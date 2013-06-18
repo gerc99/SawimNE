@@ -22,7 +22,6 @@ public class SawimService extends Service {
     private static final String LOG_TAG = "SawimService";
 
     private final Messenger messenger = new Messenger(new IncomingHandler());
-    private MusicReceiver musicReceiver;
     private Tray tray = null;
 
     public static final int UPDATE_APP_ICON = 1;
