@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="input_line" type="id"/>
+    <item type="id" name="menu_edit"/>
+    <item type="id" name="menu_delete"/>
+    <item name="menu_registration_jabber" type="id"/>
+</resources>

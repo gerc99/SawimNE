@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Sawim NE</string>
+    <string name="notify_title">You have new messages...</string>
+    <string name="notify_info">Unread messages: %d</string>
+    <string name="unread_messages">Unread messages: %d</string>
+    <string name="takePhotoButton">OK</string>
+    <string name="offline">Offline</string>
+    <string name="connecting">Connecting</string>
+    <string name="online">Online</string>
+    <string name="app_running">App running.</string>
+
+    <string name="connect">Connect</string>
+    <string name="disconnect">Disconnect</string>
+    <string name="sound_on">Sound On</string>
+    <string name="sound_off">Sound Off</string>
+    <string name="add_contact">Add contact...</string>
+    <string name="options">Options</string>
+    <string name="about">About...</string>
+    <string name="quit">Quit</string>
+
+    <string name="msg_send">Send message</string>
+
+    <string name="status">Status</string>
+    <string name="status_global">Global Status</string>
+    <string name="status_happy_flag">Cheerfull, Birthday</string>
+
+    <string name="status_offline">Offline</string>
+    <string name="status_online">Online</string>
+    <string name="status_away">Away</string>
+    <string name="status_chat">Free for chat</string>
+    <string name="status_home">Home</string>
+    <string name="status_work">Work</string>
+    <string name="status_evil">Evil</string>
+    <string name="status_depression">Depression</string>
+    <string name="status_lunch">Lunch</string>
+    <string name="status_na">N/A</string>
+    <string name="status_occupied">Occupied</string>
+    <string name="status_dnd">DND</string>
+    <string name="status_invisible">Invisible</string>
+    <string name="status_invis_all">Invisible for all</string>
+    <string name="status_not_in_list">Not in list</string>
+    <string name="status_connecting">Connecting</string>
+
+    <string name="xstatus">X-Status</string>
+    <string name="xstatus_none">N/A</string>
+    <string name="xstatus_title">Title:</string>
+    <string name="xstatus_description">Description:</string>
+
+    <string name="private_status">Private Status</string>
+    <string name="private_status_visible_to_all">Visible to all</string>
+    <string name="private_status_visible_to_white_list">Visible to white list</string>
+    <string name="private_status_visible_to_all_exclude_black_list">Visible to all exclude black list</string>
+    <string name="private_status_visible_to_contacts_only">Visible to contacts only</string>
+    <string name="private_status_invisible_for_all">Invisible for all</string>
+
+    <string name="me">Me</string>
+    <string name="chat">Chat</string>
+    <string name="chat_remove">Remove chat</string>
+    <string name="quote">Quote</string>
+
+    <string name="group_not_in_list">Not in list</string>
+    <string name="group_general">General</string>
+    <string name="group_conferences">Conferences</string>
+    <string name="group_transports">Transports</string>
+
+    <string name="contact_list">Contact list</string>
+    <string name="contact_add">Add Contact</string>
+    <string name="move">Move</string>
+    <string name="remove">Remove</string>
+    <string name="remove_contact">Remove contact</string>
+    <string name="remove_me">Remove Me...</string>
+    <string name="rename">Rename</string>
+
+    <string name="contact_seen">Seen</string>
+
+    <string name="wake_up">tried to wake interlocutor.</string>
+    <string name="wake_you_up">tried to wake You</string>
+    <string name="list_of_connections">List of connections</string>
+
+    <string name="contact_has_been_removed">Contact has been removed</string>
+
+    <string name="acc_add">Add account</string>
+    <string name="acc_edit">Edit account</string>
+    <string name="acc_login">Login:</string>
+    <string name="acc_pass">Password:</string>
+    <string name="acc_nick">Nick:</string>
+    <string name="acc_sel_protocol">Select protocol:</string>
+    <string name="acc_delete_confirm">Delete confirm?</string>
+
+    <string name="auto_connect">Auto connect</string>
+    <string name="reconnect_number">Reconnect number</string>
+
+    <string name="show_user_groups">Show user groups</string>
+    <string name="show_status_line">Show status line</string>
+    <string name="hide_offline_contacts">Hide offline contacts</string>
+    <string name="sort_up_with_msg">Sort up with message</string>
+    <string name="cl_sort_by">Sort contact list by:</string>
+    <string name="save_temp_contact">Save temp contacts</string>
+    <string name="send_by_enter">Send by enter</string>
+
+    <string name="user_info">User information</string>
+    <string name="manage">Manage</string>
+    <string name="history">History</string>
+    <string name="statuses">Statuses</string>
+    <string name="reason">Reason</string>
+    <string name="sysnotice">System Notice</string>
+    <string name="youwereadded">You were added:</string>
+    <string name="requauth">Request auth</string>
+
+    <string name="wantsyourauth">wants your Authorization</string>
+    <string name="grantedby">Your auth request was granted by:</string>
+    <string name="denyedby">Your auth request was denyed by:</string>
+
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="add">Add</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="on">On</string>
+    <string name="off">Off</string>
+    <string name="save">Save</string>
+
+    <string name="info_main">Main info</string>
+    <string name="info_nick">Nick</string>
+    <string name="info_name">Name</string>
+    <string name="info_gender">Gender</string>
+    <string name="info_age">Age</string>
+    <string name="info_email">Email</string>
+    <string name="info_birth_day">Birth day</string>
+    <string name="info_cell_phone">Cell phone</string>
+    <string name="info_home_page">Home page</string>
+    <string name="info_interests">Interests</string>
+    <string name="info_notes">Notes</string>
+    <string name="info_addr">Address</string>
+    <string name="info_city">City</string>
+    <string name="info_state">State</string>
+    <string name="info_phone">Phone</string>
+    <string name="info_fax">Fax</string>
+    <string name="info_work_title">Work title</string>
+    <string name="info_depart">Depart</string>
+    <string name="info_position">Position</string>
+
+    <!-- Antispam -->
+    <string name="antispam">Antispam</string>
+    <string name="antispam_enable">Antispam enable</string>
+    <string name="antispam_msg">Message</string>
+    <string name="antispam_msg_hello">Hello message</string>
+    <string name="antispam_msg_answer">Answer</string>
+    <string name="antispam_keywords">Keywords</string>
+
+    <!-- Magig Eye -->
+    <string name="read_xtraz">Read Xtraz</string>
+    <string name="read_status_message">Read status message</string>
+    <string name="list_of_users">Muc users</string>
+    <string name="leave_chat">Leave chat</string>
+    <string name="crash_toast_text_email">Please send crashdump via email to help fix the issue !</string>
+    <string name="DarkTheme">DarkTheme</string>
+    <string name="ms_status_menu">Status</string>
+    <string name="adhoc">Adhoc</string>
+    <string name="add_user">Add user</string>
+    <string name="move_to_group">Move to group</string>
+    <string name="notes">Notes</string>
+    <string name="invite">Invite</string>
+    <string name="wake">Wake</string>
+    <string name="user_statuses">User status</string>
+    <string name="info">Info</string>
+    <string name="extra_settings">Extra settings</string>
+    <string name="set_theme_conference">Set theme conference</string>
+    <string name="conf_aff_list">Conf all list</string>
+    <string name="owner_options">Owner options</string>
+    <string name="unregister">Unregister</string>
+    <string name="register">Register</string>
+    <string name="send_sms">Send sms</string>
+    <string name="ft_name">Send file</string>
+    <string name="ft_cam">Send foto</string>
+    <string name="search_user">Search user</string>
+    <string name="add_group">Add group</string>
+    <string name="rename_group">Rename group</string>
+    <string name="del_group">Del group</string>
+    <string name="ms_xstatus_menu">XStatus menu</string>
+    <string name="Settings">Settings</string>
+    <string name="sound">Sound</string>
+    <string name="vibro">Vibro</string>
+
+    <string name="all_contacts">All contacts</string>
+    <string name="online_contacts">Online contacts</string>
+    <string name="chats">Chats</string>
+    <string name="options_account">Accounts</string>
+    <string name="options_interface">Interface</string>
+    <string name="options_signaling">Signaling</string>
+    <string name="absence">Absence</string>
+    <string name="answerer">Answerer</string>
+    <string name="register_new">Registeration jid</string>
+    <string name="more">More</string>
+    <string name="service_discovery">Service discovery</string>
+    <string name="manage_contact_list">Manage contact list</string>
+    <string name="myself">My profile</string>
+    <string name="microblog">Microblog</string>
+    <string name="open_private">Private</string>
+    <string name="next">Next</string>
+    <string name="prev">Prev</string>
+    <string name="xmppAccountDontFound">Jabber-account do not found</string>
+    <string name="cancel">Закрыть</string>
+    <string name="ok">Ок</string>
+</resources>

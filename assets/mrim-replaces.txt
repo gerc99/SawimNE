@@ -1,0 +1,338 @@
+[Sawim2mrim]
+O:-)=<SMILE>id\=400 alt\=':Ангелочек:'</SMILE>
+]:->=<SMILE>id\=408 alt\=':Чертовски злюсь:'</SMILE>
+8-)=<SMILE>id\=409 alt\=':Я круче:'</SMILE>
+\[:-}=<SMILE>id\=417 alt\=':Слушаю музыку:'</SMILE>
+:)=<###20###img010>
+\;)=<###20###img011>
+:-))=<###20###img012>
+}:o)=<###20###img016>
+$-)=<###20###img017>
+:-'=<###20###img018>
+8-(=<###20###img020>
+:''()=<###20###img022>
+S:-o=<###20###img023>
+(:-o=<###20###img024>
+8-0=<###20###img025>
+8-[o]=<###20###img026>
+):-p=<###20###img027>
+):-(=<###20###img028>
+):-$=<###20###img029>
+):-D=<###20###img030>
+:-E=<###20###img031>
+:devil:=<###20###img032>
+:vampire:=<###20###img033>
+:-][=<###20###img034>
+B-j=<###20###img036>
+:~o=<###20###img037>
+(_I_)=<###20###img038>
+:heart:=<###20###img039>
+:sleepy:=<###20###img041>
+:cool:=<###20###img000>
+:viva:=<###20###img001>
+:ok:=<###20###img002>
+:yo:=<###20###img003>
+:yo2:=<###20###img004>
+:suxx:=<###20###img005>
+:think:=<###20###img006>
+:figu:=<###20###img007>
+:kulak:=<###20###img008>
+:fuck:=<###20###img009>
+*PEACE*=<SMILE>id\=229 alt\=':Peace!:'</SMILE>
+*BRAVO*=<SMILE>id\=201 alt\=':Аплодисменты:'</SMILE>
+:[||||]:=<SMILE>id\=431 alt\=':Бойан:'</SMILE>
+%)=<SMILE>id\=428 alt\=':В изнеможении:'</SMILE>
+:-(=<SMILE>id\=422 alt\=':В печали:'</SMILE>
+@}->--=<SMILE>id\=412 alt\=':Дарю цветочек:'</SMILE>
+\:-P=<SMILE>id\=403 alt\=':Дразнюсь:'</SMILE>
+*SCRATCH*=<SMILE>id\=316 alt\=':Думаю:'</SMILE>
+*EAT*=<SMILE>id\=329 alt\=':Жую:'</SMILE>
+*HUNTER*=<SMILE>id\=219 alt\=':Застрелю:'</SMILE>
+*TIRED*=<SMILE>id\=226 alt\=':Засыпаю:'</SMILE>
+>:o=<SMILE>id\=321 alt\=':Злюсь:'</SMILE>
+*PARDON*=<SMILE>id\=419 alt\=':Извини:'</SMILE>
+*SHOUT*=<SMILE>id\=425 alt\=':Кричу:'</SMILE>
+*ROFL*=<SMILE>id\=420 alt\=':Лопну от смеха:'</SMILE>
+*IN LOVE*=<SMILE>id\=317 alt\=':Люблю:'</SMILE>
+*COOL*=<SMILE>id\=205 alt\=':Мёрзну:'</SMILE>
+*DONT_KNOW*=<SMILE>id\=427 alt\=':Не знаю:'</SMILE>
+*NO*=<SMILE>id\=418 alt\=':Не-а:'</SMILE>
+\=-O=<SMILE>id\=424 alt\=':Ой, ё:'</SMILE>
+*OK*=<SMILE>id\=413 alt\=':Ок!:'</SMILE>
+*THUMBS UP*=<SMILE>id\=413 alt\=':Ок!:'</SMILE>
+*PUNK*=<SMILE>id\=313 alt\=':Панк:'</SMILE>
+*DRINK*=<SMILE>id\=410 alt\=':Пиво:'</SMILE>
+*VAVA*=<SMILE>id\=211 alt\=':Побили:'</SMILE>
+\;-)=<SMILE>id\=429 alt\=':Подмигиваю:'</SMILE>
+*Подозрительно*=<SMILE>id\=328 alt\=':Подозрительно:'</SMILE>
+*KISSED*=<SMILE>id\=415 alt\=':Поцеловали:'</SMILE>
+*WHISTLE*=<SMILE>id\=224 alt\=':Пою:'</SMILE>
+*FEAR*=<SMILE>id\=305 alt\=':Пугаюсь:'</SMILE>
+\=(=<SMILE>id\=223 alt\=':Расстраиваюсь:'</SMILE>
+:'(=<SMILE>id\=405 alt\=':Рыдаю:'</SMILE>
+*SCOLD*=<SMILE>id\=304 alt\=':Свирепствую:'</SMILE>
+\=)=<SMILE>id\=213 alt\=':Смеюсь:'</SMILE>
+:-[=<SMILE>id\=404 alt\=':Смущаюсь:'</SMILE>
+*СТЫДНО*=<SMILE>id\=331 alt\=':Стыдно:'</SMILE>
+*CRAZY*=<SMILE>id\=406 alt\=':Сумасшествие:'</SMILE>
+*DANCE*=<SMILE>id\=407 alt\=':Танцую:'</SMILE>
+:-!=<SMILE>id\=401 alt\=':Тошнит:'</SMILE>
+:-|=<SMILE>id\=411 alt\=':Ты что!:'</SMILE>
+:-)=<SMILE>id\=426 alt\=':Улыбаюсь:'</SMILE>
+:-D=<SMILE>id\=402 alt\=':Улыбка до ушей:'</SMILE>
+*YAHOO*=<SMILE>id\=430 alt\=':Уррра!:'</SMILE>
+*JOKINGLY*=<SMILE>id\=416 alt\=':Хихикаю:'</SMILE>
+:-*=<SMILE>id\=414 alt\=':Целую:'</SMILE>
+*READ*=<SMILE>id\=204 alt\=':Читаю:'</SMILE>
+:Красотка:=<SMILE>id\=202 alt\=':Красотка:'</SMILE>
+:Смеюсь и плачу:=<SMILE>id\=214 alt\=':Смеюсь и плачу:'</SMILE>
+:Подарок:=<SMILE>id\=215 alt\=':Подарок:'</SMILE>
+:Ворчу:=<SMILE>id\=216 alt\=':Ворчу:'</SMILE>
+:Выпей яду:=<SMILE>id\=220 alt\=':Выпей яду:'</SMILE>
+:Лучезарно:=<SMILE>id\=221 alt\=':Лучезарно:'</SMILE>
+:Скучаю:=<SMILE>id\=225 alt\=':Скучаю:'</SMILE>
+:-!=<SMILE>id\=231 alt\=':Тошнит:'</SMILE>
+:Злорадствую:=<SMILE>id\=301 alt\=':Злорадствую:'</SMILE>
+:Старичок:=<SMILE>id\=303 alt\=':Старичок:'</SMILE>
+:Умник:=<SMILE>id\=307 alt\=':Умник:'</SMILE>
+:Алкоголик:=<SMILE>id\=308 alt\=':Алкоголик:'</SMILE>
+:Вояка:=<SMILE>id\=309 alt\=':Вояка:'</SMILE>
+*KISSING*=<SMILE>id\=324 alt\=':Целую:'</SMILE>
+%kot_cool%=<SMILE>id\=flash_12 alt\='Круто!'</SMILE>
+%kot_goodbye%=<SMILE>id\=flash_13 alt\='Пока-пока'</SMILE>
+%kot_spasibo%=<SMILE>id\=flash_14 alt\='Спасибо!'</SMILE>
+%kot_nedutza%=<SMILE>id\=flash_15 alt\='Не дуться!'</SMILE>
+%kot_obida%=<SMILE>id\=flash_16 alt\='Обидели'</SMILE>
+%kot_wow%=<SMILE>id\=flash_17 alt\='Ух ты!'</SMILE>
+%beer%=<SMILE>id\=flas_1 alt\='Пивка?'</SMILE>
+%serdze%=<SMILE>id\=flash_6 alt\='Сердце'</SMILE>
+%sobaka%=<SMILE>id\=flash_3 alt\='Хочу к тебе!'</SMILE>
+%zadolbal%=<SMILE>id\=flash_2 alt\='Задолбал!'</SMILE>
+%devochka%=<SMILE>id\=flash_4 alt\='Хны...!'</SMILE>
+%bodun%=<SMILE>id\=flash_5 alt\='Отходняк...'</SMILE>
+%guby%=<SMILE>id\=flash_0 alt\='Поцелуй'</SMILE>
+%smeh%=<SMILE>id\=flash_7 alt\='Жжёшь!'</SMILE>
+%mad dog%=<SMILE>id\=flash_8 alt\='А я сошла с ума...'</SMILE>
+%rosy%=<SMILE>id\=flash_9 alt\='Миллион алых роз!'</SMILE>
+%sobaka_strelyaet%=<SMILE>id\=flash_10 alt\='Пристрелю!'</SMILE>
+%rabotaet%=<SMILE>id\=flash_11 alt\='Я занят'</SMILE>
+
+[mrim2Sawim]
+<SMILE>id\=400 alt\=':Ангелочек:'</SMILE>=O:-)
+<SMILE>id\=401 alt\=':Тошнит:'</SMILE>=:-!
+<SMILE>id\=402 alt\=':Улыбка до ушей:'</SMILE>=:-D
+<SMILE>id\=403 alt\=':Дразнюсь:'</SMILE>=:-P
+<SMILE>id\=404 alt\=':Смущаюсь:'</SMILE>=:-[
+<SMILE>id\=405 alt\=':Рыдаю:'</SMILE>=:'(
+<SMILE>id\=406 alt\=':Сумасшествие:'</SMILE>=*CRAZY*
+<SMILE>id\=407 alt\=':Танцую:'</SMILE>=*DANCE*
+<SMILE>id\=408 alt\=':Чертовски злюсь:'</SMILE>=]:->
+<SMILE>id\=409 alt\=':Я круче:'</SMILE>=8-)
+<SMILE>id\=410 alt\=':Пиво:'</SMILE>=*DRINK*
+<SMILE>id\=411 alt\=':Ты что!:'</SMILE>=:-|
+<SMILE>id\=412 alt\=':Дарю цветочек:'</SMILE>=@}->--
+<SMILE>id\=413 alt\=':Ок!:'</SMILE>=*THUMBS UP*
+<SMILE>id\=414 alt\=':Целую:'</SMILE>=:-*
+<SMILE>id\=415 alt\=':Поцеловали:'</SMILE>=*KISSED*
+<SMILE>id\=416 alt\=':Хихикаю:'</SMILE>=*JOKINGLY*
+<SMILE>id\=417 alt\=':Слушаю музыку:'</SMILE>=[:-}
+<SMILE>id\=418 alt\=':Не-а:'</SMILE>=*NO*
+<SMILE>id\=419 alt\=':Извини:'</SMILE>=*PARDON*
+<SMILE>id\=420 alt\=':Лопну от смеха:'</SMILE>=*ROFL*
+<SMILE>id\=422 alt\=':В печали:'</SMILE>=:-(
+<SMILE>id\=423 alt\=':Надо подумать:'</SMILE>=*SCRATCH*
+<SMILE>id\=424 alt\=':Ой, ё:'</SMILE>=\=-O
+<SMILE>id\=425 alt\=':Кричу:'</SMILE>=*SHOUT*
+<SMILE>id\=426 alt\=':Улыбаюсь:'</SMILE>=:-)
+<SMILE>id\=427 alt\=':Не знаю:'</SMILE>=*DONT_KNOW*
+<SMILE>id\=428 alt\=':В изнеможении:'</SMILE>=%)
+<SMILE>id\=429 alt\=':Подмигиваю:'</SMILE>=;-)
+<SMILE>id\=430 alt\=':Уррра!:'</SMILE>=*YAHOO*
+<SMILE>id\=431 alt\=':Бойан:'</SMILE>=:[||||]:
+<SMILE>id\=432 alt\=':Ктулху:'</SMILE>=:Ктулху:
+<###20###img010>=:)
+<###20###img011>=;)
+<###20###img012>=:-))
+<###20###img013>=:-P
+<###20###img014>=8-)
+<###20###img015>=:-D
+<###20###img016>=}:o)
+<###20###img017>=$-)
+<###20###img018>=:-'
+<###20###img019>=:-(
+<###20###img020>=8-(
+<###20###img021>=:'(
+<###20###img022>=:''()
+<###20###img023>=S:-o
+<###20###img024>=(:-o
+<###20###img025>=8-0
+<###20###img026>=8-[o]
+<###20###img027>=):-p
+<###20###img028>=):-(
+<###20###img029>=):-$
+<###20###img030>=):-D
+<###20###img031>=:-E
+<###20###img032>=:devil:
+<###20###img033>=:vampire:
+<###20###img034>=:-][
+<###20###img035>=:-|
+<###20###img036>=B-j
+<###20###img037>=:~o
+<###20###img038>=(_I_)
+<###20###img039>=:heart:
+<###20###img040>=:-*
+<###20###img041>=:sleepy:
+<###20###img000>=:cool:
+<###20###img001>=:viva:
+<###20###img002>=:ok:
+<###20###img003>=:yo:
+<###20###img004>=:yo2:
+<###20###img005>=:suxx:
+<###20###img006>=:think:
+<###20###img007>=:figu:
+<###20###img008>=:kulak:
+<###20###img009>=:fuck:
+<SMILE>id\=200 alt\=':Ангелочек:'</SMILE>=O:-)
+<SMILE>id\=201 alt\=':Аплодисменты:'</SMILE>=*BRAVO*
+<SMILE>id\=202 alt\=':Красотка:'</SMILE>=:Красотка:
+<SMILE>id\=203 alt\=':Пиво:'</SMILE>=*DRINK*
+<SMILE>id\=204 alt\=':Читаю:'</SMILE>=*READ*
+<SMILE>id\=205 alt\=':Мёрзну:'</SMILE>=*COOL*
+<SMILE>id\=206 alt\=':Рыдаю:'</SMILE>=:'(
+<SMILE>id\=207 alt\=':Танцую:'</SMILE>=*DANCE*
+<SMILE>id\=208 alt\=':Чертовски злюсь:'</SMILE>=]:->
+<SMILE>id\=209 alt\=':Жую:'</SMILE>=*EAT*
+<SMILE>id\=210 alt\=':Побью:'</SMILE>=>:o
+<SMILE>id\=211 alt\=':Побили:'</SMILE>=*VAVA*
+<SMILE>id\=212 alt\=':Дарю цветочек:'</SMILE>=@}->--
+<SMILE>id\=213 alt\=':Смеюсь:'</SMILE>=\=)
+<SMILE>id\=214 alt\=':Смеюсь и плачу:'</SMILE>=:Смеюсь и плачу:
+<SMILE>id\=215 alt\=':Подарок:'</SMILE>=:Подарок:
+<SMILE>id\=216 alt\=':Ворчу:'</SMILE>=:Ворчу:
+<SMILE>id\=217 alt\=':Целую:'</SMILE>=:-*
+<SMILE>id\=218 alt\=':Люблю:'</SMILE>=*IN LOVE*
+<SMILE>id\=219 alt\=':Застрелю:'</SMILE>=*HUNTER*
+<SMILE>id\=220 alt\=':Выпей яду:'</SMILE>=:Выпей яду:
+<SMILE>id\=221 alt\=':Лучезарно:'</SMILE>=:Лучезарно:
+<SMILE>id\=222 alt\=':Смущаюсь:'</SMILE>=:-[
+<SMILE>id\=223 alt\=':Расстраиваюсь:'</SMILE>=\=(
+<SMILE>id\=224 alt\=':Пою:'</SMILE>=*WHISTLE*
+<SMILE>id\=225 alt\=':Скучаю:'</SMILE>=:Скучаю:
+<SMILE>id\=226 alt\=':Засыпаю:'</SMILE>=*TIRED*
+<SMILE>id\=227 alt\=':Улыбаюсь:'</SMILE>=:-)
+<SMILE>id\=228 alt\=':Показываю язык:'</SMILE>=:-P
+<SMILE>id\=229 alt\=':Peace!:'</SMILE>=*PEACE*
+<SMILE>id\=230 alt\=':Удивляюсь:'</SMILE>=\=-O
+<SMILE>id\=231 alt\=':Тошнит:'</SMILE>=:-!
+<SMILE>id\=300 alt\=':Улыбаюсь:'</SMILE>=:-)
+<SMILE>id\=301 alt\=':Злорадствую:'</SMILE>=:Злорадствую:
+<SMILE>id\=302 alt\=':Радуюсь:'</SMILE>=*YAHOO*
+<SMILE>id\=303 alt\=':Старичок:'</SMILE>=:Старичок:
+<SMILE>id\=304 alt\=':Свирепствую:'</SMILE>=*SCOLD*
+<SMILE>id\=305 alt\=':Пугаюсь:'</SMILE>=*FEAR*
+<SMILE>id\=306 alt\=':Показываю язык:'</SMILE>=:-P
+<SMILE>id\=307 alt\=':Умник:'</SMILE>=:Умник:
+<SMILE>id\=308 alt\=':Алкоголик:'</SMILE>=:Алкоголик:
+<SMILE>id\=309 alt\=':Вояка:'</SMILE>=:Вояка:
+<SMILE>id\=310 alt\=':Удивляюсь:'</SMILE>=\=-O
+<SMILE>id\=311 alt\=':Чертовски злюсь:'</SMILE>=]:->
+<SMILE>id\=312 alt\=':Расстраиваюсь:'</SMILE>=\=(
+<SMILE>id\=313 alt\=':Панк:'</SMILE>=*PUNK*
+<SMILE>id\=314 alt\=':Лопну от смеха:'</SMILE>=*ROFL*
+<SMILE>id\=315 alt\=':Подмигиваю:'</SMILE>=;-)
+<SMILE>id\=316 alt\=':Думаю:'</SMILE>=*SCRATCH*
+<SMILE>id\=317 alt\=':Люблю:'</SMILE>=*IN LOVE*
+<SMILE>id\=318 alt\=':Подавлен:'</SMILE>=:'(
+<SMILE>id\=319 alt\=':Рыдаю:'</SMILE>=:'(
+<SMILE>id\=320 alt\=':Сейчас расплачусь:'</SMILE>=:'(
+<SMILE>id\=321 alt\=':Злюсь:'</SMILE>=>:o
+<SMILE>id\=322 alt\=':Тошнит:'</SMILE>=:-!
+<SMILE>id\=323 alt\=':Сумасшествие:'</SMILE>=%)
+<SMILE>id\=324 alt\=':Целую:'</SMILE>=*KISSING*
+<SMILE>id\=325 alt\=':Поцеловали:'</SMILE>=*KISSED*
+<SMILE>id\=326 alt\=':Красотка:'</SMILE>=*Красотка*
+<SMILE>id\=327 alt\=':Ангелочек:'</SMILE>=O:-)
+<SMILE>id\=328 alt\=':Подозрительно:'</SMILE>=*Подозрительно*
+<SMILE>id\=329 alt\=':Жую:'</SMILE>=*EAT*
+<SMILE>id\=330 alt\=':Смущаюсь:'</SMILE>=:-[
+<SMILE>id\=331 alt\=':Стыдно:'</SMILE>=*СТЫДНО*
+:Peace!:=*PEACE*
+:Ангелочек:=O:-)
+:Аплодисменты:=*BRAVO*
+:Бойан:=:[||||]:
+:В изнеможении:=%)
+:В печали:=:-(
+:Дарю цветочек:=@}->--
+:Дразнюсь:=:-P
+:Думаю:=*SCRATCH*
+:Жую:=*EAT*
+:Застрелю:=*HUNTER*
+:Засыпаю:=*TIRED*
+:Злюсь:=>:o
+:Извини:=*PARDON*
+:Красотка:=*Красотка*
+:Кричу:=*SHOUT*
+:Лопну от смеха:=*ROFL*
+:Люблю:=*IN LOVE*
+:Мёрзну:=*COOL*
+:Надо подумать:=*SCRATCH*
+:Не знаю:=*DONT_KNOW*
+:Не-а:=*NO*
+:Ой, ё:=\=-O
+:Ок!:=*THUMBS UP*
+:Панк:=*PUNK*
+:Пиво:=*DRINK*
+:Побили:=*VAVA*
+:Побью:=>:o
+:Подавлен:=:'(
+:Подмигиваю:=;-)
+:Подозрительно:=*Подозрительно*
+:Показываю язык:=:-P
+:Поцеловали:=*KISSED*
+:Пою:=*WHISTLE*
+:Пугаюсь:=*FEAR*
+:Радуюсь:=*YAHOO*
+:Расстраиваюсь:=\=(
+:Рыдаю:=:'(
+:Свирепствую:=*SCOLD*
+:Сейчас расплачусь:=:'(
+:Слушаю музыку:=[:-}
+:Смеюсь:=\=)
+:Смущаюсь:=:-[
+:Стыдно:=*СТЫДНО*
+:Сумасшествие:=*CRAZY*
+:Танцую:=*DANCE*
+:Тошнит:=:-!
+:Ты что!:=:-|
+:Удивляюсь:=\=-O
+:Улыбаюсь:=:-)
+:Улыбка до ушей:=:-D
+:Уррра!:=*YAHOO*
+:Хихикаю:=*JOKINGLY*
+:Целую:=:-*
+:Чертовски злюсь:=]:->
+:Читаю:=*READ*
+:Я круче:=8-)
+<SMILE>id\=flash_12 alt\='Круто!'</SMILE>=%kot_cool%
+<SMILE>id\=flash_13 alt\='Пока-пока'</SMILE>=%kot_goodbye%
+<SMILE>id\=flash_14 alt\='Спасибо!'</SMILE>=%kot_spasibo%
+<SMILE>id\=flash_15 alt\='Не дуться!'</SMILE>=%kot_nedutza%
+<SMILE>id\=flash_16 alt\='Обидели'</SMILE>=%kot_obida%
+<SMILE>id\=flash_17 alt\='Ух ты!'</SMILE>=%kot_wow%
+<SMILE>id\=flas_1 alt\='Пивка?'</SMILE>=%beer%
+<SMILE>id\=flas_1 alt\=':Пивка?:'</SMILE>=%beer%
+<SMILE>id\=flas_1 alt\='Пивка?;)'</SMILE>=%beer%
+<SMILE>id\=flash_6 alt\='Сердце'</SMILE>=%serdze%
+<SMILE>id\=flash_3 alt\='Хочу к тебе!'</SMILE>=%sobaka%
+<SMILE>id\=flash_2 alt\='Задолбал!'</SMILE>=%zadolbal%
+<SMILE>id\=flash_4 alt\='Хны...!'</SMILE>=%devochka%
+<SMILE>id\=flash_5 alt\='Отходняк...'</SMILE>=%bodun%
+<SMILE>id\=flash_0 alt\='Поцелуй'</SMILE>=%guby%
+<SMILE>id\=flash_7 alt\='Жжёшь!'</SMILE>=%smeh%
+<SMILE>id\=flash_8 alt\='А я сошла с ума...'</SMILE>=%mad dog%
+<SMILE>id\=flash_9 alt\='Миллион алых роз!'</SMILE>=%rosy%
+<SMILE>id\=flash_10 alt\='Пристрелю!'</SMILE>=%sobaka_strelyaet%
+<SMILE>id\=flash_11 alt\='Я занят'</SMILE>=%rabotaet%
+Собеседник попытался вас разбудить, однако у вас установлена устаревшая версия Mail.Ru Агента без поддержки функции "Будильник". Загрузить самую новую версию вы можете здесь: http://agent.mail.ru/=/wakeup
+Собеседник попытался вас разбудить, однако у вас установлена устаревшая версия Mail.Ru Агента без поддержки функции Будильник. Загрузить самую новую версию вы можете здесь: http://agent.mail.ru=/wakeup
+

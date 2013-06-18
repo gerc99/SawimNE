@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        android:id="@+id/chat_view"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical"
+        xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <LinearLayout
+            android:id="@+id/chat_bar"
+            android:layout_width="match_parent"
+            android:layout_height="50dip"
+            android:orientation="horizontal">
+        <ImageView
+                android:id="@+id/usersImage"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="center_vertical"
+                android:padding="2dp"/>
+        <LinearLayout
+                android:id="@+id/widget45"
+                android:layout_width="128dp"
+                android:layout_height="match_parent"
+                android:orientation="vertical" android:layout_weight="9">
+            <TextView
+                    android:id="@+id/item_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="1dp"
+                    android:lines="1"
+                    android:scrollHorizontally="true"
+                    android:ellipsize="end"
+                    android:text="TextView"
+                    android:textSize="20sp"
+                    android:textStyle="bold"/>
+            <TextView
+                    android:id="@+id/item_description"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="1dp"
+                    android:lines="1"
+                    android:scrollHorizontally="true"
+                    android:ellipsize="end"
+                    android:text="VeryVeryVeryLongAndLongStatusMessage"/>
+        </LinearLayout>
+        <ImageView
+                android:layout_width="32dp"
+                android:layout_height="match_parent"
+                android:id="@+id/chatsImage" android:layout_gravity="center_horizontal|right|top"
+                android:layout_weight="1"/>
+    </LinearLayout>
+
+    <LinearLayout android:id="@+id/linear"
+                  android:layout_weight="2"
+                  android:orientation="horizontal"
+                  android:layout_width="fill_parent"
+                  android:layout_height="fill_parent">
+        <ru.sawim.view.MyListView
+                android:id="@+id/chat_history_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:divider="@null"
+                android:dividerHeight="0dp"
+                android:layout_weight="2"/>
+        <LinearLayout android:id="@+id/sidebar"
+                      android:orientation="vertical"
+                      android:layout_width="match_parent"
+                      android:layout_height="match_parent" android:layout_weight="1">
+            <ListView android:id="@+id/muc_user_list"
+                      android:visibility="gone"
+                      android:layout_width="fill_parent"
+                      android:layout_height="wrap_content"/>
+        </LinearLayout>
+    </LinearLayout>
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                  android:orientation="horizontal"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  style="@style/InputBar">
+
+        <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_gravity="center"
+                style="@style/InputBar.Editor">
+        <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:id="@+id/input_smile_button"
+                android:layout_gravity="center"
+                android:src="@drawable/input_smile_button"
+                style="@style/InputBar.Button" />
+
+        <EditText
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:id="@+id/messageBox" android:layout_gravity="center|left" android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:layout_weight="0.87"
+                style="@style/InputBar.EditText" />
+        <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:id="@+id/input_send_button"
+                android:layout_gravity="center"
+                android:src="@drawable/input_send_button"
+                style="@style/InputBar.Button"/>
+
+    </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

@@ -1,0 +1,103 @@
+package ru.sawim.models;
+
+import android.app.Activity;
+import android.content.Context;
+import android.text.util.Linkify;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.*;
+import ru.sawim.R;
+import ru.sawim.models.form.VirtualListItem;
+
+import java.util.List;
+
+/**
+ * Created with IntelliJ IDEA.
+ * User: Gerc
+ * Date: 11.06.13
+ * Time: 13:07
+ * To change this template use File | Settings | File Templates.
+ */
+public class VirtualListAdapter extends BaseAdapter {
+
+    Context baseContext;
+    List<VirtualListItem> items;
+
+    public VirtualListAdapter(Context context, List<VirtualListItem> items) {
+        this.baseContext = context;
+        this.items = items;
+    }
+
+    @Override
+    public boolean hasStableIds() {
+        return true;
+    }
+
+    @Override
+    public int getCount() {
+        return items.size();
+    }
+
+    @Override
+    public VirtualListItem getItem(int i) {
+        return items.get(i);
+    }
+
+    @Override
+    public long getItemId(int i) {
+        return i;
+    }
+
+    @Override
+    public View getView(int i, View convertView, ViewGroup viewGroup) {
+        ViewHolder holder;
+        VirtualListItem element = getItem(i);
+        if (convertView == null) {
+            LayoutInflater inf = ((Activity) baseContext).getLayoutInflater();
+            convertView = inf.inflate(R.layout.virtual_list_item, null);
+            holder = new ViewHolder();
+            convertView.setTag(holder);
+        } else {
+            holder = (ViewHolder) convertView.getTag();
+        }
+        LinearLayout descriptionLayout = (LinearLayout) convertView.findViewById(R.id.descriptionLayout);
+        holder.labelView = (TextView) convertView.findViewById(R.id.label);
+        holder.descView = (TextView) descriptionLayout.findViewById(R.id.description);
+        holder.imageView = (ImageView) descriptionLayout.findViewById(R.id.imageView);
+
+        holder.labelView.setVisibility(TextView.GONE);
+        holder.descView.setVisibility(TextView.GONE);
+        holder.imageView.setVisibility(ImageView.GONE);
+
+        ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) descriptionLayout.getLayoutParams();
+        if (layoutParams != null) {
+            layoutParams.setMargins(element.getMarginLeft(), 0, 0, 0);
+            descriptionLayout.setLayoutParams(layoutParams);
+        }
+        if (element.getLabel() != null) {
+            holder.labelView.setVisibility(TextView.VISIBLE);
+            holder.labelView.setText(element.getLabel());
+        }
+        if (element.getDescription() != null) {
+            if(element.isTextSelectable()) {
+                holder.descView.setTextIsSelectable(true);
+                holder.descView.setAutoLinkMask(Linkify.ALL);
+            }
+            holder.descView.setVisibility(TextView.VISIBLE);
+            holder.descView.setText(element.getDescription());
+        }
+        if (element.getImage() != null) {
+            holder.imageView.setVisibility(ImageView.VISIBLE);
+            holder.imageView.setImageBitmap(element.getImage());
+        }
+        return convertView;
+    }
+
+    private static class ViewHolder {
+        TextView labelView;
+        TextView descView;
+        ImageView imageView;
+
+    }
+}

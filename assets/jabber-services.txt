@@ -1,0 +1,7 @@
+flood@conference.jabber.ru=Обо всем
+quiz@conference.jabber.ru=Викторина
+erudit@conference.jabber.ru=Викторина для эрудитов
+anekdot@conference.jabber.ru=Анекдоты
+clubjabber@conference.jabber.ru=Помощь по jabber и просто приятное общение
+conference.jabber.ru=Конференции на jabber.ru
+conference.xmpp.ru=Конференции на xmpp.ru

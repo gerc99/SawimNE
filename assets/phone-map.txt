@@ -1,0 +1,15 @@
+qwertyChaingeMap=0
+qwertyUpperCase=0
+backspace=1048577
+smiles=42
+qwertyMenu=0
+0=\ 0\n
+1=.,?!1@'\"-_():;
+2=абвг2abc
+3=дежз3defё
+4=ийкл4ghi
+5=мноп5jkl
+6=рсту6mno
+7=фхцч7pqrs
+8=шщъы8tuv
+9=ьэюя9wxyz

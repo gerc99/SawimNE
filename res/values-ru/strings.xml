@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Sawim NE</string>
+    <string name="notify_title">У Вас есть новые сообщения…</string>
+    <string name="notify_info">Не прочитано сообщений: %d</string>
+    <string name="unread_messages">Новых сообщений: %d</string>
+    <string name="takePhotoButton">OK</string>
+    <string name="offline">Отключен</string>
+    <string name="connecting">Подключение…</string>
+    <string name="online">В сети</string>
+    <string name="app_running">App running.</string>
+
+    <string name="connect">Подключиться</string>
+    <string name="disconnect">Отключиться</string>
+    <string name="sound_on">Включить звук</string>
+    <string name="sound_off">Отключить звук</string>
+    <string name="add_contact">Добавить контакт...</string>
+    <string name="options">Настройки</string>
+    <string name="about">О...</string>
+    <string name="quit">Выход</string>
+
+    <string name="msg_send">Отправить сообщение</string>
+
+    <string name="status">Статус</string>
+    <string name="status_global">Глобальный статус</string>
+    <string name="status_happy_flag">Радостный или День рождения</string>
+
+    <string name="status_offline">Оффлайн</string>
+    <string name="status_online">Онлайн</string>
+    <string name="status_away">Отсутствую</string>
+    <string name="status_chat">Готов поболтать</string>
+    <string name="status_home">Дома</string>
+    <string name="status_work">На работе</string>
+    <string name="status_evil">Злой</string>
+    <string name="status_depression">Депрессия</string>
+    <string name="status_lunch">Кушаю</string>
+    <string name="status_na">Недоступен</string>
+    <string name="status_occupied">Occupied</string>
+    <string name="status_dnd">Занят</string>
+    <string name="status_invisible">Невидимый</string>
+    <string name="status_invis_all">Невидим для всех</string>
+    <string name="status_not_in_list">Not in list</string>
+    <string name="status_connecting">Подключение</string>
+
+    <string name="xstatus">Х-Статус</string>
+    <string name="xstatus_none">(нет)</string>
+    <string name="xstatus_title">Название:</string>
+    <string name="xstatus_description">Описание:</string>
+
+    <string name="private_status">Приватный статус</string>
+    <string name="private_status_visible_to_all">Видимый для всех</string>
+    <string name="private_status_visible_to_white_list">Видимый для списка видящих</string>
+    <string name="private_status_visible_to_all_exclude_black_list">Видимый для всех кроме списка невидящих</string>
+    <string name="private_status_visible_to_contacts_only">Видимый для КЛ</string>
+    <string name="private_status_invisible_for_all">Невидимый для всех</string>
+
+    <string name="me">Я</string>
+    <string name="chat">Чат</string>
+    <string name="chat_remove">Удалить чат</string>
+    <string name="quote">Цитировать</string>
+
+    <string name="group_not_in_list">Not in list</string>
+    <string name="group_general">General</string>
+    <string name="group_conferences">Conferences</string>
+    <string name="group_transports">Transports</string>
+
+    <string name="contact_list">Контакт лист</string>
+    <string name="contact_add">Добавить контакт</string>
+    <string name="move">Перенести</string>
+    <string name="remove">Удалить</string>
+    <string name="remove_contact">Удалить контакт</string>
+    <string name="remove_me">Удалиться из его КЛ</string>
+    <string name="rename">Переименовать</string>
+
+    <string name="contact_seen">Видели</string>
+
+    <string name="wake_up">пытался разбудить собеседника</string>
+    <string name="wake_you_up">пытался разбудить вас</string>
+    <string name="list_of_connections">Соединения</string>
+
+    <string name="contact_has_been_removed">Контакт был удалён</string>
+
+    <string name="acc_add">Добавить</string>
+    <string name="acc_edit">Редактирвать</string>
+    <string name="acc_login">Логин:</string>
+    <string name="acc_pass">Пароль:</string>
+    <string name="acc_nick">Ник:</string>
+    <string name="acc_sel_protocol">Выберите протокол:</string>
+    <string name="acc_delete_confirm">Вы действительно хотите удалить аккаунт</string>
+
+    <string name="auto_connect">Подключаться автоматически</string>
+    <string name="reconnect_number">Количество попыток подключения</string>
+
+    <string name="show_user_groups">Показывать группы контактов</string>
+    <string name="show_status_line">Показывать строку статуса</string>
+    <string name="hide_offline_contacts">Скрывать оффлайн контакты</string>
+    <string name="sort_up_with_msg">Контакты с сообщениями в начале</string>
+    <string name="cl_sort_by">Сортировать контакт-лист:</string>
+    <string name="save_temp_contact">Сохранять временные контакты</string>
+    <string name="send_by_enter">Send by enter</string>
+
+    <string name="user_info">Информация</string>
+    <string name="manage">Управление</string>
+    <string name="history">История</string>
+    <string name="statuses">Статусы</string>
+    <string name="reason">Причина</string>
+    <string name="sysnotice">Системное уведомление</string>
+    <string name="youwereadded">Вас добавил: </string>
+    <string name="requauth">Запрос авторизации</string>
+
+    <string name="wantsyourauth"> хочет авторизироваться</string>
+    <string name="grantedby">Вас авторизировал: </string>
+    <string name="denyedby">Ваш запрос на авторизацию отклонил: </string>
+
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
+    <string name="add">Добавить</string>
+    <string name="edit">Редактировать</string>
+    <string name="delete">Удалить</string>
+    <string name="on">Вкл</string>
+    <string name="off">Выкл</string>
+    <string name="save">Сохранить</string>
+
+    <string name="info_main">Main info</string>
+    <string name="info_nick">Nick</string>
+    <string name="info_name">Name</string>
+    <string name="info_gender">Gender</string>
+    <string name="info_age">Age</string>
+    <string name="info_email">Email</string>
+    <string name="info_birth_day">Birth day</string>
+    <string name="info_cell_phone">Cell phone</string>
+    <string name="info_home_page">Home page</string>
+    <string name="info_interests">Interests</string>
+    <string name="info_notes">Notes</string>
+    <string name="info_addr">Address</string>
+    <string name="info_city">City</string>
+    <string name="info_state">State</string>
+    <string name="info_phone">Phone</string>
+    <string name="info_fax">Fax</string>
+    <string name="info_work_title">Work title</string>
+    <string name="info_depart">Depart</string>
+    <string name="info_position">Position</string>
+
+    <!-- Antispam -->
+    <string name="antispam">Антиспам</string>
+    <string name="antispam_enable">Antispam enable</string>
+    <string name="antispam_msg">Message</string>
+    <string name="antispam_msg_hello">Hello message</string>
+    <string name="antispam_msg_answer">Answer</string>
+    <string name="antispam_keywords">Keywords</string>
+
+    <string name="list_of_users">Участники</string>
+    <string name="leave_chat">Покинуть чат</string>
+
+    <string name="DarkTheme">DarkTheme</string>
+    <string name="ms_status_menu">Статус</string>
+    <string name="adhoc">Команды</string>
+    <string name="add_user">Добавить контакт</string>
+    <string name="move_to_group">Перенести в группу</string>
+    <string name="notes">Заметки</string>
+    <string name="invite">Приват</string>
+    <string name="wake">Разбудить</string>
+    <string name="user_statuses">Статусы</string>
+    <string name="info">Информация</string>
+    <string name="extra_settings">Экстра-настройки</string>
+    <string name="set_theme_conference">Установить тему</string>
+    <string name="conf_aff_list">Списки рангов</string>
+    <string name="owner_options">Настроить комнату</string>
+    <string name="unregister">Отмена регистрации</string>
+    <string name="register">Зарегистрироваться</string>
+    <string name="send_sms">Отправить sms</string>
+    <string name="ft_name">Отправить файл</string>
+    <string name="ft_cam">Отправить фото</string>
+    <string name="search_user">Найти контакт</string>
+    <string name="add_group">Добавить группу</string>
+    <string name="rename_group">Переименовать группу</string>
+    <string name="del_group">Удалить группу</string>
+    <string name="ms_xstatus_menu">Х-Статус меню</string>
+    <string name="Settings">Настройки</string>
+    <string name="sound">Звук</string>
+    <string name="vibro">Вибрация</string>
+
+    <string name="all_contacts">Все контакты</string>
+    <string name="online_contacts">Онлайн контакты</string>
+    <string name="chats">Чаты</string>
+    <string name="options_account">Учетные записи</string>
+    <string name="options_interface">Интерфейс</string>
+    <string name="options_signaling">Оповещения</string>
+    <string name="absence">Отсутствие</string>
+    <string name="answerer">Автоответчик</string>
+    <string name="register_new">Заре-г-ать новый JID</string>
+    <string name="more">Еще</string>
+    <string name="service_discovery">Обзор сервисов</string>
+    <string name="manage_contact_list">Управление списком</string>
+    <string name="myself">Мой профиль</string>
+    <string name="microblog">Блог</string>
+    <string name="open_private">Приват</string>
+    <string name="next">След.</string>
+    <string name="prev">Пред.</string>
+    <string name="xmppAccountDontFound">Jabber-учетка не найдена</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">Ok</string>
+</resources>

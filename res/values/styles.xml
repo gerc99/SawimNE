@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AppThemeLightNoBar" parent="android:style/Theme.Light.NoTitleBar">
+    </style>
+    <style name="AppThemeDarkNoBar" parent="android:style/Theme.NoTitleBar">
+    </style>
+
+    <style name="AppThemeLight" parent="android:style/Theme.Light">
+    </style>
+    <style name="AppThemeDark" parent="android:style/Theme">
+    </style>
+
+    <style name="InputBar" parent="@android:style/ButtonBar">
+        <item name="android:paddingTop">5dp</item>
+        <item name="android:paddingLeft">4dp</item>
+        <item name="android:paddingRight">4dp</item>
+        <item name="android:paddingBottom">4dp</item>
+        <item name="android:background">@android:drawable/bottom_bar</item>
+        <item name="android:verticalSpacing">0dp</item>
+    </style>
+
+    <style name="InputBar.Editor">
+        <item name="android:padding">0dp</item>
+        <item name="android:verticalSpacing">0dp</item>
+        <item name="android:background">@drawable/input_editor</item>
+    </style>
+    <style name="InputBar.Button" parent="@android:Widget.Button">
+        <item name="android:padding">2dp</item>
+        <item name="android:clickable">true</item>
+        <item name="android:background">@drawable/input_button</item>
+        <item name="android:verticalSpacing">0dp</item>
+    </style>
+
+    <style name="InputBar.EditText">
+        <item name="android:padding">2dp</item>
+        <item name="android:focusable">true</item>
+        <item name="android:focusableInTouchMode">true</item>
+        <item name="android:clickable">true</item>
+        <item name="android:gravity">top</item>
+        <item name="android:background">@drawable/input_edittext</item>
+    </style>
+</resources>

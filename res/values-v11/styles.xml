@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AppThemeLightNoBar" parent="android:style/Theme.Holo.Light.NoActionBar">
+    </style>
+    <style name="AppThemeDarkNoBar" parent="android:style/Theme.Holo.NoActionBar">
+    </style>
+
+    <style name="AppThemeLight" parent="android:style/Theme.Holo.Light">
+    </style>
+    <style name="AppThemeDark" parent="android:style/Theme.Holo">
+    </style>
+</resources>

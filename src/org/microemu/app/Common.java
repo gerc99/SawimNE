@@ -1,0 +1,81 @@
+/**
+ *  MicroEmulator
+ *  Copyright (C) 2001-2003 Bartek Teodorczyk <barteo@barteo.net>
+ *
+ *  It is licensed under the following two licenses as alternatives:
+ *    1. GNU Lesser General Public License (the "LGPL") version 2.1 or any newer version
+ *    2. Apache License (the "AL") Version 2.0
+ *
+ *  You may not use this file except in compliance with at least one of
+ *  the above two licenses.
+ *
+ *  You may obtain a copy of the LGPL at
+ *      http://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt
+ *
+ *  You may obtain a copy of the AL at
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the LGPL or the AL for the specific language governing permissions and
+ *  limitations.
+ *
+ *  @version $Id: Common.java 2517 2011-11-10 12:30:37Z barteo@gmail.com $
+ */
+package org.microemu.app;
+
+import org.microemu.*;
+import org.microemu.app.util.MIDletSystemProperties;
+import org.microemu.microedition.ImplFactory;
+import org.microemu.microedition.io.ConnectorImpl;
+
+import java.util.Locale;
+import java.util.Vector;
+
+public class Common implements MicroEmulator {
+
+    private RecordStoreManager recordStoreManager;
+
+    public Common() {
+        /*
+         * Initialize secutity context for implemenations, May be there are better place
+         * for this call
+         */
+        ImplFactory.instance();
+        MIDletSystemProperties.initContext();
+        // TODO integrate with ImplementationInitialization
+        ImplFactory.registerGCF(ImplFactory.DEFAULT, new ConnectorImpl());
+    }
+
+    public RecordStoreManager getRecordStoreManager() {
+        return recordStoreManager;
+    }
+
+    public void setRecordStoreManager(RecordStoreManager manager) {
+        this.recordStoreManager = manager;
+    }
+
+    public String getAppProperty(String key) {
+        if (key.equals("microedition.platform")) {
+            return "Android";
+        } else if (key.equals("microedition.profiles")) {
+            return "MIDP-2.0";
+        } else if (key.equals("microedition.configuration")) {
+            return "CLDC-1.0";
+        } else if (key.equals("microedition.locale")) {
+            return Locale.getDefault().getLanguage();
+        } else if (key.equals("microedition.encoding")) {
+            return System.getProperty("file.encoding");
+        }
+        return null;
+    }
+
+    public int checkPermission(String permission) {
+        return MIDletSystemProperties.getPermission(permission);
+    }
+
+    public void initMIDlet() {
+        MIDletBridge.getRecordStoreManager().init(MIDletBridge.getMicroEmulator());
+    }
+}
