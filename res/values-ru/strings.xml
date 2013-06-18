@@ -158,7 +158,7 @@
     <string name="add_user">Добавить контакт</string>
     <string name="move_to_group">Перенести в группу</string>
     <string name="notes">Заметки</string>
-    <string name="invite">Приват</string>
+    <string name="invite">Пригласить в конференцию</string>
     <string name="wake">Разбудить</string>
     <string name="user_statuses">Статусы</string>
     <string name="info">Информация</string>

@@ -184,15 +184,12 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         ChatView viewer = (ChatView) getActivity().getSupportFragmentManager()
                 .findFragmentById(R.id.chat_fragment);
         Object item = adaptersPages.get(viewPager.getCurrentItem()).getItem(position);
-        //Log.e("RosterView", "item " + ((TreeNode)item).getDescription() + " page " + viewPager.getCurrentItem() + " pos " + position);
         if (item instanceof Contact) {
-            //Update();
             Contact c = ((Contact) item);
             Protocol p = c.getProtocol();
             c.activate(p);
             if (!isInLayout()) return;
             if (viewer == null || !viewer.isInLayout()) {
-                //owner.setOnUpdateRoster(null);
                 Intent intent = new Intent(getActivity(), ChatActivity.class);
                 intent.putExtra("protocol_id", p.getUserId());
                 intent.putExtra("contact_id", c.getUserId());
@@ -240,14 +237,19 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
     }
 
     @Override
-    public boolean onContextItemSelected(android.view.MenuItem item) {
+    public boolean onContextItemSelected(final android.view.MenuItem item) {
         AdapterView.AdapterContextMenuInfo menuInfo = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         if (menuInfo == null)
             menuInfo = contextMenuInfo;
         Object node = adaptersPages.get(viewPager.getCurrentItem()).getItem(menuInfo.position);
         if (node instanceof Contact) {
-            Contact c = (Contact) node;
-            new ContactMenu(c.getProtocol(), c).doAction(item.getItemId());
+            final Contact c = (Contact) node;
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    new ContactMenu(c.getProtocol(), c).doAction(item.getItemId());
+                }
+            });
             return true;
         }
         return super.onContextItemSelected(item);

@@ -164,7 +164,7 @@ public final class VirtualContactList {
         updateTree();
     }
 
-    private void itemSelected(TreeNode item) {
+    /*private void itemSelected(TreeNode item) {
         if (null == item) {
             return;
         }
@@ -179,7 +179,7 @@ public final class VirtualContactList {
             TreeBranch root = (TreeBranch) item;
             setExpandFlag(root, !root.isExpanded());
         }
-    }
+    }*/
 
     public final void setActiveContact(Contact cItem) {
         setCurrentNode(cItem);

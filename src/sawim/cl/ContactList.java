@@ -221,10 +221,6 @@ public final class ContactList implements ContactListListener {
         }
     }
 
-    public MessageEditor getMessageEditor() {
-        return null;
-    }
-
     final static public int SORT_BY_STATUS = 0;
     final static public int SORT_BY_ONLINE = 1;
     final static public int SORT_BY_NAME   = 2;

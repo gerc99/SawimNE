@@ -218,7 +218,6 @@ public final class ServiceDiscovery implements TextBoxListener {
     }
 
     public void addItem(String name, String jid) {
-        Log.e("ServiceDiscovery", "addItem "+jid+" "+name);
         if (StringConvertor.isEmpty(jid)) {
             return;
         }
@@ -274,7 +273,7 @@ public final class ServiceDiscovery implements TextBoxListener {
         }
     }
     private void addBuildInList() {
-        addUnique("Sawim aspro", "sawim-aspro@conference.jabber.ru");
+        addUnique("Sawim aspro", "jimm-sawim@conference.jabber.ru");
         VirtualListItem br = model.createNewParser(false);
         br.addBr();
         model.addPar(br);

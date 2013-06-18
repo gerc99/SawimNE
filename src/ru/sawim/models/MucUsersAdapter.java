@@ -100,7 +100,7 @@ public class MucUsersAdapter extends BaseAdapter {
         return priority;
     }
 
-    private final int getAffiliation(String nick) {
+    public final int getAffiliation(String nick) {
         JabberContact.SubContact c = getContact(nick);
         final int priorityA = (null == c) ? JabberServiceContact.AFFILIATION_NONE : c.priorityA;
         return priorityA;
@@ -163,6 +163,29 @@ public class MucUsersAdapter extends BaseAdapter {
     public Contact getPrivateContact(String nick) {
         String jid = Jid.realJidToSawimJid(conference.getUserId() + "/" + nick);
         return protocol.createTempContact(jid);
+    }
+
+    public void setMucRole(String nick, String role) {
+        protocol.getConnection().setMucRole(conference.getUserId(), nick, role);
+    }
+    public void setMucAffiliation(String nick, String affiliation) {
+        JabberContact.SubContact c = conference.getExistSubContact(nick);
+        if ((null == c) || (null == c.realJid)) {
+            return;
+        }
+        protocol.getConnection().setMucAffiliation(conference.getUserId(),
+                c.realJid, affiliation);
+    }
+    public void setMucRoleR(String nick, String role, String setReason) {
+        protocol.getConnection().setMucRoleR(conference.getUserId(), nick, role, setReason);
+    }
+    public void setMucAffiliationR(String nick, String affiliation, String setReason) {
+        JabberContact.SubContact c = conference.getExistSubContact(nick);
+        if ((null == c) || (null == c.realJid)) {
+            return;
+        }
+        protocol.getConnection().setMucAffiliationR(conference.getUserId(),
+                c.realJid, affiliation, setReason);
     }
 
     @Override

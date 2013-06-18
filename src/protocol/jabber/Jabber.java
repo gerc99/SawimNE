@@ -135,7 +135,7 @@ public final class Jabber extends Protocol implements FormListener {
         connection.start();
     }
 
-    JabberXml getConnection() {
+    public JabberXml getConnection() {
         return connection;
     }
 
