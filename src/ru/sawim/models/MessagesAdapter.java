@@ -131,7 +131,7 @@ public class MessagesAdapter extends BaseAdapter {
                 msgNick.setVisibility(TextView.GONE);
                 msgTime.setVisibility(TextView.GONE);
                 int color = General.getColor(mData.isIncoming() ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG);
-                msgText.setText(mData.getNick() + " " + getFormattedText(baseContext, text, General.getColor(color)));
+                msgText.setText(mData.getNick() + " " + getFormattedText(baseContext, text, color));
                 msgText.setTextSize(14);
             } else {
                 Icon icon = Message.msgIcons.iconAt(chat.getIcon(mData.getMessage(), mData.isIncoming()));

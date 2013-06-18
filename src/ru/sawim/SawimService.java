@@ -13,7 +13,6 @@ import android.os.Messenger;
 import android.util.Log;
 import sawim.chat.ChatHistory;
 import sawim.cl.ContactList;
-import org.bombusmod.scrobbler.MusicReceiver;
 import ru.sawim.activities.SawimActivity;
 
 public class SawimService extends Service {

@@ -173,6 +173,7 @@ public class AccountsListView extends Fragment {
                 editLogin.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
             }
             Button buttonOk = (Button) dialogLogin.findViewById(R.id.ButtonOK);
+            final int finalProtocolIndex = protocolIndex;
             buttonOk.setOnClickListener(new View.OnClickListener() {
 
                 @Override
@@ -183,7 +184,7 @@ public class AccountsListView extends Fragment {
                     String nick = editNick.getText().toString();
                     Profile account = new Profile();
                     if (1 < Profile.protocolTypes.length) {
-                        account.protocolType = Profile.protocolTypes[type];
+                        account.protocolType = Profile.protocolTypes[finalProtocolIndex];
                     }
                     account.userId = login;
                     if (StringConvertor.isEmpty(account.userId)) {

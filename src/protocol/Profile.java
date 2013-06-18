@@ -21,15 +21,9 @@ public final class Profile {
     public static final int PROTOCOL_ODNOKLASSNIKI = 16;
     public static final int PROTOCOL_VK_API = 20;
     public static final String[] protocolNames = Util.explode((""
-            
             + "|ICQ"
-            
-            
             + "|Mail.ru Agent"
-            
-            
             + "|Jabber"
-            
             + "|Facebook"
             + "|\u041e\u0434\u043d\u043e\u043a\u043b\u0430\u0441\u0441\u043d\u0438\u043a\u0438"
             + "|VKontakte"
@@ -37,28 +31,11 @@ public final class Profile {
             + "|GTalk"
             + "|Ya.Online"
             + "|QIP"
-            
-            
-            
-
-            
-            
-
-            
-            
-
-            
     ).substring(1), '|');
     public static final byte[] protocolTypes = new byte[] {
-            
             PROTOCOL_ICQ,
-            
-            
             PROTOCOL_MRIM,
-            
-            
             PROTOCOL_JABBER,
-            
             PROTOCOL_FACEBOOK,
             PROTOCOL_ODNOKLASSNIKI,
             PROTOCOL_VK,
@@ -66,28 +43,11 @@ public final class Profile {
             PROTOCOL_GTALK,
             PROTOCOL_YANDEX,
             PROTOCOL_QIP,
-            
-            
-            
-
-            
-            
-
-            
-            
-
-            
     };
     public static final String[] protocolIds = new String[] {
-            
             "UIN/E-mail",
-            
-            
             "e-mail",
-            
-            
             "jid",
-            
             "Login",
             "ID",
             "ID",
@@ -95,17 +55,6 @@ public final class Profile {
             "Login",
             "Login",
             "Login",
-            
-            
-            
-
-            
-            
-
-            
-            
-
-            
     };
 
     public byte protocolType;
@@ -129,4 +78,3 @@ public final class Profile {
         return StatusInfo.STATUS_OFFLINE != statusIndex;
     }
 }
-
