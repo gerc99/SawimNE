@@ -1,7 +1,7 @@
 package ru.sawim.view;
 
 import DrawControls.icons.Icon;
-import DrawControls.tree.ApartContactListModel;
+import DrawControls.tree.TreeBranch;
 import DrawControls.tree.TreeNode;
 import DrawControls.tree.VirtualContactList;
 import android.content.Intent;
@@ -11,6 +11,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.PagerTitleStrip;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.*;
 import android.widget.*;
 import sawim.chat.ChatHistory;
@@ -45,23 +46,24 @@ import java.util.Vector;
  */
 public class RosterView extends Fragment implements View.OnClickListener, ListView.OnItemClickListener, VirtualContactList.OnUpdateRoster {
 
+    private LinearLayout rosterViewLayout;
+    private LinearLayout topLinearLayout;
+    private LinearLayout rosterBarLayout;
+    private ProgressBar progressBar;
     private ViewPager viewPager;
     private PagerTitleStrip indicator;
     private List<View> pages = new ArrayList<View>();
     private CustomPagerAdapter pagerAdapter;
     private ArrayList<BaseAdapter> adaptersPages = new ArrayList<BaseAdapter>();
-    private VirtualContactList owner;
     private RosterAdapter allRosterAdapter;
     private ContactsAdapter onlineRosterAdapter;
     private ContactsAdapter chatsRosterAdapter;
-    private ContactList general;
-    private LinearLayout rosterViewLayout;
-    private LinearLayout topLinearLayout;
-    private LinearLayout rosterBarLayout;
-    private ProgressBar progressBar;
-    private AdapterView.AdapterContextMenuInfo contextMenuInfo;
+    private VirtualContactList owner;
     private Vector updateQueue = new Vector();
-    public List<TreeNode> drawItems = new ArrayList<TreeNode>();
+    private List<TreeNode> items = new ArrayList<TreeNode>();
+    private TreeNode currentNode = null;
+    private ContactList general;
+    private AdapterView.AdapterContextMenuInfo contextMenuInfo;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -86,13 +88,17 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         rosterBarLayout.setBackgroundColor(General.getColorWithAlpha(Scheme.THEME_CAP_BACKGROUND));
 
         LayoutInflater inf = LayoutInflater.from(currentActivity);
-        allRosterAdapter = new RosterAdapter(inf, owner, drawItems);
+        allRosterAdapter = new RosterAdapter(inf, owner, items);
         onlineRosterAdapter = new ContactsAdapter(inf, owner, ContactsAdapter.ONLINE_CONTACTS);
         chatsRosterAdapter = new ContactsAdapter(inf, owner, ContactsAdapter.OPEN_CHATS);
 
         adaptersPages.add(allRosterAdapter);
         adaptersPages.add(onlineRosterAdapter);
         adaptersPages.add(chatsRosterAdapter);
+
+        allListView.setCacheColorHint(0x00000000);
+        onlineListView.setCacheColorHint(0x00000000);
+        chatsListView.setCacheColorHint(0x00000000);
 
         allListView.setAdapter(allRosterAdapter);
         onlineListView.setAdapter(onlineRosterAdapter);
@@ -131,8 +137,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        beforePaint();
-                        updatePage(pos);
+                        rebuildRoster(pos);
                     }
                 });
             }
@@ -151,12 +156,39 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         }
     }
 
-    private void buildFlatItems(List<TreeNode> items) {
-        items.clear();
-        ((ApartContactListModel) owner.getModel()).buildFlatItems(owner.getCurrProtocol(), items);
+    private void setCurrentItemIndex(final int currentIndex) {
+        ((ListView) pages.get(viewPager.getCurrentItem())).setSelection(currentIndex);
     }
 
-    private void beforePaint() {
+    public int getCurrItem() {
+        return ((ListView) pages.get(viewPager.getCurrentItem())).getFirstVisiblePosition();
+    }
+
+    private TreeNode getCurrentNode() {
+        return getSafeNode(getCurrItem());
+    }
+
+    public TreeNode getSafeNode(int index) {
+        if ((index < items.size()) && (index >= 0)) {
+            return items.get(index);
+        }
+        return null;
+    }
+
+    public void setExpandFlag(TreeBranch node, boolean value) {
+        setCurrentNode(getCurrentNode());
+        node.setExpandFlag(value);
+        updateRoster();
+    }
+
+    @Override
+    public void setCurrentNode(TreeNode node) {
+        if (null != node) {
+            currentNode = node;
+        }
+    }
+
+    private void rebuildRoster(int pos) {
         while (!updateQueue.isEmpty()) {
             Group group = (Group) updateQueue.firstElement();
             updateQueue.removeElementAt(0);
@@ -164,7 +196,27 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         }
         try {
             owner.updateOption();
-            buildFlatItems(drawItems);
+
+            TreeNode current = currentNode;
+            currentNode = null;
+            int prevIndex = getCurrItem();
+            if (null != current) {
+                owner.expandNodePath(current);
+            } else {
+                current = getSafeNode(prevIndex);
+            }
+            items.clear();
+            owner.getModel().buildFlatItems(owner.getCurrProtocol(), items);
+            updatePage(pos);
+            if (null != current) {
+                int currentIndex = Util.getIndex(items, current);
+                if ((prevIndex != currentIndex) && (-1 != currentIndex)) {
+                    setCurrentItemIndex(currentIndex);
+                }
+            }
+            if (items.size() <= getCurrItem()) {
+                setCurrentItemIndex(0);
+            }
         } catch (Exception e) {
             DebugLog.panic("update ", e);
         }
@@ -201,7 +253,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
             }
         } else if (item instanceof Group) {
             Group group = (Group) item;
-            owner.setExpandFlag(group, !group.isExpanded());
+            setExpandFlag(group, !group.isExpanded());
         }
         updateRoster();
     }
@@ -276,12 +328,11 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
     }
 
     private void Update() {
+        updateBarProtocols();
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                beforePaint();
-                updateBarProtocols();
-                updatePage(viewPager.getCurrentItem());
+                rebuildRoster(viewPager.getCurrentItem());
             }
         });
     }
@@ -315,13 +366,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
 
     private void updatePage(final int currPage) {
         if (currPage == ContactsAdapter.ALL_CONTACTS) {
-                    /*List<TreeNode> nodes = owner.drawItems;
-                    allRosterAdapter.clear();
-                    for (int c = 0; c < nodes.size(); ++c) {
-                        allRosterAdapter.setItems(nodes.get(c));
-                    }*/
             general.getManager().getModel().sort();
-
         } else if (currPage == ContactsAdapter.ONLINE_CONTACTS) {
             onlineRosterAdapter.clear();
             Vector contacts = general.getCurrProtocol().getSortedContacts();
@@ -346,8 +391,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                beforePaint();
-                updatePage(viewPager.getCurrentItem());
+                rebuildRoster(viewPager.getCurrentItem());
             }
         });
     }

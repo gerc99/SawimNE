@@ -138,10 +138,6 @@ abstract public class Contact implements TreeNode, Sortable {
     public void activate(Protocol p) {
         ContactList.getInstance().setCurrentContact(this);
     }
-    public void writeMessage(String message) {
-	    Chat chat = getProtocol().getChat(this);
-	    chat.writeMessage(message);
-	}
 
     protected final boolean isCurrent() {
         return this == getProtocol().getContactList().getCurrentContact();
@@ -335,9 +331,6 @@ abstract public class Contact implements TreeNode, Sortable {
         return ((booleanValues >>> 16) & 0xFF) - 1;
     }
 
-    public static final int USER_MENU_MESSAGE          = 1001;
-    public static final int USER_MENU_PASTE            = 1002;
-
     public static final int USER_MENU_REQU_AUTH        = 1004;
 
     public static final int USER_MENU_USER_REMOVE      = 1007;
@@ -388,7 +381,6 @@ abstract public class Contact implements TreeNode, Sortable {
     }
     protected final void addChatItems(ContextMenu menu) {
         if (isSingleUserContact()) {
-            menu.add(Menu.FIRST, USER_MENU_MESSAGE, 2, R.string.msg_send);
             if (!isAuth()) {
                 menu.add(Menu.FIRST, USER_MENU_REQU_AUTH, 2, R.string.requauth);
             }

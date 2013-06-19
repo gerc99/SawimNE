@@ -30,7 +30,7 @@ import java.io.InputStream;
 public class General {
 
     private static General instance;
-    public static boolean isServiceStart = false;
+    public static boolean initialized = false;
 
     public void init(Context c) {
         instance = this;

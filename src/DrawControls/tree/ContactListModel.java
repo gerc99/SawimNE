@@ -79,21 +79,13 @@ public class ContactListModel {
         return null;
     }
 
-    public void buildFlatItems(Vector items) {
-        final int count = getProtocolCount();
-        for (int i = 0; i < count; ++i) {
-            Protocol p = getProtocol(i);
-
-            ProtocolBranch root = p.getProtocolBranch();
-            items.addElement(root);
-            if (!root.isExpanded()) continue;
-
-            synchronized (p.getRosterLockObject()) {
-                if (useGroups) {
-                    rebuildFlatItemsWG(p, items);
-                } else {
-                    rebuildFlatItemsWOG(p, items);
-                }
+    public void buildFlatItems(int currProtocol, List<TreeNode> items) {
+        Protocol p = getProtocol(currProtocol);
+        synchronized (p.getRosterLockObject()) {
+            if (useGroups) {
+                rebuildFlatItemsWG(p, items);
+            } else {
+                rebuildFlatItemsWOG(p, items);
             }
         }
     }

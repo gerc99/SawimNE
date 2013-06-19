@@ -3,13 +3,13 @@
 package protocol;
 
 import ru.sawim.models.form.VirtualListItem;
-import sawim.ui.text.TextListModel;
+import sawim.ui.text.VirtualListModel;
 import DrawControls.icons.Icon;
 import sawim.Sawim;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
 import sawim.ui.base.Scheme;
-import sawim.ui.text.TextList;
+import sawim.ui.text.VirtualList;
 //import sawim.ui.text.TextListController;
 import protocol.jabber.*;
 
@@ -23,8 +23,8 @@ public final class StatusView {
     private Contact contact;
     private String clientVersion;
     
-    private TextListModel model;
-    private TextList list;
+    private VirtualListModel model;
+    private VirtualList list;
 
     public StatusView() {
     }
@@ -106,10 +106,10 @@ public final class StatusView {
     }
 
     public void init(Protocol p, Contact c) {
-        list = TextList.getInstance();
-        model = new TextListModel();
+        list = VirtualList.getInstance();
+        model = new VirtualListModel();
         list.setModel(model);
-        /*list.setOnBuildContextMenu(new TextList.OnBuildContextMenu() {
+        /*list.setOnBuildContextMenu(new VirtualList.OnBuildContextMenu() {
             @Override
             public void onCreateContextMenu(Menu menu) {
                 menu.add(Menu.FIRST, INFO_MENU_COPY, 2, "copy_text");

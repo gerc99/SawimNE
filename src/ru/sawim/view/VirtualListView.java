@@ -8,7 +8,7 @@ import android.view.*;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import sawim.ui.text.TextList;
+import sawim.ui.text.VirtualList;
 import ru.sawim.R;
 import ru.sawim.models.VirtualListAdapter;
 
@@ -20,7 +20,7 @@ import ru.sawim.models.VirtualListAdapter;
  * Time: 13:22
  * To change this template use File | Settings | File Templates.
  */
-public class VirtualListView extends Fragment implements TextList.OnUpdateList {
+public class VirtualListView extends Fragment implements VirtualList.OnUpdateList {
 
     private VirtualListAdapter adapter;
     private ListView lv;
@@ -29,13 +29,13 @@ public class VirtualListView extends Fragment implements TextList.OnUpdateList {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        TextList.getInstance().setUpdateFormListener(this);
+        VirtualList.getInstance().setUpdateFormListener(this);
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        TextList.getInstance().setUpdateFormListener(null);
+        VirtualList.getInstance().setUpdateFormListener(null);
     }
 
     @Override
@@ -48,7 +48,7 @@ public class VirtualListView extends Fragment implements TextList.OnUpdateList {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         Activity currentActivity = getActivity();
-        final TextList model = TextList.getInstance();
+        final VirtualList model = VirtualList.getInstance();
         currentActivity.setTitle(model.getCaption());
         adapter = new VirtualListAdapter(currentActivity, model.getModel().elements);
         lv = (ListView)currentActivity.findViewById(R.id.list_view);
@@ -68,7 +68,7 @@ public class VirtualListView extends Fragment implements TextList.OnUpdateList {
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         contextMenuInfo = (AdapterView.AdapterContextMenuInfo) menuInfo;
-        TextList model = TextList.getInstance();
+        VirtualList model = VirtualList.getInstance();
         if (model.getBuildContextMenu() != null)
             model.getBuildContextMenu().onCreateContextMenu(menu, contextMenuInfo.position);
     }
@@ -78,7 +78,7 @@ public class VirtualListView extends Fragment implements TextList.OnUpdateList {
         AdapterView.AdapterContextMenuInfo menuInfo = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         if (menuInfo == null)
             menuInfo = contextMenuInfo;
-        TextList model = TextList.getInstance();
+        VirtualList model = VirtualList.getInstance();
         if (model.getBuildContextMenu() != null)
             model.getBuildContextMenu().onContextItemSelected(menuInfo.position, item.getItemId());
         return super.onContextItemSelected(item);
@@ -98,19 +98,23 @@ public class VirtualListView extends Fragment implements TextList.OnUpdateList {
     public void back() {
         getActivity().finish();
     }
-
     public boolean onBackPressed() {
-        if (TextList.getInstance().getItemSelectedListener() == null) return true;
-        return TextList.getInstance().getItemSelectedListener().back();
+        if (VirtualList.getInstance().getItemSelectedListener() == null) return true;
+        return VirtualList.getInstance().getItemSelectedListener().back();
     }
 
     public void onCreateOptionsMenu(Menu menu) {
-        if (TextList.getInstance().getBuildOptionsMenu() != null)
-            TextList.getInstance().getBuildOptionsMenu().onCreateOptionsMenu(menu);
+        if (VirtualList.getInstance().getBuildOptionsMenu() != null)
+            VirtualList.getInstance().getBuildOptionsMenu().onCreateOptionsMenu(menu);
     }
     public void onOptionsItemSelected(FragmentActivity activity, MenuItem item) {
-        if (TextList.getInstance().getBuildOptionsMenu() != null)
-            TextList.getInstance().getBuildOptionsMenu().onOptionsItemSelected(activity, item);
+        if (VirtualList.getInstance().getBuildOptionsMenu() != null)
+            VirtualList.getInstance().getBuildOptionsMenu().onOptionsItemSelected(activity, item);
+    }
+
+    @Override
+    public int getCurrItem() {
+        return lv.getFirstVisiblePosition();
     }
 
     @Override

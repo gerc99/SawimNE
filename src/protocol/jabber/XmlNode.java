@@ -98,12 +98,7 @@ public final class XmlNode {
 
     private int getMaxDataSize(String name) {
         if (S_BINVAL.equals(name)) {
-            if (sawim.Sawim.hasMemory(MAX_BIN_VALUE_SIZE * 2 * 2)) {
-                return MAX_BIN_VALUE_SIZE * 2;
-            }
-            if (sawim.Sawim.hasMemory(MAX_BIN_VALUE_SIZE * 2)) {
-                return MAX_BIN_VALUE_SIZE;
-            }
+            return MAX_BIN_VALUE_SIZE * 2;
         }
         return MAX_VALUE_SIZE;
     }

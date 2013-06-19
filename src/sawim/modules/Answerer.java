@@ -24,8 +24,8 @@ import ru.sawim.models.form.Forms;
 public final class Answerer implements FormListener {
     private Vector dictionary = new Vector();
     private Forms form = Forms.getInstance();
-    private TextList list;
-	private TextListModel model = new TextListModel();
+    private VirtualList list;
+	private VirtualListModel model = new VirtualListModel();
 
     private int selItem = 0;
     private static final int MENU_EDIT   = 0;
@@ -47,10 +47,10 @@ public final class Answerer implements FormListener {
     }
 
     public void activate() {
-	    list = TextList.getInstance();
+	    list = VirtualList.getInstance();
         list.setCaption(JLocale.getString("answerer"));
         refreshList();
-        list.setOnBuildContextMenu(new TextList.OnBuildContextMenu() {
+        list.setOnBuildContextMenu(new VirtualList.OnBuildContextMenu() {
             @Override
             public void onCreateContextMenu(ContextMenu menu, int listItem) {
                 if (dictionary.size() > 0) {
@@ -74,12 +74,11 @@ public final class Answerer implements FormListener {
                         dictionary.removeElementAt(listItem);
                         save();
                         refreshList();
-                        list.restore();
                         break;
                 }
             }
         });
-        list.setBuildOptionsMenu(new TextList.OnBuildOptionsMenu() {
+        list.setBuildOptionsMenu(new VirtualList.OnBuildOptionsMenu() {
             @Override
             public void onCreateOptionsMenu(Menu menu) {
                 menu.add(Menu.FIRST, MENU_ADD, 2, "add_new");
@@ -112,7 +111,6 @@ public final class Answerer implements FormListener {
                         Options.setBoolean(Options.OPTION_ANSWERER, !Options.getBoolean(Options.OPTION_ANSWERER));
                         Options.safeSave();
                         refreshList();
-                        list.restore();
                         break;
                 }
             }
@@ -207,7 +205,6 @@ public final class Answerer implements FormListener {
                 dictionary.setElementAt(item, selItem);
 				save();
                 refreshList();
-                list.restore();
 			    form.back();
             } else {
                 form.back();

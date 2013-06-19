@@ -1,12 +1,10 @@
 package sawim.history;
 
-import sawim.ui.text.TextList;
-import sawim.ui.text.TextListModel;
+import sawim.ui.text.VirtualList;
+import sawim.ui.text.VirtualListModel;
 import java.util.*;
 import javax.microedition.rms.*;
 import sawim.*;
-import sawim.cl.*;
-import sawim.ui.base.*;
 import sawim.util.JLocale;
 import sawim.comm.*;
 //import sawim.ui.text.TextListController;
@@ -14,7 +12,7 @@ import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
 
 
-public final class HistoryStorageList extends TextList implements Runnable, FormListener {
+public final class HistoryStorageList extends VirtualList implements Runnable, FormListener {
 
     private HistoryStorage history;
     private Forms frmFind;
@@ -28,7 +26,7 @@ public final class HistoryStorageList extends TextList implements Runnable, Form
     private Thread searching = null;
 
     //private MenuModel msgMenu = new MenuModel();
-    private TextList msg = TextList.getInstance();
+    private VirtualList msg = VirtualList.getInstance();
     private HistoryExport export = null;
 
     public HistoryStorageList(HistoryStorage storage) {
@@ -128,18 +126,15 @@ public final class HistoryStorageList extends TextList implements Runnable, Form
             case MENU_DEL_CURRENT:
                 history.removeHistory();
                 clearCache();
-                restore();
                 break;
 
             case MENU_DEL_ALL_EXCEPT_CUR:
                 history.clearAll(true);
-                restore();
                 break;
 
             case MENU_DEL_ALL:
                 history.clearAll(false);
                 clearCache();
-                restore();
                 break;
 
             case MENU_COPY_TEXT:
@@ -149,7 +144,6 @@ public final class HistoryStorageList extends TextList implements Runnable, Form
                 if (null == record) return;
                 SawimUI.setClipBoardText((record.type == 0),
                         record.from, record.date, record.text);
-                restore();
                 break;
 
             case MENU_INFO:
@@ -177,7 +171,7 @@ public final class HistoryStorageList extends TextList implements Runnable, Form
         }
     }
 
-    public void onContentMove(TextListModel sender, int direction) {
+    public void onContentMove(VirtualListModel sender, int direction) {
         moveInList(direction);
     }
 
@@ -215,7 +209,6 @@ public final class HistoryStorageList extends TextList implements Runnable, Form
     
     private void moveInList(int offset) {
         //setCurrentItemIndex(getCurrItem() + offset);
-        showMessText().restore();
     }
     public void run() {
         Thread it = Thread.currentThread();
@@ -228,7 +221,6 @@ public final class HistoryStorageList extends TextList implements Runnable, Form
 
         if (0 <= textIndex) {
             //setCurrentItemIndex(textIndex);
-            restore();
 
         } else if (searching == it) {
             frmFind.addString(NOT_FOUND, text + "\n" + JLocale.getString("not_found"));
@@ -276,12 +268,11 @@ public final class HistoryStorageList extends TextList implements Runnable, Form
 
         } else {
             searching = null;
-            restore();
         }
     }
 
     
-    private TextList showMessText() {
+    private VirtualList showMessText() {
         if (getCurrItem() >= getSize()) return null;
         CachedRecord record = history.getRecord(getCurrItem());
         msg.setCaption(record.from);
@@ -296,7 +287,7 @@ public final class HistoryStorageList extends TextList implements Runnable, Form
 
         msg.lock();
         msg.setAllToTop();
-        TextListModel msgText = new TextListModel();
+        VirtualListModel msgText = new VirtualListModel();
         VirtualListItem parser = msgText.createNewParser(false);
         parser.addDescription(record.date + ":", THEME_TEXT, FONT_STYLE_BOLD);
         parser.doCRLF();

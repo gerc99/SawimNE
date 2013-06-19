@@ -136,16 +136,9 @@ public final class IcqNetWorking extends ClientConnection {
         Util.putWordBE(pingPacket, 4, 0);
     }
 
-    private boolean isShadowNeeded() {
-        return Sawim.isPhone(Sawim.PHONE_NOKIA_S40);
-    }
-
     protected void connect() throws SawimException {
         connect = true;
         nextIcqSequence = 0;
-        if (isShadowNeeded()) {
-            //new GetVersion(GetVersion.TYPE_SHADOW).get();
-        }
         
         queue.processActions();
     }

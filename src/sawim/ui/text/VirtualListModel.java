@@ -13,11 +13,11 @@ import sawim.ui.base.Scheme;
 import sawim.util.JLocale;
 
 
-public final class TextListModel {
+public final class VirtualListModel {
     public List<VirtualListItem> elements;
     private String header = null;
 
-    public TextListModel() {
+    public VirtualListModel() {
         elements = new ArrayList<VirtualListItem>();
     }
 

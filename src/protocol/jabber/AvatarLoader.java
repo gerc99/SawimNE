@@ -25,7 +25,7 @@ public class AvatarLoader implements Runnable {
                 : bs64photo.popBinValue();
         bs64photo = null;
         try {
-            if ((null != avatarBytes) && Sawim.hasMemory(avatarBytes.length * 2)) {
+            if ((null != avatarBytes)) {
                 userInfo.setAvatar(avatarBytes);
                 avatarBytes = null;
                 userInfo.updateProfileView();

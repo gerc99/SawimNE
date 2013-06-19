@@ -9,7 +9,6 @@ import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import ru.sawim.models.form.VirtualListItem;
-import sawim.SawimUI;
 import sawim.comm.*;
 import sawim.ui.base.Scheme;
 import sawim.util.JLocale;
@@ -28,8 +27,8 @@ public final class MirandaNotes {
     private Jabber jabber;
     private Vector notes = new Vector();
 	
-	private TextList screen = TextList.getInstance();
-    private TextListModel model = new TextListModel();
+	private VirtualList screen = VirtualList.getInstance();
+    private VirtualListModel model = new VirtualListModel();
 
     public MirandaNotes() {
         screen.setCaption(JLocale.getString("notes"));
@@ -37,7 +36,7 @@ public final class MirandaNotes {
     void init(Jabber protocol) {
         jabber = protocol;
         screen.setModel(model);
-        screen.setBuildOptionsMenu(new TextList.OnBuildOptionsMenu() {
+        screen.setBuildOptionsMenu(new VirtualList.OnBuildOptionsMenu() {
             @Override
             public void onCreateOptionsMenu(Menu menu) {
                 menu.add(Menu.FIRST, COMMAND_ADD, 2, JLocale.getString("add_to_list"));
@@ -53,7 +52,7 @@ public final class MirandaNotes {
                 }
             }
         });
-        screen.setOnBuildContextMenu(new TextList.OnBuildContextMenu() {
+        screen.setOnBuildContextMenu(new VirtualList.OnBuildContextMenu() {
             @Override
             public void onCreateContextMenu(ContextMenu menu, int listItem) {
                 menu.add(Menu.FIRST, COMMAND_EDIT, 2, JLocale.getString("edit"));
@@ -73,12 +72,11 @@ public final class MirandaNotes {
                         removeNote(listItem);
                         jabber.getConnection().saveMirandaNotes(getNotesStorage());
                         refresh();
-                        screen.restore();
                         break;
                 }
             }
         });
-        screen.setItemSelectedListener(new TextList.ItemSelectedListener() {
+        screen.setItemSelectedListener(new VirtualList.OnClickListListener() {
             @Override
             public void itemSelected(int position) {
                 Note note = (Note)notes.elementAt(position);
@@ -273,9 +271,6 @@ public final class MirandaNotes {
                 selectNote(note);
 				jabber.getConnection().saveMirandaNotes(getNotesStorage());
             }
-            screen.restore();
         }
     }
 }
-
-

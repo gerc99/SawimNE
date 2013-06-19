@@ -3,8 +3,8 @@
 
 package sawim.modules;
 
-import sawim.ui.text.TextListModel;
-import sawim.ui.text.TextList;
+import sawim.ui.text.VirtualListModel;
+import sawim.ui.text.VirtualList;
 import sawim.Sawim;
 import sawim.comm.MD5;
 import sawim.comm.Util;
@@ -13,10 +13,10 @@ import sawim.ui.base.Scheme;
 import sawim.util.*;
 import ru.sawim.models.form.VirtualListItem;
 
-public final class DebugLog extends TextList {
+public final class DebugLog extends VirtualList {
     private static final DebugLog instance = new DebugLog();
-    private TextListModel model = new TextListModel();
-    private TextList list = null;
+    private VirtualListModel model = new VirtualListModel();
+    private VirtualList list = null;
 
     private DebugLog() {
         //super("");
@@ -24,7 +24,7 @@ public final class DebugLog extends TextList {
 
     public static void activate() {
         if (null == instance.list) {
-            instance.list = TextList.getInstance();
+            instance.list = VirtualList.getInstance();
             instance.list.setCaption(JLocale.getString("debug log"));
             instance.list.setModel(instance.model);
             /*instance.list.setOnBuildContextMenu(new OnBuildContextMenu() {

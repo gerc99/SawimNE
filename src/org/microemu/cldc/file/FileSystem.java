@@ -26,7 +26,6 @@
  */
 package org.microemu.cldc.file;
 
-import org.microemu.app.util.MIDletSystemProperties;
 import org.microemu.microedition.ImplFactory;
 
 /**
@@ -50,22 +49,15 @@ import org.microemu.microedition.ImplFactory;
 public class FileSystem {
     public static final String PROTOCOL = "file://";
 
-    public static final String detectionProperty = "microedition.io.file.FileConnection.version";
-
 	private FileSystemConnectorImpl impl;
 
     public void registerImplementation() {
         this.impl = new FileSystemConnectorImpl();
         ImplFactory.registerGCF("file", this.impl);
         ImplFactory.register(FileSystemRegistryDelegate.class, new FileSystemRegistryImpl());
-        MIDletSystemProperties.setProperty(detectionProperty, "1.0");
-        MIDletSystemProperties.setPermission("javax.microedition.io.Connector.file.read", 1);
-        MIDletSystemProperties.setPermission("javax.microedition.io.Connector.file.write", 1);
-        System.setProperty("fileconn.dir.photos", "file:///sdcard/DCIM/");
     }
 
 	protected static void unregisterImplementation(FileSystemConnectorImpl impl) {
-		MIDletSystemProperties.clearProperty(detectionProperty);
 		ImplFactory.unregistedGCF("file", impl);
 		ImplFactory.unregister(FileSystemRegistryDelegate.class, FileSystemRegistryImpl.class);
 	}

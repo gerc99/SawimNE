@@ -39,10 +39,6 @@ public class ContactMenu implements TextBoxListener {
 
     public void doAction(int cmd) {
         switch (cmd) {
-            case Contact.USER_MENU_MESSAGE: 
-                protocol.getChat(contact).writeMessage(null);
-                break;
-
             case Contact.USER_MENU_TRACK: 
                 new sawim.modules.tracking.TrackingForm(contact.getUserId()).activate();
                 break;
@@ -57,10 +53,6 @@ public class ContactMenu implements TextBoxListener {
                 messageTextbox.show(SawimActivity.getInstance().getSupportFragmentManager(), "message");
 			    return;
 			}
-
-            case Contact.USER_MENU_PASTE: 
-                protocol.getChat(contact).writeMessage(SawimUI.getClipBoardText());
-                break;
                 
             case Contact.USER_MENU_ADD_USER:
                 protocol.getSearchForm().show(contact.getUserId());
@@ -193,6 +185,4 @@ public class ContactMenu implements TextBoxListener {
             //new HistoryStorageList(history).show();
         }
     }
-    
 }
-

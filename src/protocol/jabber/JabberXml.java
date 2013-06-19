@@ -720,7 +720,7 @@ public final class JabberXml extends ClientConnection {
                 if (null == uslist) {
                     return;
                 }
-                uslist.setTotalCount(iqQuery.childrenCount());
+                uslist.setTotalCount();
                 while (0 < iqQuery.childrenCount()) {
                     XmlNode item = iqQuery.popChildNode();
 					String jid = item.getAttribute(XmlNode.S_JID);

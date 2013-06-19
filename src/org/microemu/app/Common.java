@@ -26,12 +26,8 @@
 package org.microemu.app;
 
 import org.microemu.*;
-import org.microemu.app.util.MIDletSystemProperties;
 import org.microemu.microedition.ImplFactory;
 import org.microemu.microedition.io.ConnectorImpl;
-
-import java.util.Locale;
-import java.util.Vector;
 
 public class Common implements MicroEmulator {
 
@@ -43,7 +39,6 @@ public class Common implements MicroEmulator {
          * for this call
          */
         ImplFactory.instance();
-        MIDletSystemProperties.initContext();
         // TODO integrate with ImplementationInitialization
         ImplFactory.registerGCF(ImplFactory.DEFAULT, new ConnectorImpl());
     }
@@ -54,25 +49,6 @@ public class Common implements MicroEmulator {
 
     public void setRecordStoreManager(RecordStoreManager manager) {
         this.recordStoreManager = manager;
-    }
-
-    public String getAppProperty(String key) {
-        if (key.equals("microedition.platform")) {
-            return "Android";
-        } else if (key.equals("microedition.profiles")) {
-            return "MIDP-2.0";
-        } else if (key.equals("microedition.configuration")) {
-            return "CLDC-1.0";
-        } else if (key.equals("microedition.locale")) {
-            return Locale.getDefault().getLanguage();
-        } else if (key.equals("microedition.encoding")) {
-            return System.getProperty("file.encoding");
-        }
-        return null;
-    }
-
-    public int checkPermission(String permission) {
-        return MIDletSystemProperties.getPermission(permission);
     }
 
     public void initMIDlet() {

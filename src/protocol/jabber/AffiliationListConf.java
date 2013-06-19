@@ -20,27 +20,25 @@ import ru.sawim.view.TextBoxView;
 
 public final class AffiliationListConf implements FormListener, TextBoxListener {
     
-    private int totalCount = 0;
-    
     private Jabber jabber;
     private String serverJid;
     private TextBoxView searchBox;
     private Vector jids = new Vector();
     private Vector descriptions = new Vector();
 	private Vector reasons = new Vector();
+    private String myNick;
 	
-	private TextList screen = TextList.getInstance();
-    private TextListModel model = new TextListModel();
+	private VirtualList screen = VirtualList.getInstance();
+    private VirtualListModel model = new VirtualListModel();
 
     private static final int COMMAND_ADD = 0;
-    //private static final int COMMAND_SET = 1;
-    private static final int COMMAND_SEARCH = 2;
+    private static final int COMMAND_SEARCH = 1;
 
     public AffiliationListConf() {
         searchBox = new TextBoxView();
         screen.setCaption(JLocale.getString("conf_aff_list"));
         screen.setModel(model);
-        screen.setItemSelectedListener(new TextList.ItemSelectedListener() {
+        screen.setItemSelectedListener(new VirtualList.OnClickListListener() {
             @Override
             public void itemSelected(int position) {
                 String jid = getCurrentJid(position);
@@ -53,7 +51,7 @@ public final class AffiliationListConf implements FormListener, TextBoxListener 
             }
         });
 
-        screen.setBuildOptionsMenu(new TextList.OnBuildOptionsMenu() {
+        screen.setBuildOptionsMenu(new VirtualList.OnBuildOptionsMenu() {
             @Override
             public void onCreateOptionsMenu(Menu menu) {
                 menu.add(Menu.FIRST, COMMAND_ADD, 2, "service_discovery_add");
@@ -124,21 +122,21 @@ public final class AffiliationListConf implements FormListener, TextBoxListener 
             }
         }
     }
+
 	private void clear() {
         model.clear();
         jids.removeAllElements();
 	    reasons.removeAllElements();
         descriptions.removeAllElements();
         addServer(false);
-        //screen.setAllToTop();
     }
-    public void setTotalCount(int count) {
+
+    public void setTotalCount() {
         model.clear();
         jids.removeAllElements();
 		reasons.removeAllElements();
         descriptions.removeAllElements();
         addServer(true);
-        totalCount = count;
         screen.updateModel();
     }
     
@@ -165,18 +163,16 @@ public final class AffiliationListConf implements FormListener, TextBoxListener 
         if (StringConvertor.isEmpty(serverJid)) {
             setServer("", "");
         }
-
         screen.show();
     }
+
     public void update() {
         screen.updateModel();
     }
 
-	private String myNick;
     public void setServer(String jid, String myN) {
         jid = Jid.getNormalJid(jid);
 		myNick = myN;
-        totalCount = 0;
         serverJid = jid;
         clear();
         VirtualListItem wait = model.createNewParser(false);
@@ -198,6 +194,7 @@ public final class AffiliationListConf implements FormListener, TextBoxListener 
         }
         screen.setCurrentItemIndex(index);
     }
+
     public void textboxAction(TextBoxView box, boolean ok) {
         if (!ok) {
             return;
@@ -212,9 +209,9 @@ public final class AffiliationListConf implements FormListener, TextBoxListener 
                     break;
                 }
             }
-            screen.restore();
         }
     }
+
 	private static Forms enterData = null;
 	private static final int JID = 0;
 	private static final int AFFILIATION = 1;
@@ -225,6 +222,7 @@ public final class AffiliationListConf implements FormListener, TextBoxListener 
 	public void setAffiliation(String affil) {
 	    affiliation = affil;
 	}
+
 	private final int getAffiliation() {
 	    if (("o" + "wner").equals(affiliation)) {
             return 0;
@@ -244,6 +242,7 @@ public final class AffiliationListConf implements FormListener, TextBoxListener 
 		enterData.addTextField(REASON, "reason", reason);
         enterData.show();
 	}
+
 	public void formAction(Forms form, boolean apply) {
         if (enterData == form) {
             if (apply) {
@@ -262,5 +261,3 @@ public final class AffiliationListConf implements FormListener, TextBoxListener 
         }
 	}
 }
-
-

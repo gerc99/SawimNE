@@ -152,7 +152,7 @@ public class FormAdapter extends BaseAdapter {
         } else if (Forms.CONTROL_IMAGE == c.type) {
             drawText(c, holder);
             holder.imageView.setVisibility(ImageView.VISIBLE);
-            holder.imageView.setImageBitmap(General.imageToBitmap(c.image));
+            holder.imageView.setImageBitmap(c.image);
         } else if (Forms.CONTROL_LINK == c.type) {
             drawText(c, holder);
         }

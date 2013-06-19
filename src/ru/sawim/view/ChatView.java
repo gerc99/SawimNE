@@ -335,7 +335,6 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
                     menuItem = new MucMenuItem();
                     menuItem.addItem(currentActivity.getString(R.string.adhoc), GATE_COMMANDS);
                     menuItems.add(menuItem);
-                    menuItem = new MucMenuItem();
                     int myAffiliation = usersAdapter.getAffiliation(jabberServiceContact.getMyName());
                     int myRole = usersAdapter.getRole(jabberServiceContact.getMyName());
                     final int role = usersAdapter.getRole(nick);
@@ -434,7 +433,7 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
                                                }
                                                wr.text = (TextView) row.findViewById(R.id.menuTextView);
                                                wr.text.setText(getItem(i).nameItem);
-                                               return null;
+                                               return row;
                                            }
                                        }, new DialogInterface.OnClickListener() {
                                            @Override

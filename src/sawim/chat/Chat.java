@@ -17,7 +17,6 @@ import sawim.comm.Util;
 import sawim.history.CachedRecord;
 import sawim.history.HistoryStorage;
 import protocol.Contact;
-import protocol.MessageEditor;
 import protocol.Protocol;
 import protocol.jabber.Jabber;
 import protocol.jabber.JabberContact;
@@ -102,19 +101,6 @@ public final class Chat {
 
     public static final String ADDRESS = ", ";
 
-    public final void writeMessage(String initText) {
-        if (writable) {
-            if (true) {
-                activate();
-                return;
-            }
-            MessageEditor editor = ContactList.getInstance().getMessageEditor();
-            if (null != editor) {
-                //editor.writeMessage(protocol, contact, initText);
-            }
-        }
-    }
-
     public String writeMessageTo(String nick) {
         if (null != nick) {
             if ('/' == nick.charAt(0)) {
@@ -126,7 +112,6 @@ public final class Chat {
             nick = "";
         }
         return nick;
-        //writeMessage(nick);
     }
 
     private String getBlogPostId(String text) {
@@ -162,24 +147,6 @@ public final class Chat {
 
     public Protocol getProtocol() {
         return protocol;
-    }
-
-    void onMessageSelected() {
-        if (selectMode) {
-            //markItem(getCurrItem());
-            return;
-        }
-        if (contact.isSingleUserContact()) {
-            if (isBlogBot()) {
-                writeMessage(getBlogPostId(getCurrentText()));
-                return;
-            }
-            writeMessage(null);
-            return;
-        }
-        MessData md = getCurrentMsgData();
-        String nick = ((null == md) || md.isFile()) ? null : md.getNick();
-        writeMessageTo(getMyName().equals(nick) ? null : nick);
     }
 
     private static final int ACTION_FT_CANCEL = 900;
@@ -350,7 +317,6 @@ public final class Chat {
     private void addTextToForm(Message message) {
         String from = getFrom(message);
         boolean incoming = message.isIncoming();
-        boolean offline = message.isOffline();
 
         String messageText = message.getProcessedText();
         messageText = StringConvertor.removeCr(messageText);
@@ -400,7 +366,6 @@ public final class Chat {
     
     public void sendMessage(String message) {
         ChatHistory.instance.registerChat(Chat.this);
-        //NativeCanvas.getInstance().getInput().resetText();
         if (!contact.isSingleUserContact() && message.endsWith(", ")) {
             message = "";
         }
@@ -468,30 +433,14 @@ public final class Chat {
         }
     }
 
-    private void addTextToHistory() {
+    private void addTextToHistory(MessData md) {
         if (!hasHistory()) {
             return;
         }
-        MessData md = getCurrentMsgData();
         if ((null == md) || (null == md.getText())) {
             return;
         }
         addToHistory(md.getText(), md.isIncoming(), md.getNick(), md.getTime());
-    }
-    
-
-    private MessData getCurrentMsgData() {
-        try {
-            int messIndex = 00000;
-            return (messIndex < 0) ? null : messData.get(messIndex);
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    private String getCurrentText() {
-        MessData md = getCurrentMsgData();
-        return (null == md) ? "" : md.getText();
     }
 
     public void clear() {
@@ -724,10 +673,8 @@ public final class Chat {
     public String onMessageSelected(MessData md) {
         if (contact.isSingleUserContact()) {
             if (isBlogBot()) {
-                writeMessage(getBlogPostId(getCurrentText()));
-                return "";
+                return getBlogPostId(md.getText());
             }
-            writeMessage(null);
             return "";
         }
         String nick = ((null == md) || md.isFile()) ? null : md.getNick();

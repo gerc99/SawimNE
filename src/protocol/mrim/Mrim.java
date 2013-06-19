@@ -2,7 +2,7 @@
 
 package protocol.mrim;
 
-import sawim.ui.text.TextList;
+import sawim.ui.text.VirtualList;
 import DrawControls.icons.*;
 import java.io.*;
 import java.util.Vector;
@@ -11,7 +11,7 @@ import sawim.cl.ContactList;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
 import sawim.search.*;
-import sawim.ui.text.TextListModel;
+import sawim.ui.text.VirtualListModel;
 import sawim.util.JLocale;
 import protocol.*;
 
@@ -284,12 +284,12 @@ public class Mrim extends Protocol {
             
         }
         if (MrimChatContact.USER_MENU_USERS_LIST == action) {
-            TextListModel list = new TextListModel();
+            VirtualListModel list = new VirtualListModel();
             Vector members = ((MrimChatContact)c).getMembers();
             for (int i = 0; i < members.size(); ++i) {
                 list.addItem((String)members.elementAt(i), false);
             }
-            TextList tl = TextList.getInstance();
+            VirtualList tl = VirtualList.getInstance();
             tl.setCaption(JLocale.getString("list_of_users"));
             //tl.setAllToTop();
             tl.setModel(list);

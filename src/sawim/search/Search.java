@@ -6,13 +6,12 @@ import android.support.v4.app.FragmentActivity;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
-import sawim.ui.text.TextList;
-import sawim.ui.text.TextListModel;
+import sawim.ui.text.VirtualList;
+import sawim.ui.text.VirtualListModel;
 import java.util.Vector;
 
 import sawim.cl.*;
 import sawim.comm.*;
-import sawim.ui.base.Scheme;
 //import sawim.ui.text.TextListController;
 import sawim.util.*;
 import protocol.*;
@@ -46,7 +45,7 @@ public final class Search implements FormListener, ControlStateListener {
     private static final int MENU_PREV    = 3;
 
     private Forms searchForm;
-    private TextList screen;
+    private VirtualList screen;
 
     private Group group;
     private boolean waitResults = false;
@@ -160,7 +159,6 @@ public final class Search implements FormListener, ControlStateListener {
     public void canceled() {
         if (waitResults) {
             searchId = -1;
-            //searchForm.restore();
         }
         waitResults = false;
     }
@@ -170,7 +168,7 @@ public final class Search implements FormListener, ControlStateListener {
         searchForm.addTextField(USERID, protocol.getUserIdName(), userid);
     }
     private void createSearchForm() {
-        screen = TextList.getInstance();
+        screen = VirtualList.getInstance();
         searchForm = Forms.getInstance();
         searchForm.init((TYPE_LITE == type) ? "add_user" : "search_user", this);
         if (TYPE_LITE == type) {
@@ -220,15 +218,12 @@ public final class Search implements FormListener, ControlStateListener {
 
     private void activate() {
         drawResultScreen();
-        screen.restore();
     }
 
     private void showWaitScreen() {
         screen.setCaption(JLocale.getString("search_user"));
-        //screen.setAllToTop();
-        TextListModel model = new TextListModel();
+        VirtualListModel model = new VirtualListModel();
         model.setInfoMessage(JLocale.getString("wait"));
-        //screen.setController(new TextListController(null, MENU_ADD));
         screen.setModel(model);
         screen.show();
     }
@@ -238,22 +233,19 @@ public final class Search implements FormListener, ControlStateListener {
         if (0 < resultCount) {
             screen.setCaption(JLocale.getString("results")
                     + " " + (currentResultIndex + 1) + "/" + resultCount);
-            //screen.setAllToTop();
             UserInfo userInfo = getCurrentResult();
             userInfo.setSeachResultFlag();
             userInfo.setProfileView(screen);
             userInfo.updateProfileView();
 
         } else {
-            //screen.lock();
             screen.setCaption(JLocale.getString("results") + " 0/0");
-            //screen.setAllToTop();
-            TextListModel model = new TextListModel();
+            VirtualListModel model = new VirtualListModel();
             model.setInfoMessage(JLocale.getString("no_results"));
             screen.setModel(model);
         }
 
-        screen.setBuildOptionsMenu(new TextList.OnBuildOptionsMenu() {
+        screen.setBuildOptionsMenu(new VirtualList.OnBuildOptionsMenu() {
             @Override
             public void onCreateOptionsMenu(Menu menu) {
                 menu.add(Menu.FIRST, MENU_NEXT, 2, R.string.next);
@@ -273,7 +265,7 @@ public final class Search implements FormListener, ControlStateListener {
             }
         });
 
-        screen.setOnBuildContextMenu(new TextList.OnBuildContextMenu() {
+        screen.setOnBuildContextMenu(new VirtualList.OnBuildContextMenu() {
             @Override
             public void onCreateContextMenu(ContextMenu menu, int listItem) {
                 menu.add(Menu.FIRST, MENU_ADD, 2, "add_to_list");
@@ -311,7 +303,7 @@ public final class Search implements FormListener, ControlStateListener {
         activate();
     }
 
-    public void onContentMove(TextListModel sender, int direction) {
+    public void onContentMove(VirtualListModel sender, int direction) {
         nextOrPrev(1 == direction);
     }
 
@@ -365,6 +357,7 @@ public final class Search implements FormListener, ControlStateListener {
                         }
                     }
                     ContactList.getInstance().activate(contact);
+                    form.back();
                 }
             }
 

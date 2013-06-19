@@ -13,8 +13,6 @@ import java.io.*;
 import java.util.TimeZone;
 import java.util.Vector;
 
-
-
 public class Options {
     static final int OPTIONS_CURR_ACCOUNT              =  86;
     public static final int OPTION_AA_BLOCK           = 175;   
@@ -64,7 +62,6 @@ public class Options {
     public static final int OPTION_VISIBILITY_ID       =  85;
     public static final int OPTION_UNTITLED_INPUT      = 160;
     public static final int OPTION_LIGHT_THEME         =  97;
-    public static final int OPTION_USER_ACCOUNTS       = 104;
     public static final int OPTION_INPUT_MODE          = 105;
     public static final int OPTION_SHOW_SOFTBAR        = 167;
     public static final int OPTION_SORT_UP_WITH_MSG    = 171;   
@@ -303,7 +300,6 @@ public class Options {
         setInt    (Options.OPTION_CL_SORT_BY,         0);
 		setBoolean(Options.OPTION_TITLE_IN_CONFERENCE,   true);
         setBoolean(Options.OPTION_CL_HIDE_OFFLINE,    false);
-		setInt    (Options.OPTION_USER_ACCOUNTS,      2);
         setBoolean(Options.OPTION_SHOW_SOFTBAR,       true);
         setInt    (Options.OPTION_MESS_NOTIF_MODE,    0);
         setInt    (Options.OPTION_ONLINE_NOTIF_MODE,  0);
@@ -335,7 +331,6 @@ public class Options {
         setInt    (Options.OPTION_GMT_OFFSET,        time);
         setInt    (Options.OPTION_LOCAL_OFFSET,      0);
         setBoolean(OPTION_ALARM, true);
-        setBoolean(OPTION_RECREATE_TEXTBOX, Sawim.isPhone(Sawim.PHONE_SE));
     }
 
     private static void load() throws IOException {

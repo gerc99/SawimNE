@@ -15,7 +15,7 @@ import ru.sawim.activities.SawimActivity;
 
 import java.util.Vector;
 
-public final class ContactList implements ContactListListener {
+public final class ContactList {
     private static final ContactList instance = new ContactList();
     private VirtualContactList contactList;
     private final StatusView statusView = new StatusView();
@@ -24,9 +24,9 @@ public final class ContactList implements ContactListListener {
 
     public ContactList() {
     }
+
     public void initUI() {
         contactList = new VirtualContactList();
-        contactList.setCLListener(this);
     }
 
     public byte getProtocolType(Profile account) {
@@ -80,7 +80,6 @@ public final class ContactList implements ContactListListener {
         }
     }
     public void initAccounts() {
-        
         int count = Math.max(1, Options.getAccountCount());
         for (int i = 0; i < count; ++i) {
             Profile p = Options.getAccount(i);
@@ -88,7 +87,6 @@ public final class ContactList implements ContactListListener {
                 addProtocol(p, false);
             }
         }
-
     }
     public void loadAccounts() {
         int count = contactList.getModel().getProtocolCount();
@@ -192,7 +190,6 @@ public final class ContactList implements ContactListListener {
 
     public void activate() {
         contactList.update();
-//        contactList.showMain();
     }
     public void _setActiveContact(Contact c) {
         if (null != c) {
@@ -292,7 +289,6 @@ public final class ContactList implements ContactListListener {
             }
             p.getNotInListGroup().setExpandFlag(false);
         }
-        //contactList.setAllToTop();
         contactList.update();
     }
     public VirtualContactList getManager() {
@@ -354,4 +350,3 @@ public final class ContactList implements ContactListListener {
         return statusView;
     }
 }
-

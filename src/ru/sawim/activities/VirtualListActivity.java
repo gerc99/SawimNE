@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import sawim.ui.text.TextList;
+import sawim.ui.text.VirtualList;
 import ru.sawim.R;
 import ru.sawim.view.VirtualListView;
 
@@ -42,7 +42,7 @@ public class VirtualListActivity extends FragmentActivity {
         VirtualListView view = (VirtualListView) getSupportFragmentManager().findFragmentById(R.id.virtual_list_fragment);
         if (view.onBackPressed())
             super.onBackPressed();
-        TextList.getInstance().clearAll();
+        VirtualList.getInstance().clearAll();
     }
 
     @Override

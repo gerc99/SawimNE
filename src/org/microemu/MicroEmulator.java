@@ -33,8 +33,4 @@ import java.io.InputStream;
 public interface MicroEmulator {
 
 	RecordStoreManager getRecordStoreManager();
-	
-	String getAppProperty(String key);
-	
-	int checkPermission(String permission);
 }

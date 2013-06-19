@@ -3,6 +3,10 @@
 
 package sawim;
 
+import DrawControls.icons.Image;
+import ru.sawim.General;
+import ru.sawim.models.form.FormListener;
+import ru.sawim.models.form.Forms;
 import sawim.chat.Chat;
 import sawim.chat.MessData;
 import sawim.cl.ContactList;
@@ -28,7 +32,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 public final class FileTransfer implements FileBrowserListener,
-        PhotoListener, Runnable {
+        PhotoListener, Runnable, FormListener {
 
     private String filename;
     private String description;
@@ -36,34 +40,26 @@ public final class FileTransfer implements FileBrowserListener,
     private InputStream fis;
     private int fsize;
 
-    
     private static final int descriptionField = 1000;
     private static final int  transferMode = 1001;
 
     private MessData progressInstance;
     private boolean canceled = false;
-
     private Protocol protocol;
     private Contact cItem;
     private Chat chat;
-
-    
-
-    
     private JSR75FileSystem file;
+    private Forms name_Desc;
 
-    
     public FileTransfer(Protocol p, Contact _cItem) {
         protocol = p;
         cItem = _cItem;
     }
-
     
     public Contact getReceiver() {
         return cItem;
     }
 
-    
     private void setData(InputStream is, int size) {
         fis = is;
         fsize = size;
@@ -75,14 +71,11 @@ public final class FileTransfer implements FileBrowserListener,
         return fsize;
     }
 
-    
     public void startFileTransfer() {
-        
         if (SawimActivity.getInstance().pickFile(this)) {
             return;
         }
         sawim.modules.DebugLog.panic("show file browser");
-        
         FileBrowser fsBrowser = new FileBrowser(false);
         fsBrowser.setListener(this);
         fsBrowser.activate();
@@ -92,16 +85,9 @@ public final class FileTransfer implements FileBrowserListener,
         return !StringConvertor.isEmpty(supports);
     }
     public void startPhotoTransfer() {
-        
-
-
-
-        
         SawimActivity.getInstance().startCamera(this, 1024, 768);
-        
     }
-
-    
+ 
     public void onFileSelect(InputStream in, String fileName) {
         try {
             setFileName(fileName);
@@ -137,17 +123,15 @@ public final class FileTransfer implements FileBrowserListener,
             throw new SawimException(191, 3);
         }
     }
-
     
     public void onDirectorySelect(String s0) {}
-
     
     private void askForNameDesc() {
-        /*name_Desc = new Forms("name_desc", "ok", "back", this);
+        name_Desc = Forms.getInstance();
+        name_Desc.init("name_desc", this);
         name_Desc.addString("filename", filename);
-        name_Desc.addTextField(descriptionField, "description", "", 255);
+        name_Desc.addTextField(descriptionField, "description", "");
         String items = "sawim.net.ru|www.sawim.net.ru|sawim.org";
-        
         if (cItem instanceof protocol.jabber.JabberContact) {
             if (cItem.isSingleUserContact() && cItem.isOnline()) {
                 items += "|ibb";
@@ -156,11 +140,11 @@ public final class FileTransfer implements FileBrowserListener,
         
         name_Desc.addSelector(transferMode, "send_via", items, 0);
         name_Desc.addString(JLocale.getString("size") + ": ", String.valueOf(getFileSize()/1024)+" kb");
-        name_Desc.show();*/
+        name_Desc.show();
     }
 
     
-    /*public void formAction(Forms form, boolean apply) {
+    public void formAction(Forms form, boolean apply) {
         if (apply) {
             description = name_Desc.getTextFieldValue(descriptionField);
             sendMode = name_Desc.getSelectorValue(transferMode);
@@ -180,7 +164,7 @@ public final class FileTransfer implements FileBrowserListener,
             ContactList.getInstance().activate();
         }
     }
-    */
+
     public boolean is(MessData par) {
         return (progressInstance == par);
     }
@@ -260,19 +244,12 @@ public final class FileTransfer implements FileBrowserListener,
         try {
             closeFile();
             ContactList.getInstance().removeTransfer(progressInstance, false);
-            
-
-
-
-
-            
-            //name_Desc.clearForm();
+            name_Desc.clearForm();
             Sawim.gc();
         } catch (Exception ignored) {
         }
     }
 
-    
     public void run() {
         try {
             InputStream in = getFileIS();
@@ -316,12 +293,8 @@ public final class FileTransfer implements FileBrowserListener,
             @Override
             public void run() {
                 try {
-                    //Image img = Image.createImage(image, 0, image.length);
-                    //img = Util.createThumbnail(img, name_Desc.getWidth(),
-                    //        name_Desc.getHeight());
-                    //name_Desc.addIcon(img);
+                    name_Desc.addBitmap(General.avatarBitmap(image));
                 } catch (Throwable ignored) {
-                    
                 }
             }
         }).start();
@@ -329,7 +302,6 @@ public final class FileTransfer implements FileBrowserListener,
     }
 
     private void setFileName(String name) {
-        
         name = name.replace(':', '.');
         name = name.replace('/', '_');
         name = name.replace('\\', '_');
@@ -339,21 +311,13 @@ public final class FileTransfer implements FileBrowserListener,
 
     private String getTransferClient() {
         String client = "sawim";
-        
         client = "sawim-multi";
-        
-
-        
-
-        
-
-        
         return client;
     }
     private void sendFileThroughServer(InputStream fis, int fileSize) throws SawimException {
         TcpSocket socket = new TcpSocket();
         try {
-            socket.connectTo("socket://files.sawim.net.ru:2000");
+            socket.connectTo("socket://files.jimm.net.ru:2000");
 
             final int version = 1;
             Util header = new Util();
@@ -422,21 +386,18 @@ public final class FileTransfer implements FileBrowserListener,
         }
     }
     private void sendFileThroughWeb(String host, InputStream fis, int fsize) throws SawimException {
-        InputStream is = null;
-        OutputStream os = null;
+        InputStream is;
+        OutputStream os;
         HttpConnection sc = null;
 
         final String url = "http://" + host + "/__receive_file.php";
         try {
             sc = (HttpConnection) Connector.open(url, Connector.READ_WRITE);
             sc.setRequestMethod(HttpConnection.POST);
-
             String boundary = "a9f843c9b8a736e53c40f598d434d283e4d9ff72";
-
             sc.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
             os = sc.openOutputStream();
 
-            
             StringBuffer headers = new StringBuffer();
             headers.append("--").append(boundary).append("\r\n");
             headers.append("Content-Disposition: form-data; name=\"filedesc\"\r\n");
@@ -451,7 +412,6 @@ public final class FileTransfer implements FileBrowserListener,
             headers.append("\r\n");
             os.write(StringConvertor.stringToByteArrayUtf8(headers.toString()));
 
-            
             byte[] buffer = new byte[1024*2];
             int counter = fsize;
             while (counter > 0) {
@@ -466,11 +426,9 @@ public final class FileTransfer implements FileBrowserListener,
                 }
             }
 
-            
             String end = "\r\n--" + boundary + "--\r\n";
             os.write(StringConvertor.stringToByteArrayUtf8(end));
 
-            
             is = sc.openInputStream();
 
             int respCode = sc.getResponseCode();
@@ -520,9 +478,7 @@ public final class FileTransfer implements FileBrowserListener,
 
         } catch (IOException e) {
             TcpSocket.close(sc);
-            
             DebugLog.panic("send file", e);
-            
             throw new SawimException(194, 0);
         }
 
@@ -538,5 +494,3 @@ public final class FileTransfer implements FileBrowserListener,
         return filename.endsWith(".jpg") || filename.endsWith(".jpeg") || filename.endsWith(".png");
     }
 }
-
-

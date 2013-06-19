@@ -47,14 +47,14 @@ public final class TrackingForm implements TextBoxListener {
     private final ImageList lineList_jabber = ImageList.createImageList("/jabber-status.png");
     private final Icon Status = lineList1.iconAt(STATUS);
     private String uin;
-	private TextList screen = TextList.getInstance();
-    private TextListModel model = new TextListModel();
+	private VirtualList screen = VirtualList.getInstance();
+    private VirtualListModel model = new VirtualListModel();
     private TextBoxView InputBox;
     public TrackingForm(String uin) {
         this.uin = uin;
         screen.setCaption(JLocale.getString("extra_settings"));
 		screen.setModel(model);
-        screen.setItemSelectedListener(new TextList.ItemSelectedListener() {
+        screen.setItemSelectedListener(new VirtualList.OnClickListListener() {
             @Override
             public void itemSelected(int position) {
                 changeStatus(position);
@@ -430,7 +430,6 @@ public final class TrackingForm implements TextBoxListener {
         if ((box == InputBox) && ok) {
 		    setLineText(InputBox.getString());
 			screen.back();
-			screen.restore();
 			return;
 		}
 	}

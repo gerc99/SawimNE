@@ -4,20 +4,19 @@
 package protocol.jabber;
 
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import ru.sawim.models.form.VirtualListItem;
 import sawim.ui.TextBoxListener;
-import sawim.ui.text.TextList;
+import sawim.ui.text.VirtualList;
 import java.util.Vector;
 import sawim.cl.ContactList;
+import sawim.ui.text.VirtualListModel;
 import sawim.util.JLocale;
 import sawim.comm.*;
 import sawim.ui.base.Scheme;
 //import sawim.ui.text.TextListController;
-import sawim.ui.text.TextListModel;
 import protocol.*;
 import ru.sawim.view.TextBoxView;
 
@@ -34,8 +33,8 @@ public final class ServiceDiscovery implements TextBoxListener {
     private boolean shortView;
     private Vector jids = new Vector();
 
-    private TextList screen;
-    private TextListModel model;
+    private VirtualList screen;
+    private VirtualListModel model;
 
     private static final int COMMAND_ADD = 0;
     private static final int COMMAND_SET = 1;
@@ -45,8 +44,8 @@ public final class ServiceDiscovery implements TextBoxListener {
     private static final int COMMAND_HOME = 5;
 
     public ServiceDiscovery() {
-        screen = TextList.getInstance();
-        model = new TextListModel();
+        screen = VirtualList.getInstance();
+        model = new VirtualListModel();
     }
 
     public void init(Jabber protocol) {
@@ -55,7 +54,7 @@ public final class ServiceDiscovery implements TextBoxListener {
         searchBox = new TextBoxView();
         screen.setModel(model);
         screen.setCaption(JLocale.getString("service_discovery"));
-        screen.setItemSelectedListener(new TextList.ItemSelectedListener() {
+        screen.setItemSelectedListener(new VirtualList.OnClickListListener() {
             @Override
             public void itemSelected(int position) {
                 String jid = getCurrentJid(position);
@@ -66,7 +65,6 @@ public final class ServiceDiscovery implements TextBoxListener {
                     jabber.getConnection().register(jid);
                 } else {
                     setServer(jid);
-                    screen.restore();
                 }
             }
 
@@ -74,11 +72,10 @@ public final class ServiceDiscovery implements TextBoxListener {
             public boolean back() {
                 if (serverJid == "") return true;
                 setServer("");
-                screen.restore();
                 return false;
             }
         });
-        screen.setOnBuildContextMenu(new TextList.OnBuildContextMenu() {
+        screen.setOnBuildContextMenu(new VirtualList.OnBuildContextMenu() {
             @Override
             public void onCreateContextMenu(ContextMenu menu, int listItem) {
                 menu.clear();
@@ -110,7 +107,6 @@ public final class ServiceDiscovery implements TextBoxListener {
 
                         case COMMAND_SET:
                             setServer(jid);
-                            screen.restore();
                             break;
 
                         case COMMAND_REGISTER:
@@ -120,7 +116,7 @@ public final class ServiceDiscovery implements TextBoxListener {
                 }
             }
         });
-        screen.setBuildOptionsMenu(new TextList.OnBuildOptionsMenu() {
+        screen.setBuildOptionsMenu(new VirtualList.OnBuildOptionsMenu() {
             @Override
             public void onCreateOptionsMenu(Menu menu) {
                 menu.add(Menu.FIRST, COMMAND_SEARCH, 2, JLocale.getString("service_discovery_search"));
@@ -145,7 +141,6 @@ public final class ServiceDiscovery implements TextBoxListener {
 
                     case COMMAND_HOME:
                         setServer("");
-                        screen.restore();
                         break;
                 }
             }
@@ -189,7 +184,6 @@ public final class ServiceDiscovery implements TextBoxListener {
         model.clear();
         jids.removeAllElements();
         addServer(false);
-        //screen.setAllToTop();
     }
     public void setTotalCount(int count) {
         model.clear();
@@ -290,7 +284,6 @@ public final class ServiceDiscovery implements TextBoxListener {
         serverJid = jid;
         isConferenceList = (-1 == jid.indexOf('@')) && Jid.isConference('@' + jid);
         clear();
-        Log.e("ServiceDiscovery", "setServer "+jid);
         if (0 == jid.length()) {
             Config conf = new Config().loadLocale("/jabber-services.txt");
             boolean conferences = true;
@@ -347,7 +340,6 @@ public final class ServiceDiscovery implements TextBoxListener {
         }
         if (serverBox == box) {
             setServer(serverBox.getString());
-            screen.restore();
 
         } else if (searchBox == box) {
             String text = searchBox.getString();
@@ -362,9 +354,6 @@ public final class ServiceDiscovery implements TextBoxListener {
                     break;
                 }
             }
-            screen.restore();
         }
     }
 }
-
-

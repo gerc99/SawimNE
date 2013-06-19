@@ -5,6 +5,7 @@ package sawim.comm;
 
 import DrawControls.icons.Image;
 import DrawControls.icons.ImageList;
+import DrawControls.tree.TreeNode;
 import sawim.Sawim;
 import sawim.Options;
 import sawim.util.JLocale;
@@ -176,15 +177,10 @@ public class Util {
         return ((int) buf[off]) & 0x000000FF;
     }
 
-
-    
     public static void putByte(byte[] buf, int off, int val) {
         buf[off] = (byte) (val & 0x000000FF);
     }
 
-
-    
-    
     public static int getWordLE(byte[] buf, int off) {
         int val = (((int) buf[off])) & 0x000000FF;
         return val | (((int) buf[++off]) << 8) & 0x0000FF00;
@@ -194,15 +190,11 @@ public class Util {
         return val | (((int) buf[++off])) & 0x000000FF;
     }
 
-
-    
     public static void putWordLE(byte[] buf, int off, int val) {
         buf[off]   = (byte) ((val)      & 0x000000FF);
         buf[++off] = (byte) ((val >> 8) & 0x000000FF);
     }
 
-
-    
     public static void putWordBE(byte[] buf, int off, int val) {
         buf[off]   = (byte) ((val >> 8) & 0x000000FF);
         buf[++off] = (byte) ((val)      & 0x000000FF);
@@ -227,9 +219,6 @@ public class Util {
         return val;
     }
 
-
-
-    
     public static void putDWordLE(byte[] buf, int off, long val) {
         
         buf[off]   = (byte) ((val)       & 0x00000000000000FF);
@@ -254,7 +243,6 @@ public class Util {
         return ret;
     }
 
-    
     public static String makeTwo(int number) {
         if (number < 10) {
             return "0" + String.valueOf(number);
@@ -266,49 +254,6 @@ public class Util {
     public static int nextRandInt() {
         return Math.abs(Math.max(Integer.MIN_VALUE + 1, rand.nextInt()));
     }
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
-    
 
     private final static int TIME_SECOND = 0;
     private final static int TIME_MINUTE = 1;
@@ -1014,7 +959,6 @@ public class Util {
         sb.append(s);
     }
     public static String urlEscape(String param) {
-        String urlOK = "";
         StringBuffer sb = new StringBuffer();
         for (int i = 0; i < param.length(); ++i) {
             char ch = param.charAt(i);
@@ -1041,45 +985,14 @@ public class Util {
         return sb.toString();
     }
     
-    public static int getIndex(Vector v, Object o) {
+    public static int getIndex(List<TreeNode> v, Object o) {
         int size = v.size();
         for (int i = 0; i < size; ++i) {
-            if (v.elementAt(i) == o) {
+            if (v.get(i) == o) {
                 return i;
             }
         }
         return -1;
-    }
-
-    public static Image createThumbnail(Image image, int width, int height) {
-        int sourceWidth = image.getWidth();
-        int sourceHeight = image.getHeight();
-
-        if ((width > sourceWidth) && (height > sourceHeight)) {
-            return image;
-        }
-        int thumbWidth = width;
-        int thumbHeight = thumbWidth * sourceHeight / sourceWidth;
-        if (thumbHeight > height) {
-            thumbHeight = height;
-            thumbWidth = thumbHeight * sourceWidth / sourceHeight;
-        }
-        Image scaled = image.scale(thumbWidth, thumbHeight);
-        if (null != scaled) return scaled;
-
-
-        Image thumb = new Image(thumbWidth, thumbHeight, false, 0x00FFFFFF);
-        //Graphics g = thumb.getGraphics();
-
-        /*for (int y = 0; y < thumbHeight; ++y) {
-            for (int x = 0; x < thumbWidth; ++x) {
-                g.setClip(x, y, 1, 1);
-                int dx = x * sourceWidth / thumbWidth;
-                int dy = y * sourceHeight / thumbHeight;
-                g.drawImage(image, x - dx, y - dy, Graphics.LEFT | Graphics.TOP);
-            }
-        }*/
-        return thumb;
     }
 }
 

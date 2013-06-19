@@ -97,9 +97,6 @@ public class OptionsForm implements FormListener, ControlStateListener {
         Options.setInt(opt, alts[form.getSelectorValue(opt)]);
     }
 
-    private static final short[] minItemMultipliers = new short[]{10, 15, 20, 25, 30, 35};
-    private static final String[] minItems = {"x1", "x1.5", "x2", "x2.5", "x3", "x3.5"};
-
     private void save(int currentOptionsForm) {
         switch (currentOptionsForm) {
             case OPTIONS_INTERFACE:
@@ -191,10 +188,6 @@ public class OptionsForm implements FormListener, ControlStateListener {
         });
         //form.setCaption(model.getItemText(currentOptionsForm));
         switch (currentOptionsForm) {
-            case OPTIONS_ACCOUNT:
-                new AccountsForm().show();
-                return;
-
             case OPTIONS_INTERFACE:
                 String[] colorSchemes = Scheme.getSchemeNames();
                 if (colorSchemes.length > 1) {

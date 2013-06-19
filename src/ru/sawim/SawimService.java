@@ -2,7 +2,6 @@ package ru.sawim;
 
 
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
@@ -29,7 +28,7 @@ public class SawimService extends Service {
     public void onCreate() {
         super.onCreate();
         Log.i(LOG_TAG, "onStart();");
-        General.isServiceStart = true;
+        General.initialized = true;
         tray = new Tray(this);
         if (ContactList.getInstance().getManager() != null)
             tray.startForegroundCompat(R.string.app_name, getNotification());//

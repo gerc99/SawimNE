@@ -4,14 +4,13 @@
 
 package protocol.mrim;
 
-import sawim.ui.text.TextListModel;
-import sawim.ui.text.TextList;
+import sawim.ui.text.VirtualListModel;
+import sawim.ui.text.VirtualList;
 import DrawControls.icons.*;
 import sawim.chat.message.Message;
 import sawim.ui.base.Scheme;
 import java.util.Vector;
 
-import sawim.cl.ContactList;
 import sawim.comm.*;
 //import sawim.ui.text.TextListController;
 import sawim.util.*;
@@ -19,19 +18,19 @@ import protocol.*;
 import ru.sawim.models.form.VirtualListItem;
 
 public final class MicroBlog/* extends TextListController*/ {
-    private TextListModel model = new TextListModel();
+    private VirtualListModel model = new VirtualListModel();
     private Vector emails = new Vector();
     private Vector ids = new Vector();
     private Mrim mrim;
     private boolean hasNewMessage;
-    private final TextList list;
+    private final VirtualList list;
 
     public MicroBlog(Mrim mrim) {
         this.mrim = mrim;
-        list = TextList.getInstance();
+        list = VirtualList.getInstance();
         list.setCaption(JLocale.getString("microblog"));
         list.setModel(model);
-        /*list.setOnBuildContextMenu(new TextList.OnBuildContextMenu() {
+        /*list.setOnBuildContextMenu(new VirtualList.OnBuildContextMenu() {
             @Override
             public void onCreateContextMenu(Menu menu) {
                 menu.add(Menu.FIRST, MENU_WRITE, 2, "message");
