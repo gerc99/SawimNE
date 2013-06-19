@@ -1,25 +1,17 @@
-
-
-
-
 package sawim.history;
 
-
 import sawim.cl.ContactList;
+import sawim.comm.Util;
 import sawim.io.Storage;
 import protocol.Contact;
 
 import javax.microedition.rms.RecordStore;
-
-
-
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 
 public class HistoryStorage {
-    
-    
-    
-    
-    
 
     private static final String PREFIX = "hist";
 
@@ -28,20 +20,20 @@ public class HistoryStorage {
     private String storageName;
     private Storage historyStore;
     private int currRecordCount = -1;
-    
     private AndroidHistoryStorage androidStorage;
-    
 
     public HistoryStorage(Contact contact) {
         this.contact = contact;
         uniqueUserId = ContactList.getInstance().getProtocol(contact).getUniqueUserId(contact);
         storageName = getRSName();
-        
         androidStorage = new AndroidHistoryStorage(this);
-        
     }
     public Contact getContact() {
         return contact;
+    }
+
+    public AndroidHistoryStorage getAndroidStorage() {
+        return androidStorage;
     }
 
     public static HistoryStorage getHistory(Contact contact) {
@@ -77,37 +69,32 @@ public class HistoryStorage {
     
     public synchronized void addText(String text, boolean incoming,
             String from, long gmtTime) {
-        
-        androidStorage.addText(text, incoming, from, gmtTime);
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
+        boolean isOpened = openHistory(true);
+        if (!isOpened) {
+            return;
+        }
+        byte type = (byte) (incoming ? 0 : 1);
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            DataOutputStream das = new DataOutputStream(baos);
+            das.writeByte(type);
+            das.writeUTF(from);
+            das.writeUTF(text);
+            das.writeUTF(Util.getLocalDateString(gmtTime, false));
+            byte[] buffer = baos.toByteArray();
+            historyStore.addRecord(buffer);
+        } catch (Exception e) {
+            // do nothing
+        }
+        closeHistory();
+        currRecordCount = -1;
+        //androidStorage.addText(text, incoming, from, gmtTime);
     }
 
-    
     RecordStore getRS() {
         return historyStore.getRS();
     }
 
-    
     private String getRSName() {
         return Storage.getStorageName(PREFIX + getUniqueUserId());
     }
@@ -115,55 +102,46 @@ public class HistoryStorage {
         return uniqueUserId;
     }
 
-    
     public int getHistorySize() {
-        
-        currRecordCount = androidStorage.getHistorySize();
-        
-
-
-
-
-
-
-
-
-
-
-
-        
+        if (currRecordCount < 0) {
+            openHistory(false);
+            currRecordCount = 0;
+            try {
+                if (null != historyStore) {
+                    currRecordCount = historyStore.getNumRecords();
+                }
+            } catch (Exception e) {
+                // do nothing
+            }
+        }
+        //currRecordCount = androidStorage.getHistorySize();
         return currRecordCount;
     }
 
-    
     public CachedRecord getRecord(int recNo) {
-        
-        return androidStorage.getRecord(recNo);
-        
+        if (null == historyStore) {
+            openHistory(false);
+        }
+        CachedRecord result = new CachedRecord();
+        try {
+            byte[] data = historyStore.getRecord(recNo + 1);
+            ByteArrayInputStream bais = new ByteArrayInputStream(data);
+            DataInputStream dis = new DataInputStream(bais);
+            result.type = dis.readByte();
+            result.from = dis.readUTF();
+            result.text = dis.readUTF();
+            result.date = dis.readUTF();
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
+        } catch (Exception e) {
+            result.type = 0;
+            result.from = "";
+            result.text = "";
+            result.date = "";
+        }
+        return result;
+        //return androidStorage.getRecord(recNo);
     }
 
-    
     public void removeHistory() {
         closeHistory();
         removeRMS(storageName);
@@ -190,5 +168,3 @@ public class HistoryStorage {
         }
     }
 }
-
-

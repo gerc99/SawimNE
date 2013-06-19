@@ -89,6 +89,14 @@ public class AndroidHistoryStorage {
         return HomeDirectory.getFile(sawim.modules.fs.FileSystem.HISTORY + "/" + historyStorage.getUniqueUserId() + ".txt");
     }
 
+    public String getTextFile() {
+        try {
+            return getFile().exists() ? getFile().getAbsolutePath() : null;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     private byte[] readLast(sawim.modules.fs.JSR75FileSystem fs, int read) throws Exception {
         InputStream in = fs.openInputStream();
         try {

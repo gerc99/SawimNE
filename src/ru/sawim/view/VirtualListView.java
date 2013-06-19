@@ -56,8 +56,8 @@ public class VirtualListView extends Fragment implements VirtualList.OnUpdateLis
         lv.setOnItemClickListener(new ListView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                if (model.getItemSelectedListener() != null)
-                model.getItemSelectedListener().itemSelected(position);
+                if (model.getClickListListener() != null)
+                model.getClickListListener().itemSelected(position);
             }
         });
         currentActivity.registerForContextMenu(lv);
@@ -99,8 +99,8 @@ public class VirtualListView extends Fragment implements VirtualList.OnUpdateLis
         getActivity().finish();
     }
     public boolean onBackPressed() {
-        if (VirtualList.getInstance().getItemSelectedListener() == null) return true;
-        return VirtualList.getInstance().getItemSelectedListener().back();
+        if (VirtualList.getInstance().getClickListListener() == null) return true;
+        return VirtualList.getInstance().getClickListListener().back();
     }
 
     public void onCreateOptionsMenu(Menu menu) {

@@ -38,7 +38,7 @@ public final class AffiliationListConf implements FormListener, TextBoxListener 
         searchBox = new TextBoxView();
         screen.setCaption(JLocale.getString("conf_aff_list"));
         screen.setModel(model);
-        screen.setItemSelectedListener(new VirtualList.OnClickListListener() {
+        screen.setClickListListener(new VirtualList.OnClickListListener() {
             @Override
             public void itemSelected(int position) {
                 String jid = getCurrentJid(position);

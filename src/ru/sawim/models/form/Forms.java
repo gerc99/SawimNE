@@ -129,6 +129,11 @@ public class Forms {
         return c;
     }
 
+    private void add(Control c) {
+        controls.add(c);
+        invalidate();
+    }
+
     public void clearForm() {
         controls.clear();
     }
@@ -228,7 +233,6 @@ public class Forms {
         }
     }
 
-    ////////////////////////////////////////////////////////////////////////////////
     public Control get(int controlId) {
         for (int num = 0; num < controls.size(); ++num) {
             if ((controls.get(num)).id == controlId) {
@@ -242,7 +246,6 @@ public class Forms {
     }
     public void setTextFieldLabel(int controlId, String desc) {
         Control c = get(controlId);
-        //byte type = c.type;
         c.description = desc;
         invalidate();
     }
@@ -300,10 +303,5 @@ public class Forms {
         if (null != controlListener) {
             controlListener.controlStateChanged(c.id);
         }
-    }
-
-    private void add(Control c) {
-        controls.add(c);
-        invalidate();
     }
 }

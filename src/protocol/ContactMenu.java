@@ -182,7 +182,8 @@ public class ContactMenu implements TextBoxListener {
             } else {
                 history = HistoryStorage.getHistory(contact);
             }
-            //new HistoryStorageList(history).show();
+            new HistoryStorageList().show(history);
+            //ru.sawim.activities.SawimActivity.getInstance().showHistory(history);
         }
     }
 }

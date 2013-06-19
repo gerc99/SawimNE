@@ -54,8 +54,8 @@ public final class Answerer implements FormListener {
             @Override
             public void onCreateContextMenu(ContextMenu menu, int listItem) {
                 if (dictionary.size() > 0) {
-                    menu.add(Menu.FIRST, MENU_EDIT, 2, "edit");
-                    menu.add(Menu.FIRST, MENU_DELETE, 2, "delete");
+                    menu.add(Menu.FIRST, MENU_EDIT, 2, JLocale.getString("edit"));
+                    menu.add(Menu.FIRST, MENU_DELETE, 2, JLocale.getString("delete"));
                 }
             }
 
@@ -65,8 +65,8 @@ public final class Answerer implements FormListener {
                     case MENU_EDIT:
                         selItem = listItem;
                         form.clearForm();
-                        form.addTextField(FORM_EDIT_QUESTION, "answerer_question", getItemQuestion(listItem));
-                        form.addTextField(FORM_EDIT_ANSWER, "answerer_answer", getItemAnswer(listItem));
+                        form.addTextField(FORM_EDIT_QUESTION, JLocale.getString("answerer_question"), getItemQuestion(listItem));
+                        form.addTextField(FORM_EDIT_ANSWER, JLocale.getString("answerer_answer"), getItemAnswer(listItem));
                         form.show();
                         break;
 
@@ -81,12 +81,12 @@ public final class Answerer implements FormListener {
         list.setBuildOptionsMenu(new VirtualList.OnBuildOptionsMenu() {
             @Override
             public void onCreateOptionsMenu(Menu menu) {
-                menu.add(Menu.FIRST, MENU_ADD, 2, "add_new");
-                menu.add(Menu.FIRST, MENU_CLEAR, 2, "delete_all");
+                menu.add(Menu.FIRST, MENU_ADD, 2, JLocale.getString("add_new"));
+                menu.add(Menu.FIRST, MENU_CLEAR, 2, JLocale.getString("delete_all"));
                 if (Options.getBoolean(Options.OPTION_ANSWERER)) {
-                    menu.add(Menu.FIRST, MENU_ON_OFF, 2, "answerer_off");
+                    menu.add(Menu.FIRST, MENU_ON_OFF, 2, JLocale.getString("answerer_off"));
                 } else {
-                    menu.add(Menu.FIRST, MENU_ON_OFF, 2, "answerer_on");
+                    menu.add(Menu.FIRST, MENU_ON_OFF, 2, JLocale.getString("answerer_on"));
                 }
             }
 
@@ -97,8 +97,8 @@ public final class Answerer implements FormListener {
                         dictionary.addElement(" = ");
                         selItem = dictionary.size() - 1;
                         form.clearForm();
-                        form.addTextField(FORM_EDIT_QUESTION, "answerer_question", "");
-                        form.addTextField(FORM_EDIT_ANSWER, "answerer_answer", "");
+                        form.addTextField(FORM_EDIT_QUESTION, JLocale.getString("answerer_question"), "");
+                        form.addTextField(FORM_EDIT_ANSWER, JLocale.getString("answerer_answer"), "");
                         form.show();
                         break;
 

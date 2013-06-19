@@ -46,6 +46,7 @@ import sawim.OptionsForm;
 import sawim.chat.ChatHistory;
 import sawim.cl.ContactList;
 import sawim.forms.ManageContactListForm;
+import sawim.history.HistoryStorage;
 import sawim.modules.Notify;
 import sawim.modules.photo.PhotoListener;
 import org.microemu.MIDletBridge;
@@ -451,5 +452,13 @@ public class SawimActivity extends FragmentActivity {
         } catch (Exception ignored) {
         }
         return uri.toString();
+    }
+
+    public void showHistory(HistoryStorage history) {
+        String historyFilePath = history.getAndroidStorage().getTextFile();
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        Uri uri = Uri.parse("file://" + historyFilePath);
+        intent.setDataAndType(uri, "text/plain");
+        startActivity(intent);
     }
 }

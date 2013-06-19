@@ -3,8 +3,10 @@ package ru.sawim.models.form;
 import DrawControls.icons.Icon;
 import DrawControls.icons.Image;
 import android.graphics.Bitmap;
-import android.widget.ImageView;
+import android.text.Spannable;
 import ru.sawim.General;
+import ru.sawim.activities.VirtualListActivity;
+import sawim.TextFormatter;
 
 /**
  * Created with IntelliJ IDEA.
@@ -17,8 +19,10 @@ public class VirtualListItem {
     private int marginLeft = 0;
     private Bitmap image;
     private String label = null;
-    private String description = null;
-    private byte themeText;
+    private String descStr = null;
+    private Spannable descSpan = null;
+    private byte themeTextLabel = -1;
+    private byte themeTextDesc = -1;
     private byte font;
     private boolean textIsSelectable = false;
     private boolean itemSelectable;
@@ -29,27 +33,32 @@ public class VirtualListItem {
 
     public void addLabel(String text, byte themeText, byte font) {
         label = text;
-        this.themeText = themeText;
+        this.themeTextLabel = themeText;
         this.font = font;
     }
 
     public void addDescription(String text, byte themeText, byte font) {
-        description = text;
-        this.themeText = themeText;
+        descStr = text;
+        this.themeTextDesc = themeText;
         this.font = font;
     }
 
     public void addDescription(int marginLeft, String text, byte themeText, byte font) {
         this.marginLeft = marginLeft;
-        description = text;
-        this.themeText = themeText;
+        descStr = text;
+        this.themeTextDesc = themeText;
         this.font = font;
     }
 
     public void addDescriptionSelectable(String text, byte themeText, byte font) {
         textIsSelectable = true;
-        description = text;
-        this.themeText = themeText;
+        descStr = text;
+        this.themeTextDesc = themeText;
+        this.font = font;
+    }
+
+    public void addTextWithSmiles(String text, byte themeText, byte font) {
+        descSpan = TextFormatter.getFormattedText(VirtualListActivity.getInstance(), text, General.getColor(themeText));
         this.font = font;
     }
 
@@ -57,12 +66,20 @@ public class VirtualListItem {
         return label;
     }
 
-    public String getDescription() {
-        return description;
+    public String getDescStr() {
+        return descStr;
     }
 
-    public byte getThemeText() {
-        return themeText;
+    public Spannable getDescSpan() {
+        return descSpan;
+    }
+
+    public byte getThemeTextLabel() {
+        return themeTextLabel;
+    }
+
+    public byte getThemeTextDesc() {
+        return themeTextDesc;
     }
 
     public byte getFont() {
@@ -90,7 +107,7 @@ public class VirtualListItem {
     }
 
     public void addBr() {
-        description = "\n";
+        descStr = "\n";
     }
 
     public int getMarginLeft() {

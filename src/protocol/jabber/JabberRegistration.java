@@ -1,8 +1,5 @@
 package protocol.jabber;
 
-
-import android.util.Log;
-import sawim.AccountsForm;
 import sawim.SawimException;
 import sawim.Options;
 import sawim.comm.StringConvertor;
@@ -15,7 +12,6 @@ import ru.sawim.models.form.Forms;
 public class JabberRegistration implements Runnable, FormListener {
     private XForm form;
     private JabberXml connection;
-    //private AccountsForm opts;
     private byte type;
     private String id;
 
@@ -29,10 +25,6 @@ public class JabberRegistration implements Runnable, FormListener {
     public final static byte TYPE_NONE = 2;
     private final static int FORM_SERVER = 0;
 
-
-    public JabberRegistration(/*AccountsForm of*/) {
-        //opts = of;
-    }
     public void show() {
         form = new XForm();
         type = TYPE_NEW_ACCOUNT_DOMAIN;

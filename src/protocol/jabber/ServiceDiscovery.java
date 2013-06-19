@@ -54,7 +54,7 @@ public final class ServiceDiscovery implements TextBoxListener {
         searchBox = new TextBoxView();
         screen.setModel(model);
         screen.setCaption(JLocale.getString("service_discovery"));
-        screen.setItemSelectedListener(new VirtualList.OnClickListListener() {
+        screen.setClickListListener(new VirtualList.OnClickListListener() {
             @Override
             public void itemSelected(int position) {
                 String jid = getCurrentJid(position);

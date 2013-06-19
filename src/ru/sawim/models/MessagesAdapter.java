@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import sawim.TextFormatter;
 import sawim.chat.Chat;
 import sawim.chat.MessData;
 import sawim.chat.message.Message;
@@ -74,31 +75,6 @@ public class MessagesAdapter extends BaseAdapter {
         return row;
     }
 
-    private void detectEmotions(Context context,
-                                SpannableStringBuilder builder, int startPos, int endPos) {
-        Emotions smiles = Emotions.instance;
-        for (int index = startPos; index < endPos; ++index) {
-            int smileIndex = smiles.getSmile(builder.toString(), index);
-            if (-1 != smileIndex) {
-                int length = smiles.getSmileText(smileIndex).length();
-                Icon icon = smiles.getSmileIcon(smileIndex);
-                Bitmap bitmap = Bitmap.createBitmap(icon.getImage().getBitmap(), icon.x, icon.y, icon.getWidth(), icon.getHeight());
-                ImageSpan imageSpan = new ImageSpan(context, bitmap, ImageSpan.ALIGN_BASELINE);
-                builder.setSpan(imageSpan, index, index + length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                index += length - 1;
-                break;
-            }
-        }
-    }
-
-    public Spannable getFormattedText(Context context, String text, int color) {
-        SpannableStringBuilder builder = new SpannableStringBuilder(text);
-        detectEmotions(context, builder, 0, text.length());
-        builder.setSpan(new ForegroundColorSpan(color), 0, text.length(),
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        return builder;
-    }
-
     private class ItemWrapper {
         final View item;
 
@@ -131,7 +107,7 @@ public class MessagesAdapter extends BaseAdapter {
                 msgNick.setVisibility(TextView.GONE);
                 msgTime.setVisibility(TextView.GONE);
                 int color = General.getColor(mData.isIncoming() ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG);
-                msgText.setText(mData.getNick() + " " + getFormattedText(baseContext, text, color));
+                msgText.setText(mData.getNick() + " " + TextFormatter.getFormattedText(baseContext, text, color));
                 msgText.setTextSize(14);
             } else {
                 Icon icon = Message.msgIcons.iconAt(chat.getIcon(mData.getMessage(), mData.isIncoming()));
@@ -155,7 +131,7 @@ public class MessagesAdapter extends BaseAdapter {
                         && Chat.isHighlight(text, chat.getMyName())) {
                     color = Scheme.THEME_CHAT_HIGHLIGHT_MSG;
                 }
-                msgText.setText(getFormattedText(baseContext, text, General.getColor(color)));
+                msgText.setText(TextFormatter.getFormattedText(baseContext, text, General.getColor(color)));
                 msgText.setTextSize(18);
             }
         }

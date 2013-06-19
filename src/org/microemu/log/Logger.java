@@ -26,7 +26,7 @@
  */
 package org.microemu.log;
 
-import org.microemu.app.util.IOUtils;
+import org.microemu.util.IOUtils;
 
 import java.io.File;
 import java.io.FileWriter;

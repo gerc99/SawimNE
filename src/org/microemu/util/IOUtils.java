@@ -22,7 +22,7 @@
  *  limitations.
  */
 
-package org.microemu.app.util;
+package org.microemu.util;
 
 import java.io.*;
 

@@ -16,7 +16,7 @@ public class VirtualList {
     private OnUpdateList updateFormListener;
     private OnBuildOptionsMenu buildOptionsMenu;
     private OnBuildContextMenu buildContextMenu;
-    private OnClickListListener itemSelectedListener;
+    private OnClickListListener itemClickListListener;
 
     public static VirtualList getInstance() {
         return instance;
@@ -43,7 +43,7 @@ public class VirtualList {
         updateFormListener = null;
         buildOptionsMenu = null;
         buildContextMenu = null;
-        itemSelectedListener = null;
+        itemClickListListener = null;
     }
 
     public void setUpdateFormListener(OnUpdateList l) {
@@ -100,11 +100,11 @@ public class VirtualList {
         void itemSelected(int position);
         boolean back();
     }
-    public OnClickListListener getItemSelectedListener() {
-        return itemSelectedListener;
+    public OnClickListListener getClickListListener() {
+        return itemClickListListener;
     }
-    public void setItemSelectedListener(OnClickListListener itemSelectedListener) {
-        this.itemSelectedListener = itemSelectedListener;
+    public void setClickListListener(OnClickListListener itemClickListListener) {
+        this.itemClickListListener = itemClickListListener;
     }
 
     public void show() {

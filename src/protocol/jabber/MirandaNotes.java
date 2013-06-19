@@ -76,10 +76,10 @@ public final class MirandaNotes {
                 }
             }
         });
-        screen.setItemSelectedListener(new VirtualList.OnClickListListener() {
+        screen.setClickListListener(new VirtualList.OnClickListListener() {
             @Override
             public void itemSelected(int position) {
-                Note note = (Note)notes.elementAt(position);
+                Note note = (Note) notes.elementAt(position);
                 new NoteEditor(note).showIt();
             }
 
@@ -96,12 +96,10 @@ public final class MirandaNotes {
     public void showIt() {
         clear();
         notes.removeAllElements();
-
         VirtualListItem wait = model.createNewParser(true);
         wait.addDescription(JLocale.getString("wait"),
                 Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
         model.addPar(wait);
-
         jabber.getConnection().requestMirandaNotes();
         screen.show();
     }
@@ -112,15 +110,12 @@ public final class MirandaNotes {
         note.tags = tags;
         note.text = text;
         notes.addElement(note);
-
         addNote(note);
     }
     private void addNote(Note note) {
 		VirtualListItem parser = model.createNewParser(true);
         parser.addDescription(note.title, Scheme.THEME_FORM_EDIT, Scheme.FONT_STYLE_BOLD);
-
         parser.addDescription("*" + note.tags, Scheme.THEME_TEXT, Scheme.FONT_STYLE_BOLD);
-
         parser.addDescription(note.text, Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
         model.addPar(parser);
     }
@@ -170,60 +165,6 @@ public final class MirandaNotes {
     private void selectNote(Note note) {
         screen.setCurrentItemIndex(notes.indexOf(note));
     }
-
-    /*public MenuModel getMenu() {
-        MenuModel menu = new MenuModel();
-        menu.addItem("add_to_list", COMMAND_ADD);
-        if (model.getSize() > 0) {
-            menu.addItem("copy_text", COMMAND_COPY);
-        }
-        if (!SawimUI.isClipBoardEmpty()) {
-            menu.addItem("paste", COMMAND_PASTE);
-        }
-        if (model.getSize() > 0) {
-            menu.addItem("edit", COMMAND_EDIT);
-            menu.addItem("delete", COMMAND_DEL);
-            
-            setDefaultCode(COMMAND_EDIT);
-        }
-        menu.setActionListener(this);
-        return menu;
-    }*/
-    /*protected void select(int action) {
-        switch (action) {
-            case COMMAND_ADD: {
-                new NoteEditor(addEmptyNote()).showIt();
-                break;
-            }
-
-            case COMMAND_EDIT: {
-                Note note = (Note)notes.elementAt(0);
-                new NoteEditor(note).showIt();
-                break;
-            }
-
-            case COMMAND_COPY: {
-                //SawimUI.setClipBoardText(screen.getCaption(), getCurrentText());
-                screen.restore();
-                break;
-            }
-
-            case COMMAND_PASTE:
-                Note note = addEmptyNote();
-                note.text = SawimUI.getClipBoardText(false);
-                new NoteEditor(note).showIt();
-                break;
-
-            case COMMAND_DEL:
-                removeNote(0);
-				jabber.getConnection().saveMirandaNotes(getNotesStorage());
-                refresh();
-                screen.restore();
-                break;
-
-            
-        }
-    }*/
 
     private class Note {
         private String title;

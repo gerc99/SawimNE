@@ -642,7 +642,7 @@ public final class Chat {
 				} else if (inc) {
 					sysNoticeCounter = inc(sysNoticeCounter);
 				}
-				//MagicEye.addAction(protocol, contact.getUserId(), message.getDescription());
+				//MagicEye.addAction(protocol, contact.getUserId(), message.getDescStr());
 			}
 			
             addTextToForm(message);

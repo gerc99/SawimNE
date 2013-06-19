@@ -25,13 +25,7 @@ public class CachedRecord {
         return shortText;
     }
 
-    public boolean containsUrl() {
-        return (null != Util.parseMessageForURL(text));
-    }
-
     public boolean isIncoming() {
         return 0 == type;
     }
 }
-
-

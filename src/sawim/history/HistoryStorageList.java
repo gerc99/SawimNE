@@ -1,5 +1,10 @@
 package sawim.history;
 
+import android.util.Log;
+import android.view.ContextMenu;
+import android.view.Menu;
+import ru.sawim.models.form.VirtualListItem;
+import sawim.ui.base.Scheme;
 import sawim.ui.text.VirtualList;
 import sawim.ui.text.VirtualListModel;
 import java.util.*;
@@ -12,7 +17,7 @@ import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
 
 
-public final class HistoryStorageList extends VirtualList implements Runnable, FormListener {
+public final class HistoryStorageList implements Runnable, FormListener {
 
     private HistoryStorage history;
     private Forms frmFind;
@@ -25,19 +30,54 @@ public final class HistoryStorageList extends VirtualList implements Runnable, F
     private Hashtable cachedRecords = new Hashtable();
     private Thread searching = null;
 
-    //private MenuModel msgMenu = new MenuModel();
-    private VirtualList msg = VirtualList.getInstance();
+    private VirtualList currMsg = VirtualList.getInstance();
+    private VirtualList allMsg = VirtualList.getInstance();
     private HistoryExport export = null;
 
-    public HistoryStorageList(HistoryStorage storage) {
-        setCaption(JLocale.getString("history"));
+    public void show(HistoryStorage storage) {
+        allMsg.setCaption(JLocale.getString("history"));
+        allMsg.setOnBuildContextMenu(new VirtualList.OnBuildContextMenu() {
+            @Override
+            public void onCreateContextMenu(ContextMenu menu, int listItem) {
+                if (getSize() > 0) {
+                    menu.add(Menu.FIRST, MENU_FIND, 2, JLocale.getString("find"));
+                    menu.add(Menu.FIRST, MENU_CLEAR, 2, JLocale.getString("clear"));
+                    menu.add(Menu.FIRST, MENU_COPY_TEXT, 2, JLocale.getString("copy_text"));
+                    menu.add(Menu.FIRST, MENU_INFO, 2, JLocale.getString("history_info"));
+
+                    if (sawim.modules.fs.FileSystem.isSupported()) {
+                        menu.add(Menu.FIRST, MENU_EXPORT, 2, JLocale.getString("export"));
+                    }
+                }
+            }
+
+            @Override
+            public void onContextItemSelected(int listItem, int itemMenuId) {
+                select(itemMenuId, listItem);
+            }
+        });
+        allMsg.setClickListListener(new VirtualList.OnClickListListener() {
+            @Override
+            public void itemSelected(int position) {
+                showMessText(position).show();
+            }
+
+            @Override
+            public boolean back() {
+                closeHistoryView();
+                return true;
+            }
+        });
         history = storage;
         history.openHistory();
 
         int size = getSize();
         if (0 != size) {
-            //setCurrentItemIndex(size - 1);
+            allMsg.setCurrentItemIndex(size - 1);
+            onCursorMove(size - 1);
         }
+        buildListMessages();
+        allMsg.show();
     }
 
     void closeHistoryView() {
@@ -72,36 +112,15 @@ public final class HistoryStorageList extends VirtualList implements Runnable, F
         Sawim.gc();
     }
 
-    protected void onCursorMove() {
-        CachedRecord record = getCachedRecord(getCurrItem());
+    protected void onCursorMove(int index) {
+        CachedRecord record = getCachedRecord(index);
         if (null != record) {
-            setCaption(record.from + " " + record.date);
+            allMsg.setCaption(record.from + " " + record.date);
         }
     }
-    protected void select(int action) {
-        /*switch (action) {
-            case NativeCanvas.Sawim_SELECT:
-                showMessText().show();
-                return;
 
-            case NativeCanvas.Sawim_BACK:
-                back();
-                closeHistoryView();
-                return;
-
-            case NativeCanvas.Sawim_MENU:
-                showMenu(getMenu());
-                return;
-        }*/
+    protected void select(int action, int currItem) {
         switch (action) {
-            case MENU_GOTO_URL:
-                //ContactList.getInstance().gotoUrl(getCachedRecord(getCurrItem()).text);
-                break;
-
-            case MENU_SELECT:
-                showMessText().show();
-                break;
-
             case MENU_FIND:
                 if (null == frmFind) {
                     frmFind = Forms.getInstance();
@@ -138,7 +157,7 @@ public final class HistoryStorageList extends VirtualList implements Runnable, F
                 break;
 
             case MENU_COPY_TEXT:
-                int index = getCurrItem();
+                int index = currItem;
                 if (-1 == index) return;
                 CachedRecord record = getCachedRecord(index);
                 if (null == record) return;
@@ -175,7 +194,6 @@ public final class HistoryStorageList extends VirtualList implements Runnable, F
         moveInList(direction);
     }
 
-    private static final int MENU_SELECT     = 0;
     private static final int MENU_FIND       = 1;
     private static final int MENU_CLEAR      = 2;
     private static final int MENU_DEL_CURRENT        = 40;
@@ -185,42 +203,24 @@ public final class HistoryStorageList extends VirtualList implements Runnable, F
     private static final int MENU_INFO       = 4;
     private static final int MENU_EXPORT     = 5;
     private static final int MENU_EXPORT_ALL = 6;
-    private static final int MENU_GOTO_URL   = 7;
-
-    /*protected MenuModel getMenu() {
-        MenuModel menu = new MenuModel();
-        if (getSize() > 0) {
-            menu.addItem("onContextItemSelected",       MENU_SELECT);
-            menu.addEllipsisItem("find",  MENU_FIND);
-            menu.addEllipsisItem("clear", MENU_CLEAR);
-            menu.addItem("copy_text",    MENU_COPY_TEXT);
-            menu.addItem("history_info", MENU_INFO);
-            
-            if (sawim.modules.fs.FileSystem.isSupported()) {
-                menu.addItem("export",       MENU_EXPORT);
-                
-            }
-            
-        }
-        menu.setActionListener(new Binder(this));
-        return menu;
-    }*/
 
     
     private void moveInList(int offset) {
-        //setCurrentItemIndex(getCurrItem() + offset);
+        allMsg.setCurrentItemIndex(allMsg.getCurrItem() + offset);
     }
+
     public void run() {
         Thread it = Thread.currentThread();
         searching = it;
         
         String text = frmFind.getTextFieldValue(tfldFind);
-        int textIndex = find(text, getCurrItem(),
+        int textIndex = find(text, allMsg.getCurrItem(),
                 frmFind.getCheckBoxValue(find_case_sensitiv),
                 frmFind.getCheckBoxValue(find_backwards));
 
         if (0 <= textIndex) {
-            //setCurrentItemIndex(textIndex);
+            allMsg.setCurrentItemIndex(textIndex);
+            onCursorMove(textIndex);
 
         } else if (searching == it) {
             frmFind.addString(NOT_FOUND, text + "\n" + JLocale.getString("not_found"));
@@ -265,42 +265,39 @@ public final class HistoryStorageList extends VirtualList implements Runnable, F
         if (apply) {
             frmFind.remove(NOT_FOUND);
             new Thread(this).start();
-
         } else {
             searching = null;
         }
     }
-
     
-    private VirtualList showMessText() {
-        if (getCurrItem() >= getSize()) return null;
-        CachedRecord record = history.getRecord(getCurrItem());
-        msg.setCaption(record.from);
+    private VirtualList showMessText(int currItem) {
+        if (currItem >= getSize()) return null;
+        CachedRecord record = history.getRecord(currItem);
+        currMsg.setCaption(record.from);
 
-    /*    msgMenu.clean();
-        msgMenu.addItem("copy_text", MENU_COPY_TEXT);
-        if (record.containsUrl()) {
-            msgMenu.addItem("goto_url",  MENU_GOTO_URL);
-        }
-        msgMenu.setActionListener(new Binder(this));
+        currMsg.setOnBuildContextMenu(new VirtualList.OnBuildContextMenu() {
+            @Override
+            public void onCreateContextMenu(ContextMenu menu, int listItem) {
+                menu.add(Menu.FIRST, MENU_COPY_TEXT, 2, JLocale.getString("copy_text"));
+            }
 
+            @Override
+            public void onContextItemSelected(int listItem, int itemMenuId) {
+                select(MENU_COPY_TEXT, listItem);
+            }
+        });
 
-        msg.lock();
-        msg.setAllToTop();
         VirtualListModel msgText = new VirtualListModel();
         VirtualListItem parser = msgText.createNewParser(false);
-        parser.addDescription(record.date + ":", THEME_TEXT, FONT_STYLE_BOLD);
-        parser.doCRLF();
-        parser.addTextWithSmiles(record.text, THEME_TEXT, FONT_STYLE_PLAIN);
+        parser.addDescription(record.date + ":", Scheme.THEME_TEXT, Scheme.FONT_STYLE_BOLD);
+        parser.addTextWithSmiles(record.text, Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
         msgText.addPar(parser);
 
-        msg.setController(new TextListController(msgMenu, -1));
-        msg.setModel(msgText);*/
-        return msg;
+        currMsg.setModel(msgText);
+        return currMsg;
     }
 
-    
-    protected final int getSize() {
+    private final int getSize() {
         return getHistorySize();
     }
 
@@ -321,17 +318,23 @@ public final class HistoryStorageList extends VirtualList implements Runnable, F
             g.drawString(he.contact, 2, y, w - 4, progressHeight);
             g.fillRect(0, y + progressHeight, w * he.currentMessage / he.messageCount, progressHeight);
         }
-        
-    }
-    protected void drawItemData(GraphicsEx g, int index, int x1, int y1, int w, int h, int skip, int to) {
-        CachedRecord record = getCachedRecord(index);
-        if ((null == record) || (null == record.getShortText())) return;
-        Font font = getDefaultFont();
-        g.setFont(font);
-        g.setThemeColor((record.type == 0) ? THEME_CHAT_INMSG : THEME_CHAT_OUTMSG);
-        g.drawString(record.getShortText(), x1, y1 + (h - font.getHeight()) / 2,
-                Graphics.TOP | Graphics.LEFT);
     }*/
+
+    private void buildListMessages() {
+        for (int i = 0; i < getSize(); ++i) {
+            CachedRecord record = getCachedRecord(i);
+            if ((null == record) || (null == record.getShortText())) return;
+
+            VirtualListModel msgText = new VirtualListModel();
+            VirtualListItem parser = msgText.createNewParser(false);
+            parser.addLabel(record.date + ":", Scheme.THEME_TEXT, Scheme.FONT_STYLE_BOLD);
+            parser.addTextWithSmiles(record.getShortText(), (record.type == 0) ? Scheme.THEME_CHAT_INMSG
+                    : Scheme.THEME_CHAT_OUTMSG, Scheme.FONT_STYLE_PLAIN);
+            msgText.addPar(parser);
+
+            allMsg.setModel(msgText);
+        }
+    }
 
     void exportDone() {
         export = null;

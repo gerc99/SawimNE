@@ -198,7 +198,7 @@ public final class FileBrowser implements Runnable {
         g.setFont(getDefaultFont());
         FileNode node = (FileNode)root.elementAt(index);
         boolean isDir = node.isDir() || node.isParentDir();
-        g.drawString(getIcon(isDir ? TYPE_DIR : TYPE_FILE), node.getDescription(), null,
+        g.drawString(getIcon(isDir ? TYPE_DIR : TYPE_FILE), node.getDescStr(), null,
                 x1, y1, w, h);
         if (selectFirst && (0 == index)) {
             g.drawLine(x1, y1 + h, x1 + w, y1 + h);
