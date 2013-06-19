@@ -43,7 +43,6 @@ class HistoryExport implements Runnable, FileBrowserListener {
 
     public void onDirectorySelect(String dir) {
         directory = dir;
-        //screen.restore();
         new Thread(this).start();
     }
     private void setProgress(int messageNum) {

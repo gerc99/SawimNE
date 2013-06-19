@@ -1,8 +1,14 @@
 package sawim.history;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
+import android.widget.Toast;
+import protocol.jabber.Jabber;
+import ru.sawim.activities.SawimActivity;
+import ru.sawim.activities.VirtualListActivity;
 import ru.sawim.models.form.VirtualListItem;
 import sawim.ui.base.Scheme;
 import sawim.ui.text.VirtualList;
@@ -119,7 +125,7 @@ public final class HistoryStorageList implements Runnable, FormListener {
         }
     }
 
-    protected void select(int action, int currItem) {
+    private void select(int action, int currItem) {
         switch (action) {
             case MENU_FIND:
                 if (null == frmFind) {
@@ -134,26 +140,31 @@ public final class HistoryStorageList implements Runnable, FormListener {
                 break;
 
             case MENU_CLEAR:
-                /*MenuModel menu = new MenuModel();
-                menu.addItem("currect_contact",         MENU_DEL_CURRENT);
-                menu.addItem("all_contact_except_this", MENU_DEL_ALL_EXCEPT_CUR);
-                menu.addItem("all_contacts",            MENU_DEL_ALL);
-                menu.setActionListener(new Binder(this));
-                showMenu(menu);*/
-                break;
-
-            case MENU_DEL_CURRENT:
-                history.removeHistory();
-                clearCache();
-                break;
-
-            case MENU_DEL_ALL_EXCEPT_CUR:
-                history.clearAll(true);
-                break;
-
-            case MENU_DEL_ALL:
-                history.clearAll(false);
-                clearCache();
+                CharSequence[] items = new CharSequence[3];
+                items[0] = JLocale.getString("currect_contact");
+                items[1] = JLocale.getString("all_contact_except_this");
+                items[2] = JLocale.getString("all_contacts");
+                AlertDialog.Builder builder = new AlertDialog.Builder(SawimActivity.getInstance());
+                builder.setTitle(JLocale.getString("history"));
+                builder.setItems(items, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (which) {
+                            case 0:
+                                history.removeHistory();
+                                clearCache();
+                                break;
+                            case 1:
+                                history.clearAll(true);
+                                break;
+                            case 2:
+                                history.clearAll(false);
+                                clearCache();
+                                break;
+                        }
+                    }
+                });
+                builder.create().show();
                 break;
 
             case MENU_COPY_TEXT:
@@ -171,7 +182,7 @@ public final class HistoryStorageList implements Runnable, FormListener {
                     String sb = JLocale.getString("hist_cur") + ": " + getSize()  + "\n"
                             + JLocale.getString("hist_size") + ": " + (rs.getSize() / 1024) + "\n"
                             + JLocale.getString("hist_avail") + ": " + (rs.getSizeAvailable() / 1024) + "\n";
-                    //new Popup(this, sb).show();
+                    Toast.makeText(VirtualListActivity.getInstance(), sb, Toast.LENGTH_SHORT);
                 } catch (Exception ignored) {
                 }
                 break;
@@ -196,9 +207,6 @@ public final class HistoryStorageList implements Runnable, FormListener {
 
     private static final int MENU_FIND       = 1;
     private static final int MENU_CLEAR      = 2;
-    private static final int MENU_DEL_CURRENT        = 40;
-    private static final int MENU_DEL_ALL_EXCEPT_CUR = 41;
-    private static final int MENU_DEL_ALL            = 42;
     private static final int MENU_COPY_TEXT  = 3;
     private static final int MENU_INFO       = 4;
     private static final int MENU_EXPORT     = 5;
