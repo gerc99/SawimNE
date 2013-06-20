@@ -53,7 +53,7 @@ public class SmilesAdapter extends BaseAdapter {
     public View getView(int i, View convView, ViewGroup viewGroup) {
         ItemWrapper wr;
         if (convView == null) {
-            LayoutInflater inf = ((Activity) baseContext).getLayoutInflater();
+            LayoutInflater inf = LayoutInflater.from(baseContext);
             convView = inf.inflate(R.layout.smiles_item, null);
             wr = new ItemWrapper(convView);
             convView.setTag(wr);

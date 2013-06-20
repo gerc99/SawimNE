@@ -1,5 +1,5 @@
 http://qip.ru/caps?=QIP Mobile
-http://Sawim.net.ru/caps=Sawim aspro
+http://jimm.net.ru/caps=Jimm aspro
 http://voffk.org.ru/bombus=Bombus+
 http://bombusmod.net.ru=BombusMod
 http://jasmineicq.ru/caps=Jasmine IM

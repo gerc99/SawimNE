@@ -51,7 +51,7 @@ public class AccountsAdapter extends BaseAdapter {
     public View getView(int position, View convView, ViewGroup viewGroup) {
         ItemWrapper wr;
         if (convView == null) {
-            LayoutInflater inf = ((Activity) baseContext).getLayoutInflater();
+            LayoutInflater inf = LayoutInflater.from(baseContext);
             convView = inf.inflate(R.layout.accounts_list_item, null);
             wr = new ItemWrapper(convView);
             convView.setTag(wr);

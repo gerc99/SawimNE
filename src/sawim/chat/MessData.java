@@ -1,8 +1,6 @@
-
-
-
 package sawim.chat;
 
+import android.text.Spannable;
 import sawim.Sawim;
 import sawim.chat.message.Message;
 import sawim.comm.Util;
@@ -15,6 +13,9 @@ public final class MessData {
     public int iconIndex;
     private short rowData;
 	private Message message;
+
+    public Spannable fullMeText;
+    public Spannable fullText;
 
     public static final short URLS = 1;
     public static final short INCOMING = 2;

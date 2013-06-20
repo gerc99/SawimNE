@@ -57,7 +57,7 @@ public class FormAdapter extends BaseAdapter {
         final Forms.Control c = controls.get(position);
         ViewHolder holder;
         if (convertView == null) {
-            LayoutInflater inf = ((Activity) context).getLayoutInflater();
+            LayoutInflater inf = LayoutInflater.from(context);
             convertView = inf.inflate(R.layout.form_item, null);
             holder = new ViewHolder();
             convertView.setTag(holder);

@@ -55,7 +55,7 @@ public class VirtualListAdapter extends BaseAdapter {
         ViewHolder holder;
         VirtualListItem element = getItem(i);
         if (convertView == null) {
-            LayoutInflater inf = ((Activity) baseContext).getLayoutInflater();
+            LayoutInflater inf = LayoutInflater.from(baseContext);
             convertView = inf.inflate(R.layout.virtual_list_item, null);
             holder = new ViewHolder();
             convertView.setTag(holder);

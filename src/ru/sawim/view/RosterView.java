@@ -215,7 +215,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
                 }
             }
             if (items.size() <= getCurrItem()) {
-                setCurrentItemIndex(0);
+                //setCurrentItemIndex(0);
             }
         } catch (Exception e) {
             DebugLog.panic("update ", e);
@@ -346,15 +346,15 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
                 topLinearLayout.removeAllViews();
                 for (int j = 0; j < owner.getModel().getProtocolCount(); j++) {
                     Protocol protocol = owner.getModel().getProtocol(j);
-                    ImageView imageBarButtons = new ImageView(getActivity());
+                    ImageButton imageBarButtons = new ImageButton(getActivity());
                     LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(58, LinearLayout.LayoutParams.MATCH_PARENT);
                     lp.gravity = Gravity.CENTER;
                     imageBarButtons.setLayoutParams(lp);
+                    if (j == owner.getCurrProtocol())
+                        imageBarButtons.setBackgroundColor(General.getColorWithAlpha(Scheme.THEME_BACKGROUND));
                     imageBarButtons.setImageBitmap(General.iconToBitmap(protocol.getCurrentStatusIcon()));
                     imageBarButtons.setOnClickListener(RosterView.this);
                     imageBarButtons.setId(j);
-                    if (j == owner.getCurrProtocol())
-                        imageBarButtons.setBackgroundColor(General.getColorWithAlpha(Scheme.THEME_BACKGROUND));
                     Icon messageIcon = ChatHistory.instance.getUnreadMessageIcon(protocol);
                     if (null != messageIcon)
                         imageBarButtons.setImageBitmap(General.iconToBitmap(messageIcon));
@@ -366,7 +366,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
 
     private void updatePage(final int currPage) {
         if (currPage == ContactsAdapter.ALL_CONTACTS) {
-            general.getManager().getModel().sort();
+
         } else if (currPage == ContactsAdapter.ONLINE_CONTACTS) {
             onlineRosterAdapter.clear();
             Vector contacts = general.getCurrProtocol().getSortedContacts();
@@ -391,6 +391,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                general.getManager().getModel().sort();
                 rebuildRoster(viewPager.getCurrentItem());
             }
         });

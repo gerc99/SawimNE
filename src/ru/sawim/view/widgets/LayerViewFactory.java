@@ -27,7 +27,7 @@ public class LayerViewFactory {
     public View getView(View convView, String layer) {
         ItemWrapper wr;
         if (convView == null) {
-            LayoutInflater inf = ((Activity) baseContext).getLayoutInflater();
+            LayoutInflater inf = LayoutInflater.from(baseContext);
             convView = inf.inflate(R.layout.muc_users_item, null);
             wr = new ItemWrapper(convView);
             convView.setTag(wr);

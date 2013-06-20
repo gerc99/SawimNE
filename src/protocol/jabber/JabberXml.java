@@ -711,7 +711,7 @@ public final class JabberXml extends ClientConnection {
                     commands.addItems(iqQuery);
                 }
                 return;
-			} else if ("http://jabber.org/protocol/muc#Gerc".equals(xmlns)) {
+			} else if ("http://jabber.org/protocol/muc#admin".equals(xmlns)) {
                 if (IQ_TYPE_GET == iqType) {
                     sendIqError(S_QUERY, xmlns, from, id);
                     return;
@@ -1177,7 +1177,7 @@ public final class JabberXml extends ClientConnection {
 					rangVoice = JLocale.getString("owner");
                 } else if (("a" + "dmin").equals(affiliation)) {
 					priorityA = JabberServiceContact.AFFILIATION_ADMIN;
-					rangVoice = JLocale.getString("Gerc");
+					rangVoice = JLocale.getString("admin");
                 } else {
                     priorityA = JabberServiceContact.AFFILIATION_NONE;
 					rangVoice = JLocale.getString("none");
@@ -2359,13 +2359,13 @@ public final class JabberXml extends ClientConnection {
 	public void requestAffiliationListConf(String jidConference, String affiliation) {
         putPacketIntoQueue("<iq type='get' to='" + Util.xmlEscape(jidConference)
                 + "' id='" + Util.xmlEscape(affiliation)
-				+ "'><query xmlns='http://jabber.org/protocol/muc#Gerc'><item affiliation='"
+				+ "'><query xmlns='http://jabber.org/protocol/muc#admin'><item affiliation='"
 				+ Util.xmlEscape(affiliation) + "'/></query></iq>");
         affListConf = getJabber().getAffiliationListConf();
     }
 	public void setAffiliationListConf(String jidConference, String jidItem, String setAffiliation, String setReason) {
         putPacketIntoQueue("<iq type='set' to='" + Util.xmlEscape(jidConference)
-                + "' id='admin_modify'><query xmlns='http://jabber.org/protocol/muc#Gerc'><item jid='"
+                + "' id='admin_modify'><query xmlns='http://jabber.org/protocol/muc#admin'><item jid='"
 				+ Util.xmlEscape(jidItem) + "' affiliation='" + Util.xmlEscape(setAffiliation)
 				+ "'><reason>" + Util.xmlEscape(setReason) + "</reason></item></query></iq>");
         affListConf = getJabber().getAffiliationListConf();
@@ -2382,21 +2382,21 @@ public final class JabberXml extends ClientConnection {
     }
     public void setMucRole(String jid, String nick, String role) {
         putPacketIntoQueue("<iq type='set' to='" + Util.xmlEscape(jid)
-                + "'><query xmlns='http://jabber.org/protocol/muc#Gerc'><item nick='"
+                + "'><query xmlns='http://jabber.org/protocol/muc#admin'><item nick='"
                 + Util.xmlEscape(nick)
                 + "' role='" + Util.xmlEscape(role)
                 + "'/></query></iq>");
     }
     public void setMucAffiliation(String jid, String userJid, String affiliation) {
         putPacketIntoQueue("<iq type='set' to='" + Util.xmlEscape(jid)
-                + "'><query xmlns='http://jabber.org/protocol/muc#Gerc'><item affiliation='"
+                + "'><query xmlns='http://jabber.org/protocol/muc#admin'><item affiliation='"
                 + Util.xmlEscape(affiliation)
                 + "' jid='" + Util.xmlEscape(userJid)
                 + "'/></query></iq>");
     }
 	public void setMucRoleR(String jid, String nick, String role, String setReason) {
         putPacketIntoQueue("<iq type='set' to='" + Util.xmlEscape(jid)
-		        + "' id='itemmuc'><query xmlns='http://jabber.org/protocol/muc#Gerc'><item nick='"
+		        + "' id='itemmuc'><query xmlns='http://jabber.org/protocol/muc#admin'><item nick='"
                 + Util.xmlEscape(nick)
                 + "' role='" + Util.xmlEscape(role)
 				+ "'><reason>" + Util.xmlEscape(setReason) + "</reason></item>"
@@ -2404,7 +2404,7 @@ public final class JabberXml extends ClientConnection {
     }
 	public void setMucAffiliationR(String jid, String userJid, String affiliation, String setReason) {
         putPacketIntoQueue("<iq type='set' to='" + Util.xmlEscape(jid)
-		        + "' id='itemmuc'><query xmlns='http://jabber.org/protocol/muc#Gerc'><item affiliation='"
+		        + "' id='itemmuc'><query xmlns='http://jabber.org/protocol/muc#admin'><item affiliation='"
                 + Util.xmlEscape(affiliation)
                 + "' jid='" + Util.xmlEscape(userJid)
 				+ "'><reason>" + Util.xmlEscape(setReason) + "</reason></item>"

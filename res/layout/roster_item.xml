@@ -7,21 +7,21 @@
         xmlns:android="http://schemas.android.com/apk/res/android">
     <ImageView
             android:id="@+id/first_image"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:padding="2dp"/>
     <ImageView
             android:id="@+id/second_image"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:padding="2dp"
             android:paddingBottom="2dip"/>
     <ImageView
             android:id="@+id/third_image"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:padding="2dp"
             android:paddingBottom="2dip"/>
@@ -52,8 +52,8 @@
                 android:text=""/>
     </LinearLayout>
     <ImageView
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:id="@+id/fourth_rule_image" android:layout_gravity="center_vertical|right"
             android:layout_weight="1"/>
 </LinearLayout>

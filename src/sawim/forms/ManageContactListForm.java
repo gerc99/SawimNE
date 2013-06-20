@@ -167,7 +167,7 @@ public final class ManageContactListForm implements FormListener, TextBoxListene
                                    View row = convertView;
                                    ItemWrapper wr;
                                    if (row == null) {
-                                       LayoutInflater inf = ((Activity) baseContext).getLayoutInflater();
+                                       LayoutInflater inf = (LayoutInflater.from(baseContext));
                                        row = inf.inflate(R.layout.menu_item, null);
                                        wr = new ItemWrapper(row);
                                        row.setTag(wr);

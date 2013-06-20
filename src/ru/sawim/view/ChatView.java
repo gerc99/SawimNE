@@ -82,10 +82,10 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
     private Contact currentContact;
     private BroadcastReceiver textReceiver;
     private LinearLayout sidebar;
-    private ImageView usersImage;
+    private ImageButton usersImage;
     private MucUsersAdapter usersAdapter;
     private ListView nickList;
-    private ImageView chatsImage;
+    private ImageButton chatsImage;
     private TextView contactName;
     private TextView contactStatus;
     private LinearLayout chatBarLayout;
@@ -151,10 +151,10 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
         View v = inflater.inflate(R.layout.chat, container, false);
         chat_viewLayout = (LinearLayout) v.findViewById(R.id.chat_view);
         chatBarLayout = (LinearLayout) v.findViewById(R.id.chat_bar);
-        usersImage = (ImageView) v.findViewById(R.id.usersImage);
+        usersImage = (ImageButton) v.findViewById(R.id.usersImage);
         contactName = (TextView) v.findViewById(R.id.item_name);
         contactStatus = (TextView) v.findViewById(R.id.item_description);
-        chatsImage = (ImageView) v.findViewById(R.id.chatsImage);
+        chatsImage = (ImageButton) v.findViewById(R.id.chatsImage);
         return v;
     }
 
@@ -424,7 +424,7 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
                                                View row = convertView;
                                                ItemWrapper wr;
                                                if (row == null) {
-                                                   LayoutInflater inf = (currentActivity).getLayoutInflater();
+                                                   LayoutInflater inf = LayoutInflater.from(currentActivity);
                                                    row = inf.inflate(R.layout.menu_item, null);
                                                    wr = new ItemWrapper(row);
                                                    row.setTag(wr);

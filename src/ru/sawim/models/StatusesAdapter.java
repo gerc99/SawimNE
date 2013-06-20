@@ -67,7 +67,7 @@ public class StatusesAdapter extends BaseAdapter {
         ItemWrapper wr;
         View row = convView;
         if (row == null) {
-            LayoutInflater inf = ((Activity) baseContext).getLayoutInflater();
+            LayoutInflater inf = LayoutInflater.from(baseContext);
             row = inf.inflate(R.layout.status_item, null);
             wr = new ItemWrapper(row);
             row.setTag(wr);

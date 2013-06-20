@@ -35,8 +35,15 @@ public class TextFormatter {
         }
     }
 
-    public static Spannable getFormattedText(Context context, String text, int color) {
-        SpannableStringBuilder builder = new SpannableStringBuilder(text);
+    public static Spannable getFormattedText(String text, Context context, int color) {
+        return getFormattedText(new SpannableStringBuilder(text), context, color);
+    }
+
+    public static Spannable getFormattedText(SpannableStringBuilder builder, Context context, int color) {
+        if(builder == null) {
+            builder = new SpannableStringBuilder("");
+        }
+        String text = builder.toString();
         detectEmotions(context, builder, 0, text.length());
         builder.setSpan(new ForegroundColorSpan(color), 0, text.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);

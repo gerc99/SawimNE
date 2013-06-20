@@ -55,7 +55,7 @@ public class XStatusesAdapter extends BaseAdapter {
         ItemWrapper wr;
         View row = convView;
         if (row == null) {
-            LayoutInflater inf = ((Activity) baseContext).getLayoutInflater();
+            LayoutInflater inf = LayoutInflater.from(baseContext);
             row = inf.inflate(R.layout.xstatus_item, null);
             wr = new ItemWrapper(row);
             row.setTag(wr);
