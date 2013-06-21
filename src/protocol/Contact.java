@@ -217,9 +217,9 @@ abstract public class Contact implements TreeNode, Sortable {
             String ignoreList = inIgnoreList()
                     ? "rem_ignore_list": "add_ignore_list";
 
-            menu.addSubMenu(Menu.FIRST, USER_MENU_PS_VISIBLE, 2, visibleList);
-            menu.addSubMenu(Menu.FIRST, USER_MENU_PS_INVISIBLE, 2, invisibleList);
-            menu.addSubMenu(Menu.FIRST, USER_MENU_PS_IGNORE, 2, ignoreList);
+            menu.add(Menu.FIRST, USER_MENU_PS_VISIBLE, 2, visibleList);
+            menu.add(Menu.FIRST, USER_MENU_PS_INVISIBLE, 2, invisibleList);
+            menu.add(Menu.FIRST, USER_MENU_PS_IGNORE, 2, ignoreList);
         }
     }
 

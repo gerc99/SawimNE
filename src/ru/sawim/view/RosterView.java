@@ -347,7 +347,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
                 for (int j = 0; j < owner.getModel().getProtocolCount(); j++) {
                     Protocol protocol = owner.getModel().getProtocol(j);
                     ImageButton imageBarButtons = new ImageButton(getActivity());
-                    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(58, LinearLayout.LayoutParams.MATCH_PARENT);
+                    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
                     lp.gravity = Gravity.CENTER;
                     imageBarButtons.setLayoutParams(lp);
                     if (j == owner.getCurrProtocol())
@@ -365,21 +365,13 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
     }
 
     private void updatePage(final int currPage) {
-        if (currPage == ContactsAdapter.ALL_CONTACTS) {
-
-        } else if (currPage == ContactsAdapter.ONLINE_CONTACTS) {
+        if (currPage == ContactsAdapter.ONLINE_CONTACTS) {
             onlineRosterAdapter.clear();
             Vector contacts = general.getCurrProtocol().getSortedContacts();
             for (int i = 0; i < contacts.size(); ++i) {
                 Contact c = (Contact) contacts.get(i);
                 if (c.isVisibleInContactList())
                     onlineRosterAdapter.setItems(c);
-            }
-        } else if (currPage == ContactsAdapter.OPEN_CHATS) {
-            chatsRosterAdapter.clear();
-            ChatHistory chats = ChatHistory.instance;
-            for (int i = 0; i < chats.getTotal(); ++i) {
-                chatsRosterAdapter.setItems(chats.contactAt(i));
             }
         }
         if (adaptersPages != null && adaptersPages.size() > 0)

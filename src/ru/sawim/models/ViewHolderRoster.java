@@ -4,6 +4,7 @@ import DrawControls.icons.Icon;
 import DrawControls.icons.ImageList;
 import DrawControls.tree.VirtualContactList;
 import android.graphics.Typeface;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;

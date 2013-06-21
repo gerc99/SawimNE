@@ -22,7 +22,6 @@ public final class MessData {
     public static final short ME = 4;
     public static final short PROGRESS = 8;
     public static final short SERVICE = 16;
-    public static final short MARKED = 32;
 
 	public MessData(Message m, long time, String text, String nick, short flags, int iconIndex) {
 		message = m;
@@ -58,23 +57,12 @@ public final class MessData {
         return (rowData & INCOMING) != 0;
     }
 
-    public boolean isURL() {
-        return (rowData & URLS) != 0;
-    }
-
     public boolean isMe() {
         return (rowData & ME) != 0;
     }
 
     public boolean isFile() {
         return (rowData & PROGRESS) != 0;
-    }
-
-    public boolean isMarked() {
-        return (rowData & MARKED) != 0;
-    }
-    public void setMarked(boolean marked) {
-        rowData = (short) (marked ? (rowData | MARKED) : (rowData & ~MARKED));
     }
 
     public boolean isService() {

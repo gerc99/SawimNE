@@ -261,7 +261,6 @@ public final class Jabber extends Protocol implements FormListener {
     }
 
     protected final void s_searchUsers(Search cont) {
-        
         UserInfo userInfo = new UserInfo(this);
         userInfo.uin = cont.getSearchParam(Search.UIN);
         if (null != userInfo.uin) {
@@ -283,8 +282,6 @@ public final class Jabber extends Protocol implements FormListener {
     }
 
     void setConfContactStatus(JabberServiceContact conf, String resource, byte status, String statusText, int role, int priorityA) {
-
-
         conf.__setStatus(resource, role, priorityA, status, statusText);
     }
 
@@ -859,5 +856,3 @@ public final class Jabber extends Protocol implements FormListener {
         }
     }
 }
-
-

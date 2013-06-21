@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.*;
 import android.view.inputmethod.EditorInfo;
@@ -24,11 +25,13 @@ import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.models.MessagesAdapter;
 import ru.sawim.models.MucUsersAdapter;
+import sawim.Options;
 import sawim.SawimUI;
 import sawim.chat.Chat;
 import sawim.chat.ChatHistory;
 import sawim.chat.MessData;
 import sawim.cl.ContactList;
+import sawim.comm.StringConvertor;
 import sawim.ui.TextBoxListener;
 import sawim.ui.base.Scheme;
 import sawim.util.JLocale;
@@ -74,12 +77,14 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
         }
     };
     private Chat chat;
+    private Protocol protocol;
+    private Contact currentContact;
+    private boolean visibleChat;
+    private List<MessData> messData;
     private MyListView chatListView;
     private EditText messageEditor;
     private boolean sendByEnter;
     private MessagesAdapter adapter;
-    private Protocol protocol;
-    private Contact currentContact;
     private BroadcastReceiver textReceiver;
     private LinearLayout sidebar;
     private ImageButton usersImage;
@@ -121,6 +126,9 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
         public void afterTextChanged(Editable editable) {
         }
     };
+    private String currMucNik = "";
+    private TextBoxView banTextbox;
+    private TextBoxView kikTextbox;
 
     @Override
     public void onActivityCreated(Bundle b) {
@@ -168,7 +176,7 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         switch (item.getItemId()) {
             case MENU_COPY_TEXT:
-                MessData md = chat.getMessData().get(info.position);
+                MessData md = messData.get(info.position);
                 if (null == md) {
                     return false;
                 }
@@ -211,7 +219,7 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
         General.getInstance().setOnUpdateChat(null);
         if (chat == null) return;
         chat.resetUnreadMessages();
-        chat.setVisibleChat(false);
+        setVisibleChat(false);
         unregisterReceivers();
     }
 
@@ -259,7 +267,7 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
     private void forceGoToChat() {
         addLastPosition(chat.getContact().getUserId(), chatListView.getFirstVisiblePosition());
         chat.resetUnreadMessages();
-        chat.setVisibleChat(false);
+        setVisibleChat(false);
         ChatHistory chatHistory = ChatHistory.instance;
         Chat current = chatHistory.chatAt(chatHistory.getPreferredItem());
         if (0 < current.getUnreadMessageCount()) {
@@ -267,7 +275,7 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
             resume(current);
         }
     }
-    private String currMucNik = "";
+
     public void openChat(Protocol p, Contact c) {
         General.getInstance().setOnUpdateChat(null);
         General.getInstance().setOnUpdateChat(this);
@@ -275,9 +283,10 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
         protocol = p;
         currentContact = c;
         chat = protocol.getChat(currentContact);
-        adapter = new MessagesAdapter(currentActivity, chat);
+        messData = chat.getMessData();
+        adapter = new MessagesAdapter(currentActivity, chat, messData);
         chatListView = (MyListView) currentActivity.findViewById(R.id.chat_history_list);
-        chat.setVisibleChat(true);
+        setVisibleChat(true);
 
         contactName.setTextColor(General.getColor(Scheme.THEME_CAP_TEXT));
         contactName.setText(currentContact.getName());
@@ -558,32 +567,32 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 MessData msg = adapter.getItem(position);
                 setText("");
-                setText(chat.onMessageSelected(msg));
+                setText(onMessageSelected(msg));
             }
         });
     }
 
-    private TextBoxView banTextbox;
-    private TextBoxView kikTextbox;
     private void banField() {
         banTextbox = new TextBoxView();
         banTextbox.setTextBoxListener(this);
         banTextbox.setString("");
         banTextbox.show(getActivity().getSupportFragmentManager(), "message");
     }
+
     private void kikField() {
         kikTextbox = new TextBoxView();
         kikTextbox.setTextBoxListener(this);
         kikTextbox.setString("");
         kikTextbox.show(getActivity().getSupportFragmentManager(), "message");
     }
+
     public void textboxAction(TextBoxView box, boolean ok) {
         String rzn = (box == banTextbox) ? banTextbox.getString() : kikTextbox.getString();
         String Nick = "";
         String myNick = currentContact.getMyName();
         String reason = "";
         if (rzn.charAt(0) == '!') {
-            rzn=rzn.substring(1);
+            rzn = rzn.substring(1);
         } else {
             Nick = (myNick == null) ? myNick : myNick + ": ";
         }
@@ -695,8 +704,57 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
         }
     }
 
+    private String getBlogPostId(String text) {
+        if (StringConvertor.isEmpty(text)) {
+            return null;
+        }
+        String lastLine = text.substring(text.lastIndexOf('\n') + 1);
+        if (0 == lastLine.length()) {
+            return null;
+        }
+        if ('#' != lastLine.charAt(0)) {
+            return null;
+        }
+        int numEnd = lastLine.indexOf(' ');
+        if (-1 != numEnd) {
+            lastLine = lastLine.substring(0, numEnd);
+        }
+        return lastLine + " ";
+    }
+
+    public String writeMessageTo(String nick) {
+        if (null != nick) {
+            if ('/' == nick.charAt(0)) {
+                nick = ' ' + nick;
+            }
+            nick += Chat.ADDRESS;
+
+        } else {
+            nick = "";
+        }
+        return nick;
+    }
+
+    private boolean isBlogBot() {
+        if (currentContact instanceof JabberContact) {
+            return ((Jabber) protocol).isBlogBot(currentContact.getUserId());
+        }
+        return false;
+    }
+
+    public String onMessageSelected(MessData md) {
+        if (currentContact.isSingleUserContact()) {
+            if (isBlogBot()) {
+                return getBlogPostId(md.getText());
+            }
+            return "";
+        }
+        String nick = ((null == md) || md.isFile()) ? null : md.getNick();
+        return writeMessageTo(chat.getMyName().equals(nick) ? null : nick);
+    }
+
     @Override
-     public void updateChat() {
+    public void updateChat() {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -711,6 +769,56 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
             }
         });
         updateMucList();
+    }
+
+    @Override
+    public boolean isVisibleChat() {
+        return visibleChat;
+    }
+
+    public void setVisibleChat(boolean visibleChat) {
+        this.visibleChat = visibleChat;
+    }
+
+    @Override
+    public int messCount() {
+        if (messData == null)
+            return 0;
+        return messData.size();
+    }
+
+    @Override
+    public MessData getMessageDataByIndex(int index) {
+        return messData.get(index);
+    }
+
+    @Override
+    public void clear() {
+                messData.clear();
+    }
+
+    @Override
+    public void addMess(final MessData mData) {
+                messData.add(mData);
+        removeOldMessages();
+    }
+
+    @Override
+    public void removeMessages(final int limit) {
+                if (messData.size() < limit) {
+                    return;
+                }
+                if ((0 < limit) && (0 < messData.size())) {
+                    while (limit < messData.size()) {
+                        messData.remove(0);
+                    }
+                } else {
+                    ChatHistory.instance.unregisterChat(chat);
+                }
+    }
+
+    private void removeOldMessages() {
+        removeMessages(Options.getInt(Options.OPTION_MAX_MSG_COUNT));
     }
 
     public void updateMucList() {

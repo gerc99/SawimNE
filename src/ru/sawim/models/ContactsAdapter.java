@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import sawim.chat.ChatHistory;
 import sawim.chat.message.Message;
 import sawim.ui.base.Scheme;
 import protocol.Contact;
@@ -26,7 +27,7 @@ import java.util.List;
  */
 public class ContactsAdapter extends BaseAdapter {
 
-    List<Contact> items = new ArrayList<Contact>();
+    private List<Contact> items = new ArrayList<Contact>();
 
     public static final int ALL_CONTACTS = 0;
     public static final int ONLINE_CONTACTS = 1;
@@ -43,6 +44,9 @@ public class ContactsAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
+        if (type == OPEN_CHATS) {
+            return ChatHistory.instance.historyTable.size();
+        }
         return items.size();
     }
 
@@ -56,6 +60,9 @@ public class ContactsAdapter extends BaseAdapter {
 
     @Override
     public Contact getItem(int i) {
+        if (type == OPEN_CHATS) {
+            return ChatHistory.instance.chatAt(i).getContact();
+        }
         return items.get(i);
     }
 
@@ -87,7 +94,7 @@ public class ContactsAdapter extends BaseAdapter {
             } else {
                 wr = (ItemWrapper) convertView.getTag();
             }
-            wr.populateFrom(items.get(i));
+            wr.populateFrom(ChatHistory.instance.contactAt(i));
             return convertView;
         }
         return null;

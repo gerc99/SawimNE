@@ -90,7 +90,7 @@ public class ContactListModel {
         }
     }
 
-    public void rebuildFlatItemsWG(Protocol p, List<TreeNode> drawItems) {
+    private void rebuildFlatItemsWG(Protocol p, List<TreeNode> drawItems) {
         Vector contacts;
         Group g;
         Contact c;
@@ -134,7 +134,7 @@ public class ContactListModel {
         }
     }
 
-    public void rebuildFlatItemsWOG(Protocol p, List<TreeNode> drawItems) {
+    private void rebuildFlatItemsWOG(Protocol p, List<TreeNode> drawItems) {
         boolean all = !hideOffline;
         Contact c;
         Vector contacts = p.getSortedContacts();

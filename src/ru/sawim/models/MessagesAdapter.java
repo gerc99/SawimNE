@@ -2,6 +2,8 @@ package ru.sawim.models;
 
 import DrawControls.icons.Icon;
 import android.content.Context;
+import android.text.util.Linkify;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,10 +33,10 @@ public class MessagesAdapter extends BaseAdapter {
     private List<MessData> items;
     private Chat chat;
 
-    public MessagesAdapter(Context context, Chat chat) {
+    public MessagesAdapter(Context context, Chat chat, List<MessData> items) {
         this.baseContext = context;
         this.chat = chat;
-        this.items = chat.getMessData();
+        this.items = items;
     }
 
     @Override
@@ -74,9 +76,7 @@ public class MessagesAdapter extends BaseAdapter {
         TextView msgText = (TextView) item.findViewById(R.id.msg_text);
 
         byte bg;
-        if (mData.isMarked()) {
-            bg = Scheme.THEME_CHAT_BG_MARKED;
-        } else if (mData.isService()) {
+        if (mData.isService()) {
             bg = Scheme.THEME_CHAT_BG_SYSTEM;
         } else if ((index & 1) == 0) {
             bg = mData.isIncoming() ? Scheme.THEME_CHAT_BG_IN : Scheme.THEME_CHAT_BG_OUT;
@@ -92,7 +92,7 @@ public class MessagesAdapter extends BaseAdapter {
             int color = General.getColor(mData.isIncoming() ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG);
             if (mData.fullMeText == null)
                 mData.fullMeText = TextFormatter.getFormattedText(text, baseContext, color);
-            msgText.setText(mData.getNick() + " " + mData.fullMeText);
+            msgText.setText("* " + mData.getNick() + " " + mData.fullMeText);
             msgText.setTextSize(14);
         } else {
             Icon icon = Message.msgIcons.iconAt(chat.getIcon(mData.getMessage(), mData.isIncoming()));

@@ -183,7 +183,7 @@ public final class ChatHistory {
         }
     }
 
-    private void removeChat(Chat chat) {
+    /*private void removeChat(Chat chat) {
         if (null != chat) {
             clearChat(chat);
             //if (Sawim.getSawim().getDisplay().remove(chat)) {
@@ -220,8 +220,7 @@ public final class ChatHistory {
         } else {
             ContactList.getInstance().activate();
         }
-    }
-
+    }*/
 
     public void restoreContactsWithChat(Protocol p) {
         int total = getTotal();
@@ -252,7 +251,7 @@ public final class ChatHistory {
         }
     }
 
-    void updateChatList() {
+    public void updateChatList() {
         //invalidate();
     }
     public int getPreferredItem() {

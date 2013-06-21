@@ -9,6 +9,7 @@ import android.text.InputType;
 import android.util.Log;
 import android.view.*;
 import android.widget.*;
+import protocol.Protocol;
 import sawim.Options;
 import sawim.cl.ContactList;
 import sawim.comm.StringConvertor;
@@ -76,7 +77,9 @@ public class AccountsListView extends Fragment {
                                 new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int id) {
-                                        ContactList.getInstance().getProtocol(Options.getAccount(accountID)).setStatus(StatusInfo.STATUS_OFFLINE, "");
+                                        Protocol p = ContactList.getInstance().getProtocol(Options.getAccount(accountID));
+                                        if (p != null)
+                                            p.setStatus(StatusInfo.STATUS_OFFLINE, "");
                                         Options.delAccount(accountID);
                                         setCurrentProtocol();
                                         Options.safeSave();
