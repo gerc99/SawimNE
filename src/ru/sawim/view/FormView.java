@@ -3,14 +3,18 @@ package ru.sawim.view;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
+import ru.sawim.General;
 import ru.sawim.R;
-import ru.sawim.models.form.FormAdapter;
 import ru.sawim.models.form.Forms;
+import sawim.ui.base.Scheme;
+
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -21,8 +25,7 @@ import ru.sawim.models.form.Forms;
  */
 public class FormView extends Fragment implements Forms.OnUpdateForm, View.OnClickListener {
 
-    private FormAdapter adapter;
-    private ListView list;
+    LinearLayout listLayout;
     private Button okButton;
     private Button cancelButton;
 
@@ -41,11 +44,9 @@ public class FormView extends Fragment implements Forms.OnUpdateForm, View.OnCli
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        adapter = new FormAdapter(getActivity(), Forms.getInstance().controls);
-        list.setAdapter(adapter);
         okButton = (Button) getActivity().findViewById(R.id.data_form_ok);
         okButton.setOnClickListener(this);
-
+        buildList(listLayout);
         cancelButton = (Button) getActivity().findViewById(R.id.data_form_cancel);
         cancelButton.setOnClickListener(this);
     }
@@ -54,8 +55,136 @@ public class FormView extends Fragment implements Forms.OnUpdateForm, View.OnCli
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.form, container, false);
-        list = (ListView) v.findViewById(R.id.listView);
+        ScrollView formScrollLayout = (ScrollView) v.findViewById(R.id.data_form_scroll);
+        formScrollLayout.setBackgroundColor(General.getColor(Scheme.THEME_BACKGROUND));
+        listLayout = (LinearLayout) v.findViewById(R.id.data_form_linear);
+        listLayout.setBackgroundColor(General.getColor(Scheme.THEME_BACKGROUND));
         return v;
+    }
+
+    private void buildList(LinearLayout convertView) {
+        convertView.removeAllViews();
+        List<Forms.Control> controls = Forms.getInstance().controls;
+        for (int position = 0; position < controls.size(); ++position) {
+            final Forms.Control c = controls.get(position);
+            ImageView imageView = new ImageView(getActivity());
+            TextView textView = new TextView(getActivity());
+            TextView descView = new TextView(getActivity());
+            TextView labelView = new TextView(getActivity());
+            CheckBox checkBox = new CheckBox(getActivity());
+            Spinner spinner = new Spinner(getActivity());
+            SeekBar seekBar = new SeekBar(getActivity());
+            EditText editText = new EditText(getActivity());
+
+            textView.setTextColor(General.getColor(Scheme.THEME_TEXT));
+            descView.setTextColor(General.getColor(Scheme.THEME_TEXT));
+            labelView.setTextColor(General.getColor(Scheme.THEME_TEXT));
+
+            descView.setVisibility(TextView.GONE);
+            labelView.setVisibility(TextView.GONE);
+            textView.setVisibility(TextView.GONE);
+            imageView.setVisibility(ImageView.GONE);
+            checkBox.setVisibility(CheckBox.GONE);
+            spinner.setVisibility(Spinner.GONE);
+            seekBar.setVisibility(SeekBar.GONE);
+            editText.setVisibility(EditText.GONE);
+            if (Forms.CONTROL_TEXT == c.type) {
+                drawText(c, labelView, descView, convertView);
+            } else if (Forms.CONTROL_INPUT == c.type) {
+                drawText(c, labelView, descView, convertView);
+                editText.setVisibility(EditText.VISIBLE);
+                editText.setBackgroundColor(General.getColor(Scheme.THEME_CAP_BACKGROUND));
+                editText.setTextColor(General.getColor(Scheme.THEME_TEXT));
+                editText.setText(c.text);
+                editText.addTextChangedListener(new TextWatcher() {
+
+                    public void afterTextChanged(Editable s) {
+                    }
+
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                    }
+
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                        c.text = s.toString();
+                        Forms.getInstance().controlUpdated(c);
+                    }
+                });
+                convertView.addView(editText);
+            } else if (Forms.CONTROL_CHECKBOX == c.type) {
+                checkBox.setVisibility(CheckBox.VISIBLE);
+                checkBox.setTextColor(General.getColor(Scheme.THEME_TEXT));
+                checkBox.setText(c.description);
+                checkBox.setChecked(c.selected);
+                checkBox.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        c.selected = !c.selected;
+                        Forms.getInstance().controlUpdated(c);
+                    }
+                });
+                convertView.addView(checkBox);
+            } else if (Forms.CONTROL_SELECT == c.type) {
+                drawText(c, labelView, descView, convertView);
+                spinner.setVisibility(Spinner.VISIBLE);
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, c.items);
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                spinner.setAdapter(adapter);
+                spinner.setPrompt(c.description);
+                spinner.setSelection(c.current);
+                spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
+                        c.current = position;
+                        Forms.getInstance().controlUpdated(c);
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> adapterView) {
+                    }
+                });
+                convertView.addView(spinner);
+            } else if (Forms.CONTROL_GAUGE == c.type) {
+                drawText(c, labelView, descView, convertView);
+                seekBar.setVisibility(SeekBar.VISIBLE);
+                seekBar.setProgress(c.level);
+                seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                    @Override
+                    public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                        c.level = i;
+                        Forms.getInstance().controlUpdated(c);
+                    }
+
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+                    }
+
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+                    }
+                });
+                convertView.addView(seekBar);
+            } else if (Forms.CONTROL_IMAGE == c.type) {
+                drawText(c, labelView, descView, convertView);
+                imageView.setVisibility(ImageView.VISIBLE);
+                imageView.setImageBitmap(c.image);
+                convertView.addView(imageView);
+            } else if (Forms.CONTROL_LINK == c.type) {
+                drawText(c, labelView, descView, convertView);
+            }
+        }
+    }
+
+    private void drawText(Forms.Control c, TextView labelView, TextView descView, LinearLayout convertView) {
+        if (c.label != null) {
+            labelView.setVisibility(TextView.VISIBLE);
+            labelView.setText(c.label);
+            convertView.addView(labelView);
+        }
+        if (c.description != null) {
+            descView.setVisibility(TextView.VISIBLE);
+            descView.setText(c.description);
+            convertView.addView(descView);
+        }
     }
 
     @Override
@@ -63,7 +192,7 @@ public class FormView extends Fragment implements Forms.OnUpdateForm, View.OnCli
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                adapter.notifyDataSetChanged();
+                buildList(listLayout);
             }
         });
     }

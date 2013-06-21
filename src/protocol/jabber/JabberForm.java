@@ -70,6 +70,7 @@ final class JabberForm implements FormListener {
         if (apply) {
             if (0 < form.getSize()) {
                 doAction();
+                form.back();
             }
         } else {
             switch (type) {

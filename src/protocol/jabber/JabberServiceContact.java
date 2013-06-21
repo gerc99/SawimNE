@@ -398,7 +398,7 @@ public class JabberServiceContact extends JabberContact {
                 contactMenu.add(Menu.FIRST, USER_MENU_HISTORY, 2, R.string.history);
             }
         }
-        if (isOnline() && !isGate) {
+        if (isOnline()) {
             contactMenu.add(Menu.FIRST, USER_MENU_STATUSES, 2, R.string.user_statuses);
         }
         if (isPrivate) {

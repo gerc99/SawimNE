@@ -118,11 +118,5 @@ public class General {
     }
     public interface OnUpdateChat {
         void updateChat();
-        void addMess(MessData mData);
-        void removeMessages(int limit);
-        boolean isVisibleChat();
-        int messCount();
-        MessData getMessageDataByIndex(int index);
-        void clear();
     }
 }

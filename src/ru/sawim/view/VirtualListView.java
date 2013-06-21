@@ -8,6 +8,8 @@ import android.view.*;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import ru.sawim.General;
+import sawim.ui.base.Scheme;
 import sawim.ui.text.VirtualList;
 import ru.sawim.R;
 import ru.sawim.models.VirtualListAdapter;
@@ -41,7 +43,9 @@ public class VirtualListView extends Fragment implements VirtualList.OnUpdateLis
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.virtual_list, container, false);
+        View v = inflater.inflate(R.layout.virtual_list, container, false);
+        v.findViewById(R.id.layout).setBackgroundColor(General.getColor(Scheme.THEME_BACKGROUND));
+        return v;
     }
 
     @Override
@@ -53,6 +57,7 @@ public class VirtualListView extends Fragment implements VirtualList.OnUpdateLis
         adapter = new VirtualListAdapter(currentActivity, model.getModel().elements);
         lv = (ListView)currentActivity.findViewById(R.id.list_view);
         lv.setAdapter(adapter);
+        lv.setBackgroundColor(General.getColor(Scheme.THEME_BACKGROUND));
         lv.setOnItemClickListener(new ListView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {

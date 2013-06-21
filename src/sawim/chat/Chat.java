@@ -34,8 +34,8 @@ public final class Chat {
     private HistoryStorage history;
     private Icon[] statusIcons = new Icon[7];
     private boolean showStatus = true;
-    private General.OnUpdateChat updateChatListener = General.getInstance().getUpdateChatListener();
     private List<MessData> messData = new ArrayList<MessData>();
+    private boolean visibleChat;
 
     public final void setWritable(boolean wr) {
         writable = wr;
@@ -269,9 +269,7 @@ public final class Chat {
         return contact.hasHistory();
     }
     private int getMessCount() {
-        if (updateChatListener != null)
-            return updateChatListener.messCount();
-        return 0;
+            return messCount();
     }
     private void fillFromHistory() {
         if (!hasHistory()) {
@@ -317,14 +315,40 @@ public final class Chat {
         return history;
     }
 
-    public void clear() {
-        if (updateChatListener != null)
-            updateChatListener.clear();
+    public int messCount() {
+        if (messData == null)
+            return 0;
+        return messData.size();
     }
 
-    public void removeReadMessages() {
-        if (updateChatListener != null)
-            updateChatListener.removeMessages(getUnreadMessageCount());
+    public MessData getMessageDataByIndex(int index) {
+        return messData.get(index);
+    }
+
+    public void clear() {
+        messData.clear();
+    }
+
+    public void addMess(final MessData mData) {
+        messData.add(mData);
+        removeOldMessages();
+    }
+
+    public void removeMessages(final int limit) {
+        if (messData.size() < limit) {
+            return;
+        }
+        if ((0 < limit) && (0 < messData.size())) {
+            while (limit < messData.size()) {
+                messData.remove(0);
+            }
+        } else {
+            ChatHistory.instance.unregisterChat(this);
+        }
+    }
+
+    private void removeOldMessages() {
+        removeMessages(Options.getInt(Options.OPTION_MAX_MSG_COUNT));
     }
 
     /*
@@ -389,12 +413,6 @@ public final class Chat {
         }
         MessData md = getMessageDataByIndex(getMessCount() - 1);
         return md.getTime();
-    }
-
-    public boolean isVisibleChat() {
-        if (updateChatListener != null)
-            return updateChatListener.isVisibleChat();
-        return false;
     }
 
     private short messageCounter = 0;
@@ -522,8 +540,7 @@ public final class Chat {
         if (!incoming) {
             message.setVisibleIcon(mData);
         }
-        if (updateChatListener != null)
-            updateChatListener.addMess(mData);
+        addMess(mData);
     }
 
     public void addMessage(Message message, boolean toHistory) {
@@ -576,12 +593,6 @@ public final class Chat {
         return contact;
     }
 
-    private MessData getMessageDataByIndex(int index) {
-        if (updateChatListener != null)
-            return updateChatListener.getMessageDataByIndex(index);
-        return null;
-    }
-
     MessData getUnreadMessage(int num) {
         int index = getMessCount() - getUnreadMessageCount() + num;
         return getMessageDataByIndex(index);
@@ -589,5 +600,13 @@ public final class Chat {
 
     public List<MessData> getMessData() {
         return messData;
+    }
+
+    public boolean isVisibleChat() {
+        return visibleChat;
+    }
+
+    public void setVisibleChat(boolean visibleChat) {
+        this.visibleChat = visibleChat;
     }
 }

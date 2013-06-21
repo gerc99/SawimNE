@@ -79,7 +79,6 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
     private Chat chat;
     private Protocol protocol;
     private Contact currentContact;
-    private boolean visibleChat;
     private List<MessData> messData;
     private MyListView chatListView;
     private EditText messageEditor;
@@ -219,7 +218,7 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
         General.getInstance().setOnUpdateChat(null);
         if (chat == null) return;
         chat.resetUnreadMessages();
-        setVisibleChat(false);
+        chat.setVisibleChat(false);
         unregisterReceivers();
     }
 
@@ -267,7 +266,7 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
     private void forceGoToChat() {
         addLastPosition(chat.getContact().getUserId(), chatListView.getFirstVisiblePosition());
         chat.resetUnreadMessages();
-        setVisibleChat(false);
+        chat.setVisibleChat(false);
         ChatHistory chatHistory = ChatHistory.instance;
         Chat current = chatHistory.chatAt(chatHistory.getPreferredItem());
         if (0 < current.getUnreadMessageCount()) {
@@ -286,7 +285,7 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
         messData = chat.getMessData();
         adapter = new MessagesAdapter(currentActivity, chat, messData);
         chatListView = (MyListView) currentActivity.findViewById(R.id.chat_history_list);
-        setVisibleChat(true);
+        chat.setVisibleChat(true);
 
         contactName.setTextColor(General.getColor(Scheme.THEME_CAP_TEXT));
         contactName.setText(currentContact.getName());
@@ -722,7 +721,7 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
         return lastLine + " ";
     }
 
-    public String writeMessageTo(String nick) {
+    private String writeMessageTo(String nick) {
         if (null != nick) {
             if ('/' == nick.charAt(0)) {
                 nick = ' ' + nick;
@@ -769,56 +768,6 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
             }
         });
         updateMucList();
-    }
-
-    @Override
-    public boolean isVisibleChat() {
-        return visibleChat;
-    }
-
-    public void setVisibleChat(boolean visibleChat) {
-        this.visibleChat = visibleChat;
-    }
-
-    @Override
-    public int messCount() {
-        if (messData == null)
-            return 0;
-        return messData.size();
-    }
-
-    @Override
-    public MessData getMessageDataByIndex(int index) {
-        return messData.get(index);
-    }
-
-    @Override
-    public void clear() {
-                messData.clear();
-    }
-
-    @Override
-    public void addMess(final MessData mData) {
-                messData.add(mData);
-        removeOldMessages();
-    }
-
-    @Override
-    public void removeMessages(final int limit) {
-                if (messData.size() < limit) {
-                    return;
-                }
-                if ((0 < limit) && (0 < messData.size())) {
-                    while (limit < messData.size()) {
-                        messData.remove(0);
-                    }
-                } else {
-                    ChatHistory.instance.unregisterChat(chat);
-                }
-    }
-
-    private void removeOldMessages() {
-        removeMessages(Options.getInt(Options.OPTION_MAX_MSG_COUNT));
     }
 
     public void updateMucList() {

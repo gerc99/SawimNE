@@ -10,6 +10,7 @@ import android.widget.*;
 import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.models.form.VirtualListItem;
+import sawim.ui.base.Scheme;
 
 import java.util.List;
 
@@ -66,6 +67,9 @@ public class VirtualListAdapter extends BaseAdapter {
         holder.labelView = (TextView) convertView.findViewById(R.id.label);
         holder.descView = (TextView) descriptionLayout.findViewById(R.id.description);
         holder.imageView = (ImageView) descriptionLayout.findViewById(R.id.imageView);
+
+        holder.labelView.setTextColor(General.getColor(Scheme.THEME_TEXT));
+        holder.descView.setTextColor(General.getColor(Scheme.THEME_TEXT));
 
         holder.labelView.setVisibility(TextView.GONE);
         holder.descView.setVisibility(TextView.GONE);
