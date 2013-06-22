@@ -3,6 +3,7 @@
 package sawim.modules.tracking;
 
 import DrawControls.icons.Icon;
+import ru.sawim.activities.VirtualListActivity;
 import sawim.Sawim;
 import sawim.chat.Chat;
 import sawim.chat.message.Message;
@@ -455,14 +456,14 @@ public final class Tracking {
         if (protocol instanceof Icq) {
             if (event == EVENT_STATUS) {
                 status_comm = JLocale.getString("track_action_status")+" ";
-				icon_status = protocol.getStatusInfo().getIcon(((IcqContact)item).getStatusIndex());
-				status_name = " ["+protocol.getStatusInfo().getName(((IcqContact)item).getStatusIndex())+"]";
+				icon_status = protocol.getStatusInfo().getIcon(item.getStatusIndex());
+				status_name = " ["+protocol.getStatusInfo().getName(item.getStatusIndex())+"]";
             }
 
             if (event == EVENT_XSTATUS) {
                 status_comm = JLocale.getString("track_action_xstatus")+" ";
-                icon_status = protocol.getXStatusInfo().getIcon(((IcqContact)item).getXStatusIndex());
-				status_name = " ["+protocol.getXStatusInfo().getName(((IcqContact)item).getXStatusIndex())+"]";
+                icon_status = protocol.getXStatusInfo().getIcon(item.getXStatusIndex());
+				status_name = " ["+protocol.getXStatusInfo().getName(item.getXStatusIndex())+"]";
             }
 
         }
@@ -471,14 +472,14 @@ public final class Tracking {
         if (protocol instanceof Mrim) {
            if (event == EVENT_STATUS) {
                status_comm = JLocale.getString("track_action_status")+" ";
-               icon_status = protocol.getStatusInfo().getIcon(((MrimContact)item).getStatusIndex());
-               status_name = " ["+protocol.getStatusInfo().getName(((MrimContact)item).getStatusIndex())+"]";
+               icon_status = protocol.getStatusInfo().getIcon(item.getStatusIndex());
+               status_name = " ["+protocol.getStatusInfo().getName(item.getStatusIndex())+"]";
             }
 
             if (event == EVENT_XSTATUS) {
                 status_comm = JLocale.getString("track_action_xstatus")+" ";
-                icon_status = protocol.getStatusInfo().getIcon(((MrimContact)item).getStatusIndex());
-				status_name = " ["+protocol.getXStatusInfo().getName(((MrimContact)item).getXStatusIndex())+"]";
+                icon_status = protocol.getStatusInfo().getIcon(item.getStatusIndex());
+				status_name = " ["+protocol.getXStatusInfo().getName(item.getXStatusIndex())+"]";
             }
 
         }

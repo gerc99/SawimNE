@@ -27,6 +27,9 @@ public final class MessData {
 		message = m;
         init(time, text, nick, flags, iconIndex);
 	}
+    public MessData(long time, String text, String nick, short flags, int iconIndex) {
+        init(time, text, nick, flags, iconIndex);
+    }
     public void init(long time, String text, String nick, short flags, int iconIndex) {
         this.text = text;
         this.nick = nick;

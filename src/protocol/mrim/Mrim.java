@@ -2,6 +2,7 @@
 
 package protocol.mrim;
 
+import ru.sawim.activities.SawimActivity;
 import sawim.ui.text.VirtualList;
 import DrawControls.icons.*;
 import java.io.*;
@@ -264,7 +265,7 @@ public class Mrim extends Protocol {
                 break;
 
             case Contact.CONFERENCE_DISCONNECT:
-                new ContactMenu(this, c).doAction(Contact.USER_MENU_USER_REMOVE);
+                new ContactMenu(this, c).doAction(SawimActivity.getInstance(), Contact.USER_MENU_USER_REMOVE);
                 break;
 
             

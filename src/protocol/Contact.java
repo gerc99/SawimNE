@@ -5,13 +5,19 @@ package protocol;
 import DrawControls.icons.Icon;
 import DrawControls.icons.ImageList;
 import DrawControls.tree.TreeNode;
+import android.graphics.Rect;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.SubMenu;
+import android.widget.ProgressBar;
+import ru.sawim.activities.FormActivity;
+import ru.sawim.activities.SawimActivity;
+import ru.sawim.view.FileProgressView;
 import sawim.FileTransfer;
 import sawim.Sawim;
 import sawim.Options;
 import sawim.chat.Chat;
+import sawim.chat.ChatHistory;
 import sawim.chat.message.Message;
 import sawim.cl.ContactList;
 import sawim.comm.Sortable;
@@ -139,8 +145,17 @@ abstract public class Contact implements TreeNode, Sortable {
         ContactList.getInstance().setCurrentContact(this);
     }
 
-    protected final boolean isCurrent() {
-        return this == getProtocol().getContactList().getCurrentContact();
+    FileProgressView fileProgressView;
+    public void addFileProgress() {
+        fileProgressView = new FileProgressView();
+    }
+
+    public void changeFileProgress(int percent, String caption, String text) {
+        fileProgressView.changeFileProgress(percent, caption, text);
+    }
+
+    public void showFileProgress() {
+        fileProgressView.show(FormActivity.getInstance().getSupportFragmentManager(), "file");
     }
 
     public static final byte CONTACT_NO_AUTH       = 1 << 1; 

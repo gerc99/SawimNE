@@ -2,8 +2,6 @@ package ru.sawim.models;
 
 import DrawControls.icons.Icon;
 import android.content.Context;
-import android.text.util.Linkify;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -95,12 +93,14 @@ public class MessagesAdapter extends BaseAdapter {
             msgText.setText("* " + mData.getNick() + " " + mData.fullMeText);
             msgText.setTextSize(14);
         } else {
-            Icon icon = Message.msgIcons.iconAt(chat.getIcon(mData.getMessage(), mData.isIncoming()));
-            if (icon == null) {
-                msgImage.setVisibility(ImageView.GONE);
-            } else {
-                msgImage.setVisibility(ImageView.VISIBLE);
-                msgImage.setImageBitmap(General.iconToBitmap(icon));
+            if (mData.iconIndex != Message.ICON_NONE) {
+                Icon icon = Message.msgIcons.iconAt(chat.getIcon(mData.getMessage(), mData.isIncoming()));
+                if (icon == null) {
+                    msgImage.setVisibility(ImageView.GONE);
+                } else {
+                    msgImage.setVisibility(ImageView.VISIBLE);
+                    msgImage.setImageBitmap(General.iconToBitmap(icon));
+                }
             }
 
             msgNick.setVisibility(TextView.VISIBLE);

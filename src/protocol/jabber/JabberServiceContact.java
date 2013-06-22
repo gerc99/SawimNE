@@ -6,6 +6,7 @@ package protocol.jabber;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.SubMenu;
+import ru.sawim.activities.SawimActivity;
 import sawim.Options;
 import sawim.chat.Chat;
 import sawim.chat.message.Message;
@@ -454,7 +455,7 @@ public class JabberServiceContact extends JabberContact {
             super.activate(p);
 
         } else if (isConference && p.isConnected()) {
-            new ContactMenu(p, this).doAction(CONFERENCE_CONNECT);
+            new ContactMenu(p, this).doAction(SawimActivity.getInstance(), CONFERENCE_CONNECT);
         }
     }
 

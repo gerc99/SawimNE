@@ -127,6 +127,7 @@ public final class VirtualContactList {
     public String getStatusMessage(Contact contact) {
         String message;
         Protocol protocol = model.getContactProtocol(contact);
+        if (protocol == null) return "";
         if (XStatusInfo.XSTATUS_NONE != contact.getXStatusIndex()) {
             message = contact.getXStatusText();
             if (!StringConvertor.isEmpty(message)) {
@@ -141,10 +142,7 @@ public final class VirtualContactList {
         if (!StringConvertor.isEmpty(message)) {
             return message;
         }
-        String status = protocol.
-                getStatusInfo().
-                getName(contact.
-                        getStatusIndex());
+        String status = protocol.getStatusInfo().getName(contact.getStatusIndex());
         return (status == null) ? "" : status;
     }
 

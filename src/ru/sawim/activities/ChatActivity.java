@@ -37,14 +37,14 @@ public class ChatActivity extends FragmentActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         ChatView view = (ChatView) getSupportFragmentManager().findFragmentById(R.id.chat_fragment);
-        view.onCreateOptionsMenu(menu);
+        view.onCreateMenu(menu);
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         ChatView view = (ChatView) getSupportFragmentManager().findFragmentById(R.id.chat_fragment);
-        view.onOptionsItemSelected(this, item);
+        view.onMenuItemSelected(item);
         return super.onOptionsItemSelected(item);
     }
 

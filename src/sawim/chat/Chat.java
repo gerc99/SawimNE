@@ -3,6 +3,7 @@ package sawim.chat;
 import DrawControls.icons.Icon;
 import ru.sawim.activities.ChatActivity;
 import sawim.Options;
+import sawim.Sawim;
 import sawim.chat.message.Message;
 import sawim.chat.message.PlainMessage;
 import sawim.chat.message.SystemNotice;
@@ -81,71 +82,6 @@ public final class Chat {
         return writable;
     }
 
-    private static final int ACTION_FT_CANCEL = 900;
-    private static final int ACTION_REPLY = 901;
-    private static final int ACTION_ADD_TO_HISTORY = 902;
-    private static final int ACTION_COPY_TEXT = 903;
-	private static final int ACTION_QUOTE = 1003;
-    private static final int ACTION_GOTO_URL = 904;
-    private static final int ACTION_DEL_CHAT = 905;
-    
-    /*protected MenuModel getMenu() {
-        if (selectMode) {
-            MenuModel menu = new MenuModel();
-			menu.addItem("copy_text", ACTION_COPY_TEXT);
-			menu.addItem("quote", ACTION_QUOTE);
-            menu.setActionListener(new Binder(this));
-            return menu;
-        }
-        boolean accessible = writable && (contact.isSingleUserContact() || contact.isOnline());
-        MessData md = getCurrentMsgData();
-        MenuModel menu = new MenuModel();
-        
-        if ((null != md) && md.isFile()) {
-            menu.addItem("cancel", ACTION_FT_CANCEL);
-        }
-        
-        if (0 < authRequestCounter) {
-            menu.addItem("grant", Contact.USER_MENU_GRANT_AUTH);
-            menu.addItem("deny", Contact.USER_MENU_DENY_AUTH);
-        }
-
-        if (!contact.isSingleUserContact()) {
-            menu.addItem("list_of_users", Contact.USER_MENU_USERS_LIST);
-        }
-        if ((null != md) && md.isURL()) {
-            menu.addItem("goto_url", ACTION_GOTO_URL);
-        }
-
-        if (accessible) {
-            if (sawim.modules.fs.FileSystem.isSupported()) {
-                menu.addItem("ft_name", Contact.USER_MENU_FILE_TRANS);
-            }
-            if (FileTransfer.isPhotoSupported()) {
-                menu.addItem("ft_cam", Contact.USER_MENU_CAM_TRANS);
-            }
-        }
-
-        menu.addItem("copy_text", ACTION_COPY_TEXT);
-		menu.addItem("quote", ACTION_QUOTE);
-        if (accessible) {
-            if (!SawimUI.isClipBoardEmpty()) {
-                menu.addItem("paste", Contact.USER_MENU_PASTE);
-            }
-        }
-
-        if (!contact.isAuth()) {
-            menu.addItem("requauth", Contact.USER_MENU_REQU_AUTH);
-        }
-        
-        if (!contact.isSingleUserContact() && contact.isOnline()) {
-            menu.addItem("leave_chat", Contact.CONFERENCE_DISCONNECT);
-        }
-        menu.addItem("delete_chat", ACTION_DEL_CHAT);
-        menu.setActionListener(new Binder(this));
-        return menu;
-    }*/
-
     public void beginTyping(boolean type) {
         updateStatusIcons();
     }
@@ -172,43 +108,13 @@ public final class Chat {
         }
         return false;
     }
-    
-    public MessData addFileProgress(String caption, String text) {
-        /*long time = Sawim.getCurrentGmtTime();
-        short flags = MessData.PROGRESS;
-        VirtualListItem parser = createParser();
-        parser.addDescription(text, THEME_TEXT, FONT_STYLE_PLAIN);
-        parser.addProgress(THEME_TEXT);
-        Par par = parser.getPar();
-        MessData mData = new MessData(time, "", caption, flags, Message.ICON_NONE);
-		mData.setFontSet(GraphicsEx.chatFontSet);
-		mData.setPar(par);
-        synchronized (this) {
-            messData.add(mData);
-            setCurrentItemIndex(getSize() - 1);
-            removeOldMessages();
-        }
-        ChatHistory.instance.registerChat(this);
-        return mData; */
-        return null;
-    }
 
-    public void changeFileProgress(MessData mData, String caption, String text) {
-        /*final int width = getMinScreenMetrics() - 3;
-        VirtualListItem parser = new List<VirtualListItem>(mData.par, getFontSet(), width);
-        parser.addDescription(text, THEME_TEXT, FONT_STYLE_PLAIN);
-
+    public void addFileProgress(String caption, String text) {
         long time = Sawim.getCurrentGmtTime();
         short flags = MessData.PROGRESS;
-        synchronized (this) {
-            int index = Util.getIndex((Vector) messData, mData);
-            if ((0 < getSize()) && (0 <= index)) {
-                lock();
-                mData.init(time, text, caption, flags, Message.ICON_NONE);
-                parser.commit();
-                unlock();
-            }
-        } */
+        final MessData mData = new MessData(time, text, caption, flags, Message.ICON_NONE);
+        messData.add(mData);
+        removeOldMessages();
     }
 
     public int getIcon(Message message, boolean incoming) {
@@ -325,10 +231,6 @@ public final class Chat {
         messData.clear();
             }
         });
-    }
-
-    private void addMess(final MessData mData) {
-        messData.add(mData);
     }
 
     public void removeMessages(final int limit) {
@@ -497,13 +399,18 @@ public final class Chat {
         if (!incoming) {
             message.setVisibleIcon(mData);
         }
-        ChatActivity.THIS.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                addMess(mData);
-            }
-        });
-        removeOldMessages();
+        if (ChatActivity.THIS == null) {
+            messData.add(mData);
+            removeOldMessages();
+        } else {
+            ChatActivity.THIS.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    messData.add(mData);
+                    removeOldMessages();
+                }
+            });
+        }
     }
 
     public void addMessage(Message message, boolean toHistory) {

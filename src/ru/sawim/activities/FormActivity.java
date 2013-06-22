@@ -15,9 +15,16 @@ import ru.sawim.view.FormView;
  */
 public class FormActivity extends FragmentActivity {
 
+    private static FormActivity instance;
+
+    public static FormActivity getInstance() {
+        return instance;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        instance = this;
         setContentView(R.layout.form_fragment);
         setTitle(Forms.getInstance().caption);
     }

@@ -1,25 +1,15 @@
 package ru.sawim.view;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.GridView;
-import sawim.forms.ManageContactListForm;
-import sawim.modules.Emotions;
 import sawim.ui.TextBoxListener;
 import ru.sawim.R;
-import ru.sawim.models.SmilesAdapter;
-import ru.sawim.models.form.Forms;
 
 /**
  * Created with IntelliJ IDEA.
@@ -48,9 +38,9 @@ public class TextBoxView extends DialogFragment implements View.OnClickListener 
         View v = inflater.inflate(R.layout.text_box_view, container, false);
         editText = (EditText) v.findViewById(R.id.editText);
         editText.setText(text);
-        okButton = (Button) v.findViewById(R.id.buttonOk);
+        okButton = (Button) v.findViewById(R.id.button_ok);
         okButton.setOnClickListener(this);
-        cancelButton = (Button) v.findViewById(R.id.buttonCancel);
+        cancelButton = (Button) v.findViewById(R.id.button_cancel);
         cancelButton.setOnClickListener(this);
         return v;
     }

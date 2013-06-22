@@ -307,7 +307,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    new ContactMenu(c.getProtocol(), c).doAction(item.getItemId());
+                    new ContactMenu(c.getProtocol(), c).doAction(getActivity(), item.getItemId());
                 }
             });
             return true;

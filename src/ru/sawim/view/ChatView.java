@@ -177,9 +177,8 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
     private static final int ACTION_QUOTE = 5;
     private static final int ACTION_DEL_CHAT = 6;
 
-    public void onCreateOptionsMenu(Menu menu) {
+    public void onCreateMenu(Menu menu) {
         boolean accessible = chat.getWritable() && (currentContact.isSingleUserContact() || currentContact.isOnline());
-        //menu.add(Menu.FIRST, ACTION_FT_CANCEL, 0, JLocale.getString("cancel"));
         if (0 < chat.getAuthRequestCounter()) {
             menu.add(Menu.FIRST, Contact.USER_MENU_GRANT_AUTH, 0, JLocale.getString("grant"));
             menu.add(Menu.FIRST, Contact.USER_MENU_DENY_AUTH, 0, JLocale.getString("deny"));
@@ -201,7 +200,7 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
         menu.add(Menu.FIRST, ACTION_DEL_CHAT, 0, JLocale.getString("delete_chat"));
     }
 
-    public void onOptionsItemSelected(ChatActivity chatActivity, MenuItem item) {
+    public void onMenuItemSelected(MenuItem item) {
         if (item.getItemId() == ACTION_DEL_CHAT) {
             chat.removeMessagesAtCursor(chatListView.getFirstVisiblePosition());
             if (0 < messData.size()) {
@@ -211,7 +210,7 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
             }
             return;
         }
-        new ContactMenu(protocol, currentContact).doAction(item.getItemId());
+        new ContactMenu(protocol, currentContact).doAction(getActivity(), item.getItemId());
     }
 
     @Override
@@ -265,10 +264,6 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
                 note.text = md.getText();
                 notes.showNoteEditor(note);
                 break;
-
-            //case ACTION_FT_CANCEL:
-            //    ContactList.getInstance().removeTransfer(md, true);
-            //    break;
         }
         return super.onContextItemSelected(item);
     }
