@@ -1,9 +1,7 @@
-
-
-
 package DrawControls.tree;
 
 import DrawControls.icons.Icon;
+import sawim.Options;
 import sawim.chat.ChatHistory;
 import sawim.cl.ContactList;
 import sawim.comm.Util;
@@ -52,7 +50,7 @@ public class ProtocolBranch extends TreeBranch {
 
     public void sort() {
         synchronized (protocol.getRosterLockObject()) {
-            if (/*Options.getBoolean(Options.OPTION_USER_GROUPS)*/ContactList.getInstance().getManager().getCurrPage() == 0) {
+            if (Options.getBoolean(Options.OPTION_USER_GROUPS)) {
                 Util.sort(protocol.getSortedGroups());
             } else {
                 Util.sort(protocol.getSortedContacts());

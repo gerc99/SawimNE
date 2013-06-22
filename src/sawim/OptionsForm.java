@@ -115,7 +115,7 @@ public class OptionsForm implements FormListener, ControlStateListener {
                 //    saveOptionInt(Options.OPTION_MIN_ITEM_SIZE, minItemMultipliers);
                 //Scheme.updateUI();
 
-                //    saveOptionBoolean(Options.OPTION_USER_GROUPS);
+                    saveOptionBoolean(Options.OPTION_USER_GROUPS);
                 //    saveOptionSelector(Options.OPTION_USER_ACCOUNTS);
                 //    saveOptionBoolean(Options.OPTION_CL_HIDE_OFFLINE);
                 saveOptionBoolean(Options.OPTION_SAVE_TEMP_CONTACT);
@@ -209,7 +209,7 @@ public class OptionsForm implements FormListener, ControlStateListener {
             //    loadOptionInt(Options.OPTION_MIN_ITEM_SIZE, "item_height_multiplier", minItems, minItemMultipliers);
 
                 form.addString("contact_list", null);
-            //    setChecked("show_user_groups", Options.OPTION_USER_GROUPS);
+                setChecked("show_user_groups", Options.OPTION_USER_GROUPS);
                 
             //    createSelector("show_user_accounts",
             //            "no" + "|" + "by_groups" + "|" + "by_windows", Options.OPTION_USER_ACCOUNTS);

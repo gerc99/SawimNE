@@ -1,23 +1,17 @@
-
-
 package protocol;
 
 import DrawControls.icons.Icon;
 import DrawControls.icons.ImageList;
 import DrawControls.tree.TreeNode;
-import android.graphics.Rect;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.SubMenu;
-import android.widget.ProgressBar;
 import ru.sawim.activities.FormActivity;
-import ru.sawim.activities.SawimActivity;
 import ru.sawim.view.FileProgressView;
 import sawim.FileTransfer;
 import sawim.Sawim;
 import sawim.Options;
 import sawim.chat.Chat;
-import sawim.chat.ChatHistory;
 import sawim.chat.message.Message;
 import sawim.cl.ContactList;
 import sawim.comm.Sortable;
@@ -346,20 +340,16 @@ abstract public class Contact implements TreeNode, Sortable {
     }
 
     public static final int USER_MENU_REQU_AUTH        = 1004;
-
     public static final int USER_MENU_USER_REMOVE      = 1007;
     public static final int USER_MENU_RENAME           = 1009;
-    
     public static final int USER_MENU_USER_INFO        = 1012;
     public static final int USER_MENU_MOVE             = 1015;
     public static final int USER_MENU_STATUSES         = 1016;
-    public static final int USER_MENU_LIST_OPERATION   = 1017;
     public static final int USER_MENU_HISTORY          = 1025;
     public static final int USER_MENU_ADD_USER         = 1018;
 
     public static final int USER_MENU_GRANT_AUTH       = 1021;
     public static final int USER_MENU_DENY_AUTH        = 1022;
-
 
     public static final int USER_MENU_PS_VISIBLE       = 1034;
     public static final int USER_MENU_PS_INVISIBLE     = 1035;
@@ -376,11 +366,7 @@ abstract public class Contact implements TreeNode, Sortable {
 	public static final int USER_MENU_TRACK_CONF = 1045;
 	
 	public static final int USER_MENU_ANNOTATION  = 1043;
-	public static final int USER_MENU_DEL_ANNOTATION  = 1044;
-
     public static final int CONFERENCE_DISCONNECT = 1040;
-	public static final int CONFERENCE_CONNECT = 1041;
-    public static final int USER_MENU_COPY_UID = 1006;
 
     protected abstract void initManageContactMenu(Protocol protocol, SubMenu menu);
     protected void initContextMenu(Protocol protocol, ContextMenu contactMenu) {

@@ -175,7 +175,7 @@ abstract public class Protocol {
 
     public final void sort() {
         synchronized (rosterLockObject) {
-            if (/*Options.getBoolean(Options.OPTION_USER_GROUPS)*/getContactList().getManager().getCurrPage() == 0) {
+            if (Options.getBoolean(Options.OPTION_USER_GROUPS)) {
                 Util.sort(getSortedGroups());
             } else {
                 Util.sort(getSortedContacts());
@@ -662,7 +662,7 @@ abstract public class Protocol {
             c.setOfflineStatus();
         }
         synchronized (rosterLockObject) {
-            if (/*Options.getBoolean(Options.OPTION_USER_GROUPS)*/getContactList().getManager().getCurrPage() == 0) {
+            if (Options.getBoolean(Options.OPTION_USER_GROUPS)) {
                 for (int i = groups.size() - 1; i >= 0; --i) {
                     getContactList().getManager().getModel().updateGroupData((Group) groups.elementAt(i));
                 }
@@ -781,13 +781,13 @@ abstract public class Protocol {
     }
 
     private void ui_updateGroup(Group group) {
-        //if (/*Options.getBoolean(Options.OPTION_USER_GROUPS)*/getContactList().getManager().getCurrPage() == 0) {
+        if (Options.getBoolean(Options.OPTION_USER_GROUPS)) {
             synchronized (rosterLockObject) {
                 getContactList().getManager().getModel().updateGroupData(group);
                 Util.sort(sortedGroups);
             }
             ui_updateCL(group);
-        //}
+        }
     }
 
     public final Group getNotInListGroup() {

@@ -1,14 +1,12 @@
-
-
 package DrawControls.tree;
 
 import protocol.Contact;
 import protocol.Group;
 import protocol.Protocol;
 import protocol.XStatusInfo;
+import sawim.Options;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
-
 
 public final class VirtualContactList {
 
@@ -76,7 +74,7 @@ public final class VirtualContactList {
     }
 
     public void updateOption() {
-        useGroups = /*Options.getBoolean(Options.OPTION_USER_GROUPS)*/getCurrPage() == 0;
+        useGroups = Options.getBoolean(Options.OPTION_USER_GROUPS);
         if (!initialized) {
             initialized = true;
             ContactListModel oldModel = model;
