@@ -3,6 +3,7 @@
 package sawim.cl;
 
 import DrawControls.tree.*;
+import android.widget.Toast;
 import sawim.FileTransfer;
 import sawim.Options;
 import sawim.chat.MessData;
@@ -203,6 +204,7 @@ public final class ContactList {
     }
     public void activateWithMsg(String message) {
         activate();
+        Toast.makeText(SawimActivity.getInstance(), message, Toast.LENGTH_LONG);
     }
 
     public void autoConnect() {
@@ -296,35 +298,7 @@ public final class ContactList {
     }
     
     public void setActiveContact(Contact contact) {
-       // boolean isShown = (Sawim.getSawim().getDisplay().getCurrentDisplay() == contactList);
-        //if (isShown && (0 == cursorLock)) {
-            contactList.setActiveContact(contact);
-        //}
-    }
-    private int cursorLock = 0;
-    private int contactListSaveDelay = 0;
-    public final void userActivity() {
-        cursorLock = 4 ;
-        sawim.modules.AutoAbsence.instance.userActivity();
-    }
-    public final void needRosterSave() {
-        contactListSaveDelay = 60 * 4 ;
-    }
-    public final void timerAction() {
-        sawim.modules.AutoAbsence.instance.updateTime();
-        if (0 < cursorLock) {
-            cursorLock--;
-        }
-        if (0 < contactListSaveDelay) {
-            contactListSaveDelay--;
-            if (0 == contactListSaveDelay) {
-                int count = contactList.getModel().getProtocolCount();
-                for (int i = 0; i < count; ++i) {
-                    Protocol p = contactList.getModel().getProtocol(i);
-                    p.safeSave();
-                }
-            }
-        }
+        contactList.setActiveContact(contact);
     }
 
     public final void receivedMessage(Contact contact) {

@@ -1,13 +1,7 @@
-
-
-
 package sawim.chat;
 
 import DrawControls.icons.Icon;
-import ru.sawim.General;
 import ru.sawim.activities.ChatActivity;
-import ru.sawim.activities.SawimActivity;
-import sawim.SawimUI;
 import sawim.Options;
 import sawim.chat.message.Message;
 import sawim.chat.message.PlainMessage;
@@ -36,10 +30,7 @@ public final class Chat {
     private boolean showStatus = true;
     private List<MessData> messData = new ArrayList<MessData>();
     private boolean visibleChat;
-
-    public final void setWritable(boolean wr) {
-        writable = wr;
-    }
+    public static final String ADDRESS = ", ";
 
     public Chat(Protocol p, Contact item) {
         contact = item;
@@ -64,9 +55,6 @@ public final class Chat {
         showStatusPopup();
     }
 
-    public static final String ADDRESS = ", ";
-
-
     private boolean isBlogBot() {
         if (contact instanceof JabberContact) {
             return ((Jabber) protocol).isBlogBot(contact.getUserId());
@@ -83,6 +71,14 @@ public final class Chat {
 
     public Protocol getProtocol() {
         return protocol;
+    }
+
+    public final void setWritable(boolean wr) {
+        writable = wr;
+    }
+
+    public final boolean getWritable() {
+        return writable;
     }
 
     private static final int ACTION_FT_CANCEL = 900;
@@ -137,7 +133,6 @@ public final class Chat {
                 menu.addItem("paste", Contact.USER_MENU_PASTE);
             }
         }
-    //    contact.addChatMenuItems(menu);
 
         if (!contact.isAuth()) {
             menu.addItem("requauth", Contact.USER_MENU_REQU_AUTH);
@@ -149,8 +144,8 @@ public final class Chat {
         menu.addItem("delete_chat", ACTION_DEL_CHAT);
         menu.setActionListener(new Binder(this));
         return menu;
-    }
-    */
+    }*/
+
     public void beginTyping(boolean type) {
         updateStatusIcons();
     }
@@ -316,8 +311,6 @@ public final class Chat {
     }
 
     public int messCount() {
-        if (messData == null)
-            return 0;
         return messData.size();
     }
 
@@ -326,82 +319,43 @@ public final class Chat {
     }
 
     public void clear() {
+        ChatActivity.THIS.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
         messData.clear();
+            }
+        });
     }
 
-    public void addMess(final MessData mData) {
+    private void addMess(final MessData mData) {
         messData.add(mData);
-        removeOldMessages();
     }
 
     public void removeMessages(final int limit) {
         if (messData.size() < limit) {
             return;
         }
+        ChatActivity.THIS.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
         if ((0 < limit) && (0 < messData.size())) {
             while (limit < messData.size()) {
                 messData.remove(0);
             }
         } else {
-            ChatHistory.instance.unregisterChat(this);
+            ChatHistory.instance.unregisterChat(Chat.this);
         }
+            }
+        });
     }
 
     private void removeOldMessages() {
         removeMessages(Options.getInt(Options.OPTION_MAX_MSG_COUNT));
     }
 
-    /*
-	private String quoteSelected(MessData md) {
-        StringBuffer sb = new StringBuffer();
-        String msg = md.getText();
-        if (md.isMe()) {
-            msg = "*" + md.getNick() + " " + msg;
-        }
-        sb.append(SawimUI.serialize(md.isIncoming(), md.getNick() + " " + md.strTime, msg));
-        sb.append("\n");
-        return 0 == sb.length() ? null : sb.toString();
+    public void removeMessagesAtCursor(int currPoss) {
+        removeMessages(messData.size() - currPoss - 1);
     }
-
-    private String quoteAllSelected() {
-        StringBuffer sb = new StringBuffer();
-        for (int i = 0; i < messData.size(); ++i) {
-            MessData md = getMessageDataByIndex(i);
-            if (md.isMarked()) {
-                String msg = md.getText();
-                if (md.isMe()) {
-                    msg = "*" + md.getNick() + " " + msg;
-                }
-                sb.append(SawimUI.serialize(md.isIncoming(), md.getNick() + " " + md.strTime, msg));
-                sb.append("\n");
-            }
-        }
-        return 0 == sb.length() ? null : sb.toString();
-    }
-
-    private String copySelected(MessData md) {
-        String msg = md.getText();
-        if (md.isMe()) {
-            msg = "*" + md.getNick() + " " + msg;
-        }
-        return msg + "\n";
-    }
-
-    private String copyAllSelected() {
-        StringBuffer sb = new StringBuffer();
-        for (int i = 0; i < messData.size(); ++i) {
-            MessData md = getMessageDataByIndex(i);
-            if (md.isMarked()) {
-                String msg = md.getText();
-                if (md.isMe()) {
-                    msg = "*" + md.getNick() + " " + msg;
-                }
-                sb.append(msg);
-                sb.append("\n");
-            }
-        }
-        return 0 == sb.length() ? null : sb.toString();
-    }*/
 
     public boolean empty() {
         return 0 == getMessCount();
@@ -453,6 +407,9 @@ public final class Chat {
 	    return sysNoticeCounter + authRequestCounter
                 + otherMessageCounter;
 	}
+    public int getAuthRequestCounter() {
+        return authRequestCounter;
+    }
 
     public final int getNewMessageIcon() {
         if (0 < messageCounter) {
@@ -480,7 +437,7 @@ public final class Chat {
         }
     }
 
-    private void addTextToHistory(MessData md) {
+    public void addTextToHistory(MessData md) {
         if (!hasHistory()) {
             return;
         }
@@ -540,7 +497,13 @@ public final class Chat {
         if (!incoming) {
             message.setVisibleIcon(mData);
         }
-        addMess(mData);
+        ChatActivity.THIS.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                addMess(mData);
+            }
+        });
+        removeOldMessages();
     }
 
     public void addMessage(Message message, boolean toHistory) {

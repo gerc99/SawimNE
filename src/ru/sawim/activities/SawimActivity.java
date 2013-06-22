@@ -187,15 +187,15 @@ public class SawimActivity extends FragmentActivity {
     private static final int MENU_XSTATUS = 2;
     private static final int MENU_PRIVATE_STATUS = 3;
     private static final int MENU_SOUND = 4;
-    private static final int MENU_OPTIONS = 5;
-    private static final int MENU_OPTIONS_THEMES = 6;
-    private static final int MENU_QUIT = 7;//OptionsForm
+    private static final int MENU_OPTIONS = 5;//OptionsForm
+    private static final int MENU_QUIT = 7;
     private static final int MENU_MORE = 14;
     private static final int MENU_DISCO = 15;
     private static final int MENU_NOTES = 16;
     private static final int MENU_GROUPS = 17;
     private static final int MENU_MYSELF = 18;
     private static final int MENU_MICROBLOG = 19;//ManageContactListForm
+
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         menu.clear();

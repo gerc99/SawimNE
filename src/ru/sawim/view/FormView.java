@@ -9,10 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
-import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.models.form.Forms;
-import sawim.ui.base.Scheme;
 
 import java.util.List;
 
@@ -55,10 +53,7 @@ public class FormView extends Fragment implements Forms.OnUpdateForm, View.OnCli
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.form, container, false);
-        ScrollView formScrollLayout = (ScrollView) v.findViewById(R.id.data_form_scroll);
-        formScrollLayout.setBackgroundColor(General.getColor(Scheme.THEME_BACKGROUND));
         listLayout = (LinearLayout) v.findViewById(R.id.data_form_linear);
-        listLayout.setBackgroundColor(General.getColor(Scheme.THEME_BACKGROUND));
         return v;
     }
 
@@ -76,10 +71,6 @@ public class FormView extends Fragment implements Forms.OnUpdateForm, View.OnCli
             SeekBar seekBar = new SeekBar(getActivity());
             EditText editText = new EditText(getActivity());
 
-            textView.setTextColor(General.getColor(Scheme.THEME_TEXT));
-            descView.setTextColor(General.getColor(Scheme.THEME_TEXT));
-            labelView.setTextColor(General.getColor(Scheme.THEME_TEXT));
-
             descView.setVisibility(TextView.GONE);
             labelView.setVisibility(TextView.GONE);
             textView.setVisibility(TextView.GONE);
@@ -93,8 +84,6 @@ public class FormView extends Fragment implements Forms.OnUpdateForm, View.OnCli
             } else if (Forms.CONTROL_INPUT == c.type) {
                 drawText(c, labelView, descView, convertView);
                 editText.setVisibility(EditText.VISIBLE);
-                editText.setBackgroundColor(General.getColor(Scheme.THEME_CAP_BACKGROUND));
-                editText.setTextColor(General.getColor(Scheme.THEME_TEXT));
                 editText.setText(c.text);
                 editText.addTextChangedListener(new TextWatcher() {
 
@@ -112,7 +101,6 @@ public class FormView extends Fragment implements Forms.OnUpdateForm, View.OnCli
                 convertView.addView(editText);
             } else if (Forms.CONTROL_CHECKBOX == c.type) {
                 checkBox.setVisibility(CheckBox.VISIBLE);
-                checkBox.setTextColor(General.getColor(Scheme.THEME_TEXT));
                 checkBox.setText(c.description);
                 checkBox.setChecked(c.selected);
                 checkBox.setOnClickListener(new View.OnClickListener() {

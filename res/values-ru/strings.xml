@@ -198,6 +198,5 @@
     <string name="next">След.</string>
     <string name="prev">Пред.</string>
     <string name="xmppAccountDontFound">Jabber-учетка не найдена</string>
-    <string name="cancel">Cancel</string>
-    <string name="ok">Ok</string>
+    <string name="add_to_notes">Добавить в заметки</string>
 </resources>

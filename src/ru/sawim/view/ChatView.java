@@ -12,20 +12,23 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.*;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
 import protocol.Contact;
+import protocol.ContactMenu;
 import protocol.Protocol;
 import protocol.jabber.*;
 import ru.sawim.General;
 import ru.sawim.R;
+import ru.sawim.activities.ChatActivity;
 import ru.sawim.models.MessagesAdapter;
 import ru.sawim.models.MucUsersAdapter;
+import sawim.FileTransfer;
 import sawim.Options;
+import sawim.Sawim;
 import sawim.SawimUI;
 import sawim.chat.Chat;
 import sawim.chat.ChatHistory;
@@ -50,7 +53,7 @@ import java.util.List;
 public class ChatView extends Fragment implements AbsListView.OnScrollListener, General.OnUpdateChat, TextBoxListener {
 
     public static final String PASTE_TEXT = "ru.sawim.PASTE_TEXT";
-    public static final int MENU_COPY_TEXT = 200;
+
     private static final int COMMAND_PRIVATE = 0;
     private static final int COMMAND_INFO = 1;
     private static final int COMMAND_STATUS = 2;
@@ -64,7 +67,9 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
     private static final int COMMAND_OWNER = 10;
     private static final int COMMAND_NONE = 11;
     private static final int GATE_COMMANDS = 12;
+
     private static Hashtable<String, Integer> positionHash = new Hashtable<String, Integer>();
+
     private final TextView.OnEditorActionListener enterListener = new TextView.OnEditorActionListener() {
         public boolean onEditorAction(TextView exampleView, int actionId, KeyEvent event) {
             if (isDone(actionId)) {
@@ -165,28 +170,107 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
         return v;
     }
 
+    public static final int MENU_COPY_TEXT = 1;
+    private static final int ACTION_FT_CANCEL = 2;
+    private static final int ACTION_ADD_TO_HISTORY = 3;
+    private static final int ACTION_TO_NOTES = 4;
+    private static final int ACTION_QUOTE = 5;
+    private static final int ACTION_DEL_CHAT = 6;
+
+    public void onCreateOptionsMenu(Menu menu) {
+        boolean accessible = chat.getWritable() && (currentContact.isSingleUserContact() || currentContact.isOnline());
+        //menu.add(Menu.FIRST, ACTION_FT_CANCEL, 0, JLocale.getString("cancel"));
+        if (0 < chat.getAuthRequestCounter()) {
+            menu.add(Menu.FIRST, Contact.USER_MENU_GRANT_AUTH, 0, JLocale.getString("grant"));
+            menu.add(Menu.FIRST, Contact.USER_MENU_DENY_AUTH, 0, JLocale.getString("deny"));
+        }
+        if (!currentContact.isAuth()) {
+            menu.add(Menu.FIRST, Contact.USER_MENU_REQU_AUTH, 0, JLocale.getString("requauth"));
+        }
+        if (accessible) {
+            if (sawim.modules.fs.FileSystem.isSupported()) {
+                menu.add(Menu.FIRST, Contact.USER_MENU_FILE_TRANS, 0, JLocale.getString("ft_name"));
+            }
+            if (FileTransfer.isPhotoSupported()) {
+                menu.add(Menu.FIRST, Contact.USER_MENU_CAM_TRANS, 0, JLocale.getString("ft_cam"));
+            }
+        }
+        if (!currentContact.isSingleUserContact() && currentContact.isOnline()) {
+            menu.add(Menu.FIRST, Contact.CONFERENCE_DISCONNECT, 0, JLocale.getString("leave_chat"));
+        }
+        menu.add(Menu.FIRST, ACTION_DEL_CHAT, 0, JLocale.getString("delete_chat"));
+    }
+
+    public void onOptionsItemSelected(ChatActivity chatActivity, MenuItem item) {
+        if (item.getItemId() == ACTION_DEL_CHAT) {
+            chat.removeMessagesAtCursor(chatListView.getFirstVisiblePosition());
+            if (0 < messData.size()) {
+            } else {
+                ChatHistory.instance.unregisterChat(chat);
+                ContactList.getInstance().activate(null);
+            }
+            return;
+        }
+        new ContactMenu(protocol, currentContact).doAction(item.getItemId());
+    }
+
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
         menu.add(Menu.FIRST, MENU_COPY_TEXT, 0, android.R.string.copy);
+        menu.add(Menu.FIRST, ACTION_QUOTE, 0, JLocale.getString("quote"));
+        if (protocol instanceof Jabber) {
+            menu.add(Menu.FIRST, ACTION_TO_NOTES, 0, R.string.add_to_notes);
+        }
+        if (!Options.getBoolean(Options.OPTION_HISTORY) && chat.hasHistory()) {
+            menu.add(Menu.FIRST, ACTION_ADD_TO_HISTORY, 0, JLocale.getString("add_to_history"));
+        }
     }
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        MessData md = messData.get(info.position);
+        String msg = md.getText();
         switch (item.getItemId()) {
             case MENU_COPY_TEXT:
-                MessData md = messData.get(info.position);
                 if (null == md) {
                     return false;
                 }
-                String msg = md.getText();
                 if (md.isMe()) {
                     msg = "*" + md.getNick() + " " + msg;
                 }
-                SawimUI.setClipBoardText(md.isIncoming(), md.getNick(), md.strTime, msg);
-        }
+                SawimUI.setClipBoardText(md.isIncoming(), md.getNick(), md.strTime, msg + "\n");
+                break;
 
-        return true;
+            case ACTION_QUOTE:
+                StringBuffer sb = new StringBuffer();
+                if (md.isMe()) {
+                    msg = "*" + md.getNick() + " " + msg;
+                }
+                sb.append(SawimUI.serialize(md.isIncoming(), md.getNick() + " " + md.strTime, msg));
+                sb.append("\n-----\n");
+                SawimUI.setClipBoardText(0 == sb.length() ? null : sb.toString());
+                break;
+
+            case ACTION_ADD_TO_HISTORY:
+                chat.addTextToHistory(md);
+                break;
+
+            case ACTION_TO_NOTES:
+                MirandaNotes notes = ((Jabber)protocol).getMirandaNotes();
+                notes.showIt();
+                MirandaNotes.Note note = notes.addEmptyNote();
+                note.tags = md.getNick() + " " + md.strTime;
+                note.text = md.getText();
+                notes.showNoteEditor(note);
+                break;
+
+            //case ACTION_FT_CANCEL:
+            //    ContactList.getInstance().removeTransfer(md, true);
+            //    break;
+        }
+        return super.onContextItemSelected(item);
     }
 
     private void registerReceivers() {
@@ -227,8 +311,8 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
         super.onPause();
         Log.e("ChatView", "onPause()");
         if (chat == null) return;
-        //if (!chatListView.isScroll())
         addLastPosition(chat.getContact().getUserId(), chatListView.getFirstVisiblePosition());
+        Sawim.minimize();
     }
 
     @Override
@@ -236,6 +320,13 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
         super.onResume();
         Log.e("ChatView", "onResume()");
         resume(chat);
+        Sawim.maximize();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        Log.e("ChatView", "onDestroyView()");
     }
 
     private void resume(final Chat chat) {

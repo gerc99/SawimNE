@@ -252,9 +252,6 @@ abstract public class Contact implements TreeNode, Sortable {
         return Scheme.THEME_CONTACT_OFFLINE;
     }
 
-	public StatusInfo getStatusIcon() {
-	    return getProtocol().getStatusInfo();
-	}
     public void getLeftIcons(Icon[] lIcons) {
         if (isTyping()) {
             lIcons[0] = Message.msgIcons.iconAt(Message.ICON_TYPE);
@@ -283,6 +280,7 @@ abstract public class Contact implements TreeNode, Sortable {
         }
         lIcons[4] = serverListsIcons.iconAt(privacyList);
     }
+
     public final void getRightIcons(Icon[] icons) {
         Protocol protocol = getProtocol();
         ClientInfo info = (null != protocol) ? protocol.clientInfo : null;
@@ -290,6 +288,7 @@ abstract public class Contact implements TreeNode, Sortable {
 		String id = getUserId();
         icons[1] = (Tracking.isTrackingEvent(id, Tracking.GLOBAL) == Tracking.TRUE)?Tracking.getTrackIcon(id):null;
     }
+
     public final String getText() {
         return name;
     }
@@ -376,20 +375,15 @@ abstract public class Contact implements TreeNode, Sortable {
     public void addChatMenuItems(ContextMenu model) {
     }
 
-    public final void getContextMenu(Protocol p, ContextMenu menu) {
-        new ContactMenu(p, this).getContextMenu(menu);
-    }
     protected final void addChatItems(ContextMenu menu) {
         if (isSingleUserContact()) {
             if (!isAuth()) {
                 menu.add(Menu.FIRST, USER_MENU_REQU_AUTH, 2, R.string.requauth);
             }
         }
-        
         if (!isTemp() && !isConference()) {
             menu.add(Menu.FIRST, USER_MENU_TRACK, 2, R.string.extra_settings);
 		}
-		
         if (isSingleUserContact() || isOnline()) {
             if (sawim.modules.fs.FileSystem.isSupported()) {
                 menu.add(Menu.FIRST, USER_MENU_FILE_TRANS, 2, R.string.ft_name);

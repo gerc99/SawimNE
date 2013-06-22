@@ -141,7 +141,7 @@ public class Notify implements Runnable {
         } else {
 
             int vibraKind = Options.getInt(Options.OPTION_VIBRATOR);
-            if ((VIBRA_LOCKED_ONLY == vibraKind) && !Sawim.isLocked()) {
+            if ((VIBRA_LOCKED_ONLY == vibraKind)) {
                 vibraKind = VIBRA_OFF;
             }
             if ((VIBRA_OFF != vibraKind)

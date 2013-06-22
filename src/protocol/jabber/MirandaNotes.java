@@ -19,10 +19,8 @@ import ru.sawim.models.form.Forms;
 
 public final class MirandaNotes {
     private static final int COMMAND_ADD = 0;
-    private static final int COMMAND_COPY = 1;
-    private static final int COMMAND_PASTE = 2;
-    private static final int COMMAND_EDIT = 3;
-    private static final int COMMAND_DEL = 4;
+    private static final int COMMAND_EDIT = 1;
+    private static final int COMMAND_DEL = 2;
 
     private Jabber jabber;
     private Vector notes = new Vector();
@@ -154,7 +152,7 @@ public final class MirandaNotes {
         return note.text;
     }
 
-    private Note addEmptyNote() {
+    public Note addEmptyNote() {
         Note note = new Note();
         notes.addElement(note);
         return note;
@@ -166,10 +164,14 @@ public final class MirandaNotes {
         screen.setCurrentItemIndex(notes.indexOf(note));
     }
 
-    private class Note {
+    public void showNoteEditor(Note n) {
+        new NoteEditor(n).showIt();
+    }
+
+    public class Note {
         private String title;
-        private String tags;
-        private String text;
+        public String tags;
+        public String text;
     }
 
     private class NoteEditor implements FormListener {

@@ -14,7 +14,6 @@ import sawim.ui.text.VirtualList;
 import ru.sawim.R;
 import ru.sawim.models.VirtualListAdapter;
 
-
 /**
  * Created with IntelliJ IDEA.
  * User: Gerc

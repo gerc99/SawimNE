@@ -38,18 +38,18 @@ public class VirtualListActivity extends FragmentActivity {
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        VirtualListView view = (VirtualListView) getSupportFragmentManager().findFragmentById(R.id.virtual_list_fragment);
+        view.onOptionsItemSelected(this, item);
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public void onBackPressed() {
         VirtualListView view = (VirtualListView) getSupportFragmentManager().findFragmentById(R.id.virtual_list_fragment);
         if (view.onBackPressed())
             super.onBackPressed();
         VirtualList.getInstance().clearAll();
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        VirtualListView view = (VirtualListView) getSupportFragmentManager().findFragmentById(R.id.virtual_list_fragment);
-        view.onOptionsItemSelected(this, item);
-        return super.onOptionsItemSelected(item);
     }
 
 }

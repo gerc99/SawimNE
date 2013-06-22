@@ -201,6 +201,5 @@
     <string name="next">Next</string>
     <string name="prev">Prev</string>
     <string name="xmppAccountDontFound">Jabber-account do not found</string>
-    <string name="cancel">Закрыть</string>
-    <string name="ok">Ок</string>
+    <string name="add_to_notes">Add to notes</string>
 </resources>

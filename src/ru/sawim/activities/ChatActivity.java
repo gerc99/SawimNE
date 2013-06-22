@@ -4,6 +4,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import ru.sawim.view.VirtualListView;
 import sawim.cl.ContactList;
 import protocol.Contact;
 import protocol.Protocol;
@@ -29,6 +32,20 @@ public class ChatActivity extends FragmentActivity {
         Protocol protocol = ContactList.getInstance().getProtocol(i.getStringExtra("protocol_id"));
         Contact currentContact = protocol.getItemByUIN(i.getStringExtra("contact_id"));
         view.openChat(protocol, currentContact);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        ChatView view = (ChatView) getSupportFragmentManager().findFragmentById(R.id.chat_fragment);
+        view.onCreateOptionsMenu(menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        ChatView view = (ChatView) getSupportFragmentManager().findFragmentById(R.id.chat_fragment);
+        view.onOptionsItemSelected(this, item);
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

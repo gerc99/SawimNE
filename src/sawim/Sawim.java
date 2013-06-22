@@ -16,23 +16,17 @@ import ru.sawim.activities.SawimActivity;
 import javax.microedition.io.ConnectionNotFoundException;
 import java.io.InputStream;
 
-
-public class Sawim implements Runnable {
+public class Sawim {
     public static final String NAME = "Sawim NE";
     public static final String VERSION = "1.0m";
-    public static String lastDate;
 
-    private boolean locked = false;
-    private long lastLockTime = 0;
+    public static final String microeditionPlatform = getPhone();
+    private boolean paused = true;
 
     private static Sawim instance = null;
     public static Sawim getSawim() {
         return instance;
     }
-
-    public static final String microeditionPlatform = getPhone();
-
-    private boolean paused = true;
 
     private static String getPhone() {
         String dev = android.os.Build.MODEL
@@ -68,12 +62,6 @@ public class Sawim implements Runnable {
         return in;
     }
 
-    public void run() {
-        try {
-            backgroundLoading();
-        } catch (Exception ignored) {
-        }
-    }
     private void backgroundLoading() {
         Notify.getSound().initSounds();
         Sawim.gc();
@@ -93,6 +81,7 @@ public class Sawim implements Runnable {
         JLocale.setCurrUiLanguage(Options.getString(Options.OPTION_UI_LANGUAGE));
         Scheme.setColorScheme(Options.getInt(Options.OPTION_COLOR_SCHEME));
     }
+
     private void initialize() {
         backgroundLoading();
         Options.loadAccounts();
@@ -102,20 +91,11 @@ public class Sawim implements Runnable {
         sawim.modules.tracking.Tracking.loadTrackingFromRMS();
     }
 
-    private void restore(Object screen) {
-        if (null == screen) {
-            return;
-        }
-        AutoAbsence.instance.online();
-        wakeUp();
-    }
-
     public void startApp() {
         if (!paused && (null != Sawim.instance)) {
             return;
         }
         Sawim.instance = this;
-        locked = false;
         wakeUp();
         initBasic();
         try {
@@ -123,13 +103,11 @@ public class Sawim implements Runnable {
         } catch (Exception e) {
             DebugLog.panic("init", e);
             DebugLog.activate();
-            
         }
     }
 
     public void hideApp() {
         paused = true;
-        locked = false;
         AutoAbsence.instance.away();
     }
 
@@ -158,41 +136,26 @@ public class Sawim implements Runnable {
     }
 
     public static boolean isPaused() {
-        if (instance.paused) {
-            return true;
-        }
-        return /*instance.display.isPaused()*/false;
-    }
-
-    public static boolean isLocked() {
-        return instance.locked;
-    }
-
-    public static void lockSawim() {
-        final long now = Sawim.getCurrentGmtTime();
-        final int WAITING_INTERVAL = 3; 
-        if (instance.lastLockTime + WAITING_INTERVAL  < now) {
-            instance.locked = true;
-            AutoAbsence.instance.away();
-        }
-    }
-    public static void unlockSawim() {
-        instance.lastLockTime = Sawim.getCurrentGmtTime();
-        instance.locked = false;
-        ContactList.getInstance().activate();
-        AutoAbsence.instance.online();
+        return instance.paused;
     }
 
     public static void maximize() {
-        //instance.restore(instance.display.getCurrentDisplay());
+        AutoAbsence.instance.online();
         wakeUp();
+        sawim.modules.AutoAbsence.instance.userActivity();
+        sawim.modules.AutoAbsence.instance.updateTime();
     }
+
     public static void minimize() {
         instance.hideApp();
+        sawim.modules.AutoAbsence.instance.userActivity();
+        sawim.modules.AutoAbsence.instance.updateTime();
     }
+
     public static void wakeUp() {
         instance.paused = false;
     }
+
     public static void gc() {
         System.gc();
         try {

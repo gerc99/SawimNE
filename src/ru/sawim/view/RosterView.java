@@ -14,6 +14,7 @@ import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.*;
 import android.widget.*;
+import sawim.Sawim;
 import sawim.chat.ChatHistory;
 import sawim.cl.ContactList;
 import sawim.comm.Util;
@@ -229,6 +230,13 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         Update();
         if (adaptersPages.size() > 0)
             viewPager.setCurrentItem(1);
+        Sawim.maximize();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Sawim.minimize();
     }
 
     @Override

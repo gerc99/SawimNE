@@ -1,6 +1,5 @@
 package sawim.ui.text;
 
-
 import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
 import android.view.ContextMenu;

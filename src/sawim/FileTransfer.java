@@ -131,7 +131,7 @@ public final class FileTransfer implements FileBrowserListener,
         name_Desc.init("name_desc", this);
         name_Desc.addString("filename", filename);
         name_Desc.addTextField(descriptionField, "description", "");
-        String items = "sawim.net.ru|www.sawim.net.ru|sawim.org";
+        String items = "jimm.net.ru|www.jimm.net.ru|jimm.org";
         if (cItem instanceof protocol.jabber.JabberContact) {
             if (cItem.isSingleUserContact() && cItem.isOnline()) {
                 items += "|ibb";
@@ -259,10 +259,10 @@ public final class FileTransfer implements FileBrowserListener,
                     sendFileThroughServer(in, size);
                     break;
                 case JNR_HTTP:
-                    sendFileThroughWeb("files.sawim.net.ru:81", in, size);
+                    sendFileThroughWeb("files.jimm.net.ru:81", in, size);
                     break;
                 case JO_HTTP:
-                    sendFileThroughWeb("filetransfer.sawim.org", in, size);
+                    sendFileThroughWeb("filetransfer.jimm.org", in, size);
                     break;
             }
 

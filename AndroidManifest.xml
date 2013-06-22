@@ -61,12 +61,12 @@
                   android:configChanges="orientation|keyboardHidden|screenSize"
                   android:launchMode="singleTask"/>
         <activity android:name=".activities.VirtualListActivity"
-                  android:theme="@style/AppThemeDark"
+                  android:theme="@style/AppThemeLight"
                   android:windowSoftInputMode="stateAlwaysHidden"
                   android:configChanges="orientation|keyboardHidden|screenSize"
                   android:launchMode="singleTask"/>
         <activity android:name=".activities.FormActivity"
-                  android:theme="@style/AppThemeDark"
+                  android:theme="@style/AppThemeLight"
                   android:windowSoftInputMode="stateAlwaysHidden"
                   android:configChanges="orientation|keyboardHidden|screenSize"
                   android:launchMode="singleTask"/>

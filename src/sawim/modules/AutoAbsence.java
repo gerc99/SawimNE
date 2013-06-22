@@ -122,7 +122,7 @@ public final class AutoAbsence {
     }
     public final void userActivity() {
         try {
-            if (!Sawim.isLocked() && !Sawim.isPaused()) {
+            if (!Sawim.isPaused()) {
                 int init = Options.getInt(Options.OPTION_AA_TIME) * 60; 
                 if (0 < init) {
                     activityOutTime = Sawim.getCurrentGmtTime() + init;

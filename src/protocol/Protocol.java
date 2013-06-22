@@ -34,7 +34,6 @@ import javax.microedition.rms.RecordStore;
 import java.io.*;
 import java.util.Vector;
 
-
 abstract public class Protocol {
     private static final int RECONNECT_COUNT = 20;
     private final Object rosterLockObject = new Object();
@@ -317,7 +316,7 @@ abstract public class Protocol {
 
     public final void needSave() {
         needSave = true;
-        ContactList.getInstance().needRosterSave();
+        safeSave();
     }
 
     public final boolean safeSave() {
@@ -332,9 +331,7 @@ abstract public class Protocol {
             try {
                 RecordStore.deleteRecordStore(storage);
             } catch (Exception e) {
-
             }
-
             RecordStore cl = null;
             try {
                 cl = RecordStore.openRecordStore(storage, true);
@@ -467,14 +464,10 @@ abstract public class Protocol {
     }
 
     protected void s_removeContact(Contact contact) {
-    }
-
-    ;
+    };
 
     protected void s_removedContact(Contact contact) {
-    }
-
-    ;
+    };
 
     public final void removeContact(Contact contact) {
         if (contact.isTemp()) {
@@ -1141,7 +1134,6 @@ abstract public class Protocol {
 
     public final void showException(SawimException e) {
         if (!Sawim.isPaused()) {
-            Sawim.unlockSawim();
             getContactList().activateWithMsg(getUserId() + "\n" + e.getMessage());
         }
     }
@@ -1234,10 +1226,7 @@ abstract public class Protocol {
                 } else if (Tracking.isTracking(id, Tracking.EVENT_ENTER) == Tracking.FALSE) {
                     Notify.getSound().playSoundNotification(Notify.isSound(Notify.NOTIFY_ONLINE), Notify.NOTIFY_ONLINE);
                 }
-
-
             }
-            //contact.showTopLine(getStatusInfo().getName(curr));
         }
     }
 

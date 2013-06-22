@@ -1,14 +1,9 @@
-
-
 package protocol;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.util.Log;
 import android.view.ContextMenu;
 import sawim.FileTransfer;
-import sawim.Sawim;
-import sawim.SawimUI;
 import sawim.chat.message.PlainMessage;
 import sawim.cl.ContactList;
 import sawim.comm.Util;
@@ -20,7 +15,6 @@ import sawim.util.JLocale;
 import protocol.jabber.Jabber;
 import ru.sawim.activities.SawimActivity;
 import ru.sawim.view.TextBoxView;
-
 import java.util.Vector;
 
 public class ContactMenu implements TextBoxListener {
