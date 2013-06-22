@@ -280,19 +280,19 @@ public class SawimActivity extends FragmentActivity {
                 startActivity(new Intent(this, AccountsListActivity.class));
                 break;
             case OptionsForm.OPTIONS_INTERFACE:
-                new OptionsForm().select(OptionsForm.OPTIONS_INTERFACE);
+                new OptionsForm().select(item.getTitle(), OptionsForm.OPTIONS_INTERFACE);
                 break;
             case OptionsForm.OPTIONS_SIGNALING:
-                new OptionsForm().select(OptionsForm.OPTIONS_SIGNALING);
+                new OptionsForm().select(item.getTitle(), OptionsForm.OPTIONS_SIGNALING);
                 break;
             case OptionsForm.OPTIONS_ANTISPAM:
-                new OptionsForm().select(OptionsForm.OPTIONS_ANTISPAM);
+                new OptionsForm().select(item.getTitle(), OptionsForm.OPTIONS_ANTISPAM);
                 break;
             case OptionsForm.OPTIONS_ABSENCE:
-                new OptionsForm().select(OptionsForm.OPTIONS_ABSENCE);
+                new OptionsForm().select(item.getTitle(), OptionsForm.OPTIONS_ABSENCE);
                 break;
             case OptionsForm.OPTIONS_ANSWERER:
-                new OptionsForm().select(OptionsForm.OPTIONS_ANSWERER);
+                new OptionsForm().select(item.getTitle(), OptionsForm.OPTIONS_ANSWERER);
                 break;
 
             case MENU_QUIT:

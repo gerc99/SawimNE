@@ -1,6 +1,7 @@
-
 package sawim;
 
+import ru.sawim.R;
+import ru.sawim.SawimApplication;
 import sawim.cl.ContactList;
 import sawim.comm.*;
 import sawim.modules.*;
@@ -10,7 +11,6 @@ import ru.sawim.activities.SawimActivity;
 import ru.sawim.models.form.ControlStateListener;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
-
 
 public class OptionsForm implements FormListener, ControlStateListener {
 
@@ -55,7 +55,6 @@ public class OptionsForm implements FormListener, ControlStateListener {
     private void saveOptionSelector(int opt) {
         Options.setInt(opt, form.getSelectorValue(opt));
     }
-    
 
     private void loadOptionGauge(int opt, String label) {
         form.addVolumeControl(opt, label, Options.getInt(opt));
@@ -131,7 +130,6 @@ public class OptionsForm implements FormListener, ControlStateListener {
                 //    saveOptionBoolean(Options.OPTION_SIMPLE_INPUT);
                 saveOptionInt(Options.OPTION_MAX_MSG_COUNT);
 
-                //NativeCanvas.getInstance().getInput().updateInput();
                 ContactList.getInstance().getManager().update();
                 SawimActivity.getInstance().recreateActivity();
                 break;
@@ -173,10 +171,10 @@ public class OptionsForm implements FormListener, ControlStateListener {
         }
     }
 
-    public void select(int cmd) {
+    public void select(CharSequence name, int cmd) {
         currentOptionsForm = cmd;
         form = Forms.getInstance();
-        form.init("options_lng", this);
+        form.init(SawimApplication.getContext().getString(R.string.options), this);
         form.setBackPressedListener(new Forms.OnBackPressed() {
             @Override
             public boolean back() {
@@ -186,7 +184,7 @@ public class OptionsForm implements FormListener, ControlStateListener {
                 return true;
             }
         });
-        //form.setCaption(model.getItemText(currentOptionsForm));
+        form.setCaption(name.toString());
         switch (currentOptionsForm) {
             case OPTIONS_INTERFACE:
                 String[] colorSchemes = Scheme.getSchemeNames();
@@ -306,4 +304,3 @@ public class OptionsForm implements FormListener, ControlStateListener {
         }
     }
 }
-

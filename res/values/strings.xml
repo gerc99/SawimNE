@@ -202,4 +202,5 @@
     <string name="prev">Prev</string>
     <string name="xmppAccountDontFound">Jabber-account do not found</string>
     <string name="add_to_notes">Add to notes</string>
+    <string name="accpromt">Press the "Menu" button to add a profile</string>
 </resources>

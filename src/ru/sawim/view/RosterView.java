@@ -45,7 +45,7 @@ import java.util.Vector;
  * Time: 19:58
  * To change this template use File | Settings | File Templates.
  */
-public class RosterView extends Fragment implements View.OnClickListener, ListView.OnItemClickListener, VirtualContactList.OnUpdateRoster {
+public class RosterView extends Fragment implements View.OnClickListener, ListView.OnItemClickListener, VirtualContactList.OnUpdateRoster, View.OnLongClickListener {
 
     private LinearLayout rosterViewLayout;
     private LinearLayout topLinearLayout;
@@ -321,6 +321,12 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         Update();
     }
 
+    @Override
+    public boolean onLongClick(View view) {
+        new StatusesView(StatusesView.ADAPTER_STATUS).show(getActivity().getSupportFragmentManager(), "change-status");
+        return false;
+    }
+
     private void updateProgressBar() {
         Protocol p = general.getCurrProtocol();
         if (p != null)
@@ -362,6 +368,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
                         imageBarButtons.setBackgroundColor(General.getColorWithAlpha(Scheme.THEME_BACKGROUND));
                     imageBarButtons.setImageBitmap(General.iconToBitmap(protocol.getCurrentStatusIcon()));
                     imageBarButtons.setOnClickListener(RosterView.this);
+                    imageBarButtons.setOnLongClickListener(RosterView.this);
                     imageBarButtons.setId(j);
                     Icon messageIcon = ChatHistory.instance.getUnreadMessageIcon(protocol);
                     if (null != messageIcon)

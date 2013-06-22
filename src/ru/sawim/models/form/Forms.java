@@ -63,6 +63,10 @@ public class Forms {
         return instance;
     }
 
+    public void setCaption(String caption) {
+        this.caption = caption;
+    }
+
     public interface OnUpdateForm {
         void updateForm();
         void back();
