@@ -17,12 +17,12 @@ public class OptionsForm implements FormListener, ControlStateListener {
     private Forms form;
     private int currentOptionsForm;
 
-    public static final int OPTIONS_ACCOUNT    = 8;
-    public static final int OPTIONS_INTERFACE  = 9;
-    public static final int OPTIONS_SIGNALING  = 10;
-    public static final int OPTIONS_ANTISPAM   = 11;
-    public static final int OPTIONS_ABSENCE    = 12;
-    public static final int OPTIONS_ANSWERER   = 13;
+    public static final int OPTIONS_ACCOUNT    = 7;
+    public static final int OPTIONS_INTERFACE  = 8;
+    public static final int OPTIONS_SIGNALING  = 9;
+    public static final int OPTIONS_ANTISPAM   = 10;
+    public static final int OPTIONS_ABSENCE    = 11;
+    public static final int OPTIONS_ANSWERER   = 12;
 
     private void setChecked(String lngStr, int optValue) {
         form.addCheckBox(optValue, lngStr, Options.getBoolean(optValue));
@@ -154,7 +154,6 @@ public class OptionsForm implements FormListener, ControlStateListener {
                 break;
 
             case OPTIONS_ABSENCE:
-                saveOptionBoolean(Options.OPTION_AA_BLOCK);
                 Options.setInt(Options.OPTION_AA_TIME, form.getSelectorValue(Options.OPTION_AA_TIME) * 5);
                 AutoAbsence.instance.updateOptions();
                 break;
@@ -264,7 +263,6 @@ public class OptionsForm implements FormListener, ControlStateListener {
                 break;
 
             case OPTIONS_ABSENCE:
-                setChecked("after_block", Options.OPTION_AA_BLOCK);
                 form.addSelector(Options.OPTION_AA_TIME, "after_time", "off" + "|5 |10 |15 ", Options.getInt(Options.OPTION_AA_TIME) / 5);
                 break;
 

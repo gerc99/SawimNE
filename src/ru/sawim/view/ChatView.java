@@ -171,11 +171,10 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
     }
 
     public static final int MENU_COPY_TEXT = 1;
-    private static final int ACTION_FT_CANCEL = 2;
-    private static final int ACTION_ADD_TO_HISTORY = 3;
-    private static final int ACTION_TO_NOTES = 4;
-    private static final int ACTION_QUOTE = 5;
-    private static final int ACTION_DEL_CHAT = 6;
+    private static final int ACTION_ADD_TO_HISTORY = 2;
+    private static final int ACTION_TO_NOTES = 3;
+    private static final int ACTION_QUOTE = 4;
+    private static final int ACTION_DEL_CHAT = 5;
 
     public void onCreateMenu(Menu menu) {
         boolean accessible = chat.getWritable() && (currentContact.isSingleUserContact() || currentContact.isOnline());
@@ -204,6 +203,7 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
         if (item.getItemId() == ACTION_DEL_CHAT) {
             chat.removeMessagesAtCursor(chatListView.getFirstVisiblePosition());
             if (0 < messData.size()) {
+                updateChat();
             } else {
                 ChatHistory.instance.unregisterChat(chat);
                 ContactList.getInstance().activate(null);

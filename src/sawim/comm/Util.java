@@ -917,6 +917,13 @@ public class Util {
         v.copyInto(result);
         return result;
     }
+    public static String[] vectorToArray_(Vector v) {
+        String[] stringArray = new String[v.size()];
+        for (int i=0; i < v.size(); i++) {
+            stringArray[i] = v.get(i).toString();
+        }
+        return stringArray;
+    }
 
     public static int stringsToInt(String[] mass, String s) {
         for (int i = 0; i < mass.length; ++i) {
@@ -985,7 +992,7 @@ public class Util {
         return sb.toString();
     }
     
-    public static int getIndex(List<TreeNode> v, Object o) {
+    public static int getIndex(List v, Object o) {
         int size = v.size();
         for (int i = 0; i < size; ++i) {
             if (v.get(i) == o) {

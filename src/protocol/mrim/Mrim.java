@@ -1,7 +1,6 @@
-
-
 package protocol.mrim;
 
+import protocol.net.TcpSocket;
 import ru.sawim.activities.SawimActivity;
 import sawim.ui.text.VirtualList;
 import DrawControls.icons.*;
@@ -16,6 +15,8 @@ import sawim.ui.text.VirtualListModel;
 import sawim.util.JLocale;
 import protocol.*;
 
+import javax.microedition.io.Connector;
+import javax.microedition.io.HttpConnection;
 
 public class Mrim extends Protocol {
     private MrimConnection connection = null;
@@ -122,14 +123,12 @@ public class Mrim extends Protocol {
     }
 
     public boolean isMeVisible(Contact to) {
-        
         if (to.inInvisibleList()) {
             return false;
         }
         if (to.inIgnoreList()) {
             return false;
         }
-        
         return true;
     }
 
@@ -220,7 +219,6 @@ public class Mrim extends Protocol {
     }
 
     protected Contact loadContact(DataInputStream dis) throws Exception {
-        
         int contactId = dis.readInt();
         String uin = dis.readUTF();
         String name = dis.readUTF();
@@ -249,7 +247,7 @@ public class Mrim extends Protocol {
     }
 
     public void getAvatar(UserInfo userInfo) {
-        //new sawim.ui.timers.GetVersion(userInfo).get();
+        new GetAvatar().getAvatar(userInfo);
     }
 
     public String getUserIdName() {
@@ -261,14 +259,13 @@ public class Mrim extends Protocol {
         MrimContact contact = (MrimContact)c;
         switch (action) {
             case MrimContact.USER_MENU_SEND_SMS:
-                //new sawim.forms.SmsForm(this, contact.getPhones()).show();
+                new sawim.forms.SmsForm(this, contact.getPhones()).show();
                 break;
 
             case Contact.CONFERENCE_DISCONNECT:
                 new ContactMenu(this, c).doAction(SawimActivity.getInstance(), Contact.USER_MENU_USER_REMOVE);
                 break;
 
-            
             case MrimContact.USER_MENU_PS_VISIBLE:
             case MrimContact.USER_MENU_PS_INVISIBLE:
             case MrimContact.USER_MENU_PS_IGNORE:
@@ -292,9 +289,7 @@ public class Mrim extends Protocol {
             }
             VirtualList tl = VirtualList.getInstance();
             tl.setCaption(JLocale.getString("list_of_users"));
-            //tl.setAllToTop();
             tl.setModel(list);
-            //tl.setController(new TextListController(null, -1));
             tl.show();
 
         } else if (MrimChatContact.USER_MENU_ADD_USER == action) {
@@ -350,5 +345,3 @@ public class Mrim extends Protocol {
         statusView.showIt();
     }
 }
-
-

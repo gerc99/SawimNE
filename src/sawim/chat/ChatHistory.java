@@ -1,17 +1,12 @@
-
-
 package sawim.chat;
 
 import DrawControls.icons.Icon;
-import sawim.Sawim;
-import sawim.SawimUI;
 import sawim.chat.message.Message;
 import sawim.chat.message.PlainMessage;
 import sawim.cl.ContactList;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
 import sawim.io.Storage;
-import sawim.util.JLocale;
 import protocol.Contact;
 import protocol.Protocol;
 
@@ -33,11 +28,21 @@ public final class ChatHistory {
     public int getTotal() {
         return historyTable.size();
     }
+
     public Chat chatAt(int index) {
         return (Chat)historyTable.elementAt(index);
     }
+
     public Contact contactAt(int index) {
         return chatAt(index).getContact();
+    }
+
+    public String[] vectorToArray() {
+        String[] stringArray = new String[historyTable.size()];
+        for (int i=0; i < historyTable.size(); i++) {
+            stringArray[i] = chatAt(i).getContact().getName();
+        }
+        return stringArray;
     }
 
     public Chat getChat(Contact c) {

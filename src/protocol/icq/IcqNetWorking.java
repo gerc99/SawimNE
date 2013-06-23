@@ -1,8 +1,5 @@
-
-
 package protocol.icq;
 
-import sawim.Sawim;
 import sawim.SawimException;
 import sawim.comm.Util;
 import protocol.Protocol;
@@ -20,14 +17,12 @@ public final class IcqNetWorking extends ClientConnection {
     private Icq icq;
     private IcqNetState queue;
     private boolean icqConnected = false;
-    
-    
+
     private int flapSEQ = Util.nextRandInt() % 0x8000;
     private byte[] pingPacket = null;
     
     private int counter = 0;
 
-    
     private static final int CHANNEL_CONNECT = 0x01;
     private static final int CHANNEL_SNAC = 0x02;
     private static final int CHANNEL_ERROR = 0x03;
@@ -72,7 +67,6 @@ public final class IcqNetWorking extends ClientConnection {
     }
 
     public final void connectTo(String server) throws SawimException {
-        
         if (null != socket) {
             socket.close();
         }
@@ -83,7 +77,6 @@ public final class IcqNetWorking extends ClientConnection {
         socket.connectTo("socket://" + server);
     }
 
-    
     private int getFlapSequence() {
         flapSEQ = (++flapSEQ) & 0x7FFF;
         return flapSEQ;
@@ -139,7 +132,6 @@ public final class IcqNetWorking extends ClientConnection {
     protected void connect() throws SawimException {
         connect = true;
         nextIcqSequence = 0;
-        
         queue.processActions();
     }
 
@@ -158,7 +150,6 @@ public final class IcqNetWorking extends ClientConnection {
         }
     }
 
-    
     private Packet parse(int channel, byte[] flapData) throws SawimException {
         try {
             switch (channel) {
@@ -179,9 +170,7 @@ public final class IcqNetWorking extends ClientConnection {
         } catch (SawimException e) {
             throw e;
         } catch (Exception e) {
-            
             sawim.modules.DebugLog.dump("broken packet " + channel, flapData);
-            
         }
         return null;
     }
@@ -196,5 +185,3 @@ public final class IcqNetWorking extends ClientConnection {
         connect = false;
     }
 }
-
-

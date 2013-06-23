@@ -29,7 +29,7 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
     private VirtualList profileView;
     private boolean avatarIsLoaded = false;
     private boolean searchResult = false;
-    private Bitmap avatar;
+    public Bitmap avatar;
     public String status;
     public protocol.jabber.XmlNode vCard;
     public final String realUin;

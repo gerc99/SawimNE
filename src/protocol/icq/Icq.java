@@ -1,10 +1,13 @@
-
-
-
 package protocol.icq;
 
 import DrawControls.icons.Icon;
 import DrawControls.icons.ImageList;
+import protocol.*;
+import protocol.icq.action.*;
+import protocol.icq.packet.Packet;
+import protocol.icq.packet.SnacPacket;
+import protocol.icq.packet.ToIcqSrvPacket;
+import protocol.icq.plugin.XtrazMessagePlugin;
 import sawim.Options;
 import sawim.chat.message.PlainMessage;
 import sawim.cl.ContactList;
@@ -15,12 +18,6 @@ import sawim.forms.PrivateStatusForm;
 import sawim.search.Search;
 import sawim.search.UserInfo;
 import sawim.util.JLocale;
-import protocol.*;
-import protocol.icq.action.*;
-import protocol.icq.packet.Packet;
-import protocol.icq.packet.SnacPacket;
-import protocol.icq.packet.ToIcqSrvPacket;
-import protocol.icq.plugin.XtrazMessagePlugin;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -29,27 +26,66 @@ import java.io.DataOutputStream;
 import java.util.Vector;
 
 public class Icq extends Protocol {
+    public static final IcqXStatus xstatus = new IcqXStatus();
+    public static final byte PSTATUS_ALL = 0x01;
+    public static final byte PSTATUS_NONE = 0x02;
+    public static final byte PSTATUS_VISIBLE_ONLY = 0x03;
+    public static final byte PSTATUS_NOT_INVISIBLE = 0x04;
+    public static final byte PSTATUS_CL_ONLY = 0x05;
     private static final int[] statusIconIndex = {1, 0, 4, 3, 10, 11, 8, 9, 12, 5, 6, 7, 2, 2, 1};
     private static final ImageList statusIcons = ImageList.createImageList("/icq-status.png");
-
+    private static final int NICK_TLV_ID = 0x0154;
+    private static final int FIRSTNAME_TLV_ID = 0x0140;
+    private static final int LASTNAME_TLV_ID = 0x014A;
+    private static final int EMAIL_TLV_ID = 0x015E;
+    private static final int BDAY_TLV_ID = 0x023A;
+    private static final int GENDER_TLV_ID = 0x017C;
+    private static final int HOME_PAGE_TLD = 0x0213;
+    private static final int CITY_TLV_ID = 0x0190;
+    private static final int STATE_TLV_ID = 0x019A;
+    private static final int WORK_COMPANY_TLV = 0x01AE;
+    private static final int WORK_DEPARTMENT_TLV = 0x01B8;
+    private static final int WORK_POSITION_TLV = 0x01C2;
+    private static final byte[] statuses = {
+            StatusInfo.STATUS_OFFLINE,
+            StatusInfo.STATUS_CHAT,
+            StatusInfo.STATUS_ONLINE,
+            StatusInfo.STATUS_AWAY,
+            StatusInfo.STATUS_NA,
+            StatusInfo.STATUS_OCCUPIED,
+            StatusInfo.STATUS_DND,
+            StatusInfo.STATUS_EVIL,
+            StatusInfo.STATUS_DEPRESSION,
+            StatusInfo.STATUS_LUNCH,
+            StatusInfo.STATUS_HOME,
+            StatusInfo.STATUS_WORK,
+            StatusInfo.STATUS_INVISIBLE,
+            StatusInfo.STATUS_INVIS_ALL};
+    private static final byte[] MTN_PACKET_BEGIN = {
+            (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+            (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+            (byte) 0x00, (byte) 0x01
+    };
+    private static final int VISIBLE_LIST = 0x0002;
+    private static final int INVISIBLE_LIST = 0x0003;
+    private static final int IGNORE_LIST = 0x000E;
+    private static final int ADD_INTO_LIST = 0;
+    private static final int REMOVE_FROM_LIST = 1;
+    public int privateStatusId = 0;
     private IcqNetWorking connection = null;
-    public static final IcqXStatus xstatus = new IcqXStatus();
-
-    public static final byte PSTATUS_ALL           = 0x01;
-    public static final byte PSTATUS_NONE          = 0x02;
-    public static final byte PSTATUS_VISIBLE_ONLY  = 0x03;
-    public static final byte PSTATUS_NOT_INVISIBLE = 0x04;
-    public static final byte PSTATUS_CL_ONLY       = 0x05;
-    
-    private Vector ignoreList    = new Vector();
+    private Vector ignoreList = new Vector();
     private Vector invisibleList = new Vector();
-    private Vector visibleList   = new Vector();
+    private Vector visibleList = new Vector();
+    private int ssiListLastChangeTime = -1;
+    private int ssiNumberOfItems = 0;
 
     public Icq() {
     }
+
     public String getUserIdName() {
         return "UIN";
     }
+
     protected void initStatusInfo() {
         info = new StatusInfo(statusIcons, statusIconIndex, statuses);
         xstatusInfo = Icq.xstatus.getInfo();
@@ -71,13 +107,14 @@ public class Icq extends Protocol {
             connection.requestAction(act);
         }
     }
+
     private void requestSimpleAction(Packet pkt) {
         requestSimpleAction(new OtherAction(pkt));
     }
-    
+
     protected void sendSomeMessage(PlainMessage msg) {
         msg.setMessageId(Util.uniqueValue());
-        
+
         byte[] uinRaw = StringConvertor.stringToByteArray(msg.getRcvrUin());
 
         String text = StringConvertor.restoreCrLf(msg.getText());
@@ -87,25 +124,25 @@ public class Icq extends Protocol {
         if (true) {
             byte[] textRaw = StringConvertor.stringToUcs2beByteArray(text);
 
-            buffer.writeDWordBE(msg.getMessageId()); 
-            buffer.writeDWordBE(0x00000000);         
-            buffer.writeWordBE(0x0001); 
-            buffer.writeByte(uinRaw.length); 
+            buffer.writeDWordBE(msg.getMessageId());
+            buffer.writeDWordBE(0x00000000);
+            buffer.writeWordBE(0x0001);
+            buffer.writeByte(uinRaw.length);
             buffer.writeByteArray(uinRaw);
 
-            buffer.writeWordBE(0x0002); 
+            buffer.writeWordBE(0x0002);
             buffer.writeWordBE(5 + 4 + 4 + textRaw.length);
-            buffer.writeTLVByte(0x0501, 0x01); 
+            buffer.writeTLVByte(0x0501, 0x01);
 
-            buffer.writeWordBE(0x0101); 
+            buffer.writeWordBE(0x0101);
             buffer.writeWordBE(4 + textRaw.length);
-            buffer.writeDWordBE(0x00020000); 
-            buffer.writeByteArray(textRaw); 
+            buffer.writeDWordBE(0x00020000);
+            buffer.writeByteArray(textRaw);
         } else {
             byte[] textRaw = StringConvertor.stringToByteArrayUtf8(text);
             Util tlv1127 = new Util();
 
-            tlv1127.writeWordLE(0x001B); 
+            tlv1127.writeWordLE(0x001B);
 
             tlv1127.writeWordLE(0x0008);
 
@@ -121,15 +158,15 @@ public class Icq extends Protocol {
 
             final int SEQ1 = 0xffff;
             tlv1127.writeWordLE(SEQ1);
-            tlv1127.writeWordLE(0x000E); 
+            tlv1127.writeWordLE(0x000E);
             tlv1127.writeWordLE(SEQ1);
 
             tlv1127.writeDWordLE(0x00000000);
             tlv1127.writeDWordLE(0x00000000);
             tlv1127.writeDWordLE(0x00000000);
 
-            tlv1127.writeWordLE(0x0001); 
-            tlv1127.writeWordLE(0); 
+            tlv1127.writeWordLE(0x0001);
+            tlv1127.writeWordLE(0);
 
             tlv1127.writeWordLE(0x0001);
 
@@ -137,7 +174,7 @@ public class Icq extends Protocol {
             tlv1127.writeByteArray(textRaw);
             tlv1127.writeByte(0x00);
 
-            
+
             tlv1127.writeDWordBE(0x00000000);
             tlv1127.writeDWordBE(0x00FFFFFF);
 
@@ -155,16 +192,16 @@ public class Icq extends Protocol {
 
             tlv5.writeTLV(0x2711, tlv1127.toByteArray());
 
-            buffer.writeDWordBE(msg.getMessageId()); 
-            buffer.writeDWordBE(0x00000000);         
-            buffer.writeWordBE(0x0002); 
-            buffer.writeByte(uinRaw.length); 
+            buffer.writeDWordBE(msg.getMessageId());
+            buffer.writeDWordBE(0x00000000);
+            buffer.writeWordBE(0x0002);
+            buffer.writeByte(uinRaw.length);
             buffer.writeByteArray(uinRaw);
             buffer.writeTLV(0x0005, tlv5.toByteArray());
         }
         buffer.writeTLV(0x0003, null);
         buffer.writeTLV(0x0006, null);
-        
+
         byte[] buf = buffer.toByteArray();
         connection.addMessage(msg);
         requestSimpleAction(new SnacPacket(SnacPacket.CLI_ICBM_FAMILY,
@@ -178,7 +215,7 @@ public class Icq extends Protocol {
     }
 
     protected void s_addContact(Contact contact) {
-        
+
         IcqAction act = new UpdateContactListAction(this, contact, UpdateContactListAction.ACTION_ADD);
         requestSimpleAction(act);
     }
@@ -234,7 +271,7 @@ public class Icq extends Protocol {
                 changeServerList(list, (IcqContact) contact);
                 ContactList.getInstance().activate();
                 break;
-            
+
         }
     }
 
@@ -247,12 +284,12 @@ public class Icq extends Protocol {
                 + getUserId()
                 + "</senderId></req></srv>"));
         str.append("</NOTIFY></N>");
-        XtrazMessagePlugin plugin = new XtrazMessagePlugin((IcqContact)c, str.toString());
+        XtrazMessagePlugin plugin = new XtrazMessagePlugin((IcqContact) c, str.toString());
         requestSimpleAction(plugin.getPacket());
-        ((IcqContact)c).setXStatusMessage("");
+        ((IcqContact) c).setXStatusMessage("");
         updateStatusView(c);
     }
-    
+
     public boolean isMeVisible(Contact to) {
         switch (getPrivateStatus()) {
             case PrivateStatusForm.PSTATUS_NONE:
@@ -270,6 +307,7 @@ public class Icq extends Protocol {
 
         return true;
     }
+
     public UserInfo getUserInfo(Contact c) {
         UserInfo data = new UserInfo(this);
         RequestInfoAction getInfoAction = new RequestInfoAction(data, (IcqContact) c);
@@ -284,40 +322,47 @@ public class Icq extends Protocol {
         sendStatus();
         if (-1 != bCode) {
             setPrivateStatus((Icq.PSTATUS_NONE == bCode)
-                    ? (byte)PrivateStatusForm.PSTATUS_NONE
-                    : (byte)PrivateStatusForm.PSTATUS_VISIBLE_ONLY);
+                    ? (byte) PrivateStatusForm.PSTATUS_NONE
+                    : (byte) PrivateStatusForm.PSTATUS_VISIBLE_ONLY);
         }
-        
     }
 
     protected void s_updateXStatus() {
         sendCaps();
         sendNewXStatus();
     }
-    
+
     protected void s_setPrivateStatus() {
         sendPrivateStatus(getIcqPrivateStatus());
     }
 
     private byte getPrivateStatusByStatus() {
         switch (getProfile().statusIndex) {
-            case StatusInfo.STATUS_INVIS_ALL: return Icq.PSTATUS_NONE;
-            case StatusInfo.STATUS_INVISIBLE: return Icq.PSTATUS_VISIBLE_ONLY;
+            case StatusInfo.STATUS_INVIS_ALL:
+                return Icq.PSTATUS_NONE;
+            case StatusInfo.STATUS_INVISIBLE:
+                return Icq.PSTATUS_VISIBLE_ONLY;
         }
         return -1;
     }
+
     public byte getIcqPrivateStatus() {
         byte p = getPrivateStatusByStatus();
         if (-1 != p) return p;
-        
+
         switch (getPrivateStatus()) {
-            case PrivateStatusForm.PSTATUS_ALL:           return Icq.PSTATUS_ALL;
-            case PrivateStatusForm.PSTATUS_VISIBLE_ONLY:  return Icq.PSTATUS_VISIBLE_ONLY;
-            case PrivateStatusForm.PSTATUS_NOT_INVISIBLE: return Icq.PSTATUS_NOT_INVISIBLE;
-            case PrivateStatusForm.PSTATUS_CL_ONLY:       return Icq.PSTATUS_CL_ONLY;
-            case PrivateStatusForm.PSTATUS_NONE:          return Icq.PSTATUS_NONE;
+            case PrivateStatusForm.PSTATUS_ALL:
+                return Icq.PSTATUS_ALL;
+            case PrivateStatusForm.PSTATUS_VISIBLE_ONLY:
+                return Icq.PSTATUS_VISIBLE_ONLY;
+            case PrivateStatusForm.PSTATUS_NOT_INVISIBLE:
+                return Icq.PSTATUS_NOT_INVISIBLE;
+            case PrivateStatusForm.PSTATUS_CL_ONLY:
+                return Icq.PSTATUS_CL_ONLY;
+            case PrivateStatusForm.PSTATUS_NONE:
+                return Icq.PSTATUS_NONE;
         }
-        
+
         return Icq.PSTATUS_NOT_INVISIBLE;
     }
 
@@ -328,18 +373,14 @@ public class Icq extends Protocol {
         }
     }
 
-    public int privateStatusId = 0;
-
-    private int ssiListLastChangeTime = -1;
-    private int ssiNumberOfItems = 0;
-    
     public int getSsiListLastChangeTime() {
         return ssiListLastChangeTime;
     }
-    
+
     public int getSsiNumberOfItems() {
         return ssiNumberOfItems;
     }
+
     public void setContactListInfo(int timestamp, int numberOfItems) {
         ssiListLastChangeTime = timestamp;
         ssiNumberOfItems = numberOfItems;
@@ -359,7 +400,7 @@ public class Icq extends Protocol {
             c.init(-1, Group.NOT_IN_GROUP, name, false);
             return c;
         } catch (Exception e) {
-            
+
             return null;
         }
     }
@@ -369,29 +410,29 @@ public class Icq extends Protocol {
             return true;
         }
         for (int i = groups.size() - 1; i >= 0; --i) {
-            Group group = (Group)groups.elementAt(i);
+            Group group = (Group) groups.elementAt(i);
             if (group.getId() == id) {
                 return true;
             }
         }
         for (int i = contacts.size() - 1; i >= 0; --i) {
-            IcqContact item = (IcqContact)contacts.elementAt(i);
+            IcqContact item = (IcqContact) contacts.elementAt(i);
             if ((item.getContactId() == id)) {
                 return true;
             }
         }
-        
+
         if (isExistId(invisibleList, id) || isExistId(visibleList, id)
                 || isExistId(ignoreList, id)) {
             return true;
         }
-        
+
         return false;
     }
-    
+
     private boolean isExistId(Vector list, int id) {
         for (int i = list.size() - 1; 0 <= i; --i) {
-            if (((PrivacyItem)list.elementAt(i)).id == id) {
+            if (((PrivacyItem) list.elementAt(i)).id == id) {
                 return true;
             }
         }
@@ -406,60 +447,64 @@ public class Icq extends Protocol {
         return id;
     }
 
-   protected void loadProtocolData(byte[] data) throws Exception {
+    protected void loadProtocolData(byte[] data) throws Exception {
         ByteArrayInputStream bais = new ByteArrayInputStream(data);
         DataInputStream dis = new DataInputStream(bais);
         ssiListLastChangeTime = dis.readInt();
         ssiNumberOfItems = dis.readUnsignedShort();
     }
+
     protected byte[] saveProtocolData() throws Exception {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         DataOutputStream dos = new DataOutputStream(baos);
         dos.writeInt(getSsiListLastChangeTime());
-        dos.writeShort((short)getSsiNumberOfItems());
+        dos.writeShort((short) getSsiNumberOfItems());
         return baos.toByteArray();
     }
+
     protected Contact loadContact(DataInputStream dis) throws Exception {
         int contactId = dis.readInt();
         int groupId = dis.readInt();
         byte flags = dis.readByte();
         String uin = dis.readUTF();
         String name = dis.readUTF();
-        
+
         int visibleId = dis.readInt();
         int invisibleId = dis.readInt();
         int ignoreId = dis.readInt();
-        
+
 
         IcqContact contact = (IcqContact) createContact(uin, name);
         contact.setContactId(contactId);
         contact.setGroupId(groupId);
         contact.setBooleanValues(flags);
         contact.setName(name);
-        
+
         setVisibleId(contact, visibleId);
         setInvisibleId(contact, invisibleId);
         setIgnoreId(contact, ignoreId);
-        
+
         contact.setOfflineStatus();
         return contact;
     }
+
     protected void saveContact(DataOutputStream out, Contact contact) throws Exception {
-        IcqContact icqContact = ((IcqContact)contact);
+        IcqContact icqContact = ((IcqContact) contact);
         out.writeByte(0);
         out.writeInt(icqContact.getContactId());
         out.writeInt(icqContact.getGroupId());
         out.writeByte(icqContact.getBooleanValues());
         out.writeUTF(icqContact.getUserId());
         out.writeUTF(icqContact.getName());
-        
+
         out.writeInt(getVisibleId(icqContact));
         out.writeInt(getInvisibleId(icqContact));
         out.writeInt(getIgnoreId(icqContact));
-        
+
     }
+
     public void getAvatar(UserInfo userInfo) {
-        //new sawim.ui.timers.GetVersion(userInfo).get();
+        new GetAvatar().getAvatar(userInfo);
     }
 
     protected void s_searchUsers(Search cont) {
@@ -473,18 +518,20 @@ public class Icq extends Protocol {
             requestSimpleAction(new SearchAction(cont));
         }
     }
+
     protected void s_removeGroup(Group group) {
         requestSimpleAction(new UpdateContactListAction(group, UpdateContactListAction.ACTION_DEL));
     }
+
     protected void s_renameGroup(Group group, String name) {
         group.setName(name);
         IcqAction act = new UpdateContactListAction(group, UpdateContactListAction.ACTION_RENAME);
         requestSimpleAction(act);
     }
-    
+
     protected void s_renameContact(Contact contact, String name) {
         contact.setName(name);
-        
+
         requestSimpleAction(new UpdateContactListAction(this, contact,
                 UpdateContactListAction.ACTION_RENAME));
     }
@@ -492,13 +539,15 @@ public class Icq extends Protocol {
     protected void s_moveContact(Contact contact, Group to) {
         requestSimpleAction(new UpdateContactListAction(contact, getGroup(contact), to));
     }
+
     public void saveUserInfo(UserInfo userInfo) {
         requestSimpleAction(makeSaveInfoPacket(userInfo));
     }
+
     private ToIcqSrvPacket makeSaveInfoPacket(UserInfo userInfo) {
         Util stream = new Util();
 
-        
+
         stream.writeWordLE(ToIcqSrvPacket.CLI_SET_FULLINFO);
 
         stream.writeProfileAsciizTLV(NICK_TLV_ID, userInfo.nick);
@@ -513,14 +562,14 @@ public class Icq extends Protocol {
         stream.writeProfileAsciizTLV(WORK_DEPARTMENT_TLV, userInfo.workDepartment);
         stream.writeProfileAsciizTLV(WORK_POSITION_TLV, userInfo.workPosition);
 
-        
+
         if (userInfo.birthDay != null) {
             String[] bDate = Util.explode(userInfo.birthDay, '.');
             try {
                 if (bDate.length == 3) {
-                    int year  = Integer.parseInt(bDate[2]);
+                    int year = Integer.parseInt(bDate[2]);
                     int month = Integer.parseInt(bDate[1]);
-                    int day   = Integer.parseInt(bDate[0]);
+                    int day = Integer.parseInt(bDate[0]);
                     stream.writeWordLE(BDAY_TLV_ID);
                     stream.writeWordLE(6);
                     stream.writeWordLE(year);
@@ -530,46 +579,17 @@ public class Icq extends Protocol {
             } catch (Exception e) {
             }
         }
-        
+
         stream.writeWordLE(GENDER_TLV_ID);
         stream.writeWordLE(1);
         stream.writeByte(userInfo.gender);
 
-        
+
         stream.writeTlvECombo(EMAIL_TLV_ID, userInfo.email, 0);
 
         return new ToIcqSrvPacket(0, getUserId(),
                 ToIcqSrvPacket.CLI_META_SUBCMD, new byte[0], stream.toByteArray());
     }
-    
-    private static final int NICK_TLV_ID = 0x0154;
-    private static final int FIRSTNAME_TLV_ID = 0x0140;
-    private static final int LASTNAME_TLV_ID = 0x014A;
-    private static final int EMAIL_TLV_ID = 0x015E;
-    private static final int BDAY_TLV_ID = 0x023A;
-    private static final int GENDER_TLV_ID = 0x017C;
-    private static final int HOME_PAGE_TLD = 0x0213;
-    private static final int CITY_TLV_ID = 0x0190;
-    private static final int STATE_TLV_ID = 0x019A;
-    private static final int WORK_COMPANY_TLV = 0x01AE;
-    private static final int WORK_DEPARTMENT_TLV = 0x01B8;
-    private static final int WORK_POSITION_TLV = 0x01C2;
-
-    private static final byte[] statuses = {
-        StatusInfo.STATUS_OFFLINE,
-        StatusInfo.STATUS_CHAT,
-        StatusInfo.STATUS_ONLINE,
-        StatusInfo.STATUS_AWAY,
-        StatusInfo.STATUS_NA,
-        StatusInfo.STATUS_OCCUPIED,
-        StatusInfo.STATUS_DND,
-        StatusInfo.STATUS_EVIL,
-        StatusInfo.STATUS_DEPRESSION,
-        StatusInfo.STATUS_LUNCH,
-        StatusInfo.STATUS_HOME,
-        StatusInfo.STATUS_WORK,
-        StatusInfo.STATUS_INVISIBLE,
-        StatusInfo.STATUS_INVIS_ALL};
 
     protected void s_sendTypingNotify(Contact to, boolean isTyping) {
         sendBeginTyping(to, isTyping);
@@ -577,27 +597,28 @@ public class Icq extends Protocol {
 
     public SnacPacket getStatusPacket() {
         long status = 0x10000000 | IcqStatusInfo.getNativeStatus(getProfile().statusIndex);
-        
+
         byte[] data = new byte[4 + 4 + 4 + 0x25];
         Util.putDWordBE(data, 0, 0x00060004);
         Util.putDWordBE(data, 4, status);
         Util.putDWordBE(data, 8, 0x000C0025);
         Util.putDWordBE(data, 23, 0xE36C96A9);
 
-        Util.putWordBE (data, 21, 0x0009);
+        Util.putWordBE(data, 21, 0x0009);
         Util.putDWordBE(data, 35, 0xFFFFFFFE);
         Util.putDWordBE(data, 39, 0x00100000);
         Util.putDWordBE(data, 43, 0xFFFFFFFE);
         return new SnacPacket(SnacPacket.SERVICE_FAMILY, SnacPacket.CLI_SETSTATUS_COMMAND, data);
     }
+
     public SnacPacket getCapsPacket() {
         Vector guids = new Vector();
 
         guids.addElement(GUID.CAP_AIM_ISICQ);
         guids.addElement(GUID.CAP_AIM_SERVERRELAY);
-        
+
         guids.addElement(GUID.CAP_XTRAZ);
-        
+
         guids.addElement(GUID.CAP_Sawim);
         guids.addElement(GUID.CAP_UTF8);
 
@@ -616,20 +637,21 @@ public class Icq extends Protocol {
         byte[] packet = new byte[guidsCount * 16 + 4];
         packet[0] = 0x00;
         packet[1] = 0x05;
-        packet[2] = (byte)((guidsCount * 16) / 0x0100);
-        packet[3] = (byte)((guidsCount * 16) % 0x0100);
+        packet[2] = (byte) ((guidsCount * 16) / 0x0100);
+        packet[3] = (byte) ((guidsCount * 16) % 0x0100);
 
         if (0 != extStatus) {
             System.arraycopy(GUID.CAP_QIP_STATUS.toByteArray(), 0, packet, 4, 16);
-            Util.putByte(packet, 4 + 15, extStatus); 
+            Util.putByte(packet, 4 + 15, extStatus);
         }
 
         for (int i = extStatusCount; i < guidsCount; ++i) {
-            System.arraycopy(((GUID)guids.elementAt(i - extStatusCount)).toByteArray(), 0, packet, i * 16 + 4, 16);
+            System.arraycopy(((GUID) guids.elementAt(i - extStatusCount)).toByteArray(), 0, packet, i * 16 + 4, 16);
         }
 
         return new SnacPacket(SnacPacket.LOCATION_FAMILY, SnacPacket.CLI_SETUSERINFO_COMMAND, packet);
     }
+
     public SnacPacket getPrivateStatusPacket(byte status) {
         int id = privateStatusId;
         int cmd = SnacPacket.CLI_ROSTERUPDATE_COMMAND;
@@ -639,11 +661,11 @@ public class Icq extends Protocol {
             privateStatusId = id;
         }
         Util stream = new Util();
-        stream.writeWordBE(0);    
-        stream.writeWordBE(0);    
-        stream.writeWordBE(id);   
-        stream.writeWordBE(4);    
-        stream.writeWordBE(5);    
+        stream.writeWordBE(0);
+        stream.writeWordBE(0);
+        stream.writeWordBE(id);
+        stream.writeWordBE(4);
+        stream.writeWordBE(5);
         stream.writeTLVByte(0xCA, status);
         return new SnacPacket(SnacPacket.SSI_FAMILY, cmd, stream.toByteArray());
     }
@@ -651,6 +673,7 @@ public class Icq extends Protocol {
     private void sendCaps() {
         requestSimpleAction(getCapsPacket());
     }
+
     private void sendStatus() {
         long status = 0x10000000 | IcqStatusInfo.getNativeStatus(getProfile().statusIndex);
         Util data = new Util();
@@ -659,15 +682,10 @@ public class Icq extends Protocol {
         SnacPacket p = new SnacPacket(SnacPacket.SERVICE_FAMILY, SnacPacket.CLI_SETSTATUS_COMMAND, data.toByteArray());
         requestSimpleAction(p);
     }
+
     private void sendPrivateStatus(byte status) {
         requestSimpleAction(getPrivateStatusPacket(status));
     }
-
-    private static final byte[] MTN_PACKET_BEGIN = {
-        (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
-        (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
-        (byte) 0x00, (byte) 0x01
-    };
 
     private void sendBeginTyping(Contact contact, boolean isTyping) {
         Util stream = new Util();
@@ -682,7 +700,7 @@ public class Icq extends Protocol {
         int moodIndex = Icq.xstatus.getIcqMood(xStatus);
         String mood = (moodIndex < 0) ? "" : ("0icqmood" + moodIndex);
         msg = (msg.length() < 250) ? msg : (msg.substring(0, 250 - 3) + "...");
-        
+
         byte[] moodArr = StringConvertor.stringToByteArrayUtf8(mood);
         byte[] xMsgArr = StringConvertor.stringToByteArrayUtf8(msg);
         int xMsgLen = (0 == xMsgArr.length) ? 0 : (2 + xMsgArr.length + 2);
@@ -705,41 +723,37 @@ public class Icq extends Protocol {
             out.writeWordBE(0x0000);
         }
     }
+
     public SnacPacket getNewXStatusPacket(int xStatus, String msg) {
         Util mood = new Util();
         addMoodToStatus(mood, xStatus, msg.trim());
         return new SnacPacket(SnacPacket.SERVICE_FAMILY,
                 SnacPacket.CLI_SETSTATUS_COMMAND, mood.toByteArray());
     }
+
     private void sendNewXStatus() {
         int index = getProfile().xstatusIndex;
         String title = getProfile().xstatusTitle;
-        String desc  = getProfile().xstatusDescription;
+        String desc = getProfile().xstatusDescription;
         title = StringConvertor.notNull(title);
         desc = StringConvertor.notNull(desc);
         String text = (title + " " + desc).trim();
         requestSimpleAction(getNewXStatusPacket(index, text));
     }
-    
 
     void sendRemoveMePacket(String uin) {
         byte[] uinRaw = StringConvertor.stringToByteArray(uin);
 
         byte[] buf = new byte[1 + uinRaw.length];
 
-        
+
         Util.putByte(buf, 0, uinRaw.length);
         System.arraycopy(uinRaw, 0, buf, 1, uinRaw.length);
         SnacPacket pkt = new SnacPacket(SnacPacket.SSI_FAMILY,
                 SnacPacket.CLI_REMOVEME_COMMAND, 0x00000003, buf);
         requestSimpleAction(pkt);
     }
-    
-    private static final int VISIBLE_LIST = 0x0002;
-    private static final int INVISIBLE_LIST = 0x0003;
-    private static final int IGNORE_LIST = 0x000E;
-    private static final int ADD_INTO_LIST = 0;
-    private static final int REMOVE_FROM_LIST = 1;
+
     private void changeServerList(int list, IcqContact item) {
         int id = 0;
         switch (list) {
@@ -800,11 +814,13 @@ public class Icq extends Protocol {
         }
         ui_updateContact(item);
     }
+
     public void setPrivacyLists(Vector ignore, Vector invisible, Vector visible) {
         ignoreList = ignore;
         invisibleList = invisible;
         visibleList = visible;
     }
+
     private void setIgnoreId(IcqContact c, int id) {
         setPrivacy(ignoreList, c, Contact.SL_IGNORE, id);
     }
@@ -816,6 +832,7 @@ public class Icq extends Protocol {
     private void setInvisibleId(IcqContact c, int id) {
         setPrivacy(invisibleList, c, Contact.SL_INVISIBLE, id);
     }
+
     private void setPrivacy(Vector list, Contact c, byte l, int id) {
         PrivacyItem item = getListItem(list, c);
         if (0 == id) {
@@ -828,11 +845,12 @@ public class Icq extends Protocol {
         }
         c.setBooleanValue(l, id != 0);
     }
+
     private PrivacyItem getListItem(Vector list, Contact c) {
         String uin = c.getUserId();
         PrivacyItem item;
         for (int i = list.size() - 1; 0 <= i; --i) {
-            item = (PrivacyItem)list.elementAt(i);
+            item = (PrivacyItem) list.elementAt(i);
             if (uin.equals(item.userId)) {
                 item.userId = uin;
                 return item;
@@ -840,36 +858,40 @@ public class Icq extends Protocol {
         }
         return null;
     }
+
     public int getIgnoreId(Contact c) {
         PrivacyItem item = getListItem(ignoreList, c);
         return (null == item) ? 0 : item.id;
     }
+
     public int getVisibleId(Contact c) {
         PrivacyItem item = getListItem(visibleList, c);
         return (null == item) ? 0 : item.id;
     }
+
     public int getInvisibleId(Contact c) {
         PrivacyItem item = getListItem(invisibleList, c);
         return (null == item) ? 0 : item.id;
     }
-    
+
     private void sendAuthResult(String userId, boolean confirm) {
         Util stream = new Util();
         stream.writeShortLenAndUtf8String(userId);
         stream.writeByte(confirm ? 0x01 : 0x00);
-        stream.writeLenAndUtf8String("" );
-        
+        stream.writeLenAndUtf8String("");
+
         requestSimpleAction(new SnacPacket(SnacPacket.SSI_FAMILY,
                 SnacPacket.CLI_AUTHORIZE_COMMAND, 0x0000001A,
                 stream.toByteArray()));
     }
+
     protected void requestAuth(String userId) {
         final String reason = "";
         Util stream = new Util();
         stream.writeShortLenAndUtf8String(userId);
         stream.writeLenAndUtf8String(reason);
         stream.writeWordBE(0x0000);
-        
+
         requestSimpleAction(new SnacPacket(SnacPacket.SSI_FAMILY,
                 SnacPacket.CLI_REQAUTH_COMMAND, 0x00000018,
                 stream.toByteArray()));
@@ -898,32 +920,33 @@ public class Icq extends Protocol {
         }
         data.showProfile();
     }
+
     public void showStatus(Contact contact) {
         StatusView statusView = ContactList.getInstance().getStatusView();
         ContactList.getInstance().setCurrentContact(contact);
         _updateStatusView(statusView, contact);
-	statusView.showIt();
-        
+        statusView.showIt();
         if ((XStatusInfo.XSTATUS_NONE != contact.getXStatusIndex())
                 && (null == contact.getXStatusText())
                 && isMeVisible(contact)) {
             requestXStatusMessage(contact);
         }
-        
     }
+
     public void updateStatusView(Contact contact) {
         StatusView statusView = ContactList.getInstance().getStatusView();
         if (contact == statusView.getContact()) {
             _updateStatusView(statusView, contact);
         }
     }
+
     private void _updateStatusView(StatusView statusView, Contact contact) {
         statusView.init(this, contact);
         statusView.initUI();
         statusView.addContactStatus();
 
         if (contact.isOnline()) {
-            Icon happy = ((IcqContact)contact).getHappyIcon();
+            Icon happy = ((IcqContact) contact).getHappyIcon();
             if (null != happy) {
                 statusView.addPlain(happy,
                         JLocale.getString("status_happy_flag"));
@@ -933,7 +956,6 @@ public class Icq extends Protocol {
                 statusView.addStatusText(statusText);
             }
 
-            
             if (XStatusInfo.XSTATUS_NONE != contact.getXStatusIndex()) {
                 statusView.addXStatus();
                 String xText = contact.getXStatusText();
@@ -941,7 +963,6 @@ public class Icq extends Protocol {
                     statusView.addStatusText(xText);
                 }
             }
-            
         }
         statusView.addClient();
         statusView.addTime();

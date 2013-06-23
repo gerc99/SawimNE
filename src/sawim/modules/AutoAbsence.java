@@ -1,6 +1,3 @@
-
-
-
 package sawim.modules;
 
 import sawim.Sawim;
@@ -10,7 +7,6 @@ import protocol.Profile;
 import protocol.Protocol;
 import protocol.StatusInfo;
 import protocol.XStatusInfo;
-
 
 public final class AutoAbsence {
     public static final AutoAbsence instance = new AutoAbsence();
@@ -61,11 +57,6 @@ public final class AutoAbsence {
         if ((null == p) || !p.isConnected() || p.getStatusInfo().isAway(p.getProfile().statusIndex)) {
             return false;
         }
-        
-
-
-
-        
         return true;
     }
     private void doRestore() {
@@ -83,15 +74,12 @@ public final class AutoAbsence {
                     p.xstatusTitle = pr.xstatusTitle;
                     p.xstatusDescription = pr.xstatusDescription;
                 }
-                
+
                 protos[i].setOnlineStatus(pr.statusIndex, pr.statusMessage);
             }
         }
     }
 
-    private boolean isBlockOn() {
-        return Options.getBoolean(Options.OPTION_AA_BLOCK);
-    }
     public final void updateTime() {
         if (!absence) {
             try {
@@ -108,14 +96,10 @@ public final class AutoAbsence {
         }
     }
     public final void away() {
-        if (isBlockOn()) {
-            doAway();
-        }
+        doAway();
     }
     public final void online() {
-        if (isBlockOn()) {
-            doRestore();
-        }
+        doRestore();
     }
 
     public final void updateOptions() {
@@ -137,5 +121,3 @@ public final class AutoAbsence {
         }
     }
 }
-
-

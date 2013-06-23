@@ -15,7 +15,6 @@ import java.util.Vector;
 
 public class Options {
     static final int OPTIONS_CURR_ACCOUNT              =  86;
-    public static final int OPTION_AA_BLOCK           = 175;   
     public static final int OPTION_AA_TIME            = 106;
     public static final int OPTION_UI_LANGUAGE         =   3;
     public static final int OPTION_CL_SORT_BY          =  65;   

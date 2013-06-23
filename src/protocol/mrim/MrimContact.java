@@ -1,5 +1,3 @@
-
-
 package protocol.mrim;
 
 import DrawControls.icons.Icon;
@@ -14,7 +12,6 @@ import protocol.Group;
 import protocol.Protocol;
 import protocol.XStatusInfo;
 import ru.sawim.R;
-
 
 public class MrimContact extends Contact {
     private int contactId;
@@ -64,15 +61,10 @@ public class MrimContact extends Contact {
         return flags;
     }
 
-    
     public void setClient(String cl) {
-        
         DebugLog.println("client " + userId + " " + cl);
-        
         MrimClient.createClient(this, cl);
     }
-    
-    
     
     public void getLeftIcons(Icon[] leftIcons) {
         super.getLeftIcons(leftIcons);
@@ -84,8 +76,6 @@ public class MrimContact extends Contact {
             }
         }
     }
-    
-    
 
     public void addChatMenuItems(ContextMenu model) {
         if (isOnline() && Options.getBoolean(Options.OPTION_ALARM)) {
@@ -119,16 +109,10 @@ public class MrimContact extends Contact {
         }
     }
 
-    
-
-
     public void setMood(String moodCode, String title, String desc) {
-        
         if (!StringConvertor.isEmpty(moodCode)) {
             DebugLog.println("mrim: mood " + getUserId() + " " + moodCode + " " + title);
         }
-        
-        
         String message = StringConvertor.trim(title + " " + desc);
         int x = Mrim.xStatus.createStatus(moodCode);
 
@@ -136,7 +120,6 @@ public class MrimContact extends Contact {
         if (XStatusInfo.XSTATUS_NONE == x) {
             setStatus(getStatusIndex(), message);
         }
-        
     }
 
     String getPhones() {
@@ -146,5 +129,3 @@ public class MrimContact extends Contact {
         phones = listOfPhones;
     }
 }
-
-
