@@ -96,7 +96,6 @@ public class AccountsAdapter extends BaseAdapter {
                 public void onClick(View v) {
                     ToggleButton t = (ToggleButton) v.findViewById(R.id.toggle_button);
                     account.isActive = t.isChecked();
-                    Log.e("=======================", ""+t.isChecked()+" "+account.userId);
                     Options.saveAccount(account);
                 }
             });

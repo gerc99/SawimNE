@@ -73,7 +73,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         owner = general.getManager();
         if (owner == null) return;
         owner.setOnUpdateRoster(this);
-        if (general.getCurrProtocol() == null) {
+        if (owner.getModel().getProtocolCount() == 0) {
             startActivity(new Intent(currentActivity, AccountsListActivity.class));
             return;
         }
