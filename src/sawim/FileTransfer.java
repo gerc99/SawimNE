@@ -1,5 +1,6 @@
 package sawim;
 
+import android.support.v4.app.FragmentActivity;
 import protocol.Contact;
 import protocol.Protocol;
 import protocol.net.TcpSocket;
@@ -47,8 +48,10 @@ public final class FileTransfer implements FileBrowserListener,
     private Chat chat;
     private JSR75FileSystem file;
     private Forms name_Desc;
+    private FragmentActivity activity;
 
-    public FileTransfer(Protocol p, Contact _cItem) {
+    public FileTransfer(FragmentActivity a, Protocol p, Contact _cItem) {
+        activity = a;
         protocol = p;
         cItem = _cItem;
     }
@@ -156,7 +159,7 @@ public final class FileTransfer implements FileBrowserListener,
                 setProgress(0);
                 new Thread(this).start();
             }
-            cItem.showFileProgress();
+            cItem.showFileProgress(activity);
         } else {
             destroy();
             form.back();

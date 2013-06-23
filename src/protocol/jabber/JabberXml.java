@@ -2,7 +2,6 @@
 
 package protocol.jabber;
 
-import android.util.Log;
 import sawim.Sawim;
 import sawim.SawimException;
 import sawim.Options;
@@ -792,7 +791,7 @@ public final class JabberXml extends ClientConnection {
                     return;
                 }
                 String platform = Options.getBoolean(Options.OPTION_SHOW_PLATFORM) ? ""
-					: Util.xmlEscape(sawim.Sawim.microeditionPlatform);
+					: Util.xmlEscape(sawim.Sawim.PHONE);
                 if (IQ_TYPE_GET == iqType) {
                     putPacketIntoQueue("<iq type='result' to='"
                             + Util.xmlEscape(from) + "' id='" + Util.xmlEscape(id) + "'>"

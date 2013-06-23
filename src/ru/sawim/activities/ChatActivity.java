@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import ru.sawim.view.VirtualListView;
+import sawim.Sawim;
 import sawim.cl.ContactList;
 import protocol.Contact;
 import protocol.Protocol;
@@ -57,10 +58,13 @@ public class ChatActivity extends FragmentActivity {
     public void onPause() {
         super.onPause();
         Log.e("ChatActivity", "onPause()");
+        Sawim.minimize();
     }
     @Override
     public void onResume() {
         super.onResume();
         Log.e("ChatActivity", "onResume()");
+
+        Sawim.maximize();
     }
 }

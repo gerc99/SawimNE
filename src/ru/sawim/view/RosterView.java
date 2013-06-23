@@ -224,19 +224,17 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
     }
 
     @Override
-    public void onResume() {
+     public void onResume() {
         super.onResume();
         if (owner == null) return;
         Update();
         if (adaptersPages.size() > 0)
             viewPager.setCurrentItem(1);
-        Sawim.maximize();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        Sawim.minimize();
     }
 
     @Override

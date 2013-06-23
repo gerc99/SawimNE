@@ -24,8 +24,7 @@
                 android:scrollHorizontally="false"
                 android:ellipsize="end"
                 android:text="TextView"
-                android:textSize="20sp"
-                android:textStyle="bold"/>
+                android:textSize="20sp"/>
         <TextView android:id="@+id/contactId"
                   android:layout_width="0dp"
                   android:layout_height="0dp"

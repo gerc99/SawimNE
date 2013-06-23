@@ -3,6 +3,7 @@ package protocol;
 import DrawControls.icons.Icon;
 import DrawControls.icons.ImageList;
 import DrawControls.tree.TreeNode;
+import android.support.v4.app.FragmentActivity;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.SubMenu;
@@ -148,8 +149,8 @@ abstract public class Contact implements TreeNode, Sortable {
         fileProgressView.changeFileProgress(percent, caption, text);
     }
 
-    public void showFileProgress() {
-        fileProgressView.show(FormActivity.getInstance().getSupportFragmentManager(), "file");
+    public void showFileProgress(FragmentActivity activity) {
+        fileProgressView.show(activity.getSupportFragmentManager(), "file");
     }
 
     public static final byte CONTACT_NO_AUTH       = 1 << 1; 

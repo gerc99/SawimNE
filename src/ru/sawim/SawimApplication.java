@@ -12,7 +12,8 @@ import android.content.Context;
  */
 public class SawimApplication extends Application {
 
-    private static SawimApplication instance;
+    public static SawimApplication instance;
+    public boolean useAbsence = false;
 
     @Override
     public void onCreate() {

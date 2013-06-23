@@ -1,5 +1,7 @@
 package sawim.modules;
 
+import android.util.Log;
+import ru.sawim.SawimApplication;
 import sawim.Sawim;
 import sawim.Options;
 import sawim.cl.ContactList;
@@ -13,6 +15,7 @@ public final class AutoAbsence {
 
     public AutoAbsence() {
         absence = false;
+        updateOptions();
         userActivity();
     }
 
@@ -20,6 +23,8 @@ public final class AutoAbsence {
     private Profile[] profiles;
     private long activityOutTime;
     private boolean absence;
+    private boolean use = SawimApplication.instance.useAbsence;
+    private int time;
 
     private void doAway() {
         if (absence) {
@@ -96,18 +101,25 @@ public final class AutoAbsence {
         }
     }
     public final void away() {
-        doAway();
+        if (0 < time && !use) {
+            use = false;
+            doAway();
+        }
     }
     public final void online() {
-        doRestore();
+        if (0 < time && !use) {
+            use = true;
+            doRestore();
+        }
     }
 
     public final void updateOptions() {
+        time = Options.getInt(Options.OPTION_AA_TIME);
     }
     public final void userActivity() {
         try {
             if (!Sawim.isPaused()) {
-                int init = Options.getInt(Options.OPTION_AA_TIME) * 60; 
+                int init = time * 60;
                 if (0 < init) {
                     activityOutTime = Sawim.getCurrentGmtTime() + init;
                 } else {

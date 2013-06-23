@@ -29,8 +29,7 @@
                 android:scrollHorizontally="true"
                 android:ellipsize="end"
                 android:text="TextView"
-                android:textSize="20sp"
-                android:textStyle="bold"/>
+                android:textSize="20sp"/>
     </LinearLayout>
     <ImageView
             android:layout_width="wrap_content"

@@ -5,6 +5,7 @@ package sawim.cl;
 import DrawControls.tree.ContactListModel;
 import DrawControls.tree.TreeBranch;
 import DrawControls.tree.VirtualContactList;
+import android.util.Log;
 import android.widget.Toast;
 import protocol.Contact;
 import protocol.Profile;
@@ -17,6 +18,7 @@ import ru.sawim.General;
 import ru.sawim.activities.SawimActivity;
 import sawim.FileTransfer;
 import sawim.Options;
+import sawim.modules.AutoAbsence;
 
 import java.util.Vector;
 
@@ -337,5 +339,24 @@ public final class ContactList {
 
     public StatusView getStatusView() {
         return statusView;
+    }
+
+    private int contactListSaveDelay = 0;
+
+    public final void needRosterSave() {
+        contactListSaveDelay = 60 * 4 /* * 250 = 60 sec */;
+    }
+    public final void timerAction() {
+        AutoAbsence.instance.updateTime();
+        if (0 < contactListSaveDelay) {
+            contactListSaveDelay--;
+            if (0 == contactListSaveDelay) {
+                int count = contactList.getModel().getProtocolCount();
+                for (int i = 0; i < count; ++i) {
+                    Protocol p = contactList.getModel().getProtocol(i);
+                    p.safeSave();
+                }
+            }
+        }
     }
 }

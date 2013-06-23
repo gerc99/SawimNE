@@ -166,6 +166,18 @@ public class SawimActivity extends FragmentActivity {
         super.onDestroy();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        Sawim.maximize();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Sawim.minimize();
+    }
+
     private void quit() {
         unbindService(serviceConnection);
         unregisterReceiver(networkStateReceiver);

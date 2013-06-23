@@ -1,5 +1,3 @@
-
-
 package protocol;
 
 import DrawControls.icons.Icon;
@@ -228,7 +226,6 @@ abstract public class Protocol {
     public final void setContactListAddition(Group group) {
         synchronized (rosterLockObject) {
             updateContacts(group);
-
             updateContacts(notInListGroup);
             Vector groupItems = group.getContacts();
             for (int i = 0; i < groupItems.size(); ++i) {
@@ -316,7 +313,7 @@ abstract public class Protocol {
 
     public final void needSave() {
         needSave = true;
-        safeSave();
+        ContactList.getInstance().needRosterSave();
     }
 
     public final boolean safeSave() {

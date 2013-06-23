@@ -307,7 +307,6 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
         Log.e("ChatView", "onPause()");
         if (chat == null) return;
         addLastPosition(chat.getContact().getUserId(), chatListView.getFirstVisiblePosition());
-        Sawim.minimize();
     }
 
     @Override
@@ -315,7 +314,6 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
         super.onResume();
         Log.e("ChatView", "onResume()");
         resume(chat);
-        Sawim.maximize();
     }
 
     @Override

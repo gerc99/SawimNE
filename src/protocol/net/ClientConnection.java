@@ -34,10 +34,10 @@ public abstract class ClientConnection implements Runnable {
         return keepAliveInterv;
     }
     protected final void usePong() {
-        if (-1 < StringConvertor.notNull(Sawim.microeditionPlatform).indexOf("EricssonJ108i")) {
+        if (-1 < StringConvertor.notNull(Sawim.PHONE).indexOf("EricssonJ108i")) {
             return;
         }
-        DebugLog.println("pong " + Sawim.microeditionPlatform + " " + StringConvertor.notNull(Sawim.microeditionPlatform).indexOf("EricssonJ108i"));
+        DebugLog.println("pong " + Sawim.PHONE + " " + StringConvertor.notNull(Sawim.PHONE).indexOf("EricssonJ108i"));
         usePong = true;
         updateTimeout();
     }
