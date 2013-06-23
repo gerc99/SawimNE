@@ -1,4 +1,3 @@
-
 package sawim.ui.text;
 
 import DrawControls.icons.Icon;
