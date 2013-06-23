@@ -76,7 +76,7 @@ public class ContactMenu implements TextBoxListener {
                 break;
 
             case Contact.USER_MENU_RENAME:
-                new ManageContactListForm(protocol, contact).showContactRename();
+                new ManageContactListForm(protocol, contact).showContactRename(a);
                 break;
 
             case Contact.USER_MENU_HISTORY:
@@ -93,7 +93,7 @@ public class ContactMenu implements TextBoxListener {
                 break;
 
             case Contact.USER_MENU_MOVE:
-                new ManageContactListForm(protocol, contact).showContactMove();
+                new ManageContactListForm(protocol, contact).showContactMove(a);
                 break;
             
             case Contact.USER_MENU_USER_INFO:

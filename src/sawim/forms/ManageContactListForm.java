@@ -1,11 +1,8 @@
-
-
 package sawim.forms;
 
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
+import android.support.v4.app.FragmentActivity;
 import android.view.*;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
@@ -20,7 +17,6 @@ import protocol.Contact;
 import protocol.Group;
 import protocol.Protocol;
 import ru.sawim.R;
-import ru.sawim.activities.SawimActivity;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
 import ru.sawim.view.TextBoxView;
@@ -58,13 +54,13 @@ public final class ManageContactListForm implements FormListener, TextBoxListene
         this.protocol = protocol;
         this.contact = contact;
     }
-    public void showContactRename() {
+    public void showContactRename(FragmentActivity a) {
         renameContactTextbox = new TextBoxView();
         renameContactTextbox.setString(contact.getName());
         renameContactTextbox.setTextBoxListener(this);
-        renameContactTextbox.show(SawimActivity.getInstance().getSupportFragmentManager(), "rename");
+        renameContactTextbox.show(a.getSupportFragmentManager(), "rename");
     }
-    public void showContactMove() {
+    public void showContactMove(FragmentActivity a) {
         Vector groups = protocol.getGroupItems();
         Group myGroup = protocol.getGroup(contact);
         Vector items = new Vector();
@@ -76,7 +72,7 @@ public final class ManageContactListForm implements FormListener, TextBoxListene
                 itemsId.add(g.getId());
             }
         }
-        AlertDialog.Builder builder = new AlertDialog.Builder(SawimActivity.getInstance());
+        AlertDialog.Builder builder = new AlertDialog.Builder(a);
         builder.setTitle(contact.getName());
         builder.setItems(Util.vectorToArray(items), new DialogInterface.OnClickListener() {
             @Override
@@ -106,7 +102,7 @@ public final class ManageContactListForm implements FormListener, TextBoxListene
         }
     }
 
-    public void showMenu(final Context baseContext) {
+    public void showMenu(final FragmentActivity a) {
         final List<MenuItem> menuItems = new ArrayList<MenuItem>();
         MenuItem menuItem;
         boolean canAdd = !protocol.getGroupItems().isEmpty()
@@ -144,7 +140,7 @@ public final class ManageContactListForm implements FormListener, TextBoxListene
             menuItems.add(menuItem);
         }
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(SawimActivity.getInstance());
+        AlertDialog.Builder builder = new AlertDialog.Builder(a);
         builder.setTitle(SawimApplication.getContext().getString(R.string.manage_contact_list));
         builder.setAdapter(new BaseAdapter() {
                                @Override
@@ -167,7 +163,7 @@ public final class ManageContactListForm implements FormListener, TextBoxListene
                                    View row = convertView;
                                    ItemWrapper wr;
                                    if (row == null) {
-                                       LayoutInflater inf = (LayoutInflater.from(baseContext));
+                                       LayoutInflater inf = (LayoutInflater.from(a));
                                        row = inf.inflate(R.layout.menu_item, null);
                                        wr = new ItemWrapper(row);
                                        row.setTag(wr);
@@ -181,13 +177,13 @@ public final class ManageContactListForm implements FormListener, TextBoxListene
                            }, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                select(menuItems.get(which).idItem);
+                select(a, menuItems.get(which).idItem);
             }
         });
         builder.create().show();
     }
 
-    private void select(int cmd) {
+    private void select(FragmentActivity a, int cmd) {
         action = cmd;
         switch (cmd) {
             case ADD_USER:
@@ -203,7 +199,7 @@ public final class ManageContactListForm implements FormListener, TextBoxListene
                 break;
 
             case ADD_GROUP:
-                showTextBox("add_group", null);
+                showTextBox(a, "add_group", null);
                 break;
 
             case RENAME_GROUP:
@@ -214,7 +210,7 @@ public final class ManageContactListForm implements FormListener, TextBoxListene
                     form.addTextField(GROUP_NEW_NAME, "new_group_name", "");
                     form.show();
                 } else {
-                    showTextBox("rename_group", group.getName());
+                    showTextBox(a, "rename_group", group.getName());
                 }
                 break;
 
@@ -261,12 +257,12 @@ public final class ManageContactListForm implements FormListener, TextBoxListene
         }
     }
     
-    private void showTextBox(String caption, String text) {
+    private void showTextBox(FragmentActivity a, String caption, String text) {
         groupName = new TextBoxView();
         groupName.setCaption(JLocale.getString(caption));
         groupName.setString(text);
         groupName.setTextBoxListener(this);
-        groupName.show(SawimActivity.getInstance().getSupportFragmentManager(), "group_name");
+        groupName.show(a.getSupportFragmentManager(), "group_name");
     }
 
     public void textboxAction(TextBoxView box, boolean ok) {

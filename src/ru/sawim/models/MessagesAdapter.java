@@ -118,9 +118,8 @@ public class MessagesAdapter extends BaseAdapter {
                     && Chat.isHighlight(text, chat.getMyName())) {
                 color = Scheme.THEME_CHAT_HIGHLIGHT_MSG;
             }
-            if (mData.fullText == null) {
+            if (mData.fullText == null)
                 mData.fullText = TextFormatter.getFormattedText(text, baseContext, General.getColor(color));
-            }
             msgText.setText(mData.fullText);
             msgText.setTextSize(18);
         }

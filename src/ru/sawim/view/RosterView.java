@@ -14,13 +14,6 @@ import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.*;
 import android.widget.*;
-import sawim.Sawim;
-import sawim.chat.ChatHistory;
-import sawim.cl.ContactList;
-import sawim.comm.Util;
-import sawim.forms.ManageContactListForm;
-import sawim.modules.DebugLog;
-import sawim.ui.base.Scheme;
 import protocol.Contact;
 import protocol.ContactMenu;
 import protocol.Group;
@@ -32,6 +25,12 @@ import ru.sawim.activities.ChatActivity;
 import ru.sawim.models.ContactsAdapter;
 import ru.sawim.models.CustomPagerAdapter;
 import ru.sawim.models.RosterAdapter;
+import sawim.chat.ChatHistory;
+import sawim.cl.ContactList;
+import sawim.comm.Util;
+import sawim.forms.ManageContactListForm;
+import sawim.modules.DebugLog;
+import sawim.ui.base.Scheme;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -169,6 +168,13 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         return getSafeNode(getCurrItem());
     }
 
+    @Override
+    public void setCurrentNode(TreeNode node) {
+        if (null != node) {
+            currentNode = node;
+        }
+    }
+
     public TreeNode getSafeNode(int index) {
         if ((index < items.size()) && (index >= 0)) {
             return items.get(index);
@@ -180,13 +186,6 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         setCurrentNode(getCurrentNode());
         node.setExpandFlag(value);
         updateRoster();
-    }
-
-    @Override
-    public void setCurrentNode(TreeNode node) {
-        if (null != node) {
-            currentNode = node;
-        }
     }
 
     private void rebuildRoster(int pos) {
@@ -224,7 +223,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
     }
 
     @Override
-     public void onResume() {
+    public void onResume() {
         super.onResume();
         if (owner == null) return;
         Update();
@@ -351,27 +350,33 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
 
     @Override
     public void updateBarProtocols() {
+        final int protCount = owner.getModel().getProtocolCount();
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 updateProgressBar();
-                topLinearLayout.removeAllViews();
-                for (int j = 0; j < owner.getModel().getProtocolCount(); j++) {
-                    Protocol protocol = owner.getModel().getProtocol(j);
-                    ImageButton imageBarButtons = new ImageButton(getActivity());
-                    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-                    lp.gravity = Gravity.CENTER;
-                    imageBarButtons.setLayoutParams(lp);
-                    if (j == owner.getCurrProtocol())
-                        imageBarButtons.setBackgroundColor(General.getColorWithAlpha(Scheme.THEME_BACKGROUND));
-                    imageBarButtons.setImageBitmap(General.iconToBitmap(protocol.getCurrentStatusIcon()));
-                    imageBarButtons.setOnClickListener(RosterView.this);
-                    imageBarButtons.setOnLongClickListener(RosterView.this);
-                    imageBarButtons.setId(j);
-                    Icon messageIcon = ChatHistory.instance.getUnreadMessageIcon(protocol);
-                    if (null != messageIcon)
-                        imageBarButtons.setImageBitmap(General.iconToBitmap(messageIcon));
-                    topLinearLayout.addView(imageBarButtons, j);
+                if (protCount > 1) {
+                    topLinearLayout.removeAllViews();
+                    for (int j = 0; j < protCount; j++) {
+                        Protocol protocol = owner.getModel().getProtocol(j);
+                        ImageButton imageBarButtons = new ImageButton(getActivity());
+                        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+                        lp.gravity = Gravity.CENTER;
+                        imageBarButtons.setLayoutParams(lp);
+                        if (j == owner.getCurrProtocol())
+                            imageBarButtons.setBackgroundColor(General.getColorWithAlpha(Scheme.THEME_BACKGROUND));
+                        imageBarButtons.setImageBitmap(General.iconToBitmap(protocol.getCurrentStatusIcon()));
+                        imageBarButtons.setOnClickListener(RosterView.this);
+                        imageBarButtons.setOnLongClickListener(RosterView.this);
+                        imageBarButtons.setId(j);
+                        Icon messageIcon = ChatHistory.instance.getUnreadMessageIcon(protocol);
+                        if (null != messageIcon)
+                            imageBarButtons.setImageBitmap(General.iconToBitmap(messageIcon));
+                        topLinearLayout.addView(imageBarButtons, j);
+                    }
+                } else {
+                    rosterBarLayout.setVisibility(LinearLayout.GONE);
+                    topLinearLayout.setVisibility(LinearLayout.GONE);
                 }
             }
         });
