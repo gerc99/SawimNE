@@ -554,7 +554,8 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                mucUsersView.update();
+                if (mucUsersView != null)
+                    mucUsersView.update();
             }
         });
     }
