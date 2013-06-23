@@ -136,6 +136,7 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
         if (!currentContact.isSingleUserContact() && currentContact.isOnline()) {
             menu.add(Menu.FIRST, Contact.CONFERENCE_DISCONNECT, 0, JLocale.getString("leave_chat"));
         }
+        menu.add(Menu.FIRST, Contact.USER_MENU_STATUSES, 2, R.string.user_statuses);
         menu.add(Menu.FIRST, ACTION_DEL_CHAT, 0, JLocale.getString("delete_chat"));
     }
 
