@@ -25,6 +25,7 @@ import ru.sawim.activities.ChatActivity;
 import ru.sawim.models.ContactsAdapter;
 import ru.sawim.models.CustomPagerAdapter;
 import ru.sawim.models.RosterAdapter;
+import sawim.chat.Chat;
 import sawim.chat.ChatHistory;
 import sawim.cl.ContactList;
 import sawim.comm.Util;
@@ -242,8 +243,15 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
                 .findFragmentById(R.id.chat_fragment);
         Object item = adaptersPages.get(viewPager.getCurrentItem()).getItem(position);
         if (item instanceof Contact) {
-            Contact c = ((Contact) item);
-            Protocol p = c.getProtocol();
+            Protocol p;
+            Contact c;
+            if (viewPager.getCurrentItem() == ContactsAdapter.OPEN_CHATS) {
+                c = ChatHistory.instance.contactAt(position);
+                p = c.getProtocol();
+            } else {
+                c = ((Contact) item);
+                p = general.getCurrProtocol();
+            }
             c.activate(p);
             if (!isInLayout()) return;
             if (viewer == null || !viewer.isInLayout()) {
@@ -252,8 +260,12 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
                 intent.putExtra("contact_id", c.getUserId());
                 getActivity().startActivity(intent);
             } else {
+                Chat chat = viewer.getCurrentChat();
+                viewer.pause(chat);
+                viewer.destroy(chat);
                 if (c != null) {
                     viewer.openChat(p, c);
+                    viewer.resume(viewer.getCurrentChat());
                 }
             }
         } else if (item instanceof Group) {

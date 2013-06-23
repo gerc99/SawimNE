@@ -8,6 +8,6 @@
             android:layout_height="wrap_content"
             android:text="Layer"
             android:textAppearance="?android:attr/textAppearanceMedium" android:layout_gravity="left"
-            style="@android:style/TextAppearance.DeviceDefault.Small"/>
+            android:textSize="15dp"/>
 
 </LinearLayout>
