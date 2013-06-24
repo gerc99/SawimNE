@@ -3,6 +3,7 @@ package ru.sawim.models.form;
 import DrawControls.icons.Image;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.support.v4.app.FragmentActivity;
 import ru.sawim.General;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
@@ -44,6 +45,10 @@ public class Forms {
 
     public void show() {
         SawimActivity.getInstance().startActivity(new Intent(SawimActivity.getInstance(), FormActivity.class));
+    }
+
+    public void show(FragmentActivity a) {
+        a.startActivity(new Intent(a, FormActivity.class));
     }
 
     public void invalidate() {
@@ -166,6 +171,13 @@ public class Forms {
     public void addCheckBox(int controlId, String label, boolean selected) {
         label = (null == label) ? " " : label;
         Control c = create(controlId, CONTROL_CHECKBOX, null, JLocale.getString(label));
+        c.selected = selected;
+        add(c);
+    }
+
+    public void addCheckBox_(int controlId, String label, boolean selected) {
+        label = (null == label) ? " " : label;
+        Control c = create(controlId, CONTROL_CHECKBOX, null, label);
         c.selected = selected;
         add(c);
     }

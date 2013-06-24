@@ -315,13 +315,7 @@ public final class ContactList {
         contactList.setActiveContact(contact);
     }
 
-    public final void receivedMessage(Contact contact) {
-        markMessages(contact);
-    }
-
     public final void markMessages(Contact contact) {
-        if (General.getInstance().getUpdateChatListener() != null)
-            General.getInstance().getUpdateChatListener().updateChat();
         SawimActivity.getInstance().updateAppIcon();
     }
 

@@ -1,11 +1,11 @@
-
-
 package sawim.forms;
 
+import ru.sawim.models.form.FormListener;
+import ru.sawim.models.form.Forms;
 import sawim.search.UserInfo;
 import protocol.Protocol;
 
-public class EditInfo {
+public class EditInfo implements FormListener {
 
     private static final int _NickNameItem = 1000;
     private static final int _FirstNameItem = 1001;
@@ -23,7 +23,7 @@ public class EditInfo {
     private static final int _WorkPositionItem = 1013;
     private static final int _WorkPhoneItem = 1014;
     private static final int _AboutItem = 1015;
-    //private Forms form;
+    private Forms form;
     private Protocol protocol;
     private UserInfo userInfo;
 
@@ -33,116 +33,76 @@ public class EditInfo {
     }
 
     public EditInfo init() {
-        
         final boolean isJabber = (protocol instanceof protocol.jabber.Jabber);
-        
-        
+        form = Forms.getInstance();
+        form.init("editform", this);
 
-        
-        /*form = new Forms("editform", "save", "cancel", this);
-        form.addTextField(_NickNameItem, "nick", userInfo.nick, 64);
-        form.addTextField(_FirstNameItem, "firstname", userInfo.firstName, 64);
-        form.addTextField(_LastNameItem, "lastname", userInfo.lastName, 64);
+        form.addTextField(_NickNameItem, "nick", userInfo.nick);
+        form.addTextField(_FirstNameItem, "firstname", userInfo.firstName);
+        form.addTextField(_LastNameItem, "lastname", userInfo.lastName);
         
         if (!isJabber) {
-            
             form.addSelector(_SexItem, "gender", "-" + "|" + "female" + "|" + "male", userInfo.gender);
-            
         }
-        
-        
 
-        
-        form.addTextField(_BdayItem, "birth_day", userInfo.birthDay, 15);
-        
-        
+        form.addTextField(_BdayItem, "birth_day", userInfo.birthDay);
+
         if (isJabber) {
-            form.addTextField(_EmailItem, "email", userInfo.email, 64);
-            form.addTextField(_CellPhoneItem, "cell_phone", userInfo.cellPhone, 64);
+            form.addTextField(_EmailItem, "email", userInfo.email);
+            form.addTextField(_CellPhoneItem, "cell_phone", userInfo.cellPhone);
         }
-        
-        
 
-
-
-
-        
-        form.addTextField(_HomePageItem, "home_page", userInfo.homePage, 256);
+        form.addTextField(_HomePageItem, "home_page", userInfo.homePage);
 
         form.addHeader("home_info");
         
         if (isJabber) {
-            form.addTextField(_AddrItem, "addr", userInfo.homeAddress, 256);
+            form.addTextField(_AddrItem, "addr", userInfo.homeAddress);
         }
         
-        
-
-
-
-        
-        form.addTextField(_CityItem, "city", userInfo.homeCity, 128);
-        form.addTextField(_StateItem, "state", userInfo.homeState, 128);
+        form.addTextField(_CityItem, "city", userInfo.homeCity);
+        form.addTextField(_StateItem, "state", userInfo.homeState);
 
         form.addHeader("work_info");
-        form.addTextField(_WorkCompanyItem, "title", userInfo.workCompany, 256);
-        form.addTextField(_WorkDepartmentItem, "depart", userInfo.workDepartment, 256);
-        form.addTextField(_WorkPositionItem, "position", userInfo.workPosition, 256);
+        form.addTextField(_WorkCompanyItem, "title", userInfo.workCompany);
+        form.addTextField(_WorkDepartmentItem, "depart", userInfo.workDepartment);
+        form.addTextField(_WorkPositionItem, "position", userInfo.workPosition);
         
         if (isJabber) {
-            form.addTextField(_WorkPhoneItem, "phone", userInfo.workPhone, 64);
-            form.addTextField(_AboutItem, "notes", userInfo.about, 2048);
+            form.addTextField(_WorkPhoneItem, "phone", userInfo.workPhone);
+            form.addTextField(_AboutItem, "notes", userInfo.about);
         }
-        
-        
 
-
-
-        */
         return this;
     }
 
     public void show() {
-        //form.show();
+        form.show();
     }
 
     private void destroy() {
-        //form.destroy();
+        form.destroy();
         protocol = null;
-        //form = null;
+        form = null;
         userInfo = null;
     }
 
-    /*public void formAction(Forms form, boolean apply) {
+    @Override
+    public void formAction(Forms form, boolean apply) {
         if (!apply) {
             form.back();
             destroy();
 
         } else {
             boolean isJabber = false;
-            
             isJabber = (protocol instanceof protocol.jabber.Jabber);
-            
-            
-
-            
             userInfo.nick = form.getTextFieldValue(_NickNameItem);
-            
-
-            
             userInfo.birthDay = form.getTextFieldValue(_BdayItem);
-            
-            
             if (isJabber) {
                 userInfo.email = form.getTextFieldValue(_EmailItem);
                 userInfo.cellPhone = form.getTextFieldValue(_CellPhoneItem);
             }
-            
-            
 
-
-
-
-            
             userInfo.firstName = form.getTextFieldValue(_FirstNameItem);
             userInfo.lastName = form.getTextFieldValue(_LastNameItem);
             if (!isJabber) {
@@ -150,15 +110,9 @@ public class EditInfo {
             }
             userInfo.homePage = form.getTextFieldValue(_HomePageItem);
 
-            
             if (isJabber) {
                 userInfo.homeAddress = form.getTextFieldValue(_AddrItem);
             }
-            
-            
-
-
-
             
             userInfo.homeCity = form.getTextFieldValue(_CityItem);
             userInfo.homeState = form.getTextFieldValue(_StateItem);
@@ -171,20 +125,11 @@ public class EditInfo {
                 userInfo.workPhone = form.getTextFieldValue(_WorkPhoneItem);
                 userInfo.about = form.getTextFieldValue(_AboutItem);
             }
-            
-            
-
-
-
-            
 
             userInfo.updateProfileView();
             protocol.saveUserInfo(userInfo);
             form.back();
             destroy();
         }
-    }*/
+    }
 }
-
-
-

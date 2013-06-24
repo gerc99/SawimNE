@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import sawim.Options;
 import sawim.chat.ChatHistory;
 import sawim.chat.message.Message;
 import sawim.ui.base.Scheme;
@@ -112,11 +113,10 @@ public class ViewHolderRoster {
                 imageCl.setVisibility(ImageView.GONE);
             }
         }
-
         ClientInfo info = (null != p) ? p.clientInfo : null;
         Icon icClient = (null != info) ? info.getIcon(item.clientIndex) : null;
         ImageView itemClientImage = getItemFourthRuleImage();
-        if (icClient != null) {
+        if (icClient != null && !Options.getBoolean(Options.OPTION_HIDE_ICONS_CLIENTS)) {
             itemClientImage.setVisibility(ImageView.VISIBLE);
             itemClientImage.setImageBitmap(General.iconToBitmap(icClient));
         } else {

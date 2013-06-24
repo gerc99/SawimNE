@@ -1,6 +1,7 @@
 package sawim.chat;
 
 import DrawControls.icons.Icon;
+import ru.sawim.General;
 import ru.sawim.activities.ChatActivity;
 import sawim.Options;
 import sawim.Sawim;
@@ -113,8 +114,12 @@ public final class Chat {
         long time = Sawim.getCurrentGmtTime();
         short flags = MessData.PROGRESS;
         final MessData mData = new MessData(time, text, caption, flags, Message.ICON_NONE);
-        messData.add(mData);
-        removeOldMessages();
+        if (General.getInstance().getUpdateChatListener() == null) {
+            removeOldMessages();
+            messData.add(mData);
+        } else {
+            General.getInstance().getUpdateChatListener().addMessage(mData);
+        }
     }
 
     public int getIcon(Message message, boolean incoming) {
@@ -225,21 +230,15 @@ public final class Chat {
     }
 
     public void clear() {
-        ChatActivity.THIS.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
         messData.clear();
-            }
-        });
+        if (General.getInstance().getUpdateChatListener() != null)
+            General.getInstance().getUpdateChatListener().updateChat();
     }
 
     public void removeMessages(final int limit) {
         if (messData.size() < limit) {
             return;
         }
-        ChatActivity.THIS.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
         if ((0 < limit) && (0 < messData.size())) {
             while (limit < messData.size()) {
                 messData.remove(0);
@@ -247,11 +246,11 @@ public final class Chat {
         } else {
             ChatHistory.instance.unregisterChat(Chat.this);
         }
-            }
-        });
+        if (General.getInstance().getUpdateChatListener() != null)
+            General.getInstance().getUpdateChatListener().updateChat();
     }
 
-    private void removeOldMessages() {
+    public void removeOldMessages() {
         removeMessages(Options.getInt(Options.OPTION_MAX_MSG_COUNT));
     }
 
@@ -399,17 +398,11 @@ public final class Chat {
         if (!incoming) {
             message.setVisibleIcon(mData);
         }
-        if (ChatActivity.THIS == null) {
-            messData.add(mData);
+        if (General.getInstance().getUpdateChatListener() == null) {
             removeOldMessages();
+            messData.add(mData);
         } else {
-            ChatActivity.THIS.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    messData.add(mData);
-                    removeOldMessages();
-                }
-            });
+            General.getInstance().getUpdateChatListener().addMessage(mData);
         }
     }
 

@@ -142,13 +142,16 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
 
     public void onMenuItemSelected(MenuItem item) {
         if (item.getItemId() == ACTION_DEL_CHAT) {
-            chat.removeMessagesAtCursor(chatListView.getFirstVisiblePosition());
+            /*chat.removeMessagesAtCursor(chatListView.getFirstVisiblePosition() + 1);
             if (0 < messData.size()) {
                 updateChat();
             } else {
                 ChatHistory.instance.unregisterChat(chat);
                 ContactList.getInstance().activate(null);
-            }
+                getActivity().finish();
+            }*/
+            chat.clear();
+            getActivity().finish();
             return;
         }
         new ContactMenu(protocol, currentContact).doAction(getActivity(), item.getItemId());
@@ -551,6 +554,21 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
         }
     }
 
+    @Override
+    public void addMessage(final MessData mess) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (adapter != null) {
+                    chat.removeOldMessages();
+                    messData.add(mess);
+                    adapter.notifyDataSetChanged();
+                }
+            }
+        });
+    }
+
+    @Override
     public void updateMucList() {
         getActivity().runOnUiThread(new Runnable() {
             @Override

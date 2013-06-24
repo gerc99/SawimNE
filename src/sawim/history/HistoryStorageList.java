@@ -300,6 +300,7 @@ public final class HistoryStorageList implements Runnable, FormListener {
         parser.addDescription(record.date + ":", Scheme.THEME_TEXT, Scheme.FONT_STYLE_BOLD);
         parser.addTextWithSmiles(record.text, Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
         msgText.addPar(parser);
+        currMsg.updateModel();
 
         currMsg.setModel(msgText);
         return currMsg;
@@ -339,7 +340,7 @@ public final class HistoryStorageList implements Runnable, FormListener {
             parser.addTextWithSmiles(record.getShortText(), (record.type == 0) ? Scheme.THEME_CHAT_INMSG
                     : Scheme.THEME_CHAT_OUTMSG, Scheme.FONT_STYLE_PLAIN);
             msgText.addPar(parser);
-
+            allMsg.updateModel();
             allMsg.setModel(msgText);
         }
     }

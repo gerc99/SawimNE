@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import sawim.Options;
 import sawim.ui.base.Scheme;
 import protocol.jabber.Jabber;
 import protocol.jabber.JabberContact;
@@ -67,11 +68,11 @@ public class MucUserViewFactory {
             getItemAffilationImage().setImageBitmap(General.iconToBitmap(affiliationIcons.iconAt(JabberServiceContact.getAffiliationName(c.priorityA))));
             Icon ic = protocol.clientInfo.getIcon(c.client);
             ImageView itemClientImage = getItemClientImage();
-            if (ic == null) {
-                itemClientImage.setVisibility(ImageView.GONE);
-            } else {
+            if (ic != null && !Options.getBoolean(Options.OPTION_HIDE_ICONS_CLIENTS)) {
                 itemClientImage.setVisibility(ImageView.VISIBLE);
                 itemClientImage.setImageBitmap(General.iconToBitmap(ic));
+            } else {
+                itemClientImage.setVisibility(ImageView.GONE);
             }
         }
 

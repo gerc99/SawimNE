@@ -2,6 +2,7 @@ package ru.sawim;
 
 import android.app.Application;
 import android.content.Context;
+import sawim.ExternalApi;
 
 /**
  * Created with IntelliJ IDEA.

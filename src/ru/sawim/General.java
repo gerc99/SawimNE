@@ -2,27 +2,21 @@ package ru.sawim;
 
 import DrawControls.icons.Icon;
 import DrawControls.icons.Image;
-import DrawControls.icons.ImageList;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.net.Uri;
-import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
 import sawim.chat.MessData;
-import sawim.chat.message.Message;
-import sawim.chat.message.PlainMessage;
 import sawim.ui.base.Scheme;
 import ru.sawim.activities.SawimActivity;
 
 import javax.microedition.io.ConnectionNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -118,5 +112,7 @@ public class General {
     }
     public interface OnUpdateChat {
         void updateChat();
+        void addMessage(MessData messData);
+        void updateMucList();
     }
 }

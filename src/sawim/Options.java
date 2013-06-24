@@ -59,7 +59,7 @@ public class Options {
     public static final int OPTION_EXT_CLKEYCALL       =  81;   
     public static final int OPTION_EXT_CLKEYPOUND      =  82;   
     public static final int OPTION_VISIBILITY_ID       =  85;
-    public static final int OPTION_UNTITLED_INPUT      = 160;
+    public static final int OPTION_HIDE_ICONS_CLIENTS      = 160;
     public static final int OPTION_LIGHT_THEME         =  97;
     public static final int OPTION_INPUT_MODE          = 105;
     public static final int OPTION_SHOW_SOFTBAR        = 167;
@@ -299,6 +299,7 @@ public class Options {
         setInt    (Options.OPTION_CL_SORT_BY,         0);
 		setBoolean(Options.OPTION_TITLE_IN_CONFERENCE,   true);
         setBoolean(Options.OPTION_CL_HIDE_OFFLINE,    false);
+        setBoolean(Options.OPTION_HIDE_ICONS_CLIENTS,    false);
         setBoolean(Options.OPTION_SHOW_SOFTBAR,       true);
         setInt    (Options.OPTION_MESS_NOTIF_MODE,    0);
         setInt    (Options.OPTION_ONLINE_NOTIF_MODE,  0);

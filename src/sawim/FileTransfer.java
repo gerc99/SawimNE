@@ -1,10 +1,13 @@
 package sawim;
 
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import protocol.Contact;
 import protocol.Protocol;
 import protocol.net.TcpSocket;
 import ru.sawim.General;
+import ru.sawim.activities.ChatActivity;
+import ru.sawim.activities.FormActivity;
 import ru.sawim.activities.SawimActivity;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
@@ -79,7 +82,7 @@ public final class FileTransfer implements FileBrowserListener,
     }
 
     public void startFileTransfer() {
-        if (SawimActivity.getInstance().pickFile(this)) {
+        if (ExternalApi.instance.pickFile(this)) {
             return;
         }
         sawim.modules.DebugLog.panic("show file browser");
@@ -89,7 +92,8 @@ public final class FileTransfer implements FileBrowserListener,
     }
 
     public void startPhotoTransfer() {
-        SawimActivity.getInstance().startCamera(this, 1024, 768);
+        ExternalApi.instance.setActivity(SawimActivity.getInstance());
+        ExternalApi.instance.startCamera(this, 1024, 768);
     }
 
     public void onFileSelect(InputStream in, String fileName) {
@@ -142,7 +146,7 @@ public final class FileTransfer implements FileBrowserListener,
         }
         name_Desc.addSelector(transferMode, "send_via", items, 0);
         name_Desc.addString(JLocale.getString("size") + ": ", String.valueOf(getFileSize() / 1024) + " kb");
-        name_Desc.show();
+        name_Desc.show(activity);
     }
 
     public void formAction(Forms form, boolean apply) {
@@ -159,7 +163,7 @@ public final class FileTransfer implements FileBrowserListener,
                 setProgress(0);
                 new Thread(this).start();
             }
-            cItem.showFileProgress(activity);
+            cItem.showFileProgress(FormActivity.getInstance());
         } else {
             destroy();
             form.back();
@@ -224,6 +228,7 @@ public final class FileTransfer implements FileBrowserListener,
             return;
         }
         changeFileProgress(0, JLocale.getString("error") + "\n" + e.getMessage());
+        Log.e("FileTransfer", JLocale.getString("error") + "\n" + e.getMessage());
     }
 
     private void closeFile() {

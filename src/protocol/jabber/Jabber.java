@@ -1,11 +1,10 @@
-
-
 package protocol.jabber;
 
 import DrawControls.icons.ImageList;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.util.Log;
+import ru.sawim.General;
 import ru.sawim.view.TextBoxView;
 import sawim.FileTransfer;
 import sawim.chat.message.PlainMessage;
@@ -283,6 +282,8 @@ public final class Jabber extends Protocol implements FormListener {
 
     void setConfContactStatus(JabberServiceContact conf, String resource, byte status, String statusText, int role, int priorityA) {
         conf.__setStatus(resource, role, priorityA, status, statusText);
+        if (General.getInstance().getUpdateChatListener() != null)
+            General.getInstance().getUpdateChatListener().updateMucList();
     }
 
     void setContactStatus(JabberContact c, String resource, byte status, String text, int priority) {

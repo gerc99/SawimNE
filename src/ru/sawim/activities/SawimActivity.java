@@ -25,21 +25,17 @@
 
 package ru.sawim.activities;
 
-import android.app.AlertDialog;
 import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.media.AudioManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Message;
-import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
 import android.text.ClipboardManager;
 import android.util.Log;
 import android.view.*;
-import sawim.FileTransfer;
+import sawim.ExternalApi;
 import sawim.Sawim;
 import sawim.Options;
 import sawim.OptionsForm;
@@ -47,9 +43,7 @@ import sawim.chat.ChatHistory;
 import sawim.cl.ContactList;
 import sawim.forms.ManageContactListForm;
 import sawim.forms.SmsForm;
-import sawim.history.HistoryStorage;
 import sawim.modules.Notify;
-import sawim.modules.photo.PhotoListener;
 import org.microemu.MIDletBridge;
 import org.microemu.cldc.file.FileSystem;
 import org.microemu.util.AndroidLoggerAppender;
@@ -62,15 +56,12 @@ import protocol.icq.Icq;
 import protocol.jabber.Jabber;
 import protocol.mrim.Mrim;
 import ru.sawim.*;
-import ru.sawim.photo.CameraActivity;
 import ru.sawim.view.StatusesView;
 import ru.sawim.view.XStatusesView;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.util.Locale;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class SawimActivity extends FragmentActivity {
@@ -81,6 +72,7 @@ public class SawimActivity extends FragmentActivity {
     public Common common;
     private static SawimActivity instance;
     private NetworkStateReceiver networkStateReceiver = new NetworkStateReceiver();
+    private final SawimServiceConnection serviceConnection = new SawimServiceConnection();
 
     public static SawimActivity getInstance() {
         return instance;
@@ -164,6 +156,7 @@ public class SawimActivity extends FragmentActivity {
     protected void onDestroy() {
         quit();
         super.onDestroy();
+        Log.e("SawimActivity", "onDestroy");
     }
 
     @Override
@@ -187,7 +180,10 @@ public class SawimActivity extends FragmentActivity {
 
     @Override
     public void onBackPressed() {
-        minimizeApp();
+        Intent startMain = new Intent(Intent.ACTION_MAIN);
+        startMain.addCategory(Intent.CATEGORY_HOME);
+        startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(startMain);
     }
 
     public void recreateActivity() {
@@ -330,89 +326,8 @@ public class SawimActivity extends FragmentActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void minimizeApp() {
-        Intent startMain = new Intent(Intent.ACTION_MAIN);
-        startMain.addCategory(Intent.CATEGORY_HOME);
-        startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(startMain);
-    }
-
     public boolean isNetworkAvailable() {
         return networkStateReceiver.isNetworkAvailable();
-    }
-
-    private PhotoListener photoListener = null;
-    private FileTransfer fileTransferListener = null;
-    private static final int RESULT_PHOTO = RESULT_FIRST_USER + 1;
-    private static final int RESULT_EXTERNAL_PHOTO = RESULT_FIRST_USER + 2;
-    private static final int RESULT_EXTERNAL_FILE = RESULT_FIRST_USER + 3;
-
-    public void startCamera(PhotoListener listener, int width, int height) {
-        photoListener = listener;
-        if (1000 < Math.max(width, height)) {
-            try {
-                Intent extCameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                if (!isCallable(extCameraIntent)) throw new Exception("not found");
-                startActivityForResult(extCameraIntent, RESULT_EXTERNAL_PHOTO);
-                return;
-            } catch (Exception ignored) {
-            }
-        }
-        Intent cameraIntent = new Intent(this, CameraActivity.class);
-        cameraIntent.putExtra("width", width);
-        cameraIntent.putExtra("height", height);
-        startActivityForResult(cameraIntent, RESULT_PHOTO);
-    }
-
-    public boolean pickFile(FileTransfer listener) {
-        try {
-            fileTransferListener = listener;
-            Intent theIntent = new Intent(Intent.ACTION_GET_CONTENT);
-            theIntent.setType("file/*");
-            theIntent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
-            if (!isCallable(theIntent)) return false;
-            startActivityForResult(theIntent, RESULT_EXTERNAL_FILE);
-            return true;
-        } catch (Exception e) {
-            sawim.modules.DebugLog.panic("pickFile", e);
-            return false;
-        }
-    }
-
-    private boolean isCallable(Intent intent) {
-        return !getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY).isEmpty();
-    }
-
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        sawim.modules.DebugLog.println("result " + requestCode + " " + resultCode + " " + data);
-        if (null == data) return;
-        if (RESULT_OK != resultCode) return;
-        try {
-            if (RESULT_PHOTO == requestCode) {
-                if (null == photoListener) return;
-                photoListener.processPhoto(data.getByteArrayExtra("photo"));
-                photoListener = null;
-
-            } else if (RESULT_EXTERNAL_PHOTO == requestCode) {
-                if (null == photoListener) return;
-                Uri uriImage = data.getData();
-                InputStream in = getContentResolver().openInputStream(uriImage);
-                byte[] img = new byte[in.available()];
-                in.read(img);
-                photoListener.processPhoto(img);
-                photoListener = null;
-
-            } else if (RESULT_EXTERNAL_FILE == requestCode) {
-                Uri fileUri = data.getData();
-                sawim.modules.DebugLog.println("File " + fileUri);
-                InputStream is = getContentResolver().openInputStream(fileUri);
-                fileTransferListener.onFileSelect(is, getFileName(fileUri));
-                fileTransferListener = null;
-            }
-        } catch (Throwable ignored) {
-            sawim.modules.DebugLog.panic("activity", ignored);
-        }
     }
 
     public void updateAppIcon() {
@@ -453,37 +368,5 @@ public class SawimActivity extends FragmentActivity {
                 }
             }
         });
-    }
-
-    private final SawimServiceConnection serviceConnection = new SawimServiceConnection();
-
-    private String getFileName(Uri fileUri) {
-        String file = getRealPathFromUri(fileUri);
-        return file.substring(file.lastIndexOf('/') + 1);
-    }
-
-    private String getRealPathFromUri(Uri uri) {
-        try {
-            if ("content".equals(uri.getScheme())) {
-                String[] proj = {MediaStore.MediaColumns.DATA};
-                Cursor cursor = managedQuery(uri, proj, null, null, null);
-                int columnIndex = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
-                cursor.moveToFirst();
-                return cursor.getString(columnIndex);
-            }
-            if ("file".equals(uri.getScheme())) {
-                return uri.getPath();
-            }
-        } catch (Exception ignored) {
-        }
-        return uri.toString();
-    }
-
-    public void showHistory(HistoryStorage history) {
-        String historyFilePath = history.getAndroidStorage().getTextFile();
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        Uri uri = Uri.parse("file://" + historyFilePath);
-        intent.setDataAndType(uri, "text/plain");
-        startActivity(intent);
     }
 }

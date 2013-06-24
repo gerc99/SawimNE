@@ -1,5 +1,3 @@
-
-
 package protocol;
 
 import ru.sawim.models.form.VirtualListItem;
@@ -10,15 +8,11 @@ import sawim.comm.StringConvertor;
 import sawim.comm.Util;
 import sawim.ui.base.Scheme;
 import sawim.ui.text.VirtualList;
-//import sawim.ui.text.TextListController;
 import protocol.jabber.*;
 
 
 public final class StatusView {
-    public static final int INFO_MENU_COPY     = 1;
-    public static final int INFO_MENU_COPY_ALL = 2;
-    public static final int INFO_MENU_GOTO_URL = 4;
-    public static final int INFO_MENU_GET_X    = 5;
+
     private Protocol protocol;
     private Contact contact;
     private String clientVersion;
@@ -67,6 +61,7 @@ public final class StatusView {
         VirtualListItem line = model.createNewParser(false);
         line.addDescription(" \n", Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
         model.addPar(line);
+        list.updateModel();
     }
     public void addPlain(Icon img, String str) {
         if (!StringConvertor.isEmpty(str)) {
@@ -76,6 +71,7 @@ public final class StatusView {
             }
             line.addDescriptionSelectable(str, Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
             model.addPar(line);
+            list.updateModel();
         }
     }
     public void addStatusText(String text) {
@@ -83,10 +79,12 @@ public final class StatusView {
             VirtualListItem line = model.createNewParser(true);
             line.addDescriptionSelectable(text, Scheme.THEME_PARAM_VALUE, Scheme.FONT_STYLE_PLAIN);
             model.addPar(line);
+            list.updateModel();
         }
     }
     public void addInfo(String key, String value) {
         model.addParam(key, value);
+        list.updateModel();
     }
     
     public void addContactStatus() {
@@ -109,41 +107,6 @@ public final class StatusView {
         list = VirtualList.getInstance();
         model = new VirtualListModel();
         list.setModel(model);
-        /*list.setOnBuildContextMenu(new VirtualList.OnBuildContextMenu() {
-            @Override
-            public void onCreateContextMenu(Menu menu) {
-                menu.add(Menu.FIRST, INFO_MENU_COPY, 2, "copy_text");
-                menu.add(Menu.FIRST, INFO_MENU_COPY_ALL, 2, "copy_all_text");
-                //if ((1 < list.getCurrItem()) && Util.hasURL(model.getParText(list.getCurrItem()))) {
-                //    menu.addItem("goto_url", INFO_MENU_GOTO_URL);
-                //}
-
-                if ((XStatusInfo.XSTATUS_NONE != contact.getXStatusIndex())
-                        && (protocol instanceof Icq)) {
-                    menu.add(Menu.FIRST, INFO_MENU_GET_X, 2, "reqxstatmsg up");
-                }
-            }
-
-            @Override
-            public void onContextItemSelected(int itemId) {
-                switch (itemId) {
-                    case INFO_MENU_COPY:
-                    case INFO_MENU_COPY_ALL:
-                        //list.getController().copy(INFO_MENU_COPY_ALL == action);
-                        list.restore();
-                        break;
-
-                    case INFO_MENU_GOTO_URL:
-                        //ContactList.getInstance().gotoUrl(model.getParText(list.getCurrItem()));
-                        break;
-
-                    case INFO_MENU_GET_X:
-                        ((Icq)protocol).requestXStatusMessage(contact);
-                        list.restore();
-                        break;
-                }
-            }
-        });*/
         contact = c;
         protocol = p;
         clientVersion = null;

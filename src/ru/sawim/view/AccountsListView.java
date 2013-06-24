@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.InputType;
-import android.util.Log;
 import android.view.*;
 import android.widget.*;
 import protocol.Protocol;
@@ -15,10 +14,8 @@ import sawim.cl.ContactList;
 import sawim.comm.StringConvertor;
 import protocol.Profile;
 import protocol.StatusInfo;
-import protocol.jabber.JabberRegistration;
 import ru.sawim.R;
 import ru.sawim.models.AccountsAdapter;
-
 import java.util.Vector;
 
 /**
@@ -141,7 +138,6 @@ public class AccountsListView extends Fragment {
 
     public class LoginDialog {
         private Dialog dialogLogin;
-        private boolean isActive;
 
         public LoginDialog(final int type, final int id, final boolean isEdit) {
             dialogLogin = new Dialog(getActivity());
@@ -150,7 +146,6 @@ public class AccountsListView extends Fragment {
             final EditText editLogin = (EditText) dialogLogin.findViewById(R.id.Login);
             final EditText editNick = (EditText) dialogLogin.findViewById(R.id.Nick);
             final EditText editPass = (EditText) dialogLogin.findViewById(R.id.Password);
-            final CheckBox checkAutoConnect = (CheckBox) dialogLogin.findViewById(R.id.auto_connect);
             int protocolIndex = 0;
             for (int i = 0; i < Profile.protocolTypes.length; ++i) {
                 if (type == Profile.protocolTypes[i]) {
@@ -165,8 +160,6 @@ public class AccountsListView extends Fragment {
                 editLogin.setText(account.userId);
                 editNick.setText(account.nick);
                 editPass.setText(account.password);
-                //checkAutoConnect.setChecked(account.);
-                isActive = (account.isActive);
             } else {
                 dialogLogin.setTitle(getText(R.string.acc_add));
             }

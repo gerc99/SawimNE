@@ -43,12 +43,9 @@ public final class ServiceDiscovery implements TextBoxListener {
     private static final int COMMAND_SET_SERVER = 4;
     private static final int COMMAND_HOME = 5;
 
-    public ServiceDiscovery() {
+    public void init(Jabber protocol) {
         screen = VirtualList.getInstance();
         model = new VirtualListModel();
-    }
-
-    public void init(Jabber protocol) {
         jabber = protocol;
         serverBox = new TextBoxView();
         searchBox = new TextBoxView();
@@ -264,6 +261,7 @@ public final class ServiceDiscovery implements TextBoxListener {
             VirtualListItem br = model.createNewParser(false);
             br.addBr();
             model.addPar(br);
+            screen.updateModel();
         }
     }
     private void addBuildInList() {
@@ -271,6 +269,7 @@ public final class ServiceDiscovery implements TextBoxListener {
         VirtualListItem br = model.createNewParser(false);
         br.addBr();
         model.addPar(br);
+        screen.updateModel();
 
         String domain = Jid.getDomain(jabber.getUserId());
         addUnique(JLocale.getString("my_server"), domain);

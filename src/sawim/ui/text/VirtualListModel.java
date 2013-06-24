@@ -1,13 +1,9 @@
-
 package sawim.ui.text;
 
 import DrawControls.icons.Icon;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import android.graphics.Bitmap;
-import ru.sawim.activities.VirtualListActivity;
 import ru.sawim.models.form.VirtualListItem;
 import sawim.comm.StringConvertor;
 import sawim.ui.base.Scheme;
@@ -23,16 +19,7 @@ public final class VirtualListModel {
     }
 
     public final void addPar(final VirtualListItem item) {
-        if (VirtualListActivity.getInstance() == null) {
-            elements.add(item);
-        } else {
-            VirtualListActivity.getInstance().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    elements.add(item);
-                }
-            });
-        }
+        elements.add(item);
     }
 
     public final VirtualListItem createNewParser(boolean itemSelectable) {
@@ -42,10 +29,6 @@ public final class VirtualListModel {
     public void clear() {
         elements.clear();
         header = null;
-    }
-
-    public void removeFirst() {
-        elements.remove(0);
     }
     
     public final void addItem(String text, boolean active) {

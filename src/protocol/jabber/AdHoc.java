@@ -3,6 +3,7 @@ package protocol.jabber;
 
 
 import android.util.Log;
+import ru.sawim.activities.SawimActivity;
 import sawim.cl.ContactList;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
@@ -43,7 +44,7 @@ public final class AdHoc implements FormListener, ControlStateListener {
         commandsListForm.init("adhoc", this);
         updateForm(false);
         commandsListForm.setControlStateListener(this);
-        commandsListForm.show();
+        commandsListForm.show(SawimActivity.getInstance());
         requestCommandsForCurrentResource();
     }
     private String[] getResources() {
@@ -186,7 +187,7 @@ public final class AdHoc implements FormListener, ControlStateListener {
             }
         }
         if (showForm) {
-            form.getForm().show();
+            form.getForm().show(SawimActivity.getInstance());
         }
     }
 

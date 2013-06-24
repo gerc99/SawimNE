@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import sawim.ExternalApi;
 import sawim.Sawim;
 import sawim.cl.ContactList;
 import protocol.Contact;
@@ -28,6 +29,7 @@ public class ChatActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         THIS = this;
         setContentView(R.layout.chat_fragment);
+        ExternalApi.instance.setActivity(this);
         Intent i = getIntent();
         ChatView view = (ChatView) getSupportFragmentManager().findFragmentById(R.id.chat_fragment);
         Protocol protocol = ContactList.getInstance().getProtocol(i.getStringExtra("protocol_id"));
@@ -47,6 +49,11 @@ public class ChatActivity extends FragmentActivity {
         ChatView view = (ChatView) getSupportFragmentManager().findFragmentById(R.id.chat_fragment);
         view.onMenuItemSelected(item);
         return super.onOptionsItemSelected(item);
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (ExternalApi.instance.onActivityResult(requestCode, resultCode, data))
+            super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override

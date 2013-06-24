@@ -1,9 +1,6 @@
-
-
 package protocol.jabber;
 
 import java.util.Vector;
-
 import android.support.v4.app.FragmentActivity;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -25,13 +22,13 @@ public final class MirandaNotes {
     private Jabber jabber;
     private Vector notes = new Vector();
 	
-	private VirtualList screen = VirtualList.getInstance();
-    private VirtualListModel model = new VirtualListModel();
+	private VirtualList screen;
+    private VirtualListModel model;
 
-    public MirandaNotes() {
-        screen.setCaption(JLocale.getString("notes"));
-    }
     void init(Jabber protocol) {
+        screen = VirtualList.getInstance();
+        model = new VirtualListModel();
+        screen.setCaption(JLocale.getString("notes"));
         jabber = protocol;
         screen.setModel(model);
         screen.setBuildOptionsMenu(new VirtualList.OnBuildOptionsMenu() {
@@ -98,6 +95,7 @@ public final class MirandaNotes {
         wait.addDescription(JLocale.getString("wait"),
                 Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
         model.addPar(wait);
+        screen.updateModel();
         jabber.getConnection().requestMirandaNotes();
         screen.show();
     }
@@ -112,10 +110,10 @@ public final class MirandaNotes {
     }
     private void addNote(Note note) {
 		VirtualListItem parser = model.createNewParser(true);
-        parser.addDescription(note.title, Scheme.THEME_FORM_EDIT, Scheme.FONT_STYLE_BOLD);
-        parser.addDescription("*" + note.tags, Scheme.THEME_TEXT, Scheme.FONT_STYLE_BOLD);
+        parser.addLabel(note.title + "\n" + "*" + note.tags, Scheme.THEME_FORM_EDIT, Scheme.FONT_STYLE_BOLD);
         parser.addDescription(note.text, Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
         model.addPar(parser);
+        screen.updateModel();
     }
 
     void update() {
@@ -127,7 +125,6 @@ public final class MirandaNotes {
         int size = notes.size();
         for (int i = 0; i < size; ++i) {
             Note note = (Note)notes.elementAt(i);
-
             storage.append("<note tags='").append(Util.xmlEscape(note.tags)).append("'>");
             storage.append("<title>").append(Util.xmlEscape(note.title)).append("</title>");
             storage.append("<text>").append(Util.xmlEscape(note.text)).append("</text>");
@@ -138,18 +135,12 @@ public final class MirandaNotes {
 
     private void refresh() {
         int index = screen.getCurrItem();
-
         clear();
         int size = notes.size();
         for (int i = 0; i < size; ++i) {
             addNote((Note)notes.elementAt(i));
         }
         screen.setCurrentItemIndex(index);
-    }
-
-    private String getCurrentText(int currItem) {
-        Note note = (Note)notes.elementAt(currItem);
-        return note.text;
     }
 
     public Note addEmptyNote() {
@@ -213,6 +204,7 @@ public final class MirandaNotes {
                 refresh();
                 selectNote(note);
 				jabber.getConnection().saveMirandaNotes(getNotesStorage());
+                form.back();
             }
         }
     }

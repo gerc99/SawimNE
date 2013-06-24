@@ -3,6 +3,7 @@ package protocol.jabber;
 import java.util.Vector;
 
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import ru.sawim.models.form.VirtualListItem;
@@ -34,7 +35,8 @@ public final class AffiliationListConf implements FormListener, TextBoxListener 
     private static final int COMMAND_ADD = 0;
     private static final int COMMAND_SEARCH = 1;
 
-    public AffiliationListConf() {
+    public void init(Jabber protocol) {
+        jabber = protocol;
         searchBox = new TextBoxView();
         screen.setCaption(JLocale.getString("conf_aff_list"));
         screen.setModel(model);
@@ -72,10 +74,6 @@ public final class AffiliationListConf implements FormListener, TextBoxListener 
                 }
             }
         });
-    }
-
-    public void init(Jabber protocol) {
-        jabber = protocol;
     }
 	
 	private int getJidIndex(int textIndex) {
@@ -117,6 +115,7 @@ public final class AffiliationListConf implements FormListener, TextBoxListener 
             VirtualListItem item = model.createNewParser(active);
             item.addDescription(serverJid, Scheme.THEME_TEXT,  Scheme.FONT_STYLE_BOLD);
             model.addPar(item);
+            screen.updateModel();
             if (active) {
                 jids.addElement(serverJid);
             }
@@ -152,6 +151,7 @@ public final class AffiliationListConf implements FormListener, TextBoxListener 
         }
         item.addDescription(reasone, Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
         model.addPar(item);
+        screen.updateModel();
         jids.addElement(jid);
 		reasons.addElement(reasone);
         if (0 == (jids.size() % 50)) {

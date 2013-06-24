@@ -200,4 +200,5 @@
     <string name="xmppAccountDontFound">Jabber-учетка не найдена</string>
     <string name="add_to_notes">Добавить в заметки</string>
     <string name="accpromt">Нажмите кнопку "Меню", чтобы добавить профиль</string>
+    <string name="hide_icons_clients">Скрывать иконки клиентов</string>
 </resources>

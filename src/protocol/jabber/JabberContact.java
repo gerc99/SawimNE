@@ -1,5 +1,3 @@
-
-
 package protocol.jabber;
 
 import android.view.ContextMenu;
@@ -15,7 +13,6 @@ import protocol.Contact;
 import protocol.Protocol;
 import protocol.StatusInfo;
 import ru.sawim.R;
-
 import java.util.Vector;
 
 

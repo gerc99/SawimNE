@@ -274,7 +274,6 @@ public final class TrackingForm implements TextBoxListener {
                 addTextToForm(i);
             }
 		}
-		screen.updateModel();
     }
 
     private void addTextToForm(int index) {
@@ -293,6 +292,7 @@ public final class TrackingForm implements TextBoxListener {
             record.addDescription(40, line.name, Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
         }
 		model.addPar(record);
+        screen.updateModel();
     }
 
     public void activate() {

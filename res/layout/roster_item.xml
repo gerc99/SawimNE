@@ -29,6 +29,7 @@
             android:id="@+id/widget45"
             android:layout_width="128dp"
             android:layout_height="wrap_content"
+            android:padding="5dp"
             android:orientation="vertical" android:layout_weight="9">
         <TextView
                 android:id="@+id/item_name"

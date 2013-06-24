@@ -303,8 +303,10 @@ public class MucUsersView implements TextBoxListener {
     }
 
     public void update() {
-        if (usersAdapter != null)
+        if (usersAdapter != null) {
+            usersAdapter.update();
             usersAdapter.notifyDataSetChanged();
+        }
     }
 
     private class MucMenuItem {

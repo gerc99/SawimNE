@@ -2,6 +2,7 @@ package protocol;
 
 import DrawControls.icons.Icon;
 import DrawControls.tree.ProtocolBranch;
+import ru.sawim.General;
 import sawim.FileTransfer;
 import sawim.Sawim;
 import sawim.SawimException;
@@ -825,6 +826,8 @@ abstract public class Protocol {
             ui_updateContact(contact);
         }
         getContactList().markMessages(contact);
+        if (General.getInstance().getUpdateChatListener() != null)
+            General.getInstance().getUpdateChatListener().updateChat();
     }
 
     public final void ui_changeContactStatus(Contact contact) {
@@ -989,7 +992,7 @@ abstract public class Protocol {
                 ui_updateContact(contact);
             }
         }
-        ContactList.getInstance().receivedMessage(contact);
+        getContactList().markMessages(contact);
         getContactList().getManager().update(contact);
         getContactList().getManager().updateBarProtocols();
     }
@@ -1014,7 +1017,7 @@ abstract public class Protocol {
         }
         if (isHuman) {
             if (isPersonal) {
-                ContactList.getInstance().setActiveContact(contact);
+                getContactList().setActiveContact(contact);
             }
         }
         String id = contact.getUserId();

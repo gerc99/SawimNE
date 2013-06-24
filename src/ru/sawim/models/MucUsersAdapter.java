@@ -7,7 +7,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import sawim.util.JLocale;
 import protocol.Contact;
-import protocol.Protocol;
 import protocol.jabber.Jabber;
 import protocol.jabber.JabberContact;
 import protocol.jabber.JabberServiceContact;
@@ -36,20 +35,16 @@ public class MucUsersAdapter extends BaseAdapter {
     private JabberServiceContact conference;
     private List<Object> items = new ArrayList<Object>();
     private Jabber protocol;
-    private int myRole;
-    private int myAffiliation;
 
     public MucUsersAdapter(Context context, Jabber jabber, JabberServiceContact conf) {
         layerView = new LayerViewFactory(context);
         protocol = jabber;
         mucUserView = new MucUserViewFactory(context, jabber);
         conference = conf;
-        myRole = getRole(conference.getMyName());
-        myAffiliation = getAffiliation(conference.getMyName());
         update();
     }
 
-    private void update() {
+    public void update() {
         items.clear();
         //Util.sort(conference.subcontacts);
         final int moderators = getContactCount(JabberServiceContact.ROLE_MODERATOR);

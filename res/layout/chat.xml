@@ -99,7 +99,7 @@
                 android:id="@+id/messageBox" android:layout_gravity="center|left" android:layout_alignParentLeft="true"
                 android:layout_alignParentTop="true"
                 android:layout_weight="0.87"
-                style="@style/InputBar.EditText" />
+                style="@style/InputBar.EditText" android:inputType="textMultiLine|textCapSentences"/>
         <ImageButton
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"

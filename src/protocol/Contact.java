@@ -386,7 +386,7 @@ abstract public class Contact implements TreeNode, Sortable {
         if (!isTemp() && !isConference()) {
             menu.add(Menu.FIRST, USER_MENU_TRACK, 2, R.string.extra_settings);
 		}
-        if (isSingleUserContact() || isOnline()) {
+        /*if (isSingleUserContact() || isOnline()) {
             if (sawim.modules.fs.FileSystem.isSupported()) {
                 menu.add(Menu.FIRST, USER_MENU_FILE_TRANS, 2, R.string.ft_name);
             }
@@ -394,7 +394,7 @@ abstract public class Contact implements TreeNode, Sortable {
                 menu.add(Menu.FIRST, USER_MENU_CAM_TRANS, 2, R.string.ft_cam);
             }
             addChatMenuItems(menu);
-        }
+        }*/
     }
     protected final void addGeneralItems(Protocol protocol, ContextMenu menu) {
         menu.add(Menu.FIRST, USER_MENU_USER_INFO, 2, R.string.user_info);
