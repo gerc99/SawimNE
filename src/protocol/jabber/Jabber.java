@@ -838,7 +838,7 @@ public final class Jabber extends Protocol implements FormListener {
                     }
                 }
                 ContactList.getInstance().activate();
-
+                enterData.back();
             } else {
                 enterData.back();
             }

@@ -1,6 +1,5 @@
 package ru.sawim.models;
 
-import android.app.Activity;
 import android.content.Context;
 import android.text.util.Linkify;
 import android.view.LayoutInflater;
@@ -23,8 +22,8 @@ import java.util.List;
  */
 public class VirtualListAdapter extends BaseAdapter {
 
-    Context baseContext;
-    List<VirtualListItem> items;
+    private Context baseContext;
+    private List<VirtualListItem> items;
 
     public VirtualListAdapter(Context context, List<VirtualListItem> items) {
         this.baseContext = context;
@@ -43,6 +42,7 @@ public class VirtualListAdapter extends BaseAdapter {
 
     @Override
     public VirtualListItem getItem(int i) {
+        if (items.size() == 0) return null;
         return items.get(i);
     }
 
@@ -63,6 +63,7 @@ public class VirtualListAdapter extends BaseAdapter {
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
+        if (element == null) return convertView;
         LinearLayout descriptionLayout = (LinearLayout) convertView.findViewById(R.id.descriptionLayout);
         holder.labelView = (TextView) convertView.findViewById(R.id.label);
         holder.descView = (TextView) descriptionLayout.findViewById(R.id.description);

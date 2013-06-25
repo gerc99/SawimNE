@@ -19,6 +19,7 @@ import protocol.jabber.Jabber;
 import protocol.jabber.JabberContact;
 import protocol.jabber.JabberServiceContact;
 import protocol.jabber.Jid;
+import sawim.modules.MagicEye;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -118,7 +119,7 @@ public final class Chat {
             removeOldMessages();
             messData.add(mData);
         } else {
-            General.getInstance().getUpdateChatListener().addMessage(mData);
+            General.getInstance().getUpdateChatListener().addMessage(this, mData);
         }
     }
 
@@ -402,7 +403,7 @@ public final class Chat {
             removeOldMessages();
             messData.add(mData);
         } else {
-            General.getInstance().getUpdateChatListener().addMessage(mData);
+            General.getInstance().getUpdateChatListener().addMessage(this, mData);
         }
     }
 
@@ -432,7 +433,7 @@ public final class Chat {
                 } else if (inc) {
                     sysNoticeCounter = inc(sysNoticeCounter);
                 }
-                //MagicEye.addAction(protocol, contact.getUserId(), message.getDescStr());
+                MagicEye.addAction(protocol, contact.getUserId(), message.getText());
             }
 
             addTextToForm(message, getFrom(message));

@@ -61,6 +61,18 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
             addMenu();
         }
         profileView.setModel(new VirtualListModel());
+        profileView.setClickListListener(new VirtualList.OnClickListListener() {
+            @Override
+            public void itemSelected(int position) {
+
+            }
+
+            @Override
+            public boolean back() {
+                profileView.clearAll();
+                return true;
+            }
+        });
     }
     public void showProfile() {
         profileView.show();
@@ -100,7 +112,6 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
                 protocol.getAvatar(this);
             }
         }
-
         profileView.setModel(profile);
     }
     private void updateProfileView(VirtualListModel profile) {
@@ -146,6 +157,7 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
 
         profile.setHeader("avatar");
         profile.addAvatar(null, avatar);
+        profileView.updateModel();
     }
     private void addMenu() {
         profileView.setBuildOptionsMenu(new VirtualList.OnBuildOptionsMenu() {

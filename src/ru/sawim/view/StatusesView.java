@@ -15,12 +15,14 @@ import ru.sawim.R;
 import ru.sawim.models.StatusesAdapter;
 
 public class StatusesView extends DialogFragment {
-    StatusesAdapter statusesAdapter;
+    private StatusesAdapter statusesAdapter;
     public static final int ADAPTER_STATUS = 0;
     public static final int ADAPTER_PRIVATESTATUS = 1;
     private int type;
+    private Protocol protocol;
 
-    public StatusesView(int type) {
+    public StatusesView(Protocol p, int type) {
+        protocol = p;
         this.type = type;
     }
 
@@ -29,7 +31,6 @@ public class StatusesView extends DialogFragment {
                              Bundle savedInstanceState) {
         getDialog().setTitle(R.string.ms_status_menu);
         View v = inflater.inflate(R.layout.statuses_view, container, false);
-        final Protocol protocol = ContactList.getInstance().getCurrProtocol();
         statusesAdapter = new StatusesAdapter(getActivity(), protocol, type);
         ListView lv = (ListView) v.findViewById(R.id.statuses_view);
         Log.e("STATUS", ""+protocol.getProfile().statusIndex);

@@ -49,7 +49,6 @@ public class VirtualListActivity extends FragmentActivity {
         VirtualListView view = (VirtualListView) getSupportFragmentManager().findFragmentById(R.id.virtual_list_fragment);
         if (view.onBackPressed())
             super.onBackPressed();
-        VirtualList.getInstance().clearAll();
     }
 
 }

@@ -1,5 +1,3 @@
-
-
 package protocol.jabber;
 
 import sawim.Sawim;
@@ -12,6 +10,7 @@ import sawim.comm.MD5;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
 import sawim.modules.DebugLog;
+import sawim.modules.MagicEye;
 import sawim.search.UserInfo;
 import sawim.util.JLocale;
 import protocol.*;
@@ -804,16 +803,14 @@ public final class JabberXml extends ClientConnection {
                             + "</os></query></iq>");
                     
                     String jid = Jid.isConference(from) ? from : Jid.getBareJid(from);
-                    //MagicEye.addAction(jabber, jid, "get_version");
-                    
+                    MagicEye.addAction(jabber, jid, "get_version");
                 }
                 return;
 
             } else if ("jabber:iq:last".equals(xmlns)) {
                 if (IQ_TYPE_GET == iqType) {
-                    
                     String jid = Jid.isConference(from) ? from : Jid.getBareJid(from);
-                    //MagicEye.addAction(jabber, jid, "last_activity_request");
+                    MagicEye.addAction(jabber, jid, "last_activity_request");
                     
                     long time = Sawim.getCurrentGmtTime() - jabber.getLastStatusChangeTime();
                     putPacketIntoQueue("<iq type='result' to='" + Util.xmlEscape(from)
@@ -843,7 +840,7 @@ public final class JabberXml extends ClientConnection {
                 return;
             }
             String jid = Jid.isConference(from) ? from : Jid.getBareJid(from);
-            //MagicEye.addAction(jabber, jid, "get_time");
+            MagicEye.addAction(jabber, jid, "get_time");
             
             int gmtOffset = Options.getInt(Options.OPTION_GMT_OFFSET);
             putPacketIntoQueue("<iq type='result' to='" + Util.xmlEscape(from)

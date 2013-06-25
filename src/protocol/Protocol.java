@@ -826,8 +826,6 @@ abstract public class Protocol {
             ui_updateContact(contact);
         }
         getContactList().markMessages(contact);
-        if (General.getInstance().getUpdateChatListener() != null)
-            General.getInstance().getUpdateChatListener().updateChat();
     }
 
     public final void ui_changeContactStatus(Contact contact) {
@@ -1050,8 +1048,6 @@ abstract public class Protocol {
                 playNotification(Notify.isSound(Notify.NOTIFY_MULTIMESSAGE), Notify.NOTIFY_MULTIMESSAGE);
             }
             playNotification(Notify.NOTIFY_MULTIMESSAGE);
-        } else {
-            playNotification(Notify.NOTIFY_RECONNECT);
         }
         if (!isPersonal) {
             return;

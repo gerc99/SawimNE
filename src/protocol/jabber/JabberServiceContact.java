@@ -1,6 +1,3 @@
-
-
-
 package protocol.jabber;
 
 import android.view.ContextMenu;
@@ -20,9 +17,7 @@ import protocol.ContactMenu;
 import protocol.Protocol;
 import protocol.StatusInfo;
 import ru.sawim.R;
-
 import java.util.Vector;
-
 
 public class JabberServiceContact extends JabberContact {
     public static final int GATE_CONNECT = 0;
@@ -241,16 +236,12 @@ public class JabberServiceContact extends JabberContact {
             if (301 == code) {
                 text = "you_was_baned";
 				textPresence.append(JLocale.getString("you_was_baned")).append(" ").append(reasone);
-				
-                //sawim.modules.MagicEye.addAction(getProtocol(), getUserId(), nick + " was baned", reasone);
-				
+                sawim.modules.MagicEye.addAction(getProtocol(), getUserId(), nick + " was baned", reasone);
                 playSoundEye();
             } else if (307 == code) {
                 text = "you_was_kicked";
 				textPresence.append(JLocale.getString("you_was_kicked")).append(" ").append(reasone);
-				
-                //sawim.modules.MagicEye.addAction(getProtocol(), getUserId(), nick + " was kicked", reasone);
-				
+                sawim.modules.MagicEye.addAction(getProtocol(), getUserId(), nick + " was kicked", reasone);
                 playSoundEye();
             } else if (404 == code) {
                 text = "error";
@@ -289,11 +280,8 @@ public class JabberServiceContact extends JabberContact {
             if (null != event) {
                 event = JLocale.getString(event);
 				textPresence.append(event).append(" ").append(reasone);
-				
-                //sawim.modules.MagicEye.addAction(jabber, getUserId(), nick + " " + event, reasone);
-				
+                sawim.modules.MagicEye.addAction(jabber, getUserId(), nick + " " + event, reasone);
             }
-        
         }
 			if (isPresence() == (byte)1) {
                 addPresence(jabber, new SystemNotice(jabber,               
@@ -302,7 +290,6 @@ public class JabberServiceContact extends JabberContact {
         if (hasChat()) {
             jabber.getChat(this).setWritable(canWrite());
         }
-        //showTopLine(nick + ": " + jabber.getStatusInfo().getName(StatusInfo.STATUS_OFFLINE));
     }
 	
 	void presence(String nick, int statusCode, String changedNick) {
@@ -370,7 +357,7 @@ public class JabberServiceContact extends JabberContact {
             } else {
                 contactMenu.add(Menu.FIRST, CONFERENCE_CONNECT, 2, R.string.connect);
             }
-            if (!isOnline()) {//////
+            if (!isOnline()) {//
                 contactMenu.add(Menu.FIRST, USER_MENU_USERS_LIST, 2, R.string.list_of_users);
             }
             contactMenu.add(Menu.FIRST, CONFERENCE_OPTIONS, 2, R.string.options);

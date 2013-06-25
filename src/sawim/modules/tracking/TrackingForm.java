@@ -64,6 +64,7 @@ public final class TrackingForm implements TextBoxListener {
             public boolean back() {
                 saveList();
                 backToCL();
+                screen.clearAll();
                 return true;
             }
         });

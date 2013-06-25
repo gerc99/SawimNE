@@ -1,5 +1,3 @@
-
-
 package protocol.mrim;
 
 import sawim.Sawim;
@@ -12,6 +10,7 @@ import sawim.cl.ContactList;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
 import sawim.modules.DebugLog;
+import sawim.modules.MagicEye;
 import sawim.modules.Notify;
 import sawim.search.Search;
 import sawim.search.UserInfo;
@@ -22,9 +21,7 @@ import protocol.StatusInfo;
 import protocol.TemporaryRoster;
 import protocol.net.ClientConnection;
 import protocol.net.TcpSocket;
-
 import java.util.Vector;
-
 
 public final class MrimConnection extends ClientConnection {
     private TcpSocket socket;
@@ -141,7 +138,6 @@ public final class MrimConnection extends ClientConnection {
         socket = new TcpSocket();
         socket.connectTo("socket://" + server);
 
-        
         DebugLog.println("send hello");
         
         MrimBuffer hi = new MrimBuffer();
@@ -273,9 +269,7 @@ public final class MrimConnection extends ClientConnection {
                 
                 ContactList.getInstance().activateWithMsg(from + " (SMS):\n" + msg);
             }
-            
-            //MagicEye.addAction(mrim, fromEmail, "SMS", msg);
-            
+            MagicEye.addAction(mrim, fromEmail, "SMS", msg);
             return;
         }
         if ((MrimPacket.MESSAGE_FLAG_AUTHORIZE & flags) != 0) {
@@ -434,9 +428,6 @@ public final class MrimConnection extends ClientConnection {
         } else if (MrimPacket.MRIM_CS_OFFLINE_MESSAGE_ACK == cmd) {
             byte[] uidl = packetData.getUidl();
             String offmsg = packetData.getString();
-            
-            
-            
             String[] mail = explodeMail(offmsg);
             String date = getMailValue(mail[0], "Date");
             String from = getMailValue(mail[0], "From");
@@ -475,9 +466,6 @@ public final class MrimConnection extends ClientConnection {
             String user = packetData.getString();
             int clientCaps = (int)packetData.getDWord();
             String client = packetData.getString();
-
-            
-
             MrimContact contact = (MrimContact)mrim.getItemByUIN(user);
             if ((null != contact) && !(contact instanceof MrimPhoneContact)) {
                 final int oldStatusIndex = contact.getStatusIndex();
@@ -489,19 +477,15 @@ public final class MrimConnection extends ClientConnection {
                 if (StatusInfo.STATUS_OFFLINE != newStatusIndex) {
                     contact.setClient(client);
                 }
-                
-                
+
                 mrim.ui_changeContactStatus(contact);
                 if ((contact instanceof MrimChatContact) && contact.isOnline()) {
                     putMultiChatGetMembers(contact.getUserId());
                 }
-
-                
                 if ((StatusInfo.STATUS_OFFLINE == newStatusIndex)
                         && (StatusInfo.STATUS_OFFLINE == oldStatusIndex)) {
-                    //MagicEye.addAction(mrim, contact.getUserId(), "hiding_from_you");
+                    MagicEye.addAction(mrim, contact.getUserId(), "hiding_from_you");
                 }
-                
             }
 
         } else if (MrimPacket.MRIM_CS_ANKETA_INFO == cmd) {
@@ -519,17 +503,13 @@ public final class MrimConnection extends ClientConnection {
                         ? new UserInfo(mrim, "")
                         : singleUserInfo;
                     setUserInfo(userInfo, fieldNames, packetData);
-
                     if (null != search) {
                         search.addResult(userInfo);
                     }
-
                     if (null != lastContact) {
                         if (StringConvertor.isEmpty(lastContact.getPhones())) {
-
                         } else if (StringConvertor.isEmpty(userInfo.homePhones)) {
                             userInfo.homePhones = lastContact.getPhones();
-
                         } else {
                             userInfo.homePhones += ", " + lastContact.getPhones();
                         }
@@ -576,10 +556,7 @@ public final class MrimConnection extends ClientConnection {
             lastContact = null;
 
         } else if (MrimPacket.MRIM_CS_MODIFY_CONTACT_ACK == cmd) {
-            
             DebugLog.println("contact update status " + packetData.getDWord());
-            
-
         } else if (MrimPacket.MRIM_CS_CONTACT_LIST2 == cmd) {
             getContactList(packetData);
 
@@ -596,16 +573,12 @@ public final class MrimConnection extends ClientConnection {
             if (reply) {
                 String alert = packetData.getUtf8String();
             }
-            
             if (isConnected()) {
                 boolean added = mrim.getMicroBlog().addPost(from, nick, text, postid, reply, time);
                 if (added && !mrim.getUserId().equals(from)) {
-                    
                     mrim.playNotification(Notify.NOTIFY_BLOG);
-                    
                 }
             }
-            
 
         } else {
             
@@ -763,11 +736,7 @@ public final class MrimConnection extends ClientConnection {
 
             String id = packetData.getQWordAsString();
             long time = packetData.getDWord(); 
-            String blogPost = packetData.getUcs2String(); 
-            
-            
-            
-            
+            String blogPost = packetData.getUcs2String();
 
             packetData.skipFormattedRecord(contactMask, 7 + 5 + 4);
             if ((CONTACT_FLAG_REMOVED & flags) != 0) continue;
@@ -786,10 +755,8 @@ public final class MrimConnection extends ClientConnection {
             contact.setMood(xstatus, title, desc);
             hasPhones |= (MrimGroup.PHONE_CONTACTS_GROUP == contact.getGroupId());
 
-            
             mrim.getMicroBlog().addPost(userid, name, blogPost, id, false, time);
-            
-            
+
             contact.setClient(client);
             
             roster.addContact(contact);
@@ -942,8 +909,6 @@ public final class MrimConnection extends ClientConnection {
         }
     }
 
-
-    
     private static final int[] statusCodes = {
             STATUS_OFFLINE,
             STATUS_ONLINE,
@@ -1000,5 +965,3 @@ public final class MrimConnection extends ClientConnection {
         return statusCodes[statusIndex];
     }
 }
-
-

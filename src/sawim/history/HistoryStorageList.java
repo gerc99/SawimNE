@@ -71,6 +71,8 @@ public final class HistoryStorageList implements Runnable, FormListener {
             @Override
             public boolean back() {
                 closeHistoryView();
+                allMsg.clearAll();
+                currMsg.clearAll();
                 return true;
             }
         });

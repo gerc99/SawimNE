@@ -1,4 +1,3 @@
-
 package protocol.net;
 
 import sawim.comm.Util;

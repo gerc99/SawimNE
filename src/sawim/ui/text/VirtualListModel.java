@@ -13,13 +13,25 @@ import sawim.util.JLocale;
 public final class VirtualListModel {
     public List<VirtualListItem> elements;
     private String header = null;
+    private OnAddListListener addListListener;
 
     public VirtualListModel() {
         elements = new ArrayList<VirtualListItem>();
     }
 
     public final void addPar(final VirtualListItem item) {
-        elements.add(item);
+        if (addListListener == null)
+            elements.add(item);
+        else
+            addListListener.addList(item);
+    }
+
+    public void setAddListListener(OnAddListListener addListListener) {
+        this.addListListener = addListListener;
+    }
+
+    public interface OnAddListListener {
+        public void addList(VirtualListItem item);
     }
 
     public final VirtualListItem createNewParser(boolean itemSelectable) {
@@ -99,7 +111,7 @@ public final class VirtualListModel {
     }
 
     public boolean isItemSelectable(int i) {
-        //if (elements.size() == 0) return false;
+        if (elements.size() < i) return false;
         return elements.get(i).isItemSelectable();
     }
 }

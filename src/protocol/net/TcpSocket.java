@@ -1,5 +1,3 @@
-
-
 package protocol.net;
 
 import sawim.SawimException;
@@ -24,12 +22,6 @@ public final class TcpSocket {
     public void connectTo(String url) throws SawimException {
         try {
             sc = (StreamConnection)Connector.open(url, Connector.READ_WRITE);
-            
-            
-            
-            
-            
-            
             os = sc.openOutputStream();
             is = sc.openInputStream();
         } catch (ConnectionNotFoundException e) {
@@ -47,12 +39,6 @@ public final class TcpSocket {
     public void connectForReadingTo(String url) throws SawimException {
         try {
             sc = (StreamConnection)Connector.open(url, Connector.READ);
-            
-            
-            
-            
-            
-            
             is = sc.openInputStream();
         } catch (ConnectionNotFoundException e) {
             throw new SawimException(121, 0);
@@ -92,11 +78,7 @@ public final class TcpSocket {
             if (-1 == bRead) {
                 throw new IOException("EOF");
             }
-            
-
-            
             return bRead;
-
         } catch (IOException e) {
             throw new SawimException(120, 1);
         }
@@ -117,9 +99,7 @@ public final class TcpSocket {
                 }
                 bReadSum += bRead;
             } while (bReadSum < data.length);
-            
 
-            
             return bReadSum;
         } catch (IOException e) {
             throw new SawimException(120, 1);
@@ -132,14 +112,9 @@ public final class TcpSocket {
         try {
             os.write(data, offset, length);
         } catch (IOException e) {
-            
             sawim.modules.DebugLog.panic("write", e);
-            
             throw new SawimException(120, 2);
         }
-        
-
-        
     }
     public void flush() throws SawimException {
         try {
@@ -181,4 +156,3 @@ public final class TcpSocket {
         }
     }
 }
-

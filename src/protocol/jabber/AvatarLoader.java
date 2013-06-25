@@ -1,13 +1,6 @@
 package protocol.jabber;
 
-
-import DrawControls.icons.Image;
-import DrawControls.icons.ImageList;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import sawim.Sawim;
 import sawim.search.UserInfo;
-
 
 public class AvatarLoader implements Runnable {
     private byte[] avatarBytes = null;

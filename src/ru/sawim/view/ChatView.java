@@ -1,10 +1,8 @@
 package ru.sawim.view;
 
-
 import DrawControls.icons.Icon;
 import DrawControls.icons.ImageList;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.*;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -12,7 +10,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.*;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -23,23 +20,18 @@ import protocol.Protocol;
 import protocol.jabber.*;
 import ru.sawim.General;
 import ru.sawim.R;
-import ru.sawim.activities.ChatActivity;
 import ru.sawim.models.MessagesAdapter;
-import ru.sawim.models.MucUsersAdapter;
 import sawim.FileTransfer;
 import sawim.Options;
-import sawim.Sawim;
 import sawim.SawimUI;
 import sawim.chat.Chat;
 import sawim.chat.ChatHistory;
 import sawim.chat.MessData;
 import sawim.cl.ContactList;
 import sawim.comm.StringConvertor;
-import sawim.ui.TextBoxListener;
 import sawim.ui.base.Scheme;
 import sawim.util.JLocale;
 
-import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -555,13 +547,13 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
     }
 
     @Override
-    public void addMessage(final MessData mess) {
+    public void addMessage(final Chat chat, final MessData mess) {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 if (adapter != null) {
                     chat.removeOldMessages();
-                    messData.add(mess);
+                    chat.getMessData().add(mess);
                     adapter.notifyDataSetChanged();
                 }
             }

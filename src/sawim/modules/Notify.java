@@ -1,19 +1,12 @@
-
 package sawim.modules;
-
 
 import android.content.Context;
 import android.os.Vibrator;
 import sawim.Sawim;
 import sawim.Options;
 import sawim.comm.Util;
-//import sawim.ui.base.Popup;
-import sawim.util.JLocale;
 import ru.sawim.activities.SawimActivity;
 import ru.sawim.sound.SoundPlayer;
-
-
-
 
 public class Notify implements Runnable {
 

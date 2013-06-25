@@ -49,6 +49,7 @@ public final class AffiliationListConf implements FormListener, TextBoxListener 
 
             @Override
             public boolean back() {
+                screen.clearAll();
                 return true;
             }
         });

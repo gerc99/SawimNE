@@ -1,6 +1,3 @@
-
-
-
 package protocol.icq;
 
 import sawim.Sawim;
@@ -13,6 +10,7 @@ import sawim.comm.GUID;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
 import sawim.modules.DebugLog;
+import sawim.modules.MagicEye;
 import sawim.util.JLocale;
 import protocol.Contact;
 import protocol.XStatusInfo;
@@ -53,11 +51,7 @@ public final class IcqNetDefActions {
         int hour = reader.getByte();
         int min = reader.getByte();
         int sec = 0;
-
-        
         int type = reader.getWordLE();
-
-        
         int textLen = reader.getWordLE();
 
         byte[] msgData = reader.getArray(textLen);
@@ -66,7 +60,6 @@ public final class IcqNetDefActions {
             return;
         }
 
-        
         long date = Util.createGmtTime(year, mon, day, hour, min, sec) + 5 * 60 * 60;
 
         if (0x0001 == type) { 
@@ -75,32 +68,21 @@ public final class IcqNetDefActions {
     }
     
     public void forward(Packet packet) throws SawimException {
-        
         if (packet instanceof DisconnectPacket) {
             DisconnectPacket disconnectPacket = (DisconnectPacket) packet;
-
-            
             throw disconnectPacket.makeException();
         }
 
         if (packet instanceof FromIcqSrvPacket) {
             FromIcqSrvPacket fromIcqSrvPacket = (FromIcqSrvPacket) packet;
-
-            
             if (FromIcqSrvPacket.SRV_OFFLINEMSG_SUBCMD == fromIcqSrvPacket.getSubcommand()) {
                 processOfflineMessage(fromIcqSrvPacket.getReader());
-
-                
             } else if (FromIcqSrvPacket.SRV_DONEOFFLINEMSGS_SUBCMD == fromIcqSrvPacket.getSubcommand()) {
                 sendPacket(new ToIcqSrvPacket(0x00000000, getIcq().getUserId(),
                         ToIcqSrvPacket.CLI_ACKOFFLINEMSGS_SUBCMD, new byte[0], new byte[0]));
-
-            
             } else  {
                 unknownPacket(packet);
-            
             }
-
         } else if (packet instanceof SnacPacket) {
             SnacPacket snacPacket = (SnacPacket) packet;
             int family = snacPacket.getFamily();
@@ -114,17 +96,10 @@ public final class IcqNetDefActions {
                     userOffline(snacPacket);
 
                 } else if (0x1F == command) {
-                    
-                    //MagicEye.addAction(getIcq(), "1", "Verification");
-                    
-                    
+                    MagicEye.addAction(getIcq(), "1", "Verification");
                     DebugLog.println("Verification");
-                    
-
-                
                 } else  {
                     unknownPacket(packet);
-                
                 }
 
             } else if (SnacPacket.CLI_ICBM_FAMILY == family) {
@@ -140,7 +115,6 @@ public final class IcqNetDefActions {
                         readMessage(snacPacket.getReader());
                     } catch (Exception e) {
                     }
-
                 
                 } else if (SnacPacket.SRV_MISSED_MESSAGE_COMMAND == command) {
                     ArrayReader marker = snacPacket.getReader();
@@ -156,11 +130,8 @@ public final class IcqNetDefActions {
                     int count = marker.getWordBE();
                     int reasone = marker.getWordBE();
                     DebugLog.println("msg: " + uin + " [" + reasone +  "]x("+count+")");
-                
 
-                
                 } else if (SnacPacket.SRV_MTN_COMMAND == command) {
-                    
                     ArrayReader buf = snacPacket.getReader();
                     buf.skip(10);
                     int uin_len = buf.getByte();
@@ -170,84 +141,52 @@ public final class IcqNetDefActions {
                     if (Options.getInt(Options.OPTION_TYPING_MODE) > 0) {
                         getIcq().beginTyping(uin, (0x0002 == flag));
                     }
-                
-
-                
                 } else {
                     unknownPacket(packet);
-                
                 }
-
                 
             } else if (SnacPacket.SSI_FAMILY == family) {
                 if (SnacPacket.SRV_ADDEDYOU_COMMAND == command) {
-                    
                     String uin = getUinByByteLen(snacPacket.getReader());
-
-                    
-                    //MagicEye.addAction(getIcq(), uin,
-                    //        JLocale.getString("youwereadded") + uin);
-                    
-
+                    MagicEye.addAction(getIcq(), uin,
+                            JLocale.getString("youwereadded") + uin);
                     
                 } else if (SnacPacket.SRV_GRANT_FUTURE_AUTH_COMMAND == command) {
                     ArrayReader authMarker = snacPacket.getReader();
-
-                    
                     int length = authMarker.getByte();
                     String uin = StringConvertor.byteArrayToAsciiString(
                             authMarker.getArray(length), 0, length);
-
                     String reason = getReasone(authMarker);
-
                     getIcq().setAuthResult(uin, true);
 
-                    
                 } else if (SnacPacket.SRV_AUTHREQ_COMMAND == command) {
                     ArrayReader authMarker = snacPacket.getReader();
-
-                    
                     int length = authMarker.getByte();
                     String uin = StringConvertor.byteArrayToAsciiString(
                             authMarker.getArray(length), 0, length);
-
                     String reason = getReasone(authMarker);
-
                     getIcq().addMessage(new SystemNotice(getIcq(), SystemNotice.SYS_NOTICE_AUTHREQ, uin, reason));
-
-                    
                 } else if (SnacPacket.SRV_AUTHREPLY_COMMAND == command) {
                     ArrayReader authMarker = snacPacket.getReader();
-
-                    
                     int length = authMarker.getByte();
                     String uin = StringConvertor.byteArrayToAsciiString(
                             authMarker.getArray(length), 0, length);
-
-                    
                     boolean granted = (0x01 == authMarker.getByte());
-
                     String reason = getReasone(authMarker);
-
-                    
                     if (granted) {
                         getIcq().setAuthResult(uin, true);
                     } else {
                         Contact c = getIcq().getItemByUIN(uin);
                         if ((null != c) && !c.isTemp()) {
-                            
-                        //    MagicEye.addAction(getIcq(), uin,
-                        //            JLocale.getString("denyedby") + uin);
-                            
+                            MagicEye.addAction(getIcq(), uin,
+                                    JLocale.getString("denyedby") + uin);
                         }
                     }
-
                 } else if (SnacPacket.CLI_ROSTERDELETE_COMMAND == command) {
                     ArrayReader buf = snacPacket.getReader();
                     int length = buf.getWordBE();
                     String uin = StringConvertor.byteArrayToAsciiString(
                             buf.getArray(length), 0, length);
-
                     buf.skip(4);
                     int type = buf.getWordBE();
                     if (0 == type) {
@@ -259,19 +198,12 @@ public final class IcqNetDefActions {
                                 getIcq().addMessage(new SystemNotice(getIcq(),
                                         SystemNotice.SYS_NOTICE_MESSAGE, uin, message));
                             }
-                            
-                           // MagicEye.addAction(getIcq(), uin, message);
-                            
+                            MagicEye.addAction(getIcq(), uin, message);
                         }
                     }
-
-                
                 } else  {
                     unknownPacket(packet);
-                
                 }
-
-            
             } else  {
                 unknownPacket(packet);
             
@@ -288,14 +220,11 @@ public final class IcqNetDefActions {
         }
         return reason;
     }
-
     
     private byte[] mergeCapabilities(byte[] oldCaps, byte[] newCaps) {
         if (null == newCaps) {
             return oldCaps;
         }
-
-        
         int newCapsCount = 0;
         for (int i = 0; i < newCaps.length; i += 2) {
             if (0x13 != newCaps[i]) continue;
@@ -325,7 +254,6 @@ public final class IcqNetDefActions {
         return allCaps;
     }
 
-    
     private void unknownPacket(Packet packet) {
         if (!(packet instanceof SnacPacket)) {
             return;
@@ -336,9 +264,6 @@ public final class IcqNetDefActions {
         if (0x1 == family) {
             if (0x21 == command) return;
             if (0x0F == command) return;
-
-
-
         }
         if (packet instanceof FromIcqSrvPacket) {
             FromIcqSrvPacket fisp = (FromIcqSrvPacket)packet;
@@ -371,12 +296,10 @@ public final class IcqNetDefActions {
             int textLen = reader.getWordLE();
             reader.skip(textLen);
             if (MESSAGE_TYPE_EXTENDED == msgType) {
-                
                 XtrazMessagePlugin plg = unpackPlugin(reader, uin);
                 if (null != plg) {
                     sendPacket(plg.getPacket());
                 }
-                
             }
         }
     }
@@ -473,28 +396,16 @@ public final class IcqNetDefActions {
                 SnacPacket.CLI_ACKMSG_COMMAND, 0, packet.toByteArray()));
     }
     private void readMessage(ArrayReader marker) throws SawimException {
-
-        
         marker.skip(8 );
         int format = marker.getWordBE();
-
-
-        
         int uinLen = marker.getByte();
-
-        
         String uin = StringConvertor.byteArrayToAsciiString(
                 marker.getArray(uinLen), 0, uinLen);
-
         marker.skip(2 );
-
-        
         int tlvCount = marker.getWordBE();
         for (int i = 0; i < tlvCount; ++i) {
             marker.skipTlv();
         }
-
-        
         int tlvType;
         byte[] msgBuf;
         do {
@@ -503,114 +414,60 @@ public final class IcqNetDefActions {
         } while ((tlvType != 0x0002) && (tlvType != 0x0005));
 
         ArrayReader msgMarker = new ArrayReader(msgBuf, 0);
-
-        
-        
-        
         if (format == 0x0001) {
-
-            
-            
             byte[] message = null;
-
-            
             while (msgMarker.isNotEnd()) {
-
-                
                 tlvType = msgMarker.getTlvType();
-                
                 byte[] tlvValue = msgMarker.getTlv();
-
-                
                 switch (tlvType) {
                     case 0x0501:
-                        
-                        
                         break;
                     case 0x0101:
-                        
                         message = tlvValue;
                         break;
                 }
-
             }
-
-            
             if (null != message) {
-
                 boolean ucs2 = (0x0002 == Util.getWordBE(message, 0));
-                
                 String text = null;
                 if (ucs2) {
                     text = StringConvertor.ucs2beByteArrayToString(message, 4, message.length - 4);
                 } else {
                     text = StringConvertor.byteArrayToWinString(message, 4, message.length - 4);
                 }
-
-                
-                
                 addMessage(uin, text);
                 sendRecivedFlag(marker.getBuffer(), uin, false);
             }
-
-            
-            
-            
         } else if (format == 0x0002) {
-            
-            
-            
-
-            
             int cmd = msgMarker.getWordBE();
-            if (0x0000 != cmd) return; 
-
-            
+            if (0x0000 != cmd) return;
             msgMarker.skip(4 + 4);
-
-            
             msgMarker.skip(16);
-
-            
             int ackType = -1;
             byte[] extIP = new byte[4];
             byte[] ip = new byte[4];
             int port = 0;
-            
             int status = -1;
-
-            
             byte[] msg2Buf = null;
             do {
-                
                 tlvType = msgMarker.getTlvType();
-                
                 byte[] infoBuf = msgMarker.getTlv();
-                
                 switch (tlvType) {
                     case 0x0003: System.arraycopy(infoBuf, 0, extIP, 0, 4);  break;
                     case 0x0004: System.arraycopy(infoBuf, 0, ip, 0, 4);     break;
                     case 0x0005: port = Util.getWordBE(infoBuf, 0);         break;
                     case 0x000a: ackType = Util.getWordBE(infoBuf, 0);      break;
                 }
-                
                 if (0x2711 == tlvType) {
                     msg2Buf = infoBuf;
                 }
             } while (msgMarker.isNotEnd());
-
-            
             if (null == msg2Buf) {
                 return;
             }
             ArrayReader msg2Reader = new ArrayReader(msg2Buf, 0);
-
-            
-            
             msg2Reader.skip(msg2Reader.getWordLE());
             msg2Reader.skip(msg2Reader.getWordLE());
-
-            
             int msgType = msg2Reader.getWordLE();
             if (!((MESSAGE_TYPE_PLAIN == msgType)
                     || (MESSAGE_TYPE_URL == msgType)
@@ -620,28 +477,17 @@ public final class IcqNetDefActions {
                 if (MESSAGE_TYPE_ADDED == msgType) {
                     DebugLog.println("msg type 0x" + Integer.toHexString(msgType));
                 }
-                
                 return;
             }
-
             status = msg2Reader.getWordLE();
-
-            msg2Reader.skip(2 );
-
-            
+            msg2Reader.skip(2);
             int textLen = msg2Reader.getWordLE();
-            
             byte[] rawText = msg2Reader.getArray(textLen);
-
-            
             if (0x0001 == msgType) {
                 if (rawText.length == 0) {
                     return;
                 }
-
                 msg2Reader.skip(4  + 4 );
-
-                
                 boolean isUtf8 = false;
                 if (msg2Buf.length >= msg2Reader.getOffset() + 4) {
                     int guidLen = (int) msg2Reader.getDWordLE();
@@ -654,24 +500,16 @@ public final class IcqNetDefActions {
                         }
                     }
                 }
-
-                
                 String text = null;
-                
                 if (isUtf8) {
                     text = StringConvertor.utf8beByteArrayToString(rawText, 0, rawText.length);
                 } else {
                     text = StringConvertor.byteArrayToWinString(rawText, 0, rawText.length);
                 }
-                
                 addMessage(uin, text);
                 sendRecivedFlag(marker.getBuffer(), uin, true);
-
-            } else if (0x0004 == msgType) { 
-
-                
+            } else if (0x0004 == msgType) {
             } else if (msgType == 0x001A) {
-                
                 XtrazMessagePlugin plg = unpackPlugin(msg2Reader, uin);
                 if (null != plg) {
                     marker.setOffset(0);
@@ -679,31 +517,14 @@ public final class IcqNetDefActions {
                     sendPacket(plg.getPacket());
                     return;
                 }
-                
             }
-
-            
-            
-            
         } else if (format == 0x0004) {
-
-            
             msgMarker.skip(4);
-
-            
             int msgType = msgMarker.getWordLE();
-
-            
             if (msgType != 0x0001) return;
-
-            
             int textLen = msgMarker.getWordLE();
-
-            
             String text = StringConvertor.byteArrayToWinString(
                     msgMarker.getArray(textLen), 0, textLen);
-
-            
             addMessage(uin, text);
         }
     }
@@ -716,36 +537,27 @@ public final class IcqNetDefActions {
 
     private String lastOfflineUin = null;
     private void userOffline(SnacPacket snacPacket) {
-        
         String uin = getUinByByteLen(snacPacket.getReader());
-
         IcqContact item = (IcqContact)getIcq().getItemByUIN(uin);
         if (null != item) {
             boolean hasBeenOffline = !item.isOnline();
-            
             if (getIcq().isConnected() && hasBeenOffline) {
                 if (item.getUserId().equals(lastOfflineUin)) {
-                    //MagicEye.addAction(getIcq(), lastOfflineUin, "hiding_from_you");
+                    MagicEye.addAction(getIcq(), lastOfflineUin, "hiding_from_you");
                 }
                 lastOfflineUin = item.getUserId();
             }
-            
             if (hasBeenOffline) {
                 return;
             }
-
             item.setOfflineStatus();
-            
             getIcq().ui_changeContactStatus(item);
-
-            
         } else {
             DebugLog.println("USER_OFFLINE for " + uin);
             
         }
     }
     private void userOnline(SnacPacket snacPacket) {
-        
         byte[] internalIP = new byte[4];
         byte[] externalIP = new byte[4];
         int dcPort = 0;
@@ -761,23 +573,17 @@ public final class IcqNetDefActions {
         String statusText = null;
         String mood = null;
 
-        
         int idle = -1;
         int online = -1;
         long signon = -1;
 
-        
         int status = IcqStatusInfo.STATUS_ONLINE;
-
-        
         ArrayReader marker = snacPacket.getReader();
-
         int uinLen = marker.getByte();
         String uin = StringConvertor.byteArrayToAsciiString(
                 marker.getArray(uinLen), 0, uinLen);
-        marker.skip(2 );
+        marker.skip(2);
 
-        
         int tlvNum = marker.getWordBE();
         for (int i = 0; i < tlvNum; ++i) {
             int tlvType = marker.getTlvType();
@@ -811,7 +617,6 @@ public final class IcqNetDefActions {
             } else if (tlvType == 0x000F) {
                 online = (int)byteArrayToLong(tlvData);
 
-                
             } else if (tlvType == 0x001D) {
                 ArrayReader iconMarker = new ArrayReader(tlvData, 0);
                 final int BART_STATUS_STR = 0x0002;
@@ -841,12 +646,8 @@ public final class IcqNetDefActions {
         
         IcqContact contact = (IcqContact)getIcq().getItemByUIN(uin);
         if (contact != null) {
-            
             int flags = (status >> 16) & 0xFFFF;
-
-            
             contact.setXStatus(Icq.xstatus.createXStatus(capabilities_old, mood), null);
-            
             statusText = StringConvertor.trim(statusText);
             if (!StringConvertor.isEmpty(statusText)) {
                 
@@ -854,13 +655,10 @@ public final class IcqNetDefActions {
                     contact.setXStatusMessage(statusText);
                     statusText = null;
                 }
-                
             }
             getIcq().setContactStatus(contact,
                     IcqStatusInfo.getStatusIndex(status & 0xFFFF, capabilities_old),
                     statusText);
-
-
             contact.happyFlag = ((flags & FLAG_HAPPY) != 0)
                     || GUID.CAP_QIP_HAPPY.equals(capabilities_old);
 
@@ -868,16 +666,9 @@ public final class IcqNetDefActions {
             capabilities_old = null;
             capabilities_new = null;
 
-            
-            
             contact.setTimeOfChaingingStatus(signon);
             ClientDetector.instance.execVM(contact, capa, new int[] {dwFT1, dwFT2, dwFT3}, protocolVersion);
-            
-
-            
             getIcq().ui_changeContactStatus(contact);
-
-            
         } else {
             DebugLog.println("USER_ONLINE for " + uin + " (0x" + Integer.toHexString(status) + ")");
             
@@ -886,7 +677,6 @@ public final class IcqNetDefActions {
 
     
     private XtrazMessagePlugin unpackPlugin(ArrayReader reader, String uin) {
-        
         int someLen = reader.getWordLE();
         int bufPos = reader.getOffset() + someLen;
         int guidPos = reader.getOffset();
@@ -923,15 +713,10 @@ public final class IcqNetDefActions {
         xmlLen = Math.min(xmlLen, reader.getBuffer().length - reader.getOffset());
         String xml = StringConvertor.utf8beByteArrayToString(
                 reader.getArray(xmlLen), 0, xmlLen);
-
-        
         if (xml.startsWith("<N>")) {
-            //MagicEye.addAction(icq, uin, "read xtraz");
+            MagicEye.addAction(icq, uin, "read xtraz");
         }
-        
-
         if (contact == null) return null;
-
         if (xml.startsWith("<NR>")) {
             String res = getTagContent(xml, "RES");
             String title = StringConvertor.notNull(getTagContent(res, tags[0])).trim();
@@ -965,9 +750,7 @@ public final class IcqNetDefActions {
         }
         return null;
     }
-    
 
-    
     private long byteArrayToLong(byte[] b) {
         long l = 0;
         l |= b[0] & 0xFF;
@@ -981,7 +764,6 @@ public final class IcqNetDefActions {
         }
         return l;
     }
-
     
     public static final int MESSAGE_TYPE_AUTO     = 0x0000;
     public static final int MESSAGE_TYPE_NORM     = 0x0001;
@@ -992,25 +774,9 @@ public final class IcqNetDefActions {
     public static final int MESSAGE_TYPE_DND      = 0x03eb;
     public static final int MESSAGE_TYPE_FFC      = 0x03ec;
 
-
-    public static final int MESSAGE_TYPE_PLAIN    = 0x0001; 
-
+    public static final int MESSAGE_TYPE_PLAIN    = 0x0001;
     public static final int MESSAGE_TYPE_FILEREQ  = 0x0003; 
-    public static final int MESSAGE_TYPE_URL      = 0x0004; 
-
-
-
-
-    public static final int MESSAGE_TYPE_ADDED    = 0x000C; 
-
-
-
-    public static final int MESSAGE_TYPE_PLUGIN   = 0x001A; 
-
-
-
-
-
+    public static final int MESSAGE_TYPE_URL      = 0x0004;
+    public static final int MESSAGE_TYPE_ADDED    = 0x000C;
+    public static final int MESSAGE_TYPE_PLUGIN   = 0x001A;
 }
-
-

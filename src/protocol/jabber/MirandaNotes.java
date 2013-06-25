@@ -80,6 +80,7 @@ public final class MirandaNotes {
 
             @Override
             public boolean back() {
+                screen.clearAll();
                 return true;
             }
         });

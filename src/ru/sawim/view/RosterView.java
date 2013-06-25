@@ -332,7 +332,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
 
     @Override
     public boolean onLongClick(View view) {
-        new StatusesView(StatusesView.ADAPTER_STATUS).show(getActivity().getSupportFragmentManager(), "change-status");
+        new StatusesView(owner.getModel().getProtocol(view.getId()), StatusesView.ADAPTER_STATUS).show(getActivity().getSupportFragmentManager(), "change-status");
         return false;
     }
 
@@ -378,9 +378,9 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
                         if (j == owner.getCurrProtocol())
                             imageBarButtons.setBackgroundColor(General.getColorWithAlpha(Scheme.THEME_BACKGROUND));
                         imageBarButtons.setImageBitmap(General.iconToBitmap(protocol.getCurrentStatusIcon()));
+                        imageBarButtons.setId(j);
                         imageBarButtons.setOnClickListener(RosterView.this);
                         imageBarButtons.setOnLongClickListener(RosterView.this);
-                        imageBarButtons.setId(j);
                         Icon messageIcon = ChatHistory.instance.getUnreadMessageIcon(protocol);
                         if (null != messageIcon)
                             imageBarButtons.setImageBitmap(General.iconToBitmap(messageIcon));

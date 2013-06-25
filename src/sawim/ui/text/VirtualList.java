@@ -39,6 +39,7 @@ public class VirtualList {
     }
 
     public void clearAll() {
+        model.elements.clear();
         updateFormListener = null;
         buildOptionsMenu = null;
         buildContextMenu = null;
@@ -47,6 +48,10 @@ public class VirtualList {
 
     public void setUpdateFormListener(OnUpdateList l) {
         updateFormListener = l;
+    }
+
+    public void removeFirstText() {
+        model.elements.remove(0);
     }
 
     public interface OnUpdateList {

@@ -43,6 +43,7 @@ import sawim.chat.ChatHistory;
 import sawim.cl.ContactList;
 import sawim.forms.ManageContactListForm;
 import sawim.forms.SmsForm;
+import sawim.modules.MagicEye;
 import sawim.modules.Notify;
 import org.microemu.MIDletBridge;
 import org.microemu.cldc.file.FileSystem;
@@ -205,6 +206,7 @@ public class SawimActivity extends FragmentActivity {
     private static final int MENU_GROUPS = 17;
     private static final int MENU_MYSELF = 18;
     private static final int MENU_MICROBLOG = 19;//ManageContactListForm
+    private static final int MENU_MAGIC_EYE = 20;
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
@@ -242,6 +244,7 @@ public class SawimActivity extends FragmentActivity {
             }
         menu.add(Menu.NONE, MENU_SOUND, Menu.NONE, Options.getBoolean(Options.OPTION_SILENT_MODE)
                 ? R.string.sound_on : R.string.sound_off);
+        menu.add(Menu.NONE, MENU_MAGIC_EYE, Menu.NONE, R.string.magic_eye);
         SubMenu optionsMenu = menu.addSubMenu(Menu.NONE, MENU_OPTIONS, Menu.NONE, R.string.options);
         optionsMenu.add(Menu.NONE, OptionsForm.OPTIONS_ACCOUNT, Menu.NONE, R.string.options_account);
         optionsMenu.add(Menu.NONE, OptionsForm.OPTIONS_INTERFACE, Menu.NONE, R.string.options_interface);
@@ -266,19 +269,22 @@ public class SawimActivity extends FragmentActivity {
                 }
                 break;
             case MENU_STATUS:
-                new StatusesView(StatusesView.ADAPTER_STATUS).show(getSupportFragmentManager(), "change-status");
+                new StatusesView(p, StatusesView.ADAPTER_STATUS).show(getSupportFragmentManager(), "change-status");
                 break;
             case MENU_XSTATUS:
                 new XStatusesView().show(getSupportFragmentManager(), "change-xstatus");
                 break;
             case MENU_PRIVATE_STATUS:
-                new StatusesView(StatusesView.ADAPTER_PRIVATESTATUS).show(getSupportFragmentManager(), "change-private-status");
+                new StatusesView(p, StatusesView.ADAPTER_PRIVATESTATUS).show(getSupportFragmentManager(), "change-private-status");
                 break;
             case MENU_SEND_SMS:
                 new SmsForm(null, null).show();
                 break;
             case MENU_SOUND:
                 Notify.getSound().changeSoundMode(false);
+                break;
+            case MENU_MAGIC_EYE:
+                MagicEye.instance.activate();
                 break;
 
             case MENU_DISCO:

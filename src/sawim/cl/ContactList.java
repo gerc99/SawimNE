@@ -1,11 +1,8 @@
-
-
 package sawim.cl;
 
 import DrawControls.tree.ContactListModel;
 import DrawControls.tree.TreeBranch;
 import DrawControls.tree.VirtualContactList;
-import android.util.Log;
 import android.widget.Toast;
 import protocol.Contact;
 import protocol.Profile;
@@ -317,6 +314,8 @@ public final class ContactList {
 
     public final void markMessages(Contact contact) {
         SawimActivity.getInstance().updateAppIcon();
+        if (General.getInstance().getUpdateChatListener() != null)
+            General.getInstance().getUpdateChatListener().updateChat();
     }
 
     public void updateConnectionStatus() {
