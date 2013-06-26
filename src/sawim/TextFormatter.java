@@ -8,6 +8,7 @@ import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.ImageSpan;
 import android.text.util.Linkify;
+import android.util.Log;
 import sawim.modules.Emotions;
 
 /**
@@ -18,10 +19,10 @@ import sawim.modules.Emotions;
  * To change this template use File | Settings | File Templates.
  */
 public class TextFormatter {
+    static Emotions smiles = Emotions.instance;
 
     private static void detectEmotions(Context context,
                                        SpannableStringBuilder builder, int startPos, int endPos) {
-        Emotions smiles = Emotions.instance;
         for (int index = startPos; index < endPos; ++index) {
             int smileIndex = smiles.getSmile(builder.toString(), index);
             if (-1 != smileIndex) {
@@ -31,7 +32,6 @@ public class TextFormatter {
                 ImageSpan imageSpan = new ImageSpan(context, bitmap, ImageSpan.ALIGN_BASELINE);
                 builder.setSpan(imageSpan, index, index + length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 index += length - 1;
-                break;
             }
         }
     }

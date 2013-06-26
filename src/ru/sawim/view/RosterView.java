@@ -23,6 +23,7 @@ import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.activities.AccountsListActivity;
 import ru.sawim.activities.ChatActivity;
+import ru.sawim.activities.SawimActivity;
 import ru.sawim.models.ContactsAdapter;
 import ru.sawim.models.CustomPagerAdapter;
 import ru.sawim.models.RosterAdapter;
@@ -136,12 +137,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
             @Override
             public void onPageSelected(final int pos) {
                 owner.setCurrPage(pos);
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        rebuildRoster(pos);
-                    }
-                });
+                updateRoster();
             }
 
             @Override
@@ -230,7 +226,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         if (owner == null) return;
         Update();
         if (adaptersPages.size() > 0)
-            viewPager.setCurrentItem(1);
+            viewPager.setCurrentItem(2);
     }
 
     @Override

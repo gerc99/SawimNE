@@ -1,5 +1,3 @@
-
-
 package sawim.modules;
 
 import java.util.Vector;
@@ -104,7 +102,7 @@ public final class Answerer implements FormListener {
 
                     case MENU_CLEAR:
                         popupAction();
-                        Toast.makeText(activity, "All removed", Toast.LENGTH_SHORT);
+                        Toast.makeText(activity, "All removed", Toast.LENGTH_SHORT).show();
                         break;
 
                     case MENU_ON_OFF:
@@ -203,8 +201,8 @@ public final class Answerer implements FormListener {
                 String item = form.getTextFieldValue(FORM_EDIT_QUESTION) +  "=" + form.getTextFieldValue(FORM_EDIT_ANSWER);      
                 dictionary.setElementAt(item, selItem);
 				save();
-                refreshList();
 			    form.back();
+                list.updateModel();
             } else {
                 form.back();
             }

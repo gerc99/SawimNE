@@ -92,7 +92,7 @@ public class Sawim {
             initialize();
         } catch (Exception e) {
             DebugLog.panic("init", e);
-            DebugLog.activate();
+            DebugLog.instance.activate();
         }
     }
 

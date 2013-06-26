@@ -205,4 +205,5 @@
     <string name="accpromt">Press the "Menu" button to add a profile</string>
     <string name="hide_icons_clients">Hide icons clients</string>
     <string name="magic_eye">Magic eye</string>
+    <string name="debug">Debug</string>
 </resources>

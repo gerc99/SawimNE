@@ -727,7 +727,6 @@ public final class JabberXml extends ClientConnection {
 					uslist.setAffiliation(affiliation);
                     uslist.addItem(reasone, jid);
                 }
-                uslist.update();
                 return;
             } else if ("jabber:iq:register".equals(xmlns)) {
                 if ((null != jabberForm) && jabberForm.getId().equals(id)) {

@@ -43,6 +43,7 @@ import sawim.chat.ChatHistory;
 import sawim.cl.ContactList;
 import sawim.forms.ManageContactListForm;
 import sawim.forms.SmsForm;
+import sawim.modules.DebugLog;
 import sawim.modules.MagicEye;
 import sawim.modules.Notify;
 import org.microemu.MIDletBridge;
@@ -123,8 +124,8 @@ public class SawimActivity extends FragmentActivity {
                 }
             }
         }));
-        MIDletInit();
         if (!General.initialized) {
+            MIDletInit();
             new Sawim().startApp();
             ChatHistory.instance.loadUnreadMessages();
             updateAppIcon();
@@ -207,6 +208,7 @@ public class SawimActivity extends FragmentActivity {
     private static final int MENU_MYSELF = 18;
     private static final int MENU_MICROBLOG = 19;//ManageContactListForm
     private static final int MENU_MAGIC_EYE = 20;
+    private static final int MENU_DEBUG_LOG = 21;
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
@@ -253,6 +255,7 @@ public class SawimActivity extends FragmentActivity {
         optionsMenu.add(Menu.NONE, OptionsForm.OPTIONS_ABSENCE, Menu.NONE, R.string.absence);
         optionsMenu.add(Menu.NONE, OptionsForm.OPTIONS_ANSWERER, Menu.NONE, R.string.answerer);
 
+        menu.add(Menu.NONE, MENU_DEBUG_LOG, Menu.NONE, R.string.debug);
         menu.add(Menu.NONE, MENU_QUIT, Menu.NONE, R.string.quit);
         return super.onPrepareOptionsMenu(menu);
     }
@@ -322,6 +325,9 @@ public class SawimActivity extends FragmentActivity {
                 new OptionsForm().select(item.getTitle(), OptionsForm.OPTIONS_ANSWERER);
                 break;
 
+            case MENU_DEBUG_LOG:
+                DebugLog.instance.activate();
+                break;
             case MENU_QUIT:
                 Sawim.getSawim().quit();
                 quit();

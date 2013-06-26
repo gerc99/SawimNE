@@ -1,6 +1,3 @@
-
-
-
 package protocol.jabber;
 
 import android.support.v4.app.FragmentActivity;
@@ -16,7 +13,6 @@ import sawim.ui.text.VirtualListModel;
 import sawim.util.JLocale;
 import sawim.comm.*;
 import sawim.ui.base.Scheme;
-//import sawim.ui.text.TextListController;
 import protocol.*;
 import ru.sawim.view.TextBoxView;
 

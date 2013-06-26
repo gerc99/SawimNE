@@ -1,5 +1,9 @@
 package sawim.modules;
 
+import android.support.v4.app.FragmentActivity;
+import android.view.Menu;
+import android.view.MenuItem;
+import sawim.SawimUI;
 import sawim.ui.text.VirtualListModel;
 import sawim.ui.text.VirtualList;
 import sawim.Sawim;
@@ -9,60 +13,47 @@ import sawim.ui.base.Scheme;
 import sawim.util.*;
 import ru.sawim.models.form.VirtualListItem;
 
-public final class DebugLog extends VirtualList {
-    private static final DebugLog instance = new DebugLog();
+public final class DebugLog {
+    public static final DebugLog instance = new DebugLog();
     private VirtualListModel model = new VirtualListModel();
     private VirtualList list = null;
 
-    private DebugLog() {
-    }
+    public void activate() {
+        list = VirtualList.getInstance();
+        list.setCaption(JLocale.getString("debug log"));
+        list.setModel(model);
+        list.setBuildOptionsMenu(new VirtualList.OnBuildOptionsMenu() {
+            @Override
+            public void onCreateOptionsMenu(Menu menu) {
+                menu.add(Menu.FIRST, MENU_COPY_ALL, 2, JLocale.getString("copy_all_text"));
+                menu.add(Menu.FIRST, MENU_CLEAN, 2, JLocale.getString("clear"));
+            }
 
-    public static void activate() {
-        if (null == instance.list) {
-            instance.list = VirtualList.getInstance();
-            instance.list.setCaption(JLocale.getString("debug log"));
-            instance.list.setModel(instance.model);
-            /*instance.list.setOnBuildContextMenu(new OnBuildContextMenu() {
-                @Override
-                public void onCreateContextMenu(Menu menu) {
-                    menu.add(Menu.FIRST, MENU_COPY, 2, "copy_text");
-                    menu.add(Menu.FIRST, MENU_COPY_ALL, 2, "copy_all_text");
-                    menu.add(Menu.FIRST, MENU_CLEAN, 2, "clear");
-                    menu.add(Menu.FIRST, MENU_PROPERTIES, 2, "Properties");
+            @Override
+            public void onOptionsItemSelected(FragmentActivity activity, MenuItem item) {
+                switch (item.getItemId()) {
+                    case MENU_COPY_ALL:
+                        StringBuffer s = new StringBuffer();
+                        for (int i = 0; i < list.getModel().elements.size(); ++i) {
+                            s.append(list.getModel().elements.get(i).getLabel()).append("\n")
+                                    .append(list.getModel().elements.get(i).getDescStr()).append("\n");
+                        }
+                        SawimUI.setClipBoardText(true, "DebugLog", "", s.toString());
+                        break;
+
+                    case MENU_CLEAN:
+                        model.clear();
+                        list.updateModel();
+                        break;
                 }
-
-                @Override
-                public void onContextItemSelected(int action) {
-                    switch (action) {
-                        case MENU_COPY:
-                        case MENU_COPY_ALL:
-                            //list.getController().copy(action == MENU_COPY_ALL);
-                            instance.list.restore();
-                            break;
-
-                        case MENU_CLEAN:
-                            synchronized (instance) {
-                                instance.model.clear();
-                                instance.list.updateModel();
-                            }
-                            instance.list.restore();
-                            break;
-
-                        case MENU_PROPERTIES:
-                            dumpProperties();
-                            instance.list.restore();
-                            break;
-                    }
-                }
-            });*/
-        }
-        instance.list.show();
+            }
+        });
+        list.show();
     }
 
     private static final int MENU_COPY       = 0;
     private static final int MENU_COPY_ALL   = 1;
     private static final int MENU_CLEAN      = 2;
-    private static final int MENU_PROPERTIES = 3;
 
     private void removeOldRecords() {
         final int maxRecordCount = 200;
@@ -98,12 +89,12 @@ public final class DebugLog extends VirtualList {
     private synchronized void print(String text) {
         VirtualListItem record = model.createNewParser(true);
         String date = Util.getLocalDateString(Sawim.getCurrentGmtTime(), true);
-        record.addDescriptionSelectable(date + ": ", Scheme.THEME_MAGIC_EYE_NUMBER,
+        record.addLabel(date + ": ", Scheme.THEME_MAGIC_EYE_NUMBER,
                 Scheme.FONT_STYLE_PLAIN);
         record.addDescriptionSelectable(_(text), Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
 
         model.addPar(record);
-        removeOldRecords();
+        //removeOldRecords();
     }
     public static void println(String text) {
         System.out.println(text);

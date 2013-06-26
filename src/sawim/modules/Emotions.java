@@ -1,5 +1,3 @@
-
-
 package sawim.modules;
 
 
@@ -21,10 +19,9 @@ public final class Emotions {
     private String[] selEmotionsWord;
     private String[] selEmotionsSmileNames;
 
-    private String smileChars;
+    public String smileChars;
     private int[] textCorrIndexes;
     private String[] textCorrWords;
-
 
     private Emotions() {}
     public static final Emotions instance = new Emotions();

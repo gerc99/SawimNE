@@ -3,6 +3,10 @@ package sawim.cl;
 import DrawControls.tree.ContactListModel;
 import DrawControls.tree.TreeBranch;
 import DrawControls.tree.VirtualContactList;
+import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Looper;
+import android.widget.PopupWindow;
 import android.widget.Toast;
 import protocol.Contact;
 import protocol.Profile;
@@ -12,9 +16,11 @@ import protocol.icq.Icq;
 import protocol.jabber.Jabber;
 import protocol.mrim.Mrim;
 import ru.sawim.General;
+import ru.sawim.SawimApplication;
 import ru.sawim.activities.SawimActivity;
 import sawim.FileTransfer;
 import sawim.Options;
+import sawim.chat.message.Message;
 import sawim.modules.AutoAbsence;
 
 import java.util.Vector;
@@ -215,9 +221,9 @@ public final class ContactList {
         activate();
     }
 
-    public void activateWithMsg(String message) {
+    public void activateWithMsg(final String message) {
+        //Toast.makeText(SawimActivity.getInstance(), message, Toast.LENGTH_LONG).show();
         activate();
-        Toast.makeText(SawimActivity.getInstance(), message, Toast.LENGTH_LONG);
     }
 
     public void autoConnect() {

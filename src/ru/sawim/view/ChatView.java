@@ -29,6 +29,7 @@ import sawim.chat.ChatHistory;
 import sawim.chat.MessData;
 import sawim.cl.ContactList;
 import sawim.comm.StringConvertor;
+import sawim.modules.DebugLog;
 import sawim.ui.base.Scheme;
 import sawim.util.JLocale;
 
@@ -364,16 +365,16 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
         chatListView.setFocusable(true);
         chatListView.setCacheColorHint(0x00000000);
         chatListView.setOnScrollListener(this);
-        chatListView.setTranscriptMode(ListView.TRANSCRIPT_MODE_NORMAL);
-        chatListView.setStackFromBottom(true);
+        chatListView.setDividerHeight(0);
         chatListView.setAdapter(adapter);
         chatListView.setOnCreateContextMenuListener(this);
         chatListView.setOnItemClickListener(new ListView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                MessData msg = chat.getMessData().get(position);
+                MessData msg = (MessData) adapterView.getAdapter().getItem(position);
                 setText("");
                 setText(onMessageSelected(msg));
+                DebugLog.println("chatListView.setOnItemClickListener " + onMessageSelected(msg) + " " + position + " " + msg.getText());
             }
         });
     }

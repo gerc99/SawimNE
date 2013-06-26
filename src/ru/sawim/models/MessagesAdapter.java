@@ -60,8 +60,6 @@ public class MessagesAdapter extends BaseAdapter {
         if (row == null) {
             LayoutInflater inf = LayoutInflater.from(baseContext);
             row = inf.inflate(R.layout.chat_item, null);
-        } else {
-            row = convertView;
         }
         populateFrom(row, i);
         return row;

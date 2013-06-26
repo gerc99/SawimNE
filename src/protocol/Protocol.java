@@ -1100,6 +1100,7 @@ abstract public class Protocol {
 
     public final void processException(SawimException e) {
         DebugLog.println("process exception: " + e.getMessage());
+        getContactList().activateWithMsg(getUserId() + "\n" + e.getMessage());
         if (!SawimActivity.getInstance().isNetworkAvailable()) {
             e = new SawimException(123, 0);
         }
@@ -1129,9 +1130,7 @@ abstract public class Protocol {
     }
 
     public final void showException(SawimException e) {
-        if (!Sawim.isPaused()) {
-            getContactList().activateWithMsg(getUserId() + "\n" + e.getMessage());
-        }
+        getContactList().activateWithMsg(getUserId() + "\n" + e.getMessage());
     }
 
     public final void dismiss() {

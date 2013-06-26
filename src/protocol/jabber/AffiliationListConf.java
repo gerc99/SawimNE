@@ -136,7 +136,6 @@ public final class AffiliationListConf implements FormListener, TextBoxListener 
 		reasons.removeAllElements();
         descriptions.removeAllElements();
         addServer(true);
-        //screen.updateModel();
     }
     
     public void addItem(String reasone, String jid) {
@@ -151,12 +150,8 @@ public final class AffiliationListConf implements FormListener, TextBoxListener 
         }
         item.addDescription(reasone, Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
         model.addPar(item);
-        //screen.updateModel();
         jids.addElement(jid);
 		reasons.addElement(reasone);
-        if (0 == (jids.size() % 50)) {
-        //    screen.updateModel();
-        }
     }
 
     public void showIt() {
@@ -164,10 +159,6 @@ public final class AffiliationListConf implements FormListener, TextBoxListener 
             setServer("", "");
         }
         screen.show();
-    }
-
-    public void update() {
-        //screen.updateModel();
     }
 
     public void setServer(String jid, String myN) {

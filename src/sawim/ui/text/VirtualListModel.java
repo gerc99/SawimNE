@@ -123,7 +123,7 @@ public final class VirtualListModel {
     }
 
     public boolean isItemSelectable(int i) {
-        if (elements.size() < i) return false;
+        //if (elements.size() < i) return false;
         return elements.get(i).isItemSelectable();
     }
 }
