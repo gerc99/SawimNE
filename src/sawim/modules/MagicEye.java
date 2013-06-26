@@ -62,7 +62,6 @@ public final class MagicEye {
                     case MENU_CLEAN:
                         synchronized (instance) {
                             model.clear();
-                            list.updateModel();
                         }
                         break;
                 }
@@ -90,7 +89,7 @@ public final class MagicEye {
             label += contact.getName();
         }
         record.addLabel(label, Scheme.THEME_MAGIC_EYE_USER, Scheme.FONT_STYLE_PLAIN);
-        String decs = action;
+        String decs = action + " ";
         if (null != msg) {
             decs += msg;
         }
@@ -98,14 +97,12 @@ public final class MagicEye {
 
         model.addPar(record);
         removeOldRecords();
-        list.updateModel();
     }
 
     private void removeOldRecords() {
         final int maxRecordCount = 50;
         while (maxRecordCount < model.getSize()) {
             list.removeFirstText();
-            list.updateModel();
         }
     }
 

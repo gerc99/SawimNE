@@ -966,6 +966,5 @@ public class Icq extends Protocol {
         }
         statusView.addClient();
         statusView.addTime();
-        statusView.update();
     }
 }

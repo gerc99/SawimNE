@@ -1,6 +1,3 @@
-
-
-
 package sawim.modules;
 
 import sawim.ui.text.VirtualListModel;
@@ -9,7 +6,6 @@ import sawim.Sawim;
 import sawim.comm.MD5;
 import sawim.comm.Util;
 import sawim.ui.base.Scheme;
-//import sawim.ui.text.TextListController;
 import sawim.util.*;
 import ru.sawim.models.form.VirtualListItem;
 
@@ -19,7 +15,6 @@ public final class DebugLog extends VirtualList {
     private VirtualList list = null;
 
     private DebugLog() {
-        //super("");
     }
 
     public static void activate() {
@@ -71,13 +66,11 @@ public final class DebugLog extends VirtualList {
 
     private void removeOldRecords() {
         final int maxRecordCount = 200;
-        /*while (maxRecordCount < model.getSize()) {
-            if (null == list) {
-                model.removeFirst();
-            } else {
+        while (maxRecordCount < model.getSize()) {
+            if (null != list) {
                 list.removeFirstText();
             }
-        }*/
+        }
     }
 
     public static void memoryUsage(String str) {
@@ -111,9 +104,6 @@ public final class DebugLog extends VirtualList {
 
         model.addPar(record);
         removeOldRecords();
-        if (null != list) {
-            list.updateModel();
-        }
     }
     public static void println(String text) {
         System.out.println(text);
@@ -122,20 +112,17 @@ public final class DebugLog extends VirtualList {
 
     public static void panic(String str) {
         try {
-            
             throw new Exception();
         } catch (Exception e) {
             panic(str, e);
         }
     }
     public static void assert0(String str, String result, String heed) {
-        
         assert0(str, (result != heed) && !result.equals(heed));
     }
     public static void assert0(String str, boolean result) {
         if (result) {
             try {
-                
                 throw new Exception();
             } catch (Exception e) {
                 println("assert: " + _(str));
@@ -155,11 +142,9 @@ public final class DebugLog extends VirtualList {
         System.err.println("panic: " + _(str));
         String text = "panic: " + _(str) + " "  + e.getMessage()
                 + " (" + e.getClass().getName() + ")";
-        
         for (StackTraceElement ste : e.getStackTrace()) {
             text += String.format("\n%s.%s() %d", ste.getClassName(), ste.getMethodName(), ste.getLineNumber());
         }
-        
         println(text);
         e.printStackTrace();
     }
@@ -180,9 +165,6 @@ public final class DebugLog extends VirtualList {
         profilerTime = now;
     }
 
-    private void testOAuth() {
-
-    }
     public static void startTests() {
         println("1329958015 " + Util.createGmtTime(2012, 02, 23, 4, 46, 55));
 
@@ -222,33 +204,6 @@ public final class DebugLog extends VirtualList {
         assert0("replace (4): failed", Util.replace("text3text33", "22", "3"), "text3text33");
         
     }
-    public static void dumpProperties() {
-        println("RamFree: "   + System.getProperty("com.nokia.memoryramfree"));
-        println("Network: "   + System.getProperty("com.nokia.mid.networkid"));
-        
-        
-        println("Signal: "    + System.getProperty("com.nokia.mid.networksignal"));
-        println("Indicator: " + System.getProperty("com.nokia.canvas.net.indicator.location"));
-        
-        println("Point: "     + System.getProperty("com.nokia.network.access"));
-
-        println("Battery: " + batteryLevel());
-        println("Params: "     + System.getProperty("com.nokia.mid.cmdline"));
-        
-        
-
-        
-        
-        
-    }
-    private static String batteryLevel() {
-        String level = System.getProperty("com.nokia.mid.batterylevel");
-        if (null == level) {
-            level = System.getProperty("batterylevel");
-        }
-        return level;
-    }
-
 
     public static void dump(String comment, byte[] data) {
         StringBuffer sb = new StringBuffer();
@@ -263,5 +218,3 @@ public final class DebugLog extends VirtualList {
         println(sb.toString());
     }
 }
-
-

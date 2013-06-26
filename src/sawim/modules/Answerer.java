@@ -123,7 +123,6 @@ public final class Answerer implements FormListener {
         int count = dictionary.size();
         for ( int i = 0; i < count; ++i) {
             model.addItem((String)dictionary.elementAt(i), false);
-            list.updateModel();
         }
         list.setModel(model);
     }

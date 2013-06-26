@@ -116,7 +116,6 @@ public final class AffiliationListConf implements FormListener, TextBoxListener 
             VirtualListItem item = model.createNewParser(active);
             item.addDescription(serverJid, Scheme.THEME_TEXT,  Scheme.FONT_STYLE_BOLD);
             model.addPar(item);
-            screen.updateModel();
             if (active) {
                 jids.addElement(serverJid);
             }
@@ -137,7 +136,7 @@ public final class AffiliationListConf implements FormListener, TextBoxListener 
 		reasons.removeAllElements();
         descriptions.removeAllElements();
         addServer(true);
-        screen.updateModel();
+        //screen.updateModel();
     }
     
     public void addItem(String reasone, String jid) {
@@ -152,11 +151,11 @@ public final class AffiliationListConf implements FormListener, TextBoxListener 
         }
         item.addDescription(reasone, Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
         model.addPar(item);
-        screen.updateModel();
+        //screen.updateModel();
         jids.addElement(jid);
 		reasons.addElement(reasone);
         if (0 == (jids.size() % 50)) {
-            screen.updateModel();
+        //    screen.updateModel();
         }
     }
 
@@ -168,7 +167,7 @@ public final class AffiliationListConf implements FormListener, TextBoxListener 
     }
 
     public void update() {
-        screen.updateModel();
+        //screen.updateModel();
     }
 
     public void setServer(String jid, String myN) {
@@ -180,7 +179,6 @@ public final class AffiliationListConf implements FormListener, TextBoxListener 
         wait.addDescription(JLocale.getString("wait"),
                 Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
         model.addPar(wait);
-        screen.updateModel();
     }
     
 	private void setCurrTextIndex(int textIndex) {

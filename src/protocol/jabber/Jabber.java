@@ -734,7 +734,6 @@ public final class Jabber extends Protocol implements FormListener {
             statusView.addClient();
         }
         statusView.addTime();
-        statusView.update();
     }
 
     public void showStatus(Contact contact) {

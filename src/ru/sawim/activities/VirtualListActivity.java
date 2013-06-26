@@ -4,9 +4,8 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import sawim.ui.text.VirtualList;
-import ru.sawim.R;
 import ru.sawim.view.VirtualListView;
+import ru.sawim.R;
 
 /**
  * Created with IntelliJ IDEA.

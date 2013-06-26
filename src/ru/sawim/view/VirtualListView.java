@@ -23,7 +23,7 @@ import sawim.ui.text.VirtualListModel;
  * Time: 13:22
  * To change this template use File | Settings | File Templates.
  */
-public class VirtualListView extends Fragment implements VirtualList.OnUpdateList, VirtualListModel.OnAddListListener {
+public class VirtualListView extends Fragment implements VirtualList.OnVirtualListListener, VirtualListModel.OnAddListListener {
 
     private VirtualListAdapter adapter;
     private VirtualList list = VirtualList.getInstance();
@@ -34,13 +34,13 @@ public class VirtualListView extends Fragment implements VirtualList.OnUpdateLis
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         list.getModel().setAddListListener(this);
-        list.setUpdateFormListener(this);
+        list.setVirtualListListener(this);
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        list.setUpdateFormListener(null);
+        list.setVirtualListListener(null);
         list.getModel().setAddListListener(null);
     }
 
@@ -91,16 +91,6 @@ public class VirtualListView extends Fragment implements VirtualList.OnUpdateLis
     }
 
     @Override
-    public void updateForm() {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                adapter.notifyDataSetChanged();
-            }
-        });
-    }
-
-    @Override
     public void addList(final VirtualListItem item) {
         getActivity().runOnUiThread(new Runnable() {
             @Override
@@ -112,9 +102,42 @@ public class VirtualListView extends Fragment implements VirtualList.OnUpdateLis
     }
 
     @Override
+    public void clearList() {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                list.getModel().elements.clear();
+                adapter.notifyDataSetChanged();
+            }
+        });
+    }
+
+    @Override
+    public void removeFirstText() {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                list.getModel().elements.remove(0);
+                adapter.notifyDataSetChanged();
+            }
+        });
+    }
+
+    @Override
+    public void update() {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                adapter.notifyDataSetChanged();
+            }
+        });
+    }
+
+    @Override
     public void back() {
         getActivity().finish();
     }
+
     public boolean onBackPressed() {
         if (list.getClickListListener() == null) return true;
         return list.getClickListListener().back();
@@ -124,6 +147,7 @@ public class VirtualListView extends Fragment implements VirtualList.OnUpdateLis
         if (list.getBuildOptionsMenu() != null)
             list.getBuildOptionsMenu().onCreateOptionsMenu(menu);
     }
+
     public void onOptionsItemSelected(FragmentActivity activity, MenuItem item) {
         if (list.getBuildOptionsMenu() != null)
             list.getBuildOptionsMenu().onOptionsItemSelected(activity, item);

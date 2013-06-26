@@ -69,7 +69,6 @@ public final class ServiceDiscovery implements TextBoxListener {
             public boolean back() {
                 if (serverJid == "") return true;
                 setServer("");
-                screen.clearAll();
                 return false;
             }
         });

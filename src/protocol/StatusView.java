@@ -61,7 +61,6 @@ public final class StatusView {
         VirtualListItem line = model.createNewParser(false);
         line.addDescription(" \n", Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
         model.addPar(line);
-        list.updateModel();
     }
     public void addPlain(Icon img, String str) {
         if (!StringConvertor.isEmpty(str)) {
@@ -71,7 +70,6 @@ public final class StatusView {
             }
             line.addDescriptionSelectable(str, Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
             model.addPar(line);
-            list.updateModel();
         }
     }
     public void addStatusText(String text) {
@@ -79,12 +77,10 @@ public final class StatusView {
             VirtualListItem line = model.createNewParser(true);
             line.addDescriptionSelectable(text, Scheme.THEME_PARAM_VALUE, Scheme.FONT_STYLE_PLAIN);
             model.addPar(line);
-            list.updateModel();
         }
     }
     public void addInfo(String key, String value) {
         model.addParam(key, value);
-        list.updateModel();
     }
     
     public void addContactStatus() {
@@ -119,9 +115,7 @@ public final class StatusView {
     public Contact getContact() {
         return contact;
     }
-    public void update() {
-        list.updateModel();
-    }
+
     public void showIt() {
         list.show();
     }

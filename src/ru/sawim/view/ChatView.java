@@ -342,7 +342,7 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
         smileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                new SmilesView().show(getActivity().getSupportFragmentManager(), "onContextItemSelected-smile");
+                new SmilesView().show(getActivity().getSupportFragmentManager(), "show-smiles");
             }
         });
         ImageButton sendButton = (ImageButton) currentActivity.findViewById(R.id.input_send_button);
@@ -371,7 +371,7 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
         chatListView.setOnItemClickListener(new ListView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                MessData msg = adapter.getItem(position);
+                MessData msg = chat.getMessData().get(position);
                 setText("");
                 setText(onMessageSelected(msg));
             }

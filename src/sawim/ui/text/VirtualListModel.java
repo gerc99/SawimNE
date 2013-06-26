@@ -26,21 +26,33 @@ public final class VirtualListModel {
             addListListener.addList(item);
     }
 
+    public void clear() {
+        if (addListListener == null)
+            elements.clear();
+        else
+            addListListener.clearList();
+        header = null;
+    }
+
+    public void removeFirstText() {
+        if (addListListener == null)
+            elements.remove(0);
+        else
+            addListListener.removeFirstText();
+    }
+
     public void setAddListListener(OnAddListListener addListListener) {
         this.addListListener = addListListener;
     }
 
     public interface OnAddListListener {
-        public void addList(VirtualListItem item);
+        void addList(VirtualListItem item);
+        void clearList();
+        void removeFirstText();
     }
 
     public final VirtualListItem createNewParser(boolean itemSelectable) {
         return new VirtualListItem(itemSelectable);
-    }
-
-    public void clear() {
-        elements.clear();
-        header = null;
     }
     
     public final void addItem(String text, boolean active) {

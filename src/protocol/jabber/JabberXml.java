@@ -906,7 +906,6 @@ public final class JabberXml extends ClientConnection {
 			if (text == null) text = "";
             _notes.addNote(title, tags, text);
         }
-        _notes.update();
     }
     void saveMirandaNotes(String storage) {
         StringBuffer xml = new StringBuffer();

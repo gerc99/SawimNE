@@ -157,7 +157,6 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
 
         profile.setHeader("avatar");
         profile.addAvatar(null, avatar);
-        profileView.updateModel();
     }
     private void addMenu() {
         profileView.setBuildOptionsMenu(new VirtualList.OnBuildOptionsMenu() {

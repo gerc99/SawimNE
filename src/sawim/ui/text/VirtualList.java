@@ -12,7 +12,7 @@ public class VirtualList {
     protected VirtualListModel model;
     private String caption;
     private static VirtualList instance = new VirtualList();
-    private OnUpdateList updateFormListener;
+    private OnVirtualListListener virtualListListener;
     private OnBuildOptionsMenu buildOptionsMenu;
     private OnBuildContextMenu buildContextMenu;
     private OnClickListListener itemClickListListener;
@@ -31,7 +31,6 @@ public class VirtualList {
 
     public void setModel(VirtualListModel model) {
         this.model = model;
-        updateModel();
     }
 
     public VirtualListModel getModel() {
@@ -39,43 +38,53 @@ public class VirtualList {
     }
 
     public void clearAll() {
-        model.elements.clear();
-        updateFormListener = null;
+        model.clear();
+        virtualListListener = null;
         buildOptionsMenu = null;
         buildContextMenu = null;
         itemClickListListener = null;
     }
 
-    public void setUpdateFormListener(OnUpdateList l) {
-        updateFormListener = l;
-    }
-
     public void removeFirstText() {
-        model.elements.remove(0);
+        model.removeFirstText();
     }
 
-    public interface OnUpdateList {
-        void updateForm();
+    public void setVirtualListListener(OnVirtualListListener l) {
+        virtualListListener = l;
+    }
+    public interface OnClickListListener {
+        void itemSelected(int position);
+        boolean back();
+    }
+    public OnClickListListener getClickListListener() {
+        return itemClickListListener;
+    }
+    public void setClickListListener(OnClickListListener itemClickListListener) {
+        this.itemClickListListener = itemClickListListener;
+    }
+
+    public interface OnVirtualListListener {
+        void update();
         void back();
         int getCurrItem();
         void setCurrentItemIndex(int index);
     }
     public void updateModel() {
-        if (updateFormListener != null)
-            updateFormListener.updateForm();
+        if (virtualListListener != null)
+            virtualListListener.update();
     }
     public void back() {
-        if (updateFormListener != null)
-            updateFormListener.back();
+        if (virtualListListener != null)
+            virtualListListener.back();
     }
     public int getCurrItem() {
-        if (updateFormListener != null)
-            return updateFormListener.getCurrItem();
+        if (virtualListListener != null)
+            return virtualListListener.getCurrItem();
         return 0;
     }
     public void setCurrentItemIndex(int currentItemIndex) {
-        if (updateFormListener != null)
-            updateFormListener.setCurrentItemIndex(currentItemIndex);
+        if (virtualListListener != null)
+            virtualListListener.setCurrentItemIndex(currentItemIndex);
     }
 
     public interface OnBuildOptionsMenu {
@@ -98,17 +107,6 @@ public class VirtualList {
     }
     public OnBuildContextMenu getBuildContextMenu() {
         return buildContextMenu;
-    }
-
-    public interface OnClickListListener {
-        void itemSelected(int position);
-        boolean back();
-    }
-    public OnClickListListener getClickListListener() {
-        return itemClickListListener;
-    }
-    public void setClickListListener(OnClickListListener itemClickListListener) {
-        this.itemClickListListener = itemClickListListener;
     }
 
     public void show() {

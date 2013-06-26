@@ -96,7 +96,6 @@ public final class MirandaNotes {
         wait.addDescription(JLocale.getString("wait"),
                 Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
         model.addPar(wait);
-        screen.updateModel();
         jabber.getConnection().requestMirandaNotes();
         screen.show();
     }
@@ -114,11 +113,6 @@ public final class MirandaNotes {
         parser.addLabel(note.title + "\n" + "*" + note.tags, Scheme.THEME_FORM_EDIT, Scheme.FONT_STYLE_BOLD);
         parser.addDescription(note.text, Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
         model.addPar(parser);
-        screen.updateModel();
-    }
-
-    void update() {
-        screen.updateModel();
     }
 
     String getNotesStorage() {
