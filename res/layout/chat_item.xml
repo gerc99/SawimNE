@@ -23,7 +23,6 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:text="nickname"
-                android:textStyle="bold"
                 android:textSize="15.0sp"/>
 
         <TextView
@@ -45,7 +44,6 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:autoLink="web"
-                android:bufferType="normal"
                 android:text="text"
                 android:textSize="13.0sp"/>
     </LinearLayout>

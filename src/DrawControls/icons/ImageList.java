@@ -1,8 +1,7 @@
-
 package DrawControls.icons;
 
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 import sawim.Sawim;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -92,6 +91,7 @@ public class ImageList {
                 tmpIcons.addElement(icon);
             }
         }
+        Log.e("ImageList", tmpIcons.size() + " " + resName);
         icons = new Icon[tmpIcons.size()];
         tmpIcons.copyInto(icons);
     }
@@ -151,4 +151,3 @@ public class ImageList {
         return new Image(width, height, false, 0x00FFFFFF);
     }
 }
-

@@ -124,8 +124,8 @@ public class SawimActivity extends FragmentActivity {
                 }
             }
         }));
+        MIDletInit();
         if (!General.initialized) {
-            MIDletInit();
             new Sawim().startApp();
             ChatHistory.instance.loadUnreadMessages();
             updateAppIcon();
@@ -142,7 +142,6 @@ public class SawimActivity extends FragmentActivity {
         }
         FileSystem fs = new FileSystem();
         fs.registerImplementation();
-
         startService();
         networkStateReceiver.updateNetworkState(this);
         common.initMIDlet();

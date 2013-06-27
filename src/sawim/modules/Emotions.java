@@ -294,11 +294,11 @@ public final class Emotions {
         return selEmotionsWord[smileIndex];
     }
 
-    public ImageList smiles() {
-        return images;
+    public int count() {
+        return selEmotionsIndexes.length;
     }
 
+    public Icon getSmile(int smileIndex) {
+        return images.iconAt(smileIndex);
+    }
 }
-
-// #sijapp cond.end#
-

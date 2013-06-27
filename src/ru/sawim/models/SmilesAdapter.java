@@ -36,12 +36,12 @@ public class SmilesAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return emotions.smiles().size();
+        return emotions.count();
     }
 
     @Override
-    public Integer getItem(int i) {
-        return i;
+    public Icon getItem(int i) {
+        return emotions.getSmile(i);
     }
 
     @Override
@@ -107,8 +107,7 @@ public class SmilesAdapter extends BaseAdapter {
             }
         }*/
 
-        void populateFrom(int item) {
-            Icon ic = emotions.smiles().iconAt(item);
+        void populateFrom(Icon ic) {
             if (ic != null) {
                 getItemImage().setImageBitmap(General.iconToBitmap(ic));
             }

@@ -27,9 +27,9 @@ public class SmilesView extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
-        View v = inflater.inflate(R.layout.smiles_view, container, false);
         smilesAdapter = new SmilesAdapter(getActivity());
-        GridView gv = (GridView) v.findViewById(R.id.gridView);
+        GridView gv = new GridView(getActivity());
+        gv.setNumColumns(5);
         gv.setAdapter(smilesAdapter);
         gv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -40,6 +40,6 @@ public class SmilesView extends DialogFragment {
                 dismiss();
             }
         });
-        return v;
+        return gv;
     }
 }
