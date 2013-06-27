@@ -60,7 +60,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:fastScrollEnabled="true"/>
+                android:fastScrollEnabled="true"
+                android:fadeScrollbars="true"/>
         <LinearLayout android:id="@+id/sidebar"
                       android:orientation="vertical"
                       android:layout_width="match_parent"

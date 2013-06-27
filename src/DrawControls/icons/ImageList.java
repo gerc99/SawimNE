@@ -91,7 +91,6 @@ public class ImageList {
                 tmpIcons.addElement(icon);
             }
         }
-        Log.e("ImageList", tmpIcons.size() + " " + resName);
         icons = new Icon[tmpIcons.size()];
         tmpIcons.copyInto(icons);
     }

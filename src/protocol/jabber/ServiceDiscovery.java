@@ -30,7 +30,7 @@ public final class ServiceDiscovery implements TextBoxListener {
     private Vector jids = new Vector();
 
     private VirtualList screen;
-    private VirtualListModel model;
+    private VirtualListModel model = new VirtualListModel();
 
     private static final int COMMAND_ADD = 0;
     private static final int COMMAND_SET = 1;
@@ -41,7 +41,6 @@ public final class ServiceDiscovery implements TextBoxListener {
 
     public void init(Jabber protocol) {
         screen = VirtualList.getInstance();
-        model = new VirtualListModel();
         jabber = protocol;
         serverBox = new TextBoxView();
         searchBox = new TextBoxView();

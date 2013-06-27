@@ -362,10 +362,14 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
             messageEditor.setOnEditorActionListener(enterListener);
         }
         messageEditor.addTextChangedListener(textWatcher);
-        chatListView.setFocusable(true);
+        chatListView.setStackFromBottom(true);
+        chatListView.setBackgroundColor(0);
+        chatListView.setAlwaysDrawnWithCacheEnabled(false);
+        chatListView.setAnimationCacheEnabled(false);
+        chatListView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_LOW);
+        chatListView.setTranscriptMode(1);
         chatListView.setCacheColorHint(0x00000000);
         chatListView.setOnScrollListener(this);
-        chatListView.setDividerHeight(0);
         chatListView.setAdapter(adapter);
         chatListView.setOnCreateContextMenuListener(this);
         chatListView.setOnItemClickListener(new ListView.OnItemClickListener() {

@@ -8,13 +8,15 @@
     <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:drawingCacheQuality="low">
         <ImageView
                 android:id="@+id/msg_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="left"
-                android:src="@drawable/inc_msg">
+                android:src="@drawable/inc_msg"
+                android:drawingCacheQuality="low">
         </ImageView>
 
         <TextView
@@ -23,7 +25,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:text="nickname"
-                android:textSize="15.0sp"/>
+                android:textSize="15.0sp"
+                android:drawingCacheQuality="low"/>
 
         <TextView
                 android:id="@+id/msg_time"
@@ -31,13 +34,15 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:text="TextView"
-                android:textSize="15.0sp"/>
+                android:textSize="15.0sp"
+                android:drawingCacheQuality="low"/>
     </LinearLayout>
 
     <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:drawingCacheQuality="low">
 
         <TextView
                 android:id="@+id/msg_text"

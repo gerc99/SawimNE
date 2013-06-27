@@ -37,12 +37,16 @@ public class VirtualList {
         return model;
     }
 
-    public void clearAll() {
-        model.clear();
+    public void clearListeners() {
         virtualListListener = null;
         buildOptionsMenu = null;
         buildContextMenu = null;
         itemClickListListener = null;
+    }
+
+    public void clearAll() {
+        model.clear();
+        clearListeners();
     }
 
     public void removeFirstText() {

@@ -4,32 +4,38 @@ import android.support.v4.app.FragmentActivity;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
+import protocol.Contact;
 import ru.sawim.activities.VirtualListActivity;
 import ru.sawim.view.TextBoxView;
+import sawim.SawimUI;
+import sawim.comm.StringConvertor;
+import sawim.comm.Util;
 import sawim.ui.TextBoxListener;
 import sawim.ui.text.VirtualListModel;
 import sawim.ui.text.VirtualList;
-import DrawControls.icons.*;
-import sawim.chat.message.Message;
 import sawim.ui.base.Scheme;
 import java.util.Vector;
-
-import sawim.comm.*;
-//import sawim.ui.text.TextListController;
-import sawim.util.*;
-import protocol.*;
 import ru.sawim.models.form.VirtualListItem;
+import sawim.util.JLocale;
 
 public final class MicroBlog implements TextBoxListener {
     private VirtualListModel model = new VirtualListModel();
     private Vector emails = new Vector();
     private Vector ids = new Vector();
     private Mrim mrim;
-    private boolean hasNewMessage;
-    private final VirtualList list;
+    private VirtualList list;
+
+    private static final int MENU_WRITE     = 0;
+    private static final int MENU_REPLY     = 1;
+    private static final int MENU_COPY      = 2;
+    private static final int MENU_CLEAN     = 3;
+    private static final int MENU_USER_MENU = 4;
 
     public MicroBlog(Mrim mrim) {
         this.mrim = mrim;
+    }
+
+    public void activate() {
         list = VirtualList.getInstance();
         list.setCaption(JLocale.getString("microblog"));
         list.setModel(model);
@@ -46,15 +52,15 @@ public final class MicroBlog implements TextBoxListener {
 
             @Override
             public boolean back() {
-                list.clearAll();
+                list.clearListeners();
                 return true;
             }
         });
         list.setBuildOptionsMenu(new VirtualList.OnBuildOptionsMenu() {
             @Override
             public void onCreateOptionsMenu(Menu menu) {
-                menu.add(Menu.FIRST, MENU_WRITE, 2, "message");
-                menu.add(Menu.FIRST, MENU_CLEAN, 2, "clear");
+                menu.add(Menu.FIRST, MENU_WRITE, 2, JLocale.getString("message"));
+                menu.add(Menu.FIRST, MENU_CLEAN, 2, JLocale.getString("clear"));
             }
 
             @Override
@@ -78,36 +84,39 @@ public final class MicroBlog implements TextBoxListener {
         list.setOnBuildContextMenu(new VirtualList.OnBuildContextMenu() {
             @Override
             public void onCreateContextMenu(ContextMenu menu, int listItem) {
-                //menu.add(Menu.FIRST, MENU_COPY, 2, "copy_text");
-                menu.add(Menu.FIRST, MENU_USER_MENU, 2, "user_menu");
+                menu.add(Menu.FIRST, MENU_USER_MENU, 2, JLocale.getString("reply"));
+                menu.add(Menu.FIRST, MENU_COPY, 2, JLocale.getString("copy_text"));
+                //menu.add(Menu.FIRST, MENU_USER_MENU, 2, JLocale.getString("user_menu"));
             }
 
             @Override
             public void onContextItemSelected(int listItem, int itemMenuId) {
                 switch (itemMenuId) {
-                    case MENU_COPY:
+                    case MENU_REPLY:
+                        String to = "";
+                        int cur = listItem;
+                        if (cur < ids.size()) {
+                            to = (String)ids.elementAt(cur);
+                        }
+                        write(to);
                         break;
 
-                    case MENU_USER_MENU:
+                    case MENU_COPY:
+                        SawimUI.setClipBoardText(model.elements.get(listItem).getLabel() + "\n" + model.elements.get(listItem).getDescSpan().toString());
+                        break;
+
+                    /*case MENU_USER_MENU:
                         try {
                             int item = list.getCurrItem();
                             String uin = (String)emails.elementAt(item);
-                            //list.showMenu(ContactList.getInstance().getContextMenu(mrim,
-                            //        mrim.createTempContact(uin)));
+                            new ContactMenu(mrim, mrim.createTempContact(uin)).getContextMenu(menu);
                         } catch (Exception e) {
                         }
-                        break;
+                        break;*/
                 }
             }
         });
-    }
-
-    public void activate() {
         list.show();
-    }
-
-    public Icon getIcon() {
-        return hasNewMessage ? Message.msgIcons.iconAt(Message.ICON_IN_MSG_HI) : null;
     }
 
     private void removeOldRecords() {
@@ -145,17 +154,9 @@ public final class MicroBlog implements TextBoxListener {
         par.addTextWithSmiles(post, Scheme.THEME_MAGIC_EYE_TEXT, Scheme.FONT_STYLE_PLAIN);
 
         model.addPar(par);
-        removeOldRecords();
-        //if (this != Sawim.getSawim().getDisplay().getCurrentDisplay()) {
-        //    hasNewMessage = true;
-        //}
+        //removeOldRecords();
         return true;
     }
-
-    private static final int MENU_WRITE     = 0;
-    private static final int MENU_COPY      = 2;
-    private static final int MENU_CLEAN     = 3;
-    private static final int MENU_USER_MENU = 4;
 
     private TextBoxView postEditor;
     private String replayTo = "";
@@ -174,6 +175,7 @@ public final class MicroBlog implements TextBoxListener {
             if (!StringConvertor.isEmpty(text)) {
                 c.postToMicroBlog(text, replayTo);
             }
+            list.updateModel();
         }
     }
 }
