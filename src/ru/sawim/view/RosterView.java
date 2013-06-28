@@ -410,8 +410,13 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                general.getManager().getModel().sort();
-                rebuildRoster(viewPager.getCurrentItem());
+                if (viewPager.getCurrentItem() == ContactsAdapter.OPEN_CHATS) {
+                    Util.sort(ChatHistory.instance.chats());
+                    updatePage(ContactsAdapter.OPEN_CHATS);
+                } else {
+                    general.getManager().getModel().sort();
+                    rebuildRoster(viewPager.getCurrentItem());
+                }
             }
         });
     }

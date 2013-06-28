@@ -1,11 +1,5 @@
-
-
-
 package sawim.comm;
 
-import DrawControls.icons.Image;
-import DrawControls.icons.ImageList;
-import DrawControls.tree.TreeNode;
 import sawim.Sawim;
 import sawim.Options;
 import sawim.util.JLocale;

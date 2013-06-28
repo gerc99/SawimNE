@@ -20,6 +20,7 @@ public final class ChatHistory {
     public final Vector historyTable = new Vector();
     public static final ChatHistory instance = new ChatHistory();
     private final Icon[] leftIcons = new Icon[7];
+    private Vector chats = new Vector();
 
     private ChatHistory() {
         //super(JLocale.getString("chats"));
@@ -35,6 +36,14 @@ public final class ChatHistory {
 
     public Contact contactAt(int index) {
         return chatAt(index).getContact();
+    }
+
+    public Vector chats() {
+        chats.clear();
+        for (int i = 0; i < historyTable.size(); i++) {
+            chats.addElement(chatAt(i).getContact());
+        }
+        return chats;
     }
 
     public String[] vectorToArray() {
