@@ -6,13 +6,11 @@ import DrawControls.tree.TreeNode;
 import DrawControls.tree.VirtualContactList;
 import android.content.Intent;
 import android.graphics.Rect;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.PagerTitleStrip;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.*;
 import android.widget.*;
 import protocol.Contact;
@@ -23,7 +21,6 @@ import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.activities.AccountsListActivity;
 import ru.sawim.activities.ChatActivity;
-import ru.sawim.activities.SawimActivity;
 import ru.sawim.models.ContactsAdapter;
 import ru.sawim.models.CustomPagerAdapter;
 import ru.sawim.models.RosterAdapter;
@@ -407,17 +404,21 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
 
     @Override
     public void updateRoster() {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
+        new Thread() {
             public void run() {
-                if (viewPager.getCurrentItem() == ContactsAdapter.OPEN_CHATS) {
-                    Util.sort(ChatHistory.instance.chats());
-                    updatePage(ContactsAdapter.OPEN_CHATS);
-                } else {
-                    general.getManager().getModel().sort();
-                    rebuildRoster(viewPager.getCurrentItem());
-                }
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (viewPager.getCurrentItem() == ContactsAdapter.OPEN_CHATS) {
+                            Util.sort(ChatHistory.instance.chats());
+                            updatePage(ContactsAdapter.OPEN_CHATS);
+                        } else {
+                            general.getManager().getModel().sort();
+                            rebuildRoster(viewPager.getCurrentItem());
+                        }
+                    }
+                });
             }
-        });
+        }.start();
     }
 }

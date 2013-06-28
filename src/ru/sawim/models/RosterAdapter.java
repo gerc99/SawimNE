@@ -42,7 +42,9 @@ public class RosterAdapter extends BaseAdapter {
 
     @Override
     public TreeNode getItem(int i) {
-        return items.get(i);
+        if ((items.size() > i) && (i >= 0))
+            return items.get(i);
+        return null;
     }
 
     @Override
@@ -52,7 +54,6 @@ public class RosterAdapter extends BaseAdapter {
 
     @Override
     public View getView(int i, View convertView, ViewGroup viewGroup) {
-        TreeNode o = items.get(i);
         ViewHolderRoster holder;
         if (convertView == null) {
             convertView = mInflater.inflate(R.layout.roster_item, null);
@@ -61,11 +62,13 @@ public class RosterAdapter extends BaseAdapter {
         } else {
             holder = (ViewHolderRoster) convertView.getTag();
         }
-        if (o instanceof Group) {
-            holder.populateFromGroup((Group) o);
-        } else if (o instanceof Contact) {
-            holder.populateFromContact((Contact) o);
-        }
+        TreeNode o = getItem(i);
+        if (o != null)
+            if (o instanceof Group) {
+                holder.populateFromGroup((Group) o);
+            } else if (o instanceof Contact) {
+                holder.populateFromContact((Contact) o);
+            }
         return convertView;
     }
 }

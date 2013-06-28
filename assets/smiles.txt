@@ -1,136 +1,50 @@
-56
-"улыбка"        :-), :), =), =)), :-)), :)), +), *GIGGLING*, *giggling*, :smile:
-"подмигиваю"    ;-), ;), ^_~, *подмигиваю*, :wink:, *подмигнул*, *I've_winked_at*, *ПОДМИГНУЛ*, *I'VE WINKED AT*, *I've winked at*, *I'VE_WINKED_AT*
-"язык"          :-P, :P, :-p, :p, +P, =P, +p, =p, :-b, :b, +b, =b, *хвастовство*, *ХВАСТОВСТВО*
-"широкаяулыбка" :-D, :D, +D, =D, :-)))), :)))), =)))), *BIGGRIN*, *LOL*, *широкая_улыбка*, *big_smile*, :biggrin:, :BIGGRIN:, *ШИРОКАЯ_УЛЫБКА*, *BIG_SMILE*, *ШИРОКАЯ УЛЫБКА*, *BIG SMILE*, *широкая улыбка*, *big smile*, :lol:, :ROFL:, :rofl:, ROFL, ROFL!, rofl, *lol*
-"смех"          *ROFL*, *ROTFL*, :-))))), :-)))))), :))))), :)))))), =))))), =)))))), *смех*, *СМЕХ*, *laugh*, *LAUGH*
-"хи"            *JOKINGLY*, 8P, 8p, *насмешка*, *MOSKING*, *gibe*, *НАСМЕШКА*, *GIBE*
-"хихихи"        *SARCASTIC*
-"yahoo"         *YAHOO*, *YAHOO!*
-"хохо"          *HOHO*, *шутка*
-"сумашедший"    *CRAZY*, :crazy:, *crazy*, *nerd*, *NERD*, *сумасшедший*, *СУМАСШЕДШИЙ*, *псих*
-"счастливый"    *HAPPY*, *happy*, *:happy:*, *:HAPPY:*, *счастливый*, *I'M_HAPPY*, *СЧАСТЛИВЫЙ*, *I'm_happy*, *I'm happy*, *I'M HAPPY*, *boast*, *BOAST*, <]
-"смущение"      :-[, :[, (e), (E), :'), :'-), ='), ;'>, ;-., :blush:
-"пардон"        *PARDON*, *pardon*, =], :PARDON:, :pardon:, *excuse_me*, *excuse me*, *EXCUSE_ME*, *EXCUSE ME*, :PARDON:, :pardon:, *PARDON*, *pardon*, *простите*
-"актуально"     ;D, *acute*, ;-D, *ACUTE*, *warning_you!*, *предупреждаю*, *ПРЕДУПРЕЖДАЮ*, *warning_you*, *WARNING_YOU*, *WARNING_YOU!*, *warning you*, *warning you!*
-"во!"           *THUMBS UP*, *THUMBSUP*, *GOOD*, (y), (Y), *THUMBS_UP*, *thumbsup*, *thumbs_up*, *thumbs up*
-"грусть"        :-(, :(, +(, =(, :-((, :((, +((, =((, :sad:
-"нет"           *NO*, *no*, *NONO*, *nono*, *но-но*, *ноно*, *НОНО*, *НО-НО*, *no-no*, *NO-NO*
-"недоволен"     ;-|, ;|, *ANGRY_JUMPING*, *angry_jumping*, *ANGRY JUMPING*, *angry jumping*, *mmm_yeah*, *мда*, *МДА*, *MMM_YEAH*, *mmm yeah*, *MMM YEAH*
-"что!?"         8-|, 8|, ?-|, 8-/, *BLINK*, *blink*, *CHTO!?*, *chto!?*, *что!?*, *ЧТО!?*
-"шок"           =-O, =O, =-o, =0, O_O, O_o, o_O, О_о, о_О, 0_0, О_О, O_O, O_o, o_O, O_0, o_0, 0_O, 0_o, *WOW*, *wow*, :-O
-"обморок"       *SWOON*, *swoon*
-"повесился"     X-), X), *HANG*, *hang*
-"угроза"        *THREAT*, *threat*, >:o, >:O, >+O, >:o, >+o, >=O, >=o, :-@, *ANGRY*, *угроза*, *УГРОЗА*
-"агрессия"      *AGRESSION*, *agression*, *агрессия*, *АГРЕССИЯ*
-"слёзы"         :'(, :'-(, :"(, ;-(, ;(, ='(, *CRY*, 8(, 8-[, 8-(, 8[, :-<, *WHINING*, *whining*
-"прости"        *SORRY*, :sorry:, *sorry*, *ПРОСТИТЕ*, *простите*, :SORRY:
-"болею"         *ILL*, *ill*, *больной*, *болею*, *PAIN*, *pain*
-"сатана"        ]:->, }:->, ]:>, }:>, >:-], >:], (6), *DIABLO*, *DEVIL*, *MAD*, :diablo:
-"чертенок"      *GIRL_DEVIL*, *she-devil*, *ЧЕРТОВКА*, *SHE-DEVIL*, *чертовка*
-"сплю"          *SLEEP*, *sleep*, *ЛЕНИВЫЙ*, *LAZY*, *Sleep*, *ленивый*, *lazy*, *LAZY*, *ASLEEP*, *SLEEPING*, *SLEEPY*, *lazy*, *asleep*, *sleeping*, *sleepy*, *TIRED*
-"устал"         %), %-), :-$, :$, *WACKO*, :-[], *%)*, :wacko:, :WACKO:, *:wacko:*, *:WACKO:*, 10  *OUT*, *out*, :OUT:, :-S, :-s, 8-s
-"пора..."       *TIME*, *time*
-"пора?!"        *CLOCK*, *clock*
-"кофе"          *COFFEE*, *coffee*, *coffe*, *COFFE*, *кофе*, *КОФЕ*, *чай*, *ЧАЙ*, *tea*, *TEA*
-"туалет"        *TOILET*, *toilet*, *WC*, *туалет*, *унитаз*, *сортир*
-"душ"           *SHOWER*, *shower*, *душ*, *в душе*, *моюсь*, *:wash:*, *WASH*, *wash*
-"кушаю"         *FOOD*, *food*, (pl), *няма-няма*, *еда*, *кушаю*
-"читаю"         *READ*, *read*, *READING*, *reading*, *reads*, *READS*, *NEWSPAPER*, *newspaper*
-"работаю"       *WORK*, *тяжкая_работа*, *тяжкая работа*, *WORKING*, *работа*, *работаю*, *work*, *working*, *ТЯЖКАЯ РАБОТА*, *ТЯЖКАЯ_РАБОТА*, *РАБОТА*, *РАБОТАЮ*, *heard_work*, *heard work*, *HEARD WORK*, *HEARD_WORK*, *hard_work*, *hard work*, *HARD WORK*, *HARD_WORK*, *moil*, *MOIL*, *job*, *JOB*
-"куку"          *KU-KU*, *ku-ku*, *kuku*, *KUKU*
-"ааа"           8-D, 8-P, *AAA*
-"конфета"       *SWEET*, *sweet*
-"голодный"      *HUNGER*, *hunger*, *голодный*, *ГОЛОДНЫЙ*, *LICK*, *lick*, *eat_licklips*
-"yesss"         *YESS!*, *yess!*, *есс*, *ЕСС*, *YES!*, *YEEES!*, *YESS*, *yess*
-"обстену"       :-|, :|, =|, *ERMM*, *ermm*, *wall*, *WALL*, *fool*, *FOOL*, ermm, ERMM, "ERMM"
-"ковыряюсь"     *NOSE*, *to_pick_ones_nose*, *nose*
-"пчела"         *BEE*, *bee*, *пчелка*, *пчела*, *ПЧЕЛКА*, *ПЧЕЛА*
-"фак!"          *FUCK*, *fuck*, *FUCK_YOU*, *FUCKOFF*, *fuck*, *fuckoff*, *фак*, *фак_ю*, *ФАК*
-"фига"          *FIGA*, *fig*, *figa*, *ФИГА*, *FIG*, :figa:, :FIGA:, *фига*
-"мартини"       *MARTINI*, *martini*, *мартини*, *МАРТИНИ*, *:martini:*, *:MARTINI:*, *romantic*
-"да"            *YES*, *yes*, *да*, *ДА*
-"спрятался"     *CAN'T SEE*, *hidden*, *can't_see*, *can't see*, *CAN'T_SEE*, *прятки*, *:can't_see:*, *:can't see:*
-"очки"          8-), 8-), B-), B), (H), (h), B-D, BD, B-|
-"музыка"        [:-}, [:}, *музыка*, *МУЗЫКА*, *Music*, *MUSIC*, *music*
-"победа"        *V*, *victory*, *VICTORY*, *PIECE*, *vv*, *победа*, *ПОБЕДА*
-"пиво"          *DRINK*, *BEER*, *beer*, (B), (b), :PEPSI:, :beer:
-"?"             :-?, *:-?, :?, *???*, *:?*, *:-?*, *:-?*
-"уууу"          X-., x-., Х-., х-.
-"шутник"        :-], *:-]*, *:-], *shutnik*, *SHUTNIK*, *wutnik*, *WUTNIK*, *шутник*, *ШУТНИК*, *:wutnik:*, *:shutnik:*, *:WUTNIK:*
-"танец"         *DANCE*, *dance*, *dance_jaga*, *танец*, *ТАНЕЦ*, *dance jaga*, *DANCE_JAGA*, *DANCE JAGA*
-"зуб"           :-E, :-Е
-"хитрый"        :->, *:->*, :>, *хитрый*, *ХИТРЫЙ*
-"бомба"         @=
-"дикарь"        *WASSUP*, *SUP*, *MAMBA*, :MAMBA:, *wassup*, *sup*, *mamba*, *:WASSUP:*, *:SUP:*
-"тошнит"        :-!, :!, :-~, ;-~, :(~, +(~, =(~, :bad:, *SICK*, ;-!, ;!, :X, :x, *DISGUSTED*, :*), :(~, +(~, =(~, :bad:
-"зонт"          *PARASOL*, *parasol*, *umbrella*, *UMBRELLA*, *zont*, *ZONT*, *зонт*, *ЗОНТ*
-"укуренный"     *GRASS*, *grass*
-"король"        *KING*, *king*, *crown*, *CROWN*, *КОРОЛЬ*, *король*
-"медсестра"     *MEDSISTER*, *medsister*, *HOSPITAL*, *МЕДСЕСТРА*, *hospital*, *медсестра*
-"какаяпрелесть" *how_lovely?*, *какая_прелесть...*
-"реверанс"      *CURTSY*, *curtsy*, *реверанс*, *РЕВЕРАНС*
-"кокетка"       *COQUETTE*, *coquette*, *кокетка*, *КОКЕТКА*
-"девочка"       *:-), *:), *=), *:-D, *:D, *FLIRT*
-"смотрю"        *SIGH*, *sigh*, *смотрит*
-"королева"      *QUEEN*, *queen*, *королева*, *КОРОЛЕВА*, *принцесса*, *ПРИНЦЕССА*, *princess*, *PRINCESS*
-"ангел"         O:-), O:), O+), O=), 0:-), 0:), 0+), 0=), (A), (a), o:-)
-"курю"          *SMOKE*, *SMOKING*
-"пока"          *BYE*, *goodbye*, *goodbye!*, *GOODBYE*, *GOODBYE!*, *пока*, *ПОКА*, *пока!*, *ПОКА!*
-"пляж"          *BEACH*, *ПЛЯЖ*, *beach*, *relax*, *:relax:*, *пляж*
-"здравствуй"    *HI*, *hello*, *HELLO*, *hello!*, *HELLO!*, *Hello*, *:hello:*, *привет!*, *ПРИВЕТ!*, *привет*, *ПРИВЕТ*
-"ok"            *OK*, :OK:, :ok:, *ok*
-"паника"        *PANIC*, *panic*, *SCARE*, *SCARED*, *shock_scare*, *shock scare*, *:shock_scare:*, *:SCARE:*, *:SCARED:*, *:shock scare:*, *паника*, *ПАНИКА*
-"сильный"       *BB*, *STRONG*, *bb*, *strong*
-"крутой"        \m/, *COOLBOY*, *SYSTEM*, *m/*, *\m/*, :cool: :yeah:
-"незаю"         *DONT_KNOW*, *DONT KNOW*, *UNKNOWN*, *dont know*, *DONTKNOW*, *unknown, dontknow*, *dont_know*, *DON'T_KNOW*, *DON'T KNOW*, *don't know*, *DON'TKNOW*, don'tknow*, *don't_know*, *dntknw*
-"алкаш"         *ALCOHOLIC*, *alcoholic*, *drink drunk*, *drink_drunk*, *DRUNK*, *drunk*
-"неуверен"      *UNSURE*, *unsure*
-"пишу"          *WRITE*, *write*
-"крик"          *SHOUT*, *крик*, *КРИК*, *shout*
-"цензура"       *CENSORED*, *censored*
-"побитый"       *ВАВА*, *sore*, *SORE*, *VAVA*, *BLACK_EYE*, *BLACKEYE*, *BLACK EYE*, *вава*
-"это"           *THIS*, *ЭТО*, *this*, *это*, *NOTI*, *noti*
-"стоп"          *STOP*, *stop*, *стоп*, *СТОП*
-"наркоман"      *DRUGS*, *ты_наркоман_сцука?!*, *ты_наркоман_сцуко?*, *ti_narcoman_scuco?*, *SMOKE?*, *smoke?*, *Smoke?*, *rastaman*, *cool smoke*, *cool_smoke*, *RASTAMAN*, *COOL SMOKE*, *COOL_SMOKE*, *дунем?*, *ДУНЕМ?*
-"думаю"         *SCRATCH*, *hmmm*, *думаю*, *ДУМАЮ*, *I'm_thinking*, *I'M_THINKING*, *I'm thinking*, *I'M THINKING*
-"истерика"      *HISTERICS*, *ranting*, *RANTING*, *ISTERIKA*, *isterika*, *:ISTERIKA:*, *:isterika:*, *:ranting:*, *:HISTERICS:*
-"браво"         *BRAVO*, :BRAVO:, :bravo:, :clapping:, *CLAPPING*, *БРАВО*, *браво*, *bravo*, *:BRAVO:*, *:bravo:*
-"ботан"         *BOTAN*, *ботан*, *ботаник*, *botan*, *BOTANIK*, *botanik*, *ERUDITE*, *erudite*, *UMNIK2*, *umnik2*, *UMNIK*, *umnik*, *умник*, *УМНИК*, *умник2*, *УМНИК2*, *clever*, *умный*, *УМНЫЙ*, *CLEVER*
-"секрет"        :-X, :-x, :-#, :#, *SECRET*, :secret:, *тайна*, *it's_a_secret*, *ТАЙНА*, *it'_a_secret*, *IT'S A SECRET*, *IT'S_A_SECRET*, *TSSS*
-"спасибо"       *THANKS*, *thank_you*, *thank*, *thanks*, *THANK*, *MERCI*, *merci*, *:thanks:*, *big_thanks*, *спасибо*, *СПАСИБО*
-"еу!"           *YOW!*, *yow!*, *ёу*, *ЁУ*, *yu*, *YU*, *I'M WHISTLING*, *ПОСВИСТЫВАЮ*, *I'm_whistling*, *I'M_WHISTLING*, *I'm whistling*, *посвистываю*
-"суеверие"      *SUPERSTITION*, *superstition*, *СУЕВЕРИЕ*, *суеверие*
-"ищу"           *SEARCH*, *SEARCHING*, *searching*, *search*
-"бее"           :-\, :-/, =/, =\, *BEEE*, :\, >:P, /;P, /;p
-"секс"          *SEX*, *fucking*, *sex*, *секс*, *СЕКС*, *FUCKIN*
-"свист"         *WHISTLE*, *whistling*, *YU*, :-", :-"
-"помоги"        *HELP*, *SOS*, *help*, *СПАСИТЕ*, *спасите*, *HELP_ME*, *HELP ME*
-"смерть"        *DEATH*, *смерть*, *death*, *SKULL*, *skull*, :skull:, 8-X, 8-x
-"зад"           (_|_), *ass*, *ASS*, *kiss_my_ass*, *задница*, *жопа*, *зад*, *Kiss_my_ass*, (ass)
-"атата!"        *ATATA*, *atata*
-"сердце"        *LOVE*, *love*, *Love*
-"влюблен"       *IN LOVE*, *in love*, *lovely*, *IN_LOVE*, *INLOVE*, *in_love*
-"влюбленый"     *ENAMOURED*, *enamoured*, *влюблен*
-"твоесердце"    *YOUHEARD*, *youheard*
-"дарюсердце"    *GIVE_HEART*, *give_heart*, *pulse*, *give heart*, *GIVE HEART*
-"роза"          @}->--, @}-:--, @>}---, (F), (f), @>--'---, @>--`---, @>}---`---, @}->-, @};-
-"букет"         *BOUQUET*, *bouquet*, *bucet*, *BUCET*, *BUKET*, *buket*, *букет*, *цветы*, *flowers*, *flower*, *FLOWERS*, *FLOWER*, *many_flowers*, *MANY_FLOWERS*, *many flowers*, *many flowers*
-"поцелуй"       :-*, :*, :-{}, :{}, +{}, ={}, ^.^, :kiss:, *KISS*
-"поцеловала"    *KISSED*, *HEART*, *heart*, *kissed*, *KISSS*, *kisss*
-"поцеловал"     *KISSING*, *FLYKISS*, *GIRLKISS* *FLYKISSING*, *FLY KISSING*, *FLY_KISSING*, *FLY KISSED*, *FLY_KISSED*, *FLY_KISS*, *FLY KISS*, *GIRL KISS*, *GIRL_KISS*, *GIRL_KISSED*, *GIRL KISSED*, *GIRL_KISSING*, *GIRL KISSING*
-"целуюручку"    *hand kiss*,*целую ручку*
-"прикосновение" *TOUCH*, *touch*, *прикосновение*, *ПРИКОСНОВЕНИЕ*
-"обнимает"      *ОБНИМАЕТ*, *обнимает*
-"танец"         *LOWE DANCE*, *love dance*
-"щекотка"       *TICKLE*, *tickle*
-"пес"           *dog*, *VIANNEN*, *DOG*, *viannen*, *собака*, *СОБАКА*
-"собачийязык"   *dog tongue*, *DOG TONGUE*
-"довольныйпёс"  *complacent dog*, *COMPLACENT DOG*
-"счасиливыйпёс" *happy dog*, *HAPPY DOG*
-"любящийпёс"    *love dog*, *LOVE DOG*
-"кот"           *CAT*, *KAT*, *kat*, *cat*, *кошка*, *киса*, *КИСА*, *КОШКА*
-"счасиливыйкот" *happy cat*, *HAPPY CAT*
-"смущённыйкот"  *embarrassed cat*, *EMBARRASSED CAT*
-"котенок"       *PUSS*, *puss*
-"кошка"         *PUSSY*, *pussy*
+60
+"Smile"      :-), :), =), =))
+"Sad"        :-(, :(, =(, =((
+"Ironic"     ;-), ;)
+"Tongue"     :-P, :P, :-p, :p
+"Boss"       8-)
+"Xa-xa"        :-D, :D, =-D, =-d, :d, =d, :-d
+"Confusion"  :-[, :[, =-[, =[
+"Angel"      O:-)
+"Shock"      =-O, =O, :-O, :O, =-o, =o, :-o, :o
+"Kiss"       :-*, :*, =-*, =*, :-{}
+"Sob"        :'(, ='(
+"Shut up"    :-X, :X, :-x, :x
+"Angry"      >:o, >=o, >:O, >=O
+"Stupid"     :-|, :|, =-|, =|
+"Suspirious" :-\, =-\, =\, :-/, =-/, =/
+"Jokingly"   *JOKINGLY*, *jokingly*
+"Devil"      ]:->, ]:>, ]=->, ]=>
+"Music"      [:-}, [:}, [=-}, [=}
+"Kissed"     *KISSED*, *kissed*
+"Illness"    :-!, :!, =-!, =!
+"Tired"      *TIRED*, *tired*
+"Stop"       *STOP*, *stop*
+"Kissing"    *KISSING*, *kissing*
+"Rose"       @}->--
+"Thumbs up"  *THUMBS UP*, *thumbs up*
+"Beer"       *DRINK*, *drink*
+"In love"    *IN LOVE*, *in love*
+"Bomb"       @=
+"Indefinite" *HELP*, *help*
+"Snooty"     \m/, \M/
+"Crazy"      %)
+"OK"         *OK*, *ok*
+"Wass up"    *WASSUP*, *wassup*
+"Sorry"      *SORRY*, *sorry*
+"Bravo"      *BRAVO*, *bravo*
+"Rofl"       *ROFL*, *rofl*, :lol:
+"Pardon"     *PARDON*, *pardon*
+"No"         *NO*, *no*
+"Crazy"      *CRAZY*, *crazy*
+"Dont know"  *DONT KNOW*, *dont know*, *DONT_KNOW*, *dont_know*
+"Dance"      *DANCE*, *dance*
+"Yahoo"      *YAHOO*, *yahoo*
+"Hi"         *HI*, *hi*
+"BYE"        *BYE*, *bye*
+"YES"        *YES*, *yes*
+";D"         ;D
+"WALL"       *WALL*, *wall*
+"WRITE"      *WRITE*, *write*
+"SCRATCH"    *SCRATCH*, *scratch*
