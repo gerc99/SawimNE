@@ -4,6 +4,7 @@ import DrawControls.icons.Icon;
 import android.content.Context;
 import android.text.SpannableStringBuilder;
 import android.text.util.Linkify;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,24 +56,28 @@ public class MessagesAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int i, View convertView, ViewGroup viewGroup) {
+    public View getView(int index, View convertView, ViewGroup viewGroup) {
         View row = convertView;
+        ViewHolder holder;
         if (row == null) {
             LayoutInflater inf = LayoutInflater.from(baseContext);
             row = inf.inflate(R.layout.chat_item, null);
+            holder = new ViewHolder();
+            holder.msgImage = (ImageView) row.findViewById(R.id.msg_icon);
+            holder.msgNick = (TextView) row.findViewById(R.id.msg_nick);
+            holder.msgTime = (TextView) row.findViewById(R.id.msg_time);
+            holder.msgText = (TextView) row.findViewById(R.id.msg_text);
+            row.setTag(holder);
+        } else {
+            holder = (ViewHolder) row.getTag();
         }
-        populateFrom(row, i);
-        return row;
-    }
 
-    void populateFrom(View item, int index) {
         MessData mData = items.get(index);
         String text = mData.getText();
-        ImageView msgImage = (ImageView) item.findViewById(R.id.msg_icon);
-        TextView msgNick = (TextView) item.findViewById(R.id.msg_nick);
-        TextView msgTime = (TextView) item.findViewById(R.id.msg_time);
-        TextView msgText = (TextView) item.findViewById(R.id.msg_text);
-
+        ImageView msgImage = holder.msgImage;
+        TextView msgNick = holder.msgNick;
+        TextView msgTime = holder.msgTime;
+        TextView msgText = holder.msgText;
         byte bg;
         if (mData.isService()) {
             bg = Scheme.THEME_CHAT_BG_SYSTEM;
@@ -81,7 +86,7 @@ public class MessagesAdapter extends BaseAdapter {
         } else {
             bg = mData.isIncoming() ? Scheme.THEME_CHAT_BG_IN_ODD : Scheme.THEME_CHAT_BG_OUT_ODD;
         }
-        item.setBackgroundColor(General.getColor(bg));
+        row.setBackgroundColor(General.getColor(bg));
 
         if (mData.isMe()) {
             msgImage.setVisibility(ImageView.GONE);
@@ -121,5 +126,13 @@ public class MessagesAdapter extends BaseAdapter {
             msgText.setText(mData.fullText);
             msgText.setTextSize(18);
         }
+        return row;
+    }
+
+    static class ViewHolder {
+        ImageView msgImage;
+        TextView msgNick;
+        TextView msgTime;
+        TextView msgText;
     }
 }

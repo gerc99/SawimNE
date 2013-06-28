@@ -161,6 +161,7 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
         if (!Options.getBoolean(Options.OPTION_HISTORY) && chat.hasHistory()) {
             menu.add(Menu.FIRST, ACTION_ADD_TO_HISTORY, 0, JLocale.getString("add_to_history"));
         }
+        currentContact.addChatMenuItems(menu);
     }
 
     @Override
@@ -362,12 +363,8 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
             messageEditor.setOnEditorActionListener(enterListener);
         }
         messageEditor.addTextChangedListener(textWatcher);
-        chatListView.setStackFromBottom(true);
-        chatListView.setBackgroundColor(0);
-        chatListView.setAlwaysDrawnWithCacheEnabled(false);
-        chatListView.setAnimationCacheEnabled(false);
-        chatListView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_LOW);
-        chatListView.setTranscriptMode(1);
+        chatListView.setFocusable(true);
+        //chatListView.setStackFromBottom(true);
         chatListView.setCacheColorHint(0x00000000);
         chatListView.setOnScrollListener(this);
         chatListView.setAdapter(adapter);

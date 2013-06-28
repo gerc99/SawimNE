@@ -99,10 +99,6 @@ public class JabberContact extends Contact {
         return getUserId();
     }
 
-	public void showListOfSubcontacts() {
-	    Jabber jabber = (Jabber)getProtocol();
-	    jabber.showListOfSubcontacts(this);
-	}
     public boolean execCommand(Protocol protocol, String msg) {
         final String cmd;
         final String param;

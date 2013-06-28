@@ -59,13 +59,14 @@
                 android:id="@+id/chat_history_list"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:divider="@null"
+                android:dividerHeight="0dp"
                 android:layout_weight="1"
-                android:fastScrollEnabled="true"
-                android:fadeScrollbars="true"/>
+                android:fastScrollEnabled="true"/>
         <LinearLayout android:id="@+id/sidebar"
                       android:orientation="vertical"
                       android:layout_width="match_parent"
-                      android:layout_height="match_parent" android:layout_weight="1">
+                      android:layout_height="match_parent" android:layout_weight="1.5">
             <ListView android:id="@+id/muc_user_list"
                       android:visibility="gone"
                       android:layout_width="fill_parent"

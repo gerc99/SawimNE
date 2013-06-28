@@ -1,6 +1,3 @@
-
-
-
 package sawim.chat.message;
 
 import DrawControls.icons.Icon;
@@ -9,7 +6,6 @@ import sawim.chat.MessData;
 import protocol.Contact;
 import protocol.Protocol;
 import ru.sawim.General;
-import ru.sawim.activities.ChatActivity;
 
 public abstract class Message {
     public static final ImageList msgIcons = ImageList.createImageList("/msgs.png");
@@ -22,15 +18,12 @@ public abstract class Message {
     public static final int ICON_OUT_MSG = 5;
     public static final int ICON_OUT_MSG_FROM_SERVER = 6;
     public static final int ICON_OUT_MSG_FROM_CLIENT = 7;
-	
 	public static final int ICON_MSG_TRACK = 8;
-    
 
     public static final int NOTIFY_OFF = -1;
     public static final int NOTIFY_NONE = ICON_OUT_MSG;
     public static final int NOTIFY_FROM_SERVER = ICON_OUT_MSG_FROM_SERVER;
     public static final int NOTIFY_FROM_CLIENT = ICON_OUT_MSG_FROM_CLIENT;
-
 
     protected boolean isIncoming;
     protected String contactId;
@@ -133,4 +126,3 @@ public abstract class Message {
         return false;
     }
 }
-

@@ -59,15 +59,15 @@ public class VirtualListAdapter extends BaseAdapter {
             LayoutInflater inf = LayoutInflater.from(baseContext);
             convertView = inf.inflate(R.layout.virtual_list_item, null);
             holder = new ViewHolder();
+            holder.descriptionLayout = (LinearLayout) convertView.findViewById(R.id.descriptionLayout);
+            holder.labelView = (TextView) convertView.findViewById(R.id.label);
+            holder.descView = (TextView) holder.descriptionLayout.findViewById(R.id.description);
+            holder.imageView = (ImageView) holder.descriptionLayout.findViewById(R.id.imageView);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
         if (element == null) return convertView;
-        LinearLayout descriptionLayout = (LinearLayout) convertView.findViewById(R.id.descriptionLayout);
-        holder.labelView = (TextView) convertView.findViewById(R.id.label);
-        holder.descView = (TextView) descriptionLayout.findViewById(R.id.description);
-        holder.imageView = (ImageView) descriptionLayout.findViewById(R.id.imageView);
 
         holder.labelView.setTextColor(General.getColor(Scheme.THEME_TEXT));
         holder.descView.setTextColor(General.getColor(Scheme.THEME_TEXT));
@@ -76,10 +76,10 @@ public class VirtualListAdapter extends BaseAdapter {
         holder.descView.setVisibility(TextView.GONE);
         holder.imageView.setVisibility(ImageView.GONE);
 
-        ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) descriptionLayout.getLayoutParams();
+        ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) holder.descriptionLayout.getLayoutParams();
         if (layoutParams != null) {
             layoutParams.setMargins(element.getMarginLeft(), 0, 0, 0);
-            descriptionLayout.setLayoutParams(layoutParams);
+            holder.descriptionLayout.setLayoutParams(layoutParams);
         }
         if (element.getLabel() != null) {
             holder.labelView.setVisibility(TextView.VISIBLE);
@@ -116,6 +116,7 @@ public class VirtualListAdapter extends BaseAdapter {
     }
 
     private static class ViewHolder {
+        LinearLayout descriptionLayout;
         TextView labelView;
         TextView descView;
         ImageView imageView;

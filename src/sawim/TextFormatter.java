@@ -1,8 +1,10 @@
 package sawim;
 
 import DrawControls.icons.Icon;
+import android.R;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
@@ -13,7 +15,7 @@ import sawim.modules.Emotions;
 
 /**
  * Created with IntelliJ IDEA.
- * User: admin
+ * User: Gerc
  * Date: 19.06.13
  * Time: 20:45
  * To change this template use File | Settings | File Templates.
