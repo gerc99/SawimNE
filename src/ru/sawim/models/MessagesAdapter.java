@@ -94,9 +94,10 @@ public class MessagesAdapter extends BaseAdapter {
             msgTime.setVisibility(TextView.GONE);
             int color = General.getColor(mData.isIncoming() ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG);
             if (mData.fullMeText == null)
-                mData.fullMeText = TextFormatter.getFormattedText(text, baseContext, color);
+                mData.fullMeText = TextFormatter.getFormattedText(text, baseContext);
             msgText.setText("* " + mData.getNick() + " " + mData.fullMeText);
-            msgText.setTextSize(14);
+            msgText.setTextColor(color);
+            msgText.setTextSize(17);
         } else {
             if (mData.iconIndex != Message.ICON_NONE) {
                 Icon icon = Message.msgIcons.iconAt(chat.getIcon(mData.getMessage(), mData.isIncoming()));
@@ -111,10 +112,12 @@ public class MessagesAdapter extends BaseAdapter {
             msgNick.setVisibility(TextView.VISIBLE);
             msgNick.setText(mData.getNick());
             msgNick.setTextColor(General.getColor(mData.isIncoming() ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG));
+            msgNick.setTextSize(22);
 
             msgTime.setVisibility(TextView.VISIBLE);
             msgTime.setText("(" + mData.strTime + ")");
             msgTime.setTextColor(General.getColor(mData.isIncoming() ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG));
+            msgTime.setTextSize(18);
 
             byte color = Scheme.THEME_TEXT;
             if (mData.isIncoming() && !chat.getContact().isSingleUserContact()
@@ -122,8 +125,9 @@ public class MessagesAdapter extends BaseAdapter {
                 color = Scheme.THEME_CHAT_HIGHLIGHT_MSG;
             }
             if (mData.fullText == null)
-                mData.fullText = TextFormatter.getFormattedText(text, baseContext, General.getColor(color));
+                mData.fullText = TextFormatter.getFormattedText(text, baseContext);
             msgText.setText(mData.fullText);
+            msgText.setTextColor(General.getColor(color));
             msgText.setTextSize(18);
         }
         return row;

@@ -132,7 +132,7 @@ public class OptionsForm implements FormListener, ControlStateListener {
                 //GraphicsEx.setChatPresenseFont(Options.getInt(Options.OPTION_CHAT_PRESENSEFONT_SCHEME));
                 saveOptionBoolean(Options.OPTION_TITLE_IN_CONFERENCE);
                 saveOptionString(Options.UNAVAILABLE_NESSAGE);
-                //saveOptionBoolean(Options.OPTION_SIMPLE_INPUT);
+                saveOptionBoolean(Options.OPTION_SIMPLE_INPUT);
                 saveOptionInt(Options.OPTION_MAX_MSG_COUNT);
 
                 ContactList.getInstance().getManager().update();
@@ -232,7 +232,7 @@ public class OptionsForm implements FormListener, ControlStateListener {
                 //        Options.OPTION_CHAT_PRESENSEFONT_SCHEME);
 				setChecked("title_in_conference",  Options.OPTION_TITLE_IN_CONFERENCE);
 				loadOptionString(Options.UNAVAILABLE_NESSAGE, "post_outputs");
-                //setChecked("use_simple_input", Options.OPTION_SIMPLE_INPUT);
+                setChecked("use_simple_input", Options.OPTION_SIMPLE_INPUT);
                 break;
 
             case OPTIONS_SIGNALING:

@@ -73,6 +73,7 @@ public class ViewHolderRoster {
         else
             itemName.setText(item.getText() + " (" + item.subcontactsS() + ")");
         itemName.setTextColor(General.getColor(item.getTextTheme()));
+        itemName.setTypeface(item.hasChat() ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT);
 
         TextView itemStausText = getItemDescriptionText();
         itemStausText.setVisibility(TextView.VISIBLE);

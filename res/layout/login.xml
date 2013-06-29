@@ -1,44 +1,49 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:id="@+id/account_linear"
-              android:layout_width="match_parent"
-              android:layout_height="fill_parent"
-              android:orientation="vertical">
-
-        <TextView android:text="@string/acc_login" android:id="@+id/acc_login_text"
-                  android:layout_height="wrap_content" android:layout_width="wrap_content"
-                  android:textStyle="bold" android:gravity="right"
-                  android:paddingRight="10dip"/>
-
-        <EditText android:id="@+id/Login" android:text=""
-                  android:layout_height="wrap_content" android:layout_width="fill_parent"
-                  android:singleLine="true"/>
-
-        <TextView android:layout_alignParentLeft="true"
-                  android:layout_height="wrap_content" android:id="@+id/acc_pass_text"
-                  android:layout_width="wrap_content" android:text="@string/acc_pass"
-                  android:textStyle="bold" android:gravity="right"
-                  android:paddingRight="10dip"/>
-
-        <EditText android:id="@+id/Password" android:text=""
-                  android:layout_height="wrap_content" android:layout_width="fill_parent"
-                  android:singleLine="true" android:inputType="textPassword"/>
-
-        <TextView android:layout_alignParentLeft="true"
-                  android:layout_height="wrap_content" android:id="@+id/acc_nick_text"
-                  android:layout_width="wrap_content" android:text="@string/acc_nick"
-                  android:textStyle="bold" android:gravity="right"
-                  android:paddingRight="10dip"/>
-
-        <EditText android:id="@+id/Nick" android:text=""
-                  android:layout_height="wrap_content" android:layout_width="fill_parent"
-                  android:singleLine="true"/>
-
-
-    <Button
-            android:id="@+id/ButtonOK"
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+    <TextView android:text="@string/acc_login"
+              android:id="@+id/acc_login_text"
+              android:layout_height="wrap_content"
+              android:layout_width="wrap_content"
+              android:textStyle="bold"
+              android:gravity="center_horizontal" android:layout_centerHorizontal="true"
+              android:layout_alignParentTop="true"/>
+    <EditText android:id="@+id/Login"
+              android:layout_height="wrap_content"
+              android:layout_width="fill_parent"
+              android:singleLine="true"
+              android:layout_below="@+id/acc_login_text" android:padding="10dp"/>
+    <TextView android:layout_height="wrap_content"
+              android:layout_width="wrap_content"
+              android:id="@+id/acc_pass_text"
+              android:text="@string/acc_pass"
+              android:textStyle="bold"
+              android:layout_below="@+id/Login" android:layout_centerHorizontal="true"/>
+    <EditText android:id="@+id/Password"
+              android:layout_height="wrap_content"
+              android:layout_width="fill_parent"
+              android:singleLine="true"
+              android:inputType="textPassword"
+              android:layout_below="@+id/acc_pass_text" android:padding="10dp"/>
+    <TextView android:layout_alignParentLeft="false"
+              android:layout_height="wrap_content"
+              android:id="@+id/acc_nick_text"
+              android:layout_width="wrap_content"
+              android:text="@string/acc_nick"
+              android:textStyle="bold"
+              android:layout_below="@+id/Password" android:layout_alignParentRight="false"
+              android:layout_centerHorizontal="true"/>
+    <EditText android:id="@+id/Nick"
+              android:layout_height="wrap_content"
+              android:layout_width="fill_parent"
+              android:singleLine="true"
+              android:layout_below="@+id/acc_nick_text" android:padding="10dp"/>
+    <Button android:id="@+id/ButtonOK"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/acc_add" android:layout_gravity="center_horizontal"/>
-
-</LinearLayout>
+            android:text="@string/acc_add"
+            android:layout_gravity="center_horizontal"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/Nick"/>
+</RelativeLayout>

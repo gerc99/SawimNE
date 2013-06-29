@@ -2,20 +2,19 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
               android:layout_width="match_parent"
-			android:layout_height="wrap_content">
+              android:layout_height="wrap_content">
+
 
     <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:drawingCacheQuality="low">
+            android:orientation="horizontal">
         <ImageView
                 android:id="@+id/msg_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="left"
-                android:src="@drawable/inc_msg"
-                android:drawingCacheQuality="low">
+                android:src="@drawable/inc_msg">
         </ImageView>
 
         <TextView
@@ -24,8 +23,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:text="nickname"
-                android:textSize="15.0sp"
-                android:drawingCacheQuality="low"/>
+                />
 
         <TextView
                 android:id="@+id/msg_time"
@@ -33,15 +31,13 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:text="TextView"
-                android:textSize="15.0sp"
-                android:drawingCacheQuality="low"/>
+                />
     </LinearLayout>
 
     <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:drawingCacheQuality="low">
+            android:orientation="horizontal">
 
         <TextView
                 android:id="@+id/msg_text"
@@ -49,7 +45,7 @@
                 android:layout_height="wrap_content"
                 android:autoLink="web"
                 android:text="text"
-                android:textSize="13.0sp"/>
+                />
     </LinearLayout>
 
 </LinearLayout>

@@ -88,7 +88,7 @@ public class FileSystemFileConnection implements FileConnection {
         // application path
         // "e:/sawim-multi/" is symlink to home
         if (fullPath.startsWith("e:/sawimne/")) {
-            fullPath = fullPath.replaceFirst("e:/sawim/", "~/");
+            fullPath = fullPath.replaceFirst("e:/sawimne/", "~/");
         }
 
         int rootEnd = fullPath.indexOf(DIR_SEP);
@@ -178,7 +178,7 @@ public class FileSystemFileConnection implements FileConnection {
 	private static Vector<File> getLocalRoots() {
         Vector<File> ls = new Vector<File>();
         try {
-            File fsRoot = new File(System.getProperty("user.home") + "/.sawim/filesystem");
+            File fsRoot = new File(System.getProperty("user.home") + "/.sawimne/filesystem");
             if (!fsRoot.exists()) {
                 if (!fsRoot.mkdirs()) {
                     throw new RuntimeException("Can't create filesystem root " + fsRoot.getAbsolutePath());

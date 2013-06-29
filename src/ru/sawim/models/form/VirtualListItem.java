@@ -58,7 +58,8 @@ public class VirtualListItem {
     }
 
     public void addTextWithSmiles(String text, byte themeText, byte font) {
-        descSpan = TextFormatter.getFormattedText(text, VirtualListActivity.getInstance(), General.getColor(themeText));
+        descSpan = TextFormatter.getFormattedText(text, VirtualListActivity.getInstance());
+        this.themeTextDesc = themeText;
         this.font = font;
     }
 

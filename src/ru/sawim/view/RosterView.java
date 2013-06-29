@@ -222,8 +222,6 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         super.onResume();
         if (owner == null) return;
         Update();
-        if (adaptersPages.size() > 0)
-            viewPager.setCurrentItem(2);
     }
 
     @Override

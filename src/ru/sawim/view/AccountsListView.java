@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.text.InputType;
 import android.view.*;
@@ -130,18 +131,27 @@ public class AccountsListView extends Fragment {
 
             @Override
             public void onClick(DialogInterface dialog, int item) {
-                new LoginDialog(Profile.protocolTypes[item], -1, false);
+                new LoginDialog(Profile.protocolTypes[item], -1, false).show(getActivity().getSupportFragmentManager(), "login");
             }
         });
         builder.create().show();
     }
 
-    public class LoginDialog {
-        private Dialog dialogLogin;
+    public class LoginDialog extends DialogFragment {
+        private int type;
+        public int id;
+        private boolean isEdit;
 
         public LoginDialog(final int type, final int id, final boolean isEdit) {
-            dialogLogin = new Dialog(getActivity());
-            dialogLogin.setContentView(R.layout.login);
+            this.type = type;
+            this.id = id;
+            this.isEdit = isEdit;
+        }
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                                 Bundle savedInstanceState) {
+            View dialogLogin = inflater.inflate(R.layout.login, container, false);
             final TextView loginText = (TextView) dialogLogin.findViewById(R.id.acc_login_text);
             final EditText editLogin = (EditText) dialogLogin.findViewById(R.id.Login);
             final EditText editNick = (EditText) dialogLogin.findViewById(R.id.Nick);
@@ -156,12 +166,12 @@ public class AccountsListView extends Fragment {
             loginText.setText(Profile.protocolIds[protocolIndex]);
             if (isEdit) {
                 final Profile account = Options.getAccount(id);
-                dialogLogin.setTitle(getText(R.string.acc_edit));
+                getDialog().setTitle(getText(R.string.acc_edit));
                 editLogin.setText(account.userId);
                 editNick.setText(account.nick);
                 editPass.setText(account.password);
             } else {
-                dialogLogin.setTitle(getText(R.string.acc_add));
+                getDialog().setTitle(getText(R.string.acc_add));
             }
             if (type == Profile.PROTOCOL_ICQ) {
                 editLogin.setInputType(InputType.TYPE_CLASS_NUMBER);
@@ -201,11 +211,10 @@ public class AccountsListView extends Fragment {
                     } else {
                         addAccount(Options.getAccountCount() + 1, account);
                     }
-                    dialogLogin.dismiss();
+                    dismiss();
                 }
-
             });
-            dialogLogin.show();
+            return dialogLogin;
         }
     }
 }

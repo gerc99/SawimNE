@@ -43,7 +43,7 @@ import java.util.List;
  * Time: 20:30
  * To change this template use File | Settings | File Templates.
  */
-public class ChatView extends Fragment implements AbsListView.OnScrollListener, General.OnUpdateChat {
+public class ChatView extends Fragment implements AbsListView.OnScrollListener, General.OnUpdateChat, ListView.OnItemClickListener {
 
     public static final String PASTE_TEXT = "ru.sawim.PASTE_TEXT";
 
@@ -338,7 +338,6 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
             usersImage.setVisibility(View.GONE);
             nickList.setVisibility(View.GONE);
         }
-
         ImageButton smileButton = (ImageButton) currentActivity.findViewById(R.id.input_smile_button);
         smileButton.setBackgroundColor(background);
         smileButton.setOnClickListener(new View.OnClickListener() {
@@ -347,10 +346,13 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
                 new SmilesView().show(getActivity().getSupportFragmentManager(), "show-smiles");
             }
         });
+        sendByEnter = Options.getBoolean(Options.OPTION_SIMPLE_INPUT);
         ImageButton sendButton = (ImageButton) currentActivity.findViewById(R.id.input_send_button);
-        sendButton.setBackgroundColor(background);
-        sendByEnter = (null == sendButton);
-        if (null != sendButton) {
+        if (sendByEnter) {
+            sendButton.setVisibility(ImageButton.GONE);
+        } else {
+            sendButton.setVisibility(ImageButton.VISIBLE);
+            sendButton.setBackgroundColor(background);
             sendButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -364,20 +366,20 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
         }
         messageEditor.addTextChangedListener(textWatcher);
         chatListView.setFocusable(true);
-        //chatListView.setStackFromBottom(true);
         chatListView.setCacheColorHint(0x00000000);
         chatListView.setOnScrollListener(this);
+        chatListView.setTranscriptMode(ListView.TRANSCRIPT_MODE_NORMAL);
+        chatListView.setStackFromBottom(true);
         chatListView.setAdapter(adapter);
         chatListView.setOnCreateContextMenuListener(this);
-        chatListView.setOnItemClickListener(new ListView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                MessData msg = (MessData) adapterView.getAdapter().getItem(position);
-                setText("");
-                setText(onMessageSelected(msg));
-                DebugLog.println("chatListView.setOnItemClickListener " + onMessageSelected(msg) + " " + position + " " + msg.getText());
-            }
-        });
+        chatListView.setOnItemClickListener(this);
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+        MessData msg = (MessData) adapterView.getAdapter().getItem(position);
+        setText("");
+        setText(onMessageSelected(msg));
     }
 
     public Chat getCurrentChat() {
