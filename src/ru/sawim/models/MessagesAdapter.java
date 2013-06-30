@@ -15,7 +15,7 @@ import sawim.TextFormatter;
 import sawim.chat.Chat;
 import sawim.chat.MessData;
 import sawim.chat.message.Message;
-import sawim.ui.base.Scheme;
+import ru.sawim.Scheme;
 
 import java.util.List;
 
@@ -116,7 +116,7 @@ public class MessagesAdapter extends BaseAdapter {
             msgNick.setTextSize(18);
 
             msgTime.setVisibility(TextView.VISIBLE);
-            msgTime.setText("(" + mData.strTime + ")");
+            msgTime.setText(mData.strTime);
             msgTime.setTextColor(General.getColor(mData.isIncoming() ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG));
             msgTime.setTextSize(18);
 

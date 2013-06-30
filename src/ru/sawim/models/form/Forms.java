@@ -4,6 +4,7 @@ import DrawControls.icons.Image;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import ru.sawim.General;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
@@ -36,11 +37,15 @@ public class Forms {
     private OnBackPressed backPressedListener;
     private ControlStateListener controlListener;
     public CharSequence caption;
-    private static final Forms instance = new Forms();
+    private static Forms instance = new Forms();
 
     public void back() {
         updateFormListener.back();
         destroy();
+    }
+
+    public void backForm() {
+        updateFormListener.back();
     }
 
     public void show() {
@@ -115,6 +120,10 @@ public class Forms {
 
     public void destroy() {
         clearForm();
+        clearListeners();
+    }
+
+    public void clearListeners() {
         formListener = null;
         controlListener = null;
         updateFormListener = null;
@@ -281,6 +290,7 @@ public class Forms {
     }
     public int getSelectorValue(int controlId) {
         try {
+            Log.e("Forms", ""+controlId);
             return get(controlId).current;
         } catch (Exception e) {
             DebugLog.panic("getSelectorValue", e);

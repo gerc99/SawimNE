@@ -8,7 +8,7 @@ import android.widget.*;
 import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.models.form.VirtualListItem;
-import sawim.ui.base.Scheme;
+import ru.sawim.Scheme;
 
 import java.util.List;
 

@@ -43,6 +43,7 @@ public class AccountsListView extends Fragment {
         ListView accountsList = (ListView) getActivity().findViewById(R.id.AccountsList);
         accountsListAdapter = new AccountsAdapter(getActivity());
         getActivity().setTitle(getActivity().getString(R.string.options_account));
+        accountsList.setCacheColorHint(0x00000000);
         accountsList.setAdapter(accountsListAdapter);
         registerForContextMenu(accountsList);
     }

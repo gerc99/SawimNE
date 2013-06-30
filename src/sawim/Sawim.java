@@ -1,13 +1,12 @@
 package sawim;
 
-import android.util.Log;
 import sawim.chat.ChatHistory;
 import sawim.cl.ContactList;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
 import sawim.modules.*;
 import sawim.search.Search;
-import sawim.ui.base.Scheme;
+import ru.sawim.Scheme;
 import sawim.util.JLocale;
 import ru.sawim.activities.SawimActivity;
 
@@ -17,7 +16,7 @@ import java.io.InputStream;
 public class Sawim {
 
     public static final String NAME = "Sawim NE";
-    public static final String VERSION = "1.0m";
+    public static final String VERSION = "1.1";
     public static final String PHONE = "android/" + android.os.Build.MODEL
             + "/" + android.os.Build.VERSION.RELEASE;
 

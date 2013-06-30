@@ -3,23 +3,22 @@ package protocol.jabber;
 import java.util.Vector;
 
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import ru.sawim.Scheme;
 import ru.sawim.models.form.VirtualListItem;
+import ru.sawim.models.list.VirtualList;
+import ru.sawim.models.list.VirtualListModel;
 import sawim.cl.ContactList;
 import sawim.comm.StringConvertor;
 
-import sawim.ui.TextBoxListener;
-import sawim.ui.base.*;
 import sawim.util.JLocale;
 import sawim.comm.*;
-import sawim.ui.text.*;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
 import ru.sawim.view.TextBoxView;
 
-public final class AffiliationListConf implements FormListener, TextBoxListener {
+public final class AffiliationListConf implements FormListener, TextBoxView.TextBoxListener {
     
     private Jabber jabber;
     private String serverJid;
@@ -244,9 +243,8 @@ public final class AffiliationListConf implements FormListener, TextBoxListener 
 				        reason);
 				} catch (Exception e) {}
 				ContactList.getInstance().activate();
-            } else {
-                enterData.back();
             }
+            enterData.back();
             enterData = null;
         }
 	}

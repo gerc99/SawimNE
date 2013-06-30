@@ -6,8 +6,8 @@ import android.support.v4.app.FragmentActivity;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
-import sawim.ui.text.VirtualList;
-import sawim.ui.text.VirtualListModel;
+import ru.sawim.models.list.VirtualList;
+import ru.sawim.models.list.VirtualListModel;
 import java.util.Vector;
 
 import sawim.cl.*;

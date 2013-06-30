@@ -27,6 +27,9 @@ final class XForm {
         form = Forms.getInstance();
         form.init(caption, listener);
     }
+    void init(Forms f) {
+        form = f;
+    }
     public boolean isWaiting() {
         return waitingForm;
     }

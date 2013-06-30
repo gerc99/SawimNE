@@ -4,6 +4,7 @@
               android:layout_width="match_parent"
               android:layout_height="wrap_content">
 
+
     <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
@@ -22,7 +23,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:text="nickname"
-                />
+                android:layout_weight="1"/>
 
         <TextView
                 android:id="@+id/msg_time"
@@ -30,7 +31,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:text="TextView"
-                />
+                android:layout_weight="0"/>
     </LinearLayout>
 
     <LinearLayout

@@ -186,6 +186,7 @@ public class MucUsersAdapter extends BaseAdapter {
     @Override
     public View getView(int i, View convView, ViewGroup viewGroup) {
         Object o = items.get(i);
+        if (o == null) return convView;
         if (o instanceof String) return layerView.getView(convView, (String)o);
         if (o instanceof JabberContact.SubContact) return mucUserView.getView(convView, (JabberContact.SubContact)o);
         return convView;

@@ -13,7 +13,6 @@ import sawim.comm.StringConvertor;
 import sawim.comm.Util;
 import sawim.search.Search;
 import sawim.search.UserInfo;
-import sawim.ui.TextBoxListener;
 import sawim.util.JLocale;
 import protocol.*;
 import ru.sawim.SawimApplication;
@@ -568,7 +567,7 @@ public final class Jabber extends Protocol implements FormListener {
 			case JabberServiceContact.COMMAND_TITLE:
                 TextBoxView textbox = new TextBoxView();
                 textbox.setString("/title " + c.getStatusText());
-                textbox.setTextBoxListener(new TextBoxListener() {
+                textbox.setTextBoxListener(new TextBoxView.TextBoxListener() {
                     @Override
                     public void textboxAction(TextBoxView box, boolean ok) {
                         sendMessage(contact, box.getString(), true);

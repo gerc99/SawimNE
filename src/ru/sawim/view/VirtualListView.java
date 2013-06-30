@@ -10,11 +10,11 @@ import android.widget.ListView;
 
 import ru.sawim.General;
 import ru.sawim.models.form.VirtualListItem;
-import sawim.ui.base.Scheme;
-import sawim.ui.text.VirtualList;
+import ru.sawim.Scheme;
+import ru.sawim.models.list.VirtualList;
 import ru.sawim.R;
 import ru.sawim.models.VirtualListAdapter;
-import sawim.ui.text.VirtualListModel;
+import ru.sawim.models.list.VirtualListModel;
 
 /**
  * Created with IntelliJ IDEA.
@@ -58,7 +58,8 @@ public class VirtualListView extends Fragment implements VirtualList.OnVirtualLi
         Activity currentActivity = getActivity();
         currentActivity.setTitle(list.getCaption());
         adapter = new VirtualListAdapter(currentActivity, list.getModel().elements);
-        lv = (ListView)currentActivity.findViewById(R.id.list_view);
+        lv = (ListView) currentActivity.findViewById(R.id.list_view);
+        lv.setCacheColorHint(0x00000000);
         lv.setAdapter(adapter);
         lv.setBackgroundColor(General.getColor(Scheme.THEME_BACKGROUND));
         lv.setOnItemClickListener(new ListView.OnItemClickListener() {

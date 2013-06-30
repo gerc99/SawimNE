@@ -7,11 +7,12 @@ import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
+import ru.sawim.models.list.VirtualList;
+import ru.sawim.models.list.VirtualListModel;
 import sawim.*;
 import sawim.chat.message.Message;
 import sawim.comm.*;
 import sawim.io.Storage;
-import sawim.ui.text.*;
 import sawim.util.*;
 
 import protocol.*;

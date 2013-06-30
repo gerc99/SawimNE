@@ -2,10 +2,10 @@ package sawim;
 
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
+import ru.sawim.Scheme;
 import sawim.cl.ContactList;
 import sawim.comm.*;
 import sawim.modules.*;
-import sawim.ui.base.*;
 import sawim.util.*;
 import ru.sawim.activities.SawimActivity;
 import ru.sawim.models.form.ControlStateListener;
@@ -124,7 +124,7 @@ public class OptionsForm implements FormListener, ControlStateListener {
                 //saveOptionBoolean(Options.OPTION_CL_HIDE_OFFLINE);
                 saveOptionBoolean(Options.OPTION_SAVE_TEMP_CONTACT);
                 saveOptionBoolean(Options.OPTION_SORT_UP_WITH_MSG);
-                //saveOptionBoolean(Options.OPTION_SHOW_STATUS_LINE);
+                saveOptionBoolean(Options.OPTION_SHOW_STATUS_LINE);
                 saveOptionSelector(Options.OPTION_CL_SORT_BY);
                 saveOptionBoolean(Options.OPTION_SHOW_PLATFORM);
                 saveOptionBoolean(Options.OPTION_HISTORY);
@@ -181,7 +181,6 @@ public class OptionsForm implements FormListener, ControlStateListener {
             public boolean back() {
                 save(currentOptionsForm);
                 form.destroy();
-                SawimActivity.getInstance().recreateActivity();
                 return true;
             }
         });
@@ -216,7 +215,7 @@ public class OptionsForm implements FormListener, ControlStateListener {
                 
                 //setChecked("hide_offline", Options.OPTION_CL_HIDE_OFFLINE);
                 setChecked("save_temp_contacts", Options.OPTION_SAVE_TEMP_CONTACT);
-                //setChecked("show_status_line", Options.OPTION_SHOW_STATUS_LINE);
+                setChecked("show_status_line", Options.OPTION_SHOW_STATUS_LINE);
                 setChecked("contacts_with_msg_at_top", Options.OPTION_SORT_UP_WITH_MSG);
 
                 createSelector("sort_by",

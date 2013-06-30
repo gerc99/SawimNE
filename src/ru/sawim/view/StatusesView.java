@@ -33,7 +33,7 @@ public class StatusesView extends DialogFragment {
         View v = inflater.inflate(R.layout.statuses_view, container, false);
         statusesAdapter = new StatusesAdapter(getActivity(), protocol, type);
         ListView lv = (ListView) v.findViewById(R.id.statuses_view);
-        Log.e("STATUS", ""+protocol.getProfile().statusIndex);
+        lv.setCacheColorHint(0x00000000);
         if (type == ADAPTER_STATUS)
             statusesAdapter.setSelectedItem(protocol.getProfile().statusIndex);
         else

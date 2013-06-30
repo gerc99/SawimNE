@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
-import sawim.ui.TextBoxListener;
 import ru.sawim.R;
 
 /**
@@ -78,5 +77,9 @@ public class TextBoxView extends DialogFragment implements View.OnClickListener 
 
     public void back() {
         dismiss();
+    }
+
+    public static interface TextBoxListener {
+        void textboxAction(TextBoxView box, boolean ok);
     }
 }

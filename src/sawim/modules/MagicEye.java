@@ -33,9 +33,9 @@ import ru.sawim.models.form.VirtualListItem;
 import sawim.Sawim;
 import sawim.SawimUI;
 import sawim.comm.Util;
-import sawim.ui.base.Scheme;
-import sawim.ui.text.VirtualList;
-import sawim.ui.text.VirtualListModel;
+import ru.sawim.Scheme;
+import ru.sawim.models.list.VirtualList;
+import ru.sawim.models.list.VirtualListModel;
 import sawim.util.JLocale;
 
 import java.util.List;
@@ -133,7 +133,8 @@ public final class MagicEye {
     private void removeOldRecords() {
         final int maxRecordCount = 50;
         while (maxRecordCount < model.getSize()) {
-            list.removeFirstText();
+            if (null != list)
+                list.removeFirstText();
         }
     }
 

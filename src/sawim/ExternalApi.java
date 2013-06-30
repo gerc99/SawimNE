@@ -15,7 +15,7 @@ import java.io.InputStream;
 
 public class ExternalApi {
 
-    public static final ExternalApi instance = new ExternalApi();
+    public static ExternalApi instance = new ExternalApi();
     private FragmentActivity activity;
 
     public void setActivity(FragmentActivity activity) {

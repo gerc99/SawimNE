@@ -4,14 +4,13 @@ import DrawControls.icons.Icon;
 import DrawControls.icons.ImageList;
 import DrawControls.tree.VirtualContactList;
 import android.graphics.Typeface;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import sawim.Options;
 import sawim.chat.ChatHistory;
 import sawim.chat.message.Message;
-import sawim.ui.base.Scheme;
+import ru.sawim.Scheme;
 import protocol.*;
 import ru.sawim.General;
 import ru.sawim.R;
@@ -76,9 +75,13 @@ public class ViewHolderRoster {
         itemName.setTypeface(item.hasChat() ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT);
 
         TextView itemStausText = getItemDescriptionText();
-        itemStausText.setVisibility(TextView.VISIBLE);
-        itemStausText.setText(vcl.getStatusMessage(item));
-        itemStausText.setTextColor(General.getColor(Scheme.THEME_CONTACT_STATUS));
+        if (Options.getBoolean(Options.OPTION_SHOW_STATUS_LINE)) {
+            itemStausText.setVisibility(TextView.VISIBLE);
+            itemStausText.setText(vcl.getStatusMessage(item));
+            itemStausText.setTextColor(General.getColor(Scheme.THEME_CONTACT_STATUS));
+        } else {
+            itemStausText.setVisibility(TextView.GONE);
+        }
 
         ImageView statusImage = getItemFirstImage();
         Icon icStatus = p.getStatusInfo().getIcon(item.getStatusIndex());

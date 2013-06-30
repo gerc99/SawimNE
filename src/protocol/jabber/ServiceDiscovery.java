@@ -5,19 +5,18 @@ import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import ru.sawim.models.form.VirtualListItem;
-import sawim.ui.TextBoxListener;
-import sawim.ui.text.VirtualList;
+import ru.sawim.models.list.VirtualList;
 import java.util.Vector;
 import sawim.cl.ContactList;
-import sawim.ui.text.VirtualListModel;
+import ru.sawim.models.list.VirtualListModel;
 import sawim.util.JLocale;
 import sawim.comm.*;
-import sawim.ui.base.Scheme;
+import ru.sawim.Scheme;
 import protocol.*;
 import ru.sawim.view.TextBoxView;
 
 
-public final class ServiceDiscovery implements TextBoxListener {
+public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
 
     private boolean isConferenceList = false;
     private int totalCount = 0;
@@ -62,7 +61,10 @@ public final class ServiceDiscovery implements TextBoxListener {
 
             @Override
             public boolean back() {
-                if (serverJid == "") return true;
+                if (serverJid == "") {
+                    screen.clearAll();
+                    return true;
+                }
                 setServer("");
                 return false;
             }

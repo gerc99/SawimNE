@@ -1,8 +1,7 @@
-
 package protocol.jabber;
 
-
 import android.util.Log;
+import ru.sawim.activities.FormActivity;
 import ru.sawim.activities.SawimActivity;
 import sawim.cl.ContactList;
 import sawim.comm.StringConvertor;
@@ -11,7 +10,6 @@ import sawim.util.JLocale;
 import ru.sawim.models.form.ControlStateListener;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
-
 
 public final class AdHoc implements FormListener, ControlStateListener {
     private JabberContact contact;
@@ -31,9 +29,11 @@ public final class AdHoc implements FormListener, ControlStateListener {
         nodes = new String[0];
         names = new String[0];
     }
+
     public String getJid() {
         return jid;
     }
+
 	private String resourceConf;
 	public void setResource(String res) {
 	    resourceConf = res;
@@ -41,12 +41,13 @@ public final class AdHoc implements FormListener, ControlStateListener {
 
     public void show() {
         commandsListForm = Forms.getInstance();
-        commandsListForm.init("adhoc", this);
+        commandsListForm.init(JLocale.getString("adhoc"), this);
         updateForm(false);
         commandsListForm.setControlStateListener(this);
         commandsListForm.show(SawimActivity.getInstance());
         requestCommandsForCurrentResource();
     }
+
     private String[] getResources() {
         String[] resources = new String[contact.subcontacts.size()];
         for (int i = resources.length - 1; 0 <= i; --i) {
@@ -55,6 +56,7 @@ public final class AdHoc implements FormListener, ControlStateListener {
         }
         return resources;
     }
+
     private void updateForm(boolean loaded) {
         String[] resources = getResources();
         int selectedResource = 0;
@@ -77,8 +79,8 @@ public final class AdHoc implements FormListener, ControlStateListener {
             String label = loaded ? "commands_not_found" : "receiving_commands";
             commandsListForm.addString(JLocale.getString(label));
         }
-        //commandsListForm.invalidate();
     }
+
     private void requestCommandsForCurrentResource() {
         nodes = new String[0];
         names = new String[0];
@@ -131,7 +133,6 @@ public final class AdHoc implements FormListener, ControlStateListener {
             if (0 != nodes.length) {
                 commandIndex = form.getSelectorValue(FORM_COMMAND);
                 protocol.getConnection().requestCommand(this, nodes[commandIndex]);
-                form.back();
 			} else {
                 requestCommandsForCurrentResource();
                 updateForm(false);
@@ -187,7 +188,8 @@ public final class AdHoc implements FormListener, ControlStateListener {
             }
         }
         if (showForm) {
-            form.getForm().show(SawimActivity.getInstance());
+            commandsListForm.show();
+            //form.getForm().show(FormActivity.getInstance());
         }
     }
 

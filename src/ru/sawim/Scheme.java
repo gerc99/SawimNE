@@ -1,6 +1,6 @@
 
 
-package sawim.ui.base;
+package ru.sawim;
 
 import sawim.Options;
 import sawim.comm.Config;

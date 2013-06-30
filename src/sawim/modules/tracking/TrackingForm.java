@@ -6,15 +6,15 @@ import java.util.Vector;
 
 import DrawControls.icons.Icon;
 import DrawControls.icons.ImageList;
+import ru.sawim.Scheme;
 import ru.sawim.activities.VirtualListActivity;
 import ru.sawim.models.form.VirtualListItem;
-import sawim.ui.TextBoxListener;
+import ru.sawim.models.list.VirtualList;
+import ru.sawim.models.list.VirtualListModel;
 import sawim.util.*;
-import sawim.ui.base.*;
-import sawim.ui.text.*;
 import ru.sawim.view.TextBoxView;
 
-public final class TrackingForm implements TextBoxListener {
+public final class TrackingForm implements TextBoxView.TextBoxListener {
 
     public static final int TRACK = 1;
     public static final int TRACKON = 2;

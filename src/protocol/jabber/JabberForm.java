@@ -59,7 +59,7 @@ final class JabberForm implements FormListener {
         XmlNode captcha = baseNode.getFirstNode(S_CAPTCHA);
         id = baseNode.getAttribute("i" + "d");
         form.loadXFromXml(captcha, baseNode);
-        form.getForm().show/*Top*/();
+        form.getForm().show();
     }
 
     public String getId() {

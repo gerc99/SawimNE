@@ -7,9 +7,7 @@ import android.support.v4.app.FragmentActivity;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.SubMenu;
-import ru.sawim.activities.FormActivity;
 import ru.sawim.view.FileProgressView;
-import sawim.FileTransfer;
 import sawim.Sawim;
 import sawim.Options;
 import sawim.chat.Chat;
@@ -18,7 +16,7 @@ import sawim.cl.ContactList;
 import sawim.comm.Sortable;
 import sawim.comm.StringConvertor;
 import sawim.modules.tracking.Tracking;
-import sawim.ui.base.Scheme;
+import ru.sawim.Scheme;
 import ru.sawim.R;
 
 

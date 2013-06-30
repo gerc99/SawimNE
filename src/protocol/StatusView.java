@@ -4,13 +4,13 @@ import android.view.ContextMenu;
 import android.view.Menu;
 import ru.sawim.models.form.VirtualListItem;
 import sawim.SawimUI;
-import sawim.ui.text.VirtualListModel;
+import ru.sawim.models.list.VirtualListModel;
 import DrawControls.icons.Icon;
 import sawim.Sawim;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
-import sawim.ui.base.Scheme;
-import sawim.ui.text.VirtualList;
+import ru.sawim.Scheme;
+import ru.sawim.models.list.VirtualList;
 import protocol.jabber.*;
 import sawim.util.JLocale;
 
@@ -122,7 +122,7 @@ public final class StatusView {
                 switch (itemMenuId) {
                     case INFO_MENU_COPY:
                         VirtualListItem item = list.getModel().elements.get(listItem);
-                        SawimUI.setClipBoardText(item.getLabel() + "\n" + item.getDescStr());
+                        SawimUI.setClipBoardText(((item.getLabel() == null) ? "" : item.getLabel() + "\n") + item.getDescStr());
                         break;
 
                     case INFO_MENU_COPY_ALL:

@@ -46,6 +46,7 @@ public class XStatusesView extends DialogFragment {
         statusesAdapter = new XStatusesAdapter(getActivity(), protocol);
         final ListView lv = (ListView) v.findViewById(R.id.xstatuses_view);
         statusesAdapter.setSelectedItem(protocol.getProfile().xstatusIndex);
+        lv.setCacheColorHint(0x00000000);
         lv.setAdapter(statusesAdapter);
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

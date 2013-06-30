@@ -12,7 +12,6 @@ import android.net.Uri;
 import android.util.DisplayMetrics;
 import sawim.chat.Chat;
 import sawim.chat.MessData;
-import sawim.ui.base.Scheme;
 import ru.sawim.activities.SawimActivity;
 
 import javax.microedition.io.ConnectionNotFoundException;

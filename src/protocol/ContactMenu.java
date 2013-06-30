@@ -11,13 +11,12 @@ import sawim.comm.Util;
 import sawim.forms.ManageContactListForm;
 import sawim.history.HistoryStorage;
 import sawim.history.HistoryStorageList;
-import sawim.ui.TextBoxListener;
 import sawim.util.JLocale;
 import protocol.jabber.Jabber;
 import ru.sawim.view.TextBoxView;
 import java.util.Vector;
 
-public class ContactMenu implements TextBoxListener {
+public class ContactMenu implements TextBoxView.TextBoxListener {
     private Contact contact;
     private Protocol protocol;
     private TextBoxView messageTextbox;

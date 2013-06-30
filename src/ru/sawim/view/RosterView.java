@@ -30,7 +30,7 @@ import sawim.cl.ContactList;
 import sawim.comm.Util;
 import sawim.forms.ManageContactListForm;
 import sawim.modules.DebugLog;
-import sawim.ui.base.Scheme;
+import ru.sawim.Scheme;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -210,7 +210,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
                 }
             }
             if (items.size() <= getCurrItem()) {
-                //setCurrentItemIndex(0);
+                setCurrentItemIndex(0);
             }
         } catch (Exception e) {
             DebugLog.panic("update ", e);

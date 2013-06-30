@@ -11,7 +11,6 @@ import sawim.cl.ContactList;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
 import sawim.search.Search;
-import sawim.ui.TextBoxListener;
 import sawim.util.JLocale;
 import protocol.Contact;
 import protocol.Group;
@@ -26,7 +25,7 @@ import java.util.List;
 import java.util.Vector;
 
 
-public final class ManageContactListForm implements FormListener, TextBoxListener {
+public final class ManageContactListForm implements FormListener, TextBoxView.TextBoxListener {
     private static final int ADD_USER     = 20;
     private static final int SEARCH_USER  = 21;
     private static final int ADD_GROUP    = 22;

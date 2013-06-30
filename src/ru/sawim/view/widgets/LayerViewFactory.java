@@ -1,12 +1,11 @@
 package ru.sawim.view.widgets;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
-import sawim.ui.base.Scheme;
+import ru.sawim.Scheme;
 import ru.sawim.General;
 import ru.sawim.R;
 

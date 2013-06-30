@@ -7,11 +7,12 @@ import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import ru.sawim.models.form.VirtualListItem;
+import ru.sawim.models.list.VirtualList;
+import ru.sawim.models.list.VirtualListModel;
 import sawim.SawimUI;
 import sawim.comm.*;
-import sawim.ui.base.Scheme;
+import ru.sawim.Scheme;
 import sawim.util.JLocale;
-import sawim.ui.text.*;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
 

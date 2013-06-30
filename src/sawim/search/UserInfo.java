@@ -2,13 +2,12 @@ package sawim.search;
 
 import android.graphics.Bitmap;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import ru.sawim.activities.SawimActivity;
 import sawim.ExternalApi;
-import sawim.ui.text.VirtualListModel;
-import sawim.ui.text.VirtualList;
+import ru.sawim.models.list.VirtualListModel;
+import ru.sawim.models.list.VirtualList;
 import DrawControls.icons.*;
 import sawim.SawimException;
 import sawim.comm.Util;

@@ -10,15 +10,14 @@ import ru.sawim.view.TextBoxView;
 import sawim.SawimUI;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
-import sawim.ui.TextBoxListener;
-import sawim.ui.text.VirtualListModel;
-import sawim.ui.text.VirtualList;
-import sawim.ui.base.Scheme;
+import ru.sawim.models.list.VirtualListModel;
+import ru.sawim.models.list.VirtualList;
+import ru.sawim.Scheme;
 import java.util.Vector;
 import ru.sawim.models.form.VirtualListItem;
 import sawim.util.JLocale;
 
-public final class MicroBlog implements TextBoxListener {
+public final class MicroBlog implements TextBoxView.TextBoxListener {
     private VirtualListModel model = new VirtualListModel();
     private Vector emails = new Vector();
     private Vector ids = new Vector();

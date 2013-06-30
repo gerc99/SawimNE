@@ -11,7 +11,6 @@ import protocol.Protocol;
 import protocol.jabber.*;
 import ru.sawim.R;
 import ru.sawim.models.MucUsersAdapter;
-import sawim.ui.TextBoxListener;
 import sawim.util.JLocale;
 
 import java.util.ArrayList;
@@ -24,7 +23,7 @@ import java.util.List;
  * Time: 21:55
  * To change this template use File | Settings | File Templates.
  */
-public class MucUsersView implements TextBoxListener {
+public class MucUsersView implements TextBoxView.TextBoxListener {
 
     private static final int COMMAND_PRIVATE = 0;
     private static final int COMMAND_INFO = 1;
@@ -53,6 +52,7 @@ public class MucUsersView implements TextBoxListener {
 
     public void show(final FragmentActivity activity, ListView nickList, ImageView usersImage, final ChatView chatView) {
         usersAdapter = new MucUsersAdapter(activity, (Jabber) protocol, jabberServiceContact);
+        nickList.setCacheColorHint(0x00000000);
         nickList.setAdapter(usersAdapter);
         usersImage.setVisibility(View.VISIBLE);
         nickList.setVisibility(View.VISIBLE);

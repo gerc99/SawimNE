@@ -2,14 +2,13 @@ package ru.sawim.view.widgets;
 
 import DrawControls.icons.Icon;
 import DrawControls.icons.ImageList;
-import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import sawim.Options;
-import sawim.ui.base.Scheme;
+import ru.sawim.Scheme;
 import protocol.jabber.Jabber;
 import protocol.jabber.JabberContact;
 import protocol.jabber.JabberServiceContact;

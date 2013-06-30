@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -194,7 +195,6 @@ public class FormView extends Fragment implements Forms.OnUpdateForm, View.OnCli
     public void onClick(View view) {
         if (view.equals(cancelButton)) {
             Forms.getInstance().getFormListener().formAction(Forms.getInstance(), false);
-            getActivity().finish();
         } else if (view.equals(okButton)) {
             new Thread() {
                 public void run() {

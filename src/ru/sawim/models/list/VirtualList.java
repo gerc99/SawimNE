@@ -1,4 +1,4 @@
-package sawim.ui.text;
+package ru.sawim.models.list;
 
 import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
@@ -117,4 +117,3 @@ public class VirtualList {
         SawimActivity.getInstance().startActivity(new Intent(SawimActivity.getInstance(), VirtualListActivity.class));
     }
 }
-

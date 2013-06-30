@@ -1,4 +1,4 @@
-package sawim.ui.text;
+package ru.sawim.models.list;
 
 import DrawControls.icons.Icon;
 import java.util.ArrayList;
@@ -6,7 +6,7 @@ import java.util.List;
 import android.graphics.Bitmap;
 import ru.sawim.models.form.VirtualListItem;
 import sawim.comm.StringConvertor;
-import sawim.ui.base.Scheme;
+import ru.sawim.Scheme;
 import sawim.util.JLocale;
 
 

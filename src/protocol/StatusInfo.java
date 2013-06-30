@@ -1,5 +1,3 @@
-
-
 package protocol;
 
 import DrawControls.icons.Icon;
@@ -95,4 +93,3 @@ public final class StatusInfo {
         return false;
     }
 }
-

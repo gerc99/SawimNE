@@ -10,7 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import sawim.chat.ChatHistory;
 import sawim.chat.message.Message;
-import sawim.ui.base.Scheme;
+import ru.sawim.Scheme;
 import protocol.Contact;
 import ru.sawim.General;
 import ru.sawim.R;

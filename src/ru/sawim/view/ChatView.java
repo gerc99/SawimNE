@@ -29,9 +29,7 @@ import sawim.chat.ChatHistory;
 import sawim.chat.MessData;
 import sawim.cl.ContactList;
 import sawim.comm.StringConvertor;
-import sawim.modules.DebugLog;
-import sawim.modules.Emotions;
-import sawim.ui.base.Scheme;
+import ru.sawim.Scheme;
 import sawim.util.JLocale;
 
 import java.util.Hashtable;
@@ -44,7 +42,7 @@ import java.util.List;
  * Time: 20:30
  * To change this template use File | Settings | File Templates.
  */
-public class ChatView extends Fragment implements AbsListView.OnScrollListener, General.OnUpdateChat, ListView.OnItemClickListener {
+public class ChatView extends Fragment implements AbsListView.OnScrollListener, General.OnUpdateChat {
 
     public static final String PASTE_TEXT = "ru.sawim.PASTE_TEXT";
 
@@ -139,12 +137,8 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
             /*chat.removeMessagesAtCursor(chatListView.getFirstVisiblePosition() + 1);
             if (0 < messData.size()) {
                 updateChat();
-            } else {
-                ChatHistory.instance.unregisterChat(chat);
-                ContactList.getInstance().activate(null);
-                getActivity().finish();
             }*/
-            chat.clear();
+            ChatHistory.instance.unregisterChat(chat);
             getActivity().finish();
             return;
         }
@@ -373,15 +367,18 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
         chatListView.setStackFromBottom(true);
         chatListView.setAdapter(adapter);
         chatListView.setOnCreateContextMenuListener(this);
-        chatListView.setOnItemClickListener(this);
+        chatListView.setOnItemClickListener(new ChatClick());
     }
 
-    @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-        MessData msg = (MessData) adapterView.getAdapter().getItem(position);
-        setText("");
-        setText(onMessageSelected(msg));
+    public class ChatClick implements ListView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+            MessData msg = (MessData) adapterView.getAdapter().getItem(position);
+            setText("");
+            setText(onMessageSelected(msg));
+        }
     }
+
 
     public Chat getCurrentChat() {
         return chat;
