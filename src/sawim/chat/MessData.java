@@ -1,8 +1,8 @@
 package sawim.chat;
 
+import android.graphics.Bitmap;
 import android.text.Spannable;
 import sawim.Sawim;
-import sawim.chat.message.Message;
 import sawim.comm.Util;
 
 public final class MessData {
@@ -12,10 +12,10 @@ public final class MessData {
     public String strTime;
     public int iconIndex;
     private short rowData;
-	private Message message;
 
     public Spannable fullMeText;
     public Spannable fullText;
+    public Bitmap iconMess;
 
     public static final short URLS = 1;
     public static final short INCOMING = 2;
@@ -23,14 +23,7 @@ public final class MessData {
     public static final short PROGRESS = 8;
     public static final short SERVICE = 16;
 
-	public MessData(Message m, long time, String text, String nick, short flags, int iconIndex) {
-		message = m;
-        init(time, text, nick, flags, iconIndex);
-	}
     public MessData(long time, String text, String nick, short flags, int iconIndex) {
-        init(time, text, nick, flags, iconIndex);
-    }
-    public void init(long time, String text, String nick, short flags, int iconIndex) {
         this.text = text;
         this.nick = nick;
         this.time = time;
@@ -39,10 +32,6 @@ public final class MessData {
         boolean today = (Sawim.getCurrentGmtTime() - 24 * 60 * 60 < time);
         strTime = Util.getLocalDateString(time, today);
     }
-	
-	public Message getMessage() {
-		return message;
-	}
 
     public long getTime() {
         return time;
@@ -72,4 +61,3 @@ public final class MessData {
         return (rowData & SERVICE) != 0;
     }
 }
-

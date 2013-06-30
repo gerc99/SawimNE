@@ -301,4 +301,8 @@ public final class Emotions {
     public Icon getSmile(int smileIndex) {
         return images.iconAt(smileIndex);
     }
+
+    public int getSmileHeight() {
+        return images.getHeight();
+    }
 }

@@ -88,7 +88,7 @@ public final class VirtualListModel {
             VirtualListItem line = createNewParser(true);
             line.addLabel(JLocale.getString(langStr) + ": ",
                     Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
-            line.addDescriptionSelectable(str, Scheme.THEME_PARAM_VALUE, Scheme.FONT_STYLE_PLAIN);
+            line.addDescription(str, Scheme.THEME_PARAM_VALUE, Scheme.FONT_STYLE_PLAIN);
             addPar(line);
         }
     }

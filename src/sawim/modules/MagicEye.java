@@ -24,17 +24,21 @@ Author(s): Artyomov Denis
 package sawim.modules;
 
 import android.support.v4.app.FragmentActivity;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import protocol.*;
 import DrawControls.icons.Icon;
 import ru.sawim.models.form.VirtualListItem;
 import sawim.Sawim;
+import sawim.SawimUI;
 import sawim.comm.Util;
 import sawim.ui.base.Scheme;
 import sawim.ui.text.VirtualList;
 import sawim.ui.text.VirtualListModel;
 import sawim.util.JLocale;
+
+import java.util.List;
 
 public final class MagicEye {
     public static final MagicEye instance = new MagicEye();
@@ -50,6 +54,33 @@ public final class MagicEye {
     public void activate() {
         list = VirtualList.getInstance();
         list.setCaption(JLocale.getString("magic eye"));
+        list.setOnBuildContextMenu(new VirtualList.OnBuildContextMenu() {
+            @Override
+            public void onCreateContextMenu(ContextMenu menu, int listItem) {
+                menu.add(Menu.FIRST, MENU_COPY, 2, JLocale.getString("copy_text"));
+                menu.add(Menu.FIRST, MENU_COPY_ALL, 2, JLocale.getString("copy_all_text"));
+            }
+
+            @Override
+            public void onContextItemSelected(int listItem, int itemMenuId) {
+                switch (itemMenuId) {
+                    case MENU_COPY:
+                        VirtualListItem item = list.getModel().elements.get(listItem);
+                        SawimUI.setClipBoardText(item.getLabel() + "\n" + item.getDescStr());
+                        break;
+
+                    case MENU_COPY_ALL:
+                        StringBuffer s = new StringBuffer();
+                        List<VirtualListItem> listItems = list.getModel().elements;
+                        for (int i = 0; i < listItems.size(); ++i) {
+                            s.append(listItems.get(i).getLabel()).append("\n")
+                                    .append(listItems.get(i).getDescStr()).append("\n");
+                        }
+                        SawimUI.setClipBoardText(s.toString());
+                        break;
+                }
+            }
+        });
         list.setBuildOptionsMenu(new VirtualList.OnBuildOptionsMenu() {
             @Override
             public void onCreateOptionsMenu(Menu menu) {
@@ -93,7 +124,7 @@ public final class MagicEye {
         if (null != msg) {
             decs += msg;
         }
-        record.addDescriptionSelectable(decs, Scheme.THEME_MAGIC_EYE_TEXT, Scheme.FONT_STYLE_PLAIN);
+        record.addDescription(decs, Scheme.THEME_MAGIC_EYE_TEXT, Scheme.FONT_STYLE_PLAIN);
 
         model.addPar(record);
         removeOldRecords();

@@ -2,9 +2,7 @@ package ru.sawim.models;
 
 import DrawControls.icons.Icon;
 import android.content.Context;
-import android.text.SpannableStringBuilder;
-import android.text.util.Linkify;
-import android.util.Log;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -100,19 +98,22 @@ public class MessagesAdapter extends BaseAdapter {
             msgText.setTextSize(17);
         } else {
             if (mData.iconIndex != Message.ICON_NONE) {
-                Icon icon = Message.msgIcons.iconAt(chat.getIcon(mData.getMessage(), mData.isIncoming()));
+                Icon icon = Message.msgIcons.iconAt(mData.iconIndex);
                 if (icon == null) {
                     msgImage.setVisibility(ImageView.GONE);
                 } else {
                     msgImage.setVisibility(ImageView.VISIBLE);
-                    msgImage.setImageBitmap(General.iconToBitmap(icon));
+                    if (mData.iconMess == null)
+                        mData.iconMess = General.iconToBitmap(icon);
+                    msgImage.setImageBitmap(mData.iconMess);
                 }
             }
 
             msgNick.setVisibility(TextView.VISIBLE);
             msgNick.setText(mData.getNick());
             msgNick.setTextColor(General.getColor(mData.isIncoming() ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG));
-            msgNick.setTextSize(22);
+            msgNick.setTypeface(Typeface.DEFAULT_BOLD);
+            msgNick.setTextSize(18);
 
             msgTime.setVisibility(TextView.VISIBLE);
             msgTime.setText("(" + mData.strTime + ")");
@@ -124,8 +125,9 @@ public class MessagesAdapter extends BaseAdapter {
                     && Chat.isHighlight(text, chat.getMyName())) {
                 color = Scheme.THEME_CHAT_HIGHLIGHT_MSG;
             }
-            if (mData.fullText == null)
+            if (mData.fullText == null) {
                 mData.fullText = TextFormatter.getFormattedText(text, baseContext);
+            }
             msgText.setText(mData.fullText);
             msgText.setTextColor(General.getColor(color));
             msgText.setTextSize(18);

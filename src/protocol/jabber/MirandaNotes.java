@@ -1,11 +1,13 @@
 package protocol.jabber;
 
+import java.util.List;
 import java.util.Vector;
 import android.support.v4.app.FragmentActivity;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import ru.sawim.models.form.VirtualListItem;
+import sawim.SawimUI;
 import sawim.comm.*;
 import sawim.ui.base.Scheme;
 import sawim.util.JLocale;
@@ -15,9 +17,11 @@ import ru.sawim.models.form.Forms;
 
 
 public final class MirandaNotes {
-    private static final int COMMAND_ADD = 0;
-    private static final int COMMAND_EDIT = 1;
-    private static final int COMMAND_DEL = 2;
+    private static final int COMMAND_ADD    = 0;
+    private static final int COMMAND_EDIT   = 1;
+    private static final int COMMAND_DEL    = 2;
+    private static final int MENU_COPY      = 3;
+    private static final int MENU_COPY_ALL  = 4;
 
     private Jabber jabber;
     private Vector notes = new Vector();
@@ -52,6 +56,8 @@ public final class MirandaNotes {
             public void onCreateContextMenu(ContextMenu menu, int listItem) {
                 menu.add(Menu.FIRST, COMMAND_EDIT, 2, JLocale.getString("edit"));
                 menu.add(Menu.FIRST, COMMAND_DEL, 2, JLocale.getString("delete"));
+                menu.add(Menu.FIRST, MENU_COPY, 2, JLocale.getString("copy_text"));
+                menu.add(Menu.FIRST, MENU_COPY_ALL, 2, JLocale.getString("copy_all_text"));
             }
 
             @Override
@@ -67,6 +73,21 @@ public final class MirandaNotes {
                         removeNote(listItem);
                         jabber.getConnection().saveMirandaNotes(getNotesStorage());
                         refresh();
+                        break;
+
+                    case MENU_COPY:
+                        VirtualListItem item = screen.getModel().elements.get(listItem);
+                        SawimUI.setClipBoardText(item.getLabel() + "\n" + item.getDescStr());
+                        break;
+
+                    case MENU_COPY_ALL:
+                        StringBuffer s = new StringBuffer();
+                        List<VirtualListItem> listItems = screen.getModel().elements;
+                        for (int i = 0; i < listItems.size(); ++i) {
+                            s.append(listItems.get(i).getLabel()).append("\n")
+                                    .append(listItems.get(i).getDescStr()).append("\n");
+                        }
+                        SawimUI.setClipBoardText(s.toString());
                         break;
                 }
             }

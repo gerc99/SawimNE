@@ -1,7 +1,6 @@
 package ru.sawim.models;
 
 import android.content.Context;
-import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -89,10 +88,6 @@ public class VirtualListAdapter extends BaseAdapter {
             holder.labelView.setText(element.getLabel());
         }
         if (element.getDescStr() != null) {
-            if (element.isTextSelectable()) {
-                holder.descView.setTextIsSelectable(true);
-                holder.descView.setAutoLinkMask(Linkify.ALL);
-            }
             holder.descView.setVisibility(TextView.VISIBLE);
             if (element.getThemeTextDesc() > -1) {
                 holder.descView.setTextColor(General.getColor(element.getThemeTextDesc()));
@@ -100,10 +95,6 @@ public class VirtualListAdapter extends BaseAdapter {
             holder.descView.setText(element.getDescStr());
         } else {
             if (element.getDescSpan() != null) {
-                if (element.isTextSelectable()) {
-                    holder.descView.setTextIsSelectable(true);
-                    holder.descView.setAutoLinkMask(Linkify.ALL);
-                }
                 holder.descView.setVisibility(TextView.VISIBLE);
                 holder.descView.setText(element.getDescSpan());
             }

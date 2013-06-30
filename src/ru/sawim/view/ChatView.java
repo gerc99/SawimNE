@@ -30,6 +30,7 @@ import sawim.chat.MessData;
 import sawim.cl.ContactList;
 import sawim.comm.StringConvertor;
 import sawim.modules.DebugLog;
+import sawim.modules.Emotions;
 import sawim.ui.base.Scheme;
 import sawim.util.JLocale;
 

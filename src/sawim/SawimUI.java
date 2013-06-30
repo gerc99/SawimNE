@@ -27,8 +27,8 @@ public final class SawimUI {
     public static String getClipBoardText() {
         return getClipBoardText(false);
     }
+
     public static String getClipBoardText(boolean quote) {
-        
         String androidClipboard = SawimActivity.getInstance().getFromClipboard();
         if (!StringConvertor.isEmpty(androidClipboard) && !androidClipboard.equals(clipBoardText)) {
             clipBoardText = androidClipboard;
@@ -56,7 +56,6 @@ public final class SawimUI {
         clipBoardText     = text;
         clipBoardHeader   = header;
         clipBoardIncoming = true;
-        
         SawimActivity.getInstance().putToClipboard(clipBoardHeader, clipBoardText);
         
     }
@@ -64,22 +63,17 @@ public final class SawimUI {
         clipBoardText     = text;
         clipBoardHeader   = null;
         clipBoardIncoming = true;
-        
         SawimActivity.getInstance().putToClipboard(clipBoardHeader, clipBoardText);
-        
     }
 
     public static void setClipBoardText(boolean incoming, String from, String date, String text) {
         clipBoardText     = text;
         clipBoardHeader   = null;
         clipBoardIncoming = incoming;
-        
         SawimActivity.getInstance().putToClipboard(clipBoardHeader, clipBoardText);
-        
     }
 
     public static void clearClipBoardText() {
         clipBoardText = null;
     }
 }
-

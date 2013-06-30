@@ -1,6 +1,7 @@
 package sawim.chat;
 
 import DrawControls.icons.Icon;
+import android.util.Log;
 import ru.sawim.General;
 import ru.sawim.activities.ChatActivity;
 import sawim.Options;
@@ -138,7 +139,7 @@ public final class Chat {
             }
             return Message.ICON_IN_MSG_HI;
         }
-        return message.iconIndex;
+        return Message.ICON_OUT_MSG;
     }
 
     public String getMyName() {
@@ -170,7 +171,7 @@ public final class Chat {
         showStatus = false;
     }
 
-    final static private int MAX_HIST_LAST_MESS = 5;
+    //final static private int MAX_HIST_LAST_MESS = 5;
 
     public boolean hasHistory() {
         return contact.hasHistory();
@@ -196,7 +197,7 @@ public final class Chat {
                 return;
             }
 
-            int loadOffset = Math.max(recCount - MAX_HIST_LAST_MESS, 0);
+            int loadOffset = /*Math.max(recCount - MAX_HIST_LAST_MESS, 0)*/0;
             for (int i = loadOffset; i < recCount; ++i) {
                 CachedRecord rec = hist.getRecord(i);
                 if (null == rec) {
@@ -232,8 +233,8 @@ public final class Chat {
 
     public void clear() {
         messData.clear();
-        if (General.getInstance().getUpdateChatListener() != null)
-            General.getInstance().getUpdateChatListener().updateChat();
+        //if (General.getInstance().getUpdateChatListener() != null)
+        //    General.getInstance().getUpdateChatListener().updateChat();
     }
 
     public void removeMessages(final int limit) {
@@ -247,8 +248,6 @@ public final class Chat {
         } else {
             ChatHistory.instance.unregisterChat(Chat.this);
         }
-        if (General.getInstance().getUpdateChatListener() != null)
-            General.getInstance().getUpdateChatListener().updateChat();
     }
 
     public void removeOldMessages() {
@@ -395,7 +394,7 @@ public final class Chat {
         if (message instanceof SystemNotice) {
             flags |= MessData.SERVICE;
         }
-        final MessData mData = new MessData(message, message.getNewDate(), messageText, from, flags, getIcon(message, incoming));
+        final MessData mData = new MessData(message.getNewDate(), messageText, from, flags, getIcon(message, incoming));
         if (!incoming) {
             message.setVisibleIcon(mData);
         }

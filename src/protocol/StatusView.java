@@ -1,6 +1,9 @@
 package protocol;
 
+import android.view.ContextMenu;
+import android.view.Menu;
 import ru.sawim.models.form.VirtualListItem;
+import sawim.SawimUI;
 import sawim.ui.text.VirtualListModel;
 import DrawControls.icons.Icon;
 import sawim.Sawim;
@@ -9,16 +12,20 @@ import sawim.comm.Util;
 import sawim.ui.base.Scheme;
 import sawim.ui.text.VirtualList;
 import protocol.jabber.*;
+import sawim.util.JLocale;
 
+import java.util.List;
 
 public final class StatusView {
 
     private Protocol protocol;
     private Contact contact;
     private String clientVersion;
-    
     private VirtualListModel model;
     private VirtualList list;
+
+    public static final int INFO_MENU_COPY     = 1;
+    public static final int INFO_MENU_COPY_ALL = 2;
 
     public StatusView() {
     }
@@ -68,14 +75,14 @@ public final class StatusView {
             if (null != img) {
                 line.addIcon(img);
             }
-            line.addDescriptionSelectable(str, Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
+            line.addDescription(str, Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
             model.addPar(line);
         }
     }
     public void addStatusText(String text) {
         if (!StringConvertor.isEmpty(text)) {
             VirtualListItem line = model.createNewParser(true);
-            line.addDescriptionSelectable(text, Scheme.THEME_PARAM_VALUE, Scheme.FONT_STYLE_PLAIN);
+            line.addDescription(text, Scheme.THEME_PARAM_VALUE, Scheme.FONT_STYLE_PLAIN);
             model.addPar(line);
         }
     }
@@ -103,6 +110,33 @@ public final class StatusView {
         list = VirtualList.getInstance();
         model = new VirtualListModel();
         list.setModel(model);
+        list.setOnBuildContextMenu(new VirtualList.OnBuildContextMenu() {
+            @Override
+            public void onCreateContextMenu(ContextMenu menu, int listItem) {
+                menu.add(Menu.FIRST, INFO_MENU_COPY, 2, JLocale.getString("copy_text"));
+                menu.add(Menu.FIRST, INFO_MENU_COPY_ALL, 2, JLocale.getString("copy_all_text"));
+            }
+
+            @Override
+            public void onContextItemSelected(int listItem, int itemMenuId) {
+                switch (itemMenuId) {
+                    case INFO_MENU_COPY:
+                        VirtualListItem item = list.getModel().elements.get(listItem);
+                        SawimUI.setClipBoardText(item.getLabel() + "\n" + item.getDescStr());
+                        break;
+
+                    case INFO_MENU_COPY_ALL:
+                        StringBuffer s = new StringBuffer();
+                        List<VirtualListItem> listItems = list.getModel().elements;
+                        for (int i = 0; i < listItems.size(); ++i) {
+                            s.append(listItems.get(i).getLabel()).append("\n")
+                                    .append(listItems.get(i).getDescStr()).append("\n");
+                        }
+                        SawimUI.setClipBoardText(s.toString());
+                        break;
+                }
+            }
+        });
         contact = c;
         protocol = p;
         clientVersion = null;
