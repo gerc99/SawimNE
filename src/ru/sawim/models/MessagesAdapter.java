@@ -92,9 +92,15 @@ public class MessagesAdapter extends BaseAdapter {
             msgImage.setVisibility(ImageView.GONE);
             msgNick.setVisibility(TextView.GONE);
             msgTime.setVisibility(TextView.GONE);
-            int color = General.getColor(mData.isIncoming() ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG);
             msgText.setText("* " + mData.getNick() + " " + mData.fullText);
-            msgText.setTextColor(color);
+            msgText.setTextColor(General.getColor(mData.isIncoming() ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG));
+            msgText.setTextSize(17);
+        } else if (mData.isPresence()) {
+            msgImage.setVisibility(ImageView.GONE);
+            msgNick.setVisibility(TextView.GONE);
+            msgTime.setVisibility(TextView.GONE);
+            msgText.setText("* " + mData.getNick() + mData.fullText);
+            msgText.setTextColor(General.getColor(Scheme.THEME_CHAT_INMSG));
             msgText.setTextSize(17);
         } else {
             if (mData.iconIndex != Message.ICON_NONE) {

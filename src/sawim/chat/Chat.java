@@ -404,7 +404,7 @@ public final class Chat {
     public void addPresence(SystemNotice message) {
         ChatHistory.instance.registerChat(this);
         String messageText = message.getProcessedText();
-        final MessData mData = new MessData(message.getNewDate(), messageText, message.getName(), MessData.ME, Message.ICON_NONE);
+        final MessData mData = new MessData(message.getNewDate(), messageText, message.getName(), MessData.PRESENCE, Message.ICON_NONE);
         if (General.getInstance().getUpdateChatListener() == null) {
             removeOldMessages();
             messData.add(mData);

@@ -1,6 +1,5 @@
 package sawim.chat;
 
-import android.graphics.Bitmap;
 import android.text.Spannable;
 import sawim.Sawim;
 import sawim.comm.Util;
@@ -20,6 +19,7 @@ public final class MessData {
     public static final short ME = 4;
     public static final short PROGRESS = 8;
     public static final short SERVICE = 16;
+    public static final short PRESENCE = 32;
 
     public MessData(long time, String text, String nick, short flags, int iconIndex) {
         this.text = text;
@@ -57,5 +57,9 @@ public final class MessData {
 
     public boolean isService() {
         return (rowData & SERVICE) != 0;
+    }
+
+    public boolean isPresence() {
+        return (rowData & PRESENCE) != 0;
     }
 }
