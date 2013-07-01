@@ -12,6 +12,7 @@ import ru.sawim.activities.SawimActivity;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
 import sawim.chat.Chat;
+import sawim.chat.ChatHistory;
 import sawim.cl.ContactList;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
@@ -456,7 +457,6 @@ public final class FileTransfer implements FileBrowserListener,
                     .append(StringConvertor.bytesToSizeString(fsize, false))
                     .append("\n");
             messText.append("Link: ").append(respString);
-
             protocol.sendMessage(cItem, messText.toString(), true);
             setProgress(100);
             TcpSocket.close(sc);

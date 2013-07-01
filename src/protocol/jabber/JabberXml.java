@@ -1217,7 +1217,9 @@ public final class JabberXml extends ClientConnection {
                     conf.setRealJid(fromRes, Jid.getBareJid(realJid));
                 }
                 contact.setClient(fromRes, x.getFirstNodeAttribute("c", S_NODE));
-			    conf.presence(fromRes, code, StringConvertor.notNull(newNick));
+                if (303 == code) {
+                    conf.addPresence(getJabber(), fromRes, ": " + JLocale.getString("change_nick") + " " + StringConvertor.notNull(newNick));
+                }
             } else {
                 conf.nickOffline(getJabber(), fromRes, code, StringConvertor.notNull(reasone), StringConvertor.notNull(statusString));
             }

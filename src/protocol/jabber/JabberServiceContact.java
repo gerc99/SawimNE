@@ -10,8 +10,6 @@ import protocol.StatusInfo;
 import ru.sawim.R;
 import ru.sawim.activities.SawimActivity;
 import sawim.Options;
-import sawim.chat.Chat;
-import sawim.chat.message.Message;
 import sawim.chat.message.SystemNotice;
 import sawim.cl.ContactList;
 import sawim.comm.StringConvertor;
@@ -148,9 +146,11 @@ public class JabberServiceContact extends JabberContact {
         return Tracking.FALSE;
     }
 
-    private void addPresence(Jabber jabber, Message message) {
-        Chat chat = jabber.getChat(this);
-        chat.addMessage(message, false);
+    public void addPresence(Jabber jabber, String nick, String text) {
+        if (isPresence() != (byte) 1)
+            return;
+        jabber.getChat(this).addPresence(new SystemNotice(jabber,
+                SystemNotice.SYS_NOTICE_PRESENCE, getUserId(), nick, text));
     }
 
     void nickChainged(Jabber jabber, String oldNick, String newNick) {
@@ -176,7 +176,6 @@ public class JabberServiceContact extends JabberContact {
             jabber.getChat(this).setWritable(canWrite());
         }
         if (myNick.equals(nick)) {
-
             JabberContact.SubContact c = getContact(getMyName());
             setStatus(c.status, getStatusText());
             jabber.addRejoin(getUserId());
@@ -185,10 +184,9 @@ public class JabberServiceContact extends JabberContact {
         if (null != sc) {
             if (isPresence() == (byte) 1) {
                 StringBuffer prsnsText = new StringBuffer(0);
-                prsnsText.append("/me ").append(": ").append(jabber.getStatusInfo().getName(sc.status)).append(" ");
+                prsnsText.append(": ").append(jabber.getStatusInfo().getName(sc.status)).append(" ");
                 prsnsText.append(tempRang).append("/").append(tempRole).append(" ").append(role_Xstatus);
-                addPresence(jabber, new SystemNotice(jabber,
-                        SystemNotice.SYS_NOTICE_PRESENCE, getUserId(), nick, prsnsText.toString()));
+                addPresence(jabber, nick, prsnsText.toString());
             }
         }
     }
@@ -233,7 +231,7 @@ public class JabberServiceContact extends JabberContact {
 
     void nickOffline(Jabber jabber, String nick, int code, String reasone, String presenceUnavailable) {
         StringBuffer textPresence = new StringBuffer();
-        textPresence.append("/me ").append(": ").append(jabber.getStatusInfo().getName(StatusInfo.STATUS_OFFLINE)).append(" ").append(presenceUnavailable);
+        textPresence.append(": ").append(jabber.getStatusInfo().getName(StatusInfo.STATUS_OFFLINE)).append(" ").append(presenceUnavailable);
         if (getMyName().equals(nick)) {
             if (isOnline()) {
                 jabber.removeRejoin(getUserId());
@@ -286,25 +284,9 @@ public class JabberServiceContact extends JabberContact {
                 sawim.modules.MagicEye.addAction(jabber, getUserId(), nick + " " + event, reasone);
             }
         }
-        if (isPresence() == (byte) 1) {
-            addPresence(jabber, new SystemNotice(jabber,
-                    SystemNotice.SYS_NOTICE_PRESENCE, getUserId(), nick, textPresence.toString()));
-        }
+        addPresence(jabber, nick, textPresence.toString());
         if (hasChat()) {
             jabber.getChat(this).setWritable(canWrite());
-        }
-    }
-
-    void presence(String nick, int statusCode, String changedNick) {
-        if (isPresence() == (byte) 0) {
-            return;
-        }
-        String text = null;
-        if (303 == statusCode) {
-            text = ("/me " + ": " + JLocale.getString("change_nick") + " " + changedNick);
-        }
-        if (text != null) {
-            getProtocol().addMessage(new SystemNotice(getProtocol(), SystemNotice.SYS_NOTICE_PRESENCE, getUserId(), nick, text));
         }
     }
 

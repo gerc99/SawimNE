@@ -1174,7 +1174,6 @@ abstract public class Protocol {
         }
         PlainMessage plainMsg = new PlainMessage(this, to, Sawim.getCurrentGmtTime(), msg);
         if (isConnected()) {
-
             if (msg.startsWith("/") && !msg.startsWith("/me ") && !msg.startsWith("/wakeup") && (to instanceof JabberContact)) {
                 boolean cmdExecuted = ((JabberContact) to).execCommand(this, msg);
                 if (!cmdExecuted) {
@@ -1184,7 +1183,6 @@ abstract public class Protocol {
                 }
                 return;
             }
-
             sendSomeMessage(plainMsg);
         }
         if (addToChat) {

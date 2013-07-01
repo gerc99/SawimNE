@@ -13,9 +13,7 @@ public final class MessData {
     public int iconIndex;
     private short rowData;
 
-    public Spannable fullMeText;
     public Spannable fullText;
-    public Bitmap iconMess;
 
     public static final short URLS = 1;
     public static final short INCOMING = 2;

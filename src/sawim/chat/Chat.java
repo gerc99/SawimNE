@@ -171,8 +171,6 @@ public final class Chat {
         showStatus = false;
     }
 
-    //final static private int MAX_HIST_LAST_MESS = 5;
-
     public boolean hasHistory() {
         return contact.hasHistory();
     }
@@ -197,8 +195,7 @@ public final class Chat {
                 return;
             }
 
-            int loadOffset = /*Math.max(recCount - MAX_HIST_LAST_MESS, 0)*/0;
-            for (int i = loadOffset; i < recCount; ++i) {
+            for (int i = 0; i < recCount; ++i) {
                 CachedRecord rec = hist.getRecord(i);
                 if (null == rec) {
                     continue;
@@ -233,8 +230,6 @@ public final class Chat {
 
     public void clear() {
         messData.clear();
-        //if (General.getInstance().getUpdateChatListener() != null)
-        //    General.getInstance().getUpdateChatListener().updateChat();
     }
 
     public void removeMessages(final int limit) {
@@ -406,6 +401,22 @@ public final class Chat {
         }
     }
 
+    public void addPresence(SystemNotice message) {
+        ChatHistory.instance.registerChat(this);
+        String messageText = message.getProcessedText();
+        final MessData mData = new MessData(message.getNewDate(), messageText, message.getName(), MessData.ME, Message.ICON_NONE);
+        if (General.getInstance().getUpdateChatListener() == null) {
+            removeOldMessages();
+            messData.add(mData);
+        } else {
+            General.getInstance().getUpdateChatListener().addMessage(this, mData);
+        }
+        if (!isVisibleChat()) {
+            contact.updateChatState(this);
+            ChatHistory.instance.updateChatList();
+        }
+    }
+
     public void addMessage(Message message, boolean toHistory) {
         ChatHistory.instance.registerChat(this);
         boolean inc = !isVisibleChat();
@@ -425,16 +436,13 @@ public final class Chat {
             }
         } else if (message instanceof SystemNotice) {
             SystemNotice notice = (SystemNotice) message;
-            if (SystemNotice.SYS_NOTICE_PRESENCE != notice.getSysnoteType()) {
-                if (SystemNotice.SYS_NOTICE_AUTHREQ == notice.getSysnoteType()) {
-                    inc = true;
-                    authRequestCounter = inc(authRequestCounter);
-                } else if (inc) {
-                    sysNoticeCounter = inc(sysNoticeCounter);
-                }
-                MagicEye.addAction(protocol, contact.getUserId(), message.getText());
+            if (SystemNotice.SYS_NOTICE_AUTHREQ == notice.getSysnoteType()) {
+                inc = true;
+                authRequestCounter = inc(authRequestCounter);
+            } else if (inc) {
+                sysNoticeCounter = inc(sysNoticeCounter);
             }
-
+            MagicEye.addAction(protocol, contact.getUserId(), message.getText());
             addTextToForm(message, getFrom(message));
         }
         if (inc) {

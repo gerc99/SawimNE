@@ -85,15 +85,15 @@ public class MessagesAdapter extends BaseAdapter {
             bg = mData.isIncoming() ? Scheme.THEME_CHAT_BG_IN_ODD : Scheme.THEME_CHAT_BG_OUT_ODD;
         }
         row.setBackgroundColor(General.getColor(bg));
-
+        if (mData.fullText == null) {
+            mData.fullText = TextFormatter.getFormattedText(text, baseContext);
+        }
         if (mData.isMe()) {
             msgImage.setVisibility(ImageView.GONE);
             msgNick.setVisibility(TextView.GONE);
             msgTime.setVisibility(TextView.GONE);
             int color = General.getColor(mData.isIncoming() ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG);
-            if (mData.fullMeText == null)
-                mData.fullMeText = TextFormatter.getFormattedText(text, baseContext);
-            msgText.setText("* " + mData.getNick() + " " + mData.fullMeText);
+            msgText.setText("* " + mData.getNick() + " " + mData.fullText);
             msgText.setTextColor(color);
             msgText.setTextSize(17);
         } else {
@@ -103,9 +103,7 @@ public class MessagesAdapter extends BaseAdapter {
                     msgImage.setVisibility(ImageView.GONE);
                 } else {
                     msgImage.setVisibility(ImageView.VISIBLE);
-                    if (mData.iconMess == null)
-                        mData.iconMess = General.iconToBitmap(icon);
-                    msgImage.setImageBitmap(mData.iconMess);
+                    msgImage.setImageBitmap(General.iconToBitmap(icon));
                 }
             }
 
@@ -125,9 +123,7 @@ public class MessagesAdapter extends BaseAdapter {
                     && Chat.isHighlight(text, chat.getMyName())) {
                 color = Scheme.THEME_CHAT_HIGHLIGHT_MSG;
             }
-            if (mData.fullText == null) {
-                mData.fullText = TextFormatter.getFormattedText(text, baseContext);
-            }
+
             msgText.setText(mData.fullText);
             msgText.setTextColor(General.getColor(color));
             msgText.setTextSize(18);

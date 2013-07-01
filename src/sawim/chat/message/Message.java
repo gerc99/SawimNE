@@ -1,6 +1,7 @@
 package sawim.chat.message;
 
 import DrawControls.icons.ImageList;
+import ru.sawim.General;
 import sawim.chat.MessData;
 import protocol.Contact;
 import protocol.Protocol;
@@ -48,7 +49,13 @@ public abstract class Message {
         this.mData = mData;
     }
     public final void setSendingState(int state) {
-        mData.iconIndex = state;
+        if (!mData.isMe()) {
+            mData.iconIndex = state;
+        }
+        if (getRcvr().hasChat()) {
+            if (General.getInstance().getUpdateChatListener() != null)
+                General.getInstance().getUpdateChatListener().updateChat();
+        }
     }
 
     public final void setName(String name) {
