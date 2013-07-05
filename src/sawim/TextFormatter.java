@@ -40,11 +40,7 @@ public class TextFormatter {
 
     public static Spannable getFormattedText(String text, Context context) {
         SpannableStringBuilder builder = new SpannableStringBuilder(text);
-        if (Linkify.addLinks(builder, 1)) {
-            builder.setSpan(null, 0, text.length(),
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            return builder;
-        }
+        Linkify.addLinks(builder, 1);
         detectEmotions(context, builder, 0, text.length());
         builder.setSpan(null, 0, text.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);

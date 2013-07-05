@@ -361,6 +361,8 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
         }
         messageEditor.addTextChangedListener(textWatcher);
         chatListView.setFocusable(true);
+        chatListView.setClickable(true);
+        chatListView.setLongClickable(true);
         chatListView.setCacheColorHint(0x00000000);
         chatListView.setOnScrollListener(this);
         chatListView.setTranscriptMode(ListView.TRANSCRIPT_MODE_NORMAL);

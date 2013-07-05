@@ -69,7 +69,7 @@ public class MessagesAdapter extends BaseAdapter {
         } else {
             holder = (ViewHolder) row.getTag();
         }
-
+        ((ViewGroup)row).setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
         MessData mData = items.get(index);
         String text = mData.getText();
         ImageView msgImage = holder.msgImage;
@@ -99,7 +99,7 @@ public class MessagesAdapter extends BaseAdapter {
             msgImage.setVisibility(ImageView.GONE);
             msgNick.setVisibility(TextView.GONE);
             msgTime.setVisibility(TextView.GONE);
-            msgText.setText("* " + mData.getNick() + mData.fullText);
+            msgText.setText(mData.getNick() + mData.fullText);
             msgText.setTextColor(General.getColor(Scheme.THEME_CHAT_INMSG));
             msgText.setTextSize(17);
         } else {
