@@ -28,7 +28,6 @@ import java.io.InputStream;
 public class General {
 
     private static General instance;
-    public static boolean initialized = false;
 
     public void init(Context c) {
         instance = this;

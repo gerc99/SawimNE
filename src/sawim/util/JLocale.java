@@ -65,7 +65,6 @@ public class JLocale {
     }
     
     private static void loadLang(String lang) {
-        
 		Config config = new Config().load("/" + lang + ".lang");
 		for (int j = 0; j < config.getKeys().length; ++j) {
 			resources.put(config.getKeys()[j], config.getValues()[j]);

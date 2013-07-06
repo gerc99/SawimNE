@@ -49,10 +49,6 @@ public class VirtualList {
         clearListeners();
     }
 
-    public void removeFirstText() {
-        model.removeFirstText();
-    }
-
     public void setVirtualListListener(OnVirtualListListener l) {
         virtualListListener = l;
     }

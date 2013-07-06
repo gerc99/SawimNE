@@ -1,6 +1,5 @@
 package protocol.mrim;
 
-import DrawControls.icons.Icon;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.SubMenu;
@@ -64,17 +63,6 @@ public class MrimContact extends Contact {
     public void setClient(String cl) {
         DebugLog.println("client " + userId + " " + cl);
         MrimClient.createClient(this, cl);
-    }
-    
-    public void getLeftIcons(Icon[] leftIcons) {
-        super.getLeftIcons(leftIcons);
-        if (!isTyping() && !hasUnreadMessage()) {
-            Icon x = leftIcons[1];
-            if (null != x) {
-                leftIcons[0] = x;
-                leftIcons[1] = null;
-            }
-        }
     }
 
     public void addChatMenuItems(ContextMenu model) {

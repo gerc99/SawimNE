@@ -1,6 +1,5 @@
 package protocol.vk;
 
-import android.view.ContextMenu;
 import android.view.SubMenu;
 import protocol.Contact;
 import protocol.Protocol;

@@ -11,6 +11,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.PagerTitleStrip;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.*;
 import android.widget.*;
 import protocol.Contact;
@@ -19,18 +20,19 @@ import protocol.Group;
 import protocol.Protocol;
 import ru.sawim.General;
 import ru.sawim.R;
+import ru.sawim.Scheme;
 import ru.sawim.activities.AccountsListActivity;
 import ru.sawim.activities.ChatActivity;
 import ru.sawim.models.ContactsAdapter;
 import ru.sawim.models.CustomPagerAdapter;
 import ru.sawim.models.RosterAdapter;
+import sawim.Options;
 import sawim.chat.Chat;
 import sawim.chat.ChatHistory;
 import sawim.cl.ContactList;
 import sawim.comm.Util;
 import sawim.forms.ManageContactListForm;
 import sawim.modules.DebugLog;
-import ru.sawim.Scheme;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,10 +75,11 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         owner = general.getManager();
         if (owner == null) return;
         owner.setOnUpdateRoster(this);
-        if (owner.getModel().getProtocolCount() == 0) {
+        if (owner.getProtocolCount() == 0) {
             startActivity(new Intent(currentActivity, AccountsListActivity.class));
             return;
         }
+        owner.updateOptions(owner, owner.getCurrProtocol());
         adaptersPages.clear();
         ListView allListView = new ListView(currentActivity);
         ListView onlineListView = new ListView(currentActivity);
@@ -141,7 +144,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
             public void onPageScrollStateChanged(int state) {
             }
         });
-        Update();
+        update();
     }
 
     @Override
@@ -184,24 +187,35 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
     }
 
     private void rebuildRoster(int pos) {
+        Util.sort(owner.getProtocol(owner.getCurrProtocol()).getSortedContacts());
         while (!updateQueue.isEmpty()) {
             Group group = (Group) updateQueue.firstElement();
             updateQueue.removeElementAt(0);
-            owner.getModel().updateGroup(group);
+            owner.updateGroup(group);
         }
         try {
-            owner.updateOption();
+            owner.updateOptions(owner, owner.getCurrProtocol());
 
             TreeNode current = currentNode;
             currentNode = null;
             int prevIndex = getCurrItem();
             if (null != current) {
-                owner.expandNodePath(current);
+                if ((current instanceof Contact) && Options.getBoolean(Options.OPTION_USER_GROUPS)) {
+                    Contact c = (Contact) current;
+                    Protocol p = /*contactListModel.getContactProtocol(c)*/owner.getCurrentProtocol();
+                    if (null != p) {
+                        Group group = p.getGroupById(c.getGroupId());
+                        if (null == group) {
+                            group = p.getNotInListGroup();
+                        }
+                        owner.getGroupNode(group).setExpandFlag(true);
+                    }
+                }
             } else {
                 current = getSafeNode(prevIndex);
             }
             items.clear();
-            owner.getModel().buildFlatItems(owner.getCurrProtocol(), items);
+            owner.buildFlatItems(owner.getCurrProtocol(), items);
             updatePage(pos);
             if (null != current) {
                 int currentIndex = Util.getIndex(items, current);
@@ -220,8 +234,8 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
     @Override
     public void onResume() {
         super.onResume();
-        if (owner == null) return;
-        Update();
+        if (owner.getProtocolCount() == 0) return;
+        update();
     }
 
     @Override
@@ -319,12 +333,12 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
     @Override
     public void onClick(View view) {
         owner.setCurrProtocol(view.getId());
-        Update();
+        update();
     }
 
     @Override
     public boolean onLongClick(View view) {
-        new StatusesView(owner.getModel().getProtocol(view.getId()), StatusesView.ADAPTER_STATUS).show(getActivity().getSupportFragmentManager(), "change-status");
+        new StatusesView(owner.getProtocol(view.getId()), StatusesView.ADAPTER_STATUS).show(getActivity().getSupportFragmentManager(), "change-status");
         return false;
     }
 
@@ -342,27 +356,24 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
             }
     }
 
-    private void Update() {
+    private void update() {
         updateBarProtocols();
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                rebuildRoster(viewPager.getCurrentItem());
-            }
-        });
+        updateRoster();
     }
 
     @Override
     public void updateBarProtocols() {
-        final int protCount = owner.getModel().getProtocolCount();
+        final int protCount = owner.getProtocolCount();
+        Log.e("RosterView", ""+protCount);
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 updateProgressBar();
+
                 if (protCount > 1) {
                     topLinearLayout.removeAllViews();
-                    for (int j = 0; j < protCount; j++) {
-                        Protocol protocol = owner.getModel().getProtocol(j);
+                    for (int j = 0; j < protCount; ++j) {
+                        Protocol protocol = owner.getProtocol(j);
                         ImageButton imageBarButtons = new ImageButton(getActivity());
                         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
                         lp.gravity = Gravity.CENTER;
@@ -402,21 +413,16 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
 
     @Override
     public void updateRoster() {
-        new Thread() {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
             public void run() {
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (viewPager.getCurrentItem() == ContactsAdapter.OPEN_CHATS) {
-                            Util.sort(ChatHistory.instance.chats());
-                            updatePage(ContactsAdapter.OPEN_CHATS);
-                        } else {
-                            general.getManager().getModel().sort();
-                            rebuildRoster(viewPager.getCurrentItem());
-                        }
-                    }
-                });
+                if (viewPager.getCurrentItem() == ContactsAdapter.OPEN_CHATS) {
+                    Util.sort(ChatHistory.instance.chats());
+                    adaptersPages.get(ContactsAdapter.OPEN_CHATS).notifyDataSetChanged();
+                } else {
+                    rebuildRoster(viewPager.getCurrentItem());
+                }
             }
-        }.start();
+        });
     }
 }

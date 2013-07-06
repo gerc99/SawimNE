@@ -165,12 +165,6 @@ public final class ChatHistory {
         if (-1 == Util.getIndex(historyTable, item)) {
             historyTable.addElement(item);
             item.getContact().updateChatState(item);
-            try {
-                Icon[] icons = new Icon[7];
-                item.getContact().getLeftIcons(icons);
-                //itemHeight = Math.max(itemHeight, GraphicsEx.getMaxImagesHeight(icons));
-            } catch (Exception ignored) {
-            }
         }
     }
 
@@ -431,4 +425,3 @@ public final class ChatHistory {
         s.delete();
     }
 }
-

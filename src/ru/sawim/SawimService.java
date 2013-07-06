@@ -28,7 +28,6 @@ public class SawimService extends Service {
     public void onCreate() {
         super.onCreate();
         Log.i(LOG_TAG, "onStart();");
-        General.initialized = true;
         tray = new Tray(this);
         if (ContactList.getInstance().getManager() != null)
             tray.startForegroundCompat(R.string.app_name, getNotification());//

@@ -232,7 +232,6 @@ public class JabberContact extends Contact {
         return currentContact;
     }
 
-
 	public byte subcontactsS() {
 	    if (!isConference() && 1 < subcontacts.size()) {
 	        return (byte)subcontacts.size();
@@ -310,5 +309,3 @@ public class JabberContact extends Contact {
         return !isTemp();
     }
 }
-
-

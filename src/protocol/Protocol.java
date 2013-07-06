@@ -1,8 +1,6 @@
 package protocol;
 
 import DrawControls.icons.Icon;
-import DrawControls.tree.ProtocolBranch;
-import ru.sawim.General;
 import sawim.FileTransfer;
 import sawim.Sawim;
 import sawim.SawimException;
@@ -55,7 +53,6 @@ abstract public class Protocol {
     private Vector sortedContacts = new Vector();
     private Vector sortedGroups = new Vector();
     private Group notInListGroup;
-    private ProtocolBranch branch;
 
     private String getContactListRS() {
         return rmsName;
@@ -240,7 +237,7 @@ abstract public class Protocol {
     }
 
     private void updateContacts(Group group) {
-        getContactList().getManager().getModel().updateGroup(this, group);
+        getContactList().getManager().updateGroup(this, group);
     }
 
     public final boolean isConnecting() {
@@ -662,7 +659,7 @@ abstract public class Protocol {
         synchronized (rosterLockObject) {
             if (Options.getBoolean(Options.OPTION_USER_GROUPS)) {
                 for (int i = groups.size() - 1; i >= 0; --i) {
-                    getContactList().getManager().getModel().updateGroupData((Group) groups.elementAt(i));
+                    getContactList().getManager().updateGroupData((Group) groups.elementAt(i));
                 }
             }
         }
@@ -766,7 +763,7 @@ abstract public class Protocol {
         if (null == g) {
             g = notInListGroup;
         }
-        getContactList().getManager().getModel().removeFromGroup(g, c);
+        getContactList().getManager().removeFromGroup(g, c);
     }
 
     private void ui_addContactToGroup(Contact contact, Group group) {
@@ -775,13 +772,13 @@ abstract public class Protocol {
         if (null == group) {
             group = notInListGroup;
         }
-        getContactList().getManager().getModel().addToGroup(group, contact);
+        getContactList().getManager().addToGroup(group, contact);
     }
 
     private void ui_updateGroup(Group group) {
         if (Options.getBoolean(Options.OPTION_USER_GROUPS)) {
             synchronized (rosterLockObject) {
-                getContactList().getManager().getModel().updateGroupData(group);
+                getContactList().getManager().updateGroupData(group);
                 Util.sort(sortedGroups);
             }
             ui_updateCL(group);
@@ -793,20 +790,11 @@ abstract public class Protocol {
     }
 
     private void ui_updateCL(Contact c) {
-        //if (!getProtocolBranch().isExpanded()) return;
         getContactList().getManager().update(c);
     }
 
     private void ui_updateCL(Group g) {
-        //if (!getProtocolBranch().isExpanded()) return;
         getContactList().getManager().update(g);
-    }
-
-    public final ProtocolBranch getProtocolBranch() {
-        if (null == branch) {
-            branch = new ProtocolBranch(this);
-        }
-        return branch;
     }
 
     public final Vector getSortedContacts() {
@@ -1101,7 +1089,7 @@ abstract public class Protocol {
     public final void processException(SawimException e) {
         DebugLog.println("process exception: " + e.getMessage());
         getContactList().activateWithMsg(getUserId() + "\n" + e.getMessage());
-        if (!SawimActivity.getInstance().isNetworkAvailable()) {
+        if (!SawimApplication.getInstance().isNetworkAvailable()) {
             e = new SawimException(123, 0);
         }
         if (e.isReconnectable()) {
@@ -1143,7 +1131,6 @@ abstract public class Protocol {
         profile = null;
         contacts = null;
         groups = null;
-        branch = null;
     }
 
     public void autoDenyAuth(String uin) {

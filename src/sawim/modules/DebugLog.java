@@ -209,11 +209,9 @@ public final class DebugLog {
     }
 
     private void removeOldRecords() {
-        final int maxRecordCount = 200;
+        final int maxRecordCount = 50;
         while (maxRecordCount < model.getSize()) {
-            if (null != list) {
-                list.removeFirstText();
-            }
+            model.removeFirstText();
         }
     }
 

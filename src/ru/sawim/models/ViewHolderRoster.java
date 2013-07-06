@@ -7,6 +7,8 @@ import android.graphics.Typeface;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import protocol.mrim.Mrim;
+import protocol.mrim.MrimPhoneContact;
 import sawim.Options;
 import sawim.chat.ChatHistory;
 import sawim.chat.message.Message;
@@ -14,6 +16,7 @@ import ru.sawim.Scheme;
 import protocol.*;
 import ru.sawim.General;
 import ru.sawim.R;
+import sawim.modules.tracking.Tracking;
 
 /**
  * Created with IntelliJ IDEA.
@@ -26,11 +29,12 @@ public class ViewHolderRoster {
 
     View item = null;
     private TextView itemName = null;
-    private TextView itemStatus = null;
-    private ImageView itemStatusImage = null;
-    private ImageView itemXStatusImage = null;
-    private ImageView itemAuthImage;
-    private ImageView itemClientImage;
+    private TextView itemDescriptionText = null;
+    private ImageView itemFirstImage = null;
+    private ImageView itemSecondImage = null;
+    private ImageView itemThirdImage;
+    private ImageView itemFourthImage;
+    private ImageView itemFifthImage;
     private VirtualContactList vcl;
 
     public ViewHolderRoster(VirtualContactList vcl, View item) {
@@ -45,10 +49,10 @@ public class ViewHolderRoster {
         itemName.setTextColor(General.getColor(Scheme.THEME_GROUP));
         itemName.setTypeface(Typeface.DEFAULT);
 
-        ImageView statusImage = getItemFirstImage();
-        statusImage.setVisibility(ImageView.VISIBLE);
+        ImageView firstImage = getItemFirstImage();
+        firstImage.setVisibility(ImageView.VISIBLE);
         ImageList groupIcons = ImageList.createImageList("/gricons.png");
-        statusImage.setImageBitmap(General.iconToBitmap((isExpanded) ? groupIcons.iconAt(1) : groupIcons.iconAt(0)));
+        firstImage.setImageBitmap(General.iconToBitmap((isExpanded) ? groupIcons.iconAt(1) : groupIcons.iconAt(0)));
 
         getItemDescriptionText().setVisibility(TextView.GONE);
         getItemThirdImage().setVisibility(ImageView.GONE);
@@ -65,7 +69,7 @@ public class ViewHolderRoster {
     }
 
     void populateFromContact(Contact item) {
-        Protocol p = vcl.getModel().getProtocol(vcl.getCurrProtocol());
+        Protocol p = vcl.getProtocol(vcl.getCurrProtocol());
         TextView itemName = getItemName();
         if (item.subcontactsS() == 0)
             itemName.setText(item.getText());
@@ -85,6 +89,8 @@ public class ViewHolderRoster {
 
         ImageView statusImage = getItemFirstImage();
         Icon icStatus = p.getStatusInfo().getIcon(item.getStatusIndex());
+        if (item instanceof MrimPhoneContact)
+            icStatus = Mrim.getPhoneContactIcon();
         if (icStatus == null) {
             statusImage.setVisibility(ImageView.GONE);
         } else {
@@ -109,14 +115,26 @@ public class ViewHolderRoster {
 
         if (!item.isTemp()) {
             Icon icAuth = item.authIcon.iconAt(0);
-            ImageView imageCl = getItemThirdImage();
-            if (!item.isAuth()) {
-                imageCl.setVisibility(ImageView.VISIBLE);
-                imageCl.setImageBitmap(General.iconToBitmap(icAuth));
+            ImageView thirdImage = getItemThirdImage();
+            thirdImage.setVisibility(ImageView.VISIBLE);
+            if (item.isAuth()) {
+                int privacyList = -1;
+                if (item.inIgnoreList()) {
+                    privacyList = 0;
+                } else if (item.inInvisibleList()) {
+                    privacyList = 1;
+                } else if (item.inVisibleList()) {
+                    privacyList = 2;
+                }
+                if (privacyList != -1)
+                    thirdImage.setImageBitmap(General.iconToBitmap(item.serverListsIcons.iconAt(privacyList)));
+                else
+                    thirdImage.setVisibility(ImageView.GONE);
             } else {
-                imageCl.setVisibility(ImageView.GONE);
+                thirdImage.setImageBitmap(General.iconToBitmap(icAuth));
             }
         }
+
         ClientInfo info = (null != p) ? p.clientInfo : null;
         Icon icClient = (null != info) ? info.getIcon(item.clientIndex) : null;
         ImageView itemClientImage = getItemFourthRuleImage();
@@ -125,6 +143,15 @@ public class ViewHolderRoster {
             itemClientImage.setImageBitmap(General.iconToBitmap(icClient));
         } else {
             itemClientImage.setVisibility(ImageView.GONE);
+        }
+
+        ImageView itemFifthRuleImage = getItemFifthRuleImage();
+        String id = item.getUserId();
+        if (Tracking.isTrackingEvent(id, Tracking.GLOBAL) == Tracking.TRUE) {
+            itemFifthRuleImage.setVisibility(ImageView.VISIBLE);
+            itemFifthRuleImage.setImageBitmap(General.iconToBitmap(Tracking.getTrackIcon(id)));
+        } else {
+            itemFifthRuleImage.setVisibility(ImageView.GONE);
         }
     }
 
@@ -136,37 +163,44 @@ public class ViewHolderRoster {
     }
 
     public TextView getItemDescriptionText() {
-        if (itemStatus == null) {
-            itemStatus = (TextView) item.findViewById(R.id.item_description);
+        if (itemDescriptionText == null) {
+            itemDescriptionText = (TextView) item.findViewById(R.id.item_description);
         }
-        return itemStatus;
+        return itemDescriptionText;
     }
 
     public ImageView getItemFirstImage() {
-        if (itemStatusImage == null) {
-            itemStatusImage = (ImageView) item.findViewById(R.id.first_image);
+        if (itemFirstImage == null) {
+            itemFirstImage = (ImageView) item.findViewById(R.id.first_image);
         }
-        return itemStatusImage;
+        return itemFirstImage;
     }
 
     public ImageView getItemSecondImage() {
-        if (itemXStatusImage == null) {
-            itemXStatusImage = (ImageView) item.findViewById(R.id.second_image);
+        if (itemSecondImage == null) {
+            itemSecondImage = (ImageView) item.findViewById(R.id.second_image);
         }
-        return itemXStatusImage;
+        return itemSecondImage;
     }
 
     public ImageView getItemThirdImage() {
-        if (itemAuthImage == null) {
-            itemAuthImage = (ImageView) item.findViewById(R.id.third_image);
+        if (itemThirdImage == null) {
+            itemThirdImage = (ImageView) item.findViewById(R.id.third_image);
         }
-        return itemAuthImage;
+        return itemThirdImage;
     }
 
     public ImageView getItemFourthRuleImage() {
-        if (itemClientImage == null) {
-            itemClientImage = (ImageView) item.findViewById(R.id.fourth_rule_image);
+        if (itemFourthImage == null) {
+            itemFourthImage = (ImageView) item.findViewById(R.id.fourth_rule_image);
         }
-        return itemClientImage;
+        return itemFourthImage;
+    }
+
+    public ImageView getItemFifthRuleImage() {
+        if (itemFifthImage == null) {
+            itemFifthImage = (ImageView) item.findViewById(R.id.fifth_rule_image);
+        }
+        return itemFifthImage;
     }
 }

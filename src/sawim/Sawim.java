@@ -1,5 +1,6 @@
 package sawim;
 
+import ru.sawim.SawimApplication;
 import sawim.chat.ChatHistory;
 import sawim.cl.ContactList;
 import sawim.comm.StringConvertor;
@@ -48,7 +49,7 @@ public class Sawim {
         in = sawim.modules.fs.FileSystem.openSawimFile(name);
         if (null == in) {
             try {
-                in = SawimActivity.getInstance().getAssets().open(name.substring(1));
+                in = SawimApplication.getInstance().getAssets().open(name.substring(1));
             } catch (Exception ignored) {
             }
         }

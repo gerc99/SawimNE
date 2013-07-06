@@ -1,11 +1,7 @@
-
-
-
 package protocol.icq;
 
 import DrawControls.icons.Icon;
 import DrawControls.icons.ImageList;
-import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.SubMenu;
 import protocol.Contact;
@@ -28,11 +24,6 @@ public class IcqContact extends Contact {
 
     public Icon getHappyIcon() {
         return happyFlag ? happyIcon.iconAt(0) : null;
-    }
-
-    public void getLeftIcons(Icon[] leftIcons) {
-        leftIcons[2] = getHappyIcon();
-        super.getLeftIcons(leftIcons);
     }
 
     public void init(int id, int groupId, String name, boolean noAuth) {
@@ -61,10 +52,6 @@ public class IcqContact extends Contact {
 
     public final void setXStatusMessage(String text) {
         setXStatus(getXStatusIndex(), text);
-    }
-    
-    public void setStatusMessage(String msg) {
-        setStatus(getStatusIndex(), msg);
     }
 
     protected void initManageContactMenu(Protocol protocol, SubMenu menu) {

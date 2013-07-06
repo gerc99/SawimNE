@@ -27,9 +27,6 @@
 
 package org.microemu;
 
-import javax.microedition.io.ConnectionNotFoundException;
-import java.io.InputStream;
-
 public interface MicroEmulator {
 
 	RecordStoreManager getRecordStoreManager();

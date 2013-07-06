@@ -49,13 +49,13 @@ public class AndroidRecordStoreManager implements RecordStoreManager {
 	
 	private final static Object NULL_STORE = new Object();
 	
-	private Activity activity;
+	private Context activity;
 
 	private ConcurrentHashMap<String, Object> recordStores = null;
 
 	private ExtendedRecordListener recordListener = null;
 	
-	public AndroidRecordStoreManager(Activity context) {
+	public AndroidRecordStoreManager(Context context) {
 		this.activity = context;
 	}
 

@@ -1,6 +1,3 @@
-
-
-
 package DrawControls.tree;
 
 
@@ -25,4 +22,3 @@ public abstract class TreeBranch implements TreeNode {
 
     public abstract boolean isEmpty();
 }
-

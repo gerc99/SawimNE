@@ -25,33 +25,24 @@
 
 package ru.sawim.activities;
 
-import android.app.NotificationManager;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.os.Bundle;
-import android.os.Message;
 import android.support.v4.app.FragmentActivity;
 import android.text.ClipboardManager;
 import android.util.Log;
 import android.view.*;
-import sawim.ExternalApi;
 import sawim.Sawim;
 import sawim.Options;
 import sawim.OptionsForm;
-import sawim.chat.ChatHistory;
 import sawim.cl.ContactList;
 import sawim.forms.ManageContactListForm;
 import sawim.forms.SmsForm;
 import sawim.modules.DebugLog;
 import sawim.modules.MagicEye;
 import sawim.modules.Notify;
-import org.microemu.MIDletBridge;
-import org.microemu.cldc.file.FileSystem;
 import org.microemu.util.AndroidLoggerAppender;
-import org.microemu.app.Common;
 import org.microemu.log.Logger;
-import org.microemu.util.AndroidRecordStoreManager;
 import protocol.Protocol;
 import protocol.StatusInfo;
 import protocol.icq.Icq;
@@ -69,13 +60,8 @@ import java.util.concurrent.atomic.AtomicReference;
 public class SawimActivity extends FragmentActivity {
 
     public static final String LOG_TAG = "SawimActivity";
-    public static String PACKAGE_NAME = null;
 
-    public Common common;
     private static SawimActivity instance;
-    private NetworkStateReceiver networkStateReceiver = new NetworkStateReceiver();
-    private final SawimServiceConnection serviceConnection = new SawimServiceConnection();
-
     public static SawimActivity getInstance() {
         return instance;
     }
@@ -88,7 +74,6 @@ public class SawimActivity extends FragmentActivity {
         new General().init(this);
         setContentView(R.layout.main);
         instance = this;
-        PACKAGE_NAME = getApplicationContext().getPackageName();
 
         Logger.removeAllAppenders();
         Logger.setLocationEnabled(false);
@@ -124,38 +109,10 @@ public class SawimActivity extends FragmentActivity {
                 }
             }
         }));
-        MIDletInit();
-        if (!General.initialized) {
-            new Sawim().startApp();
-            ChatHistory.instance.loadUnreadMessages();
-            updateAppIcon();
-            ContactList.getInstance().autoConnect();
-        }
-    }
-
-    private void MIDletInit() {
-        common = new Common();
-        MIDletBridge.setMicroEmulator(common);
-        common.setRecordStoreManager(new AndroidRecordStoreManager(this));
-        if (getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
-            System.setProperty("video.snapshot.encodings", "yes");
-        }
-        FileSystem fs = new FileSystem();
-        fs.registerImplementation();
-        startService();
-        networkStateReceiver.updateNetworkState(this);
-        common.initMIDlet();
-    }
-
-    private void startService() {
-        startService(new Intent(this, SawimService.class));
-        registerReceiver(networkStateReceiver, networkStateReceiver.getFilter());
-        bindService(new Intent(this, SawimService.class), serviceConnection, BIND_AUTO_CREATE);
     }
 
     @Override
     protected void onDestroy() {
-        quit();
         super.onDestroy();
         Log.e("SawimActivity", "onDestroy");
     }
@@ -170,13 +127,6 @@ public class SawimActivity extends FragmentActivity {
     public void onPause() {
         super.onPause();
         Sawim.minimize();
-    }
-
-    private void quit() {
-        unbindService(serviceConnection);
-        unregisterReceiver(networkStateReceiver);
-        stopService(new Intent(this, SawimService.class));
-        ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).cancelAll();
     }
 
     @Override
@@ -222,9 +172,9 @@ public class SawimActivity extends FragmentActivity {
             if ((p instanceof Icq) || (p instanceof Mrim))
                 menu.add(Menu.NONE, MENU_PRIVATE_STATUS, Menu.NONE, R.string.private_status);
 
-            int count = ContactList.getInstance().getManager().getModel().getProtocolCount();
+            int count = ContactList.getInstance().getManager().getProtocolCount();
             for (int i = 0; i < count; ++i) {
-                Protocol pr = ContactList.getInstance().getManager().getModel().getProtocol(i);
+                Protocol pr = ContactList.getInstance().getManager().getProtocol(i);
                 if ((pr instanceof Mrim) && pr.isConnected()) {
                     menu.add(Menu.NONE, MENU_SEND_SMS, Menu.NONE, R.string.send_sms);
                 }
@@ -329,20 +279,12 @@ public class SawimActivity extends FragmentActivity {
                 break;
             case MENU_QUIT:
                 Sawim.getSawim().quit();
-                quit();
+                SawimApplication.getInstance().quit();
                 finish();
                 System.exit(0);
                 break;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    public boolean isNetworkAvailable() {
-        return networkStateReceiver.isNetworkAvailable();
-    }
-
-    public void updateAppIcon() {
-        serviceConnection.send(Message.obtain(null, SawimService.UPDATE_APP_ICON));
     }
 
     private final Object lock = new Object();

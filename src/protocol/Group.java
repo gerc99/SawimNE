@@ -1,5 +1,3 @@
-
-
 package protocol;
 
 import DrawControls.icons.Icon;
@@ -68,16 +66,6 @@ public class Group extends TreeBranch implements Sortable {
 
     public void setGroupId(int groupId) {
         this.groupId = groupId;
-    }
-
-    public final void getLeftIcons(Icon[] icons) {
-    }
-
-    public final void getRightIcons(Icon[] rightIcons) {
-        if (isExpanded()) {
-            return;
-        }
-        rightIcons[0] = ChatHistory.instance.getUnreadMessageIcon(getContacts());
     }
 
     public boolean isEmpty() {

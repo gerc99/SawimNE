@@ -1,9 +1,6 @@
 package sawim.chat;
 
-import DrawControls.icons.Icon;
-import android.util.Log;
 import ru.sawim.General;
-import ru.sawim.activities.ChatActivity;
 import sawim.Options;
 import sawim.Sawim;
 import sawim.chat.message.Message;
@@ -30,7 +27,6 @@ public final class Chat {
     private Contact contact;
     private boolean writable = true;
     private HistoryStorage history;
-    private Icon[] statusIcons = new Icon[7];
     private boolean showStatus = true;
     private List<MessData> messData = new ArrayList<MessData>();
     private boolean visibleChat;
@@ -46,15 +42,7 @@ public final class Chat {
         contact = item;
     }
 
-    private void updateStatusIcons() {
-        for (int i = 0; i < statusIcons.length; ++i) {
-            statusIcons[i] = null;
-        }
-        contact.getLeftIcons(statusIcons);
-
-    }
     public void updateStatus() {
-        updateStatusIcons();
         showStatus = true;
         showStatusPopup();
     }
@@ -86,7 +74,6 @@ public final class Chat {
     }
 
     public void beginTyping(boolean type) {
-        updateStatusIcons();
     }
 
     public static boolean isHighlight(String text, String nick) {

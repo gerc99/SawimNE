@@ -123,7 +123,7 @@ public final class MicroBlog implements TextBoxView.TextBoxListener {
         while (maxRecordCount < model.getSize()) {
             ids.removeElementAt(0);
             emails.removeElementAt(0);
-            list.removeFirstText();
+            model.removeFirstText();
         }
     }
 

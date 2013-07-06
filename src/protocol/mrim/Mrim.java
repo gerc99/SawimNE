@@ -20,7 +20,7 @@ public class Mrim extends Protocol {
     private static final ImageList statusIcons = ImageList.createImageList("/mrim-status.png");
     private static final int[] statusIconIndex = {1, 0, 3, 4, -1, -1, -1, -1, -1, -1, 5, -1, 2, -1, 1};
 
-    static Icon getPhoneContactIcon() {
+    public static Icon getPhoneContactIcon() {
         int phoneContactIndex = statusIconIndex[StatusInfo.STATUS_OFFLINE];
         if (6 < statusIcons.size()) {
             phoneContactIndex = statusIcons.size() - 1;
