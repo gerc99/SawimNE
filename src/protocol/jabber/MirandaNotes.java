@@ -9,7 +9,7 @@ import android.view.MenuItem;
 import ru.sawim.models.form.VirtualListItem;
 import ru.sawim.models.list.VirtualList;
 import ru.sawim.models.list.VirtualListModel;
-import sawim.SawimUI;
+import sawim.Clipboard;
 import sawim.comm.*;
 import ru.sawim.Scheme;
 import sawim.util.JLocale;
@@ -78,7 +78,7 @@ public final class MirandaNotes {
 
                     case MENU_COPY:
                         VirtualListItem item = screen.getModel().elements.get(listItem);
-                        SawimUI.setClipBoardText(item.getLabel() + "\n" + item.getDescStr());
+                        Clipboard.setClipBoardText(item.getLabel() + "\n" + item.getDescStr());
                         break;
 
                     case MENU_COPY_ALL:
@@ -88,7 +88,7 @@ public final class MirandaNotes {
                             s.append(listItems.get(i).getLabel()).append("\n")
                                     .append(listItems.get(i).getDescStr()).append("\n");
                         }
-                        SawimUI.setClipBoardText(s.toString());
+                        Clipboard.setClipBoardText(s.toString());
                         break;
                 }
             }

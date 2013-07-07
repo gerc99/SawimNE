@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.net.Uri;
+import android.text.ClipboardManager;
 import android.util.DisplayMetrics;
 import sawim.Options;
 import sawim.Updater;
@@ -27,6 +28,7 @@ import sawim.util.JLocale;
 import javax.microedition.io.ConnectionNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Created with IntelliJ IDEA.
@@ -39,13 +41,13 @@ public class General {
 
     private static General instance;
     public static final String NAME = "Sawim NE";
-    public static final String VERSION = "1.1";
+    public static final String VERSION = "1.2";
     public static final String PHONE = "android/" + android.os.Build.MODEL
             + "/" + android.os.Build.VERSION.RELEASE;
 
     private boolean paused = true;
 
-    public void init(Context c) {
+    public void init() {
         instance = this;
     }
 

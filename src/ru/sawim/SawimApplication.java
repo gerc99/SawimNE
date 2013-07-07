@@ -40,6 +40,7 @@ public class SawimApplication extends Application {
     @Override
     public void onCreate() {
         instance = this;
+        new General().init();
         Thread.setDefaultUncaughtExceptionHandler(ExceptionHandler.inContext(getApplicationContext()));
         super.onCreate();
         MIDletInit();

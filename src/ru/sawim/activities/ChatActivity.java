@@ -3,6 +3,7 @@ package ru.sawim.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import ru.sawim.General;
@@ -38,17 +39,13 @@ public class ChatActivity extends FragmentActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        ChatView view = (ChatView) getSupportFragmentManager().findFragmentById(R.id.chat_fragment);
-        view.onCreateMenu(menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        ChatView view = (ChatView) getSupportFragmentManager().findFragmentById(R.id.chat_fragment);
-        view.onMenuItemSelected(item);
-        return super.onOptionsItemSelected(item);
+    public boolean onKeyUp(int key, KeyEvent event) {
+        if (key == KeyEvent.KEYCODE_MENU) {
+            ChatView view = (ChatView) getSupportFragmentManager().findFragmentById(R.id.chat_fragment);
+            if (view != null)
+                view.showMenu();
+        }
+        return super.onKeyUp(key, event);
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

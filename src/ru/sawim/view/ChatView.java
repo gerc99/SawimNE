@@ -21,12 +21,11 @@ import protocol.Protocol;
 import protocol.jabber.*;
 import ru.sawim.General;
 import ru.sawim.R;
-import ru.sawim.SawimApplication;
 import ru.sawim.models.MessagesAdapter;
 import ru.sawim.view.widgets.menu.MyMenu;
+import sawim.Clipboard;
 import sawim.FileTransfer;
 import sawim.Options;
-import sawim.SawimUI;
 import sawim.chat.Chat;
 import sawim.chat.ChatHistory;
 import sawim.chat.MessData;
@@ -111,30 +110,6 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
     private static final int ACTION_QUOTE = 4;
     private static final int ACTION_DEL_CHAT = 5;
 
-    public void onCreateMenu(Menu menu) {
-        boolean accessible = chat.getWritable() && (currentContact.isSingleUserContact() || currentContact.isOnline());
-        if (0 < chat.getAuthRequestCounter()) {
-            menu.add(Menu.FIRST, Contact.USER_MENU_GRANT_AUTH, 0, JLocale.getString("grant"));
-            menu.add(Menu.FIRST, Contact.USER_MENU_DENY_AUTH, 0, JLocale.getString("deny"));
-        }
-        if (!currentContact.isAuth()) {
-            menu.add(Menu.FIRST, Contact.USER_MENU_REQU_AUTH, 0, JLocale.getString("requauth"));
-        }
-        if (accessible) {
-            if (sawim.modules.fs.FileSystem.isSupported()) {
-                menu.add(Menu.FIRST, Contact.USER_MENU_FILE_TRANS, 0, JLocale.getString("ft_name"));
-            }
-            if (FileTransfer.isPhotoSupported()) {
-                menu.add(Menu.FIRST, Contact.USER_MENU_CAM_TRANS, 0, JLocale.getString("ft_cam"));
-            }
-        }
-        if (!currentContact.isSingleUserContact() && currentContact.isOnline()) {
-            menu.add(Menu.FIRST, Contact.CONFERENCE_DISCONNECT, 0, JLocale.getString("leave_chat"));
-        }
-        menu.add(Menu.FIRST, Contact.USER_MENU_STATUSES, 2, R.string.user_statuses);
-        menu.add(Menu.FIRST, ACTION_DEL_CHAT, 0, JLocale.getString("delete_chat"));
-    }
-
     public void showMenu() {
         final MyMenu menu = new MyMenu(getActivity());
         boolean accessible = chat.getWritable() && (currentContact.isSingleUserContact() || currentContact.isOnline());
@@ -160,7 +135,7 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
         menu.add(JLocale.getString("delete_chat"), ACTION_DEL_CHAT);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(getActivity(), R.style.AlertDialogCustom));
-        builder.setTitle(SawimApplication.getContext().getString(R.string.manage_contact_list));
+        builder.setTitle(currentContact.getName());
         builder.setAdapter(menu, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -177,19 +152,6 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
             }
         });
         builder.create().show();
-    }
-
-    public void onMenuItemSelected(MenuItem item) {
-        if (item.getItemId() == ACTION_DEL_CHAT) {
-            /*chat.removeMessagesAtCursor(chatListView.getFirstVisiblePosition() + 1);
-            if (0 < messData.size()) {
-                updateChat();
-            }*/
-            ChatHistory.instance.unregisterChat(chat);
-            getActivity().finish();
-            return;
-        }
-        new ContactMenu(protocol, currentContact).doAction(getActivity(), item.getItemId());
     }
 
     @Override
@@ -219,7 +181,7 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
                 if (md.isMe()) {
                     msg = "*" + md.getNick() + " " + msg;
                 }
-                SawimUI.setClipBoardText(md.isIncoming(), md.getNick(), md.strTime, msg + "\n");
+                Clipboard.setClipBoardText(md.isIncoming(), md.getNick(), md.strTime, msg + "\n");
                 break;
 
             case ACTION_QUOTE:
@@ -227,9 +189,9 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
                 if (md.isMe()) {
                     msg = "*" + md.getNick() + " " + msg;
                 }
-                sb.append(SawimUI.serialize(md.isIncoming(), md.getNick() + " " + md.strTime, msg));
+                sb.append(Clipboard.serialize(md.isIncoming(), md.getNick() + " " + md.strTime, msg));
                 sb.append("\n-----\n");
-                SawimUI.setClipBoardText(0 == sb.length() ? null : sb.toString());
+                Clipboard.setClipBoardText(0 == sb.length() ? null : sb.toString());
                 break;
 
             case ACTION_ADD_TO_HISTORY:

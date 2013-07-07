@@ -3,7 +3,7 @@ package protocol;
 import android.view.ContextMenu;
 import android.view.Menu;
 import ru.sawim.models.form.VirtualListItem;
-import sawim.SawimUI;
+import sawim.Clipboard;
 import ru.sawim.models.list.VirtualListModel;
 import DrawControls.icons.Icon;
 import ru.sawim.General;
@@ -122,7 +122,7 @@ public final class StatusView {
                 switch (itemMenuId) {
                     case INFO_MENU_COPY:
                         VirtualListItem item = list.getModel().elements.get(listItem);
-                        SawimUI.setClipBoardText(((item.getLabel() == null) ? "" : item.getLabel() + "\n") + item.getDescStr());
+                        Clipboard.setClipBoardText(((item.getLabel() == null) ? "" : item.getLabel() + "\n") + item.getDescStr());
                         break;
 
                     case INFO_MENU_COPY_ALL:
@@ -132,7 +132,7 @@ public final class StatusView {
                             s.append(listItems.get(i).getLabel()).append("\n")
                                     .append(listItems.get(i).getDescStr()).append("\n");
                         }
-                        SawimUI.setClipBoardText(s.toString());
+                        Clipboard.setClipBoardText(s.toString());
                         break;
                 }
             }

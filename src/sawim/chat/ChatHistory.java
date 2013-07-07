@@ -153,7 +153,7 @@ public final class ChatHistory {
             }
         }
 
-        if (SawimUI.execHotKey(null == chat ? null : chat.getProtocol(),
+        if (Clipboard.execHotKey(null == chat ? null : chat.getProtocol(),
                 null == chat ? null : chat.getContact(), keyCode, type)) {
             return;
         }

@@ -29,8 +29,6 @@ import android.content.Intent;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.text.ClipboardManager;
-import android.util.Log;
 import android.view.*;
 import sawim.Options;
 import sawim.OptionsForm;
@@ -54,7 +52,6 @@ import ru.sawim.view.XStatusesView;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class SawimActivity extends FragmentActivity {
 
@@ -70,7 +67,6 @@ public class SawimActivity extends FragmentActivity {
         super.onCreate(icicle);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
-        new General().init(this);
         setContentView(R.layout.main);
         instance = this;
 
@@ -111,12 +107,6 @@ public class SawimActivity extends FragmentActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Log.e("SawimActivity", "onDestroy");
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
         General.maximize();
@@ -130,10 +120,7 @@ public class SawimActivity extends FragmentActivity {
 
     @Override
     public void onBackPressed() {
-        Intent startMain = new Intent(Intent.ACTION_MAIN);
-        startMain.addCategory(Intent.CATEGORY_HOME);
-        startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(startMain);
+        moveTaskToBack(true);
     }
 
     public void recreateActivity() {
@@ -284,41 +271,5 @@ public class SawimActivity extends FragmentActivity {
                 break;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    private final Object lock = new Object();
-
-    public String getFromClipboard() {
-        final AtomicReference<String> text = new AtomicReference<String>();
-        text.set(null);
-        runOnUiThread(new Runnable() {
-            public void run() {
-                try {
-                    ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-                    text.set(clipboard.hasText() ? clipboard.getText().toString() : null);
-                    synchronized (lock) {
-                        lock.notify();
-                    }
-                } catch (Throwable e) {
-                    sawim.modules.DebugLog.panic("get clipboard", e);
-                    // do nothing
-                }
-            }
-        });
-        return text.get();
-    }
-
-    public void putToClipboard(final String label, final String text) {
-        runOnUiThread(new Runnable() {
-            public void run() {
-                try {
-                    ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-                    clipboard.setText(text);
-                } catch (Throwable e) {
-                    sawim.modules.DebugLog.panic("set clipboard", e);
-                    // do nothing
-                }
-            }
-        });
     }
 }

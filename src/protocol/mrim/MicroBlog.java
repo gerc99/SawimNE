@@ -7,7 +7,7 @@ import android.view.MenuItem;
 import protocol.Contact;
 import ru.sawim.activities.VirtualListActivity;
 import ru.sawim.view.TextBoxView;
-import sawim.SawimUI;
+import sawim.Clipboard;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
 import ru.sawim.models.list.VirtualListModel;
@@ -101,7 +101,7 @@ public final class MicroBlog implements TextBoxView.TextBoxListener {
                         break;
 
                     case MENU_COPY:
-                        SawimUI.setClipBoardText(model.elements.get(listItem).getLabel() + "\n" + model.elements.get(listItem).getDescSpan().toString());
+                        Clipboard.setClipBoardText(model.elements.get(listItem).getLabel() + "\n" + model.elements.get(listItem).getDescSpan().toString());
                         break;
 
                     /*case MENU_USER_MENU:
