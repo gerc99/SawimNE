@@ -3,18 +3,15 @@ package ru.sawim.view;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.support.v4.app.FragmentActivity;
-import android.view.LayoutInflater;
+import android.view.ContextThemeWrapper;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.*;
 import protocol.Protocol;
 import protocol.jabber.*;
 import ru.sawim.R;
 import ru.sawim.models.MucUsersAdapter;
+import ru.sawim.view.widgets.menu.MyMenu;
 import sawim.util.JLocale;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -78,19 +75,11 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
                 final Object o = usersAdapter.getItem(position);
                 final String nick = usersAdapter.getCurrentSubContact(o);
                 if (o instanceof String) return false;
-                final List<MucMenuItem> menuItems = new ArrayList<MucMenuItem>();
-                MucMenuItem menuItem = new MucMenuItem();
-                menuItem.addItem(activity.getString(R.string.open_private), COMMAND_PRIVATE);
-                menuItems.add(menuItem);
-                menuItem = new MucMenuItem();
-                menuItem.addItem(activity.getString(R.string.info), COMMAND_INFO);
-                menuItems.add(menuItem);
-                menuItem = new MucMenuItem();
-                menuItem.addItem(activity.getString(R.string.user_statuses), COMMAND_STATUS);
-                menuItems.add(menuItem);
-                menuItem = new MucMenuItem();
-                menuItem.addItem(activity.getString(R.string.adhoc), GATE_COMMANDS);
-                menuItems.add(menuItem);
+                final MyMenu menu = new MyMenu(activity);
+                menu.add(activity.getString(R.string.open_private), COMMAND_PRIVATE);
+                menu.add(activity.getString(R.string.info), COMMAND_INFO);
+                menu.add(activity.getString(R.string.user_statuses), COMMAND_STATUS);
+                menu.add(activity.getString(R.string.adhoc), GATE_COMMANDS);
                 int myAffiliation = usersAdapter.getAffiliation(jabberServiceContact.getMyName());
                 int myRole = usersAdapter.getRole(jabberServiceContact.getMyName());
                 final int role = usersAdapter.getRole(nick);
@@ -99,103 +88,51 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
                     myAffiliation++;
                 if (JabberServiceContact.ROLE_MODERATOR == myRole) {
                     if (JabberServiceContact.ROLE_MODERATOR > role) {
-                        menuItem = new MucMenuItem();
-                        menuItem.addItem(JLocale.getString("to_kick"), COMMAND_KICK);
-                        menuItems.add(menuItem);
+                        menu.add(JLocale.getString("to_kick"), COMMAND_KICK);
                     }
                     if (myAffiliation >= JabberServiceContact.AFFILIATION_ADMIN && affiliation < myAffiliation) {
-                        menuItem = new MucMenuItem();
-                        menuItem.addItem(JLocale.getString("to_ban"), COMMAND_BAN);
-                        menuItems.add(menuItem);
+                        menu.add(JLocale.getString("to_ban"), COMMAND_BAN);
                     }
                     if (affiliation < JabberServiceContact.AFFILIATION_ADMIN) {
                         if (role == JabberServiceContact.ROLE_VISITOR) {
-                            menuItem = new MucMenuItem();
-                            menuItem.addItem(JLocale.getString("to_voice"), COMMAND_VOICE);
-                            menuItems.add(menuItem);
+                            menu.add(JLocale.getString("to_voice"), COMMAND_VOICE);
                         } else {
-                            menuItem = new MucMenuItem();
-                            menuItem.addItem(JLocale.getString("to_devoice"), COMMAND_DEVOICE);
-                            menuItems.add(menuItem);
+                            menu.add(JLocale.getString("to_devoice"), COMMAND_DEVOICE);
                         }
                     }
                 }
                 if (myAffiliation >= JabberServiceContact.AFFILIATION_ADMIN) {
                     if (affiliation < JabberServiceContact.AFFILIATION_ADMIN) {
                         if (role == JabberServiceContact.ROLE_MODERATOR) {
-                            menuItem = new MucMenuItem();
-                            menuItem.addItem(JLocale.getString("to_voice"), COMMAND_VOICE);
-                            menuItems.add(menuItem);
+                            menu.add(JLocale.getString("to_voice"), COMMAND_VOICE);
                         } else {
-                            menuItem = new MucMenuItem();
-                            menuItem.addItem(JLocale.getString("to_moder"), COMMAND_MODER);
-                            menuItems.add(menuItem);
+                            menu.add(JLocale.getString("to_moder"), COMMAND_MODER);
                         }
                     }
                     if (affiliation < myAffiliation) {
                         if (affiliation != JabberServiceContact.AFFILIATION_NONE) {
-                            menuItem = new MucMenuItem();
-                            menuItem.addItem(JLocale.getString("to_none"), COMMAND_NONE);
-                            menuItems.add(menuItem);
+                            menu.add(JLocale.getString("to_none"), COMMAND_NONE);
                         }
                         if (affiliation != JabberServiceContact.AFFILIATION_MEMBER) {
-                            menuItem = new MucMenuItem();
-                            menuItem.addItem(JLocale.getString("to_member"), COMMAND_MEMBER);
-                            menuItems.add(menuItem);
+                            menu.add(JLocale.getString("to_member"), COMMAND_MEMBER);
                         }
                     }
                 }
                 if (myAffiliation >= JabberServiceContact.AFFILIATION_OWNER) {
                     if (affiliation != JabberServiceContact.AFFILIATION_ADMIN) {
-                        menuItem = new MucMenuItem();
-                        menuItem.addItem(JLocale.getString("to_admin"), COMMAND_ADMIN);
-                        menuItems.add(menuItem);
+                        menu.add(JLocale.getString("to_admin"), COMMAND_ADMIN);
                     }
                     if (affiliation != JabberServiceContact.AFFILIATION_OWNER) {
-                        menuItem = new MucMenuItem();
-                        menuItem.addItem(JLocale.getString("to_owner"), COMMAND_OWNER);
-                        menuItems.add(menuItem);
+                        menu.add(JLocale.getString("to_owner"), COMMAND_OWNER);
                     }
                 }
-                AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+				AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(activity, R.style.AlertDialogCustom));
                 builder.setTitle(jabberServiceContact.getName());
-                builder.setAdapter(new BaseAdapter() {
-                                       @Override
-                                       public int getCount() {
-                                           return menuItems.size();
-                                       }
-
-                                       @Override
-                                       public MucMenuItem getItem(int i) {
-                                           return menuItems.get(i);
-                                       }
-
-                                       @Override
-                                       public long getItemId(int i) {
-                                           return i;
-                                       }
-
-                                       @Override
-                                       public View getView(int i, View convertView, ViewGroup viewGroup) {
-                                           View row = convertView;
-                                           ItemWrapper wr;
-                                           if (row == null) {
-                                               LayoutInflater inf = LayoutInflater.from(activity);
-                                               row = inf.inflate(R.layout.menu_item, null);
-                                               wr = new ItemWrapper(row);
-                                               row.setTag(wr);
-                                           } else {
-                                               wr = (ItemWrapper) row.getTag();
-                                           }
-                                           wr.text = (TextView) row.findViewById(R.id.menuTextView);
-                                           wr.text.setText(getItem(i).nameItem);
-                                           return row;
-                                       }
-                                   }, new DialogInterface.OnClickListener() {
+                builder.setAdapter(menu, new DialogInterface.OnClickListener() {
                                        @Override
                                        public void onClick(DialogInterface dialog, int which) {
                                            currMucNik = nick;
-                                           switch (menuItems.get(which).idItem) {
+                                           switch (menu.getItem(which).idItem) {
                                                case COMMAND_PRIVATE:
                                                    String jid = Jid.realJidToSawimJid(jabberServiceContact.getUserId() + "/" + nick);
                                                    JabberServiceContact c = (JabberServiceContact) protocol.getItemByUIN(jid);
@@ -306,25 +243,6 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
         if (usersAdapter != null) {
             usersAdapter.update();
             usersAdapter.notifyDataSetChanged();
-        }
-    }
-
-    private class MucMenuItem {
-        String nameItem;
-        int idItem;
-
-        public void addItem(String name, int id) {
-            nameItem = name;
-            idItem = id;
-        }
-    }
-
-    private class ItemWrapper {
-        final View item;
-        TextView text;
-
-        public ItemWrapper(View item) {
-            this.item = item;
         }
     }
 }

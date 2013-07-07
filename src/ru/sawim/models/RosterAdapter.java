@@ -64,9 +64,9 @@ public class RosterAdapter extends BaseAdapter {
         }
         TreeNode o = getItem(i);
         if (o != null)
-            if (o instanceof Group) {
+            if (o.isGroup()) {
                 holder.populateFromGroup((Group) o);
-            } else if (o instanceof Contact) {
+            } else if (o.isContact()) {
                 holder.populateFromContact((Contact) o);
             }
         return convertView;

@@ -9,4 +9,7 @@
     </style>
     <style name="AppThemeDark" parent="android:style/Theme.Holo">
     </style>
+
+    <style name="AlertDialogCustom"></style>
+
 </resources>

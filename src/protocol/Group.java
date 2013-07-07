@@ -6,7 +6,8 @@ import sawim.comm.Util;
 import java.util.Vector;
 
 
-public class Group implements TreeNode, Sortable {
+public class Group extends TreeNode implements Sortable {
+
     private String name;
     private final Vector contacts = new Vector();
     private byte mode;
@@ -98,9 +99,16 @@ public class Group implements TreeNode, Sortable {
             caption += " (" + onlineCount + "/" + total + ")";
         }
     }
+
     public final String getText() {
         return caption;
     }
+
+    @Override
+    protected int getType() {
+        return TreeNode.GROUP;
+    }
+
     public final String getCount() {
         return count;
     }

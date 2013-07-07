@@ -17,4 +17,6 @@
 <resources>
     <color name="actionbar_title_color">#ffffff</color>
     <color name="background_slide_switcher">#ffeede</color>
+    <color name="alert_dialog_background_color">#ff000000</color>
+    <color name="alert_dialog_text_color">#fffff7db</color>
 </resources>

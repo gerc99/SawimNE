@@ -88,6 +88,13 @@
             <ImageButton
                     android:layout_width="wrap_content"
                     android:layout_height="fill_parent"
+                    android:id="@+id/menu_button"
+                    android:layout_gravity="center"
+                    android:src="@android:drawable/ic_menu_sort_by_size"
+                    style="@style/InputBar.Button"/>
+            <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
                     android:id="@+id/input_smile_button"
                     android:layout_gravity="center"
                     android:src="@drawable/input_smile_button"

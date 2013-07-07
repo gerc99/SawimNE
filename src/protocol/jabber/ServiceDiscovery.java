@@ -262,7 +262,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
         }
     }
     private void addBuildInList() {
-        addUnique("General aspro", "jimm-sawim@conference.jabber.ru");
+        addUnique("Sawim aspro", "jimm-sawim@conference.jabber.ru");
         VirtualListItem br = model.createNewParser(false);
         br.addBr();
         model.addPar(br);

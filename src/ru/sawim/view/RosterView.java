@@ -246,8 +246,8 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
         ChatView viewer = (ChatView) getActivity().getSupportFragmentManager()
                 .findFragmentById(R.id.chat_fragment);
-        Object item = adaptersPages.get(viewPager.getCurrentItem()).getItem(position);
-        if (item instanceof Contact) {
+        TreeNode item = ((RosterAdapter)adaptersPages.get(viewPager.getCurrentItem())).getItem(position);
+        if (item.isContact()) {
             Protocol p;
             Contact c;
             if (viewPager.getCurrentItem() == ContactsAdapter.OPEN_CHATS) {
@@ -273,7 +273,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
                     viewer.resume(viewer.getCurrentChat());
                 }
             }
-        } else if (item instanceof Group) {
+        } else if (item.isGroup()) {
             Group group = (Group) item;
             setExpandFlag(group, !group.isExpanded());
         }
@@ -298,12 +298,12 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         contextMenuInfo = (AdapterView.AdapterContextMenuInfo) menuInfo;
-        Object node = ((ListView) v).getAdapter().getItem(contextMenuInfo.position);
+        TreeNode node = ((RosterAdapter)((ListView) v).getAdapter()).getItem(contextMenuInfo.position);
         Protocol p = general.getCurrProtocol();
-        if (node instanceof Contact) {
+        if (node.isContact()) {
             new ContactMenu(((Contact) node).getProtocol(), (Contact) node).getContextMenu(menu);
         }
-        if (node instanceof Group) {
+        if (node.isGroup()) {
             if (p.isConnected()) {
                 new ManageContactListForm(p, (Group) node).showMenu(getActivity());
             }

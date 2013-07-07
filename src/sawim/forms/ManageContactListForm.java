@@ -4,9 +4,8 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.support.v4.app.FragmentActivity;
 import android.view.*;
-import android.widget.BaseAdapter;
-import android.widget.TextView;
 import ru.sawim.SawimApplication;
+import ru.sawim.view.widgets.menu.MyMenu;
 import sawim.cl.ContactList;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
@@ -21,7 +20,6 @@ import ru.sawim.models.form.Forms;
 import ru.sawim.view.TextBoxView;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Vector;
 
 
@@ -71,7 +69,7 @@ public final class ManageContactListForm implements FormListener, TextBoxView.Te
                 itemsId.add(g.getId());
             }
         }
-        AlertDialog.Builder builder = new AlertDialog.Builder(a);
+        AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(a, R.style.AlertDialogCustom));
         builder.setTitle(contact.getName());
         builder.setItems(Util.vectorToArray(items), new DialogInterface.OnClickListener() {
             @Override
@@ -83,100 +81,36 @@ public final class ManageContactListForm implements FormListener, TextBoxView.Te
         builder.create().show();
     }
 
-    private class MenuItem {
-        String nameItem;
-        int idItem;
-        public void addItem(String name, int id) {
-            nameItem = name;
-            idItem = id;
-        }
-    }
-
-    private class ItemWrapper {
-        final View item;
-        TextView text;
-
-        public ItemWrapper(View item) {
-            this.item = item;
-        }
-    }
 
     public void showMenu(final FragmentActivity a) {
-        final List<MenuItem> menuItems = new ArrayList<MenuItem>();
-        MenuItem menuItem;
+        final MyMenu menu = new MyMenu(a);
         boolean canAdd = !protocol.getGroupItems().isEmpty()
                 && ((null == group) || group.hasMode(Group.MODE_NEW_CONTACTS));
         if (canAdd) {
-            menuItem = new MenuItem();
-            menuItem.addItem(SawimApplication.getContext().getString(R.string.add_user), ADD_USER);
-            menuItems.add(menuItem);
+            menu.add(SawimApplication.getContext().getString(R.string.add_user), ADD_USER);
             if (!(protocol instanceof protocol.jabber.Jabber)) {
-                menuItem = new MenuItem();
-                menuItem.addItem(SawimApplication.getContext().getString(R.string.search_user), SEARCH_USER);
-                menuItems.add(menuItem);
+                menu.add(SawimApplication.getContext().getString(R.string.search_user), SEARCH_USER);
             }
         }
-        menuItem = new MenuItem();
-        menuItem.addItem(SawimApplication.getContext().getString(R.string.add_group), ADD_GROUP);
-        menuItems.add(menuItem);
+        menu.add(SawimApplication.getContext().getString(R.string.add_group), ADD_GROUP);
         if (null != group) {
             if (group.hasMode(Group.MODE_EDITABLE)) {
-                menuItem = new MenuItem();
-                menuItem.addItem(SawimApplication.getContext().getString(R.string.rename_group), RENAME_GROUP);
-                menuItems.add(menuItem);
+                menu.add(SawimApplication.getContext().getString(R.string.rename_group), RENAME_GROUP);
             }
             if (group.getContacts().isEmpty() && group.hasMode(Group.MODE_REMOVABLE)) {
-                menuItem = new MenuItem();
-                menuItem.addItem(SawimApplication.getContext().getString(R.string.del_group), DEL_GROUP);
-                menuItems.add(menuItem);
+                menu.add(SawimApplication.getContext().getString(R.string.del_group), DEL_GROUP);
             }
         } else {
-            menuItem = new MenuItem();
-            menuItem.addItem(SawimApplication.getContext().getString(R.string.rename_group), RENAME_GROUP);
-            menuItems.add(menuItem);
-            menuItem = new MenuItem();
-            menuItem.addItem(SawimApplication.getContext().getString(R.string.del_group), DEL_GROUP);
-            menuItems.add(menuItem);
+            menu.add(SawimApplication.getContext().getString(R.string.rename_group), RENAME_GROUP);
+            menu.add(SawimApplication.getContext().getString(R.string.del_group), DEL_GROUP);
         }
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(a);
+		AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(a, R.style.AlertDialogCustom));
         builder.setTitle(SawimApplication.getContext().getString(R.string.manage_contact_list));
-        builder.setAdapter(new BaseAdapter() {
-                               @Override
-                               public int getCount() {
-                                   return menuItems.size();
-                               }
-
-                               @Override
-                               public MenuItem getItem(int i) {
-                                   return menuItems.get(i);
-                               }
-
-                               @Override
-                               public long getItemId(int i) {
-                                   return i;
-                               }
-
-                               @Override
-                               public View getView(int i, View convertView, ViewGroup viewGroup) {
-                                   View row = convertView;
-                                   ItemWrapper wr;
-                                   if (row == null) {
-                                       LayoutInflater inf = (LayoutInflater.from(a));
-                                       row = inf.inflate(R.layout.menu_item, null);
-                                       wr = new ItemWrapper(row);
-                                       row.setTag(wr);
-                                   } else {
-                                       wr = (ItemWrapper) row.getTag();
-                                   }
-                                   wr.text = (TextView) row.findViewById(R.id.menuTextView);
-                                   wr.text.setText(getItem(i).nameItem);
-                                   return row;
-                               }
-                           }, new DialogInterface.OnClickListener() {
+        builder.setAdapter(menu, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                select(a, menuItems.get(which).idItem);
+                select(a, menu.getItem(which).idItem);
             }
         });
         builder.create().show();
@@ -221,7 +155,6 @@ public final class ManageContactListForm implements FormListener, TextBoxView.Te
                     form.show();
                 } else {
                     protocol.removeGroup(group);
-                    //ContactList.getInstance().activate();
                 }
                 break;
         }

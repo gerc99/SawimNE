@@ -3,9 +3,11 @@ package sawim.history;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.view.ContextMenu;
+import android.view.ContextThemeWrapper;
 import android.view.Menu;
 import android.widget.Toast;
 import ru.sawim.General;
+import ru.sawim.R;
 import ru.sawim.activities.SawimActivity;
 import ru.sawim.activities.VirtualListActivity;
 import ru.sawim.models.form.VirtualListItem;
@@ -145,7 +147,7 @@ public final class HistoryStorageList implements Runnable, FormListener {
                 items[0] = JLocale.getString("currect_contact");
                 items[1] = JLocale.getString("all_contact_except_this");
                 items[2] = JLocale.getString("all_contacts");
-                AlertDialog.Builder builder = new AlertDialog.Builder(SawimActivity.getInstance());
+				AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(SawimActivity.getInstance(), R.style.AlertDialogCustom));
                 builder.setTitle(JLocale.getString("history"));
                 builder.setItems(items, new DialogInterface.OnClickListener() {
                     @Override

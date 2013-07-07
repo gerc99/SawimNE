@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.net.Uri;
+import android.view.ContextThemeWrapper;
 import sawim.cl.ContactList;
 import protocol.Contact;
 import protocol.Protocol;
@@ -87,7 +88,7 @@ public class OpenUriActivity extends Activity {
     }
 
     private void alert() {
-        AlertDialog alertDialog = new AlertDialog.Builder(SawimActivity.getInstance()).create();
+		AlertDialog.Builder alertDialog = new AlertDialog.Builder(new ContextThemeWrapper(SawimActivity.getInstance(), R.style.AlertDialogCustom));
         alertDialog.setTitle(getText(R.string.app_name));
         alertDialog.setMessage(getText(R.string.xmppAccountDontFound));
         alertDialog.show();

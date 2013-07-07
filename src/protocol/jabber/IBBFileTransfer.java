@@ -29,7 +29,7 @@ public class IBBFileTransfer {
             String resource = c.getCurrentSubContact().resource;
             this.to += '/' + resource;
         }
-        this.sid = Util.xmlEscape("General" + Util.uniqueValue());
+        this.sid = Util.xmlEscape("Sawim" + Util.uniqueValue());
     }
     public void setProgress(int percent) {
         ft.setProgress(percent);

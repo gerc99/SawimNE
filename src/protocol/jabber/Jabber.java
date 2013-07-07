@@ -4,6 +4,7 @@ import DrawControls.icons.ImageList;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import ru.sawim.General;
 import ru.sawim.view.TextBoxView;
 import sawim.FileTransfer;
@@ -403,7 +404,7 @@ public final class Jabber extends Protocol implements FormListener {
     }
 
     protected String processUin(String uin) {
-        resource = Jid.getResource(uin, "General");
+        resource = Jid.getResource(uin, "Sawim");
         return Jid.getBareJid(uin);
     }
 
@@ -661,7 +662,7 @@ public final class Jabber extends Protocol implements FormListener {
                 selected = i;
             }
         }
-        AlertDialog.Builder builder = new AlertDialog.Builder(SawimActivity.getInstance());
+		AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(SawimActivity.getInstance(), R.style.AlertDialogCustom));
         builder.setTitle(c.getName());
         builder.setSingleChoiceItems(Util.vectorToArray(items), selected, new DialogInterface.OnClickListener() {
             @Override

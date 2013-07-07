@@ -10,6 +10,13 @@
     <style name="AppThemeDark" parent="android:style/Theme">
     </style>
 
+    <style name="AlertDialogCustom" parent="android:Theme.DeviceDefault.Dialog">
+        <item name="android:background">@color/alert_dialog_background_color</item>
+        <item name="android:textColor">@color/alert_dialog_text_color</item>
+        <item name="android:typeface">monospace</item>
+        <item name="android:textSize">10sp</item>
+    </style>
+
     <style name="InputBar" parent="@android:style/ButtonBar">
         <item name="android:paddingTop">5dp</item>
         <item name="android:paddingLeft">4dp</item>

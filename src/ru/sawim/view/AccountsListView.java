@@ -69,7 +69,7 @@ public class AccountsListView extends Fragment {
                 return true;
 
             case R.id.menu_delete:
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+				AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(getActivity(), R.style.AlertDialogCustom));
                 builder.setMessage(getString(R.string.acc_delete_confirm) + " " + itemName + "?")
                         .setCancelable(false)
                         .setPositiveButton(android.R.string.yes,
@@ -126,7 +126,7 @@ public class AccountsListView extends Fragment {
     }
 
     public void addAccount() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+		AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(getActivity(), R.style.AlertDialogCustom));
         builder.setTitle(R.string.acc_sel_protocol);
         builder.setItems(Profile.protocolNames, new DialogInterface.OnClickListener() {
 

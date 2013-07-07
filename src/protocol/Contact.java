@@ -1,6 +1,5 @@
 package protocol;
 
-import DrawControls.icons.Icon;
 import DrawControls.icons.ImageList;
 import DrawControls.tree.TreeNode;
 import android.support.v4.app.FragmentActivity;
@@ -11,7 +10,6 @@ import ru.sawim.view.FileProgressView;
 import ru.sawim.General;
 import sawim.Options;
 import sawim.chat.Chat;
-import sawim.chat.message.Message;
 import sawim.cl.ContactList;
 import sawim.comm.Sortable;
 import sawim.comm.StringConvertor;
@@ -20,7 +18,7 @@ import ru.sawim.Scheme;
 import ru.sawim.R;
 
 
-abstract public class Contact implements TreeNode, Sortable {
+abstract public class Contact extends TreeNode implements Sortable {
     public static final ImageList authIcon = ImageList.createImageList("/auth.png");
     public static final ImageList serverListsIcons = ImageList.createImageList("/serverlists.png");
 
@@ -263,7 +261,12 @@ abstract public class Contact implements TreeNode, Sortable {
         return name;
     }
 
-    public final int getNodeWeight() {
+     @Override
+     protected int getType() {
+         return TreeNode.CONTACT;
+     }
+
+     public final int getNodeWeight() {
         if (Options.getBoolean(Options.OPTION_SORT_UP_WITH_MSG)
                 && hasUnreadMessage()) {
             return 0;

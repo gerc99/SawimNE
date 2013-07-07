@@ -1,6 +1,5 @@
 package sawim.cl;
 
-import DrawControls.tree.TreeBranch;
 import DrawControls.tree.VirtualContactList;
 import protocol.Contact;
 import protocol.Profile;
@@ -11,7 +10,6 @@ import protocol.jabber.Jabber;
 import protocol.mrim.Mrim;
 import ru.sawim.General;
 import ru.sawim.SawimApplication;
-import ru.sawim.activities.SawimActivity;
 import sawim.FileTransfer;
 import sawim.Options;
 import sawim.modules.AutoAbsence;

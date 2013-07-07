@@ -3,6 +3,7 @@ package ru.sawim.view;
 import DrawControls.icons.Icon;
 import DrawControls.icons.ImageList;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.*;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -20,7 +21,9 @@ import protocol.Protocol;
 import protocol.jabber.*;
 import ru.sawim.General;
 import ru.sawim.R;
+import ru.sawim.SawimApplication;
 import ru.sawim.models.MessagesAdapter;
+import ru.sawim.view.widgets.menu.MyMenu;
 import sawim.FileTransfer;
 import sawim.Options;
 import sawim.SawimUI;
@@ -130,6 +133,50 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
         }
         menu.add(Menu.FIRST, Contact.USER_MENU_STATUSES, 2, R.string.user_statuses);
         menu.add(Menu.FIRST, ACTION_DEL_CHAT, 0, JLocale.getString("delete_chat"));
+    }
+
+    public void showMenu() {
+        final MyMenu menu = new MyMenu(getActivity());
+        boolean accessible = chat.getWritable() && (currentContact.isSingleUserContact() || currentContact.isOnline());
+        if (0 < chat.getAuthRequestCounter()) {
+            menu.add(JLocale.getString("grant"), Contact.USER_MENU_GRANT_AUTH);
+            menu.add(JLocale.getString("deny"), Contact.USER_MENU_DENY_AUTH);
+        }
+        if (!currentContact.isAuth()) {
+            menu.add(JLocale.getString("requauth"), Contact.USER_MENU_REQU_AUTH);
+        }
+        if (accessible) {
+            if (sawim.modules.fs.FileSystem.isSupported()) {
+                menu.add(JLocale.getString("ft_name"), Contact.USER_MENU_FILE_TRANS);
+            }
+            if (FileTransfer.isPhotoSupported()) {
+                menu.add(JLocale.getString("ft_cam"), Contact.USER_MENU_CAM_TRANS);
+            }
+        }
+        if (!currentContact.isSingleUserContact() && currentContact.isOnline()) {
+            menu.add(JLocale.getString("leave_chat"), Contact.CONFERENCE_DISCONNECT);
+        }
+        menu.add(getActivity().getResources().getString(R.string.user_statuses), Contact.USER_MENU_STATUSES);
+        menu.add(JLocale.getString("delete_chat"), ACTION_DEL_CHAT);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(getActivity(), R.style.AlertDialogCustom));
+        builder.setTitle(SawimApplication.getContext().getString(R.string.manage_contact_list));
+        builder.setAdapter(menu, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (menu.getItem(which).idItem == ACTION_DEL_CHAT) {
+                    /*chat.removeMessagesAtCursor(chatListView.getFirstVisiblePosition() + 1);
+                    if (0 < messData.size()) {
+                        updateChat();
+                    }*/
+                    ChatHistory.instance.unregisterChat(chat);
+                    getActivity().finish();
+                    return;
+                }
+                new ContactMenu(protocol, currentContact).doAction(getActivity(), menu.getItem(which).idItem);
+            }
+        });
+        builder.create().show();
     }
 
     public void onMenuItemSelected(MenuItem item) {
@@ -333,6 +380,20 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
             usersImage.setVisibility(View.GONE);
             nickList.setVisibility(View.GONE);
         }
+        ImageButton menuButton = (ImageButton) currentActivity.findViewById(R.id.menu_button);
+        if (General.isTablet(getActivity())) {
+            menuButton.setVisibility(ImageButton.VISIBLE);
+            menuButton.setBackgroundColor(background);
+            menuButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    showMenu();
+                }
+            });
+        } else {
+            menuButton.setVisibility(ImageButton.GONE);
+        }
+
         ImageButton smileButton = (ImageButton) currentActivity.findViewById(R.id.input_smile_button);
         smileButton.setBackgroundColor(background);
         smileButton.setOnClickListener(new View.OnClickListener() {
