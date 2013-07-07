@@ -1,7 +1,6 @@
 package ru.sawim.view;
 
 import DrawControls.icons.Icon;
-import DrawControls.tree.TreeBranch;
 import DrawControls.tree.TreeNode;
 import DrawControls.tree.VirtualContactList;
 import android.content.Intent;
@@ -180,7 +179,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         return null;
     }
 
-    public void setExpandFlag(TreeBranch node, boolean value) {
+    public void setExpandFlag(Group node, boolean value) {
         setCurrentNode(getCurrentNode());
         node.setExpandFlag(value);
         updateRoster();
@@ -208,7 +207,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
                         if (null == group) {
                             group = p.getNotInListGroup();
                         }
-                        owner.getGroupNode(group).setExpandFlag(true);
+                        group.setExpandFlag(true);
                     }
                 }
             } else {

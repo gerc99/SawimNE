@@ -2,7 +2,7 @@
 
 package protocol.mrim;
 
-import sawim.Sawim;
+import ru.sawim.General;
 import sawim.comm.Config;
 import sawim.comm.MD5;
 import sawim.comm.StringConvertor;
@@ -130,7 +130,7 @@ final class MrimPacket {
         out.putStatusInfo(mrim);
 
         String version = "client=\"sawim\" title=\"sawin\" "
-                + "version=\"" + Sawim.VERSION + "\"";
+                + "version=\"" + General.VERSION + "\"";
         out.putString(version);
         out.putString("ru");
         out.putDWord(0);

@@ -1,6 +1,6 @@
 package protocol.mrim;
 
-import sawim.Sawim;
+import ru.sawim.General;
 import sawim.SawimException;
 import sawim.Options;
 import sawim.chat.Chat;
@@ -191,7 +191,7 @@ public final class MrimConnection extends ClientConnection {
 
         secondCounter++;
         if (4 == secondCounter) {
-            inTypingTask(Sawim.getCurrentGmtTime());
+            inTypingTask(General.getCurrentGmtTime());
             if (null != typingTo) {
                 outTypingCounter++;
                 if (9  == outTypingCounter) {
@@ -250,7 +250,7 @@ public final class MrimConnection extends ClientConnection {
 
             if (null != contact) {
                 PlainMessage message = new PlainMessage(contact.getUserId(),
-                        mrim, Sawim.getCurrentGmtTime(), msg, false);
+                        mrim, General.getCurrentGmtTime(), msg, false);
                 message.setName("SMS");
                 Chat chat = mrim.getChat(contact);
                 if (contact instanceof MrimPhoneContact) {
@@ -263,8 +263,8 @@ public final class MrimConnection extends ClientConnection {
 
             } else {
                 
-                if (Sawim.isPaused()) {
-                    Sawim.maximize();
+                if (General.isPaused()) {
+                    General.maximize();
                 }
                 
                 ContactList.getInstance().activateWithMsg(from + " (SMS):\n" + msg);
@@ -282,7 +282,7 @@ public final class MrimConnection extends ClientConnection {
                 msg = PlainMessage.CMD_WAKEUP;
     	    }
             mrim.addMessage(new PlainMessage(from, mrim,
-                    (null == date) ? Sawim.getCurrentGmtTime() : Util.createGmtDate(date),
+                    (null == date) ? General.getCurrentGmtTime() : Util.createGmtDate(date),
                     msg, offline));
         }
     }
@@ -318,7 +318,7 @@ public final class MrimConnection extends ClientConnection {
                     msg = PlainMessage.CMD_WAKEUP;
                 }
                 PlainMessage message = new PlainMessage(from, mrim,
-                        Sawim.getCurrentGmtTime(), msg, false);
+                        General.getCurrentGmtTime(), msg, false);
                 message.setName(email);
                 mrim.addMessage(message);
                 return;
@@ -379,7 +379,7 @@ public final class MrimConnection extends ClientConnection {
         if (Options.getInt(Options.OPTION_TYPING_MODE) == 0) {
             return;
         }
-        long now = Sawim.getCurrentGmtTime();
+        long now = General.getCurrentGmtTime();
         inTypingTask(now);
         for (int i = 0; i < typingTasks.length; ++i) {
             if (null == typingTasks[i]) {

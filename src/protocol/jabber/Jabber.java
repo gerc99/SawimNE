@@ -403,7 +403,7 @@ public final class Jabber extends Protocol implements FormListener {
     }
 
     protected String processUin(String uin) {
-        resource = Jid.getResource(uin, "Sawim");
+        resource = Jid.getResource(uin, "General");
         return Jid.getBareJid(uin);
     }
 

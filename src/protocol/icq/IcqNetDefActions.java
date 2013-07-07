@@ -1,6 +1,6 @@
 package protocol.icq;
 
-import sawim.Sawim;
+import ru.sawim.General;
 import sawim.SawimException;
 import sawim.Options;
 import sawim.chat.message.PlainMessage;
@@ -349,7 +349,7 @@ public final class IcqNetDefActions {
             return;
         }
         getIcq().addMessage(new PlainMessage(uin, getIcq(),
-                Sawim.getCurrentGmtTime(), text, false));
+                General.getCurrentGmtTime(), text, false));
     }
     private void addOfflineMessage(String uin, String text, long date) {
         if (StringConvertor.isEmpty(text)) {

@@ -11,8 +11,8 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import ru.sawim.General;
 import ru.sawim.R;
-import sawim.Sawim;
 import sawim.cl.ContactList;
 import sawim.comm.Util;
 
@@ -49,7 +49,7 @@ public class FileProgressView extends DialogFragment {
     }
 
     public void changeFileProgress(final int percent, final String caption, final String text) {
-        final long time = Sawim.getCurrentGmtTime();
+        final long time = General.getCurrentGmtTime();
         final String strTime = Util.getLocalDateString(time, true);
         Handler handler = new Handler(getActivity().getMainLooper());
         handler.post(new Runnable() {

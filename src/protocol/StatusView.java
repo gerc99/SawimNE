@@ -6,7 +6,7 @@ import ru.sawim.models.form.VirtualListItem;
 import sawim.SawimUI;
 import ru.sawim.models.list.VirtualListModel;
 import DrawControls.icons.Icon;
-import sawim.Sawim;
+import ru.sawim.General;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
 import ru.sawim.Scheme;
@@ -53,7 +53,7 @@ public final class StatusView {
         }
         long signonTime = contact.chaingingStatusTime;
         if (0 < signonTime) {
-            long now = Sawim.getCurrentGmtTime();
+            long now = General.getCurrentGmtTime();
             boolean today = (now - 24 * 60 * 60) < signonTime;
             if (contact.isOnline()) {
                 addInfo("li_signon_time", Util.getLocalDateString(signonTime, today));

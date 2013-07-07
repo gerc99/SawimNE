@@ -2,6 +2,8 @@
 
 package com.jcraft.jzlib;
 
+import ru.sawim.General;
+
 import java.io.DataInputStream;
 import java.io.InputStream;
 
@@ -12,7 +14,7 @@ public class ArrayLoader {
         int[] arrayInt = null;
         InputStream in = null;
         try {
-            in = sawim.Sawim.getResourceAsStream(name);
+            in = General.getResourceAsStream(name);
             DataInputStream is=new DataInputStream(in);
             int len = is.readInt();
             arrayInt = new int[len];
@@ -36,7 +38,7 @@ public class ArrayLoader {
         short[] arrayShort = null;
         InputStream in = null;
         try {
-            in = sawim.Sawim.getResourceAsStream(name);
+            in = General.getResourceAsStream(name);
             DataInputStream is = new DataInputStream(in);
             int len = is.readInt();
             arrayShort = new short[len];
@@ -59,7 +61,7 @@ public class ArrayLoader {
         byte[] arrayByte = null;
         InputStream in = null;
         try {
-            in = sawim.Sawim.getResourceAsStream(name);
+            in = General.getResourceAsStream(name);
             DataInputStream is = new DataInputStream(in);
             int len = is.readInt();
             arrayByte = new byte[len];
@@ -76,5 +78,3 @@ public class ArrayLoader {
         return arrayByte;
     }
 }
-
-

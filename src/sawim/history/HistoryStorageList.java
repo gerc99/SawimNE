@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.widget.Toast;
+import ru.sawim.General;
 import ru.sawim.activities.SawimActivity;
 import ru.sawim.activities.VirtualListActivity;
 import ru.sawim.models.form.VirtualListItem;
@@ -115,7 +116,7 @@ public final class HistoryStorageList implements Runnable, FormListener {
     
     private void clearCache() {
         cachedRecords.clear();
-        Sawim.gc();
+        General.gc();
     }
 
     protected void onCursorMove(int index) {

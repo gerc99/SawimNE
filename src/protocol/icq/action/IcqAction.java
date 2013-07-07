@@ -2,7 +2,7 @@
 
 package protocol.icq.action;
 
-import sawim.Sawim;
+import ru.sawim.General;
 import sawim.SawimException;
 import protocol.icq.Icq;
 import protocol.icq.IcqNetWorking;
@@ -13,10 +13,10 @@ public abstract class IcqAction {
     private long lastActivity;
 
     protected final void active() {
-        lastActivity = Sawim.getCurrentGmtTime();
+        lastActivity = General.getCurrentGmtTime();
     }
     protected final boolean isNotActive(long timeout) {
-        return lastActivity + timeout < Sawim.getCurrentGmtTime();
+        return lastActivity + timeout < General.getCurrentGmtTime();
     }
 
     

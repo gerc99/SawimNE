@@ -3,7 +3,7 @@
         android:id="@+id/widget35"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:padding="2dp"
+        android:padding="5dp"
         xmlns:android="http://schemas.android.com/apk/res/android">
     <ImageView
             android:id="@+id/first_image"

@@ -2,7 +2,7 @@ package sawim.modules;
 
 import android.content.Context;
 import android.os.Vibrator;
-import sawim.Sawim;
+import ru.sawim.General;
 import sawim.Options;
 import sawim.comm.Util;
 import ru.sawim.activities.SawimActivity;
@@ -139,7 +139,7 @@ public class Notify implements Runnable {
             }
             if ((VIBRA_OFF != vibraKind)
                     && ((NOTIFY_MESSAGE == notType) || (NOTIFY_MULTIMESSAGE == notType))) {
-                vibrate = Sawim.isPaused() ? 700 : 200;
+                vibrate = General.isPaused() ? 700 : 200;
             }
         }
 

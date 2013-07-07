@@ -194,7 +194,7 @@ public final class ChatHistory {
     /*private void removeChat(Chat chat) {
         if (null != chat) {
             clearChat(chat);
-            //if (Sawim.getSawim().getDisplay().remove(chat)) {
+            //if (General.getSawim().getDisplay().remove(chat)) {
             //    ContactList.getInstance()._setActiveContact(null);
             //}
             //setCurrentItemIndex(getCurrItem());

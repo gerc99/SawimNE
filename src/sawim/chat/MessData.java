@@ -1,7 +1,7 @@
 package sawim.chat;
 
-import android.text.Spannable;
-import sawim.Sawim;
+import android.text.SpannableStringBuilder;
+import ru.sawim.General;
 import sawim.comm.Util;
 
 public final class MessData {
@@ -12,7 +12,7 @@ public final class MessData {
     public int iconIndex;
     private short rowData;
 
-    public Spannable fullText;
+    public SpannableStringBuilder fullText;
 
     public static final short URLS = 1;
     public static final short INCOMING = 2;
@@ -27,7 +27,7 @@ public final class MessData {
         this.time = time;
         this.rowData = flags;
         this.iconIndex = iconIndex;
-        boolean today = (Sawim.getCurrentGmtTime() - 24 * 60 * 60 < time);
+        boolean today = (General.getCurrentGmtTime() - 24 * 60 * 60 < time);
         strTime = Util.getLocalDateString(time, today);
     }
 

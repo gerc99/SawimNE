@@ -2,7 +2,7 @@ package protocol;
 
 import DrawControls.icons.Icon;
 import sawim.FileTransfer;
-import sawim.Sawim;
+import ru.sawim.General;
 import sawim.SawimException;
 import sawim.Options;
 import sawim.chat.Chat;
@@ -353,7 +353,7 @@ abstract public class Protocol {
             buf = cl.getRecord(1);
             bais = new ByteArrayInputStream(buf);
             dis = new DataInputStream(bais);
-            if (!dis.readUTF().equals(Sawim.VERSION)) {
+            if (!dis.readUTF().equals(General.VERSION)) {
                 throw new Exception();
             }
             loadProtocolData(cl.getRecord(2));
@@ -393,7 +393,7 @@ abstract public class Protocol {
         byte[] buf;
         baos = new ByteArrayOutputStream();
         dos = new DataOutputStream(baos);
-        dos.writeUTF(Sawim.VERSION);
+        dos.writeUTF(General.VERSION);
         buf = baos.toByteArray();
         cl.addRecord(buf, 0, buf.length);
         baos.reset();
@@ -924,7 +924,7 @@ abstract public class Protocol {
     }
 
     private void setLastStatusChangeTime() {
-        lastStatusChangeTime = Sawim.getCurrentGmtTime();
+        lastStatusChangeTime = General.getCurrentGmtTime();
     }
 
     private boolean isEmptyMessage(String text) {
@@ -1159,7 +1159,7 @@ abstract public class Protocol {
         if (StringConvertor.isEmpty(msg)) {
             return;
         }
-        PlainMessage plainMsg = new PlainMessage(this, to, Sawim.getCurrentGmtTime(), msg);
+        PlainMessage plainMsg = new PlainMessage(this, to, General.getCurrentGmtTime(), msg);
         if (isConnected()) {
             if (msg.startsWith("/") && !msg.startsWith("/me ") && !msg.startsWith("/wakeup") && (to instanceof JabberContact)) {
                 boolean cmdExecuted = ((JabberContact) to).execCommand(this, msg);

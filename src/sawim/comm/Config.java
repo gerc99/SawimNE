@@ -1,8 +1,6 @@
-
-
 package sawim.comm;
 
-import android.util.Log;
+import ru.sawim.General;
 import sawim.util.JLocale;
 
 import java.io.InputStream;
@@ -18,7 +16,7 @@ public final class Config {
         String res = "";
         InputStream stream = null;
         try {
-            stream = sawim.Sawim.getResourceAsStream(path);
+            stream = General.getResourceAsStream(path);
             byte[] str = new byte[stream.available()];
             stream.read(str);
             res = StringConvertor.utf8beByteArrayToString(str, 0, str.length);

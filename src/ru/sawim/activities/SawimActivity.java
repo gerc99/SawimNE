@@ -32,7 +32,6 @@ import android.support.v4.app.FragmentActivity;
 import android.text.ClipboardManager;
 import android.util.Log;
 import android.view.*;
-import sawim.Sawim;
 import sawim.Options;
 import sawim.OptionsForm;
 import sawim.cl.ContactList;
@@ -120,13 +119,13 @@ public class SawimActivity extends FragmentActivity {
     @Override
     public void onResume() {
         super.onResume();
-        Sawim.maximize();
+        General.maximize();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        Sawim.minimize();
+        General.minimize();
     }
 
     @Override
@@ -278,7 +277,7 @@ public class SawimActivity extends FragmentActivity {
                 DebugLog.instance.activate();
                 break;
             case MENU_QUIT:
-                Sawim.getSawim().quit();
+                General.getInstance().quit();
                 SawimApplication.getInstance().quit();
                 finish();
                 System.exit(0);

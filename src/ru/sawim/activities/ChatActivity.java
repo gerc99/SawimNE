@@ -5,8 +5,8 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import ru.sawim.General;
 import sawim.ExternalApi;
-import sawim.Sawim;
 import sawim.cl.ContactList;
 import protocol.Contact;
 import protocol.Protocol;
@@ -59,12 +59,12 @@ public class ChatActivity extends FragmentActivity {
     @Override
     public void onPause() {
         super.onPause();
-        Sawim.minimize();
+        General.minimize();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        Sawim.maximize();
+        General.maximize();
     }
 }

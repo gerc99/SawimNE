@@ -2,7 +2,7 @@ package sawim.chat;
 
 import ru.sawim.General;
 import sawim.Options;
-import sawim.Sawim;
+import ru.sawim.General;
 import sawim.chat.message.Message;
 import sawim.chat.message.PlainMessage;
 import sawim.chat.message.SystemNotice;
@@ -100,7 +100,7 @@ public final class Chat {
     }
 
     public void addFileProgress(String caption, String text) {
-        long time = Sawim.getCurrentGmtTime();
+        long time = General.getCurrentGmtTime();
         short flags = MessData.PROGRESS;
         final MessData mData = new MessData(time, text, caption, flags, Message.ICON_NONE);
         if (General.getInstance().getUpdateChatListener() == null) {

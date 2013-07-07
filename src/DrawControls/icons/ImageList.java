@@ -1,8 +1,8 @@
 package DrawControls.icons;
 
 import android.graphics.BitmapFactory;
-import android.util.Log;
-import sawim.Sawim;
+import ru.sawim.General;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -123,7 +123,7 @@ public class ImageList {
     }
 
     public Image createImage(String name) throws IOException {
-        InputStream is = Sawim.getResourceAsStream(name);
+        InputStream is = General.getResourceAsStream(name);
         if (is == null) {
             throw new IOException(name + " could not be found.");
         }

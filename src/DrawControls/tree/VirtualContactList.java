@@ -235,10 +235,6 @@ public final class VirtualContactList {
         group.sort();
     }
 
-    public TreeBranch getGroupNode(Group group) {
-        return group;
-    }
-
     public void putIntoQueue(Group group) {
         if (onUpdateRoster != null)
             onUpdateRoster.putIntoQueue(group);

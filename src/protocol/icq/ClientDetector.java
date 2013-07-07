@@ -4,6 +4,7 @@
 package protocol.icq;
 
 import DrawControls.icons.ImageList;
+import ru.sawim.General;
 import sawim.comm.StringConvertor;
 import protocol.ClientInfo;
 import protocol.net.TcpSocket;
@@ -44,7 +45,7 @@ public class ClientDetector {
         InputStream stream = null;
         DataInputStream is = null;
         try {
-            stream = sawim.Sawim.getResourceAsStream("/clients.bin");
+            stream = General.getResourceAsStream("/clients.bin");
             is = new DataInputStream(stream);
 
             code = new byte[is.readInt()];

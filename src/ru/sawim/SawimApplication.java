@@ -10,7 +10,7 @@ import org.microemu.MIDletBridge;
 import org.microemu.app.Common;
 import org.microemu.cldc.file.FileSystem;
 import org.microemu.util.AndroidRecordStoreManager;
-import sawim.Sawim;
+import ru.sawim.General;
 import sawim.chat.ChatHistory;
 import sawim.cl.ContactList;
 
@@ -43,7 +43,7 @@ public class SawimApplication extends Application {
         Thread.setDefaultUncaughtExceptionHandler(ExceptionHandler.inContext(getApplicationContext()));
         super.onCreate();
         MIDletInit();
-        new Sawim().startApp();
+        new General().startApp();
         ChatHistory.instance.loadUnreadMessages();
         updateAppIcon();
         ContactList.getInstance().autoConnect();

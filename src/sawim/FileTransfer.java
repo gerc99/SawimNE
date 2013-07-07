@@ -246,7 +246,7 @@ public final class FileTransfer implements FileBrowserListener,
             closeFile();
             ContactList.getInstance().removeTransfer(false);
             name_Desc.back();
-            Sawim.gc();
+            General.gc();
         } catch (Exception ignored) {
         }
     }
@@ -278,7 +278,7 @@ public final class FileTransfer implements FileBrowserListener,
 
     public void processPhoto(final byte[] data) {
         setData(new ByteArrayInputStream(data), data.length);
-        String timestamp = Util.getLocalDateString(Sawim.getCurrentGmtTime(), false);
+        String timestamp = Util.getLocalDateString(General.getCurrentGmtTime(), false);
         String photoName = "photo-"
                 + timestamp.replace('.', '-').replace(' ', '-')
                 + ".jpg";

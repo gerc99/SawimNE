@@ -1,16 +1,12 @@
 package sawim;
 
 import DrawControls.icons.Icon;
-import android.R;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
-import android.text.style.ForegroundColorSpan;
 import android.text.style.ImageSpan;
 import android.text.util.Linkify;
-import android.util.Log;
 import sawim.modules.Emotions;
 
 /**
@@ -23,27 +19,29 @@ import sawim.modules.Emotions;
 public class TextFormatter {
     static Emotions smiles = Emotions.instance;
 
-    private static void detectEmotions(Context context,
-                                       SpannableStringBuilder builder, int startPos, int endPos) {
-        for (int index = startPos; index < endPos; ++index) {
-            int smileIndex = smiles.getSmile(builder.toString(), index);
-            if (-1 != smileIndex) {
-                int length = smiles.getSmileText(smileIndex).length();
-                Icon icon = smiles.getSmileIcon(smileIndex);
-                Bitmap bitmap = Bitmap.createBitmap(icon.getImage().getBitmap(), icon.x, icon.y, icon.getWidth(), icon.getHeight());
-                ImageSpan imageSpan = new ImageSpan(context, bitmap, ImageSpan.ALIGN_BASELINE);
-                builder.setSpan(imageSpan, index, index + length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                index += length - 1;
+    private static SpannableStringBuilder detectEmotions(Context context,
+                                                         SpannableStringBuilder builder) {
+        String message = builder.toString();
+        for (int index = 0; index < message.length(); ++index) {
+            int smileIndex = smiles.getSmileChars().indexOf(message.charAt(index));
+            while (-1 != smileIndex) {
+                if (message.startsWith(smiles.getSmileText(smileIndex), index)) {
+                    int length = smiles.getSmileText(smileIndex).length();
+                    Icon icon = smiles.getSmileIcon(smileIndex);
+                    builder.setSpan(new ImageSpan(context,
+                            Bitmap.createBitmap(icon.getImage().getBitmap(), icon.x, icon.y, icon.getWidth(), icon.getHeight()),
+                            ImageSpan.ALIGN_BASELINE), index, index + length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    index += length - 1;
+                }
+                smileIndex = smiles.getSmileChars().indexOf(message.charAt(index), smileIndex + 1);
             }
         }
+        return builder;
     }
 
-    public static Spannable getFormattedText(String text, Context context) {
+    public static SpannableStringBuilder getFormattedText(String text, Context context) {
         SpannableStringBuilder builder = new SpannableStringBuilder(text);
-        Linkify.addLinks(builder, 1);
-        detectEmotions(context, builder, 0, text.length());
-        builder.setSpan(null, 0, text.length(),
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        return builder;
+        //if (Linkify.addLinks(builder, 1)) return builder;
+        return detectEmotions(context, builder);
     }
 }

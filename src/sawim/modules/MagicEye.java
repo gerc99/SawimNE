@@ -30,7 +30,7 @@ import android.view.MenuItem;
 import protocol.*;
 import DrawControls.icons.Icon;
 import ru.sawim.models.form.VirtualListItem;
-import sawim.Sawim;
+import ru.sawim.General;
 import sawim.SawimUI;
 import sawim.comm.Util;
 import ru.sawim.Scheme;
@@ -105,7 +105,7 @@ public final class MagicEye {
     private synchronized void registerAction(Protocol protocol, String userId,
             String action, String msg, Icon icon) {
 
-        String date = Util.getLocalDateString(Sawim.getCurrentGmtTime(), true);
+        String date = Util.getLocalDateString(General.getCurrentGmtTime(), true);
         action = JLocale.getString(action);
         Contact contact = protocol.getItemByUIN(userId);
 

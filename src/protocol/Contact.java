@@ -8,7 +8,7 @@ import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.SubMenu;
 import ru.sawim.view.FileProgressView;
-import sawim.Sawim;
+import ru.sawim.General;
 import sawim.Options;
 import sawim.chat.Chat;
 import sawim.chat.message.Message;
@@ -106,7 +106,7 @@ abstract public class Contact implements TreeNode, Sortable {
 
     public void setOfflineStatus() {
         if (isOnline()) {
-            setTimeOfChaingingStatus(Sawim.getCurrentGmtTime());
+            setTimeOfChaingingStatus(General.getCurrentGmtTime());
 			
 			String id = getUserId();
 			if (Tracking.isTrackingEvent(id, Tracking.GLOBAL) == Tracking.TRUE) {
@@ -128,7 +128,7 @@ abstract public class Contact implements TreeNode, Sortable {
     }
     protected final void setStatus(byte statusIndex, String text) {
         if (!isOnline() && (StatusInfo.STATUS_OFFLINE != statusIndex)) {
-            setTimeOfChaingingStatus(Sawim.getCurrentGmtTime());
+            setTimeOfChaingingStatus(General.getCurrentGmtTime());
         }
         status = statusIndex;
         statusText = (StatusInfo.STATUS_OFFLINE == status) ? null : text;

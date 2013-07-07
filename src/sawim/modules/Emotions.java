@@ -4,6 +4,7 @@ package sawim.modules;
 import DrawControls.icons.AniImageList;
 import DrawControls.icons.Icon;
 import DrawControls.icons.ImageList;
+import ru.sawim.General;
 import sawim.comm.StringConvertor;
 import protocol.net.TcpSocket;
 
@@ -19,7 +20,7 @@ public final class Emotions {
     private String[] selEmotionsWord;
     private String[] selEmotionsSmileNames;
 
-    public String smileChars;
+    private String smileChars;
     private int[] textCorrIndexes;
     private String[] textCorrWords;
 
@@ -163,13 +164,11 @@ public final class Emotions {
     }
     private ImageList loadIcons(int iconsSize) throws IOException {
         ImageList emoImages = null;
-        // #sijapp cond.if modules_ANISMILES is "true" #
         emoImages = new AniImageList();
         emoImages.load("/smiles", iconsSize, iconsSize);
         if (0 < emoImages.size()) {
             return emoImages;
         }
-        // #sijapp cond.end #
         emoImages = new ImageList();
         emoImages.load("/smiles.png", iconsSize, iconsSize);
         return emoImages;
@@ -179,18 +178,14 @@ public final class Emotions {
         Vector textCorr = new Vector();
         Vector selEmotions = new Vector();
 
-        // #sijapp cond.if modules_DEBUGLOG is "true"#
-        sawim.Sawim.gc();
+        General.gc();
         long mem = Runtime.getRuntime().freeMemory();
-        // #sijapp cond.end#
 
         // Load file "smiles.txt"
         InputStream stream = null;
-        // #sijapp cond.if modules_ANISMILES is "true" #
-        stream = sawim.Sawim.getResourceAsStream("/smiles/smiles.txt");
-        // #sijapp cond.end #
+        stream = General.getResourceAsStream("/smiles/smiles.txt");
         if (null == stream) {
-            stream = sawim.Sawim.getResourceAsStream("/smiles.txt");
+            stream = General.getResourceAsStream("/smiles.txt");
         }
         if (null == stream) {
             return false;
@@ -239,16 +234,14 @@ public final class Emotions {
         }
         this.smileChars = fisrtChars.toString();
 
-        // #sijapp cond.if modules_DEBUGLOG is "true"#
         DebugLog.println("Emotions used (full): "+(mem - Runtime.getRuntime().freeMemory()));
         selEmotions.removeAllElements();
         selEmotions = null;
         textCorr.removeAllElements();
         textCorr = null;
-        sawim.Sawim.gc();
+        General.gc();
         DebugLog.println("Emotions used: "+(mem - Runtime.getRuntime().freeMemory()));
-        // #sijapp cond.end#
-        sawim.Sawim.gc();
+        General.gc();
         images = emoImages;
         return true;
     }
@@ -284,6 +277,9 @@ public final class Emotions {
         }
         return -1;
     }
+    public String getSmileChars() {
+        return smileChars;
+    }
     public Icon getSmileIcon(int smileIndex) {
         return images.iconAt(textCorrIndexes[smileIndex]);
     }
@@ -300,9 +296,5 @@ public final class Emotions {
 
     public Icon getSmile(int smileIndex) {
         return images.iconAt(smileIndex);
-    }
-
-    public int getSmileHeight() {
-        return images.getHeight();
     }
 }

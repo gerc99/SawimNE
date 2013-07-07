@@ -1,6 +1,6 @@
 package protocol.net;
 
-import sawim.Sawim;
+import ru.sawim.General;
 import sawim.SawimException;
 import sawim.chat.message.PlainMessage;
 import sawim.comm.StringConvertor;
@@ -24,7 +24,7 @@ public abstract class ClientConnection implements Runnable {
 
     protected final void setPingInterval(long interval) {
         keepAliveInterv = Math.min(keepAliveInterv, interval);
-        nextPingTime = Sawim.getCurrentGmtTime() + keepAliveInterv;
+        nextPingTime = General.getCurrentGmtTime() + keepAliveInterv;
     }
     protected final long getPingInterval() {
         return keepAliveInterv;
@@ -37,7 +37,7 @@ public abstract class ClientConnection implements Runnable {
     private void initPingValues() {
         usePong = false;
         keepAliveInterv = PING_INTERVAL;
-        nextPingTime = Sawim.getCurrentGmtTime() + keepAliveInterv;
+        nextPingTime = General.getCurrentGmtTime() + keepAliveInterv;
     }
     public final void start() {
         new Thread(this).start();
@@ -99,7 +99,7 @@ public abstract class ClientConnection implements Runnable {
     }
 
     private void doPingIfNeeeded() throws SawimException {
-        long now = Sawim.getCurrentGmtTime();
+        long now = General.getCurrentGmtTime();
         if (usePong && (pongTime + PONG_TIMEOUT < now)) {
             throw new SawimException(120, 9);
         }
@@ -114,7 +114,7 @@ public abstract class ClientConnection implements Runnable {
         }
     }
     protected final void updateTimeout() {
-        pongTime = Sawim.getCurrentGmtTime();
+        pongTime = General.getCurrentGmtTime();
     }
     public final boolean isConnected() {
         return connect;
@@ -151,7 +151,7 @@ public abstract class ClientConnection implements Runnable {
                 messages.removeElement(msg);
             }
         }
-        long date = Sawim.getCurrentGmtTime() - 5 * 60;
+        long date = General.getCurrentGmtTime() - 5 * 60;
         for (int i = messages.size() - 1; i >= 0; --i) {
             PlainMessage m = (PlainMessage)messages.elementAt(i);
             if (date > m.getNewDate()) {

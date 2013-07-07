@@ -85,29 +85,31 @@
                 android:layout_height="fill_parent"
                 android:layout_gravity="center"
                 style="@style/InputBar.Editor">
-        <ImageButton
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:id="@+id/input_smile_button"
-                android:layout_gravity="center"
-                android:src="@drawable/input_smile_button"
-                style="@style/InputBar.Button" />
+            <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:id="@+id/input_smile_button"
+                    android:layout_gravity="center"
+                    android:src="@drawable/input_smile_button"
+                    style="@style/InputBar.Button"/>
 
-        <EditText
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:id="@+id/messageBox" android:layout_gravity="center|left" android:layout_alignParentLeft="true"
-                android:layout_alignParentTop="true"
-                android:layout_weight="0.87"
-                style="@style/InputBar.EditText" android:inputType="textMultiLine|textCapSentences"/>
-        <ImageButton
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:id="@+id/input_send_button"
-                android:layout_gravity="center"
-                android:src="@drawable/input_send_button"
-                style="@style/InputBar.Button"/>
+            <EditText
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:id="@+id/messageBox" android:layout_gravity="center|left"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentTop="true"
+                    android:maxLines="4"
+                    android:layout_weight="0.87"
+                    style="@style/InputBar.EditText"/>
+            <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:id="@+id/input_send_button"
+                    android:layout_gravity="center"
+                    android:src="@drawable/input_send_button"
+                    style="@style/InputBar.Button"/>
 
-    </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
 </LinearLayout>

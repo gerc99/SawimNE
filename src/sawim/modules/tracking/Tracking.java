@@ -5,7 +5,7 @@ import protocol.Contact;
 import protocol.Protocol;
 import protocol.icq.Icq;
 import protocol.mrim.Mrim;
-import sawim.Sawim;
+import ru.sawim.General;
 import sawim.chat.Chat;
 import sawim.chat.message.Message;
 import sawim.chat.message.PlainMessage;
@@ -378,7 +378,7 @@ public final class Tracking {
                 break;
             case ACTION_INCHAT:
                 String notice = JLocale.getString("track_action_online");
-                PlainMessage plainMsg = new PlainMessage(item.getUserId(), protocol, Sawim.getCurrentGmtTime(), notice, true);
+                PlainMessage plainMsg = new PlainMessage(item.getUserId(), protocol, General.getCurrentGmtTime(), notice, true);
                 plainMsg.setSendingState(Message.ICON_MSG_TRACK);
 
                 break;
@@ -419,7 +419,7 @@ public final class Tracking {
                 break;
             case ACTION_INCHAT:
                 String notice = JLocale.getString("track_action_offline");
-                PlainMessage plainMsg = new PlainMessage(item.getUserId(), protocol, Sawim.getCurrentGmtTime(), notice, true);
+                PlainMessage plainMsg = new PlainMessage(item.getUserId(), protocol, General.getCurrentGmtTime(), notice, true);
                 plainMsg.setSendingState(Message.ICON_MSG_TRACK);
 
                 break;
@@ -476,7 +476,7 @@ public final class Tracking {
 
         switch (action) {
             case ACTION_INCHAT:
-                PlainMessage plainMsg = new PlainMessage(item.getUserId(), protocol, Sawim.getCurrentGmtTime(), status_comm, true);
+                PlainMessage plainMsg = new PlainMessage(item.getUserId(), protocol, General.getCurrentGmtTime(), status_comm, true);
                 plainMsg.setSendingState(Message.ICON_MSG_TRACK);
                 break;
 

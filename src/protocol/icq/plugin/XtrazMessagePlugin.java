@@ -1,10 +1,6 @@
-
-
-
-
 package protocol.icq.plugin;
 
-import sawim.Sawim;
+import ru.sawim.General;
 import sawim.comm.ArrayReader;
 import sawim.comm.GUID;
 import sawim.comm.StringConvertor;
@@ -30,17 +26,14 @@ public class XtrazMessagePlugin {
         cookie2 = reader.getDWordBE();
     }
 
-    
     public XtrazMessagePlugin(IcqContact rcvr, String msg) {
         this.rcvr = rcvr;
         this.msg = msg;
     }
 
-
     private boolean isRequest() {
         return msg.startsWith("<N>");
     }
-
 
     private byte[] getData() {
         byte[] str = StringConvertor.stringToByteArrayUtf8(msg);
@@ -50,9 +43,8 @@ public class XtrazMessagePlugin {
         return buffer.toByteArray();
     }
 
-
     public SnacPacket getPacket() {
-        time = Sawim.getCurrentGmtTime() * 1000;
+        time = General.getCurrentGmtTime() * 1000;
         if (!isRequest()) {
             return new SnacPacket(SnacPacket.CLI_ICBM_FAMILY,
                     SnacPacket.CLI_ACKMSG_COMMAND,
@@ -80,31 +72,23 @@ public class XtrazMessagePlugin {
         return buffer.toByteArray();
     }
 
-
-
     private byte[] makeTlv5() {
         Util tlv5 = new Util();
         tlv5.writeWordBE(0x0000);
         tlv5.writeDWordBE(time);
         tlv5.writeDWordBE(0x00000000);
-        
         tlv5.writeByteArray(GUID.CAP_AIM_SERVERRELAY.toByteArray());
 
-        
         tlv5.writeTLVWord(0x000a, 0x0001);
 
-        
         tlv5.writeTLV(0x000f, null);
 
-        
         tlv5.writeTLV(0x2711, makeTlv1127());
         return tlv5.toByteArray();
     }
     private byte[] initReqMsg() {
-        
         byte[] uinRaw = StringConvertor.stringToByteArray(rcvr.getUserId());
 
-        
         Util buffer = new Util();
 
         buffer.writeDWordBE(time); 
@@ -113,7 +97,6 @@ public class XtrazMessagePlugin {
         buffer.writeByte(uinRaw.length); 
         buffer.writeByteArray(uinRaw);
 
-        
         buffer.writeTLV(0x0005, makeTlv5());
         buffer.writeTLV(0x0003, null); 
         return buffer.toByteArray();
@@ -123,47 +106,36 @@ public class XtrazMessagePlugin {
         byte[] textRaw = new byte[0];
         byte[] pluginData = pluginData();
         Util tlv1127 = new Util();
-
         
-        tlv1127.writeWordLE(0x001B); 
-
+        tlv1127.writeWordLE(0x001B);
         
         tlv1127.writeWordLE(0x0008);
-
         
         tlv1127.writeDWordBE(0x00000000);
         tlv1127.writeDWordBE(0x00000000);
         tlv1127.writeDWordBE(0x00000000);
         tlv1127.writeDWordBE(0x00000000);
 
-        
         tlv1127.writeWordLE(0x0000);
         tlv1127.writeByte(0x03);
-
         
         tlv1127.writeDWordBE(0x00000000);
 
-        
         int SEQ1 = 0xffff - 1;
         tlv1127.writeWordLE(SEQ1);
         tlv1127.writeWordLE(0x000E); 
         tlv1127.writeWordLE(SEQ1);
 
-        
         tlv1127.writeDWordLE(0x00000000);
         tlv1127.writeDWordLE(0x00000000);
         tlv1127.writeDWordLE(0x00000000);
 
-        
         tlv1127.writeWordLE(IcqNetDefActions.MESSAGE_TYPE_EXTENDED);
 
-        
         tlv1127.writeWordLE(IcqStatusInfo.STATUS_ONLINE);
 
-        
         tlv1127.writeWordLE(0x0001);
 
-        
         tlv1127.writeWordLE(textRaw.length + 1);
         tlv1127.writeByteArray(textRaw);
         tlv1127.writeByte(0x00);
@@ -187,7 +159,6 @@ public class XtrazMessagePlugin {
         buffer.writeByteArray(guid.toByteArray());
         buffer.writeWordLE(command);
 
-        
         buffer.writeDWordLE(subType.length);
         buffer.writeByteArray(subType);
 
@@ -197,13 +168,9 @@ public class XtrazMessagePlugin {
         buffer.writeWordBE(0x0000);
         buffer.writeByte(0x00);
 
-
         buffer.writeDWordLE(data.length);
         buffer.writeByteArray(data);
 
         return buffer.toByteArray();
     }
 }
-
-
-

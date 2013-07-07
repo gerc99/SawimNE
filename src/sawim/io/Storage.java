@@ -4,7 +4,7 @@
 
 package sawim.io;
 
-import sawim.Sawim;
+import ru.sawim.General;
 import sawim.comm.StringConvertor;
 
 import javax.microedition.rms.RecordStore;
@@ -78,7 +78,7 @@ public final class Storage {
         
         if (rs.getNumRecords() < count) {
             if ((1 < count) && (0 == rs.getNumRecords())) {
-                byte[] version = StringConvertor.stringToByteArrayUtf8(Sawim.VERSION);
+                byte[] version = StringConvertor.stringToByteArrayUtf8(General.VERSION);
                 rs.addRecord(version, 0, version.length);
             }
             while (rs.getNumRecords() < count) {
