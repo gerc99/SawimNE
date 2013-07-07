@@ -169,8 +169,7 @@ public final class Search implements FormListener, ControlStateListener {
     }
     private void createSearchForm() {
         screen = VirtualList.getInstance();
-        searchForm = Forms.getInstance();
-        searchForm.init((TYPE_LITE == type) ? "add_user" : "search_user", this);
+        searchForm = new Forms((TYPE_LITE == type) ? "add_user" : "search_user", this);
         if (TYPE_LITE == type) {
             addUserIdItem();
             if (null != jabberGate) {

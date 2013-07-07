@@ -22,7 +22,6 @@ import ru.sawim.R;
 import ru.sawim.Scheme;
 import ru.sawim.activities.AccountsListActivity;
 import ru.sawim.activities.ChatActivity;
-import ru.sawim.models.ContactsAdapter;
 import ru.sawim.models.CustomPagerAdapter;
 import ru.sawim.models.RosterAdapter;
 import sawim.Options;
@@ -57,8 +56,8 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
     private CustomPagerAdapter pagerAdapter;
     private ArrayList<BaseAdapter> adaptersPages = new ArrayList<BaseAdapter>();
     private RosterAdapter allRosterAdapter;
-    private ContactsAdapter onlineRosterAdapter;
-    private ContactsAdapter chatsRosterAdapter;
+    private RosterAdapter onlineRosterAdapter;
+    private RosterAdapter chatsRosterAdapter;
     private VirtualContactList owner;
     private Vector updateQueue = new Vector();
     private List<TreeNode> items = new ArrayList<TreeNode>();
@@ -90,9 +89,9 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         rosterBarLayout.setBackgroundColor(General.getColorWithAlpha(Scheme.THEME_CAP_BACKGROUND));
 
         LayoutInflater inf = LayoutInflater.from(currentActivity);
-        allRosterAdapter = new RosterAdapter(inf, owner, items);
-        onlineRosterAdapter = new ContactsAdapter(inf, owner, ContactsAdapter.ONLINE_CONTACTS);
-        chatsRosterAdapter = new ContactsAdapter(inf, owner, ContactsAdapter.OPEN_CHATS);
+        allRosterAdapter = new RosterAdapter(inf, owner, items, RosterAdapter.ALL_CONTACTS);
+        onlineRosterAdapter = new RosterAdapter(inf, owner, items, RosterAdapter.ONLINE_CONTACTS);
+        chatsRosterAdapter = new RosterAdapter(inf, owner, ChatHistory.instance.chats(), RosterAdapter.OPEN_CHATS);
 
         adaptersPages.add(allRosterAdapter);
         adaptersPages.add(onlineRosterAdapter);
@@ -250,7 +249,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         if (item.isContact()) {
             Protocol p;
             Contact c;
-            if (viewPager.getCurrentItem() == ContactsAdapter.OPEN_CHATS) {
+            if (viewPager.getCurrentItem() == RosterAdapter.OPEN_CHATS) {
                 c = ChatHistory.instance.contactAt(position);
                 p = c.getProtocol();
             } else {
@@ -397,15 +396,6 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
     }
 
     private void updatePage(final int currPage) {
-        if (currPage == ContactsAdapter.ONLINE_CONTACTS) {
-            onlineRosterAdapter.clear();
-            Vector contacts = general.getCurrProtocol().getSortedContacts();
-            for (int i = 0; i < contacts.size(); ++i) {
-                Contact c = (Contact) contacts.get(i);
-                if (c.isVisibleInContactList())
-                    onlineRosterAdapter.setItems(c);
-            }
-        }
         if (adaptersPages != null && adaptersPages.size() > 0)
             adaptersPages.get(currPage).notifyDataSetChanged();
     }
@@ -415,9 +405,9 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (viewPager.getCurrentItem() == ContactsAdapter.OPEN_CHATS) {
+                if (viewPager.getCurrentItem() == RosterAdapter.OPEN_CHATS) {
                     Util.sort(ChatHistory.instance.chats());
-                    adaptersPages.get(ContactsAdapter.OPEN_CHATS).notifyDataSetChanged();
+                    adaptersPages.get(RosterAdapter.OPEN_CHATS).notifyDataSetChanged();
                 } else {
                     rebuildRoster(viewPager.getCurrentItem());
                 }

@@ -22,7 +22,7 @@ import ru.sawim.models.form.Forms;
 
 public final class Answerer implements FormListener {
     private Vector dictionary = new Vector();
-    private Forms form = Forms.getInstance();
+    private Forms form;
     private VirtualList list;
 	private VirtualListModel model = new VirtualListModel();
 
@@ -37,7 +37,7 @@ public final class Answerer implements FormListener {
     private static final int FORM_EDIT_ANSWER = 1;
     
     private Answerer() {
-        form.init("answerer_dictionary", this);
+        form = new Forms("answerer_dictionary", this);
     }
     
     private static final Answerer instance = new Answerer();

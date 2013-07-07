@@ -40,8 +40,7 @@ public final class AdHoc implements FormListener, ControlStateListener {
 	}
 
     public void show() {
-        commandsListForm = Forms.getInstance();
-        commandsListForm.init(JLocale.getString("adhoc"), this);
+        commandsListForm = new Forms(JLocale.getString("adhoc"), this);
         updateForm(false);
         commandsListForm.setControlStateListener(this);
         commandsListForm.show(SawimActivity.getInstance());
@@ -141,6 +140,7 @@ public final class AdHoc implements FormListener, ControlStateListener {
             execForm();
             ContactList.getInstance().activate(contact);
         }
+        form.backForm();
     }
     private void execForm() {
         String xml = "<iq type='set' to='" + Util.xmlEscape(jid) + "' id='"
@@ -188,8 +188,7 @@ public final class AdHoc implements FormListener, ControlStateListener {
             }
         }
         if (showForm) {
-            commandsListForm.show();
-            //form.getForm().show(FormActivity.getInstance());
+            form.getForm().show(FormActivity.getInstance());
         }
     }
 
@@ -197,7 +196,7 @@ public final class AdHoc implements FormListener, ControlStateListener {
     public void controlStateChanged(int id) {
         if (FORM_RESOURCE == id) {
             //requestCommandsForCurrentResource();
-            //updateForm(false);
+           // updateForm(false);
         }
     }
 }

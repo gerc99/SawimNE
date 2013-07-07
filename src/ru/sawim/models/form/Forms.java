@@ -24,7 +24,7 @@ import java.util.List;
  */
 public class Forms {
 
-    public List<Control> controls;
+    public List<Control> controls = new ArrayList<Control>();
     public static final byte CONTROL_TEXT = 0;
     public static final byte CONTROL_INPUT = 1;
     public static final byte CONTROL_CHECKBOX = 2;
@@ -37,7 +37,7 @@ public class Forms {
     private OnBackPressed backPressedListener;
     private ControlStateListener controlListener;
     public CharSequence caption;
-    private static Forms instance = new Forms();
+    private static Forms instance;
 
     public void back() {
         updateFormListener.back();
@@ -108,10 +108,10 @@ public class Forms {
         public Bitmap image;
     }
 
-    public void init(String caption_, FormListener l) {
-        controls = new ArrayList<Control>();
+    public Forms(String caption_, FormListener l) {
         caption = JLocale.getString(caption_);
         formListener = l;
+		instance = this;
     }
 
     public void setControlStateListener(ControlStateListener l) {

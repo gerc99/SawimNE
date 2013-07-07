@@ -791,8 +791,7 @@ public final class Jabber extends Protocol implements FormListener {
 	}
 
 	final void showInviteForm(String jid) {
-	    enterDataInvite = Forms.getInstance();
-        enterDataInvite.init("invite", this);
+	    enterDataInvite = new Forms("invite", this);
 	    enterDataInvite.addSelector(JID_MESS_TO, "conference", onlineConference(getContactItems()), 1); 
 		enterDataInvite.addTextField(JID_INVITE_TO, "jid", jid);
         enterDataInvite.addTextField(REASON_INVITE, "reason", "");
@@ -800,8 +799,7 @@ public final class Jabber extends Protocol implements FormListener {
 	}
     void showOptionsForm(JabberServiceContact c) {
         enterConf = c;
-        enterData = Forms.getInstance();
-        enterData.init("conference", this);
+        enterData = new Forms("conference", this);
         enterData.addTextField(NICK, "nick", c.getMyName());
         enterData.addTextField(PASSWORD, "password", c.getPassword());
         if (!c.isTemp()) {

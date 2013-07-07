@@ -34,8 +34,7 @@ public class EditInfo implements FormListener {
 
     public EditInfo init() {
         final boolean isJabber = (protocol instanceof protocol.jabber.Jabber);
-        form = Forms.getInstance();
-        form.init("editform", this);
+        form = new Forms("editform", this);
 
         form.addTextField(_NickNameItem, "nick", userInfo.nick);
         form.addTextField(_FirstNameItem, "firstname", userInfo.firstName);

@@ -174,8 +174,7 @@ public class OptionsForm implements FormListener, ControlStateListener {
 
     public void select(CharSequence name, int cmd) {
         currentOptionsForm = cmd;
-        form = Forms.getInstance();
-        form.init(SawimApplication.getContext().getString(R.string.options), this);
+        form = new Forms(SawimApplication.getContext().getString(R.string.options), this);
         form.setBackPressedListener(new Forms.OnBackPressed() {
             @Override
             public boolean back() {

@@ -194,8 +194,7 @@ public final class MirandaNotes {
         }
 
         private void showIt() {
-            Forms form = Forms.getInstance();
-            form.init("notes", this);
+            Forms form = new Forms("notes", this);
             form.addTextField(FIELD_TITLE, "title", note.title);
             form.addTextField(FIELD_TAGS, "tags", note.tags);
             form.addTextField(FIELD_TEXT, "text", note.text);

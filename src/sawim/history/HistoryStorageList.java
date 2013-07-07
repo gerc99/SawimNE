@@ -132,8 +132,7 @@ public final class HistoryStorageList implements Runnable, FormListener {
         switch (action) {
             case MENU_FIND:
                 if (null == frmFind) {
-                    frmFind = Forms.getInstance();
-                    frmFind.init("find", this);
+                    frmFind = new Forms("find", this);
                     frmFind.addTextField(tfldFind, "text_to_find", "");
                     frmFind.addCheckBox(find_backwards, "find_backwards", true);
                     frmFind.addCheckBox(find_case_sensitiv, "find_case_sensitiv", false);
