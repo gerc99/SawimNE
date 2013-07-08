@@ -69,7 +69,7 @@ public class RosterAdapter extends BaseAdapter {
     public View getView(int i, View convertView, ViewGroup viewGroup) {
         TreeNode o = getItem(i);
         if (type == ONLINE_CONTACTS && o.isContact()) {
-            Contact c = (Contact) items.get(i);
+            Contact c = (Contact) o;
             ViewHolderRoster holder;
             if (convertView == null) {
                 convertView = mInflater.inflate(R.layout.roster_item, null);
@@ -80,7 +80,6 @@ public class RosterAdapter extends BaseAdapter {
             }
             if (c.isVisibleInContactList())
                 holder.populateFromContact(c);
-            return convertView;
         } else if (type == OPEN_CHATS) {
             ItemWrapper wr;
             if (convertView == null) {
@@ -91,8 +90,7 @@ public class RosterAdapter extends BaseAdapter {
                 wr = (ItemWrapper) convertView.getTag();
             }
             if (o.isContact())
-                wr.populateFrom((Contact) items.get(i));
-            return convertView;
+                wr.populateFrom((Contact) o);
         } else {
             ViewHolderRoster holder;
             if (convertView == null) {
@@ -112,7 +110,7 @@ public class RosterAdapter extends BaseAdapter {
         return convertView;
     }
 
-    public static class ItemWrapper {
+    static class ItemWrapper {
         View item = null;
         private TextView itemName = null;
         private ImageView itemImage = null;

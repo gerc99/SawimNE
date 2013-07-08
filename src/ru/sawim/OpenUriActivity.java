@@ -88,7 +88,7 @@ public class OpenUriActivity extends Activity {
     }
 
     private void alert() {
-		AlertDialog.Builder alertDialog = new AlertDialog.Builder(new ContextThemeWrapper(SawimActivity.getInstance(), R.style.AlertDialogCustom));
+		AlertDialog.Builder alertDialog = new AlertDialog.Builder(SawimActivity.getInstance());
         alertDialog.setTitle(getText(R.string.app_name));
         alertDialog.setMessage(getText(R.string.xmppAccountDontFound));
         alertDialog.show();

@@ -248,14 +248,11 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         TreeNode item = ((RosterAdapter)adaptersPages.get(viewPager.getCurrentItem())).getItem(position);
         if (item.isContact()) {
             Protocol p;
-            Contact c;
-            if (viewPager.getCurrentItem() == RosterAdapter.OPEN_CHATS) {
-                c = ChatHistory.instance.contactAt(position);
+            Contact c = ((Contact) item);
+            if (viewPager.getCurrentItem() == RosterAdapter.OPEN_CHATS)
                 p = c.getProtocol();
-            } else {
-                c = ((Contact) item);
+            else
                 p = general.getCurrProtocol();
-            }
             c.activate(p);
             if (!isInLayout()) return;
             if (viewer == null || !viewer.isInLayout()) {
