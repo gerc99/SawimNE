@@ -31,7 +31,6 @@ public final class StatusView {
     }
 
     public void addClient() {
-        addBr();
         if ((ClientInfo.CLI_NONE != contact.clientIndex)
                 && (null != protocol.clientInfo)) {
             addPlain(protocol.clientInfo.getIcon(contact.clientIndex),
@@ -63,12 +62,7 @@ public final class StatusView {
             }
         }
     }
-    
-    public void addBr() {
-        VirtualListItem line = model.createNewParser(false);
-        line.addDescription(" \n", Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
-        model.addPar(line);
-    }
+
     public void addPlain(Icon img, String str) {
         if (!StringConvertor.isEmpty(str)) {
             VirtualListItem line = model.createNewParser(true);

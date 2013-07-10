@@ -69,7 +69,7 @@ public final class ManageContactListForm implements FormListener, TextBoxView.Te
                 itemsId.add(g.getId());
             }
         }
-        AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(a, R.style.AlertDialogCustom));
+        AlertDialog.Builder builder = new AlertDialog.Builder(a);
         builder.setTitle(contact.getName());
         builder.setItems(Util.vectorToArray(items), new DialogInterface.OnClickListener() {
             @Override

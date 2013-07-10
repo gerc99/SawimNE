@@ -217,6 +217,7 @@ abstract public class Protocol {
             Util.sort(sortedGroups);
             updateContacts(notInListGroup);
         }
+        if (getContactList().getManager().getProtocolCount() == 0) return;
         getContactList().getManager().update();
         needSave();
     }

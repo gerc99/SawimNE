@@ -65,7 +65,7 @@ public class AccountsListView extends Fragment {
         switch (item.getItemId()) {
 
             case R.id.menu_edit:
-                new LoginDialog(protocolType, accountID, true);
+                new LoginDialog(protocolType, accountID, true).show(getActivity().getSupportFragmentManager(), "login");
                 return true;
 
             case R.id.menu_delete:

@@ -237,11 +237,6 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-    }
-
-    @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
         ChatView viewer = (ChatView) getActivity().getSupportFragmentManager()
                 .findFragmentById(R.id.chat_fragment);
@@ -359,7 +354,6 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
     @Override
     public void updateBarProtocols() {
         final int protCount = owner.getProtocolCount();
-        Log.e("RosterView", ""+protCount);
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -370,9 +364,6 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
                     for (int j = 0; j < protCount; ++j) {
                         Protocol protocol = owner.getProtocol(j);
                         ImageButton imageBarButtons = new ImageButton(getActivity());
-                        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-                        lp.gravity = Gravity.CENTER;
-                        imageBarButtons.setLayoutParams(lp);
                         if (j == owner.getCurrProtocol())
                             imageBarButtons.setBackgroundColor(General.getColorWithAlpha(Scheme.THEME_BACKGROUND));
                         imageBarButtons.setImageBitmap(General.iconToBitmap(protocol.getCurrentStatusIcon()));
@@ -382,6 +373,9 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
                         Icon messageIcon = ChatHistory.instance.getUnreadMessageIcon(protocol);
                         if (null != messageIcon)
                             imageBarButtons.setImageBitmap(General.iconToBitmap(messageIcon));
+                        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+                        lp.gravity = Gravity.CENTER;
+                        imageBarButtons.setLayoutParams(lp);
                         topLinearLayout.addView(imageBarButtons, j);
                     }
                 } else {

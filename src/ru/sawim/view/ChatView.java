@@ -7,10 +7,12 @@ import android.app.AlertDialog;
 import android.content.*;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.*;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -128,10 +130,10 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
                 menu.add(JLocale.getString("ft_cam"), Contact.USER_MENU_CAM_TRANS);
             }
         }
+        menu.add(getActivity().getResources().getString(R.string.user_statuses), Contact.USER_MENU_STATUSES);
         if (!currentContact.isSingleUserContact() && currentContact.isOnline()) {
             menu.add(JLocale.getString("leave_chat"), Contact.CONFERENCE_DISCONNECT);
         }
-        menu.add(getActivity().getResources().getString(R.string.user_statuses), Contact.USER_MENU_STATUSES);
         menu.add(JLocale.getString("delete_chat"), ACTION_DEL_CHAT);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(getActivity(), R.style.AlertDialogCustom));
@@ -261,7 +263,7 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
 
     public void pause(Chat chat) {
         if (chat == null) return;
-        addLastPosition(chat.getContact().getUserId(), chatListView.getFirstVisiblePosition());
+            addLastPosition(chat.getContact().getUserId(), chatListView.getFirstVisiblePosition());
     }
 
     public void resume(final Chat chat) {
@@ -383,14 +385,14 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
             messageEditor.setOnEditorActionListener(enterListener);
         }
         messageEditor.addTextChangedListener(textWatcher);
-        chatListView.setFocusable(true);
-        chatListView.setCacheColorHint(0x00000000);
-        chatListView.setOnScrollListener(this);
-        chatListView.setTranscriptMode(ListView.TRANSCRIPT_MODE_NORMAL);
         chatListView.setStackFromBottom(true);
-        chatListView.setAdapter(adapter);
+        chatListView.setTranscriptMode(ListView.TRANSCRIPT_MODE_NORMAL);
         chatListView.setOnCreateContextMenuListener(this);
         chatListView.setOnItemClickListener(new ChatClick());
+        chatListView.setOnScrollListener(this);
+        chatListView.setFocusable(true);
+        chatListView.setCacheColorHint(0x00000000);
+        chatListView.setAdapter(adapter);
     }
 
     public class ChatClick implements ListView.OnItemClickListener {

@@ -662,7 +662,7 @@ public final class Jabber extends Protocol implements FormListener {
                 selected = i;
             }
         }
-		AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(SawimActivity.getInstance(), R.style.AlertDialogCustom));
+		AlertDialog.Builder builder = new AlertDialog.Builder(SawimActivity.getInstance());
         builder.setTitle(c.getName());
         builder.setSingleChoiceItems(Util.vectorToArray(items), selected, new DialogInterface.OnClickListener() {
             @Override
