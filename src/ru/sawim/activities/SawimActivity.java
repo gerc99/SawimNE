@@ -149,12 +149,11 @@ public class SawimActivity extends FragmentActivity {
     public boolean onPrepareOptionsMenu(Menu menu) {
         menu.clear();
         Protocol p = ContactList.getInstance().getCurrProtocol();
-        menu.add(Menu.NONE, MENU_CONNECT, Menu.NONE, R.string.connect);
-        if (p != null)
-            menu.findItem(MENU_CONNECT).setTitle((p.isConnected() || p.isConnecting()) ? R.string.disconnect : R.string.connect);
-        menu.add(Menu.NONE, MENU_STATUS, Menu.NONE, R.string.status);
-        menu.add(Menu.NONE, MENU_XSTATUS, Menu.NONE, R.string.xstatus);
         if (p != null) {
+            menu.add(Menu.NONE, MENU_CONNECT, Menu.NONE, R.string.connect);
+            menu.findItem(MENU_CONNECT).setTitle((p.isConnected() || p.isConnecting()) ? R.string.disconnect : R.string.connect);
+            menu.add(Menu.NONE, MENU_STATUS, Menu.NONE, R.string.status);
+            menu.add(Menu.NONE, MENU_XSTATUS, Menu.NONE, R.string.xstatus);
             if ((p instanceof Icq) || (p instanceof Mrim))
                 menu.add(Menu.NONE, MENU_PRIVATE_STATUS, Menu.NONE, R.string.private_status);
 
@@ -165,8 +164,6 @@ public class SawimActivity extends FragmentActivity {
                     menu.add(Menu.NONE, MENU_SEND_SMS, Menu.NONE, R.string.send_sms);
                 }
             }
-        }
-        if (p != null)
             if (p.isConnected()) {
                 SubMenu moreMenu = menu.addSubMenu(Menu.NONE, MENU_MORE, Menu.NONE, R.string.more);
                 if (p instanceof Jabber) {
@@ -179,6 +176,7 @@ public class SawimActivity extends FragmentActivity {
                 if (p instanceof Mrim)
                     moreMenu.add(Menu.NONE, MENU_MICROBLOG, Menu.NONE, R.string.microblog);
             }
+        }
         menu.add(Menu.NONE, MENU_SOUND, Menu.NONE, Options.getBoolean(Options.OPTION_SILENT_MODE)
                 ? R.string.sound_on : R.string.sound_off);
         menu.add(Menu.NONE, MENU_MAGIC_EYE, Menu.NONE, R.string.magic_eye);

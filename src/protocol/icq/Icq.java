@@ -812,7 +812,7 @@ public class Icq extends Protocol {
                 setIgnoreId(item, id);
                 break;
         }
-        ui_updateContact(item);
+        ui_updateContact(item, true);
     }
 
     public void setPrivacyLists(Vector ignore, Vector invisible, Vector visible) {

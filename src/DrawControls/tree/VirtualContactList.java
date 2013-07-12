@@ -1,5 +1,6 @@
 package DrawControls.tree;
 
+import android.util.Log;
 import protocol.Contact;
 import protocol.Group;
 import protocol.Protocol;
@@ -34,7 +35,7 @@ public final class VirtualContactList {
             onUpdateRoster.updateRoster();
     }
 
-    public final void update() {
+    public final void update(boolean isRebuild) {
         if (onUpdateRoster != null)
             onUpdateRoster.updateRoster();
     }
@@ -152,7 +153,8 @@ public final class VirtualContactList {
             contactCounter = 0;
             drawItems.add(g);
             contacts = g.getContacts();
-            for (int contactIndex = 0; contactIndex < contacts.size(); ++contactIndex) {
+            int contactsSize = contacts.size();
+            for (int contactIndex = 0; contactIndex < contactsSize; ++contactIndex) {
                 c = (Contact) contacts.elementAt(contactIndex);
                 if (all || c.isVisibleInContactList() || (c == selectedItem)) {
                     if (g.isExpanded()) {
@@ -170,7 +172,8 @@ public final class VirtualContactList {
         drawItems.add(g);
         contacts = g.getContacts();
         contactCounter = 0;
-        for (int contactIndex = 0; contactIndex < contacts.size(); ++contactIndex) {
+        int contactsSize = contacts.size();
+        for (int contactIndex = 0; contactIndex < contactsSize; ++contactIndex) {
             c = (Contact) contacts.elementAt(contactIndex);
             if (all || c.isVisibleInContactList() || (c == selectedItem)) {
                 if (g.isExpanded()) {
@@ -253,7 +256,6 @@ public final class VirtualContactList {
     public final void setActiveContact(Contact cItem) {
         if (onUpdateRoster != null) {
             onUpdateRoster.setCurrentNode(cItem);
-            onUpdateRoster.updateRoster();
         }
     }
 

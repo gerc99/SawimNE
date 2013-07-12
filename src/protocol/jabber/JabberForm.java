@@ -121,7 +121,6 @@ final class JabberForm implements FormListener {
                 break;
 
             case TYPE_CAPTCHA:
-                Log.e("JabberForm", "TYPE_CAPTCHA " +form.getXmlForm());
                 jabber.getConnection().requestRawXml(getCaptchaXml());
                 ContactList.getInstance().activate(jabber.getItemByUIN(jid));
                 break;

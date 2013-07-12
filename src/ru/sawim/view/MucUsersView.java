@@ -42,7 +42,7 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
     private Protocol protocol;
     private JabberServiceContact jabberServiceContact;
 
-    public MucUsersView(Protocol protocol, JabberServiceContact jabberServiceContact) {
+    public void init(Protocol protocol, JabberServiceContact jabberServiceContact) {
         this.protocol = protocol;
         this.jabberServiceContact = jabberServiceContact;
     }

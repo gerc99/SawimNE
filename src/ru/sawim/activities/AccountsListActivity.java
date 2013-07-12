@@ -61,9 +61,9 @@ public class AccountsListActivity extends FragmentActivity implements JabberRegi
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        SawimActivity.getInstance().recreateActivity();
         AccountsListView view = (AccountsListView) getSupportFragmentManager().findFragmentById(R.id.acconts_list_fragment);
         if (view != null)
             view.setCurrentProtocol();
-        SawimActivity.getInstance().recreateActivity();
     }
 }

@@ -621,7 +621,7 @@ public final class JabberXml extends ClientConnection {
                     Contact selfContact = jabber.getItemByUIN(jabber.getUserId());
                     if (null != selfContact) {
                         selfContact.setBooleanValue(Contact.CONTACT_NO_AUTH, false);
-                        jabber.ui_updateContact(selfContact);
+                        jabber.ui_updateContact(selfContact, true);
                     }
                     setProgress(80);
                     jabber.s_updateOnlineStatus();
@@ -661,7 +661,7 @@ public final class JabberXml extends ClientConnection {
                     Contact selfContact = jabber.getItemByUIN(jabber.getUserId());
                     if (null != selfContact) {
                         selfContact.setBooleanValue(Contact.CONTACT_NO_AUTH, false);
-                        jabber.ui_updateContact(selfContact);
+                        jabber.ui_updateContact(selfContact, true);
                     }
                 }
                 return;

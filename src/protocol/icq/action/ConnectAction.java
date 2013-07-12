@@ -1,5 +1,3 @@
-
-
 package protocol.icq.action;
 
 import sawim.SawimException;
@@ -16,11 +14,9 @@ import protocol.icq.Icq;
 import protocol.icq.IcqContact;
 import protocol.icq.PrivacyItem;
 import protocol.icq.packet.*;
-
 import java.util.Vector;
 
 public class ConnectAction extends IcqAction {
-    
 
     public static final int STATE_ERROR = -1;
     public static final int STATE_INIT = 0;
@@ -79,7 +75,6 @@ public class ConnectAction extends IcqAction {
     
     
     private String uin;
-    
     private String password;
     
     private int state;
@@ -113,33 +108,20 @@ public class ConnectAction extends IcqAction {
         this.active = true;
         this.state = ConnectAction.STATE_INIT;
         active();
-
-        
         getConnection().connectTo(server);
-
         state = ConnectAction.STATE_INIT_DONE;
-
         this.active = false;
-        
         active();
     }
 
-    
     public boolean forward(Packet packet) throws SawimException {
         if (null == getIcq()) {
             return false;
         }
-
-        
         this.active = true;
         active();
-        
         try {
-
-            
             boolean consumed = false;
-
-            
             if (ConnectAction.STATE_INIT_DONE == this.state) {
                 
                 if (packet instanceof ConnectPacket) {
@@ -154,11 +136,9 @@ public class ConnectAction extends IcqAction {
                             sendPacket(new SnacPacket(0x0017, 0x0006, -1, stream.toByteArray()));
                             state = STATE_AUTHKEY_REQUESTED;
                         } else {
-                            
                             sendPacket(new ConnectPacket(uin, password));
                             state = ConnectAction.STATE_CLI_IDENT_SENT;
                         }
-                        
                         consumed = true;
                     }
                 }
@@ -177,9 +157,6 @@ public class ConnectAction extends IcqAction {
                         byte[] passwordRaw = StringConvertor.stringToByteArray(password);
 
                         byte[] passkey = new MD5().calculate(passwordRaw);
-
-                        
-                        
 
                         byte[] md5buf = new byte[authkey.length + passkey.length + AIM_MD5_STRING.length];
                         int md5marker = 0;
@@ -204,8 +181,6 @@ public class ConnectAction extends IcqAction {
                     }
                 }
                 consumed = true;
-
-                
             } else if (STATE_CLI_IDENT_SENT == state) {
                 int errcode = -1;
                 if (md5login) {
@@ -238,18 +213,15 @@ public class ConnectAction extends IcqAction {
                         consumed = true;
                     }
                 } else {
-                    
                     if (packet instanceof DisconnectPacket) {
                         DisconnectPacket disconnectPacket = (DisconnectPacket) packet;
                         
                         if (DisconnectPacket.TYPE_SRV_COOKIE == disconnectPacket.getType()) {
-                            
                             getIcq().setRealUin(disconnectPacket.getUin());
                             this.uin = getIcq().getUserId();
                             this.cookie = disconnectPacket.getCookie();
                             this.server = disconnectPacket.getServer();
 
-                            
                         } else if (DisconnectPacket.TYPE_SRV_GOODBYE == disconnectPacket.getType()) {
                             errcode = disconnectPacket.getError();
                         }
@@ -292,46 +264,26 @@ public class ConnectAction extends IcqAction {
                 }
 
                 if (consumed & (null != this.server) & (null != this.cookie)) {
-                    
                     getConnection().connectTo(server);
-                    
                     this.state = ConnectAction.STATE_CLI_DISCONNECT_SENT;
                 }
-
-                
             } else if (STATE_CLI_DISCONNECT_SENT == state) {
-
-                
                 if (packet instanceof ConnectPacket) {
                     ConnectPacket connectPacket = (ConnectPacket) packet;
                     if (connectPacket.getType() == ConnectPacket.SRV_CLI_HELLO) {
-
-                        
                         DebugLog.println("connect say 'hello'");
-                        
-                        
                         ConnectPacket reply = new ConnectPacket(this.cookie);
                         sendPacket(reply);
-
-
-                        
                         this.state = ConnectAction.STATE_CLI_COOKIE_SENT;
-
-
-                        
                         consumed = true;
-
                     }
                 }
-
-                
             } else if (STATE_CLI_COOKIE_SENT == state) {
                 Util stream = new Util();
 
                 for (int i = 0; i < FAMILIES_AND_VER_LIST.length; ++i) {
                     stream.writeWordBE(FAMILIES_AND_VER_LIST[i]);
                 }
-
                 sendPacket(new SnacPacket(SnacPacket.SERVICE_FAMILY, SnacPacket.CLI_FAMILIES_COMMAND, SnacPacket.CLI_FAMILIES_COMMAND, stream.toByteArray()));
                 this.state = ConnectAction.STATE_CLI_WANT_CAPS_SENT;
 
@@ -348,7 +300,6 @@ public class ConnectAction extends IcqAction {
                 }
 
             } else if (STATE_CLI_WANT_CAPS_SENT2 == state) {
-
                 Util udata = null;
                 udata = new Util();
                 udata.writeWordBE(0x0001);
@@ -357,10 +308,7 @@ public class ConnectAction extends IcqAction {
                 udata.writeWordBE(0x0004);
                 udata.writeWordBE(0x0005);
                 sendPacket(new SnacPacket(SnacPacket.SERVICE_FAMILY, SnacPacket.CLI_ACKRATES_COMMAND, 0x6F4E0000, udata.toByteArray()));
-
-                
                 sendPacket(new SnacPacket(SnacPacket.SERVICE_FAMILY, SnacPacket.CLI_REQINFO_COMMAND, 0x2BDD0000));
-
                 udata = new Util();
                 udata.writeTLVWord(0x000B, 0x00FF);
                 sendPacket(new SnacPacket(SnacPacket.SSI_FAMILY, SnacPacket.CLI_REQLISTS_COMMAND, SnacPacket.CLI_REQLISTS_COMMAND, udata.toByteArray()));
@@ -381,57 +329,25 @@ public class ConnectAction extends IcqAction {
                 roster = new TemporaryRoster(getIcq());
                 getIcq().setContactListInfo(-1, 0);
                 getIcq().setContactListStub();
-
-                
-                
-
-                
-                
-                
-                
-
-                
-                
-
-                
-                
-
-                
                 this.state = ConnectAction.STATE_CLI_CHECKROSTER_SENT;
 
-                
             } else if (STATE_CLI_CHECKROSTER_SENT == state) {
                 if (packet instanceof SnacPacket) {
                     consumed = loadContactList((SnacPacket) packet);
                 }
-
             } else if (STATE_CLI_STATUS_INFO_SENT == state) {
-                
                 sendPacket(new ToIcqSrvPacket(0x00000000, this.uin, ToIcqSrvPacket.CLI_REQOFFLINEMSGS_SUBCMD, new byte[0], new byte[0]));
-
                 getConnection().initPing();
                 getConnection().setIcqConnected();
-                
                 this.state = ConnectAction.STATE_CLI_REQOFFLINEMSGS_SENT;
             }
-
-            
             active();
             this.active = false;
             updateProgress();
-            
             return consumed;
-
-            
         } catch (SawimException e) {
-
-            
             this.active = false;
-
-            
             this.state = ConnectAction.STATE_ERROR;
-
-            
             throw e;
         }
     }
@@ -457,11 +373,7 @@ public class ConnectAction extends IcqAction {
         desc = StringConvertor.notNull(desc);
         String text = (title + " " + desc).trim();
         sendPacket(getIcq().getNewXStatusPacket(x, text));
-        
         sendPacket(getIcq().getStatusPacket());
-        
-        
-        
         sendPacket(getIcq().getCapsPacket());
         sendPacket(getIcbmPacket());
     }
@@ -473,57 +385,31 @@ public class ConnectAction extends IcqAction {
         }
         boolean srvReplyRosterRcvd = false;
         boolean newRosterLoaded = false;
-        
-        
         if (SnacPacket.SRV_REPLYROSTEROK_COMMAND == snacPacket.getCommand()) {
             srvReplyRosterRcvd = true;
             newRosterLoaded = false;
-            
             consumed = true;
             roster.useOld();
-
-            
             getIcq().setContactList(roster.getGroups(), roster.mergeContacts());
             getIcq().setContactListInfo(timestamp, count);
-
-            
-            
         } else if (SnacPacket.SRV_REPLYROSTER_COMMAND == snacPacket.getCommand()) {
             if (1 != snacPacket.getFlags()) {
                 srvReplyRosterRcvd = true;
                 newRosterLoaded = true;
             }
-
-            
             ArrayReader marker = snacPacket.getReader();
-
-            
             marker.skip(1);
-
-            
-            
             count = marker.getWordBE();
-
             for (int i = 0; i < count; ++i) {
-                
                 int nameLen = marker.getWordBE();
-                
                 String userId = StringConvertor.utf8beByteArrayToString(
                         marker.getArray(nameLen), 0, nameLen);
-
-                
                 int groupId = marker.getWordBE();
                 int id = marker.getWordBE();
                 int type = marker.getWordBE();
-
-                
                 int len = marker.getWordBE();
-
-                
                 if (0x0000 == type) {
-                    
                     String nick = userId;
-
                     boolean noAuth = false;
                     int end = marker.getOffset() + len;
                     while (marker.getOffset() < end) {
@@ -537,33 +423,17 @@ public class ConnectAction extends IcqAction {
                             }
                             marker.skipTlv();
                         }
-
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
                     }
-                    
                     try {
-                        
-                        
-                        
                         IcqContact item = (IcqContact) roster.makeContact(userId);
                         if (nick.equals(userId) && !StringConvertor.isEmpty(item.getName())) {
                             nick = item.getName();
                         }
-
                         item.init(id, groupId, nick, noAuth);
                         roster.addContact(item);
                     } catch (Exception e) {
-                        
                     }
 
-                    
                 } else if (0x0001 == type) {
                     marker.skip(len);
                     
@@ -583,24 +453,18 @@ public class ConnectAction extends IcqAction {
                         roster.addGroup(grp);
                     }
 
-                    
-                    
                 } else if (0x0002 == type) {
                     marker.skip(len);
                     visibleList.addElement(new PrivacyItem(userId, id));
 
-                    
                 } else if (0x0003 == type) {
                     marker.skip(len);
                     invisibleList.addElement(new PrivacyItem(userId, id));
 
-                    
                 } else if (0x000E == type) {
                     marker.skip(len);
                     ignoreList.addElement(new PrivacyItem(userId, id));
-                    
 
-                    
                 } else if (0x0004 == type) {
                     int end = marker.getOffset() + len;
                     while (marker.getOffset() < end) {
@@ -611,28 +475,16 @@ public class ConnectAction extends IcqAction {
                             getIcq().privateStatusId = id;
                         }
                     }
-
-                    
                 } else {
-                    
                     marker.skip(len);
                 }
             }
-
-            
             timestamp = (int) marker.getDWordBE();
-
-            
             consumed = true;
-
         }
-
-        
         if (newRosterLoaded) {
             Vector contactItems = roster.mergeContacts();
             active();
-
-            
             for (int i = 0; i < contactItems.size(); ++i) {
                 IcqContact contact = (IcqContact) contactItems.elementAt(i);
                 String userId = contact.getUserId();
@@ -641,41 +493,24 @@ public class ConnectAction extends IcqAction {
                 contact.setBooleanValue(Contact.SL_INVISIBLE, inList(invisibleList, userId));
             }
             getIcq().setPrivacyLists(ignoreList, invisibleList, visibleList);
-            
-
-            
             getIcq().setContactList(roster.getGroups(), contactItems);
             getIcq().setContactListInfo(timestamp, count);
         }
         if (srvReplyRosterRcvd) {
-            
             DebugLog.memoryUsage("Connect memory usage");
-            
-
             sendStatusData();
-            
             sendPacket(new SnacPacket(SnacPacket.SSI_FAMILY, SnacPacket.CLI_ROSTERACK_COMMAND));
-            
             sendPacket(new SnacPacket(SnacPacket.SERVICE_FAMILY, SnacPacket.CLI_READY_COMMAND, ConnectAction.CLI_READY_DATA));
-            
-            
-
-            
             this.state = ConnectAction.STATE_CLI_STATUS_INFO_SENT;
         }
         return consumed;
     }
 
     private SnacPacket getIcbmPacket() {
-        
-        
-        
         long flags = 0x0003;
         if (0 != Options.getInt(Options.OPTION_TYPING_MODE)) {
             flags |= 0x0B;
         }
-        
-        
 
         Util icbm = new Util();
         icbm.writeWordBE(0x0000);
@@ -701,12 +536,10 @@ public class ConnectAction extends IcqAction {
         return false;
     }
 
-    
     public boolean isCompleted() {
         return (null == getIcq()) || getIcq().isConnected();
     }
 
-    
     public boolean isError() {
         if (isCompleted()) {
             return false;
@@ -728,7 +561,6 @@ public class ConnectAction extends IcqAction {
     public void initProgressBar() {
         setProgress(0);
     }
-    
 
     private int getProgress() {
         switch (this.state) {
@@ -758,5 +590,3 @@ public class ConnectAction extends IcqAction {
         return 2;
     }
 }
-
-

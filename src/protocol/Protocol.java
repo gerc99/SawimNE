@@ -1,6 +1,7 @@
 package protocol;
 
 import DrawControls.icons.Icon;
+import DrawControls.tree.TreeNode;
 import sawim.FileTransfer;
 import ru.sawim.General;
 import sawim.SawimException;
@@ -25,10 +26,11 @@ import sawim.util.JLocale;
 import protocol.jabber.JabberContact;
 import ru.sawim.SawimApplication;
 import ru.sawim.R;
-import ru.sawim.activities.SawimActivity;
 
 import javax.microedition.rms.RecordStore;
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 abstract public class Protocol {
@@ -187,7 +189,6 @@ abstract public class Protocol {
     }
 
     public final void setContactList(Vector groups, Vector contacts) {
-
         if ((contacts.size() > 0) && !(contacts.elementAt(0) instanceof Contact)) {
             DebugLog.panic("contacts is not list of Contact");
             contacts = new Vector();
@@ -202,7 +203,6 @@ abstract public class Protocol {
             this.groups = groups;
         }
         ChatHistory.instance.restoreContactsWithChat(this);
-
         synchronized (rosterLockObject) {
             sortedContacts = new Vector();
             for (int i = 0; i < contacts.size(); ++i) {
@@ -218,7 +218,7 @@ abstract public class Protocol {
             updateContacts(notInListGroup);
         }
         if (getContactList().getManager().getProtocolCount() == 0) return;
-        getContactList().getManager().update();
+        getContactList().getManager().update(true);
         needSave();
     }
 
@@ -233,7 +233,7 @@ abstract public class Protocol {
                 }
             }
         }
-        getContactList().getManager().update();
+        getContactList().getManager().update(true);
         needSave();
     }
 
@@ -256,7 +256,7 @@ abstract public class Protocol {
             getContactList().updateConnectionStatus();
         }
         getContactList().getManager().updateBarProtocols();
-        getContactList().getManager().update();
+        //getContactList().getManager().update(false);
     }
 
     public void sendFile(FileTransfer transfer, String filename, String description) {
@@ -492,7 +492,7 @@ abstract public class Protocol {
             return;
         }
         contact.setName(name);
-        cl_renameContact(contact);
+        ui_updateContact(contact, false);
         needSave();
     }
 
@@ -564,7 +564,7 @@ abstract public class Protocol {
         }
         setStatusesOffline();
         getContactList().getManager().updateBarProtocols();
-        getContactList().getManager().update();
+        getContactList().getManager().update(false);
         getContactList().updateConnectionStatus();
         if (user) {
             DebugLog.println("disconnect " + getUserId());
@@ -616,6 +616,7 @@ abstract public class Protocol {
         Contact item = getItemByUIN(uin);
         if (null != item) {
             beginTyping(item, type);
+            getContactList().getManager().update(false);
         }
     }
 
@@ -641,7 +642,6 @@ abstract public class Protocol {
                 }
                 playNotification(Notify.NOTIFY_TYPING);
             }
-            getContactList().getManager().update();
         }
     }
 
@@ -782,20 +782,12 @@ abstract public class Protocol {
                 getContactList().getManager().updateGroupData(group);
                 Util.sort(sortedGroups);
             }
-            ui_updateCL(group);
+            getContactList().getManager().update(group);
         }
     }
 
     public final Group getNotInListGroup() {
         return notInListGroup;
-    }
-
-    private void ui_updateCL(Contact c) {
-        getContactList().getManager().update(c);
-    }
-
-    private void ui_updateCL(Group g) {
-        getContactList().getManager().update(g);
     }
 
     public final Vector getSortedContacts() {
@@ -812,20 +804,20 @@ abstract public class Protocol {
 
     public final void markMessages(Contact contact) {
         if (Options.getBoolean(Options.OPTION_SORT_UP_WITH_MSG)) {
-            ui_updateContact(contact);
+            ui_updateContact(contact, false);
         }
         getContactList().markMessages(contact);
     }
 
     public final void ui_changeContactStatus(Contact contact) {
         updateChatStatus(contact);
-        ui_updateContact(contact);
+        ui_updateContact(contact, true);
         //if (Options.getBoolean(Options.OPTION_CL_HIDE_OFFLINE) && !getProtocolBranch().isEmpty()) {
-        getContactList().getManager().update(contact);
+        //getContactList().getManager().update(contact);
         //}
     }
 
-    public final void ui_updateContact(Contact contact) {
+    public final void ui_updateContact(Contact contact, boolean isRebuild) {
         synchronized (rosterLockObject) {
             Group group = getGroup(contact);
             if (null == group) {
@@ -833,7 +825,7 @@ abstract public class Protocol {
             }
             getContactList().getManager().putIntoQueue(group);
         }
-        ui_updateCL(contact);
+        getContactList().getManager().update(contact);
     }
 
     private void cl_addContact(Contact contact) {
@@ -851,18 +843,14 @@ abstract public class Protocol {
             }
             ui_addContactToGroup(contact, g);
         }
-        ui_updateContact(contact);
-    }
-
-    private void cl_renameContact(Contact contact) {
-        ui_updateContact(contact);
+        ui_updateContact(contact, true);
     }
 
     private void cl_moveContact(Contact contact, Group to) {
         synchronized (rosterLockObject) {
             ui_addContactToGroup(contact, to);
         }
-        ui_updateContact(contact);
+        ui_updateContact(contact, true);
     }
 
     private void cl_removeContact(Contact contact) {
@@ -871,7 +859,7 @@ abstract public class Protocol {
             sortedContacts.removeElement(contact);
             ui_removeFromAnyGroup(contact);
         }
-        ui_updateCL(contact);
+        getContactList().getManager().update(contact);
     }
 
     private void cl_addGroup(Group group) {
@@ -894,7 +882,7 @@ abstract public class Protocol {
         synchronized (rosterLockObject) {
             sortedGroups.removeElement(group);
         }
-        ui_updateCL(group);
+        getContactList().getManager().update(group);
     }
 
     public final void addLocalContact(Contact contact) {
@@ -975,9 +963,6 @@ abstract public class Protocol {
         }
         if (!silent) {
             addMessageNotify(chat, contact, message);
-            if (Options.getBoolean(Options.OPTION_SORT_UP_WITH_MSG)) {
-                ui_updateContact(contact);
-            }
         }
         getContactList().markMessages(contact);
         getContactList().getManager().update(contact);
@@ -1001,11 +986,6 @@ abstract public class Protocol {
         }
         if (Options.getBoolean(Options.OPTION_ANSWERER)) {
             Answerer.getInstance().checkMessage(this, contact, message);
-        }
-        if (isHuman) {
-            if (isPersonal) {
-                getContactList().setActiveContact(contact);
-            }
         }
         String id = contact.getUserId();
         if (message.isOffline()) {
@@ -1041,7 +1021,7 @@ abstract public class Protocol {
         if (!isPersonal) {
             return;
         }
-        getContactList().setActiveContact(contact);
+        getContactList().getManager().setActiveContact(contact);
     }
 
     protected boolean isBlogBot(String userId) {

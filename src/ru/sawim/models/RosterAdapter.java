@@ -78,8 +78,7 @@ public class RosterAdapter extends BaseAdapter {
             } else {
                 holder = (ViewHolderRoster) convertView.getTag();
             }
-            if (c.isVisibleInContactList())
-                holder.populateFromContact(c);
+            holder.populateFromContact(c);
         } else if (type == OPEN_CHATS) {
             ItemWrapper wr;
             if (convertView == null) {

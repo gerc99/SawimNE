@@ -135,7 +135,7 @@ public class OptionsForm implements FormListener, ControlStateListener {
                 saveOptionBoolean(Options.OPTION_SIMPLE_INPUT);
                 saveOptionInt(Options.OPTION_MAX_MSG_COUNT);
 
-                ContactList.getInstance().getManager().update();
+                ContactList.getInstance().getManager().update(true);
                 SawimActivity.getInstance().recreateActivity();
                 break;
 

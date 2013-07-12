@@ -118,7 +118,8 @@ public class VirtualListView extends Fragment implements VirtualList.OnVirtualLi
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                list.getModel().elements.remove(0);
+                if (list.getModel().elements.size() > 0)
+                    list.getModel().elements.remove(0);
                 adapter.notifyDataSetChanged();
             }
         });

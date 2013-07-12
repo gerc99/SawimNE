@@ -65,7 +65,7 @@ public final class AutoAbsence {
         return true;
     }
     private void doRestore() {
-        if (!absence || (null == protos)) {
+        if (!absence || (null == protos) || time == 0) {
             return;
         }
         absence = false;
@@ -86,7 +86,7 @@ public final class AutoAbsence {
     }
 
     public final void updateTime() {
-        if (!absence) {
+        if (!absence && time > 0) {
             try {
                 if (0 < activityOutTime) {
                     if (activityOutTime < General.getCurrentGmtTime()) {
@@ -118,7 +118,7 @@ public final class AutoAbsence {
     }
     public final void userActivity() {
         try {
-            if (!General.isPaused()) {
+            if (!General.isPaused() && time > 0) {
                 int init = time * 60;
                 if (0 < init) {
                     activityOutTime = General.getCurrentGmtTime() + init;

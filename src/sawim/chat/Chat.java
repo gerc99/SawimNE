@@ -31,6 +31,7 @@ public final class Chat {
     private List<MessData> messData = new ArrayList<MessData>();
     private boolean visibleChat;
     public static final String ADDRESS = ", ";
+    public int position;
 
     public Chat(Protocol p, Contact item) {
         contact = item;
@@ -141,7 +142,7 @@ public final class Chat {
         if (showStatus) {
             showStatusPopup();
         }
-        ContactList.getInstance()._setActiveContact(contact);
+        ContactList.getInstance().activate(contact);
     }
 
     public void sendMessage(String message) {

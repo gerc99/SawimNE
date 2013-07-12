@@ -60,15 +60,9 @@ public class General {
                 + Options.getInt(Options.OPTION_LOCAL_OFFSET) * 3600;
     }
 
-    private static void platformRequestUrl(String url) throws ConnectionNotFoundException {
-        if (-1 == url.indexOf(':')) {
-            url = "xmpp:" + url;
-        }
-        if (url.startsWith("xmpp:")) {
-            Search search = ContactList.getInstance().getManager().getCurrentProtocol().getSearchForm();
-            search.show(Util.getUrlWithoutProtocol(url));
-            return;
-        }
+    public static void openUrl(String url) {
+        Search search = ContactList.getInstance().getManager().getCurrentProtocol().getSearchForm();
+        search.show(Util.getUrlWithoutProtocol(url));
     }
 
     public static java.io.InputStream getResourceAsStream(String name) {

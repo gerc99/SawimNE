@@ -122,7 +122,7 @@ public class AccountsListView extends Fragment {
             }
         });
         cl.addProtocols(listOfProfiles);
-        cl.getManager().update();
+        cl.getManager().update(true);
     }
 
     public void addAccount() {

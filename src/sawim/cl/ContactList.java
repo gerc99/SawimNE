@@ -194,19 +194,15 @@ public final class ContactList {
     }
 
     public void activate() {
-        contactList.update();
+        contactList.update(false);
     }
 
-    public void _setActiveContact(Contact c) {
+    public void activate(Contact c) {
         if (null != c) {
             contactList.setActiveContact(c);
         }
         contactList.setAlwaysVisibleNode(c);
-    }
-
-    public void activate(Contact c) {
-        _setActiveContact(c);
-        activate();
+        contactList.update(false);
     }
 
     public void activateWithMsg(final String message) {
@@ -302,10 +298,6 @@ public final class ContactList {
         return contactList;
     }
 
-    public void setActiveContact(Contact contact) {
-        contactList.setActiveContact(contact);
-    }
-
     public final void markMessages(Contact contact) {
         SawimApplication.getInstance().updateAppIcon();
         if (General.getInstance().getUpdateChatListener() != null)
@@ -335,7 +327,7 @@ public final class ContactList {
     }
     public final void timerAction() {
         AutoAbsence.instance.updateTime();
-        if (0 < contactListSaveDelay) {
+        /*if (0 < contactListSaveDelay) {
             contactListSaveDelay--;
             if (0 == contactListSaveDelay) {
                 int count = contactList.getProtocolCount();
@@ -344,6 +336,6 @@ public final class ContactList {
                     p.safeSave();
                 }
             }
-        }
+        }*/
     }
 }
