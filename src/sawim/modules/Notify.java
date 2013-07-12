@@ -2,7 +2,9 @@ package sawim.modules;
 
 import android.content.Context;
 import android.os.Vibrator;
+import android.util.Log;
 import ru.sawim.General;
+import ru.sawim.SawimApplication;
 import ru.sawim.activities.SawimActivity;
 import ru.sawim.sound.SoundPlayer;
 import sawim.Options;
@@ -85,7 +87,7 @@ public class Notify implements Runnable {
 
     public boolean vibrate(final int duration) {
         if (SawimActivity.getInstance() == null) return false;
-        final Vibrator vibrator = (Vibrator) SawimActivity.getInstance().getSystemService(Context.VIBRATOR_SERVICE);
+        final Vibrator vibrator = (Vibrator) SawimApplication.getInstance().getSystemService(Context.VIBRATOR_SERVICE);
         if (null == vibrator) {
             return false;
         }
@@ -151,7 +153,6 @@ public class Notify implements Runnable {
     }
 
     private void closePlayer() {
-
         if (null != androidPlayer) {
             androidPlayer.close();
             androidPlayer = null;
@@ -212,10 +213,8 @@ public class Notify implements Runnable {
             closePlayer();
             createPlayer(file);
             play();
-
         } catch (Exception e) {
             closePlayer();
-
         } catch (OutOfMemoryError err) {
             closePlayer();
         }
@@ -224,9 +223,9 @@ public class Notify implements Runnable {
     private boolean testSoundFile(String source) {
         try {
             createPlayer(source);
-
             return true;
         } catch (Exception e) {
+            DebugLog.panic("8888888888", e);
             return false;
         } finally {
             closePlayer();
@@ -236,7 +235,6 @@ public class Notify implements Runnable {
     private void createPlayer(String source) throws Exception {
         androidPlayer = new SoundPlayer();
         androidPlayer.play(source, getVolume());
-
     }
 
     private void play() throws Exception {

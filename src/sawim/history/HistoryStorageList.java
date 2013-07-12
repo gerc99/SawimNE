@@ -174,8 +174,7 @@ public final class HistoryStorageList implements Runnable, FormListener {
                 if (-1 == index) return;
                 CachedRecord record = getCachedRecord(index);
                 if (null == record) return;
-                Clipboard.setClipBoardText((record.type == 0),
-                        record.from, record.date, record.text);
+                Clipboard.setClipBoardText(record.text);
                 break;
 
             case MENU_INFO:

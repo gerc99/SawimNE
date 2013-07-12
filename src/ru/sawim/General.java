@@ -109,7 +109,7 @@ public class General {
             sawim.modules.tracking.Tracking.loadTrackingFromRMS();
         } catch (Exception e) {
             DebugLog.panic("init", e);
-            DebugLog.instance.activate();
+            DebugLog.instance.activateCrashLog();
         }
     }
 

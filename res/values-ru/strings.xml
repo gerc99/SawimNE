@@ -188,7 +188,7 @@
     <string name="options_signaling">Оповещения</string>
     <string name="absence">Отсутствие</string>
     <string name="answerer">Автоответчик</string>
-    <string name="register_new">Заре-г-ать новый JID</string>
+    <string name="register_new">Регистрация JID</string>
     <string name="more">Еще</string>
     <string name="service_discovery">Обзор сервисов</string>
     <string name="manage_contact_list">Управление списком</string>

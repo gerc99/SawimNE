@@ -182,7 +182,7 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
                 if (md.isMe()) {
                     msg = "*" + md.getNick() + " " + msg;
                 }
-                Clipboard.setClipBoardText(md.isIncoming(), md.getNick(), md.strTime, msg + "\n");
+                Clipboard.setClipBoardText(msg + "\n");
                 break;
 
             case ACTION_QUOTE:

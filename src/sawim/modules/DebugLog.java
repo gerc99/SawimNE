@@ -158,7 +158,7 @@ public final class DebugLog {
         println(sb.toString());
     }
 
-    public void activate() {
+    private void init() {
         list = VirtualList.getInstance();
         list.setCaption(JLocale.getString("debug log"));
         list.setModel(model);
@@ -205,7 +205,15 @@ public final class DebugLog {
                 }
             }
         });
+    }
+    public void activate() {
+        init();
         list.show();
+    }
+
+    public void activateCrashLog() {
+        init();
+        list.showCrashLog();
     }
 
     private void removeOldRecords() {

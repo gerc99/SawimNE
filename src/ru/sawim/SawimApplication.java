@@ -47,7 +47,8 @@ public class SawimApplication extends Application {
         new General().startApp();
         ChatHistory.instance.loadUnreadMessages();
         updateAppIcon();
-        ContactList.getInstance().autoConnect();
+        if (ContactList.getInstance().getManager() != null)
+            ContactList.getInstance().autoConnect();
     }
 
     private void MIDletInit() {

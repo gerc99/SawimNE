@@ -230,6 +230,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
     @Override
     public void onResume() {
         super.onResume();
+        if (owner == null) return;
         if (owner.getProtocolCount() == 0) return;
         owner.setOnUpdateRoster(this);
         update();

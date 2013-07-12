@@ -4,9 +4,9 @@ import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import ru.sawim.SawimApplication;
 import sawim.modules.fs.FileSystem;
 import sawim.modules.fs.JSR75FileSystem;
-import ru.sawim.activities.SawimActivity;
 
 import java.io.IOException;
 
@@ -29,7 +29,7 @@ public class SoundPlayer implements MediaPlayer.OnCompletionListener {
     }
 
     public void play(String source, int volume) throws IOException {
-        AudioManager audioManager = (AudioManager) SawimActivity.getInstance().getSystemService(Context.AUDIO_SERVICE);
+        AudioManager audioManager = (AudioManager) SawimApplication.getInstance().getSystemService(Context.AUDIO_SERVICE);
 
         if (AudioManager.RINGER_MODE_NORMAL == audioManager.getRingerMode()) {
             playIt(source.substring(1), volume);
@@ -43,7 +43,7 @@ public class SoundPlayer implements MediaPlayer.OnCompletionListener {
         try {
             String in = openFile(source);
             if (null == in) {
-                AssetFileDescriptor afd = SawimActivity.getInstance().getAssets().openFd(source);
+                AssetFileDescriptor afd = SawimApplication.getInstance().getAssets().openFd(source);
                 androidPlayer.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
             } else {
                 androidPlayer.setDataSource(in);

@@ -5,6 +5,7 @@ import android.support.v4.app.FragmentActivity;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
+import ru.sawim.SawimApplication;
 import ru.sawim.activities.VirtualListActivity;
 import ru.sawim.activities.SawimActivity;
 
@@ -111,5 +112,9 @@ public class VirtualList {
 
     public void show() {
         SawimActivity.getInstance().startActivity(new Intent(SawimActivity.getInstance(), VirtualListActivity.class));
+    }
+
+    public void showCrashLog() {
+        SawimApplication.getInstance().startActivity(new Intent(SawimApplication.getInstance(), VirtualListActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
     }
 }

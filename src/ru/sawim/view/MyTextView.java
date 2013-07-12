@@ -1,7 +1,6 @@
 package ru.sawim.view;
 
 import android.text.*;
-import android.text.method.LinkMovementMethod;
 
 import android.content.Context;
 import android.text.style.URLSpan;
