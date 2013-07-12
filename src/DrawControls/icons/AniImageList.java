@@ -30,7 +30,7 @@ public class AniImageList extends ImageList {
     }
 
     public void load(String resName, int w, int h) {
-        try {
+        /*try {
             InputStream is = General.getResourceAsStream(resName + "/animate.bin");
             int smileCount = is.read() + 1;
 
@@ -64,7 +64,7 @@ public class AniImageList extends ImageList {
                     iteration();
                 }
             }, WAIT_TIME, WAIT_TIME);
-        }
+        }*/
     }
 
     private static final int WAIT_TIME = 100;

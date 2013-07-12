@@ -52,7 +52,7 @@ public class ViewHolderRoster {
         ImageView firstImage = getItemFirstImage();
         firstImage.setVisibility(ImageView.VISIBLE);
         ImageList groupIcons = ImageList.createImageList("/gricons.png");
-        firstImage.setImageBitmap(General.iconToBitmap((isExpanded) ? groupIcons.iconAt(1) : groupIcons.iconAt(0)));
+        firstImage.setImageBitmap((isExpanded) ? groupIcons.iconAt(1).getImage() : groupIcons.iconAt(0).getImage());
 
         getItemDescriptionText().setVisibility(TextView.GONE);
         getItemThirdImage().setVisibility(ImageView.GONE);
@@ -64,7 +64,7 @@ public class ViewHolderRoster {
             messImage.setVisibility(ImageView.GONE);
         } else {
             messImage.setVisibility(ImageView.VISIBLE);
-            messImage.setImageBitmap(General.iconToBitmap((messIcon)));
+            messImage.setImageBitmap(messIcon.getImage());
         }
     }
 
@@ -95,14 +95,14 @@ public class ViewHolderRoster {
             statusImage.setVisibility(ImageView.GONE);
         } else {
             statusImage.setVisibility(ImageView.VISIBLE);
-            statusImage.setImageBitmap(General.iconToBitmap(icStatus));
+            statusImage.setImageBitmap(icStatus.getImage());
         }
         if (item.isTyping()) {
-            statusImage.setImageBitmap(General.iconToBitmap(Message.msgIcons.iconAt(Message.ICON_TYPE)));
+            statusImage.setImageBitmap(Message.msgIcons.iconAt(Message.ICON_TYPE).getImage());
         } else {
             Icon icMess = Message.msgIcons.iconAt(item.getUnreadMessageIcon());
             if (icMess != null)
-                statusImage.setImageBitmap(General.iconToBitmap(icMess));
+                statusImage.setImageBitmap(icMess.getImage());
         }
 
         ImageView xStatusImage = getItemSecondImage();
@@ -110,7 +110,7 @@ public class ViewHolderRoster {
             xStatusImage.setVisibility(ImageView.GONE);
         } else {
             xStatusImage.setVisibility(ImageView.VISIBLE);
-            xStatusImage.setImageBitmap(General.iconToBitmap(p.getXStatusInfo().getIcon(item.getXStatusIndex())));
+            xStatusImage.setImageBitmap(p.getXStatusInfo().getIcon(item.getXStatusIndex()).getImage());
         }
 
         if (!item.isTemp()) {
@@ -127,11 +127,11 @@ public class ViewHolderRoster {
                     privacyList = 2;
                 }
                 if (privacyList != -1)
-                    thirdImage.setImageBitmap(General.iconToBitmap(item.serverListsIcons.iconAt(privacyList)));
+                    thirdImage.setImageBitmap(item.serverListsIcons.iconAt(privacyList).getImage());
                 else
                     thirdImage.setVisibility(ImageView.GONE);
             } else {
-                thirdImage.setImageBitmap(General.iconToBitmap(icAuth));
+                thirdImage.setImageBitmap(icAuth.getImage());
             }
         }
 
@@ -140,7 +140,7 @@ public class ViewHolderRoster {
         ImageView itemClientImage = getItemFourthRuleImage();
         if (icClient != null && !Options.getBoolean(Options.OPTION_HIDE_ICONS_CLIENTS)) {
             itemClientImage.setVisibility(ImageView.VISIBLE);
-            itemClientImage.setImageBitmap(General.iconToBitmap(icClient));
+            itemClientImage.setImageBitmap(icClient.getImage());
         } else {
             itemClientImage.setVisibility(ImageView.GONE);
         }
@@ -149,7 +149,7 @@ public class ViewHolderRoster {
         String id = item.getUserId();
         if (Tracking.isTrackingEvent(id, Tracking.GLOBAL) == Tracking.TRUE) {
             itemFifthRuleImage.setVisibility(ImageView.VISIBLE);
-            itemFifthRuleImage.setImageBitmap(General.iconToBitmap(Tracking.getTrackIcon(id)));
+            itemFifthRuleImage.setImageBitmap(Tracking.getTrackIcon(id).getImage());
         } else {
             itemFifthRuleImage.setVisibility(ImageView.GONE);
         }

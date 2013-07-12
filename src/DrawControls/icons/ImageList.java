@@ -1,5 +1,6 @@
 package DrawControls.icons;
 
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import ru.sawim.General;
 
@@ -57,7 +58,7 @@ public class ImageList {
         Vector tmpIcons = new Vector();
         for (int y = 0; y < imgHeight; y += height) {
             for (int x = 0; x < imgWidth; x += width) {
-                Icon icon = new Icon(resImage, x, y, width, height);
+                Icon icon = new Icon(Bitmap.createBitmap(resImage.getBitmap(), x, y, width, height));
                 tmpIcons.addElement(icon);
             }
         }
@@ -83,11 +84,10 @@ public class ImageList {
 
         this.width = width;
         this.height = height;
-
         Vector tmpIcons = new Vector();
         for (int y = 0; y < imgHeight; y += height) {
             for (int x = 0; x < imgWidth; x += width) {
-                Icon icon = new Icon(resImage, x, y, width, height);
+                Icon icon = new Icon(Bitmap.createBitmap(resImage.getBitmap(), x, y, width, height));
                 tmpIcons.addElement(icon);
             }
         }
@@ -96,20 +96,16 @@ public class ImageList {
     }
 
     static public ImageList createImageList(String resName) {
-        
         ImageList imgs = (ImageList) files.get(resName);
         if (null != imgs) {
             return imgs;
         }
-        
         ImageList icons = new ImageList();
         try {
             icons.load(resName, -1, -1);
         } catch (Exception e) {
         }
-        
         files.put(resName, icons);
-        
         return icons;
     }
 

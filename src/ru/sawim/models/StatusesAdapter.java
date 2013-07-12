@@ -105,13 +105,13 @@ public class StatusesAdapter extends BaseAdapter {
                 getItemStatus().setText(statusInfo.getName((byte) item));
                 if (ic != null) {
                     imageView.setVisibility(ImageView.VISIBLE);
-                    getItemImage().setImageBitmap(General.iconToBitmap(ic));
+                    getItemImage().setImageBitmap(ic.getImage());
                 } else {
                     imageView.setVisibility(ImageView.GONE);
                 }
             } else {
                 getItemStatus().setText(JLocale.getString(PrivateStatusForm.statusNames(protocol)[item]));
-                imageView.setImageBitmap(General.iconToBitmap(PrivateStatusForm.privateStatusIcons.iconAt(item)));
+                imageView.setImageBitmap(PrivateStatusForm.privateStatusIcons.iconAt(item).getImage());
             }
         }
 

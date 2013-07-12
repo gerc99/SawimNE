@@ -84,11 +84,11 @@ public class VirtualListItem {
     }
 
     public void addIcon(Icon ic) {
-        image = General.iconToBitmap(ic);
+        image = ic.getImage();
     }
 
-    public void addImage(Image ic) {
-        image = General.imageToBitmap(ic);
+    public void addImage(Bitmap ic) {
+        image = ic;
     }
 
     public Bitmap getImage() {

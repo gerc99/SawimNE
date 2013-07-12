@@ -12,7 +12,7 @@ public class AniIcon extends Icon {
     
 
     public AniIcon(Icon icon, int frameCount) {
-        super(icon.getImage(), 0, 0, icon.getWidth(), icon.getHeight());
+        super(icon.getImage());
         frames = new Icon[frameCount];
         delays = new int[frameCount];
     }

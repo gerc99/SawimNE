@@ -124,9 +124,9 @@ public class RosterAdapter extends BaseAdapter {
             itemName.setTextColor(General.getColor(Scheme.THEME_CONTACT_WITH_CHAT));
             Icon icMess = Message.msgIcons.iconAt(item.getUnreadMessageIcon());
             if (icMess == null) {
-                getItemImage().setImageBitmap(General.iconToBitmap(item.getProtocol().getStatusInfo().getIcon(item.getStatusIndex())));
+                getItemImage().setImageBitmap(item.getProtocol().getStatusInfo().getIcon(item.getStatusIndex()).getImage());
             } else {
-                getItemImage().setImageBitmap(General.iconToBitmap(icMess));
+                getItemImage().setImageBitmap(icMess.getImage());
             }
         }
 

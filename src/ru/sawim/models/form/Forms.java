@@ -229,7 +229,7 @@ public class Forms {
 
     public void addImage(Image img) {
         Control c = create(-1, CONTROL_IMAGE, null, null);
-        c.image = General.imageToBitmap(img);
+        c.image = img.getBitmap();
         add(c);
     }
 

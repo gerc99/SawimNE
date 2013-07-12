@@ -123,7 +123,7 @@ public class MessagesAdapter extends BaseAdapter implements MyTextView.TextLinkC
                     msgImage.setVisibility(ImageView.GONE);
                 } else {
                     msgImage.setVisibility(ImageView.VISIBLE);
-                    msgImage.setImageBitmap(General.iconToBitmap(icon));
+                    msgImage.setImageBitmap(icon.getImage());
                 }
             }
 

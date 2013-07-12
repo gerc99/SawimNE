@@ -63,13 +63,13 @@ public class MucUserViewFactory {
             TextView itemName = getItemName();
             itemName.setText(c.resource);
             itemName.setTextColor(General.getColor(Scheme.THEME_TEXT));
-            getItemStatusImage().setImageBitmap(General.iconToBitmap(protocol.getStatusInfo().getIcon(c.status)));
-            getItemAffilationImage().setImageBitmap(General.iconToBitmap(affiliationIcons.iconAt(JabberServiceContact.getAffiliationName(c.priorityA))));
+            getItemStatusImage().setImageBitmap(protocol.getStatusInfo().getIcon(c.status).getImage());
+            getItemAffilationImage().setImageBitmap(affiliationIcons.iconAt(JabberServiceContact.getAffiliationName(c.priorityA)).getImage());
             Icon ic = protocol.clientInfo.getIcon(c.client);
             ImageView itemClientImage = getItemClientImage();
             if (ic != null && !Options.getBoolean(Options.OPTION_HIDE_ICONS_CLIENTS)) {
                 itemClientImage.setVisibility(ImageView.VISIBLE);
-                itemClientImage.setImageBitmap(General.iconToBitmap(ic));
+                itemClientImage.setImageBitmap(ic.getImage());
             } else {
                 itemClientImage.setVisibility(ImageView.GONE);
             }

@@ -74,7 +74,7 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
         super.onActivityCreated(b);
         chatBarLayout.setBackgroundColor(General.getColorWithAlpha(Scheme.THEME_CAP_BACKGROUND));
         chat_viewLayout.setBackgroundColor(General.getColorWithAlpha(Scheme.THEME_BACKGROUND));
-        usersImage.setImageBitmap(General.iconToBitmap(ImageList.createImageList("/participants.png").iconAt(0)));
+        usersImage.setImageBitmap(ImageList.createImageList("/participants.png").iconAt(0).getImage());
         usersImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -496,7 +496,7 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
             chatsImage.setVisibility(ImageView.GONE);
         } else {
             chatsImage.setVisibility(ImageView.VISIBLE);
-            chatsImage.setImageBitmap(General.iconToBitmap(icMess));
+            chatsImage.setImageBitmap(icMess.getImage());
         }
     }
 

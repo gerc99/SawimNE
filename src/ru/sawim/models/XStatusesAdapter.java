@@ -92,7 +92,7 @@ public class XStatusesAdapter extends BaseAdapter {
             getItemXStatus().setText(statusInfo.getName(item));
             if (ic != null) {
                 imageView.setVisibility(ImageView.VISIBLE);
-                imageView.setImageBitmap(General.iconToBitmap(ic));
+                imageView.setImageBitmap(ic.getImage());
             } else {
                 imageView.setVisibility(ImageView.GONE);
             }

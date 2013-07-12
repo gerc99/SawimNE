@@ -107,7 +107,7 @@ public class SmilesAdapter extends BaseAdapter {
 
         void populateFrom(Icon ic) {
             if (ic != null) {
-                getItemImage().setImageBitmap(General.iconToBitmap(ic));
+                getItemImage().setImageBitmap(ic.getImage());
             }
         }
 

@@ -159,13 +159,6 @@ public class General {
         }
     }
 
-    public static Bitmap iconToBitmap(Icon icon) {
-        return Bitmap.createBitmap(icon.getImage().getBitmap(), icon.x, icon.y, icon.getWidth(), icon.getHeight());
-    }
-    public static Bitmap imageToBitmap(Image image) {
-        return Bitmap.createBitmap(image.getBitmap(), 0, 0, image.getWidth(), image.getHeight());
-    }
-
     public static int getColor(int color) {
         return 0xff000000 | Scheme.getScheme()[color];
     }

@@ -29,7 +29,7 @@ public class TextFormatter {
                     int length = smiles.getSmileText(smileIndex).length();
                     Icon icon = smiles.getSmileIcon(smileIndex);
                     builder.setSpan(new ImageSpan(context,
-                            Bitmap.createBitmap(icon.getImage().getBitmap(), icon.x, icon.y, icon.getWidth(), icon.getHeight()),
+                            icon.getImage(),
                             ImageSpan.ALIGN_BASELINE), index, index + length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                     index += length - 1;
                 }

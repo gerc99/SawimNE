@@ -373,13 +373,13 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
                         ImageButton imageBarButtons = new ImageButton(getActivity());
                         if (j == owner.getCurrProtocol())
                             imageBarButtons.setBackgroundColor(General.getColorWithAlpha(Scheme.THEME_BACKGROUND));
-                        imageBarButtons.setImageBitmap(General.iconToBitmap(protocol.getCurrentStatusIcon()));
+                        imageBarButtons.setImageBitmap(protocol.getCurrentStatusIcon().getImage());
                         imageBarButtons.setId(j);
                         imageBarButtons.setOnClickListener(RosterView.this);
                         imageBarButtons.setOnLongClickListener(RosterView.this);
                         Icon messageIcon = ChatHistory.instance.getUnreadMessageIcon(protocol);
                         if (null != messageIcon)
-                            imageBarButtons.setImageBitmap(General.iconToBitmap(messageIcon));
+                            imageBarButtons.setImageBitmap(messageIcon.getImage());
                         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
                         lp.gravity = Gravity.CENTER;
                         imageBarButtons.setLayoutParams(lp);
