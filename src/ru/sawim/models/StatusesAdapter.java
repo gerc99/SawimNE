@@ -1,7 +1,6 @@
 package ru.sawim.models;
 
 import DrawControls.icons.Icon;
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.view.LayoutInflater;
@@ -12,7 +11,6 @@ import sawim.forms.PrivateStatusForm;
 import sawim.util.JLocale;
 import protocol.Protocol;
 import protocol.StatusInfo;
-import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.view.StatusesView;
 
@@ -79,8 +77,6 @@ public class StatusesAdapter extends BaseAdapter {
         LinearLayout activeItem = (LinearLayout) row;
         if (item == selectedItem) {
             activeItem.setBackgroundColor(Color.BLUE);
-            int top = (activeItem == null) ? 0 : activeItem.getTop();
-            ((ListView) viewGroup).setSelectionFromTop(position, top);
         } else {
             activeItem.setBackgroundColor(Color.WHITE);
         }

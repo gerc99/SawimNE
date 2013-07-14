@@ -7,19 +7,17 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.net.Uri;
-import android.text.*;
 import android.text.method.LinkMovementMethod;
 import android.text.method.MovementMethod;
-import android.text.style.ClickableSpan;
-import android.util.Log;
-import android.view.*;
+
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import protocol.jabber.Jabber;
 import ru.sawim.General;
 import ru.sawim.R;
-import ru.sawim.view.ChatView;
 import ru.sawim.view.MyTextView;
 import sawim.Clipboard;
 import sawim.TextFormatter;
@@ -27,7 +25,6 @@ import sawim.chat.Chat;
 import sawim.chat.MessData;
 import sawim.chat.message.Message;
 import ru.sawim.Scheme;
-import sawim.util.JLocale;
 
 import java.util.List;
 
@@ -136,7 +133,7 @@ public class MessagesAdapter extends BaseAdapter implements MyTextView.TextLinkC
             msgTime.setVisibility(TextView.VISIBLE);
             msgTime.setText(mData.strTime);
             msgTime.setTextColor(General.getColor(mData.isIncoming() ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG));
-            msgTime.setTextSize(18);
+            msgTime.setTextSize(14);
 
             byte color = Scheme.THEME_TEXT;
             if (mData.isIncoming() && !chat.getContact().isSingleUserContact()
@@ -147,7 +144,6 @@ public class MessagesAdapter extends BaseAdapter implements MyTextView.TextLinkC
             msgText.setText(mData.fullText);
             msgText.setTextColor(General.getColor(color));
             msgText.setTextSize(18);
-
             MovementMethod m = msgText.getMovementMethod();
             if ((m == null) || !(m instanceof LinkMovementMethod)) {
                 if (msgText.getLinksClickable()) {
@@ -165,7 +161,7 @@ public class MessagesAdapter extends BaseAdapter implements MyTextView.TextLinkC
         items[0] = baseContext.getString(R.string.open_url);
         items[1] = baseContext.getString(R.string.copy);
         items[2] = baseContext.getString(R.string.add_contact);
-        final AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(baseContext, R.style.AlertDialogCustom));
+        final AlertDialog.Builder builder = new AlertDialog.Builder(baseContext);
         builder.setTitle(R.string.url_menu);
         builder.setItems(items, new DialogInterface.OnClickListener() {
             @Override

@@ -1,8 +1,8 @@
 package ru.sawim.models;
 
-import DrawControls.icons.AniIcon;
 import DrawControls.icons.Icon;
 import android.content.Context;
+
 import android.graphics.Bitmap;
 import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.BitmapDrawable;
@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import sawim.modules.Emotions;
-import ru.sawim.General;
 import ru.sawim.R;
 
 /**

@@ -1,14 +1,21 @@
 package ru.sawim.view;
 
+import android.os.Handler;
 import android.text.*;
 
 import android.content.Context;
 import android.text.style.URLSpan;
 import android.util.AttributeSet;
+
+import android.util.Log;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 import ru.sawim.models.MessagesAdapter;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created with IntelliJ IDEA.
@@ -20,7 +27,7 @@ import ru.sawim.models.MessagesAdapter;
 
 public class MyTextView extends TextView {
 
-    static TextLinkClickListener mListener;
+    TextLinkClickListener mListener;
 
     public MyTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -53,17 +60,17 @@ public class MyTextView extends TextView {
 
                 URLSpan[] link = buffer.getSpans(off, off, URLSpan.class);
                 if (link.length != 0) {
-                    if (action == MotionEvent.ACTION_UP) {
-                        String url = link[0].getURL();
-                        mListener.onTextLinkClick(this, url);
-                    } else if (action == MotionEvent.ACTION_DOWN) {
+                    if (action == MotionEvent.ACTION_DOWN) {
                         Selection.setSelection(buffer,
                                 buffer.getSpanStart(link[0]),
                                 buffer.getSpanEnd(link[0]));
                     }
-                    return true;
+                    if (action == MotionEvent.ACTION_UP) {
+                        mListener.onTextLinkClick(this, link[0].getURL());
+                    }
                 }
             }
+            return true;
         }
         return false;
     }

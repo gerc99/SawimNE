@@ -218,7 +218,7 @@ abstract public class Protocol {
             updateContacts(notInListGroup);
         }
         if (getContactList().getManager().getProtocolCount() == 0) return;
-        getContactList().getManager().update(true);
+        getContactList().getManager().update();
         needSave();
     }
 
@@ -233,7 +233,7 @@ abstract public class Protocol {
                 }
             }
         }
-        getContactList().getManager().update(true);
+        getContactList().getManager().update();
         needSave();
     }
 
@@ -255,8 +255,7 @@ abstract public class Protocol {
             reconnect_attempts = RECONNECT_COUNT;
             getContactList().updateConnectionStatus();
         }
-        getContactList().getManager().updateBarProtocols();
-        //getContactList().getManager().update(false);
+        getContactList().getManager().updateProgressBar();
     }
 
     public void sendFile(FileTransfer transfer, String filename, String description) {
@@ -563,8 +562,8 @@ abstract public class Protocol {
             userCloseConnection();
         }
         setStatusesOffline();
-        getContactList().getManager().updateBarProtocols();
-        getContactList().getManager().update(false);
+        getContactList().getManager().updateProgressBar();
+        getContactList().getManager().update();
         getContactList().updateConnectionStatus();
         if (user) {
             DebugLog.println("disconnect " + getUserId());
@@ -616,7 +615,7 @@ abstract public class Protocol {
         Contact item = getItemByUIN(uin);
         if (null != item) {
             beginTyping(item, type);
-            getContactList().getManager().update(false);
+            getContactList().getManager().update();
         }
     }
 
@@ -726,7 +725,7 @@ abstract public class Protocol {
         setLastStatusChangeTime();
         if (isConnected()) {
             s_updateOnlineStatus();
-            getContactList().getManager().updateBarProtocols();
+            getContactList().getManager().updateProgressBar();
         }
     }
 

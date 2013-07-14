@@ -3,6 +3,7 @@ package ru.sawim.models;
 import DrawControls.icons.Icon;
 import DrawControls.icons.ImageList;
 import DrawControls.tree.VirtualContactList;
+
 import android.graphics.Typeface;
 import android.view.View;
 import android.widget.ImageView;
@@ -36,9 +37,10 @@ public class ViewHolderRoster {
     private ImageView itemFourthImage;
     private ImageView itemFifthImage;
     private VirtualContactList vcl;
+    ImageList groupIcons = ImageList.createImageList("/gricons.png");
 
     public ViewHolderRoster(VirtualContactList vcl, View item) {
-        this.vcl= vcl;
+        this.vcl = vcl;
         this.item = item;
     }
 
@@ -51,7 +53,6 @@ public class ViewHolderRoster {
 
         ImageView firstImage = getItemFirstImage();
         firstImage.setVisibility(ImageView.VISIBLE);
-        ImageList groupIcons = ImageList.createImageList("/gricons.png");
         firstImage.setImageBitmap((isExpanded) ? groupIcons.iconAt(1).getImage() : groupIcons.iconAt(0).getImage());
 
         getItemDescriptionText().setVisibility(TextView.GONE);
@@ -135,8 +136,7 @@ public class ViewHolderRoster {
             }
         }
 
-        ClientInfo info = (null != p) ? p.clientInfo : null;
-        Icon icClient = (null != info) ? info.getIcon(item.clientIndex) : null;
+        Icon icClient = (null != p.clientInfo) ? p.clientInfo.getIcon(item.clientIndex) : null;
         ImageView itemClientImage = getItemFourthRuleImage();
         if (icClient != null && !Options.getBoolean(Options.OPTION_HIDE_ICONS_CLIENTS)) {
             itemClientImage.setVisibility(ImageView.VISIBLE);
@@ -156,51 +156,44 @@ public class ViewHolderRoster {
     }
 
     public TextView getItemName() {
-        if (itemName == null) {
+        if (itemName == null)
             itemName = (TextView) item.findViewById(R.id.item_name);
-        }
         return itemName;
     }
 
     public TextView getItemDescriptionText() {
-        if (itemDescriptionText == null) {
+        if (itemDescriptionText == null)
             itemDescriptionText = (TextView) item.findViewById(R.id.item_description);
-        }
         return itemDescriptionText;
     }
 
     public ImageView getItemFirstImage() {
-        if (itemFirstImage == null) {
+        if (itemFirstImage == null)
             itemFirstImage = (ImageView) item.findViewById(R.id.first_image);
-        }
         return itemFirstImage;
     }
 
     public ImageView getItemSecondImage() {
-        if (itemSecondImage == null) {
+        if (itemSecondImage == null)
             itemSecondImage = (ImageView) item.findViewById(R.id.second_image);
-        }
         return itemSecondImage;
     }
 
     public ImageView getItemThirdImage() {
-        if (itemThirdImage == null) {
+        if (itemThirdImage == null)
             itemThirdImage = (ImageView) item.findViewById(R.id.third_image);
-        }
         return itemThirdImage;
     }
 
     public ImageView getItemFourthRuleImage() {
-        if (itemFourthImage == null) {
+        if (itemFourthImage == null)
             itemFourthImage = (ImageView) item.findViewById(R.id.fourth_rule_image);
-        }
         return itemFourthImage;
     }
 
     public ImageView getItemFifthRuleImage() {
-        if (itemFifthImage == null) {
+        if (itemFifthImage == null)
             itemFifthImage = (ImageView) item.findViewById(R.id.fifth_rule_image);
-        }
         return itemFifthImage;
     }
 }

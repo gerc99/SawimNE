@@ -1,4 +1,4 @@
-package ru.sawim.view.widgets.menu;
+package ru.sawim.view.menu;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -20,7 +20,7 @@ import java.util.List;
  */
 public class MyMenu extends BaseAdapter {
 
-    private List<MenuItem> menuItems = new ArrayList<MenuItem>();
+    private List<MyMenuItem> myMenuItems = new ArrayList<MyMenuItem>();
     private Context context;
 
     public MyMenu(Context c) {
@@ -28,19 +28,19 @@ public class MyMenu extends BaseAdapter {
     }
 
     public void add(String name, int id) {
-        MenuItem menuItem = new MenuItem();
-        menuItem.addItem(name, id);
-        menuItems.add(menuItem);
+        MyMenuItem myMenuItem = new MyMenuItem();
+        myMenuItem.addItem(name, id);
+        myMenuItems.add(myMenuItem);
     }
 
     @Override
     public int getCount() {
-        return menuItems.size();
+        return myMenuItems.size();
     }
 
     @Override
-    public MenuItem getItem(int i) {
-        return menuItems.get(i);
+    public MyMenuItem getItem(int i) {
+        return myMenuItems.get(i);
     }
 
     @Override

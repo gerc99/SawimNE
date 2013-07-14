@@ -35,7 +35,7 @@ public final class VirtualContactList {
             onUpdateRoster.updateRoster();
     }
 
-    public final void update(boolean isRebuild) {
+    public final void update() {
         if (onUpdateRoster != null)
             onUpdateRoster.updateRoster();
     }
@@ -43,6 +43,11 @@ public final class VirtualContactList {
     public void updateBarProtocols() {
         if (onUpdateRoster != null)
             onUpdateRoster.updateBarProtocols();
+    }
+
+    public void updateProgressBar() {
+        if (onUpdateRoster != null)
+            onUpdateRoster.updateProgressBar();
     }
 
     public void setOnUpdateRoster(OnUpdateRoster l) {
@@ -285,6 +290,8 @@ public final class VirtualContactList {
         void updateRoster();
 
         void updateBarProtocols();
+
+        void updateProgressBar();
 
         void putIntoQueue(Group g);
 

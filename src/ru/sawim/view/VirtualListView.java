@@ -7,7 +7,6 @@ import android.support.v4.app.FragmentActivity;
 import android.view.*;
 import android.widget.AdapterView;
 import android.widget.ListView;
-
 import ru.sawim.General;
 import ru.sawim.models.form.VirtualListItem;
 import ru.sawim.Scheme;
@@ -74,7 +73,7 @@ public class VirtualListView extends Fragment implements VirtualList.OnVirtualLi
     }
 
     @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+    public void onCreateContextMenu(ContextMenu menu, View v, android.view.ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         contextMenuInfo = (AdapterView.AdapterContextMenuInfo) menuInfo;
         if (list.getBuildContextMenu() != null)

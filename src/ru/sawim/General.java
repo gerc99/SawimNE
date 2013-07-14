@@ -100,7 +100,6 @@ public class General {
             StringConvertor.load();
             Answerer.getInstance().load();
             gc();
-            DebugLog.startTests();
 
             Options.loadAccounts();
             ContactList.getInstance().initUI();
@@ -124,7 +123,6 @@ public class General {
         try {
             Thread.sleep(100);
         } catch (InterruptedException e1) {
-
         }
         cl.safeSave();
         if (wait) {
@@ -166,6 +164,11 @@ public class General {
         return 0xdd000000 | Scheme.getScheme()[color];
     }
 
+    public static int getInversColor(int c) {
+        int color = Scheme.getScheme()[c];
+        return 0xFF550000 ^ color;
+    }
+
     public InputStream getResourceAsStream(Context c, Class origClass, String name) {
         try {
             if (name.startsWith("/")) {
@@ -183,15 +186,6 @@ public class General {
             //Logger.debug(e); // large output with BombusMod
             return null;
         }
-    }
-
-    public boolean platformRequest(Context c, String url) throws ConnectionNotFoundException {
-        try {
-            c.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-        } catch (ActivityNotFoundException e) {
-            throw new ConnectionNotFoundException();
-        }
-        return true;
     }
 
     public static boolean isTablet(Context context) {

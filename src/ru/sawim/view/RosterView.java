@@ -4,6 +4,7 @@ import DrawControls.icons.Icon;
 import DrawControls.tree.TreeNode;
 import DrawControls.tree.VirtualContactList;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -33,6 +34,7 @@ import sawim.forms.ManageContactListForm;
 import sawim.modules.DebugLog;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
@@ -64,6 +66,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
     private TreeNode currentNode = null;
     private ContactList general;
     private AdapterView.AdapterContextMenuInfo contextMenuInfo;
+    private HashMap<Integer, ImageButton> protocolIconHash = new HashMap<Integer, ImageButton>();
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -339,9 +342,13 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         return false;
     }
 
-    private void updateProgressBar() {
-        Protocol p = general.getCurrProtocol();
-        if (p != null)
+    @Override
+    public void updateProgressBar() {
+        final Protocol p = general.getCurrProtocol();
+        if (p == null) return;
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
             if (p.isConnecting()) {
                 progressBar.setVisibility(ProgressBar.VISIBLE);
                 byte percent = p.getConnectingProgress();
@@ -351,6 +358,8 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
             } else {
                 progressBar.setVisibility(ProgressBar.GONE);
             }
+            }
+        });
     }
 
     private void update() {
@@ -361,28 +370,31 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
     @Override
     public void updateBarProtocols() {
         final int protCount = owner.getProtocolCount();
+        final LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                updateProgressBar();
-
                 if (protCount > 1) {
                     topLinearLayout.removeAllViews();
                     for (int j = 0; j < protCount; ++j) {
                         Protocol protocol = owner.getProtocol(j);
-                        ImageButton imageBarButtons = new ImageButton(getActivity());
+                        ImageButton imageBarButtons = protocolIconHash.get(j);
+                        if (imageBarButtons == null) {
+                            imageBarButtons = new ImageButton(getActivity());
+                            imageBarButtons.setOnClickListener(RosterView.this);
+                            imageBarButtons.setOnLongClickListener(RosterView.this);
+                            protocolIconHash.put(j, imageBarButtons);
+                            imageBarButtons.setId(j);
+                            lp.gravity = Gravity.CENTER;
+                            imageBarButtons.setLayoutParams(lp);
+                        }
+                        imageBarButtons.setBackgroundColor(0);
                         if (j == owner.getCurrProtocol())
                             imageBarButtons.setBackgroundColor(General.getColorWithAlpha(Scheme.THEME_BACKGROUND));
                         imageBarButtons.setImageBitmap(protocol.getCurrentStatusIcon().getImage());
-                        imageBarButtons.setId(j);
-                        imageBarButtons.setOnClickListener(RosterView.this);
-                        imageBarButtons.setOnLongClickListener(RosterView.this);
                         Icon messageIcon = ChatHistory.instance.getUnreadMessageIcon(protocol);
                         if (null != messageIcon)
                             imageBarButtons.setImageBitmap(messageIcon.getImage());
-                        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-                        lp.gravity = Gravity.CENTER;
-                        imageBarButtons.setLayoutParams(lp);
                         topLinearLayout.addView(imageBarButtons, j);
                     }
                 } else {

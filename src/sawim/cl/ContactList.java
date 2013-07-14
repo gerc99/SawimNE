@@ -194,7 +194,7 @@ public final class ContactList {
     }
 
     public void activate() {
-        contactList.update(false);
+        contactList.update();
     }
 
     public void activate(Contact c) {
@@ -202,7 +202,7 @@ public final class ContactList {
             contactList.setActiveContact(c);
         }
         contactList.setAlwaysVisibleNode(c);
-        contactList.update(false);
+        contactList.update();
     }
 
     public void activateWithMsg(final String message) {

@@ -1,4 +1,4 @@
-package ru.sawim.view.widgets.menu;
+package ru.sawim.view.menu;
 
 /**
  * Created with IntelliJ IDEA.
@@ -7,7 +7,7 @@ package ru.sawim.view.widgets.menu;
  * Time: 20:50
  * To change this template use File | Settings | File Templates.
  */
-public class MenuItem {
+public class MyMenuItem {
     public String nameItem;
     public int idItem;
 

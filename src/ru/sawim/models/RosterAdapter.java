@@ -14,7 +14,6 @@ import protocol.Group;
 import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.Scheme;
-import sawim.chat.ChatHistory;
 import sawim.chat.message.Message;
 
 import java.util.List;

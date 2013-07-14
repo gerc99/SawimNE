@@ -36,16 +36,8 @@ public class ImageList {
     public int size() {
         return (null == icons) ? 0 : icons.length;
     }
-
-    public int getWidth() {
-        return width;
-    }
-
-    public int getHeight() {
-        return height;
-    }
     
-    public void load(String resName, int count) throws IOException {
+    /*public void load(String resName, int count) throws IOException {
         Image resImage = loadImage(resName);
         if (null == resImage) {
             return;
@@ -58,14 +50,15 @@ public class ImageList {
         Vector tmpIcons = new Vector();
         for (int y = 0; y < imgHeight; y += height) {
             for (int x = 0; x < imgWidth; x += width) {
-                Icon icon = new Icon(Bitmap.createBitmap(resImage.getBitmap(), x, y, width, height));
+                Bitmap bitmap = Bitmap.createBitmap(resImage.getBitmap(), x, y, width, height);
+                Icon icon = new Icon(bitmap);
+
                 tmpIcons.addElement(icon);
             }
         }
         icons = new Icon[tmpIcons.size()];
         tmpIcons.copyInto(icons);
-    }
-    
+    }*/
 
     public void load(String resName, int width, int height) throws IOException {
         Image resImage = loadImage(resName);
@@ -85,9 +78,11 @@ public class ImageList {
         this.width = width;
         this.height = height;
         Vector tmpIcons = new Vector();
+
         for (int y = 0; y < imgHeight; y += height) {
             for (int x = 0; x < imgWidth; x += width) {
-                Icon icon = new Icon(Bitmap.createBitmap(resImage.getBitmap(), x, y, width, height));
+                Bitmap bitmap = Bitmap.createBitmap(resImage.getBitmap(), x, y, width, height);
+                Icon icon = new Icon(bitmap);
                 tmpIcons.addElement(icon);
             }
         }

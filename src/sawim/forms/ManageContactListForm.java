@@ -5,7 +5,7 @@ import android.content.DialogInterface;
 import android.support.v4.app.FragmentActivity;
 import android.view.*;
 import ru.sawim.SawimApplication;
-import ru.sawim.view.widgets.menu.MyMenu;
+import ru.sawim.view.menu.MyMenu;
 import sawim.cl.ContactList;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;

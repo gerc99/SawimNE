@@ -202,7 +202,7 @@
     <string name="accpromt">Нажмите кнопку "Меню", чтобы добавить профиль</string>
     <string name="hide_icons_clients">Скрывать иконки клиентов</string>
     <string name="magic_eye">Всевидящее око</string>
-    <string name="open_url">Open url</string>
+    <string name="open_url">Открыть ссылку</string>
     <string name="copy">Копировать</string>
     <string name="url_menu">Меню ссылки</string>
 </resources>

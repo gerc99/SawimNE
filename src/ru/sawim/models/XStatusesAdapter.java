@@ -1,16 +1,15 @@
 package ru.sawim.models;
 
 import DrawControls.icons.Icon;
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 import protocol.Protocol;
 import protocol.XStatusInfo;
-import ru.sawim.General;
 import ru.sawim.R;
 
 /**
@@ -68,8 +67,6 @@ public class XStatusesAdapter extends BaseAdapter {
         LinearLayout activeItem = (LinearLayout) row;
         if (position == selectedItem) {
             activeItem.setBackgroundColor(Color.BLUE);
-            int top = (activeItem == null) ? 0 : activeItem.getTop();
-            ((ListView) viewGroup).setSelectionFromTop(position, top);
         } else {
             activeItem.setBackgroundColor(Color.WHITE);
         }

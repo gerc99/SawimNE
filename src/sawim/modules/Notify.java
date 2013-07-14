@@ -225,7 +225,6 @@ public class Notify implements Runnable {
             createPlayer(source);
             return true;
         } catch (Exception e) {
-            DebugLog.panic("8888888888", e);
             return false;
         } finally {
             closePlayer();
