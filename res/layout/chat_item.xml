@@ -39,7 +39,7 @@
 
         <ru.sawim.view.MyTextView
                 android:id="@+id/msg_text"
-                android:layout_width="fill_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:autoLink="email|web"
                 android:text="text"

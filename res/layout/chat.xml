@@ -26,22 +26,20 @@
                     android:id="@+id/item_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="1dp"
                     android:lines="1"
                     android:scrollHorizontally="true"
                     android:ellipsize="end"
                     android:text="TextView"
                     android:textSize="20sp"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold" android:layout_weight="1"/>
             <TextView
                     android:id="@+id/item_description"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="1dp"
                     android:lines="1"
                     android:scrollHorizontally="true"
                     android:ellipsize="end"
-                    android:text="VeryVeryVeryLongAndLongStatusMessage"/>
+                    android:text="VeryVeryVeryLongAndLongStatusMessage" android:layout_weight="1"/>
         </LinearLayout>
         <ImageButton
                 android:layout_width="32dp"

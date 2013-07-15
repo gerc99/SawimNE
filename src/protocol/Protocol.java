@@ -1,6 +1,7 @@
 package protocol;
 
 import DrawControls.icons.Icon;
+import android.util.Log;
 import sawim.FileTransfer;
 import ru.sawim.General;
 import sawim.SawimException;

@@ -1,5 +1,6 @@
 package DrawControls.tree;
 
+import android.util.Log;
 import protocol.Contact;
 import protocol.Group;
 import protocol.Protocol;
@@ -147,12 +148,13 @@ public final class VirtualContactList {
         Group g;
         Contact c;
         int contactCounter;
-        int onlineContactCounter = 0;
+        int onlineContactCounter;
         boolean all = !hideOffline;
         Vector groups = p.getSortedGroups();
         for (int groupIndex = 0; groupIndex < groups.size(); ++groupIndex) {
             g = (Group) groups.elementAt(groupIndex);
             contactCounter = 0;
+            onlineContactCounter = 0;
             drawItems.add(g);
             contacts = g.getContacts();
             int contactsSize = contacts.size();

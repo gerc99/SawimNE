@@ -2,7 +2,10 @@ package DrawControls.icons;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import ru.sawim.General;
+import ru.sawim.SawimApplication;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -12,29 +15,30 @@ import java.util.Vector;
 
 public class ImageList {
 
-    private Icon[] icons;
-    protected int width = 0;
-    protected int height = 0;
     private static Hashtable files = new Hashtable();
     private static ImageList instance;
+    private Icon[] icons;
 
     public ImageList() {
-         instance = this;
+        instance = this;
     }
 
     public static ImageList getInstance() {
         return instance;
     }
 
-    public Icon iconAt(int index) { 
-        if (0 <= index && index < size()) {
-            return icons[index];
+    static public ImageList createImageList(String resName) {
+        ImageList imgs = (ImageList) files.get(resName);
+        if (null != imgs) {
+            return imgs;
         }
-        return null;
-    }
-
-    public int size() {
-        return (null == icons) ? 0 : icons.length;
+        ImageList icons = new ImageList();
+        try {
+            icons.load(resName, -1, -1);
+        } catch (Exception e) {
+        }
+        files.put(resName, icons);
+        return icons;
     }
     
     /*public void load(String resName, int count) throws IOException {
@@ -60,6 +64,17 @@ public class ImageList {
         tmpIcons.copyInto(icons);
     }*/
 
+    public Icon iconAt(int index) {
+        if (0 <= index && index < size()) {
+            return icons[index];
+        }
+        return null;
+    }
+
+    public int size() {
+        return (null == icons) ? 0 : icons.length;
+    }
+
     public void load(String resName, int width, int height) throws IOException {
         Image resImage = loadImage(resName);
         if (null == resImage) {
@@ -75,13 +90,11 @@ public class ImageList {
             height = imgHeight;
         }
 
-        this.width = width;
-        this.height = height;
         Vector tmpIcons = new Vector();
-
         for (int y = 0; y < imgHeight; y += height) {
             for (int x = 0; x < imgWidth; x += width) {
-                Bitmap bitmap = Bitmap.createBitmap(resImage.getBitmap(), x, y, width, height);
+                //Bitmap bitmap = Bitmap.createBitmap(resImage.getBitmap(), x, y, width, height);
+                Bitmap bitmap = scalingIconForDPI(Bitmap.createBitmap(resImage.getBitmap(), x, y, width, height));
                 Icon icon = new Icon(bitmap);
                 tmpIcons.addElement(icon);
             }
@@ -90,18 +103,28 @@ public class ImageList {
         tmpIcons.copyInto(icons);
     }
 
-    static public ImageList createImageList(String resName) {
-        ImageList imgs = (ImageList) files.get(resName);
-        if (null != imgs) {
-            return imgs;
+    public static Bitmap scalingIconForDPI(Bitmap originBitmap) {
+        BitmapDrawable output = null;
+        if (originBitmap != null) {
+            switch (SawimApplication.getInstance().getResources().getDisplayMetrics().densityDpi) {
+                case 120:
+                    originBitmap = Bitmap.createScaledBitmap(originBitmap, 16, 16, true);
+                    break;
+                case 160:
+                    originBitmap = Bitmap.createScaledBitmap(originBitmap, 24, 24, true);
+                    break;
+                case 240:
+                    originBitmap = Bitmap.createScaledBitmap(originBitmap, 32, 32, true);
+                    break;
+                default:
+                    return originBitmap;
+            }
+            originBitmap = originBitmap.copy(Bitmap.Config.ARGB_4444, false);
+            originBitmap.setDensity(0);
+            output = new BitmapDrawable(SawimApplication.getInstance().getResources(), originBitmap);
+            output.setBounds(0, 0, output.getIntrinsicWidth(), output.getIntrinsicHeight());
         }
-        ImageList icons = new ImageList();
-        try {
-            icons.load(resName, -1, -1);
-        } catch (Exception e) {
-        }
-        files.put(resName, icons);
-        return icons;
+        return output.getBitmap();
     }
 
     public Image loadImage(String resName) {

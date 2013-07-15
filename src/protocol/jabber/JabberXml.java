@@ -1,5 +1,6 @@
 package protocol.jabber;
 
+import android.util.Log;
 import ru.sawim.General;
 import sawim.SawimException;
 import sawim.Options;
@@ -1146,7 +1147,6 @@ public final class JabberXml extends ClientConnection {
 
         int priority = Util.strToIntDef(x.getFirstNodeValue("prior" + "ity"), 0);
         String statusString = x.getFirstNodeValue(S_STATUS);
-
         if (Jid.isConference(from)) {
             XmlNode xMuc = x.getXNode("http://jabber.org/protocol/muc#user");
 			int code = 0;

@@ -362,11 +362,10 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         updateBarProtocols();
         updateRoster();
     }
-
+    final LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
     @Override
     public void updateBarProtocols() {
         final int protCount = owner.getProtocolCount();
-        final LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
