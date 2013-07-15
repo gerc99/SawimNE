@@ -1,17 +1,13 @@
 package ru.sawim;
 
-import DrawControls.icons.Icon;
-import DrawControls.icons.Image;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.net.Uri;
-import android.text.ClipboardManager;
+import android.os.Handler;
 import android.util.DisplayMetrics;
+import android.widget.Toast;
 import sawim.Options;
 import sawim.Updater;
 import sawim.chat.Chat;
@@ -25,10 +21,8 @@ import sawim.modules.*;
 import sawim.search.Search;
 import sawim.util.JLocale;
 
-import javax.microedition.io.ConnectionNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Created with IntelliJ IDEA.
@@ -155,18 +149,6 @@ public class General {
             Thread.sleep(50);
         } catch (Exception e) {
         }
-    }
-
-    public static int getColor(int color) {
-        return 0xff000000 | Scheme.getScheme()[color];
-    }
-    public static int getColorWithAlpha(int color) {
-        return 0xdd000000 | Scheme.getScheme()[color];
-    }
-
-    public static int getInversColor(int c) {
-        int color = Scheme.getScheme()[c];
-        return 0xFF550000 ^ color;
     }
 
     public InputStream getResourceAsStream(Context c, Class origClass, String name) {

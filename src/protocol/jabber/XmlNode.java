@@ -1,5 +1,3 @@
-
-
 package protocol.jabber;
 
 import sawim.SawimException;
@@ -9,7 +7,6 @@ import sawim.comm.Util;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
-
 
 public final class XmlNode {
     public String name;
@@ -562,5 +559,3 @@ public final class XmlNode {
         return vCard;
     }
 }
-
-

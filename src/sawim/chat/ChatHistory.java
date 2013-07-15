@@ -185,7 +185,7 @@ public final class ChatHistory {
         item.clear();
         Contact c = item.getContact();
         c.updateChatState(null);
-        item.getProtocol().ui_updateContact(c, false);
+        item.getProtocol().ui_updateContact(c);
         if (0 < item.getUnreadMessageCount()) {
             ContactList.getInstance().markMessages(c);
         }

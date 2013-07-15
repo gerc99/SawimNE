@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 import ru.sawim.Scheme;
-import ru.sawim.General;
 import ru.sawim.R;
 
 /**
@@ -49,7 +48,7 @@ public class LayerViewFactory {
             TextView itemLayer = getItemLayer();
             itemLayer.setTypeface(Typeface.SANS_SERIF);
             itemLayer.setText(layer);
-            itemLayer.setTextColor(General.getColor(Scheme.THEME_TEXT));
+            itemLayer.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
         }
 
         public TextView getItemLayer() {

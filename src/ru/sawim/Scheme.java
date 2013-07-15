@@ -1,5 +1,3 @@
-
-
 package ru.sawim;
 
 import sawim.Options;
@@ -40,7 +38,6 @@ public class Scheme {
     public static final byte THEME_MAGIC_EYE_NL_USER    = 25;
     public static final byte THEME_MAGIC_EYE_USER       = 26;
     public static final byte THEME_MAGIC_EYE_TEXT       = 27;
-
 
     public static final byte THEME_MENU_BACK            = 29;
     public static final byte THEME_MENU_BORDER          = 30;
@@ -165,5 +162,18 @@ public class Scheme {
     }
     private static void setColorScheme(int[] scheme) {
         System.arraycopy(scheme, 0, currentTheme, 0 , currentTheme.length);
+    }
+
+    public static int getColor(int color) {
+        return 0xff000000 | getScheme()[color];
+    }
+
+    public static int getColorWithAlpha(int color) {
+        return 0xdd000000 | getScheme()[color];
+    }
+
+    public static int getInversColor(int c) {
+        int color = getScheme()[c];
+        return 0xFF550000 ^ color;
     }
 }

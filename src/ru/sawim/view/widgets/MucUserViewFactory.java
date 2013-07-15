@@ -12,7 +12,6 @@ import ru.sawim.Scheme;
 import protocol.jabber.Jabber;
 import protocol.jabber.JabberContact;
 import protocol.jabber.JabberServiceContact;
-import ru.sawim.General;
 import ru.sawim.R;
 
 /**
@@ -62,7 +61,7 @@ public class MucUserViewFactory {
             JabberContact.SubContact c = (JabberContact.SubContact) o;
             TextView itemName = getItemName();
             itemName.setText(c.resource);
-            itemName.setTextColor(General.getColor(Scheme.THEME_TEXT));
+            itemName.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
             getItemStatusImage().setImageBitmap(protocol.getStatusInfo().getIcon(c.status).getImage());
             getItemAffilationImage().setImageBitmap(affiliationIcons.iconAt(JabberServiceContact.getAffiliationName(c.priorityA)).getImage());
             Icon ic = protocol.clientInfo.getIcon(c.client);

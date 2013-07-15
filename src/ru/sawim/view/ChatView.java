@@ -7,6 +7,7 @@ import android.app.AlertDialog;
 import android.content.*;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
@@ -66,13 +67,13 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
     private LinearLayout chatBarLayout;
     private LinearLayout chat_viewLayout;
     private MucUsersView mucUsersView;
+    private Bitmap usersIcon = ImageList.createImageList("/participants.png").iconAt(0).getImage();
 
     @Override
     public void onActivityCreated(Bundle b) {
         super.onActivityCreated(b);
-        chatBarLayout.setBackgroundColor(General.getColorWithAlpha(Scheme.THEME_CAP_BACKGROUND));
-        chat_viewLayout.setBackgroundColor(General.getColorWithAlpha(Scheme.THEME_BACKGROUND));
-        usersImage.setImageBitmap(ImageList.createImageList("/participants.png").iconAt(0).getImage());
+        chatBarLayout.setBackgroundColor(Scheme.getColorWithAlpha(Scheme.THEME_CAP_BACKGROUND));
+        usersImage.setImageBitmap(usersIcon);
         usersImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -325,20 +326,19 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
         resume(chat);
         chat.setVisibleChat(true);
 
-        contactName.setTextColor(General.getColor(Scheme.THEME_CAP_TEXT));
+        contactName.setTextColor(Scheme.getColor(Scheme.THEME_CAP_TEXT));
         contactName.setText(currentContact.getName());
-        contactStatus.setTextColor(General.getColor(Scheme.THEME_CAP_TEXT));
+        contactStatus.setTextColor(Scheme.getColor(Scheme.THEME_CAP_TEXT));
         contactStatus.setText(ContactList.getInstance().getManager().getStatusMessage(currentContact));
-        int background = General.getColorWithAlpha(Scheme.THEME_BACKGROUND);
-        LinearLayout chatLayout = (LinearLayout) currentActivity.findViewById(R.id.chat_view);
-        chatLayout.setBackgroundColor(General.getColorWithAlpha(Scheme.THEME_BACKGROUND));
+        int background = Scheme.getColorWithAlpha(Scheme.THEME_BACKGROUND);
+        chat_viewLayout.setBackgroundColor(background);
         messageEditor.setBackgroundColor(background);
-        messageEditor.setTextColor(General.getColor(Scheme.THEME_TEXT));
+        messageEditor.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
 
         nickList = (ListView) currentActivity.findViewById(R.id.muc_user_list);
         sidebar = (LinearLayout) currentActivity.findViewById(R.id.sidebar);
         sidebar.setVisibility(View.GONE);
-        sidebar.setBackgroundColor(General.getColor(Scheme.THEME_BACKGROUND));
+        sidebar.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
         if (currentContact instanceof JabberServiceContact && currentContact.isConference()) {
             mucUsersView = new MucUsersView();
             mucUsersView.init(protocol, (JabberServiceContact) currentContact);

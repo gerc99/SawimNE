@@ -59,8 +59,8 @@ public final class ExceptionHandler implements Thread.UncaughtExceptionHandler {
     public void uncaughtException(Thread thread, Throwable exception) {
         final String state = Environment.getExternalStorageState();
         final Date dumpDate = new Date(System.currentTimeMillis());
+        General.getInstance().quit();
         if (Environment.MEDIA_MOUNTED.equals(state)) {
-
             StringBuilder reportBuilder = new StringBuilder();
             reportBuilder
                     .append("\n\n\n")

@@ -10,7 +10,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import protocol.Protocol;
 import protocol.jabber.*;
-import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.Scheme;
 import ru.sawim.models.MucUsersAdapter;
@@ -54,7 +53,7 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
     public void show(final FragmentActivity activity, ListView nickList, ImageView usersImage, final ChatView chatView) {
         usersAdapter = new MucUsersAdapter(activity, (Jabber) protocol, jabberServiceContact);
         nickList.setCacheColorHint(0x00000000);
-        nickList.setBackgroundColor(General.getInversColor(Scheme.THEME_BACKGROUND));
+        nickList.setBackgroundColor(Scheme.getInversColor(Scheme.THEME_BACKGROUND));
         nickList.setAdapter(usersAdapter);
         usersImage.setVisibility(View.VISIBLE);
         nickList.setVisibility(View.VISIBLE);

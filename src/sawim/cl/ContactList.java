@@ -206,7 +206,6 @@ public final class ContactList {
     }
 
     public void activateWithMsg(final String message) {
-        //Toast.makeText(SawimActivity.getInstance(), message, Toast.LENGTH_LONG).show();
         activate();
     }
 

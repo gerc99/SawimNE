@@ -10,7 +10,6 @@ public final class StatusInfo {
     public static final byte STATUS_ONLINE  = 1;
     public static final byte STATUS_AWAY    = 2;
     public static final byte STATUS_CHAT    = 3;
-
     
     public static final byte STATUS_XA = 9;
     public static final byte STATUS_DND = 11;

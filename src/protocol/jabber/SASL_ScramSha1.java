@@ -95,9 +95,7 @@ public class SASL_ScramSha1 {
         lServerSignature = "v=" + Util.base64encode(serverSignature);
 
         return clientFinalMessageWithoutProof + ",p=" + Util.base64encode(clientProof);
-
     }
-
 
     private byte[] hi(byte[] str, byte[] salt, int i) {
         HMACSHA1 mac = getHMAC(str);
@@ -126,5 +124,3 @@ public class SASL_ScramSha1 {
         return StringConvertor.stringToByteArrayUtf8(str);
     }
 }
-
-

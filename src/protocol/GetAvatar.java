@@ -44,7 +44,6 @@ public class GetAvatar implements Runnable {
     private byte[] read(InputStream in, int length) throws IOException {
         if (0 == length) {
             return null;
-
         }
         if (0 < length) {
             byte[] bytes = new byte[length];

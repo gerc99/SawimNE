@@ -1,5 +1,3 @@
-
-
 package protocol.jabber;
 
 import com.jcraft.jzlib.JZlib;
@@ -20,9 +18,7 @@ final class Socket {
     private ZInputStream zin;
     private ZOutputStream zout;
     private boolean compressed;
-    
-    
-    
+
     public Socket() {
     }
     
@@ -31,11 +27,8 @@ final class Socket {
         zout = new ZOutputStream(socket, JZlib.Z_DEFAULT_COMPRESSION);
         zout.setFlushMode(JZlib.Z_SYNC_FLUSH);
         compressed = true;
-        
         DebugLog.println("zlib is working");
-        
     }
-    
 
     public boolean isConnected() {
         return connected;
@@ -48,7 +41,6 @@ final class Socket {
     }
 
     private int read(byte[] data) throws SawimException {
-        
         if (compressed) {
             int bRead = zin.read(data);
             if (-1 == bRead) {
@@ -81,13 +73,11 @@ final class Socket {
     }
     public void close() {
         connected = false;
-        
         try {
             zin.close();
             zout.close();
         } catch (Exception ex) {
         }
-        
         socket.close();
         inputBufferLength = 0;
         inputBufferIndex = 0;
@@ -117,7 +107,6 @@ final class Socket {
         }
         return socket.available();
     }
-
 
     char readChar() throws SawimException {
         try {
@@ -157,4 +146,3 @@ final class Socket {
         }
     }
 }
-

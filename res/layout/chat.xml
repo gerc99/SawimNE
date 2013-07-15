@@ -50,8 +50,7 @@
                 android:layout_weight="1"/>
     </LinearLayout>
 
-    <LinearLayout android:id="@+id/linear"
-                  android:layout_weight="2"
+    <LinearLayout android:layout_weight="2"
                   android:orientation="horizontal"
                   android:layout_width="fill_parent"
                   android:layout_height="fill_parent">
@@ -62,7 +61,7 @@
                 android:divider="@null"
                 android:dividerHeight="0dp"
                 android:layout_weight="1"
-                android:fastScrollEnabled="true"/>
+                android:fastScrollEnabled="true" android:paddingBottom="8dp"/>
         <LinearLayout android:id="@+id/sidebar"
                       android:orientation="vertical"
                       android:layout_width="match_parent"

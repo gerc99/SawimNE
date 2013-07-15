@@ -1,21 +1,14 @@
 package ru.sawim.view;
 
-import android.os.Handler;
 import android.text.*;
-
 import android.content.Context;
 import android.text.style.URLSpan;
 import android.util.AttributeSet;
-
 import android.util.Log;
-import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 import ru.sawim.models.MessagesAdapter;
-
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * Created with IntelliJ IDEA.
@@ -40,11 +33,11 @@ public class MyTextView extends TextView {
 
     public boolean onTouchEvent(MotionEvent event) {
         Object text = getText();
-        if (text instanceof Spanned) {
+        if (text instanceof Spannable) {
             Spannable buffer = (Spannable) text;
             int action = event.getAction();
-            if (action == MotionEvent.ACTION_UP
-                    || action == MotionEvent.ACTION_DOWN) {
+            if ((action == MotionEvent.ACTION_UP)
+                    || (action == MotionEvent.ACTION_DOWN)) {
                 int x = (int) event.getX();
                 int y = (int) event.getY();
 
@@ -68,9 +61,9 @@ public class MyTextView extends TextView {
                     if (action == MotionEvent.ACTION_UP) {
                         mListener.onTextLinkClick(this, link[0].getURL());
                     }
+                    return true;
                 }
             }
-            return true;
         }
         return false;
     }

@@ -11,7 +11,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import protocol.Contact;
 import protocol.Group;
-import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.Scheme;
 import sawim.chat.message.Message;
@@ -120,7 +119,7 @@ public class RosterAdapter extends BaseAdapter {
         void populateFrom(Contact item) {
             TextView itemName = getItemName();
             itemName.setText(item.getName());
-            itemName.setTextColor(General.getColor(Scheme.THEME_CONTACT_WITH_CHAT));
+            itemName.setTextColor(Scheme.getColor(Scheme.THEME_CONTACT_WITH_CHAT));
             Icon icMess = Message.msgIcons.iconAt(item.getUnreadMessageIcon());
             if (icMess == null) {
                 getItemImage().setImageBitmap(item.getProtocol().getStatusInfo().getIcon(item.getStatusIndex()).getImage());

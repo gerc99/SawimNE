@@ -1,6 +1,5 @@
 package DrawControls.tree;
 
-import android.util.Log;
 import protocol.Contact;
 import protocol.Group;
 import protocol.Protocol;
@@ -8,7 +7,6 @@ import protocol.XStatusInfo;
 import sawim.Options;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
-
 import java.util.List;
 import java.util.Vector;
 
@@ -17,14 +15,12 @@ public final class VirtualContactList {
     private OnUpdateRoster onUpdateRoster;
     private int currentProtocol = 0;
     private int currPage = 0;
+    private TreeNode selectedItem = null;
+    public boolean useGroups;
+    private boolean hideOffline;
 
     private final Protocol[] protocolList;
     private int count = 0;
-
-    private TreeNode selectedItem = null;
-
-    private boolean useGroups;
-    private boolean hideOffline;
 
     public VirtualContactList() {
         protocolList = new Protocol[10];
@@ -151,6 +147,7 @@ public final class VirtualContactList {
         Group g;
         Contact c;
         int contactCounter;
+        int onlineContactCounter = 0;
         boolean all = !hideOffline;
         Vector groups = p.getSortedGroups();
         for (int groupIndex = 0; groupIndex < groups.size(); ++groupIndex) {
@@ -167,16 +164,20 @@ public final class VirtualContactList {
                     }
                     contactCounter++;
                 }
+                if (c.isOnline())
+                    ++onlineContactCounter;
             }
             if (hideOffline && (0 == contactCounter)) {
                 drawItems.remove(drawItems.size() - 1);
             }
+            g.updateGroupData(contactsSize, onlineContactCounter);
         }
 
         g = p.getNotInListGroup();
         drawItems.add(g);
         contacts = g.getContacts();
         contactCounter = 0;
+        onlineContactCounter = 0;
         int contactsSize = contacts.size();
         for (int contactIndex = 0; contactIndex < contactsSize; ++contactIndex) {
             c = (Contact) contacts.elementAt(contactIndex);
@@ -186,7 +187,10 @@ public final class VirtualContactList {
                 }
                 contactCounter++;
             }
+            if (c.isOnline())
+                ++onlineContactCounter;
         }
+        g.updateGroupData(contactsSize, onlineContactCounter);
         if (0 == contactCounter) {
             drawItems.remove(drawItems.size() - 1);
         }
@@ -202,6 +206,22 @@ public final class VirtualContactList {
                 drawItems.add(c);
             }
         }
+    }
+
+    public void updateGroup(Protocol protocol, Group group) {
+        Vector allItems = protocol.getContactItems();
+        Vector groupItems = group.getContacts();
+        groupItems.removeAllElements();
+        int size = allItems.size();
+        int groupId = group.getId();
+        for (int i = 0; i < size; ++i) {
+            Contact item = (Contact) allItems.elementAt(i);
+            if (item.getGroupId() == groupId) {
+                groupItems.addElement(item);
+            }
+        }
+        group.updateGroupData();
+        group.sort();
     }
 
     public void updateGroup(Group group) {
@@ -221,26 +241,6 @@ public final class VirtualContactList {
 
     public void addToGroup(Group group, Contact contact) {
         group.getContacts().addElement(contact);
-    }
-
-    public void updateGroupData(Group group) {
-        group.updateGroupData();
-    }
-
-    public void updateGroup(Protocol protocol, Group group) {
-        Vector allItems = protocol.getContactItems();
-        Vector groupItems = group.getContacts();
-        groupItems.removeAllElements();
-        int size = allItems.size();
-        int groupId = group.getId();
-        for (int i = 0; i < size; ++i) {
-            Contact item = (Contact) allItems.elementAt(i);
-            if (item.getGroupId() == groupId) {
-                groupItems.addElement(item);
-            }
-        }
-        group.updateGroupData();
-        group.sort();
     }
 
     public void putIntoQueue(Group group) {

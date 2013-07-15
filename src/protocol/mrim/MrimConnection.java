@@ -549,7 +549,7 @@ public final class MrimConnection extends ClientConnection {
                             lastContact.setBooleanValue(Contact.CONTACT_NO_AUTH, true);
                         }
                         lastContact.setTempFlag(false);
-                        mrim.ui_updateContact(lastContact, true);
+                        mrim.ui_updateContact(lastContact);
                     }
                 }
             }

@@ -4,7 +4,7 @@ import DrawControls.icons.Icon;
 import DrawControls.tree.TreeNode;
 import DrawControls.tree.VirtualContactList;
 import android.content.Intent;
-import android.graphics.Bitmap;
+import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -18,20 +18,17 @@ import protocol.Contact;
 import protocol.ContactMenu;
 import protocol.Group;
 import protocol.Protocol;
-import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.Scheme;
 import ru.sawim.activities.AccountsListActivity;
 import ru.sawim.activities.ChatActivity;
 import ru.sawim.models.CustomPagerAdapter;
 import ru.sawim.models.RosterAdapter;
-import sawim.Options;
 import sawim.chat.Chat;
 import sawim.chat.ChatHistory;
 import sawim.cl.ContactList;
 import sawim.comm.Util;
 import sawim.forms.ManageContactListForm;
-import sawim.modules.DebugLog;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -86,10 +83,10 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         ListView onlineListView = new ListView(currentActivity);
         ListView chatsListView = new ListView(currentActivity);
 
-        rosterViewLayout.setBackgroundColor(General.getColor(Scheme.THEME_BACKGROUND));
-        indicator.setTextColor(General.getColor(Scheme.THEME_GROUP));
-        indicator.setBackgroundColor(General.getColorWithAlpha(Scheme.THEME_BACKGROUND));
-        rosterBarLayout.setBackgroundColor(General.getColorWithAlpha(Scheme.THEME_CAP_BACKGROUND));
+        rosterViewLayout.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
+        indicator.setTextColor(Scheme.getColor(Scheme.THEME_GROUP));
+        indicator.setBackgroundColor(Scheme.getColorWithAlpha(Scheme.THEME_BACKGROUND));
+        rosterBarLayout.setBackgroundColor(Scheme.getColorWithAlpha(Scheme.THEME_CAP_BACKGROUND));
 
         LayoutInflater inf = LayoutInflater.from(currentActivity);
         allRosterAdapter = new RosterAdapter(inf, owner, items, RosterAdapter.ALL_CONTACTS);
@@ -192,14 +189,12 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
             updateQueue.removeElementAt(0);
             owner.updateGroup(group);
         }
-        try {
-            owner.updateOptions(owner, owner.getCurrProtocol());
-
+    //    try {
             TreeNode current = currentNode;
             currentNode = null;
             int prevIndex = getCurrItem();
             if (null != current) {
-                if ((current instanceof Contact) && Options.getBoolean(Options.OPTION_USER_GROUPS)) {
+                if ((current.isContact()) && owner.useGroups) {
                     Contact c = (Contact) current;
                     Protocol p = owner.getCurrentProtocol();
                     if (null != p) {
@@ -216,7 +211,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
             items.clear();
             owner.buildFlatItems(owner.getCurrProtocol(), items);
             updatePage(pos);
-            if (null != current) {
+            /* (null != current) {
                 int currentIndex = Util.getIndex(items, current);
                 if ((prevIndex != currentIndex) && (-1 != currentIndex)) {
                     setCurrentItemIndex(currentIndex);
@@ -224,10 +219,10 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
             }
             if (items.size() <= getCurrItem()) {
                 setCurrentItemIndex(0);
-            }
-        } catch (Exception e) {
-            DebugLog.panic("update ", e);
-        }
+            }*/
+    //    } catch (Exception e) {
+    //        DebugLog.panic("update ", e);
+    //    }
     }
 
     @Override
@@ -236,6 +231,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         if (owner == null) return;
         if (owner.getProtocolCount() == 0) return;
         owner.setOnUpdateRoster(this);
+        updateProgressBar();
         update();
     }
 
@@ -388,9 +384,9 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
                             lp.gravity = Gravity.CENTER;
                             imageBarButtons.setLayoutParams(lp);
                         }
-                        imageBarButtons.setBackgroundColor(0);
+                        imageBarButtons.getBackground().setColorFilter(Scheme.getColor(Scheme.THEME_CAP_BACKGROUND), PorterDuff.Mode.MULTIPLY);
                         if (j == owner.getCurrProtocol())
-                            imageBarButtons.setBackgroundColor(General.getColorWithAlpha(Scheme.THEME_BACKGROUND));
+                            imageBarButtons.getBackground().setColorFilter(Scheme.getColor(Scheme.THEME_BACKGROUND), PorterDuff.Mode.SCREEN);
                         imageBarButtons.setImageBitmap(protocol.getCurrentStatusIcon().getImage());
                         Icon messageIcon = ChatHistory.instance.getUnreadMessageIcon(protocol);
                         if (null != messageIcon)

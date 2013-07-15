@@ -12,7 +12,6 @@ public class Group extends TreeNode implements Sortable {
     private final Vector contacts = new Vector();
     private byte mode;
     private String caption = null;
-    private String count = null;
     private int groupId;
     private boolean expanded = false;
 
@@ -95,9 +94,16 @@ public class Group extends TreeNode implements Sortable {
         }
         caption = getName();
         if (0 < total) {
-            count = " (" + onlineCount + "/" + total + ")";
             caption += " (" + onlineCount + "/" + total + ")";
         }
+    }
+
+    public final void updateGroupData(int total, int onlineCount) {
+        caption = getName();
+        if (0 < total) {
+            caption += " (" + onlineCount + "/" + total + ")";
+        }
+        sort();
     }
 
     public final String getText() {
@@ -109,9 +115,6 @@ public class Group extends TreeNode implements Sortable {
         return TreeNode.GROUP;
     }
 
-    public final String getCount() {
-        return count;
-    }
     public final void sort() {
         if (expanded) {
             Util.sort(contacts);

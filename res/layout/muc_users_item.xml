@@ -4,7 +4,7 @@
         android:id="@+id/widget35"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="5dp">
+        android:paddingTop="5dp" android:paddingBottom="5dp">
     <ImageView
             android:id="@+id/first_image"
             android:layout_width="wrap_content"
@@ -20,8 +20,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="5dp"
-            android:layout_weight="5">
+            android:layout_weight="5" android:paddingTop="5dp" android:paddingBottom="5dp">
         <TextView
                 android:id="@+id/item_name"
                 android:layout_width="match_parent"

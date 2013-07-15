@@ -15,7 +15,6 @@ import sawim.chat.ChatHistory;
 import sawim.chat.message.Message;
 import ru.sawim.Scheme;
 import protocol.*;
-import ru.sawim.General;
 import ru.sawim.R;
 import sawim.modules.tracking.Tracking;
 
@@ -48,7 +47,7 @@ public class ViewHolderRoster {
         boolean isExpanded = g.isExpanded();
         TextView itemName = getItemName();
         itemName.setText(g.getText());
-        itemName.setTextColor(General.getColor(Scheme.THEME_GROUP));
+        itemName.setTextColor(Scheme.getColor(Scheme.THEME_GROUP));
         itemName.setTypeface(Typeface.DEFAULT);
 
         ImageView firstImage = getItemFirstImage();
@@ -76,14 +75,14 @@ public class ViewHolderRoster {
             itemName.setText(item.getText());
         else
             itemName.setText(item.getText() + " (" + item.subcontactsS() + ")");
-        itemName.setTextColor(General.getColor(item.getTextTheme()));
+        itemName.setTextColor(Scheme.getColor(item.getTextTheme()));
         itemName.setTypeface(item.hasChat() ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT);
 
         TextView itemStausText = getItemDescriptionText();
         if (Options.getBoolean(Options.OPTION_SHOW_STATUS_LINE)) {
             itemStausText.setVisibility(TextView.VISIBLE);
             itemStausText.setText(vcl.getStatusMessage(item));
-            itemStausText.setTextColor(General.getColor(Scheme.THEME_CONTACT_STATUS));
+            itemStausText.setTextColor(Scheme.getColor(Scheme.THEME_CONTACT_STATUS));
         } else {
             itemStausText.setVisibility(TextView.GONE);
         }

@@ -87,7 +87,7 @@ public class MessagesAdapter extends BaseAdapter implements MyTextView.TextLinkC
 
         msgText.setOnTextLinkClickListener(this);
         ((ViewGroup)row).setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
-        byte bg;
+        byte bg = Scheme.THEME_BACKGROUND;
         if (mData.isService()) {
             bg = Scheme.THEME_CHAT_BG_SYSTEM;
         } else if ((index & 1) == 0) {
@@ -95,7 +95,7 @@ public class MessagesAdapter extends BaseAdapter implements MyTextView.TextLinkC
         } else {
             bg = mData.isIncoming() ? Scheme.THEME_CHAT_BG_IN_ODD : Scheme.THEME_CHAT_BG_OUT_ODD;
         }
-        row.setBackgroundColor(General.getColor(bg));
+        row.setBackgroundColor(Scheme.getColor(bg));
         if (mData.fullText == null) {
             mData.fullText = TextFormatter.getFormattedText(text, baseContext);
         }
@@ -104,14 +104,14 @@ public class MessagesAdapter extends BaseAdapter implements MyTextView.TextLinkC
             msgNick.setVisibility(TextView.GONE);
             msgTime.setVisibility(TextView.GONE);
             msgText.setText("* " + mData.getNick() + " " + mData.fullText);
-            msgText.setTextColor(General.getColor(mData.isIncoming() ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG));
+            msgText.setTextColor(Scheme.getColor(mData.isIncoming() ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG));
             msgText.setTextSize(17);
         } else if (mData.isPresence()) {
             msgImage.setVisibility(ImageView.GONE);
             msgNick.setVisibility(TextView.GONE);
             msgTime.setVisibility(TextView.GONE);
             msgText.setText(mData.getNick() + mData.fullText);
-            msgText.setTextColor(General.getColor(Scheme.THEME_CHAT_INMSG));
+            msgText.setTextColor(Scheme.getColor(Scheme.THEME_CHAT_INMSG));
             msgText.setTextSize(17);
         } else {
             if (mData.iconIndex != Message.ICON_NONE) {
@@ -126,14 +126,14 @@ public class MessagesAdapter extends BaseAdapter implements MyTextView.TextLinkC
 
             msgNick.setVisibility(TextView.VISIBLE);
             msgNick.setText(mData.getNick());
-            msgNick.setTextColor(General.getColor(mData.isIncoming() ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG));
+            msgNick.setTextColor(Scheme.getColor(mData.isIncoming() ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG));
             msgNick.setTypeface(Typeface.DEFAULT_BOLD);
             msgNick.setTextSize(18);
 
             msgTime.setVisibility(TextView.VISIBLE);
             msgTime.setText(mData.strTime);
-            msgTime.setTextColor(General.getColor(mData.isIncoming() ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG));
-            msgTime.setTextSize(14);
+            msgTime.setTextColor(Scheme.getColor(mData.isIncoming() ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG));
+            msgTime.setTextSize(10);
 
             byte color = Scheme.THEME_TEXT;
             if (mData.isIncoming() && !chat.getContact().isSingleUserContact()
@@ -142,7 +142,7 @@ public class MessagesAdapter extends BaseAdapter implements MyTextView.TextLinkC
             }
 
             msgText.setText(mData.fullText);
-            msgText.setTextColor(General.getColor(color));
+            msgText.setTextColor(Scheme.getColor(color));
             msgText.setTextSize(18);
             MovementMethod m = msgText.getMovementMethod();
             if ((m == null) || !(m instanceof LinkMovementMethod)) {

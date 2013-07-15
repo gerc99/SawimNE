@@ -7,7 +7,6 @@ import android.support.v4.app.FragmentActivity;
 import android.view.*;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import ru.sawim.General;
 import ru.sawim.models.form.VirtualListItem;
 import ru.sawim.Scheme;
 import ru.sawim.models.list.VirtualList;
@@ -47,7 +46,7 @@ public class VirtualListView extends Fragment implements VirtualList.OnVirtualLi
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.virtual_list, container, false);
-        v.findViewById(R.id.layout).setBackgroundColor(General.getColor(Scheme.THEME_BACKGROUND));
+        v.findViewById(R.id.layout).setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
         return v;
     }
 
@@ -60,7 +59,7 @@ public class VirtualListView extends Fragment implements VirtualList.OnVirtualLi
         lv = (ListView) currentActivity.findViewById(R.id.list_view);
         lv.setCacheColorHint(0x00000000);
         lv.setAdapter(adapter);
-        lv.setBackgroundColor(General.getColor(Scheme.THEME_BACKGROUND));
+        lv.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
         lv.setOnItemClickListener(new ListView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {

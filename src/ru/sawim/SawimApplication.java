@@ -6,11 +6,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Message;
+import android.os.StrictMode;
 import org.microemu.MIDletBridge;
 import org.microemu.app.Common;
 import org.microemu.cldc.file.FileSystem;
 import org.microemu.util.AndroidRecordStoreManager;
-import ru.sawim.General;
 import sawim.chat.ChatHistory;
 import sawim.cl.ContactList;
 
@@ -42,6 +42,7 @@ public class SawimApplication extends Application {
         instance = this;
         new General().init();
         Thread.setDefaultUncaughtExceptionHandler(ExceptionHandler.inContext(getApplicationContext()));
+        //StrictMode.enableDefaults();
         super.onCreate();
         MIDletInit();
         new General().startApp();

@@ -13,7 +13,6 @@ import ru.sawim.Scheme;
 import ru.sawim.models.list.VirtualList;
 import protocol.jabber.*;
 import sawim.util.JLocale;
-
 import java.util.List;
 
 public final class StatusView {
@@ -148,4 +147,3 @@ public final class StatusView {
         list.show();
     }
 }
-

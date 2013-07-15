@@ -1,7 +1,6 @@
 package protocol;
 
 import DrawControls.icons.Icon;
-import DrawControls.tree.TreeNode;
 import sawim.FileTransfer;
 import ru.sawim.General;
 import sawim.SawimException;
@@ -29,8 +28,6 @@ import ru.sawim.R;
 
 import javax.microedition.rms.RecordStore;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Vector;
 
 abstract public class Protocol {
@@ -162,13 +159,6 @@ abstract public class Protocol {
             return getStatusInfo().getIcon(getProfile().statusIndex);
         }
         return getStatusInfo().getIcon(StatusInfo.STATUS_OFFLINE);
-    }
-
-    public final void getCapIcons(Icon[] capIcons) {
-        capIcons[0] = getCurrentStatusIcon();
-        if (null != xstatusInfo) {
-            capIcons[1] = xstatusInfo.getIcon(getProfile().xstatusIndex);
-        }
     }
 
     public final void sort() {
@@ -491,7 +481,7 @@ abstract public class Protocol {
             return;
         }
         contact.setName(name);
-        ui_updateContact(contact, false);
+        ui_updateContact(contact);
         needSave();
     }
 
@@ -562,6 +552,7 @@ abstract public class Protocol {
             userCloseConnection();
         }
         setStatusesOffline();
+        getContactList().getManager().updateBarProtocols();
         getContactList().getManager().updateProgressBar();
         getContactList().getManager().update();
         getContactList().updateConnectionStatus();
@@ -630,7 +621,6 @@ abstract public class Protocol {
                 chat.beginTyping(type);
             }
             if (type && isConnected()) {
-
                 String id = item.getUserId();
                 if (Tracking.isTrackingEvent(id, Tracking.GLOBAL) == Tracking.TRUE) {
                     if (Tracking.isTracking(id, Tracking.EVENT_TYPING) == Tracking.TRUE) {
@@ -659,7 +649,7 @@ abstract public class Protocol {
         synchronized (rosterLockObject) {
             if (Options.getBoolean(Options.OPTION_USER_GROUPS)) {
                 for (int i = groups.size() - 1; i >= 0; --i) {
-                    getContactList().getManager().updateGroupData((Group) groups.elementAt(i));
+                    ((Group) groups.elementAt(i)).updateGroupData();
                 }
             }
         }
@@ -725,6 +715,7 @@ abstract public class Protocol {
         setLastStatusChangeTime();
         if (isConnected()) {
             s_updateOnlineStatus();
+            getContactList().getManager().updateBarProtocols();
             getContactList().getManager().updateProgressBar();
         }
     }
@@ -778,7 +769,7 @@ abstract public class Protocol {
     private void ui_updateGroup(Group group) {
         if (Options.getBoolean(Options.OPTION_USER_GROUPS)) {
             synchronized (rosterLockObject) {
-                getContactList().getManager().updateGroupData(group);
+                group.updateGroupData();
                 Util.sort(sortedGroups);
             }
             getContactList().getManager().update(group);
@@ -803,20 +794,17 @@ abstract public class Protocol {
 
     public final void markMessages(Contact contact) {
         if (Options.getBoolean(Options.OPTION_SORT_UP_WITH_MSG)) {
-            ui_updateContact(contact, false);
+            ui_updateContact(contact);
         }
         getContactList().markMessages(contact);
     }
 
     public final void ui_changeContactStatus(Contact contact) {
         updateChatStatus(contact);
-        ui_updateContact(contact, true);
-        //if (Options.getBoolean(Options.OPTION_CL_HIDE_OFFLINE) && !getProtocolBranch().isEmpty()) {
-        //getContactList().getManager().update(contact);
-        //}
+        ui_updateContact(contact);
     }
 
-    public final void ui_updateContact(Contact contact, boolean isRebuild) {
+    public final void ui_updateContact(Contact contact) {
         synchronized (rosterLockObject) {
             Group group = getGroup(contact);
             if (null == group) {
@@ -842,14 +830,14 @@ abstract public class Protocol {
             }
             ui_addContactToGroup(contact, g);
         }
-        ui_updateContact(contact, true);
+        ui_updateContact(contact);
     }
 
     private void cl_moveContact(Contact contact, Group to) {
         synchronized (rosterLockObject) {
             ui_addContactToGroup(contact, to);
         }
-        ui_updateContact(contact, true);
+        ui_updateContact(contact);
     }
 
     private void cl_removeContact(Contact contact) {

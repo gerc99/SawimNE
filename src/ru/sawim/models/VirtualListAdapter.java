@@ -8,7 +8,6 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.models.form.VirtualListItem;
 import ru.sawim.Scheme;
@@ -71,8 +70,8 @@ public class VirtualListAdapter extends BaseAdapter {
         }
         if (element == null) return convertView;
 
-        holder.labelView.setTextColor(General.getColor(Scheme.THEME_TEXT));
-        holder.descView.setTextColor(General.getColor(Scheme.THEME_TEXT));
+        holder.labelView.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
+        holder.descView.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
 
         holder.labelView.setVisibility(TextView.GONE);
         holder.descView.setVisibility(TextView.GONE);
@@ -86,14 +85,14 @@ public class VirtualListAdapter extends BaseAdapter {
         if (element.getLabel() != null) {
             holder.labelView.setVisibility(TextView.VISIBLE);
             if (element.getThemeTextLabel() > -1) {
-                holder.labelView.setTextColor(General.getColor(element.getThemeTextLabel()));
+                holder.labelView.setTextColor(Scheme.getColor(element.getThemeTextLabel()));
             }
             holder.labelView.setText(element.getLabel());
         }
         if (element.getDescStr() != null) {
             holder.descView.setVisibility(TextView.VISIBLE);
             if (element.getThemeTextDesc() > -1) {
-                holder.descView.setTextColor(General.getColor(element.getThemeTextDesc()));
+                holder.descView.setTextColor(Scheme.getColor(element.getThemeTextDesc()));
             }
             holder.descView.setText(element.getDescStr());
         } else {
