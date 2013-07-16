@@ -1,11 +1,9 @@
 package ru.sawim.models.form;
 
-import DrawControls.icons.Image;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
-import ru.sawim.General;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
 import sawim.modules.DebugLog;
@@ -224,12 +222,6 @@ public class Forms {
         Control c = create(controlId, CONTROL_INPUT, null, JLocale.getString(label));
         text = StringConvertor.notNull(text);
         c.text = text;
-        add(c);
-    }
-
-    public void addImage(Image img) {
-        Control c = create(-1, CONTROL_IMAGE, null, null);
-        c.image = img.getBitmap();
         add(c);
     }
 

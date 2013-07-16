@@ -105,14 +105,14 @@ public class MessagesAdapter extends BaseAdapter implements MyTextView.TextLinkC
             msgTime.setVisibility(TextView.GONE);
             msgText.setText("* " + mData.getNick() + " " + mData.fullText);
             msgText.setTextColor(Scheme.getColor(mData.isIncoming() ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG));
-            msgText.setTextSize(17);
+            msgText.setTextSize(14);
         } else if (mData.isPresence()) {
             msgImage.setVisibility(ImageView.GONE);
             msgNick.setVisibility(TextView.GONE);
             msgTime.setVisibility(TextView.GONE);
             msgText.setText(mData.getNick() + mData.fullText);
             msgText.setTextColor(Scheme.getColor(Scheme.THEME_CHAT_INMSG));
-            msgText.setTextSize(17);
+            msgText.setTextSize(14);
         } else {
             if (mData.iconIndex != Message.ICON_NONE) {
                 Icon icon = Message.msgIcons.iconAt(mData.iconIndex);

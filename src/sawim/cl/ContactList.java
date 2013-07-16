@@ -1,6 +1,7 @@
 package sawim.cl;
 
 import DrawControls.tree.VirtualContactList;
+import android.util.Log;
 import protocol.Contact;
 import protocol.Profile;
 import protocol.Protocol;
@@ -85,6 +86,24 @@ public final class ContactList {
                 protocol.dismiss();
             }
         }
+    }
+
+    public static void setCurrentProtocol() {
+        ContactList cl = ContactList.getInstance();
+        Vector listOfProfiles = new Vector();
+        for (int i = 0; i < Options.getAccountCount(); ++i) {
+            Profile p = Options.getAccount(i);
+            if (p.isActive) {
+                listOfProfiles.addElement(p);
+            }
+        }
+        /*if (listOfProfiles.isEmpty()) {
+            Profile p = Options.getAccount(0);
+            p.isActive = true;
+            listOfProfiles.addElement(p);
+        }*/
+        cl.addProtocols(listOfProfiles);
+        cl.getManager().update();
     }
 
     public void initAccounts() {

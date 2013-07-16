@@ -1,5 +1,8 @@
 package ru.sawim.view;
 
+import android.accounts.Account;
+import android.accounts.AccountAuthenticatorResponse;
+import android.accounts.AccountManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -7,6 +10,7 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.text.InputType;
+import android.util.Log;
 import android.view.*;
 import android.widget.*;
 import protocol.Protocol;
@@ -77,11 +81,15 @@ public class AccountsListView extends Fragment {
                                     @Override
                                     public void onClick(DialogInterface dialog, int id) {
                                         Protocol p = ContactList.getInstance().getProtocol(Options.getAccount(accountID));
+                                        android.accounts.Account acc = new android.accounts.Account(Options.getId(accountID), getString(R.string.app_name));
+                                        AccountManager am = AccountManager.get(getActivity());
+                                        am.removeAccount(acc, null, null);
                                         if (p != null)
                                             p.setStatus(StatusInfo.STATUS_OFFLINE, "");
                                         Options.delAccount(accountID);
-                                        setCurrentProtocol();
+                                        ContactList.setCurrentProtocol();
                                         Options.safeSave();
+                                        update();
                                     }
                                 })
                         .setNegativeButton(android.R.string.no, null)
@@ -91,38 +99,35 @@ public class AccountsListView extends Fragment {
         return false;
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
+    private void addAccountAuthenticator(String id) {
+        Account account = new Account(id, getString(R.string.app_name));
+        AccountManager am = AccountManager.get(getActivity());
+        boolean accountCreated = am.addAccountExplicitly(account, null, null);
+        Bundle extras = getActivity().getIntent().getExtras();
+        if (extras != null && accountCreated) {
+            AccountAuthenticatorResponse response = extras.getParcelable(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE);
+            Bundle result = new Bundle();
+            result.putString(AccountManager.KEY_ACCOUNT_NAME, id);
+            result.putString(AccountManager.KEY_ACCOUNT_TYPE, getString(R.string.app_name));
+            if (response != null)
+                response.onResult(result);
+        }
     }
 
     public void addAccount(int num, Profile acc) {
+        addAccountAuthenticator(acc.userId);
         Options.setAccount(num, acc);
-        setCurrentProtocol();
+        ContactList.setCurrentProtocol();
+        update();
     }
 
-    public void setCurrentProtocol() {
-        ContactList cl = ContactList.getInstance();
-        Vector listOfProfiles = new Vector();
-        for (int i = 0; i < Options.getAccountCount(); ++i) {
-            Profile p = Options.getAccount(i);
-            if (p.isActive) {
-                listOfProfiles.addElement(p);
-            }
-        }
-        if (listOfProfiles.isEmpty()) {
-            Profile p = Options.getAccount(0);
-            p.isActive = true;
-            listOfProfiles.addElement(p);
-        }
+    public void update() {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 accountsListAdapter.notifyDataSetChanged();
             }
         });
-        cl.addProtocols(listOfProfiles);
-        cl.getManager().update();
     }
 
     public void addAccount() {

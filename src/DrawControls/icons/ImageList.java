@@ -108,21 +108,36 @@ public class ImageList {
         if (originBitmap != null) {
             switch (SawimApplication.getInstance().getResources().getDisplayMetrics().densityDpi) {
                 case 120:
-                    originBitmap = Bitmap.createScaledBitmap(originBitmap, 16, 16, true);
+                    if (originBitmap.getWidth() > 16)
+                        originBitmap = Bitmap.createScaledBitmap(originBitmap, 16, 16, true);
+                    else
+                        return originBitmap;
                     break;
                 case 160:
-                    originBitmap = Bitmap.createScaledBitmap(originBitmap, 24, 24, true);
-                    break;
-                case 240:
-                    originBitmap = Bitmap.createScaledBitmap(originBitmap, 32, 32, true);
+                    if (originBitmap.getWidth() > 24)
+                        originBitmap = Bitmap.createScaledBitmap(originBitmap, 24, 24, true);
+                    else
+                        return originBitmap;
                     break;
                 default:
                     return originBitmap;
             }
+            originBitmap.setDensity(0);
+            output = new BitmapDrawable(SawimApplication.getInstance().getResources(), originBitmap);
+            output.setBounds(0, 0, (int) (output.getIntrinsicWidth() * 0.5), (int) (output.getIntrinsicHeight() * 0.5));
+        }
+        return output.getBitmap();
+    }
+
+    public static Bitmap scalingCaptchaIconForDPI(Bitmap originBitmap) {
+        BitmapDrawable output = null;
+        int density = (int) SawimApplication.getInstance().getResources().getDisplayMetrics().density;
+        if (originBitmap != null) {
+            originBitmap = Bitmap.createScaledBitmap(originBitmap, originBitmap.getWidth() * density, originBitmap.getHeight() * density, true);
             originBitmap = originBitmap.copy(Bitmap.Config.ARGB_4444, false);
             originBitmap.setDensity(0);
             output = new BitmapDrawable(SawimApplication.getInstance().getResources(), originBitmap);
-            output.setBounds(0, 0, output.getIntrinsicWidth(), output.getIntrinsicHeight());
+            output.setBounds(0, 0, (int) (output.getIntrinsicWidth() * density), (int) (output.getIntrinsicHeight() * density));
         }
         return output.getBitmap();
     }

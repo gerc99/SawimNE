@@ -26,7 +26,7 @@ public class ExternalApi {
     private FileTransfer fileTransferListener = null;
     private static final int RESULT_PHOTO = FragmentActivity.RESULT_FIRST_USER + 1;
     private static final int RESULT_EXTERNAL_PHOTO = FragmentActivity.RESULT_FIRST_USER + 2;
-    private static final int RESULT_EXTERNAL_FILE = FragmentActivity.RESULT_FIRST_USER + 3;
+    public static final int RESULT_EXTERNAL_FILE = FragmentActivity.RESULT_FIRST_USER + 3;
 
     public void startCamera(PhotoListener listener, int width, int height) {
         photoListener = listener;

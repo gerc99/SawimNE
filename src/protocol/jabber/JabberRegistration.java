@@ -74,7 +74,7 @@ public class JabberRegistration implements Runnable, FormListener {
                 account.password = password;
                 account.nick = "";
                 account.isActive = true;
-                listener.addAccount(Options.getMaxAccountCount(), account);
+                listener.addAccount(Options.getAccountCount(), account);
 
             } else {
                 error = connection.getError(n.getFirstNode("e" + "rror"));

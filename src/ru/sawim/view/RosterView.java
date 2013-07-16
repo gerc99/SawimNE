@@ -71,13 +71,13 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         final FragmentActivity currentActivity = getActivity();
         general = ContactList.getInstance();
         owner = general.getManager();
-        if (owner == null) return;
-        owner.setOnUpdateRoster(this);
-        if (owner.getProtocolCount() == 0) {
+        if (owner == null || owner.getProtocolCount() == 0) {
             startActivity(new Intent(currentActivity, AccountsListActivity.class));
             return;
         }
-        owner.updateOptions(owner, owner.getCurrProtocol());
+        owner.setOnUpdateRoster(this);
+
+        owner.updateOptions(owner.getCurrProtocol());
         adaptersPages.clear();
         ListView allListView = new ListView(currentActivity);
         ListView onlineListView = new ListView(currentActivity);
@@ -189,10 +189,11 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
             updateQueue.removeElementAt(0);
             owner.updateGroup(group);
         }
+        owner.updateOptions(pos);
     //    try {
             TreeNode current = currentNode;
             currentNode = null;
-            int prevIndex = getCurrItem();
+            //int prevIndex = getCurrItem();
             if (null != current) {
                 if ((current.isContact()) && owner.useGroups) {
                     Contact c = (Contact) current;
@@ -206,7 +207,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
                     }
                 }
             } else {
-                current = getSafeNode(prevIndex);
+                //current = getSafeNode(prevIndex);
             }
             items.clear();
             owner.buildFlatItems(owner.getCurrProtocol(), items);

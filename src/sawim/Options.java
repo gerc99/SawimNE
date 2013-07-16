@@ -1,5 +1,7 @@
 package sawim;
 
+import android.util.Log;
+import sawim.cl.ContactList;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
 import sawim.forms.PrivateStatusForm;
@@ -75,15 +77,16 @@ public class Options {
 
     private static final Vector listOfProfiles = new Vector();
 
-    
     public static int getMaxAccountCount() {
         return 20;
     }
+
     public static int getAccountCount() {
         synchronized (listOfProfiles) {
             return listOfProfiles.size();
         }
     }
+
     public static Profile getAccount(int num) {
         synchronized (listOfProfiles) {
             if (listOfProfiles.size() <= num) {
@@ -92,19 +95,51 @@ public class Options {
             return (Profile)listOfProfiles.elementAt(num);
         }
     }
+
+    public static Profile getAccount(String id) {
+        for (int i = 0; i < listOfProfiles.size(); ++i) {
+            Profile p = (Profile)listOfProfiles.elementAt(i);
+            Log.e("OptionsgetAccount", "-"+id+"="+p.userId+"-");
+            if (p.userId.equals(id)) {
+                Log.e("OptionsgetAccount", ""+id+ " "+p.userId);
+                return p;
+            }
+        }
+        return (Profile)listOfProfiles.elementAt(0);
+    }
+
+    public static String getId(int id) {
+        Profile p = (Profile)listOfProfiles.elementAt(id);
+        return p.userId;
+    }
+
     public static int getAccountIndex(Profile profile) {
         synchronized (listOfProfiles) {
             return Math.max(0, Util.getIndex(listOfProfiles, profile));
         }
     }
+
     public static void setCurrentAccount(int num) {
         num = Math.min(num, getAccountCount());
         Options.setInt(Options.OPTIONS_CURR_ACCOUNT, num);
     }
+
     public static int getCurrentAccount() {
         return Options.getInt(Options.OPTIONS_CURR_ACCOUNT);
     }
+
+    public static void delAccount(String id) {
+        for (int i = 0; i < listOfProfiles.size(); ++i) {
+            Profile p = (Profile)listOfProfiles.elementAt(i);
+            Log.e("Optionsdel", ""+id+" "+p.userId);
+            if (p.userId.equals(id)) {
+                delAccount(i);
+            }
+        }
+    }
+
     public static void delAccount(int num) {
+        ContactList.getInstance().getManager().removeProtocol(num);
         synchronized (listOfProfiles) {
             listOfProfiles.removeElementAt(num);
             int current = getCurrentAccount();
@@ -133,6 +168,7 @@ public class Options {
             s.close();
         }
     }
+
     public static void setAccount(int num, Profile account) {
         int size = getAccountCount();
         synchronized (listOfProfiles) {
@@ -145,6 +181,7 @@ public class Options {
             saveAccount(num, account);
         }
     }
+
     public static void saveAccount(Profile account) {
         synchronized (listOfProfiles) {
             int num = listOfProfiles.indexOf(account);
@@ -153,6 +190,7 @@ public class Options {
             }
         }
     }
+
     public static void loadAccounts() {
         Storage s = new Storage("j-accounts");
         try {
@@ -209,6 +247,7 @@ public class Options {
         }
         s.close();
     }
+
     private static void addProfile(int uinOpt, int passOpt, int nickOpt) {
         String uin = getString(uinOpt);
         if (!StringConvertor.isEmpty(uin)) {
@@ -243,6 +282,7 @@ public class Options {
             return new byte[0];
         }
     }
+
     private static Profile readProfile(byte[] data) {
         Profile p = new Profile();
         try {
@@ -277,6 +317,7 @@ public class Options {
         }
         return p;
     }
+
     private static Object[] options = new Object[256];
     public static void loadOptions() {
         try {
@@ -288,6 +329,7 @@ public class Options {
             setDefaults();
         }
     }
+
     private static void initAccounts() {
         setInt    (Options.OPTIONS_CURR_ACCOUNT,      0);
     }

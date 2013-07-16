@@ -2,6 +2,7 @@ package protocol.jabber;
 
 
 import DrawControls.icons.ImageList;
+import android.graphics.Bitmap;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
 import sawim.util.JLocale;
@@ -83,7 +84,8 @@ final class XForm {
                 if (null != bs64img) {
                     byte[] imgBytes = Util.base64decode(bs64img);
                     bs64img = null;
-                    form.addImage(ImageList.getInstance().createImage(imgBytes, 0, imgBytes.length));
+                    Bitmap bitmap = ImageList.getInstance().createImage(imgBytes, 0, imgBytes.length).getBitmap();
+                    form.addBitmap(ImageList.scalingCaptchaIconForDPI(bitmap));
                 }
             }
             addField(item, item.getAttribute("ty" + "pe"));

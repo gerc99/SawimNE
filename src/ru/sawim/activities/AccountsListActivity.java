@@ -1,5 +1,7 @@
 package ru.sawim.activities;
 
+import android.accounts.AccountAuthenticatorResponse;
+import android.accounts.AccountManager;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
@@ -9,6 +11,7 @@ import protocol.Profile;
 import protocol.jabber.JabberRegistration;
 import ru.sawim.R;
 import ru.sawim.view.AccountsListView;
+import sawim.cl.ContactList;
 
 /**
  * Created with IntelliJ IDEA.
@@ -18,11 +21,20 @@ import ru.sawim.view.AccountsListView;
  * To change this template use File | Settings | File Templates.
  */
 public class AccountsListActivity extends FragmentActivity implements JabberRegistration.OnAddAccount {
+    private AccountAuthenticatorResponse mAccountAuthenticatorResponse = null;
+    private Bundle mResultBundle = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.accounts_list_fragment);
+
+        mResultBundle = savedInstanceState;
+        mAccountAuthenticatorResponse =
+                getIntent().getParcelableExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE);
+        if (mAccountAuthenticatorResponse != null) {
+            mAccountAuthenticatorResponse.onRequestContinued();
+        }
     }
 
     @Override
@@ -34,7 +46,6 @@ public class AccountsListActivity extends FragmentActivity implements JabberRegi
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
         switch (item.getItemId()) {
             case R.id.add:
                 AccountsListView view = (AccountsListView) getSupportFragmentManager().findFragmentById(R.id.acconts_list_fragment);
@@ -62,8 +73,18 @@ public class AccountsListActivity extends FragmentActivity implements JabberRegi
     public void onBackPressed() {
         super.onBackPressed();
         SawimActivity.getInstance().recreateActivity();
-        AccountsListView view = (AccountsListView) getSupportFragmentManager().findFragmentById(R.id.acconts_list_fragment);
-        if (view != null)
-            view.setCurrentProtocol();
+    }
+
+    public void finish() {
+        if (mAccountAuthenticatorResponse != null) {
+            if (mResultBundle != null) {
+                mAccountAuthenticatorResponse.onResult(mResultBundle);
+            } else {
+                mAccountAuthenticatorResponse.onError(AccountManager.ERROR_CODE_CANCELED,
+                        "canceled");
+            }
+            mAccountAuthenticatorResponse = null;
+        }
+        super.finish();
     }
 }
