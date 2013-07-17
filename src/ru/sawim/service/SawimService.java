@@ -1,4 +1,4 @@
-package ru.sawim;
+package ru.sawim.service;
 
 
 import android.app.Notification;
@@ -10,6 +10,8 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.util.Log;
+import ru.sawim.R;
+import ru.sawim.Tray;
 import sawim.chat.ChatHistory;
 import sawim.cl.ContactList;
 import ru.sawim.activities.SawimActivity;

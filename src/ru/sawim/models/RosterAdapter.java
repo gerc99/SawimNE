@@ -16,6 +16,7 @@ import ru.sawim.Scheme;
 import sawim.chat.message.Message;
 
 import java.util.List;
+import java.util.zip.Inflater;
 
 /**
  * Created with IntelliJ IDEA.
@@ -121,10 +122,22 @@ public class RosterAdapter extends BaseAdapter {
             itemName.setText(item.getName());
             itemName.setTextColor(Scheme.getColor(Scheme.THEME_CONTACT_WITH_CHAT));
             Icon icMess = Message.msgIcons.iconAt(item.getUnreadMessageIcon());
+            Icon icStatus = item.
+                    getProtocol().
+                    getStatusInfo().
+                    getIcon(
+                            item.getStatusIndex());
+            ImageView itemImage = getItemImage();
             if (icMess == null) {
-                getItemImage().setImageBitmap(item.getProtocol().getStatusInfo().getIcon(item.getStatusIndex()).getImage());
+                if (icStatus == null) {
+                    itemImage.setVisibility(ImageView.GONE);
+                } else {
+                    itemImage.setVisibility(ImageView.VISIBLE);
+                    itemImage.setImageBitmap(icStatus.getImage());
+                }
             } else {
-                getItemImage().setImageBitmap(icMess.getImage());
+                itemImage.setVisibility(ImageView.VISIBLE);
+                itemImage.setImageBitmap(icMess.getImage());
             }
         }
 

@@ -1,4 +1,4 @@
-package ru.sawim;
+package ru.sawim.service;
 
 /**
  * Created with IntelliJ IDEA.
@@ -9,21 +9,19 @@ package ru.sawim;
  */
 import android.accounts.*;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.util.Log;
-import protocol.Protocol;
-import protocol.StatusInfo;
+import ru.sawim.SawimApplication;
 import ru.sawim.activities.AccountsListActivity;
-import sawim.Options;
-import sawim.cl.ContactList;
 
 public class AuthenticationService extends Service {
 
     private static AccountAuthenticatorImpl sAccountAuthenticator = null;
+
+    static {
+        sAccountAuthenticator = new AccountAuthenticatorImpl();
+    }
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -35,47 +33,21 @@ public class AuthenticationService extends Service {
     }
 
     private AccountAuthenticatorImpl getAuthenticator() {
-        if (sAccountAuthenticator == null) {
-            sAccountAuthenticator = new AccountAuthenticatorImpl(this);
-        }
         return sAccountAuthenticator;
     }
 
     private static class AccountAuthenticatorImpl extends AbstractAccountAuthenticator {
-
-        private Context mContext;
-
-        public AccountAuthenticatorImpl(Context context) {
-            super(context);
-            mContext = context;
+        public AccountAuthenticatorImpl() {
+            super(SawimApplication.getInstance());
         }
 
         @Override
         public Bundle addAccount(AccountAuthenticatorResponse response, String accountType, String authTokenType, String[] requiredFeatures, Bundle options) throws NetworkErrorException {
-            Intent i = new Intent(mContext, AccountsListActivity.class);
+            Intent i = new Intent(SawimApplication.getInstance(), AccountsListActivity.class);
             i.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
             Bundle reply = new Bundle();
             reply.putParcelable(AccountManager.KEY_INTENT, i);
             return reply;
-        }
-
-        @Override
-        public Bundle getAccountRemovalAllowed(AccountAuthenticatorResponse response, Account account) throws android.accounts.NetworkErrorException {
-            String id = account.name;
-            Bundle result = super.getAccountRemovalAllowed(response, account);
-            result.putBoolean(AccountManager.KEY_BOOLEAN_RESULT, true);
-            try {
-            Log.e("getAccountRemovalAllowed", id+"-"+Options.getAccount(id));
-            Protocol p = ContactList.getInstance().getProtocol(Options.getAccount(id));
-            if (p != null)
-                p.setStatus(StatusInfo.STATUS_OFFLINE, "");
-            Options.delAccount(id);
-            ContactList.setCurrentProtocol();
-            Options.safeSave();
-            } catch (Exception e) {
-                Log.e("AuthenticationService", e.getMessage());
-            }
-            return result;
         }
 
         @Override

@@ -1,5 +1,6 @@
 package protocol.vk;
 
+import ru.sawim.SawimApplication;
 import sawim.chat.message.PlainMessage;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -33,7 +34,7 @@ public class VkConnection implements Runnable {
         }
 
         final SawimActivity a = SawimActivity.getInstance();
-        a.runOnUiThread(new Runnable() {
+        SawimApplication.getInstance().runOnUiThread(new Runnable() {
             public void run() {
                 if (!api.hasAccessToken()) api.showLoginDialog(vk.getUserId(), vk.getPassword());
             }

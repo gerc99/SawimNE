@@ -3,6 +3,7 @@ package sawim;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.os.Build;
+import ru.sawim.SawimApplication;
 import ru.sawim.activities.SawimActivity;
 import sawim.comm.StringConvertor;
 
@@ -33,7 +34,7 @@ public final class Clipboard {
     }
 
     public static void putToClipboard(final String text) {
-        SawimActivity.getInstance().runOnUiThread(new Runnable() {
+        SawimApplication.getInstance().runOnUiThread(new Runnable() {
             public void run() {
                 try {
                     if (Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {

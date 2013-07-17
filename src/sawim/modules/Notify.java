@@ -91,7 +91,7 @@ public class Notify implements Runnable {
         if (null == vibrator) {
             return false;
         }
-        SawimActivity.getInstance().runOnUiThread(new Runnable() {
+        SawimApplication.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 if (600 < duration) {

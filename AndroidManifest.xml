@@ -30,6 +30,15 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        <activity android:name=".activities.SawimActivity"
+                  android:label="@string/app_name"
+                  android:theme="@style/AppThemeDarkNoBar"
+                  android:windowSoftInputMode="stateAlwaysHidden|adjustResize"
+                  android:configChanges="orientation|keyboardHidden|screenSize"
+                  android:launchMode="singleTask">
+            <intent-filter>
                 <action android:name="android.intent.action.SEND"/>
                 <category android:name="android.intent.category.DEFAULT"/>
                 <data android:mimeType="*/*"/>
@@ -76,8 +85,12 @@
                   android:configChanges="orientation|keyboardHidden|screenSize"
                   android:launchMode="singleTask"/>
 
-        <service android:enabled="true" android:name=".SawimService" android:stopWithTask="true"/>
-        <service android:name="ru.sawim.AuthenticationService" android:exported="true" android:process=":auth" android:stopWithTask="true">
+        <service android:enabled="true" android:name=".service.SawimService" android:stopWithTask="true"/>
+        <service
+                android:name=".service.AuthenticationService"
+                android:exported="true"
+                android:process=":auth"
+                android:stopWithTask="true">
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator"/>
             </intent-filter>

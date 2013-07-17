@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentActivity;
 import android.view.*;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import ru.sawim.SawimApplication;
 import ru.sawim.models.form.VirtualListItem;
 import ru.sawim.Scheme;
 import ru.sawim.models.list.VirtualList;
@@ -91,7 +92,7 @@ public class VirtualListView extends Fragment implements VirtualList.OnVirtualLi
 
     @Override
     public void addList(final VirtualListItem item) {
-        getActivity().runOnUiThread(new Runnable() {
+        SawimApplication.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 list.getModel().elements.add(item);
@@ -102,7 +103,7 @@ public class VirtualListView extends Fragment implements VirtualList.OnVirtualLi
 
     @Override
     public void clearList() {
-        getActivity().runOnUiThread(new Runnable() {
+        SawimApplication.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 list.getModel().elements.clear();
@@ -113,7 +114,7 @@ public class VirtualListView extends Fragment implements VirtualList.OnVirtualLi
 
     @Override
     public void removeFirstText() {
-        getActivity().runOnUiThread(new Runnable() {
+        SawimApplication.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 if (list.getModel().elements.size() > 0)
@@ -125,7 +126,7 @@ public class VirtualListView extends Fragment implements VirtualList.OnVirtualLi
 
     @Override
     public void update() {
-        getActivity().runOnUiThread(new Runnable() {
+        SawimApplication.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 adapter.notifyDataSetChanged();
@@ -160,7 +161,7 @@ public class VirtualListView extends Fragment implements VirtualList.OnVirtualLi
 
     @Override
     public void setCurrentItemIndex(final int i) {
-         getActivity().runOnUiThread(new Runnable() {
+         SawimApplication.getInstance().runOnUiThread(new Runnable() {
              @Override
              public void run() {
                  lv.setSelection(i);

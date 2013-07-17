@@ -11,6 +11,7 @@ import android.widget.ListView;
 import protocol.Protocol;
 import protocol.jabber.*;
 import ru.sawim.R;
+import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
 import ru.sawim.models.MucUsersAdapter;
 import ru.sawim.view.menu.MyMenu;
@@ -61,7 +62,7 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 final Object o = usersAdapter.getItem(position);
-                activity.runOnUiThread(new Runnable() {
+                SawimApplication.getInstance().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         if (o instanceof JabberContact.SubContact) {

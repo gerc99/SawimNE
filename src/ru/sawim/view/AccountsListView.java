@@ -4,16 +4,15 @@ import android.accounts.Account;
 import android.accounts.AccountAuthenticatorResponse;
 import android.accounts.AccountManager;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.text.InputType;
-import android.util.Log;
 import android.view.*;
 import android.widget.*;
 import protocol.Protocol;
+import ru.sawim.SawimApplication;
 import sawim.Options;
 import sawim.cl.ContactList;
 import sawim.comm.StringConvertor;
@@ -21,7 +20,6 @@ import protocol.Profile;
 import protocol.StatusInfo;
 import ru.sawim.R;
 import ru.sawim.models.AccountsAdapter;
-import java.util.Vector;
 
 /**
  * Created with IntelliJ IDEA.
@@ -122,7 +120,7 @@ public class AccountsListView extends Fragment {
     }
 
     public void update() {
-        getActivity().runOnUiThread(new Runnable() {
+        SawimApplication.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 accountsListAdapter.notifyDataSetChanged();

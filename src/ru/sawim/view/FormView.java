@@ -5,12 +5,12 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 import ru.sawim.R;
+import ru.sawim.SawimApplication;
 import ru.sawim.models.form.Forms;
 
 import java.util.List;
@@ -178,7 +178,7 @@ public class FormView extends Fragment implements Forms.OnUpdateForm, View.OnCli
 
     @Override
     public void updateForm() {
-        getActivity().runOnUiThread(new Runnable() {
+        SawimApplication.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 buildList(listLayout);
@@ -198,7 +198,7 @@ public class FormView extends Fragment implements Forms.OnUpdateForm, View.OnCli
         } else if (view.equals(okButton)) {
             new Thread() {
                 public void run() {
-                    FormView.this.getActivity().runOnUiThread(new Runnable() {
+                    SawimApplication.getInstance().runOnUiThread(new Runnable() {
                         public void run() {
                             Forms.getInstance().getFormListener().formAction(Forms.getInstance(), true);
                         }

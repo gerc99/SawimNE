@@ -209,4 +209,5 @@
     <string name="open_url">Open url</string>
     <string name="copy">Copy</string>
     <string name="url_menu">Menu url</string>
+    <string name="press_menu_for_connect">Press the menu button and choose action</string>
 </resources>

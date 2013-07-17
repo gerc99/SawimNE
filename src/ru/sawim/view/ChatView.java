@@ -23,6 +23,7 @@ import protocol.Protocol;
 import protocol.jabber.*;
 import ru.sawim.General;
 import ru.sawim.R;
+import ru.sawim.SawimApplication;
 import ru.sawim.models.MessagesAdapter;
 import ru.sawim.view.menu.MyMenu;
 import sawim.Clipboard;
@@ -214,7 +215,7 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
         textReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context c, final Intent i) {
-                getActivity().runOnUiThread(new Runnable() {
+                SawimApplication.getInstance().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         insert(" " + i.getExtras().getString("text") + " ");
@@ -277,7 +278,7 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
         chatListView.setFocusable(true);
         chatListView.setCacheColorHint(0x00000000);
         chatListView.setAdapter(adapter);
-        getActivity().runOnUiThread(new Runnable() {
+        SawimApplication.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 int count = chatListView.getCount();
@@ -444,7 +445,7 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
     }
 
     public void resetText() {
-        getActivity().runOnUiThread(new Runnable() {
+        SawimApplication.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 messageEditor.setText("");
@@ -457,7 +458,7 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
     }
 
     public void setText(final String text) {
-        getActivity().runOnUiThread(new Runnable() {
+        SawimApplication.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 String t = null == text ? "" : text;
@@ -550,7 +551,7 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
 
     @Override
     public void updateChat() {
-        getActivity().runOnUiThread(new Runnable() {
+        SawimApplication.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 updateChatsIcon();
@@ -574,7 +575,7 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
 
     @Override
     public void addMessage(final Chat chat, final MessData mess) {
-        getActivity().runOnUiThread(new Runnable() {
+        SawimApplication.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 if (adapter != null) {
@@ -588,7 +589,7 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
 
     @Override
     public void updateMucList() {
-        getActivity().runOnUiThread(new Runnable() {
+        SawimApplication.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 if (mucUsersView != null)
