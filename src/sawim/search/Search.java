@@ -94,13 +94,13 @@ public final class Search implements FormListener, ControlStateListener {
     }
     public void show() {
         type = TYPE_FULL;
-        createSearchForm();
+        createSearchForm(false);
         searchForm.show();
     }
-    public void show(String uin) {
+    public void show(String uin, boolean isConference) {
         type = TYPE_LITE;
         setSearchParam(Search.UIN, uin);
-        createSearchForm();
+        createSearchForm(isConference);
         searchForm.show();
     }
     private void showResults() {
@@ -167,7 +167,7 @@ public final class Search implements FormListener, ControlStateListener {
         String userid = StringConvertor.notNull(getSearchParam(UIN));
         searchForm.addTextField(USERID, protocol.getUserIdName(), userid);
     }
-    private void createSearchForm() {
+    private void createSearchForm(boolean isConference) {
         screen = VirtualList.getInstance();
         searchForm = new Forms((TYPE_LITE == type) ? "add_user" : "search_user", this);
         if (TYPE_LITE == type) {
@@ -188,7 +188,7 @@ public final class Search implements FormListener, ControlStateListener {
                 }
                 searchForm.addSelector(GROUP, "group", list, def);
             }
-            boolean request_auth = true;
+            boolean request_auth = isConference;
             
             if (protocol instanceof Mrim) {
                 request_auth = false;
@@ -278,7 +278,7 @@ public final class Search implements FormListener, ControlStateListener {
                         UserInfo info = getCurrentResult();
                         Search s = new Search(protocol);
                         s.preferredNick = info.getOptimalName();
-                        s.show(info.uin);
+                        s.show(info.uin, false);
                         break;
 
                     case MENU_MESSAGE:

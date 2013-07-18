@@ -182,7 +182,7 @@
 
     <string name="all_contacts">Все контакты</string>
     <string name="online_contacts">В сети</string>
-    <string name="chats">Чаты</string>
+    <string name="active_contacts">Активные</string>
     <string name="options_account">Учетные записи</string>
     <string name="options_interface">Интерфейс</string>
     <string name="options_signaling">Оповещения</string>
@@ -205,5 +205,6 @@
     <string name="open_url">Открыть ссылку</string>
     <string name="copy">Копировать</string>
     <string name="url_menu">Меню ссылки</string>
-    <string name="press_menu_for_connect">Нажмите кнопку Меню и выберете действие</string>
+    <string name="press_menu_for_connect">Нажмите кнопку Меню и выберите действие</string>
+    <string name="add_conference">Добавить конференцию</string>
 </resources>

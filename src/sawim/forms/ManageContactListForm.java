@@ -24,11 +24,12 @@ import java.util.Vector;
 
 
 public final class ManageContactListForm implements FormListener, TextBoxView.TextBoxListener {
-    private static final int ADD_USER     = 20;
-    private static final int SEARCH_USER  = 21;
-    private static final int ADD_GROUP    = 22;
-    private static final int RENAME_GROUP = 23;
-    private static final int DEL_GROUP    = 24;
+    private static final int ADD_USER       = 0;
+    private static final int ADD_CONFERENCE = 1;
+    private static final int SEARCH_USER    = 2;
+    private static final int ADD_GROUP      = 3;
+    private static final int RENAME_GROUP   = 4;
+    private static final int DEL_GROUP      = 5;
 
     private static final int GROUP    = 25;
     private static final int GROUP_NEW_NAME = 26;
@@ -88,6 +89,7 @@ public final class ManageContactListForm implements FormListener, TextBoxView.Te
                 && ((null == group) || group.hasMode(Group.MODE_NEW_CONTACTS));
         if (canAdd) {
             menu.add(SawimApplication.getContext().getString(R.string.add_user), ADD_USER);
+            menu.add(SawimApplication.getContext().getString(R.string.add_conference), ADD_CONFERENCE);
             if (!(protocol instanceof protocol.jabber.Jabber)) {
                 menu.add(SawimApplication.getContext().getString(R.string.search_user), SEARCH_USER);
             }
@@ -118,17 +120,21 @@ public final class ManageContactListForm implements FormListener, TextBoxView.Te
 
     private void select(FragmentActivity a, int cmd) {
         action = cmd;
+        Search search = protocol.getSearchForm();
         switch (cmd) {
             case ADD_USER:
-                Search search = protocol.getSearchForm();
                 search.putToGroup(group);
-                search.show("");
+                search.show("", false);
+                break;
+
+            case ADD_CONFERENCE:
+                search.putToGroup(group);
+                search.show("", true);
                 break;
 
             case SEARCH_USER:
-                Search searchUser = protocol.getSearchForm();
-                searchUser.putToGroup(group);
-                searchUser.show();
+                search.putToGroup(group);
+                search.show();
                 break;
 
             case ADD_GROUP:

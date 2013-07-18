@@ -1,6 +1,5 @@
 package DrawControls.tree;
 
-import android.util.Log;
 import protocol.Contact;
 import protocol.Group;
 import protocol.Protocol;

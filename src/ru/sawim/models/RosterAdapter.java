@@ -3,6 +3,7 @@ package ru.sawim.models;
 import DrawControls.icons.Icon;
 import DrawControls.tree.TreeNode;
 import DrawControls.tree.VirtualContactList;
+import android.database.DataSetObserver;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +17,6 @@ import ru.sawim.Scheme;
 import sawim.chat.message.Message;
 
 import java.util.List;
-import java.util.zip.Inflater;
 
 /**
  * Created with IntelliJ IDEA.
@@ -62,6 +62,13 @@ public class RosterAdapter extends BaseAdapter {
     @Override
     public long getItemId(int i) {
         return i;
+    }
+
+    @Override
+    public void unregisterDataSetObserver(DataSetObserver observer) {
+        if (observer != null) {
+            super.unregisterDataSetObserver(observer);
+        }
     }
 
     @Override
@@ -142,16 +149,14 @@ public class RosterAdapter extends BaseAdapter {
         }
 
         public ImageView getItemImage() {
-            if (itemImage == null) {
+            if (itemImage == null)
                 itemImage = (ImageView) item.findViewById(R.id.image);
-            }
             return itemImage;
         }
 
         public TextView getItemName() {
-            if (itemName == null) {
+            if (itemName == null)
                 itemName = (TextView) item.findViewById(R.id.item_name);
-            }
             return itemName;
         }
     }

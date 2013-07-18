@@ -39,7 +39,8 @@
                     android:lines="1"
                     android:scrollHorizontally="true"
                     android:ellipsize="end"
-                    android:text="VeryVeryVeryLongAndLongStatusMessage" android:layout_weight="1"/>
+                    android:text="VeryVeryVeryLongAndLongStatusMessage" android:layout_weight="1"
+                    />
         </LinearLayout>
         <ImageButton
                 android:layout_width="32dp"
@@ -59,7 +60,7 @@
                 android:divider="@null"
                 android:dividerHeight="0dp"
                 android:layout_weight="1"
-                android:fastScrollEnabled="true" android:paddingBottom="8dp"/>
+                android:fastScrollEnabled="true" android:layout_marginBottom="8dp"/>
         <LinearLayout android:id="@+id/sidebar"
                       android:orientation="vertical"
                       android:layout_width="match_parent"

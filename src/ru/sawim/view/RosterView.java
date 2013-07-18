@@ -72,13 +72,20 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         final FragmentActivity currentActivity = getActivity();
         general = ContactList.getInstance();
         owner = general.getManager();
-        if (owner == null || owner.getProtocolCount() == 0) {
+        if (owner == null) {
             startActivity(new Intent(currentActivity, AccountsListActivity.class));
             return;
+        } else {
+            if (owner.getProtocolCount() == 0) {
+                startActivity(new Intent(currentActivity, AccountsListActivity.class));
+                return;
+            } else if (owner.getProtocolCount() == 1) {
+                Toast.makeText(getActivity(), R.string.press_menu_for_connect, Toast.LENGTH_LONG).show();
+            }
         }
         owner.setOnUpdateRoster(this);
-
         owner.updateOptions(owner.getCurrProtocol());
+
         adaptersPages.clear();
         ListView allListView = new ListView(currentActivity);
         ListView onlineListView = new ListView(currentActivity);
@@ -89,9 +96,6 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         indicator.setBackgroundColor(Scheme.getColorWithAlpha(Scheme.THEME_BACKGROUND));
         rosterBarLayout.setBackgroundColor(Scheme.getColorWithAlpha(Scheme.THEME_CAP_BACKGROUND));
 
-        if (items.size() == 0) {
-            Toast.makeText(getActivity(), R.string.press_menu_for_connect, Toast.LENGTH_LONG).show();
-        }
         LayoutInflater inf = LayoutInflater.from(currentActivity);
         allRosterAdapter = new RosterAdapter(inf, owner, items, RosterAdapter.ALL_CONTACTS);
         onlineRosterAdapter = new RosterAdapter(inf, owner, items, RosterAdapter.ONLINE_CONTACTS);
@@ -111,7 +115,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
 
         allListView.setTag(currentActivity.getResources().getString(R.string.all_contacts));
         onlineListView.setTag(currentActivity.getResources().getString(R.string.online_contacts));
-        chatsListView.setTag(currentActivity.getResources().getString(R.string.chats));
+        chatsListView.setTag(currentActivity.getResources().getString(R.string.active_contacts));
 
         pages.add(allListView);
         pages.add(onlineListView);
@@ -155,9 +159,9 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         }
     }
 
-    private void setCurrentItemIndex(final int currentIndex) {
-        ((ListView) pages.get(viewPager.getCurrentItem())).setSelection(currentIndex);
-    }
+    //private void setCurrentItemIndex(final int currentIndex) {
+    //    ((ListView) pages.get(viewPager.getCurrentItem())).setSelection(currentIndex);
+    //}
 
     private int getCurrItem() {
         return ((ListView) pages.get(viewPager.getCurrentItem())).getFirstVisiblePosition();
@@ -317,8 +321,8 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         AdapterView.AdapterContextMenuInfo menuInfo = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         if (menuInfo == null)
             menuInfo = contextMenuInfo;
-        Object node = adaptersPages.get(viewPager.getCurrentItem()).getItem(menuInfo.position);
-        if (node instanceof Contact) {
+        TreeNode node = ((RosterAdapter)adaptersPages.get(viewPager.getCurrentItem())).getItem(menuInfo.position);
+        if (node.isContact()) {
             final Contact c = (Contact) node;
             SawimApplication.getInstance().runOnUiThread(new Runnable() {
                 @Override

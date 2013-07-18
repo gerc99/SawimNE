@@ -38,6 +38,7 @@ import ru.sawim.Scheme;
 import sawim.util.JLocale;
 
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created with IntelliJ IDEA.
@@ -68,6 +69,7 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
     private LinearLayout chatBarLayout;
     private LinearLayout chat_viewLayout;
     private MucUsersView mucUsersView;
+    private static ConcurrentHashMap<String, Integer> positionHash = new ConcurrentHashMap<String, Integer>();
     private Bitmap usersIcon = ImageList.createImageList("/participants.png").iconAt(0).getImage();
 
     @Override
@@ -262,28 +264,17 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
 
     public void pause(Chat chat) {
         if (chat == null) return;
-            chat.position = chatListView.getFirstVisiblePosition();
+            addLastPosition(currentContact.getUserId(), chatListView.getFirstVisiblePosition());
     }
 
     public void resume(final Chat chat) {
         if (chat == null) return;
-        adapter = new MessagesAdapter(getActivity(), chat, messData);
-        chatListView = (MyListView) getActivity().findViewById(R.id.chat_history_list);
-        messageEditor.addTextChangedListener(textWatcher);
-        chatListView.setStackFromBottom(true);
-        chatListView.setTranscriptMode(ListView.TRANSCRIPT_MODE_NORMAL);
-        chatListView.setOnCreateContextMenuListener(this);
-        chatListView.setOnScrollListener(this);
-        chatListView.setOnItemClickListener(new ChatClick());
-        chatListView.setFocusable(true);
-        chatListView.setCacheColorHint(0x00000000);
-        chatListView.setAdapter(adapter);
         SawimApplication.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 int count = chatListView.getCount();
                 int unreadMessages = chat.getUnreadMessageCount();
-                int lastPosition = chat.position + 1;
+                int lastPosition = getLastPosition(currentContact.getUserId()) + 1;
                 Log.e("ChatView", "lastPosition "+lastPosition);
                 Log.e("ChatView", "count "+count);
                 if (lastPosition >= 0) {
@@ -304,7 +295,7 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
     }
 
     private void forceGoToChat() {
-        chat.position = chatListView.getFirstVisiblePosition();
+        addLastPosition(currentContact.getUserId(), chatListView.getFirstVisiblePosition());
         chat.resetUnreadMessages();
         chat.setVisibleChat(false);
         ChatHistory chatHistory = ChatHistory.instance;
@@ -313,6 +304,15 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
             openChat(current.getProtocol(), current.getContact());
             resume(current);
         }
+    }
+
+    private void addLastPosition(String jid, int position) {
+        positionHash.put(jid, position);
+    }
+
+    private int getLastPosition(String jid) {
+        if (positionHash.containsKey(jid)) return positionHash.remove(jid);
+        else return -1;
     }
 
     public void openChat(Protocol p, Contact c) {
@@ -324,12 +324,24 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
         chat = protocol.getChat(currentContact);
         messData = chat.getMessData();
         messageEditor = (EditText) currentActivity.findViewById(R.id.messageBox);
-        resume(chat);
+        adapter = new MessagesAdapter(getActivity(), chat, messData);
+        chatListView = (MyListView) getActivity().findViewById(R.id.chat_history_list);
+        messageEditor.addTextChangedListener(textWatcher);
+        chatListView.setStackFromBottom(true);
+        chatListView.setTranscriptMode(ListView.TRANSCRIPT_MODE_NORMAL);
+        chatListView.setOnCreateContextMenuListener(this);
+        chatListView.setOnScrollListener(this);
+        chatListView.setOnItemClickListener(new ChatClick());
+        chatListView.setFocusable(true);
+        chatListView.setCacheColorHint(0x00000000);
+        chatListView.setAdapter(adapter);
         chat.setVisibleChat(true);
 
         contactName.setTextColor(Scheme.getColor(Scheme.THEME_CAP_TEXT));
+		contactName.setTextSize(General.getFontSize());
         contactName.setText(currentContact.getName());
         contactStatus.setTextColor(Scheme.getColor(Scheme.THEME_CAP_TEXT));
+		contactStatus.setTextSize(General.getFontSize());
         contactStatus.setText(ContactList.getInstance().getManager().getStatusMessage(currentContact));
         int background = Scheme.getColorWithAlpha(Scheme.THEME_BACKGROUND);
         chat_viewLayout.setBackgroundColor(background);

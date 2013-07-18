@@ -113,7 +113,7 @@ public class OptionsForm implements FormListener, ControlStateListener {
                     Options.setString(Options.OPTION_UI_LANGUAGE, JLocale.langAvailable[lang]);
                 }
 
-                //saveOptionSelector(Options.OPTION_FONT_SCHEME);
+                saveOptionSelector(Options.OPTION_FONT_SCHEME);
                 //GraphicsEx.setFontScheme(Options.getInt(Options.OPTION_FONT_SCHEME));
                 //saveOptionInt(Options.OPTION_MIN_ITEM_SIZE, minItemMultipliers);
                 //Scheme.updateUI();
@@ -200,9 +200,9 @@ public class OptionsForm implements FormListener, ControlStateListener {
                     }
                     form.addSelector(Options.OPTION_UI_LANGUAGE, "language", JLocale.langAvailableName, cur);
                 }
-                //createSelector("fonts",
-                //        "10sp" + "|" + "fonts_smallest" + "|" + "fonts_small" + "|" + "fonts_normal" + "|" + "fonts_large",
-                //        Options.OPTION_FONT_SCHEME);
+                createSelector("fonts",
+                        "10sp" + "|" + "fonts_smallest" + "|" + "fonts_small" + "|" + "fonts_normal" + "|" + "fonts_large",
+                        Options.OPTION_FONT_SCHEME);
                 //loadOptionInt(Options.OPTION_MIN_ITEM_SIZE, "item_height_multiplier", minItems, minItemMultipliers);
 
                 form.addString("contact_list", null);
@@ -283,7 +283,7 @@ public class OptionsForm implements FormListener, ControlStateListener {
                 //Scheme.updateUI();
                 break;
             case Options.OPTION_FONT_SCHEME:
-                //saveOptionSelector(Options.OPTION_FONT_SCHEME);
+                saveOptionSelector(Options.OPTION_FONT_SCHEME);
                 //GraphicsEx.setFontScheme(Options.getInt(Options.OPTION_FONT_SCHEME));
                 //Scheme.updateUI();
                 break;

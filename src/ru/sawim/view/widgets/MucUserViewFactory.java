@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import ru.sawim.General;
 import sawim.Options;
 import ru.sawim.Scheme;
 import protocol.jabber.Jabber;
@@ -60,6 +61,7 @@ public class MucUserViewFactory {
         void populateFrom(Object o) {
             JabberContact.SubContact c = (JabberContact.SubContact) o;
             TextView itemName = getItemName();
+			itemName.setTextSize(General.getFontSize());
             itemName.setText(c.resource);
             itemName.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
             getItemStatusImage().setImageBitmap(protocol.getStatusInfo().getIcon(c.status).getImage());

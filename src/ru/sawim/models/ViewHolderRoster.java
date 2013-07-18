@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import protocol.mrim.Mrim;
 import protocol.mrim.MrimPhoneContact;
+import ru.sawim.General;
 import sawim.Options;
 import sawim.chat.ChatHistory;
 import sawim.chat.message.Message;
@@ -46,6 +47,7 @@ public class ViewHolderRoster {
     void populateFromGroup(Group g) {
         boolean isExpanded = g.isExpanded();
         TextView itemName = getItemName();
+		itemName.setTextSize(General.getFontSize());
         itemName.setText(g.getText());
         itemName.setTextColor(Scheme.getColor(Scheme.THEME_GROUP));
         itemName.setTypeface(Typeface.DEFAULT);
@@ -71,6 +73,7 @@ public class ViewHolderRoster {
     void populateFromContact(Contact item) {
         Protocol p = vcl.getProtocol(vcl.getCurrProtocol());
         TextView itemName = getItemName();
+		itemName.setTextSize(General.getFontSize());
         if (item.subcontactsS() == 0)
             itemName.setText(item.getText());
         else
@@ -79,6 +82,7 @@ public class ViewHolderRoster {
         itemName.setTypeface(item.hasChat() ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT);
 
         TextView itemStausText = getItemDescriptionText();
+		itemStausText.setTextSize(General.getFontSize() - 2);
         if (Options.getBoolean(Options.OPTION_SHOW_STATUS_LINE)) {
             itemStausText.setVisibility(TextView.VISIBLE);
             itemStausText.setText(vcl.getStatusMessage(item));

@@ -128,7 +128,7 @@ public class MessagesAdapter extends BaseAdapter implements MyTextView.TextLinkC
             msgNick.setText(mData.getNick());
             msgNick.setTextColor(Scheme.getColor(mData.isIncoming() ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG));
             msgNick.setTypeface(Typeface.DEFAULT_BOLD);
-            msgNick.setTextSize(18);
+            msgNick.setTextSize(General.getFontSize());
 
             msgTime.setVisibility(TextView.VISIBLE);
             msgTime.setText(mData.strTime);
@@ -143,7 +143,7 @@ public class MessagesAdapter extends BaseAdapter implements MyTextView.TextLinkC
 
             msgText.setText(mData.fullText);
             msgText.setTextColor(Scheme.getColor(color));
-            msgText.setTextSize(18);
+            msgText.setTextSize(General.getFontSize());
             MovementMethod m = msgText.getMovementMethod();
             if ((m == null) || !(m instanceof LinkMovementMethod)) {
                 if (msgText.getLinksClickable()) {

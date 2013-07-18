@@ -553,7 +553,7 @@ public final class Jabber extends Protocol implements FormListener {
             case JabberServiceContact.GATE_ADD:
                 Search s = this.getSearchForm();
                 s.setJabberGate(c.getUserId());
-                s.show("");
+                s.show("", false);
                 break;
 
             case JabberServiceContact.USER_MENU_USERS_LIST:
@@ -561,6 +561,7 @@ public final class Jabber extends Protocol implements FormListener {
                     //new ConferenceParticipants(this, (JabberServiceContact) c).show();
                 } else {
                     ServiceDiscovery sd = getServiceDiscovery();
+                    sd.isMucUsers(true);
                     sd.setServer(contact.getUserId());
                     sd.showIt();
                 }

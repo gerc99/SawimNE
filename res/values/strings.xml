@@ -185,7 +185,7 @@
 
     <string name="all_contacts">All contacts</string>
     <string name="online_contacts">Online</string>
-    <string name="chats">Chats</string>
+    <string name="active_contacts">Active contacts</string>
     <string name="options_account">Accounts</string>
     <string name="options_interface">Interface</string>
     <string name="options_signaling">Signaling</string>
@@ -210,4 +210,5 @@
     <string name="copy">Copy</string>
     <string name="url_menu">Menu url</string>
     <string name="press_menu_for_connect">Press the menu button and choose action</string>
+    <string name="add_conference">Add conference</string>
 </resources>

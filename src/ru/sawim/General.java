@@ -2,6 +2,7 @@ package ru.sawim;
 
 import android.content.Context;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -56,7 +57,7 @@ public class General {
 
     public static void openUrl(String url) {
         Search search = ContactList.getInstance().getManager().getCurrentProtocol().getSearchForm();
-        search.show(Util.getUrlWithoutProtocol(url));
+        search.show(Util.getUrlWithoutProtocol(url), true);
     }
 
     public static java.io.InputStream getResourceAsStream(String name) {
@@ -149,6 +150,23 @@ public class General {
             Thread.sleep(50);
         } catch (Exception e) {
         }
+    }
+
+    public static int getFontSize() {
+        Resources res = SawimApplication.getInstance().getResources();
+        switch (Options.getInt(Options.OPTION_FONT_SCHEME)) {
+            case 0:
+                return res.getDimensionPixelSize(R.dimen.smallest_10_font_size);
+            case 1:
+                return res.getDimensionPixelSize(R.dimen.smallest_13_font_size);
+            case 2:
+                return res.getDimensionPixelSize(R.dimen.small_font_size);
+            case 3:
+                return res.getDimensionPixelSize(R.dimen.medium_font_size);
+            case 4:
+                return res.getDimensionPixelSize(R.dimen.large_font_size);
+        }
+        return 15;
     }
 
     public InputStream getResourceAsStream(Context c, Class origClass, String name) {

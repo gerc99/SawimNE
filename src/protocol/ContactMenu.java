@@ -50,7 +50,7 @@ public class ContactMenu implements TextBoxView.TextBoxListener {
 			}
                 
             case Contact.USER_MENU_ADD_USER:
-                protocol.getSearchForm().show(contact.getUserId());
+                protocol.getSearchForm().show(contact.getUserId(), false);
                 break;
 
             case Contact.USER_MENU_USER_REMOVE:

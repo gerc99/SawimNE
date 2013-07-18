@@ -165,12 +165,12 @@ public class SawimActivity extends FragmentActivity {
                 }
             }
             if (p.isConnected()) {
+                menu.add(Menu.NONE, MENU_GROUPS, Menu.NONE, R.string.manage_contact_list);
                 SubMenu moreMenu = menu.addSubMenu(Menu.NONE, MENU_MORE, Menu.NONE, R.string.more);
                 if (p instanceof Jabber) {
                     moreMenu.add(Menu.NONE, MENU_DISCO, Menu.NONE, R.string.service_discovery);
                     moreMenu.add(Menu.NONE, MENU_NOTES, Menu.NONE, R.string.notes);
                 }
-                moreMenu.add(Menu.NONE, MENU_GROUPS, Menu.NONE, R.string.manage_contact_list);
                 if (p.hasVCardEditor())
                     moreMenu.add(Menu.NONE, MENU_MYSELF, Menu.NONE, R.string.myself);
                 if (p instanceof Mrim)

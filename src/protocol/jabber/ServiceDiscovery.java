@@ -27,6 +27,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
     private TextBoxView searchBox;
     private boolean shortView;
     private Vector jids = new Vector();
+    private boolean isMucUsers = false;
 
     private VirtualList screen;
     private VirtualListModel model = new VirtualListModel();
@@ -39,6 +40,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
     private static final int COMMAND_HOME = 5;
 
     public void init(Jabber protocol) {
+        isMucUsers = false;
         screen = VirtualList.getInstance();
         jabber = protocol;
         serverBox = new TextBoxView();
@@ -61,12 +63,13 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
 
             @Override
             public boolean back() {
-                if (serverJid == "") {
-                    screen.clearAll();
+                //screen.clearAll();
+                //setServer("");
+                //if (isMucUsers) {
+                //    screen.clearAll();
                     return true;
-                }
-                setServer("");
-                return false;
+                //}
+                //return false;
             }
         });
         screen.setOnBuildContextMenu(new VirtualList.OnBuildContextMenu() {
@@ -271,6 +274,10 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
         String domain = Jid.getDomain(jabber.getUserId());
         addUnique(JLocale.getString("my_server"), domain);
         addUnique(JLocale.getString("conferences_on_") + domain, "conference." + domain);
+    }
+
+    public void isMucUsers(boolean isMucUsers) {
+        this.isMucUsers = isMucUsers;
     }
 
     public void setServer(String jid) {
