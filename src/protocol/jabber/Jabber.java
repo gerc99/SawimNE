@@ -561,8 +561,8 @@ public final class Jabber extends Protocol implements FormListener {
                     //new ConferenceParticipants(this, (JabberServiceContact) c).show();
                 } else {
                     ServiceDiscovery sd = getServiceDiscovery();
-                    sd.isMucUsers(true);
                     sd.setServer(contact.getUserId());
+                    sd.isMucUsers(true);
                     sd.showIt();
                 }
                 break;

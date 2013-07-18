@@ -40,7 +40,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
     private static final int COMMAND_HOME = 5;
 
     public void init(Jabber protocol) {
-        isMucUsers = false;
+        isMucUsers(false);
         screen = VirtualList.getInstance();
         jabber = protocol;
         serverBox = new TextBoxView();
@@ -63,13 +63,17 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
 
             @Override
             public boolean back() {
-                //screen.clearAll();
-                //setServer("");
-                //if (isMucUsers) {
-                //    screen.clearAll();
+                if (isMucUsers) {
+                    screen.clearAll();
+                    setServer("");
                     return true;
-                //}
-                //return false;
+                }
+                if (serverJid == "") {
+                    screen.clearAll();
+                    return true;
+                }
+                setServer("");
+                return false;
             }
         });
         screen.setOnBuildContextMenu(new VirtualList.OnBuildContextMenu() {
