@@ -188,7 +188,7 @@ public final class Search implements FormListener, ControlStateListener {
                 }
                 searchForm.addSelector(GROUP, "group", list, def);
             }
-            boolean request_auth = isConference;
+            boolean request_auth = !isConference;
             
             if (protocol instanceof Mrim) {
                 request_auth = false;

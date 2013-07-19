@@ -1,11 +1,13 @@
 package ru.sawim.models;
 
+import DrawControls.icons.AniIcon;
 import DrawControls.icons.Icon;
 import android.content.Context;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.BitmapDrawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,7 +59,10 @@ public class SmilesAdapter extends BaseAdapter {
         } else {
             wr = (ItemWrapper) convView.getTag();
         }
-        wr.populateFrom(getItem(i));
+        if (emotions.isAniSmiles())
+            wr.populateAniFrom((AniIcon) getItem(i));
+        else
+            wr.populateFrom(getItem(i));
         return convView;
     }
 
@@ -70,7 +75,6 @@ public class SmilesAdapter extends BaseAdapter {
         mAnimation.setOneShot(false);
         mAnimation.addFrame(frame, DURATION);
         mImage.setBackgroundDrawable(mAnimation);
-
     }
 
     private void stopFrameAnimation() {
@@ -80,7 +84,6 @@ public class SmilesAdapter extends BaseAdapter {
         }
     }
 
-
     public class ItemWrapper {
         View item = null;
         private ImageView itemImage = null;
@@ -89,20 +92,18 @@ public class SmilesAdapter extends BaseAdapter {
             this.item = item;
         }
 
-        /*void populateFrom(int item) {
-            AniIcon ic = (AniIcon) emotions.smiles().iconAt(item);
+        void populateAniFrom(AniIcon ic) {
             if (ic != null) {
-                //getItemImage().setImageBitmap(iconToBitmap(ic));
                 Log.e("frameCount", "" + ic.getImages().length);
                 for (int frameNum = 0; frameNum < ic.getImages().length; ++frameNum) {
-                    startFrameAnimation(getItemImage(), General.iconToBitmap(ic.getImages()[frameNum]));
+                    startFrameAnimation(getItemImage(), ic.getImages()[frameNum].getImage());
                 }
                 if (!mAnimation.isRunning()) {
                     mAnimation.setVisible(true, true);
                     mAnimation.start();
                 }
             }
-        }*/
+        }
 
         void populateFrom(Icon ic) {
             if (ic != null) {

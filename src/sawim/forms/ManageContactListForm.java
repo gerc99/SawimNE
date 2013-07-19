@@ -71,6 +71,7 @@ public final class ManageContactListForm implements FormListener, TextBoxView.Te
             }
         }
         AlertDialog.Builder builder = new AlertDialog.Builder(a);
+        builder.setCancelable(true);
         builder.setTitle(contact.getName());
         builder.setItems(Util.vectorToArray(items), new DialogInterface.OnClickListener() {
             @Override
@@ -108,6 +109,7 @@ public final class ManageContactListForm implements FormListener, TextBoxView.Te
         }
 
 		AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(a, R.style.AlertDialogCustom));
+        builder.setCancelable(true);
         builder.setTitle(SawimApplication.getContext().getString(R.string.manage_contact_list));
         builder.setAdapter(menu, new DialogInterface.OnClickListener() {
             @Override

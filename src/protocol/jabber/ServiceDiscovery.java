@@ -4,6 +4,7 @@ import android.support.v4.app.FragmentActivity;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
+import ru.sawim.General;
 import ru.sawim.models.form.VirtualListItem;
 import ru.sawim.models.list.VirtualList;
 import java.util.Vector;
@@ -230,9 +231,9 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
 
         model.addPar(item);
         jids.addElement(shortJid);
-        if (0 == (jids.size() % 50)) {
+        //if (0 == (jids.size() % 50)) {
             screen.updateModel();
-        }
+        //}
     }
 
     public void showIt() {
@@ -269,7 +270,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
         }
     }
     private void addBuildInList() {
-        addUnique("Sawim aspro", "jimm-sawim@conference.jabber.ru");
+        addUnique(General.NAME, "jimm-sawim@conference.jabber.ru");
         VirtualListItem br = model.createNewParser(false);
         br.addBr();
         model.addPar(br);

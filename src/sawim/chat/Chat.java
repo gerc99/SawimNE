@@ -2,7 +2,6 @@ package sawim.chat;
 
 import ru.sawim.General;
 import sawim.Options;
-import ru.sawim.General;
 import sawim.chat.message.Message;
 import sawim.chat.message.PlainMessage;
 import sawim.chat.message.SystemNotice;
@@ -58,7 +57,7 @@ public final class Chat {
         if (contact instanceof JabberContact) {
             service |= Jid.isGate(contact.getUserId());
         }
-        return !service && contact.isSingleUserContact();
+        return !(service && contact.isSingleUserContact());
     }
 
     public Protocol getProtocol() {
@@ -100,9 +99,8 @@ public final class Chat {
     }
 
     public void addFileProgress(String caption, String text) {
-        long time = General.getCurrentGmtTime();
-        short flags = MessData.PROGRESS;
-        final MessData mData = new MessData(time, text, caption, flags, Message.ICON_NONE);
+        ChatHistory.instance.registerChat(this);
+        final MessData mData = new MessData(General.getCurrentGmtTime(), text, caption, MessData.PROGRESS, Message.ICON_NONE);
         if (General.getInstance().getUpdateChatListener() == null) {
             removeOldMessages();
             messData.add(mData);

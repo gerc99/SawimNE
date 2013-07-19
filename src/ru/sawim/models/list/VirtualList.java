@@ -53,13 +53,16 @@ public class VirtualList {
     public void setVirtualListListener(OnVirtualListListener l) {
         virtualListListener = l;
     }
+
     public interface OnClickListListener {
         void itemSelected(int position);
         boolean back();
     }
+
     public OnClickListListener getClickListListener() {
         return itemClickListListener;
     }
+
     public void setClickListListener(OnClickListListener itemClickListListener) {
         this.itemClickListListener = itemClickListListener;
     }
@@ -70,19 +73,23 @@ public class VirtualList {
         int getCurrItem();
         void setCurrentItemIndex(int index);
     }
+
     public void updateModel() {
         if (virtualListListener != null)
             virtualListListener.update();
     }
+
     public void back() {
         if (virtualListListener != null)
             virtualListListener.back();
     }
+
     public int getCurrItem() {
         if (virtualListListener != null)
             return virtualListListener.getCurrItem();
         return 0;
     }
+
     public void setCurrentItemIndex(int currentItemIndex) {
         if (virtualListListener != null)
             virtualListListener.setCurrentItemIndex(currentItemIndex);
@@ -92,9 +99,11 @@ public class VirtualList {
         void onCreateOptionsMenu(Menu menu);
         void onOptionsItemSelected(FragmentActivity activity, MenuItem item);
     }
+
     public OnBuildOptionsMenu getBuildOptionsMenu() {
         return buildOptionsMenu;
     }
+
     public void setBuildOptionsMenu(OnBuildOptionsMenu buildOptionsMenu) {
         this.buildOptionsMenu = buildOptionsMenu;
     }
@@ -103,9 +112,11 @@ public class VirtualList {
         void onCreateContextMenu(ContextMenu menu, int listItem);
         void onContextItemSelected(int listItem, int itemMenuId);
     }
+
     public void setOnBuildContextMenu(OnBuildContextMenu l) {
         buildContextMenu = l;
     }
+
     public OnBuildContextMenu getBuildContextMenu() {
         return buildContextMenu;
     }

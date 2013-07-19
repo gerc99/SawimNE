@@ -245,6 +245,7 @@ abstract public class Protocol {
         if (100 == percent) {
             reconnect_attempts = RECONNECT_COUNT;
             getContactList().updateConnectionStatus();
+            getContactList().getManager().updateBarProtocols();
         }
         getContactList().getManager().updateProgressBar();
     }
@@ -716,7 +717,6 @@ abstract public class Protocol {
         setLastStatusChangeTime();
         if (isConnected()) {
             s_updateOnlineStatus();
-            getContactList().getManager().updateBarProtocols();
             getContactList().getManager().updateProgressBar();
         }
     }

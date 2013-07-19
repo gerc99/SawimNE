@@ -162,6 +162,7 @@ public class MessagesAdapter extends BaseAdapter implements MyTextView.TextLinkC
         items[1] = baseContext.getString(R.string.copy);
         items[2] = baseContext.getString(R.string.add_contact);
         final AlertDialog.Builder builder = new AlertDialog.Builder(baseContext);
+        builder.setCancelable(true);
         builder.setTitle(R.string.url_menu);
         builder.setItems(items, new DialogInterface.OnClickListener() {
             @Override

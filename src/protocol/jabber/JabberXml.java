@@ -2548,7 +2548,7 @@ public final class JabberXml extends ClientConnection {
 
     private String getVerHash(Vector features) {
         StringBuffer sb = new StringBuffer();
-        sb.append("client/phone/" + "/Sawim NE<");
+        sb.append("client/phone/" + "/" + General.NAME + "<");
         for (int i = 0; i < features.size(); ++i) {
             sb.append(features.elementAt(i)).append('<');
         }
@@ -2556,7 +2556,7 @@ public final class JabberXml extends ClientConnection {
     }
     private String getFeatures(Vector features) {
         StringBuffer sb = new StringBuffer();
-        sb.append("<identity category='client' type='phone' name='Sawim NE'/>");
+        sb.append("<identity category='client' type='phone' name='" + General.NAME + "'/>");
         for (int i = 0; i < features.size(); ++i) {
             sb.append("<feature var='").append(features.elementAt(i)).append("'/>");
         }

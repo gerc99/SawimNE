@@ -132,6 +132,7 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
                     }
                 }
 				AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(activity, R.style.AlertDialogCustom));
+                builder.setCancelable(true);
                 builder.setTitle(jabberServiceContact.getName());
                 builder.setAdapter(menu, new DialogInterface.OnClickListener() {
                                        @Override

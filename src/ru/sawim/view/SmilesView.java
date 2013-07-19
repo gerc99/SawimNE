@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import ru.sawim.General;
 import sawim.modules.Emotions;
 import ru.sawim.R;
 import ru.sawim.models.SmilesAdapter;
@@ -34,9 +35,8 @@ public class SmilesView extends DialogFragment {
         gv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent = new Intent(ChatView.PASTE_TEXT);
-                intent.putExtra("text", Emotions.instance.getSmileCode(i));
-                getActivity().sendBroadcast(intent);
+                if (General.getInstance().getUpdateChatListener() != null)
+                    General.getInstance().getUpdateChatListener().pastText(Emotions.instance.getSmileCode(i));
                 dismiss();
             }
         });

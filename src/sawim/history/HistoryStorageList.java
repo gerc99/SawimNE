@@ -147,6 +147,7 @@ public final class HistoryStorageList implements Runnable, FormListener {
                 items[1] = JLocale.getString("all_contact_except_this");
                 items[2] = JLocale.getString("all_contacts");
 				AlertDialog.Builder builder = new AlertDialog.Builder(SawimActivity.getInstance());
+                builder.setCancelable(true);
                 builder.setTitle(JLocale.getString("history"));
                 builder.setItems(items, new DialogInterface.OnClickListener() {
                     @Override

@@ -23,6 +23,7 @@ public final class Emotions {
     private String smileChars;
     private int[] textCorrIndexes;
     private String[] textCorrWords;
+    private boolean isAniSmiles = false;
 
     private Emotions() {}
     public static final Emotions instance = new Emotions();
@@ -149,6 +150,7 @@ public final class Emotions {
             }
         }
     }
+
     public void load() {
         boolean loaded = false;
         try {
@@ -162,17 +164,20 @@ public final class Emotions {
             images = null;
         }
     }
+
     private ImageList loadIcons(int iconsSize) throws IOException {
         ImageList emoImages = null;
         emoImages = new AniImageList();
         emoImages.load("/smiles", iconsSize, iconsSize);
         if (0 < emoImages.size()) {
+            isAniSmiles = true;
             return emoImages;
         }
         emoImages = new ImageList();
         emoImages.load("/smiles.png", iconsSize, iconsSize);
         return emoImages;
     }
+
     private boolean loadAll() {
         images = null;
         Vector textCorr = new Vector();
@@ -181,7 +186,6 @@ public final class Emotions {
         General.gc();
         long mem = Runtime.getRuntime().freeMemory();
 
-        // Load file "smiles.txt"
         InputStream stream = null;
         stream = General.getResourceAsStream("/smiles/smiles.txt");
         if (null == stream) {
@@ -193,7 +197,6 @@ public final class Emotions {
         ImageList emoImages = null;
         try {
             DataInputStream dos = new DataInputStream(stream);
-            // Read icon size
             int iconsSize = readIntFromStream(dos);
             emoImages = loadIcons(iconsSize);
             byte[] str = new byte[dos.available()];
@@ -207,8 +210,6 @@ public final class Emotions {
         if (0 == emoImages.size()) {
             return false;
         }
-
-        // Write emotions data from vectors to arrays
         int size = selEmotions.size();
         selEmotionsIndexes    = new int[size];
         selEmotionsWord       = new String[size];
@@ -223,7 +224,6 @@ public final class Emotions {
         size = textCorr.size();
         textCorrWords   = new String[size];
         textCorrIndexes = new int[size];
-//        smileListItems = new Glyphs[size];
         StringBuffer fisrtChars = new StringBuffer(textCorr.size());
         for (int i = 0; i < size; ++i) {
             Object[] data = (Object[])textCorr.elementAt(i);
@@ -246,14 +246,6 @@ public final class Emotions {
         return true;
     }
 
-    public static boolean isSupported() {
-        return (null != instance.images);
-    }
-
-    public final boolean isEnabled() {
-        return (null != images);
-    }
-
     private int readIntFromStream(DataInputStream stream) throws IOException {
         int value = 0;
         byte digit = stream.readByte();
@@ -267,25 +259,18 @@ public final class Emotions {
         return value;
     }
 
-    public int getSmile(String text, int pos) {
-        int smileIndex = smileChars.indexOf(text.charAt(pos));
-        while (-1 != smileIndex) {
-            if (text.startsWith(textCorrWords[smileIndex], pos)) {
-                return smileIndex;
-            }
-            smileIndex = smileChars.indexOf(text.charAt(pos), smileIndex + 1);
-        }
-        return -1;
-    }
     public String getSmileChars() {
         return smileChars;
     }
+
     public Icon getSmileIcon(int smileIndex) {
         return images.iconAt(textCorrIndexes[smileIndex]);
     }
+
     public String getSmileText(int smileIndex) {
         return textCorrWords[smileIndex];
     }
+
     public String getSmileCode(int smileIndex) {
         return selEmotionsWord[smileIndex];
     }
@@ -296,5 +281,9 @@ public final class Emotions {
 
     public Icon getSmile(int smileIndex) {
         return images.iconAt(smileIndex);
+    }
+
+    public boolean isAniSmiles() {
+        return isAniSmiles;
     }
 }

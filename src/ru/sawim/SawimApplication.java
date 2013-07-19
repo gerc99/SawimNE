@@ -4,6 +4,7 @@ import android.app.Application;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Handler;
 import android.os.Message;
@@ -127,5 +128,16 @@ public class SawimApplication extends Application {
 
     public void updateAppIcon() {
         serviceConnection.send(Message.obtain(null, SawimService.UPDATE_APP_ICON));
+    }
+
+    public String getVersion() {
+        String version = "";
+        try {
+            PackageInfo pinfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            version = pinfo.versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            version = "unknown";
+        }
+        return version;
     }
 }
