@@ -84,7 +84,7 @@ public final class ChatHistory {
 	public int getOtherMessageCount() {
 	    int count = 0;
         for (int i = getTotal() - 1; 0 <= i; --i) {
-            count += chatAt(i).getOtherMessageCount();
+            count += chatAt(i).getAllMessagesCount();
 		}
 		return count;
     }
@@ -162,7 +162,6 @@ public final class ChatHistory {
 
     
     public void registerChat(Chat item) {
-        if (!item.empty()) return;
         if (-1 == Util.getIndex(historyTable, item)) {
             historyTable.addElement(item);
             item.getContact().updateChatState(item);

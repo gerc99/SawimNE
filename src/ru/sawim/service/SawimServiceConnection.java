@@ -1,4 +1,4 @@
-package ru.sawim;
+package ru.sawim.service;
 
 import android.content.ComponentName;
 import android.content.ServiceConnection;

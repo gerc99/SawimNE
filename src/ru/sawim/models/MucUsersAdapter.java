@@ -1,18 +1,26 @@
 package ru.sawim.models;
 
+import DrawControls.icons.Icon;
+import DrawControls.icons.ImageList;
 import android.content.Context;
+import android.graphics.Typeface;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.TextView;
+import ru.sawim.General;
+import ru.sawim.R;
+import ru.sawim.Scheme;
+import sawim.Options;
 import sawim.util.JLocale;
 import protocol.Contact;
 import protocol.jabber.Jabber;
 import protocol.jabber.JabberContact;
 import protocol.jabber.JabberServiceContact;
 import protocol.jabber.Jid;
-import ru.sawim.view.widgets.LayerViewFactory;
-import ru.sawim.view.widgets.MucUserViewFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,16 +38,15 @@ public class MucUsersAdapter extends BaseAdapter {
     private static final int ITEM_GROUP = 0;
     private static final int ITEM_CONTACT = 1;
     private static final int ITEM_TYPECOUNT = 2;
-    private LayerViewFactory layerView;
-    private MucUserViewFactory mucUserView;
     private JabberServiceContact conference;
     private List<Object> items = new ArrayList<Object>();
     private Jabber protocol;
+    private static ImageList affiliationIcons = ImageList.createImageList("/jabber-affiliations.png");
+    Context context;
 
     public MucUsersAdapter(Context context, Jabber jabber, JabberServiceContact conf) {
-        layerView = new LayerViewFactory(context);
+        this.context = context;
         protocol = jabber;
-        mucUserView = new MucUserViewFactory(context, jabber);
         conference = conf;
         update();
     }
@@ -187,8 +194,90 @@ public class MucUsersAdapter extends BaseAdapter {
     public View getView(int i, View convView, ViewGroup viewGroup) {
         Object o = items.get(i);
         if (o == null) return convView;
-        if (o instanceof String) return layerView.getView(convView, (String)o);
-        if (o instanceof JabberContact.SubContact) return mucUserView.getView(convView, (JabberContact.SubContact)o);
+        ItemWrapper wr;
+        if (convView == null) {
+            LayoutInflater inf = LayoutInflater.from(context);
+            convView = inf.inflate(R.layout.muc_users_item, null);
+            wr = new ItemWrapper(convView);
+            convView.setTag(wr);
+        } else {
+            wr = (ItemWrapper) convView.getTag();
+        }
+        if (o instanceof String) {
+            convView.setPadding(0, 0, 0, 0);
+            wr.populateLayerFrom((String) o);
+        }
+        if (o instanceof JabberContact.SubContact)
+            wr.populateFrom(protocol, o);
         return convView;
+    }
+
+    static class ItemWrapper {
+        View item = null;
+        private TextView itemName = null;
+        private ImageView itemStatusImage = null;
+        private ImageView itemAffilationImage = null;
+        private ImageView itemClientImage = null;
+
+        public ItemWrapper(View item) {
+            this.item = item;
+        }
+
+        void populateLayerFrom(String layer) {
+            getItemStatusImage().setVisibility(ImageView.GONE);
+            getItemAffilationImage().setVisibility(ImageView.GONE);
+            getItemClientImage().setVisibility(ImageView.GONE);
+            TextView itemLayer = getItemName();
+            itemLayer.setTextSize(General.getFontSize() - 2);
+            itemLayer.setTypeface(Typeface.SANS_SERIF);
+            itemLayer.setText(layer);
+            itemLayer.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
+        }
+
+        void populateFrom(Jabber protocol, Object o) {
+            JabberContact.SubContact c = (JabberContact.SubContact) o;
+            TextView itemName = getItemName();
+            itemName.setTextSize(General.getFontSize());
+            itemName.setText(c.resource);
+            itemName.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
+            getItemStatusImage().setImageBitmap(protocol.getStatusInfo().getIcon(c.status).getImage());
+            getItemAffilationImage().setImageBitmap(affiliationIcons.iconAt(JabberServiceContact.getAffiliationName(c.priorityA)).getImage());
+            Icon ic = protocol.clientInfo.getIcon(c.client);
+            ImageView itemClientImage = getItemClientImage();
+            if (ic != null && !Options.getBoolean(Options.OPTION_HIDE_ICONS_CLIENTS)) {
+                itemClientImage.setVisibility(ImageView.VISIBLE);
+                itemClientImage.setImageBitmap(ic.getImage());
+            } else {
+                itemClientImage.setVisibility(ImageView.GONE);
+            }
+        }
+
+        public ImageView getItemStatusImage() {
+            if (itemStatusImage == null) {
+                itemStatusImage = (ImageView) item.findViewById(R.id.first_image);
+            }
+            return itemStatusImage;
+        }
+
+        public ImageView getItemAffilationImage() {
+            if (itemAffilationImage == null) {
+                itemAffilationImage = (ImageView) item.findViewById(R.id.affilationImage);
+            }
+            return itemAffilationImage;
+        }
+
+        public TextView getItemName() {
+            if (itemName == null) {
+                itemName = (TextView) item.findViewById(R.id.item_name);
+            }
+            return itemName;
+        }
+
+        public ImageView getItemClientImage() {
+            if (itemClientImage == null) {
+                itemClientImage = (ImageView) item.findViewById(R.id.fourth_rule_image);
+            }
+            return itemClientImage;
+        }
     }
 }

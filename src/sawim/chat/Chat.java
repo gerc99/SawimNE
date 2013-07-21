@@ -1,5 +1,6 @@
 package sawim.chat;
 
+import android.util.Log;
 import ru.sawim.General;
 import sawim.Options;
 import sawim.chat.message.Message;
@@ -57,7 +58,7 @@ public final class Chat {
         if (contact instanceof JabberContact) {
             service |= Jid.isGate(contact.getUserId());
         }
-        return !(service && contact.isSingleUserContact());
+        return /*!*/service && contact.isSingleUserContact();
     }
 
     public Protocol getProtocol() {
@@ -251,7 +252,7 @@ public final class Chat {
     }
 
     private short messageCounter = 0;
-    private short otherMessageCounter = 0;
+    private short allMessagesCounter = 0;
     private byte sysNoticeCounter = 0;
     private byte authRequestCounter = 0;
 
@@ -266,10 +267,10 @@ public final class Chat {
 
     public void resetUnreadMessages() {
         boolean notEmpty = (0 < messageCounter)
-                || (0 < otherMessageCounter)
+                || (0 < allMessagesCounter)
                 || (0 < sysNoticeCounter);
         messageCounter = 0;
-        otherMessageCounter = 0;
+        allMessagesCounter = 0;
         sysNoticeCounter = 0;
         if (notEmpty) {
             contact.updateChatState(this);
@@ -278,15 +279,13 @@ public final class Chat {
     }
 
     public int getUnreadMessageCount() {
-        return messageCounter + sysNoticeCounter + authRequestCounter
-                + otherMessageCounter;
+        return messageCounter + sysNoticeCounter + authRequestCounter;
     }
     public int getPersonalUnreadMessageCount() {
         return messageCounter + sysNoticeCounter + authRequestCounter;
     }
-	public int getOtherMessageCount() {
-	    return sysNoticeCounter + authRequestCounter
-                + otherMessageCounter;
+	public int getAllMessagesCount() {
+	    return allMessagesCounter;
 	}
     public int getAuthRequestCounter() {
         return authRequestCounter;
@@ -297,7 +296,7 @@ public final class Chat {
             return Message.ICON_IN_MSG_HI;
         } else if (0 < authRequestCounter) {
             return Message.ICON_SYSREQ;
-        } else if (0 < otherMessageCounter) {
+        } else if (0 < allMessagesCounter) {
             return Message.ICON_IN_MSG;
         } else if (0 < sysNoticeCounter) {
             return Message.ICON_SYS_OK;
@@ -415,7 +414,6 @@ public final class Chat {
                 messageCounter = inc(messageCounter);
                 if (!contact.isSingleUserContact()
                         && !isHighlight(message.getProcessedText(), getMyName())) {
-                    otherMessageCounter = inc(otherMessageCounter);
                     messageCounter--;
                 }
             }
@@ -431,6 +429,7 @@ public final class Chat {
             addTextToForm(message, getFrom(message));
         }
         if (inc) {
+            allMessagesCounter = inc(allMessagesCounter);
             contact.updateChatState(this);
             ChatHistory.instance.updateChatList();
         }
@@ -450,7 +449,7 @@ public final class Chat {
     }
 
     MessData getUnreadMessage(int num) {
-        int index = getMessCount() - getUnreadMessageCount() + num;
+        int index = getMessCount() - getAllMessagesCount() + num;
         return getMessageDataByIndex(index);
     }
 

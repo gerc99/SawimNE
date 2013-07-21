@@ -15,7 +15,6 @@ public final class AutoAbsence {
 
     public AutoAbsence() {
         absence = false;
-        updateOptions();
         userActivity();
     }
 
@@ -86,6 +85,7 @@ public final class AutoAbsence {
     }
 
     public final void updateTime() {
+        time = Options.getInt(Options.OPTION_AA_TIME);
         if (!absence && time > 0) {
             try {
                 if (0 < activityOutTime) {
@@ -113,10 +113,8 @@ public final class AutoAbsence {
         }
     }
 
-    public final void updateOptions() {
-        time = Options.getInt(Options.OPTION_AA_TIME);
-    }
     public final void userActivity() {
+        time = Options.getInt(Options.OPTION_AA_TIME);
         try {
             if (!General.isPaused() && time > 0) {
                 int init = time * 60;

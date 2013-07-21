@@ -9,6 +9,7 @@ import protocol.Protocol;
 import protocol.StatusInfo;
 import ru.sawim.R;
 import ru.sawim.activities.SawimActivity;
+import ru.sawim.models.RosterAdapter;
 import sawim.Options;
 import sawim.chat.message.SystemNotice;
 import sawim.cl.ContactList;
@@ -115,7 +116,8 @@ public class JabberServiceContact extends JabberContact {
     }
 
     public boolean isVisibleInContactList() {
-        if (ContactList.getInstance().getManager().getCurrPage() != 1/*!Options.getBoolean(Options.OPTION_CL_HIDE_OFFLINE)*/)
+        if (ContactList.getInstance().getManager().getCurrPage() != RosterAdapter.ONLINE_CONTACTS
+        /*!Options.getBoolean(Options.OPTION_CL_HIDE_OFFLINE)*/)
             return true;
         return isConference() || isGate ? super.isVisibleInContactList() : true;
     }

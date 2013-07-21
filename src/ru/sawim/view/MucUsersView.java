@@ -62,7 +62,7 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 final Object o = usersAdapter.getItem(position);
-                SawimApplication.getInstance().runOnUiThread(new Runnable() {
+                activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         if (o instanceof JabberContact.SubContact) {
@@ -149,7 +149,7 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
                                                    chatView.openChat(protocol, c);
                                                    break;
                                                case COMMAND_INFO:
-                                                   protocol.showUserInfo(usersAdapter.getContactForVCard(nick));
+                                                   protocol.showUserInfo(activity, usersAdapter.getContactForVCard(nick));
                                                    break;
                                                case COMMAND_STATUS:
                                                    protocol.showStatus(usersAdapter.getPrivateContact(nick));

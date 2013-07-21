@@ -77,10 +77,11 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
             startActivity(new Intent(currentActivity, AccountsListActivity.class));
             return;
         } else {
-            if (owner.getProtocolCount() == 0) {
+            int protocolCount = owner.getProtocolCount();
+            if (protocolCount == 0) {
                 startActivity(new Intent(currentActivity, AccountsListActivity.class));
                 return;
-            } else if (owner.getProtocolCount() == 1) {
+            } else if (protocolCount == 1 && owner.getProtocol(owner.getCurrProtocol()).getContactItems().size() == 0) {
                 Toast.makeText(getActivity(), R.string.press_menu_for_connect, Toast.LENGTH_LONG).show();
             }
         }
@@ -242,6 +243,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         if (owner.getProtocolCount() == 0) return;
         owner.setOnUpdateRoster(this);
         update();
+        Log.e("RosterView", "onResume");
     }
 
     @Override
@@ -249,6 +251,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         super.onPause();
         if (owner == null) return;
         owner.setOnUpdateRoster(null);
+        Log.e("RosterView", "onPause");
     }
 
     @Override
@@ -324,7 +327,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         TreeNode node = ((RosterAdapter)adaptersPages.get(viewPager.getCurrentItem())).getItem(menuInfo.position);
         if (node.isContact()) {
             final Contact c = (Contact) node;
-            SawimApplication.getInstance().runOnUiThread(new Runnable() {
+            getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     new ContactMenu(c.getProtocol(), c).doAction(getActivity(), item.getItemId());
@@ -351,7 +354,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
     public void updateProgressBar() {
         final Protocol p = general.getCurrProtocol();
         if (p == null) return;
-        SawimApplication.getInstance().runOnUiThread(new Runnable() {
+        getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
             if (p.isConnecting()) {
@@ -376,7 +379,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
     @Override
     public void updateBarProtocols() {
         final int protCount = owner.getProtocolCount();
-        SawimApplication.getInstance().runOnUiThread(new Runnable() {
+        getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 if (protCount > 1) {
@@ -420,10 +423,11 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         SawimApplication.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
-                SawimApplication.getInstance().runOnUiThread(new Runnable() {
+                getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         if (viewPager.getCurrentItem() == RosterAdapter.OPEN_CHATS) {
+                            items.addAll(ChatHistory.instance.chats());
                             Util.sort(ChatHistory.instance.chats());
                             adaptersPages.get(RosterAdapter.OPEN_CHATS).notifyDataSetChanged();
                         } else {

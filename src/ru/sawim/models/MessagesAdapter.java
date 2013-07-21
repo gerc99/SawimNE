@@ -41,7 +41,10 @@ public class MessagesAdapter extends BaseAdapter implements MyTextView.TextLinkC
     private List<MessData> items;
     private Chat chat;
 
-    public MessagesAdapter(Context context, Chat chat, List<MessData> items) {
+    public MessagesAdapter() {
+    }
+
+    public void init(Context context, Chat chat, List<MessData> items) {
         this.baseContext = context;
         this.chat = chat;
         this.items = items;

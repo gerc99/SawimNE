@@ -2,6 +2,7 @@ package ru.sawim.activities;
 
 import android.accounts.AccountAuthenticatorResponse;
 import android.accounts.AccountManager;
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
@@ -23,10 +24,16 @@ import sawim.cl.ContactList;
 public class AccountsListActivity extends FragmentActivity implements JabberRegistration.OnAddAccount {
     private AccountAuthenticatorResponse mAccountAuthenticatorResponse = null;
     private Bundle mResultBundle = null;
+    private static AccountsListActivity instance;
+
+    public static AccountsListActivity getInstance() {
+        return instance;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        instance = this;
         setContentView(R.layout.accounts_list_fragment);
 
         mResultBundle = savedInstanceState;

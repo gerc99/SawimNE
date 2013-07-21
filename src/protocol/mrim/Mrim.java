@@ -1,5 +1,6 @@
 package protocol.mrim;
 
+import android.support.v4.app.FragmentActivity;
 import ru.sawim.activities.SawimActivity;
 import ru.sawim.models.list.VirtualList;
 import DrawControls.icons.*;
@@ -251,7 +252,7 @@ public class Mrim extends Protocol {
     }
     public void saveUserInfo(UserInfo userInfo) {
     }
-    protected void doAction(Contact c, int action) {
+    protected void doAction(FragmentActivity a, Contact c, int action) {
         MrimContact contact = (MrimContact)c;
         switch (action) {
             case MrimContact.USER_MENU_SEND_SMS:
@@ -296,7 +297,7 @@ public class Mrim extends Protocol {
         }
     }
 
-    public void showUserInfo(Contact contact) {
+    public void showUserInfo(FragmentActivity a, Contact contact) {
         UserInfo data;
         if (contact instanceof MrimPhoneContact) {
             data = new UserInfo(this);

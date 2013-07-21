@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentActivity;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
+import ru.sawim.activities.FormActivity;
 import ru.sawim.models.list.VirtualList;
 import ru.sawim.models.list.VirtualListModel;
 import java.util.Vector;
@@ -88,7 +89,7 @@ public final class Search implements FormListener, ControlStateListener {
             }
             Contact contact = protocol.createTempContact(userid);
             if (null != contact) {
-                protocol.showUserInfo(contact);
+                protocol.showUserInfo(FormActivity.getInstance(), contact);
             }
         }
     }

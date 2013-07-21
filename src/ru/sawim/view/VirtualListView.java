@@ -7,7 +7,7 @@ import android.support.v4.app.FragmentActivity;
 import android.view.*;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import ru.sawim.SawimApplication;
+import ru.sawim.activities.VirtualListActivity;
 import ru.sawim.models.form.VirtualListItem;
 import ru.sawim.Scheme;
 import ru.sawim.models.list.VirtualList;
@@ -92,7 +92,7 @@ public class VirtualListView extends Fragment implements VirtualList.OnVirtualLi
 
     @Override
     public void addList(final VirtualListItem item) {
-        SawimApplication.getInstance().runOnUiThread(new Runnable() {
+        VirtualListActivity.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 list.getModel().elements.add(item);
@@ -103,7 +103,7 @@ public class VirtualListView extends Fragment implements VirtualList.OnVirtualLi
 
     @Override
     public void clearList() {
-        SawimApplication.getInstance().runOnUiThread(new Runnable() {
+        VirtualListActivity.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 list.getModel().elements.clear();
@@ -114,7 +114,7 @@ public class VirtualListView extends Fragment implements VirtualList.OnVirtualLi
 
     @Override
     public void removeFirstText() {
-        SawimApplication.getInstance().runOnUiThread(new Runnable() {
+        VirtualListActivity.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 if (list.getModel().elements.size() > 0)
@@ -126,7 +126,7 @@ public class VirtualListView extends Fragment implements VirtualList.OnVirtualLi
 
     @Override
     public void update() {
-        SawimApplication.getInstance().runOnUiThread(new Runnable() {
+        VirtualListActivity.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 adapter.notifyDataSetChanged();
@@ -161,7 +161,7 @@ public class VirtualListView extends Fragment implements VirtualList.OnVirtualLi
 
     @Override
     public void setCurrentItemIndex(final int i) {
-         SawimApplication.getInstance().runOnUiThread(new Runnable() {
+        VirtualListActivity.getInstance().runOnUiThread(new Runnable() {
              @Override
              public void run() {
                  lv.setSelection(i);

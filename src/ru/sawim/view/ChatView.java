@@ -2,12 +2,14 @@ package ru.sawim.view;
 
 import DrawControls.icons.Icon;
 import DrawControls.icons.ImageList;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.*;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
@@ -47,7 +49,7 @@ import java.util.List;
  * Time: 20:30
  * To change this template use File | Settings | File Templates.
  */
-public class ChatView extends Fragment implements AbsListView.OnScrollListener, General.OnUpdateChat {
+public class ChatView extends Fragment implements /*AbsListView.OnScrollListener, */General.OnUpdateChat {
 
     private Chat chat;
     private Protocol protocol;
@@ -211,7 +213,7 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
 
     @Override
     public void pastText(final String text) {
-        SawimApplication.getInstance().runOnUiThread(new Runnable() {
+        getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 insert(" " + text + " ");
@@ -250,33 +252,31 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
     public void pause(Chat chat) {
         if (chat == null) return;
             addLastPosition(chat.getContact().getUserId(), chatListView.getFirstVisiblePosition());
+
     }
 
     public void resume(final Chat chat) {
         if (chat == null) return;
-        SawimApplication.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                int count = chatListView.getCount();
-                int unreadMessages = chat.getUnreadMessageCount();
-                int lastPosition = getLastPosition(chat.getContact().getUserId()) + 1;
-                Log.e("ChatView", "lastPosition "+lastPosition);
-                Log.e("ChatView", "count "+count);
-                if (lastPosition >= 0) {
-                    chatListView.setScroll(false);
-                    chatListView.setSelection(lastPosition);
-                } else {
-                    if (unreadMessages > 0) {
-                        chatListView.setScroll(false);
-                        chatListView.setSelection(count - (unreadMessages + 1));
-                    } else {
-                        if (chatListView.isScroll()) chatListView.setSelection(count);
-                    }
-                }
+        final int size = chat.getMessData().size();
+        final int unreadMessages = chat.getAllMessagesCount();
+        final int lastPosition = getLastPosition(chat.getContact().getUserId()) + 1;
+        if (lastPosition >= 0) {
+            chatListView.setScroll(false);
+            setPosition(lastPosition);
+        } else {
+            if (unreadMessages > 0) {
+                chatListView.setScroll(false);
+                setPosition(size - 1 - unreadMessages);
+            } else {
+                if (chatListView.isScroll()) setPosition(chatListView.getCount());
             }
-        });
+        }
         chat.resetUnreadMessages();
         updateChat();
+    }
+
+    private void setPosition(int position) {
+        chatListView.setSelection(position);
     }
 
     private void forceGoToChat() {
@@ -310,19 +310,19 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
         chat = protocol.getChat(currentContact);
         messData = chat.getMessData();
         messageEditor = (EditText) currentActivity.findViewById(R.id.messageBox);
-        adapter = new MessagesAdapter(getActivity(), chat, messData);
+        adapter = new MessagesAdapter();
+        adapter.init(getActivity(), chat, messData);
         chatListView = (MyListView) getActivity().findViewById(R.id.chat_history_list);
         messageEditor.addTextChangedListener(textWatcher);
         chatListView.setStackFromBottom(true);
         chatListView.setTranscriptMode(ListView.TRANSCRIPT_MODE_NORMAL);
         chatListView.setOnCreateContextMenuListener(this);
-        chatListView.setOnScrollListener(this);
+    //    chatListView.setOnScrollListener(this);
         chatListView.setOnItemClickListener(new ChatClick());
         chatListView.setFocusable(true);
         chatListView.setCacheColorHint(0x00000000);
         chatListView.setAdapter(adapter);
         chat.setVisibleChat(true);
-
         contactName.setTextColor(Scheme.getColor(Scheme.THEME_CAP_TEXT));
 		contactName.setTextSize(General.getFontSize());
         contactName.setText(currentContact.getName());
@@ -443,7 +443,7 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
     }
 
     private void resetText() {
-        SawimApplication.getInstance().runOnUiThread(new Runnable() {
+        getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 messageEditor.setText("");
@@ -456,7 +456,7 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
     }
 
     private void setText(final String text) {
-        SawimApplication.getInstance().runOnUiThread(new Runnable() {
+        getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 String t = null == text ? "" : text;
@@ -547,23 +547,26 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
         return writeMessageTo(chat.getMyName().equals(nick) ? null : nick);
     }
 
+    private void updatePosition() {
+        boolean scroll = chatListView.isScroll();
+        if (adapter != null) {
+            if (/*scroll && */adapter.getCount() >= 1) {
+                setPosition(adapter.getCount());
+            }
+            adapter.notifyDataSetChanged();
+        }
+    }
+
     @Override
     public void updateChat() {
-        SawimApplication.getInstance().runOnUiThread(new Runnable() {
+        chatListView.post(new Runnable() {
             @Override
             public void run() {
                 updateChatIcon();
-                boolean scroll = chatListView.isScroll();
-                if (adapter != null) {
-                    if (scroll && chatListView.getCount() >= 1) {
-                        chatListView.setSelection(chatListView.getCount());
-                    }
-                    adapter.notifyDataSetChanged();
-                }
+                updatePosition();
             }
         });
         updateMucList();
-
         RosterView rosterView = (RosterView) getActivity().getSupportFragmentManager().findFragmentById(R.id.roster_fragment);
         if (rosterView != null) {
             rosterView.updateBarProtocols();
@@ -573,13 +576,12 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
 
     @Override
     public void addMessage(final Chat chat, final MessData mess) {
-        SawimApplication.getInstance().runOnUiThread(new Runnable() {
+        chatListView.post(new Runnable() {
             @Override
             public void run() {
                 if (adapter != null) {
                     chat.removeOldMessages();
                     chat.getMessData().add(mess);
-                    adapter.notifyDataSetChanged();
                 }
             }
         });
@@ -587,7 +589,7 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
 
     @Override
     public void updateMucList() {
-        SawimApplication.getInstance().runOnUiThread(new Runnable() {
+        getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 if (mucUsersView != null)
@@ -596,13 +598,13 @@ public class ChatView extends Fragment implements AbsListView.OnScrollListener, 
         });
     }
 
-    public void onScrollStateChanged(AbsListView view, int scrollState) {
+    /*public void onScrollStateChanged(AbsListView view, int scrollState) {
     }
 
     public void onScroll(AbsListView view, final int firstVisibleItem, final int visibleItemCount, final int totalItemCount) {
         if (firstVisibleItem + visibleItemCount == totalItemCount) chatListView.setScroll(true);
         else chatListView.setScroll(false);
-    }
+    }*/
 
     private TextWatcher textWatcher = new TextWatcher() {
         private String previousText;

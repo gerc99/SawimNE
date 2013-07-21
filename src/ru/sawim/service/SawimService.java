@@ -81,10 +81,9 @@ public class SawimService extends Service {
             notification.ledOnMS = 300;
             notification.ledOffMS = 1000;
             notification.flags |= android.app.Notification.FLAG_SHOW_LIGHTS;
-        }
-        if (0 < allUnread) {
-            notification.number = allUnread;
-            stateMsg = String.format((String) getText(R.string.unread_messages), allUnread);
+
+            notification.number = unread;
+            stateMsg = String.format((String) getText(R.string.unread_messages), unread);
         }
 
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this, SawimActivity.class), 0);

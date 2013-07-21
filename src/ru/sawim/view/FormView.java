@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.*;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
+import ru.sawim.activities.FormActivity;
 import ru.sawim.models.form.Forms;
 
 import java.util.List;
@@ -178,7 +179,7 @@ public class FormView extends Fragment implements Forms.OnUpdateForm, View.OnCli
 
     @Override
     public void updateForm() {
-        SawimApplication.getInstance().runOnUiThread(new Runnable() {
+        FormActivity.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 buildList(listLayout);
@@ -198,7 +199,7 @@ public class FormView extends Fragment implements Forms.OnUpdateForm, View.OnCli
         } else if (view.equals(okButton)) {
             new Thread() {
                 public void run() {
-                    SawimApplication.getInstance().runOnUiThread(new Runnable() {
+                    FormActivity.getInstance().runOnUiThread(new Runnable() {
                         public void run() {
                             Forms.getInstance().getFormListener().formAction(Forms.getInstance(), true);
                         }

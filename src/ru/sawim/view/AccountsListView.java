@@ -13,6 +13,7 @@ import android.view.*;
 import android.widget.*;
 import protocol.Protocol;
 import ru.sawim.SawimApplication;
+import ru.sawim.activities.AccountsListActivity;
 import sawim.Options;
 import sawim.cl.ContactList;
 import sawim.comm.StringConvertor;
@@ -121,7 +122,7 @@ public class AccountsListView extends Fragment {
     }
 
     public void update() {
-        SawimApplication.getInstance().runOnUiThread(new Runnable() {
+        AccountsListActivity.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 accountsListAdapter.notifyDataSetChanged();

@@ -6,20 +6,20 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.os.Handler;
 import android.os.Message;
 import org.microemu.MIDletBridge;
 import org.microemu.app.Common;
 import org.microemu.cldc.file.FileSystem;
 import org.microemu.util.AndroidRecordStoreManager;
 import ru.sawim.service.SawimService;
+import ru.sawim.service.SawimServiceConnection;
 import sawim.chat.ChatHistory;
 import sawim.cl.ContactList;
+import sawim.modules.DebugLog;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
-import java.util.logging.LogManager;
 
 /**
  * Created with IntelliJ IDEA.
@@ -37,7 +37,6 @@ public class SawimApplication extends Application {
     private NetworkStateReceiver networkStateReceiver = new NetworkStateReceiver();
 
     private final ExecutorService backgroundExecutor;
-    private final Handler handler;
 
     public static SawimApplication getInstance() {
         return instance;
@@ -48,7 +47,6 @@ public class SawimApplication extends Application {
     }
 
     public SawimApplication() {
-        handler = new Handler();
         backgroundExecutor = Executors
                 .newSingleThreadExecutor(new ThreadFactory() {
                     @Override
@@ -85,14 +83,11 @@ public class SawimApplication extends Application {
                 try {
                     runnable.run();
                 } catch (Exception e) {
+                    DebugLog.panic("runInBackground", e);
                     ExceptionHandler.reportOnlyHandler(SawimApplication.this);
                 }
             }
         });
-    }
-
-    public void runOnUiThread(final Runnable runnable) {
-        handler.post(runnable);
     }
 
     private void MIDletInit() {

@@ -4,6 +4,7 @@ import protocol.Contact;
 import protocol.Group;
 import protocol.Protocol;
 import protocol.XStatusInfo;
+import ru.sawim.models.RosterAdapter;
 import sawim.Options;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
@@ -108,20 +109,11 @@ public final class VirtualContactList {
     public void updateOptions(int currProtocol) {
         boolean groups = useGroups;
         useGroups = Options.getBoolean(Options.OPTION_USER_GROUPS);
-        hideOffline = /*Options.getBoolean(Options.OPTION_CL_HIDE_OFFLINE)*/getCurrPage() == 1;
+        hideOffline = /*Options.getBoolean(Options.OPTION_CL_HIDE_OFFLINE)*/getCurrPage() == RosterAdapter.ONLINE_CONTACTS;
         if (groups && !useGroups) {
             Util.sort(getProtocol(currProtocol).getSortedContacts());
         }
     }
-
-    /*public Protocol getContactProtocol(Contact c) {
-        for (int i = 0; i < getProtocolCount(); ++i) {
-            if (getProtocol(i).inContactList(c)) {
-                return getProtocol(i);
-            }
-        }
-        return null;
-    }*/
 
     public final Protocol getProtocol(Group g) {
         for (int i = 0; i < getProtocolCount(); ++i) {

@@ -34,7 +34,7 @@ public class VkConnection implements Runnable {
         }
 
         final SawimActivity a = SawimActivity.getInstance();
-        SawimApplication.getInstance().runOnUiThread(new Runnable() {
+        a.runOnUiThread(new Runnable() {
             public void run() {
                 if (!api.hasAccessToken()) api.showLoginDialog(vk.getUserId(), vk.getPassword());
             }

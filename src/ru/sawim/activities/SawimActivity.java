@@ -29,6 +29,7 @@ import android.content.Intent;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.*;
 import sawim.Options;
 import sawim.OptionsForm;
@@ -233,7 +234,7 @@ public class SawimActivity extends FragmentActivity {
                 new ManageContactListForm(p).showMenu(this);
                 break;
             case MENU_MYSELF:
-                p.showUserInfo(p.createTempContact(p.getUserId(), p.getNick()));
+                p.showUserInfo(this, p.createTempContact(p.getUserId(), p.getNick()));
                 break;
             case MENU_MICROBLOG:
                 ((Mrim)p).getMicroBlog().activate();

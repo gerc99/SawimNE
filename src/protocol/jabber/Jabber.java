@@ -3,6 +3,7 @@ package protocol.jabber;
 import DrawControls.icons.ImageList;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
 import ru.sawim.General;
@@ -527,7 +528,7 @@ public final class Jabber extends Protocol implements FormListener {
 	public static final int CONFERENCE_MEMBERS = 22;
 	public static final int CONFERENCE_INBAN = 23;
 
-    protected void doAction(Contact c, int cmd) {
+    protected void doAction(final FragmentActivity a, Contact c, int cmd) {
         final JabberContact contact = (JabberContact) c;
         switch (cmd) {
             case JabberServiceContact.GATE_CONNECT:
@@ -602,10 +603,10 @@ public final class Jabber extends Protocol implements FormListener {
                 al.showIt();
 				break;
 			case CONFERENCE_MEMBERS:
-			    AffiliationListConf a = getAffiliationListConf();
-                a.setServer(c.getUserId(), c.getMyName());
+			    AffiliationListConf affiliationListConf = getAffiliationListConf();
+                affiliationListConf.setServer(c.getUserId(), c.getMyName());
                 getConnection().requestAffiliationListConf(c.getUserId(), "mem" + "ber");
-                a.showIt();
+                affiliationListConf.showIt();
 				break;
 			case CONFERENCE_INBAN:
 			    AffiliationListConf aff = getAffiliationListConf();
@@ -676,9 +677,9 @@ public final class Jabber extends Protocol implements FormListener {
         builder.create().show();
     }
 
-    public void showUserInfo(Contact contact) {
+    public void showUserInfo(final FragmentActivity a, Contact contact) {
         if (!contact.isSingleUserContact()) {
-            doAction(contact, JabberContact.USER_MENU_USERS_LIST);
+            doAction(a, contact, JabberContact.USER_MENU_USERS_LIST);
             return;
         }
 

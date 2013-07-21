@@ -2,6 +2,7 @@ package protocol.icq;
 
 import DrawControls.icons.Icon;
 import DrawControls.icons.ImageList;
+import android.support.v4.app.FragmentActivity;
 import protocol.*;
 import protocol.icq.action.*;
 import protocol.icq.packet.Packet;
@@ -246,7 +247,7 @@ public class Icq extends Protocol {
                 UpdateContactListAction.ACTION_DEL));
     }
 
-    protected void doAction(Contact contact, int action) {
+    protected void doAction(FragmentActivity a, Contact contact, int action) {
         switch (action) {
             case IcqContact.USER_MENU_REMOVE_ME:
                 sendRemoveMePacket(contact.getUserId());
@@ -905,7 +906,7 @@ public class Icq extends Protocol {
         sendAuthResult(userId, false);
     }
 
-    public void showUserInfo(Contact contact) {
+    public void showUserInfo(FragmentActivity a, Contact contact) {
         final UserInfo data;
         if (isConnected()) {
             data = getUserInfo(contact);

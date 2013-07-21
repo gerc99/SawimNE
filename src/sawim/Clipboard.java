@@ -34,8 +34,8 @@ public final class Clipboard {
     }
 
     public static void putToClipboard(final String text) {
-        SawimApplication.getInstance().runOnUiThread(new Runnable() {
-            public void run() {
+        //SawimApplication.getInstance().runOnUiThread(new Runnable() {
+        //    public void run() {
                 try {
                     if (Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
                         android.text.ClipboardManager clipboard = (android.text.ClipboardManager)
@@ -49,7 +49,7 @@ public final class Clipboard {
                 } catch (Throwable e) {
                     sawim.modules.DebugLog.panic("set clipboard", e);
                 }
-            }
-        });
+        //    }
+        //});
     }
 }

@@ -6,6 +6,7 @@ import DrawControls.tree.TreeNode;
 import DrawControls.tree.VirtualContactList;
 import android.database.DataSetObserver;
 import android.graphics.Typeface;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -85,6 +86,7 @@ public class RosterAdapter extends BaseAdapter {
     public View getView(int i, View convertView, ViewGroup viewGroup) {
         TreeNode o = getItem(i);
         ViewHolderRoster holder;
+        Protocol protocol = vcl.getProtocol(vcl.getCurrProtocol());
         if (convertView == null) {
             convertView = mInflater.inflate(R.layout.roster_item, null);
             holder = new ViewHolderRoster(vcl, convertView);
@@ -93,13 +95,17 @@ public class RosterAdapter extends BaseAdapter {
             holder = (ViewHolderRoster) convertView.getTag();
         }
         if ((type == OPEN_CHATS || type == ONLINE_CONTACTS) && o.isContact()) {
-            holder.populateFromContact((Contact) o);
+            Contact c = (Contact) o;
+            if (type == OPEN_CHATS)
+                holder.populateFromContact(c.getProtocol(), c);
+            else
+                holder.populateFromContact(protocol, (Contact) o);
         } else {
             if (o != null)
                 if (o.isGroup()) {
                     holder.populateFromGroup((Group) o);
                 } else if (o.isContact()) {
-                    holder.populateFromContact((Contact) o);
+                    holder.populateFromContact(protocol, (Contact) o);
                 }
         }
         return convertView;
@@ -150,8 +156,7 @@ public class RosterAdapter extends BaseAdapter {
             }
         }
 
-        void populateFromContact(Contact item) {
-            Protocol p = vcl.getProtocol(vcl.getCurrProtocol());
+        void populateFromContact(Protocol p, Contact item) {
             TextView itemName = getItemName();
             itemName.setTextSize(General.getFontSize());
             if (item.subcontactsS() == 0)

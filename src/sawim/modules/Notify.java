@@ -91,9 +91,9 @@ public class Notify implements Runnable {
         if (null == vibrator) {
             return false;
         }
-        SawimApplication.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
+        //SawimApplication.getInstance().runOnUiThread(new Runnable() {
+        //    @Override
+        //    public void run() {
                 if (600 < duration) {
                     vibrator.vibrate(pattern, -1);
                 } else if (0 < duration) {
@@ -101,8 +101,8 @@ public class Notify implements Runnable {
                 } else {
                     vibrator.cancel();
                 }
-            }
-        });
+        //    }
+        //});
         return true;
     }
 

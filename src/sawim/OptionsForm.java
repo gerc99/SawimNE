@@ -160,7 +160,6 @@ public class OptionsForm implements FormListener, ControlStateListener {
 
             case OPTIONS_ABSENCE:
                 Options.setInt(Options.OPTION_AA_TIME, form.getSelectorValue(Options.OPTION_AA_TIME) * 5);
-                AutoAbsence.instance.updateOptions();
                 break;
         }
         Options.safeSave();
