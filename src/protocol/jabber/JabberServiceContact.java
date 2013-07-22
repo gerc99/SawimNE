@@ -20,17 +20,7 @@ import sawim.util.JLocale;
 import java.util.Vector;
 
 public class JabberServiceContact extends JabberContact {
-    public static final int GATE_CONNECT = 0;
-    public static final int GATE_DISCONNECT = 1;
-    public static final int GATE_REGISTER = 2;
-    public static final int GATE_UNREGISTER = 3;
-    public static final int GATE_ADD = 4;
-    public static final int CONFERENCE_CONNECT = 5;
-    public static final int CONFERENCE_OPTIONS = 6;
-    public static final int CONFERENCE_OWNER_OPTIONS = 7;
-    public static final int CONFERENCE_ADD = 9;
-    public static final int GATE_COMMANDS = 10;
-    public static final int COMMAND_TITLE = 20;
+
     public static final byte AFFILIATION_NONE = (byte) 0;
     public static final byte AFFILIATION_MEMBER = (byte) 1;
     public static final byte AFFILIATION_ADMIN = (byte) 2;
@@ -38,6 +28,7 @@ public class JabberServiceContact extends JabberContact {
     public static final byte ROLE_VISITOR = (byte) -1;
     public static final byte ROLE_PARTICIPANT = (byte) 0;
     public static final byte ROLE_MODERATOR = (byte) 1;
+
     public boolean warning = false;
     private boolean isPrivate;
     private boolean isConference;
@@ -79,14 +70,11 @@ public class JabberServiceContact extends JabberContact {
                 return 1;
             case AFFILIATION_MEMBER:
                 return 2;
-
             case AFFILIATION_NONE:
                 return 3;
         }
         return 0;
-    }
-
-    ;
+    };
 
     public boolean isAutoJoin() {
         return autojoin;

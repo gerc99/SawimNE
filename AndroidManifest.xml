@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="ru.sawim"
           android:versionCode="4"
-          android:versionName="1.2.0"
+          android:versionName="1.2.1"
           android:installLocation="auto">
     <uses-feature android:name="android.hardware.camera" android:required="false"/>
     <uses-feature android:name="android.hardware.camera.autofocus" android:required="false"/>

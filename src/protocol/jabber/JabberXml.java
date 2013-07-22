@@ -1643,7 +1643,7 @@ public final class JabberXml extends ClientConnection {
         if (null != nick) {
             message.setName(('@' == nick.charAt(0)) ? nick.substring(1) : nick);
         }
-        getJabber().addMessage(message);
+        getJabber().addMessage(message, true);
     }
 
     String getError(XmlNode errorNode) {

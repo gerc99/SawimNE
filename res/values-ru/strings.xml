@@ -207,4 +207,5 @@
     <string name="url_menu">Меню ссылки</string>
     <string name="press_menu_for_connect">Нажмите кнопку Меню и выберите действие</string>
     <string name="add_conference">Добавить конференцию</string>
+    <string name="include_setting_the_story">Для сохранения истории, включите в настройках историю тоже</string>
 </resources>

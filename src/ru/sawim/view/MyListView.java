@@ -14,6 +14,7 @@ import android.widget.ListView;
  * To change this template use File | Settings | File Templates.
  */
 public class MyListView extends ListView {
+
     private boolean scroll = true;
 
     public MyListView(Context context) {
@@ -40,5 +41,6 @@ public class MyListView extends ListView {
             else setSelection(getCount());
         }*/
     }
+
 }
 

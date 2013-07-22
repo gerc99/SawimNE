@@ -72,8 +72,13 @@ public class SawimApplication extends Application {
         new General().startApp();
         ChatHistory.instance.loadUnreadMessages();
         updateAppIcon();
-        if (ContactList.getInstance().getManager() != null)
-            ContactList.getInstance().autoConnect();
+        runInBackground(new Runnable() {
+            @Override
+            public void run() {
+                if (ContactList.getInstance().getManager() != null)
+                    ContactList.getInstance().autoConnect();
+            }
+        });
     }
 
     public void runInBackground(final Runnable runnable) {

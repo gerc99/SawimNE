@@ -6,6 +6,8 @@ import java.util.Vector;
 
 import DrawControls.icons.Icon;
 import DrawControls.icons.ImageList;
+import ru.sawim.R;
+import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
 import ru.sawim.activities.VirtualListActivity;
 import ru.sawim.models.form.VirtualListItem;
@@ -155,7 +157,8 @@ public final class TrackingForm implements TextBoxView.TextBoxListener {
 	    list.removeAllElements();
 		list.addElement(createLine(Tracking.GLOBAL, Tracking.GLOBAL, No, null, getName("extra_settings"), true, false));
 		list.addElement(createLine(Tracking.EVENT_ENTER, Tracking.EVENT_ENTER, No, null, getName("track_event_enter"), true));
-        list.addElement(createLine(Tracking.EVENT_ENTER, Tracking.ACTION_HISTORY, No, null, getName("use_history"), false));
+        list.addElement(createLine(Tracking.EVENT_ENTER, Tracking.ACTION_HISTORY, No, null, getName("use_history")
+                + " (" + SawimApplication.getInstance().getResources().getString(R.string.include_setting_the_story) + ")", false));
 		list.addElement(createLine(Tracking.EVENT_ENTER, Tracking.ACTION_PRESENCE, No, null, getName("notice_presence"), false));
 		list.addElement(createLine(Tracking.EVENT_ENTER, Tracking.SOUND_EYE, No, null, getName("eye_notif"), false));
         list.addElement(createLine(Tracking.EVENT_MESSAGE, Tracking.EVENT_MESSAGE, No, Message, getName("track_event_message"), true));

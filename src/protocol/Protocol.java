@@ -1192,9 +1192,7 @@ abstract public class Protocol {
                 contact.setTempFlag(true);
                 addLocalContact(contact);
             }
-            if (!chat.empty() || !contact.isSingleUserContact()) {
-                ChatHistory.instance.registerChat(chat);
-            }
+            ChatHistory.instance.registerChat(chat);
         }
         return chat;
     }

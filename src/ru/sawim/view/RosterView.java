@@ -57,7 +57,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
     private ArrayList<BaseAdapter> adaptersPages = new ArrayList<BaseAdapter>();
     private RosterAdapter allRosterAdapter;
     private RosterAdapter onlineRosterAdapter;
-    private RosterAdapter chatsRosterAdapter;
+    //private RosterAdapter chatsRosterAdapter;
     private VirtualContactList owner;
     private Vector updateQueue = new Vector();
     private List<TreeNode> items = new ArrayList<TreeNode>();
@@ -91,7 +91,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         adaptersPages.clear();
         ListView allListView = new ListView(currentActivity);
         ListView onlineListView = new ListView(currentActivity);
-        ListView chatsListView = new ListView(currentActivity);
+    //    ListView chatsListView = new ListView(currentActivity);
 
         rosterViewLayout.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
         indicator.setTextColor(Scheme.getColor(Scheme.THEME_GROUP));
@@ -101,42 +101,42 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         LayoutInflater inf = LayoutInflater.from(currentActivity);
         allRosterAdapter = new RosterAdapter(inf, owner, items, RosterAdapter.ALL_CONTACTS);
         onlineRosterAdapter = new RosterAdapter(inf, owner, items, RosterAdapter.ONLINE_CONTACTS);
-        chatsRosterAdapter = new RosterAdapter(inf, owner, ChatHistory.instance.chats(), RosterAdapter.OPEN_CHATS);
+    //    chatsRosterAdapter = new RosterAdapter(inf, owner, ChatHistory.instance.chats(), RosterAdapter.OPEN_CHATS);
 
         adaptersPages.add(allRosterAdapter);
         adaptersPages.add(onlineRosterAdapter);
-        adaptersPages.add(chatsRosterAdapter);
+    //    adaptersPages.add(chatsRosterAdapter);
 
         allListView.setCacheColorHint(0x00000000);
         onlineListView.setCacheColorHint(0x00000000);
-        chatsListView.setCacheColorHint(0x00000000);
+    //    chatsListView.setCacheColorHint(0x00000000);
 
         allListView.setAdapter(allRosterAdapter);
         onlineListView.setAdapter(onlineRosterAdapter);
-        chatsListView.setAdapter(chatsRosterAdapter);
+    //    chatsListView.setAdapter(chatsRosterAdapter);
 
         allListView.setTag(currentActivity.getResources().getString(R.string.all_contacts));
         onlineListView.setTag(currentActivity.getResources().getString(R.string.online_contacts));
-        chatsListView.setTag(currentActivity.getResources().getString(R.string.active_contacts));
+    //    chatsListView.setTag(currentActivity.getResources().getString(R.string.active_contacts));
 
         pages.add(allListView);
         pages.add(onlineListView);
-        pages.add(chatsListView);
+    //    pages.add(chatsListView);
 
         pagerAdapter = new CustomPagerAdapter(pages);
         viewPager.setAdapter(pagerAdapter);
 
         currentActivity.registerForContextMenu(allListView);
         currentActivity.registerForContextMenu(onlineListView);
-        currentActivity.registerForContextMenu(chatsListView);
+    //    currentActivity.registerForContextMenu(chatsListView);
 
         allListView.setOnCreateContextMenuListener(this);
         onlineListView.setOnCreateContextMenuListener(this);
-        chatsListView.setOnCreateContextMenuListener(this);
+    //    chatsListView.setOnCreateContextMenuListener(this);
 
         allListView.setOnItemClickListener(this);
         onlineListView.setOnItemClickListener(this);
-        chatsListView.setOnItemClickListener(this);
+    //    chatsListView.setOnItemClickListener(this);
         viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int i, float v, int i2) {
@@ -426,13 +426,13 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if (viewPager.getCurrentItem() == RosterAdapter.OPEN_CHATS) {
+                        /*if (viewPager.getCurrentItem() == RosterAdapter.OPEN_CHATS) {
                             items.addAll(ChatHistory.instance.chats());
                             Util.sort(ChatHistory.instance.chats());
                             adaptersPages.get(RosterAdapter.OPEN_CHATS).notifyDataSetChanged();
-                        } else {
+                        } else {*/
                             rebuildRoster(viewPager.getCurrentItem());
-                        }
+                        //}
                     }
                 });
             }

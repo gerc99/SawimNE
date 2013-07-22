@@ -34,11 +34,6 @@ public class JabberContact extends Contact {
         return JLocale.getString(Jabber.GENERAL_GROUP);
     }
 
-    public static final int USER_MENU_CONNECTIONS = 10;
-    public static final int USER_MENU_REMOVE_ME   = 11;
-    public static final int USER_MENU_ADHOC       = 12;
-	public static final int USER_MENU_SEEN   = 14;
-	public static final int USER_INVITE = 29;
     public void addChatMenuItems(ContextMenu model) {
         if (isOnline() && !(this instanceof JabberServiceContact)) {
             if (Options.getBoolean(Options.OPTION_ALARM)) {

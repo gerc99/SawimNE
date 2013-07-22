@@ -58,7 +58,7 @@ public final class Chat {
         if (contact instanceof JabberContact) {
             service |= Jid.isGate(contact.getUserId());
         }
-        return /*!*/service && contact.isSingleUserContact();
+        return !service && contact.isSingleUserContact();
     }
 
     public Protocol getProtocol() {
@@ -100,7 +100,6 @@ public final class Chat {
     }
 
     public void addFileProgress(String caption, String text) {
-        ChatHistory.instance.registerChat(this);
         final MessData mData = new MessData(General.getCurrentGmtTime(), text, caption, MessData.PROGRESS, Message.ICON_NONE);
         if (General.getInstance().getUpdateChatListener() == null) {
             removeOldMessages();

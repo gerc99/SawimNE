@@ -303,6 +303,26 @@ abstract public class Contact extends TreeNode implements Sortable {
         return ((booleanValues >>> 16) & 0xFF) - 1;
     }
 
+    public static final int GATE_CONNECT = 0;
+    public static final int GATE_DISCONNECT = 1;
+    public static final int GATE_REGISTER = 2;
+    public static final int GATE_UNREGISTER = 3;
+    public static final int GATE_ADD = 4;
+    public static final int CONFERENCE_CONNECT = 5;
+    public static final int CONFERENCE_OPTIONS = 6;
+    public static final int CONFERENCE_OWNER_OPTIONS = 7;
+    public static final int CONFERENCE_ADD = 8;
+    public static final int COMMAND_TITLE = 9;
+    public static final int USER_MENU_CONNECTIONS = 10;
+    public static final int USER_MENU_REMOVE_ME   = 11;
+    public static final int USER_MENU_ADHOC       = 12;
+    public static final int USER_MENU_SEEN   = 13;
+    public static final int USER_INVITE = 14;
+
+    public static final int ACTION_CURRENT_DEL_CHAT = 15;
+    public static final int ACTION_DEL_ALL_CHATS_EXCEPT_CUR = 16;
+    public static final int ACTION_DEL_ALL_CHATS = 17;
+
     public static final int USER_MENU_REQU_AUTH        = 1004;
     public static final int USER_MENU_USER_REMOVE      = 1007;
     public static final int USER_MENU_RENAME           = 1009;

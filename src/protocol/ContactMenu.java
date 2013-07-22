@@ -7,6 +7,7 @@ import android.view.ContextMenu;
 import android.view.ContextThemeWrapper;
 import ru.sawim.R;
 import sawim.FileTransfer;
+import sawim.chat.ChatHistory;
 import sawim.chat.message.PlainMessage;
 import sawim.cl.ContactList;
 import sawim.comm.Util;

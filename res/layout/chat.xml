@@ -13,40 +13,28 @@
             android:orientation="horizontal">
         <ImageButton
                 android:id="@+id/usersImage"
-                android:layout_width="32dp"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="center_vertical"
-                android:padding="2dp" android:layout_weight="1"/>
+                android:layout_weight="1" android:minWidth="76dp"/>
         <LinearLayout
                 android:id="@+id/widget45"
-                android:layout_width="128dp"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:orientation="vertical" android:layout_weight="9">
-            <TextView
-                    android:id="@+id/item_name"
+                android:orientation="vertical" android:layout_gravity="center_vertical"
+                android:layout_weight="15">
+            <ru.sawim.view.MySpinner
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:lines="1"
-                    android:scrollHorizontally="true"
-                    android:ellipsize="end"
-                    android:text="TextView"
-                    android:textSize="20sp"
-                    android:textStyle="bold" android:layout_weight="1"/>
-            <TextView
-                    android:id="@+id/item_description"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:lines="1"
-                    android:scrollHorizontally="true"
-                    android:ellipsize="end"
-                    android:text="VeryVeryVeryLongAndLongStatusMessage" android:layout_weight="1"
-                    />
+                    android:layout_height="match_parent"
+                    android:id="@+id/spinner"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@drawable/btn_dropdown"/>
         </LinearLayout>
         <ImageButton
-                android:layout_width="32dp"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:id="@+id/chatsImage" android:layout_gravity="center_horizontal|right|top"
-                android:layout_weight="1"/>
+                android:id="@+id/chatsImage" android:layout_gravity="center_vertical"
+                android:layout_weight="1" android:minWidth="76dp"/>
     </LinearLayout>
 
     <LinearLayout android:layout_weight="2"
