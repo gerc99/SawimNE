@@ -40,7 +40,6 @@ public class RosterAdapter extends BaseAdapter {
 
     public static final int ALL_CONTACTS = 0;
     public static final int ONLINE_CONTACTS = 1;
-    public static final int OPEN_CHATS = 2;
     private VirtualContactList vcl;
     private List<TreeNode> items;
     private LayoutInflater mInflater;
@@ -94,12 +93,8 @@ public class RosterAdapter extends BaseAdapter {
         } else {
             holder = (ViewHolderRoster) convertView.getTag();
         }
-        if ((type == OPEN_CHATS || type == ONLINE_CONTACTS) && o.isContact()) {
-            Contact c = (Contact) o;
-            if (type == OPEN_CHATS)
-                holder.populateFromContact(c.getProtocol(), c);
-            else
-                holder.populateFromContact(protocol, (Contact) o);
+        if (type == ONLINE_CONTACTS && o.isContact()) {
+            holder.populateFromContact(protocol, (Contact) o);
         } else {
             if (o != null)
                 if (o.isGroup()) {

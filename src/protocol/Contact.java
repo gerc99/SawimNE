@@ -267,8 +267,8 @@ abstract public class Contact extends TreeNode implements Sortable {
      }
 
      public final int getNodeWeight() {
-        if (Options.getBoolean(Options.OPTION_SORT_UP_WITH_MSG)
-                && hasUnreadMessage()) {
+        if (/*Options.getBoolean(Options.OPTION_SORT_UP_WITH_MSG)
+                && */hasUnreadMessage()) {
             return 0;
         }
         if (!isSingleUserContact()) {

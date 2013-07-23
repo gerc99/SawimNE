@@ -926,8 +926,8 @@ public class Util {
         }
         return 0;
     }
-    
-    private static int compareNodes(Sortable node1, Sortable node2) {
+
+    public static int compareNodes(Sortable node1, Sortable node2) {
         int result = node1.getNodeWeight() - node2.getNodeWeight();
         if (0 == result) {
             result = StringConvertor.stringCompare(node1.getText(), node2.getText());
@@ -951,7 +951,6 @@ public class Util {
             }
         }
     }
-
     
     private static void putCh(StringBuffer sb, int ch) {
         String s = Integer.toHexString(ch);

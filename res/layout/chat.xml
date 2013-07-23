@@ -27,8 +27,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:id="@+id/spinner"
-                    android:layout_gravity="center_horizontal"
-                    android:background="@drawable/btn_dropdown"/>
+                    android:layout_gravity="center_horizontal"/>
         </LinearLayout>
         <ImageButton
                 android:layout_width="wrap_content"

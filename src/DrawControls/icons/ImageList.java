@@ -3,7 +3,7 @@ package DrawControls.icons;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
+
 import ru.sawim.General;
 import ru.sawim.SawimApplication;
 

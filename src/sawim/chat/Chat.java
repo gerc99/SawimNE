@@ -47,20 +47,6 @@ public final class Chat {
         showStatusPopup();
     }
 
-    private boolean isBlogBot() {
-        if (contact instanceof JabberContact) {
-            return ((Jabber) protocol).isBlogBot(contact.getUserId());
-        }
-        return false;
-    }
-    public boolean isHuman() {
-        boolean service = isBlogBot() || protocol.isBot(contact);
-        if (contact instanceof JabberContact) {
-            service |= Jid.isGate(contact.getUserId());
-        }
-        return !service && contact.isSingleUserContact();
-    }
-
     public Protocol getProtocol() {
         return protocol;
     }
@@ -100,13 +86,7 @@ public final class Chat {
     }
 
     public void addFileProgress(String caption, String text) {
-        final MessData mData = new MessData(General.getCurrentGmtTime(), text, caption, MessData.PROGRESS, Message.ICON_NONE);
-        if (General.getInstance().getUpdateChatListener() == null) {
-            removeOldMessages();
-            messData.add(mData);
-        } else {
-            General.getInstance().getUpdateChatListener().addMessage(this, mData);
-        }
+        addMessage(new MessData(General.getCurrentGmtTime(), text, caption, MessData.PROGRESS, Message.ICON_NONE));
     }
 
     public int getIcon(Message message, boolean incoming) {
@@ -144,12 +124,69 @@ public final class Chat {
 
     public void sendMessage(String message) {
         ChatHistory.instance.registerChat(this);
-        if (!contact.isSingleUserContact() && message.endsWith(", ")) {
-            message = "";
-        }
+        //if (!contact.isSingleUserContact() && message.endsWith(", ")) {
+        //    message = "";
+        //}
         if (!StringConvertor.isEmpty(message)) {
             protocol.sendMessage(contact, message, true);
         }
+    }
+
+    private String getBlogPostId(String text) {
+        if (StringConvertor.isEmpty(text)) {
+            return null;
+        }
+        String lastLine = text.substring(text.lastIndexOf('\n') + 1);
+        if (0 == lastLine.length()) {
+            return null;
+        }
+        if ('#' != lastLine.charAt(0)) {
+            return null;
+        }
+        int numEnd = lastLine.indexOf(' ');
+        if (-1 != numEnd) {
+            lastLine = lastLine.substring(0, numEnd);
+        }
+        return lastLine + " ";
+    }
+
+    private String writeMessageTo(String nick) {
+        if (null != nick) {
+            if ('/' == nick.charAt(0)) {
+                nick = ' ' + nick;
+            }
+            nick += Chat.ADDRESS;
+
+        } else {
+            nick = "";
+        }
+        return nick;
+    }
+
+    private boolean isBlogBot() {
+        if (contact instanceof JabberContact) {
+            return ((Jabber) protocol).isBlogBot(contact.getUserId());
+        }
+        return false;
+    }
+
+    public boolean isHuman() {
+        boolean service = isBlogBot() || protocol.isBot(contact);
+        if (contact instanceof JabberContact) {
+            service |= Jid.isGate(contact.getUserId());
+        }
+        return !service && contact.isSingleUserContact();
+    }
+
+    public String onMessageSelected(MessData md) {
+        if (contact.isSingleUserContact()) {
+            if (isBlogBot()) {
+                return getBlogPostId(md.getText());
+            }
+            return "";
+        }
+        String nick = ((null == md) || md.isFile()) ? null : md.getNick();
+        return writeMessageTo(getMyName().equals(nick) ? null : nick);
     }
     
     private void showStatusPopup() {
@@ -376,6 +413,10 @@ public final class Chat {
         if (!incoming) {
             message.setVisibleIcon(mData);
         }
+        addMessage(mData);
+    }
+
+    private void addMessage(MessData mData) {
         if (General.getInstance().getUpdateChatListener() == null) {
             removeOldMessages();
             messData.add(mData);
@@ -387,13 +428,7 @@ public final class Chat {
     public void addPresence(SystemNotice message) {
         ChatHistory.instance.registerChat(this);
         String messageText = message.getProcessedText();
-        final MessData mData = new MessData(message.getNewDate(), messageText, message.getName(), MessData.PRESENCE, Message.ICON_NONE);
-        if (General.getInstance().getUpdateChatListener() == null) {
-            removeOldMessages();
-            messData.add(mData);
-        } else {
-            General.getInstance().getUpdateChatListener().addMessage(this, mData);
-        }
+        addMessage(new MessData(message.getNewDate(), messageText, message.getName(), MessData.PRESENCE, Message.ICON_NONE));
         if (!isVisibleChat()) {
             contact.updateChatState(this);
             ChatHistory.instance.updateChatList();

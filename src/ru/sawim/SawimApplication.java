@@ -65,7 +65,6 @@ public class SawimApplication extends Application {
         instance = this;
         new General().init();
         Thread.setDefaultUncaughtExceptionHandler(ExceptionHandler.inContext(getApplicationContext()));
-        //StrictMode.enableDefaults();
         super.onCreate();
         Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
         MIDletInit();

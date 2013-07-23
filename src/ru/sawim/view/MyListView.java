@@ -41,6 +41,4 @@ public class MyListView extends ListView {
             else setSelection(getCount());
         }*/
     }
-
 }
-

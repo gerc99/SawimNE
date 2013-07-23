@@ -4,6 +4,7 @@ import DrawControls.icons.Icon;
 import sawim.chat.message.Message;
 import sawim.chat.message.PlainMessage;
 import sawim.cl.ContactList;
+import sawim.comm.Sortable;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
 import sawim.io.Storage;

@@ -165,7 +165,7 @@ abstract public class Protocol {
 
     public final void sort() {
         synchronized (rosterLockObject) {
-            if (Options.getBoolean(Options.OPTION_USER_GROUPS)) {
+            if (getContactList().getManager().useGroups) {
                 Util.sort(getSortedGroups());
             } else {
                 Util.sort(getSortedContacts());
@@ -650,7 +650,7 @@ abstract public class Protocol {
             c.setOfflineStatus();
         }
         synchronized (rosterLockObject) {
-            if (Options.getBoolean(Options.OPTION_USER_GROUPS)) {
+            if (getContactList().getManager().useGroups) {
                 for (int i = groups.size() - 1; i >= 0; --i) {
                     ((Group) groups.elementAt(i)).updateGroupData();
                 }
@@ -769,7 +769,7 @@ abstract public class Protocol {
     }
 
     private void ui_updateGroup(Group group) {
-        if (Options.getBoolean(Options.OPTION_USER_GROUPS)) {
+        if (getContactList().getManager().useGroups) {
             synchronized (rosterLockObject) {
                 group.updateGroupData();
                 Util.sort(sortedGroups);

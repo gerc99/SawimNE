@@ -7,11 +7,13 @@ import android.content.*;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.*;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -47,6 +49,7 @@ import java.util.List;
  */
 public class ChatView extends Fragment implements /*AbsListView.OnScrollListener, */General.OnUpdateChat {
 
+    private static final String TAG = "ChatView";
     private Chat chat;
     private Protocol protocol;
     private Contact currentContact;
@@ -66,10 +69,16 @@ public class ChatView extends Fragment implements /*AbsListView.OnScrollListener
     private static Hashtable<String, Integer> positionHash = new Hashtable<String, Integer>();
     private Bitmap usersIcon = ImageList.createImageList("/participants.png").iconAt(0).getImage();
 
+    private static final int MENU_COPY_TEXT = 1;
+    private static final int ACTION_ADD_TO_HISTORY = 2;
+    private static final int ACTION_TO_NOTES = 3;
+    private static final int ACTION_QUOTE = 4;
+
     @Override
     public void onActivityCreated(Bundle b) {
         super.onActivityCreated(b);
         chatBarLayout.setBackgroundColor(Scheme.getColorWithAlpha(Scheme.THEME_CAP_BACKGROUND));
+        usersImage.getBackground().setColorFilter(Scheme.getColor(Scheme.THEME_CAP_BACKGROUND), PorterDuff.Mode.MULTIPLY);
         usersImage.setImageBitmap(usersIcon);
         usersImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -78,16 +87,21 @@ public class ChatView extends Fragment implements /*AbsListView.OnScrollListener
                 updateChat();
             }
         });
+        initSpinner();
+        chatsImage.getBackground().setColorFilter(Scheme.getColor(Scheme.THEME_CAP_BACKGROUND), PorterDuff.Mode.MULTIPLY);
         chatsImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 forceGoToChat(ChatHistory.instance.getPreferredItem());
+                spinner.setSelection(ChatHistory.instance.getItemChat(currentContact));
             }
         });
+    }
 
+    private void initSpinner() {
         ChatsSpinnerAdapter chatsSpinnerAdapter = new ChatsSpinnerAdapter(getActivity());
         spinner.setAdapter(chatsSpinnerAdapter);
-        //spinner.setBackgroundColor(Scheme.getColorWithAlpha(Scheme.THEME_CAP_BACKGROUND));
+        spinner.getBackground().setColorFilter(Scheme.getColor(Scheme.THEME_CAP_BACKGROUND), PorterDuff.Mode.MULTIPLY);
         spinner.setSelection(ChatHistory.instance.getItemChat(currentContact));
         spinner.setOnItemSelectedEvenIfUnchangedListener(new AdapterView.OnItemSelectedListener() {
 
@@ -102,25 +116,6 @@ public class ChatView extends Fragment implements /*AbsListView.OnScrollListener
             }
         });
     }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.chat, container, false);
-        chat_viewLayout = (LinearLayout) v.findViewById(R.id.chat_view);
-        chatBarLayout = (LinearLayout) v.findViewById(R.id.chat_bar);
-        usersImage = (ImageButton) v.findViewById(R.id.usersImage);
-
-        spinner = (MySpinner) v.findViewById(R.id.spinner);
-        chatsImage = (ImageButton) v.findViewById(R.id.chatsImage);
-        return v;
-    }
-
-    public static final int MENU_COPY_TEXT = 1;
-    private static final int ACTION_ADD_TO_HISTORY = 2;
-    private static final int ACTION_TO_NOTES = 3;
-    private static final int ACTION_QUOTE = 4;
-
 
     public void showMenu() {
         final MyMenu menu = new MyMenu(getActivity());
@@ -182,8 +177,10 @@ public class ChatView extends Fragment implements /*AbsListView.OnScrollListener
                         });
                         getActivity().finish();
                         break;
+
+                    default:
+                        new ContactMenu(protocol, currentContact).doAction(getActivity(), menu.getItem(which).idItem);
                 }
-                new ContactMenu(protocol, currentContact).doAction(getActivity(), menu.getItem(which).idItem);
             }
         });
         builder.create().show();
@@ -246,14 +243,18 @@ public class ChatView extends Fragment implements /*AbsListView.OnScrollListener
     }
 
     @Override
-    public void pastText(final String text) {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                insert(" " + text + " ");
-                showKeyboard();
-            }
-        });
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View v = inflater.inflate(R.layout.chat, container, false);
+        chat_viewLayout = (LinearLayout) v.findViewById(R.id.chat_view);
+        chatBarLayout = (LinearLayout) v.findViewById(R.id.chat_bar);
+        usersImage = (ImageButton) v.findViewById(R.id.usersImage);
+        spinner = (MySpinner) v.findViewById(R.id.spinner);
+        chatsImage = (ImageButton) v.findViewById(R.id.chatsImage);
+        nickList = (ListView) v.findViewById(R.id.muc_user_list);
+        sidebar = (LinearLayout) v.findViewById(R.id.sidebar);
+        messageEditor = (EditText) v.findViewById(R.id.messageBox);
+        return v;
     }
 
     @Override
@@ -296,10 +297,9 @@ public class ChatView extends Fragment implements /*AbsListView.OnScrollListener
         final int size = chat.getMessData().size();
         final int unreadMessages = chat.getAllMessagesCount();
         final int lastPosition = getLastPosition(chat.getContact().getUserId()) + 1;
-
-        chatListView.post(new Runnable() {
+        /*chatListView.post(new Runnable() {
             @Override
-            public void run() {
+            public void run() {*/
                 if (lastPosition >= 0) {
                     chatListView.setScroll(false);
                     setPosition(lastPosition);
@@ -311,8 +311,8 @@ public class ChatView extends Fragment implements /*AbsListView.OnScrollListener
                         if (chatListView.isScroll()) setPosition(chatListView.getCount());
                     }
                 }
-            }
-        });
+        //    }
+        //});
         chat.resetUnreadMessages();
         updateChat();
     }
@@ -349,10 +349,8 @@ public class ChatView extends Fragment implements /*AbsListView.OnScrollListener
         currentContact = c;
         chat = protocol.getChat(currentContact);
         messData = chat.getMessData();
-        messageEditor = (EditText) currentActivity.findViewById(R.id.messageBox);
-
-        adapter.init(currentActivity, chat, messData);
         chatListView = (MyListView) currentActivity.findViewById(R.id.chat_history_list);
+        adapter.init(currentActivity, chat, messData);
         messageEditor.addTextChangedListener(textWatcher);
         chatListView.setStackFromBottom(true);
         chatListView.setTranscriptMode(ListView.TRANSCRIPT_MODE_NORMAL);
@@ -369,8 +367,6 @@ public class ChatView extends Fragment implements /*AbsListView.OnScrollListener
         messageEditor.setBackgroundColor(background);
         messageEditor.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
 
-        nickList = (ListView) currentActivity.findViewById(R.id.muc_user_list);
-        sidebar = (LinearLayout) currentActivity.findViewById(R.id.sidebar);
         sidebar.setVisibility(View.GONE);
         sidebar.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
         if (currentContact instanceof JabberServiceContact && currentContact.isConference()) {
@@ -429,12 +425,76 @@ public class ChatView extends Fragment implements /*AbsListView.OnScrollListener
         }
     }
 
-    public class ChatClick implements ListView.OnItemClickListener {
+    private void updateChatIcon() {
+        Icon icMess = ChatHistory.instance.getUnreadMessageIcon();
+        if (icMess == null) {
+            chatsImage.setVisibility(ImageView.GONE);
+        } else {
+            chatsImage.setVisibility(ImageView.VISIBLE);
+            chatsImage.setImageBitmap(icMess.getImage());
+        }
+    }
+
+    private void updatePosition() {
+        //chatListView.requestLayout();
+        //boolean scroll = chatListView.isScroll();
+        if (adapter != null) {
+                if (/*scroll && */adapter.getCount() >= 1) {
+                //    setPosition(adapter.getCount());
+                }
+            adapter.notifyDataSetChanged();
+        }
+    }
+
+    @Override
+    public void updateChat() {
+        if (chatListView == null) return;
+        chatListView.post(new Runnable() {
+            @Override
+            public void run() {
+                updateChatIcon();
+                updatePosition();
+            }
+        });
+        updateMucList();
+        RosterView rosterView = (RosterView) getActivity().getSupportFragmentManager().findFragmentById(R.id.roster_fragment);
+        if (rosterView != null) {
+            rosterView.updateBarProtocols();
+            rosterView.updateRoster();
+        }
+    }
+
+    @Override
+    public void addMessage(final Chat chat, final MessData mess) {
+        if (chatListView == null) return;
+        chatListView.post(new Runnable() {
+            @Override
+            public void run() {
+                if (adapter != null) {
+                    chat.removeOldMessages();
+                    chat.getMessData().add(mess);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void updateMucList() {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (mucUsersView != null)
+                    mucUsersView.update();
+            }
+        });
+    }
+
+    private class ChatClick implements ListView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
             MessData msg = (MessData) adapterView.getAdapter().getItem(position);
             setText("");
-            setText(onMessageSelected(msg));
+            setText(chat.onMessageSelected(msg));
         }
     }
 
@@ -460,6 +520,17 @@ public class ChatView extends Fragment implements /*AbsListView.OnScrollListener
         showKeyboard(messageEditor);
     }
 
+    @Override
+    public void pastText(final String text) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                insert(" " + text + " ");
+                showKeyboard();
+            }
+        });
+    }
+
     private void send() {
         hideKeyboard(messageEditor);
         chat.sendMessage(getText());
@@ -467,7 +538,7 @@ public class ChatView extends Fragment implements /*AbsListView.OnScrollListener
         updateChat();
     }
 
-    public boolean canAdd(String what) {
+    private boolean canAdd(String what) {
         String text = getText();
         if (0 == text.length()) return false;
         // more then one comma
@@ -521,118 +592,6 @@ public class ChatView extends Fragment implements /*AbsListView.OnScrollListener
         return (EditorInfo.IME_NULL == actionId)
                 || (EditorInfo.IME_ACTION_DONE == actionId)
                 || (EditorInfo.IME_ACTION_SEND == actionId);
-    }
-
-    private void updateChatIcon() {
-        Icon icMess = ChatHistory.instance.getUnreadMessageIcon();
-        if (icMess == null) {
-            chatsImage.setVisibility(ImageView.GONE);
-        } else {
-            chatsImage.setVisibility(ImageView.VISIBLE);
-            chatsImage.setImageBitmap(icMess.getImage());
-        }
-    }
-
-    private String getBlogPostId(String text) {
-        if (StringConvertor.isEmpty(text)) {
-            return null;
-        }
-        String lastLine = text.substring(text.lastIndexOf('\n') + 1);
-        if (0 == lastLine.length()) {
-            return null;
-        }
-        if ('#' != lastLine.charAt(0)) {
-            return null;
-        }
-        int numEnd = lastLine.indexOf(' ');
-        if (-1 != numEnd) {
-            lastLine = lastLine.substring(0, numEnd);
-        }
-        return lastLine + " ";
-    }
-
-    private String writeMessageTo(String nick) {
-        if (null != nick) {
-            if ('/' == nick.charAt(0)) {
-                nick = ' ' + nick;
-            }
-            nick += Chat.ADDRESS;
-
-        } else {
-            nick = "";
-        }
-        return nick;
-    }
-
-    private boolean isBlogBot() {
-        if (currentContact instanceof JabberContact) {
-            return ((Jabber) protocol).isBlogBot(currentContact.getUserId());
-        }
-        return false;
-    }
-
-    public String onMessageSelected(MessData md) {
-        if (currentContact.isSingleUserContact()) {
-            if (isBlogBot()) {
-                return getBlogPostId(md.getText());
-            }
-            return "";
-        }
-        String nick = ((null == md) || md.isFile()) ? null : md.getNick();
-        return writeMessageTo(chat.getMyName().equals(nick) ? null : nick);
-    }
-
-    private void updatePosition() {
-        boolean scroll = chatListView.isScroll();
-        if (adapter != null) {
-            if (/*scroll && */adapter.getCount() >= 1) {
-                setPosition(adapter.getCount());
-            }
-            adapter.notifyDataSetChanged();
-        }
-    }
-
-    @Override
-    public void updateChat() {
-        if (chatListView == null) return;
-        chatListView.post(new Runnable() {
-            @Override
-            public void run() {
-                updateChatIcon();
-                updatePosition();
-            }
-        });
-        updateMucList();
-        RosterView rosterView = (RosterView) getActivity().getSupportFragmentManager().findFragmentById(R.id.roster_fragment);
-        if (rosterView != null) {
-            rosterView.updateBarProtocols();
-            rosterView.updateRoster();
-        }
-    }
-
-    @Override
-    public void addMessage(final Chat chat, final MessData mess) {
-        if (chatListView == null) return;
-        chatListView.post(new Runnable() {
-            @Override
-            public void run() {
-                if (adapter != null) {
-                    chat.removeOldMessages();
-                    chat.getMessData().add(mess);
-                }
-            }
-        });
-    }
-
-    @Override
-    public void updateMucList() {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (mucUsersView != null)
-                    mucUsersView.update();
-            }
-        });
     }
 
     /*public void onScrollStateChanged(AbsListView view, int scrollState) {

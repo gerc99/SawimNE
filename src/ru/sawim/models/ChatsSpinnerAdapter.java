@@ -58,7 +58,6 @@ public class ChatsSpinnerAdapter extends BaseAdapter implements SpinnerAdapter {
         HeaderViewHolder headerViewHolder;
         Chat chat = getItem(position);
         if (v == null) {
-
             v = layoutInflater.inflate(R.layout.spinner_item, null);
             headerViewHolder = new HeaderViewHolder();
             headerViewHolder.header = (TextView) v.findViewById(R.id.header);
@@ -67,7 +66,7 @@ public class ChatsSpinnerAdapter extends BaseAdapter implements SpinnerAdapter {
             headerViewHolder = (HeaderViewHolder) v.getTag();
         }
         headerViewHolder.header.setTextSize(General.getFontSize() + 4);
-        //headerViewHolder.header.setBackgroundColor(Scheme.getColor(Scheme.THEME_CAP_TEXT));
+        headerViewHolder.header.setTextColor(Scheme.getColor(Scheme.THEME_CAP_TEXT));
         headerViewHolder.header.setText(chat.getContact().getName());
         return v;
     }
@@ -86,7 +85,7 @@ public class ChatsSpinnerAdapter extends BaseAdapter implements SpinnerAdapter {
         } else {
             dropDownViewHolder = (DropDownViewHolder) v.getTag();
         }
-        //v.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
+        v.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
         Icon icStatus = chat.getProtocol().getStatusInfo().getIcon(chat.getContact().getStatusIndex());
         Icon icMess = Message.msgIcons.iconAt(chat.getContact().getUnreadMessageIcon());
         if (icMess == null)
@@ -95,7 +94,7 @@ public class ChatsSpinnerAdapter extends BaseAdapter implements SpinnerAdapter {
             dropDownViewHolder.imageView.setImageBitmap(icMess.getImage());
 
         dropDownViewHolder.label.setTextSize(General.getFontSize());
-        //dropDownViewHolder.label.setBackgroundColor(Scheme.getColor(Scheme.THEME_TEXT));
+        dropDownViewHolder.label.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
         dropDownViewHolder.label.setText(chat.getContact().getName());
         return v;
     }

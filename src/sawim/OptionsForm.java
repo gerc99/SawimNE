@@ -123,7 +123,7 @@ public class OptionsForm implements FormListener, ControlStateListener {
                 //saveOptionSelector(Options.OPTION_USER_ACCOUNTS);
                 //saveOptionBoolean(Options.OPTION_CL_HIDE_OFFLINE);
                 saveOptionBoolean(Options.OPTION_SAVE_TEMP_CONTACT);
-                saveOptionBoolean(Options.OPTION_SORT_UP_WITH_MSG);
+        //        saveOptionBoolean(Options.OPTION_SORT_UP_WITH_MSG);
                 saveOptionBoolean(Options.OPTION_SHOW_STATUS_LINE);
                 saveOptionSelector(Options.OPTION_CL_SORT_BY);
                 saveOptionBoolean(Options.OPTION_SHOW_PLATFORM);
@@ -214,7 +214,7 @@ public class OptionsForm implements FormListener, ControlStateListener {
                 //setChecked("hide_offline", Options.OPTION_CL_HIDE_OFFLINE);
                 setChecked("save_temp_contacts", Options.OPTION_SAVE_TEMP_CONTACT);
                 setChecked("show_status_line", Options.OPTION_SHOW_STATUS_LINE);
-                setChecked("contacts_with_msg_at_top", Options.OPTION_SORT_UP_WITH_MSG);
+            //    setChecked("contacts_with_msg_at_top", Options.OPTION_SORT_UP_WITH_MSG);
 
                 createSelector("sort_by",
                         "sort_by_status" + "|" + "sort_by_online" + "|" + "sort_by_name",
