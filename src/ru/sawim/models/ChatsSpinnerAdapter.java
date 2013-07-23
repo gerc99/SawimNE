@@ -44,7 +44,7 @@ public class ChatsSpinnerAdapter extends BaseAdapter implements SpinnerAdapter {
 
     @Override
     public Chat getItem(int i) {
-        return chats.get(i);
+        return ChatHistory.instance.chatAt(i);
     }
 
     @Override
@@ -65,6 +65,7 @@ public class ChatsSpinnerAdapter extends BaseAdapter implements SpinnerAdapter {
         } else {
             headerViewHolder = (HeaderViewHolder) v.getTag();
         }
+        if (chat == null) return v;
         headerViewHolder.header.setTextSize(General.getFontSize() + 4);
         headerViewHolder.header.setTextColor(Scheme.getColor(Scheme.THEME_CAP_TEXT));
         headerViewHolder.header.setText(chat.getContact().getName());
@@ -85,6 +86,7 @@ public class ChatsSpinnerAdapter extends BaseAdapter implements SpinnerAdapter {
         } else {
             dropDownViewHolder = (DropDownViewHolder) v.getTag();
         }
+        if (chat == null) return v;
         v.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
         Icon icStatus = chat.getProtocol().getStatusInfo().getIcon(chat.getContact().getStatusIndex());
         Icon icMess = Message.msgIcons.iconAt(chat.getContact().getUnreadMessageIcon());

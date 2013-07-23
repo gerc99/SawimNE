@@ -54,18 +54,22 @@ public class ChatView extends Fragment implements /*AbsListView.OnScrollListener
     private Protocol protocol;
     private Contact currentContact;
     private List<MessData> messData;
-    private MyListView chatListView;
-    private EditText messageEditor;
     private boolean sendByEnter;
-    private MessagesAdapter adapter = new MessagesAdapter();
-    private LinearLayout sidebar;
-    private ImageButton usersImage;
     private ListView nickList;
-    private ImageButton chatsImage;
+    private MyListView chatListView;
     private MySpinner spinner;
+    private MucUsersView mucUsersView;
+    private MessagesAdapter adapter = new MessagesAdapter();
+    private ChatsSpinnerAdapter chatsSpinnerAdapter;
     private LinearLayout chatBarLayout;
     private LinearLayout chat_viewLayout;
-    private MucUsersView mucUsersView;
+    private LinearLayout sidebar;
+    private ImageButton usersImage;
+    private ImageButton chatsImage;
+    private ImageButton menuButton;
+    private ImageButton smileButton;
+    private ImageButton sendButton;
+    private EditText messageEditor;
     private static Hashtable<String, Integer> positionHash = new Hashtable<String, Integer>();
     private Bitmap usersIcon = ImageList.createImageList("/participants.png").iconAt(0).getImage();
 
@@ -87,19 +91,19 @@ public class ChatView extends Fragment implements /*AbsListView.OnScrollListener
                 updateChat();
             }
         });
-        initSpinner();
+
         chatsImage.getBackground().setColorFilter(Scheme.getColor(Scheme.THEME_CAP_BACKGROUND), PorterDuff.Mode.MULTIPLY);
         chatsImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                spinner.setOnItemSelectedEvenIfUnchangedListener(null);
                 forceGoToChat(ChatHistory.instance.getPreferredItem());
-                spinner.setSelection(ChatHistory.instance.getItemChat(currentContact));
             }
         });
     }
 
     private void initSpinner() {
-        ChatsSpinnerAdapter chatsSpinnerAdapter = new ChatsSpinnerAdapter(getActivity());
+        chatsSpinnerAdapter = new ChatsSpinnerAdapter(getActivity());
         spinner.setAdapter(chatsSpinnerAdapter);
         spinner.getBackground().setColorFilter(Scheme.getColor(Scheme.THEME_CAP_BACKGROUND), PorterDuff.Mode.MULTIPLY);
         spinner.setSelection(ChatHistory.instance.getItemChat(currentContact));
@@ -253,6 +257,10 @@ public class ChatView extends Fragment implements /*AbsListView.OnScrollListener
         chatsImage = (ImageButton) v.findViewById(R.id.chatsImage);
         nickList = (ListView) v.findViewById(R.id.muc_user_list);
         sidebar = (LinearLayout) v.findViewById(R.id.sidebar);
+
+        menuButton = (ImageButton) v.findViewById(R.id.menu_button);
+        smileButton = (ImageButton) v.findViewById(R.id.input_smile_button);
+        sendButton = (ImageButton) v.findViewById(R.id.input_send_button);
         messageEditor = (EditText) v.findViewById(R.id.messageBox);
         return v;
     }
@@ -289,7 +297,6 @@ public class ChatView extends Fragment implements /*AbsListView.OnScrollListener
     public void pause(Chat chat) {
         if (chat == null) return;
             addLastPosition(chat.getContact().getUserId(), chatListView.getFirstVisiblePosition());
-
     }
 
     public void resume(final Chat chat) {
@@ -322,11 +329,11 @@ public class ChatView extends Fragment implements /*AbsListView.OnScrollListener
     }
 
     private void forceGoToChat(int position) {
-        addLastPosition(chat.getContact().getUserId(), chatListView.getFirstVisiblePosition());
-        chat.resetUnreadMessages();
-        chat.setVisibleChat(false);
+        pause(chat);
+        destroy(chat);
         ChatHistory chatHistory = ChatHistory.instance;
         Chat current = chatHistory.chatAt(position);
+        if (current == null) return;
         openChat(current.getProtocol(), current.getContact());
         resume(current);
     }
@@ -355,13 +362,14 @@ public class ChatView extends Fragment implements /*AbsListView.OnScrollListener
         chatListView.setStackFromBottom(true);
         chatListView.setTranscriptMode(ListView.TRANSCRIPT_MODE_NORMAL);
         chatListView.setOnCreateContextMenuListener(this);
-    //    chatListView.setOnScrollListener(this);
+        //chatListView.setOnScrollListener(this);
         chatListView.setOnItemClickListener(new ChatClick());
         chatListView.setFocusable(true);
         chatListView.setCacheColorHint(0x00000000);
         chatListView.setAdapter(adapter);
         chat.setVisibleChat(true);
-
+        if (spinner.getOnItemSelectedEvenIfUnchangedListener() == null)
+            initSpinner();
         int background = Scheme.getColorWithAlpha(Scheme.THEME_BACKGROUND);
         chat_viewLayout.setBackgroundColor(background);
         messageEditor.setBackgroundColor(background);
@@ -383,7 +391,7 @@ public class ChatView extends Fragment implements /*AbsListView.OnScrollListener
             usersImage.setVisibility(View.GONE);
             nickList.setVisibility(View.GONE);
         }
-        ImageButton menuButton = (ImageButton) currentActivity.findViewById(R.id.menu_button);
+
         if (General.isTablet(currentActivity)) {
             menuButton.setVisibility(ImageButton.VISIBLE);
             menuButton.setBackgroundColor(background);
@@ -397,7 +405,6 @@ public class ChatView extends Fragment implements /*AbsListView.OnScrollListener
             menuButton.setVisibility(ImageButton.GONE);
         }
 
-        ImageButton smileButton = (ImageButton) currentActivity.findViewById(R.id.input_smile_button);
         smileButton.setBackgroundColor(background);
         smileButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -405,8 +412,8 @@ public class ChatView extends Fragment implements /*AbsListView.OnScrollListener
                 new SmilesView().show(currentActivity.getSupportFragmentManager(), "show-smiles");
             }
         });
+
         sendByEnter = Options.getBoolean(Options.OPTION_SIMPLE_INPUT);
-        ImageButton sendButton = (ImageButton) currentActivity.findViewById(R.id.input_send_button);
         if (sendByEnter) {
             sendButton.setVisibility(ImageButton.GONE);
         } else {

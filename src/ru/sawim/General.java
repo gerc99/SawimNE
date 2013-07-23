@@ -111,23 +111,23 @@ public class General {
 
     public void quit() {
         ContactList cl = ContactList.getInstance();
-        boolean wait;
+        /*boolean wait;
         try {
             wait = cl.disconnect();
         } catch (Exception e) {
             return;
-        }
+        }*/
         try {
             Thread.sleep(100);
         } catch (InterruptedException e1) {
         }
         cl.safeSave();
-        if (wait) {
+        //if (wait) {
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e1) {
             }
-        }
+        //}
         ChatHistory.instance.saveUnreadMessages();
     }
 

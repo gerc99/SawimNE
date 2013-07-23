@@ -23,4 +23,8 @@ public class MySpinner extends Spinner {
             OnItemSelectedListener listener) {
         this.listener = listener;
     }
+
+    public OnItemSelectedListener getOnItemSelectedEvenIfUnchangedListener() {
+        return listener;
+    }
 }

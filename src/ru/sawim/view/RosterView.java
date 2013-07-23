@@ -171,9 +171,8 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
     }
 
     public TreeNode getSafeNode(int index) {
-        if ((index < items.size()) && (index >= 0)) {
+        if ((index < items.size()) && (index >= 0))
             return items.get(index);
-        }
         return null;
     }
 
