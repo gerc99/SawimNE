@@ -62,7 +62,6 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
     private Vector updateQueue = new Vector();
     private List<TreeNode> items = new ArrayList<TreeNode>();
     private TreeNode currentNode = null;
-    private ContactList general;
     private AdapterView.AdapterContextMenuInfo contextMenuInfo;
     final LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
     private HashMap<Integer, ImageButton> protocolIconHash = new HashMap<Integer, ImageButton>();
@@ -71,8 +70,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         final FragmentActivity currentActivity = getActivity();
-        general = ContactList.getInstance();
-        owner = general.getManager();
+        owner = ContactList.getInstance().getManager();
         if (owner == null) {
             startActivity(new Intent(currentActivity, AccountsListActivity.class));
             return;
@@ -81,12 +79,12 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
             if (protocolCount == 0) {
                 startActivity(new Intent(currentActivity, AccountsListActivity.class));
                 return;
-            } else if (protocolCount == 1 && owner.getProtocol(owner.getCurrProtocol()).getContactItems().size() == 0) {
+            } else if (protocolCount == 1 && owner.getCurrentProtocol().getContactItems().size() == 0) {
                 Toast.makeText(getActivity(), R.string.press_menu_for_connect, Toast.LENGTH_LONG).show();
             }
         }
         owner.setOnUpdateRoster(this);
-        owner.updateOptions(owner.getCurrProtocol());
+        owner.updateOptions();
 
         adaptersPages.clear();
         ListView allListView = new ListView(currentActivity);
@@ -181,14 +179,14 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         node.setExpandFlag(value);
     }
 
-    private void rebuildRoster(int pos) {
-        owner.getProtocol(owner.getCurrProtocol()).sort();
+    private void rebuildRoster() {
+    //    owner.getProtocol(owner.getCurrProtocol()).sort();
         while (!updateQueue.isEmpty()) {
             Group group = (Group) updateQueue.firstElement();
             updateQueue.removeElementAt(0);
             owner.updateGroup(group);
         }
-        owner.updateOptions(pos);
+        owner.updateOptions();
     //    try {
             TreeNode current = currentNode;
             currentNode = null;
@@ -209,8 +207,8 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
                 //current = getSafeNode(prevIndex);
             }
             items.clear();
-            owner.buildFlatItems(owner.getCurrProtocol(), items);
-            updatePage(pos);
+            owner.buildFlatItems(items);
+            updatePage(viewPager.getCurrentItem());
             /* (null != current) {
                 int currentIndex = Util.getIndex(items, current);
                 if ((prevIndex != currentIndex) && (-1 != currentIndex)) {
@@ -247,7 +245,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
                 .findFragmentById(R.id.chat_fragment);
         TreeNode item = ((RosterAdapter)adaptersPages.get(viewPager.getCurrentItem())).getItem(position);
         if (item.isContact()) {
-            Protocol p = general.getCurrProtocol();
+            Protocol p = owner.getCurrentProtocol();
             Contact c = ((Contact) item);
             c.activate(p);
             if (!isInLayout()) return;
@@ -259,7 +257,6 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
             } else {
                 Chat chat = viewer.getCurrentChat();
                 viewer.pause(chat);
-                viewer.destroy(chat);
                 if (c != null) {
                     viewer.openChat(p, c);
                     viewer.resume(viewer.getCurrentChat());
@@ -291,7 +288,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         super.onCreateContextMenu(menu, v, menuInfo);
         contextMenuInfo = (AdapterView.AdapterContextMenuInfo) menuInfo;
         TreeNode node = ((RosterAdapter)((ListView) v).getAdapter()).getItem(contextMenuInfo.position);
-        Protocol p = general.getCurrProtocol();
+        Protocol p = owner.getCurrentProtocol();
         if (node.isContact()) {
             new ContactMenu(((Contact) node).getProtocol(), (Contact) node).getContextMenu(menu);
         }
@@ -335,7 +332,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
 
     @Override
     public void updateProgressBar() {
-        final Protocol p = general.getCurrProtocol();
+        final Protocol p = owner.getCurrentProtocol();
         if (p == null) return;
         getActivity().runOnUiThread(new Runnable() {
             @Override
@@ -409,7 +406,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        rebuildRoster(viewPager.getCurrentItem());
+                        rebuildRoster();
                     }
                 });
             }

@@ -200,7 +200,7 @@ public final class ContactList {
     }
 
     public Protocol getCurrProtocol() {
-        return contactList.getProtocol(contactList.getCurrProtocol());
+        return contactList.getCurrentProtocol();
     }
 
     public Protocol getProtocol(Contact c) {

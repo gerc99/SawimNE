@@ -26,9 +26,9 @@ import sawim.util.JLocale;
  */
 public class MucUsersView implements TextBoxView.TextBoxListener {
 
-    private static final int COMMAND_PRIVATE = 0;
-    private static final int COMMAND_INFO = 1;
-    private static final int COMMAND_STATUS = 2;
+    public static final int COMMAND_PRIVATE = 0;
+    public static final int COMMAND_INFO = 1;
+    public static final int COMMAND_STATUS = 2;
     private static final int COMMAND_KICK = 3;
     private static final int COMMAND_BAN = 4;
     private static final int COMMAND_DEVOICE = 5;
@@ -39,7 +39,7 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
     private static final int COMMAND_OWNER = 10;
     private static final int COMMAND_NONE = 11;
     private static final int GATE_COMMANDS = 12;
-    private MucUsersAdapter usersAdapter;
+    private MucUsersAdapter usersAdapter = new MucUsersAdapter();
     private String currMucNik = "";
     private TextBoxView banTextbox;
     private TextBoxView kikTextbox;
@@ -51,12 +51,12 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
         this.jabberServiceContact = jabberServiceContact;
     }
 
-    public void show(final FragmentActivity activity, ListView nickList, ImageView usersImage, final ChatView chatView) {
-        usersAdapter = new MucUsersAdapter(activity, (Jabber) protocol, jabberServiceContact);
+    public void show(final ChatView chatView, ListView nickList) {
+        final FragmentActivity activity = chatView.getActivity();
+        usersAdapter.init(activity, (Jabber) protocol, jabberServiceContact);
         nickList.setCacheColorHint(0x00000000);
         nickList.setBackgroundColor(Scheme.getInversColor(Scheme.THEME_BACKGROUND));
         nickList.setAdapter(usersAdapter);
-        usersImage.setVisibility(View.VISIBLE);
         nickList.setVisibility(View.VISIBLE);
         nickList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -146,13 +146,16 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
                                                        c = (JabberServiceContact) protocol.createTempContact(jid);
                                                        protocol.addTempContact(c);
                                                    }
+                                                   chatView.pause(chatView.getCurrentChat());
+                                                   chatView.resetSpinner();
                                                    chatView.openChat(protocol, c);
+                                                   chatView.resume(chatView.getCurrentChat());
                                                    break;
                                                case COMMAND_INFO:
-                                                   protocol.showUserInfo(activity, usersAdapter.getContactForVCard(nick));
+                                                   protocol.showUserInfo(activity, jabberServiceContact.getPrivateContact(nick));
                                                    break;
                                                case COMMAND_STATUS:
-                                                   protocol.showStatus(usersAdapter.getPrivateContact(nick));
+                                                   protocol.showStatus(jabberServiceContact.getPrivateContact(nick));
                                                    break;
                                                case GATE_COMMANDS:
                                                    JabberContact.SubContact subContact = jabberServiceContact.getExistSubContact(nick);

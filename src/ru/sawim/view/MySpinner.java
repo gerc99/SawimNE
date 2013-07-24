@@ -12,6 +12,10 @@ public class MySpinner extends Spinner {
         super(context, attrs);
     }
 
+    public MySpinner(Context context) {
+        super(context);
+    }
+
     @Override
     public void setSelection(int position) {
         super.setSelection(position);

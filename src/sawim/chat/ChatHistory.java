@@ -4,7 +4,6 @@ import DrawControls.icons.Icon;
 import sawim.chat.message.Message;
 import sawim.chat.message.PlainMessage;
 import sawim.cl.ContactList;
-import sawim.comm.Sortable;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
 import sawim.io.Storage;
@@ -73,7 +72,7 @@ public final class ChatHistory {
 	public int getOtherMessageCount() {
 	    int count = 0;
         for (int i = getTotal() - 1; 0 <= i; --i) {
-            count += chatAt(i).getAllMessagesCount();
+            count += chatAt(i).getOtherMessageCount();
 		}
 		return count;
     }
@@ -150,7 +149,7 @@ public final class ChatHistory {
         Contact c = item.getContact();
         c.updateChatState(null);
         item.getProtocol().ui_updateContact(c);
-        if (0 < item.getAllMessagesCount()) {
+        if (0 < item.getOtherMessageCount()) {
             ContactList.getInstance().markMessages(c);
         }
     }
@@ -248,7 +247,7 @@ public final class ChatHistory {
         int current = 0;
         for (int i = 0; i < historyTable.size(); ++i) {
             Chat chat = chatAt(i);
-            if (0 < chat.getAllMessagesCount()) {
+            if (0 < chat.getOtherMessageCount()) {
                 return i;
             }
             if (currentContact == chat.getContact()) {
@@ -387,7 +386,7 @@ public final class ChatHistory {
             for (int i = getTotal() - 1; 0 <= i; --i) {
                 Chat chat = chatAt(i);
                 
-                int count = chat.getAllMessagesCount();
+                int count = chat.getOtherMessageCount();
                 for (int j = 0; j < count; ++j) {
                     MessData message = chat.getUnreadMessage(j);
                     ByteArrayOutputStream out = new ByteArrayOutputStream();

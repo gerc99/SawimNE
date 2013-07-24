@@ -359,7 +359,7 @@ public class Options {
         setBoolean(Options.OPTION_USER_GROUPS,        true);
         setBoolean(Options.OPTION_HISTORY,            false);
         setInt    (Options.OPTION_COLOR_SCHEME,       1);
-        setInt    (Options.OPTION_FONT_SCHEME,        2);
+        setInt    (Options.OPTION_FONT_SCHEME,        16);
 		setInt    (Options.OPTION_CHAT_PRESENSEFONT_SCHEME, 0);
         int minItemSize = 15;
         setInt    (Options.OPTION_MIN_ITEM_SIZE,      minItemSize);

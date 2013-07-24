@@ -1,5 +1,6 @@
 package sawim;
 
+import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
@@ -64,8 +65,16 @@ public class OptionsForm implements FormListener, ControlStateListener {
         form.addVolumeControl(opt, label, Options.getInt(opt));
     }
 
+    private void loadOptionFontGauge(int opt, String label) {
+        form.addFontVolumeControl(opt, label, Options.getInt(opt));
+    }
+
     private void saveOptionGauge(int opt) {
         Options.setInt(opt, form.getVolumeValue(opt));
+    }
+
+    private void saveOptionFontGauge(int opt) {
+        Options.setInt(opt, form.getGaugeValue(opt));
     }
 
     private void loadOptionInt(int opt, String label, String variants) {
@@ -113,7 +122,7 @@ public class OptionsForm implements FormListener, ControlStateListener {
                     Options.setString(Options.OPTION_UI_LANGUAGE, JLocale.langAvailable[lang]);
                 }
 
-                saveOptionSelector(Options.OPTION_FONT_SCHEME);
+                saveOptionFontGauge(Options.OPTION_FONT_SCHEME);
                 //GraphicsEx.setFontScheme(Options.getInt(Options.OPTION_FONT_SCHEME));
                 //saveOptionInt(Options.OPTION_MIN_ITEM_SIZE, minItemMultipliers);
                 //Scheme.updateUI();
@@ -163,6 +172,7 @@ public class OptionsForm implements FormListener, ControlStateListener {
                 break;
         }
         Options.safeSave();
+        General.updateOptions();
     }
     
     public void formAction(Forms form, boolean apply) {
@@ -199,9 +209,7 @@ public class OptionsForm implements FormListener, ControlStateListener {
                     }
                     form.addSelector(Options.OPTION_UI_LANGUAGE, "language", JLocale.langAvailableName, cur);
                 }
-                createSelector("fonts",
-                        "10sp" + "|" + "fonts_smallest" + "|" + "fonts_small" + "|" + "fonts_normal" + "|" + "fonts_large",
-                        Options.OPTION_FONT_SCHEME);
+                loadOptionFontGauge(Options.OPTION_FONT_SCHEME, "fonts");
                 //loadOptionInt(Options.OPTION_MIN_ITEM_SIZE, "item_height_multiplier", minItems, minItemMultipliers);
 
                 form.addString("contact_list", null);
@@ -278,22 +286,15 @@ public class OptionsForm implements FormListener, ControlStateListener {
         switch (id) {
             case Options.OPTION_COLOR_SCHEME:
                 //saveOptionSelector(Options.OPTION_COLOR_SCHEME);
-                //Scheme.setColorScheme(Options.getInt(Options.OPTION_COLOR_SCHEME));
-                //Scheme.updateUI();
                 break;
             case Options.OPTION_FONT_SCHEME:
                 saveOptionSelector(Options.OPTION_FONT_SCHEME);
-                //GraphicsEx.setFontScheme(Options.getInt(Options.OPTION_FONT_SCHEME));
-                //Scheme.updateUI();
                 break;
 			case Options.OPTION_CHAT_PRESENSEFONT_SCHEME:
 				//saveOptionSelector(Options.OPTION_CHAT_PRESENSEFONT_SCHEME);
-                //GraphicsEx.setChatPresenseFont(Options.getInt(Options.OPTION_CHAT_PRESENSEFONT_SCHEME));
-				//Scheme.updateUI();
                 break;
             case Options.OPTION_MIN_ITEM_SIZE:
                 //saveOptionInt(Options.OPTION_MIN_ITEM_SIZE, minItemMultipliers);
-                //Scheme.updateUI();
                 break;
         }
     }

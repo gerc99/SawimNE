@@ -106,12 +106,12 @@ public final class VirtualContactList {
         return count;
     }
 
-    public void updateOptions(int currProtocol) {
+    public void updateOptions() {
         boolean groups = useGroups;
         useGroups = Options.getBoolean(Options.OPTION_USER_GROUPS) && getCurrPage() == RosterAdapter.ALL_CONTACTS;
         hideOffline = /*Options.getBoolean(Options.OPTION_CL_HIDE_OFFLINE)*/getCurrPage() == RosterAdapter.ONLINE_CONTACTS;
         if (groups && !useGroups) {
-            Util.sort(getProtocol(currProtocol).getSortedContacts());
+            Util.sort(getCurrentProtocol().getSortedContacts());
         }
     }
 
@@ -127,8 +127,8 @@ public final class VirtualContactList {
         return null;
     }
 
-    public void buildFlatItems(int currProtocol, List<TreeNode> items) {
-        Protocol p = getProtocol(currProtocol);
+    public void buildFlatItems(List<TreeNode> items) {
+        Protocol p = getCurrentProtocol();
         if (p == null) return;
         synchronized (p.getRosterLockObject()) {
             if (useGroups) {

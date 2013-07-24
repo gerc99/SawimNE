@@ -4,10 +4,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.support.v4.app.FragmentActivity;
 import android.view.ContextMenu;
-import android.view.ContextThemeWrapper;
-import ru.sawim.R;
 import sawim.FileTransfer;
-import sawim.chat.ChatHistory;
 import sawim.chat.message.PlainMessage;
 import sawim.cl.ContactList;
 import sawim.comm.Util;
@@ -108,7 +105,7 @@ public class ContactMenu implements TextBoxView.TextBoxListener {
                 items[1] = JLocale.getString("admins");
                 items[2] = JLocale.getString("members");
                 items[3] = JLocale.getString("inban");
-				AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(a, R.style.AlertDialogCustom));
+				AlertDialog.Builder builder = new AlertDialog.Builder(a);
                 builder.setTitle(contact.getName());
                 builder.setCancelable(true);
                 builder.setItems(items, new DialogInterface.OnClickListener() {

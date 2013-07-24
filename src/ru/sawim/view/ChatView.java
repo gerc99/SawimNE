@@ -33,7 +33,6 @@ import sawim.Options;
 import sawim.chat.Chat;
 import sawim.chat.ChatHistory;
 import sawim.chat.MessData;
-import sawim.comm.StringConvertor;
 import ru.sawim.Scheme;
 import sawim.util.JLocale;
 
@@ -47,7 +46,7 @@ import java.util.List;
  * Time: 20:30
  * To change this template use File | Settings | File Templates.
  */
-public class ChatView extends Fragment implements /*AbsListView.OnScrollListener, */General.OnUpdateChat {
+public class ChatView extends Fragment implements General.OnUpdateChat {
 
     private static final String TAG = "ChatView";
     private Chat chat;
@@ -56,9 +55,9 @@ public class ChatView extends Fragment implements /*AbsListView.OnScrollListener
     private List<MessData> messData;
     private boolean sendByEnter;
     private ListView nickList;
-    private MyListView chatListView;
+    private ListView chatListView;
     private MySpinner spinner;
-    private MucUsersView mucUsersView;
+    private MucUsersView mucUsersView = new MucUsersView();
     private MessagesAdapter adapter = new MessagesAdapter();
     private ChatsSpinnerAdapter chatsSpinnerAdapter;
     private LinearLayout chatBarLayout;
@@ -70,13 +69,12 @@ public class ChatView extends Fragment implements /*AbsListView.OnScrollListener
     private ImageButton smileButton;
     private ImageButton sendButton;
     private EditText messageEditor;
-    private static Hashtable<String, Integer> positionHash = new Hashtable<String, Integer>();
     private Bitmap usersIcon = ImageList.createImageList("/participants.png").iconAt(0).getImage();
 
-    private static final int MENU_COPY_TEXT = 1;
-    private static final int ACTION_ADD_TO_HISTORY = 2;
-    private static final int ACTION_TO_NOTES = 3;
-    private static final int ACTION_QUOTE = 4;
+    private static final int MENU_COPY_TEXT = 4;
+    private static final int ACTION_ADD_TO_HISTORY = 5;
+    private static final int ACTION_TO_NOTES = 6;
+    private static final int ACTION_QUOTE = 7;
 
     @Override
     public void onActivityCreated(Bundle b) {
@@ -96,10 +94,14 @@ public class ChatView extends Fragment implements /*AbsListView.OnScrollListener
         chatsImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                spinner.setOnItemSelectedEvenIfUnchangedListener(null);
+                resetSpinner();
                 forceGoToChat(ChatHistory.instance.getPreferredItem());
             }
         });
+    }
+
+    public void resetSpinner() {
+        spinner.setOnItemSelectedEvenIfUnchangedListener(null);
     }
 
     private void initSpinner() {
@@ -195,6 +197,9 @@ public class ChatView extends Fragment implements /*AbsListView.OnScrollListener
         super.onCreateContextMenu(menu, v, menuInfo);
         menu.add(Menu.FIRST, MENU_COPY_TEXT, 0, android.R.string.copy);
         menu.add(Menu.FIRST, ACTION_QUOTE, 0, JLocale.getString("quote"));
+        menu.add(Menu.FIRST, MucUsersView.COMMAND_PRIVATE, 0, R.string.open_private);
+        menu.add(Menu.FIRST, MucUsersView.COMMAND_INFO, 0, R.string.info);
+        menu.add(Menu.FIRST, MucUsersView.COMMAND_STATUS, 0, R.string.user_statuses);
         if (protocol instanceof Jabber) {
             menu.add(Menu.FIRST, ACTION_TO_NOTES, 0, R.string.add_to_notes);
         }
@@ -208,7 +213,9 @@ public class ChatView extends Fragment implements /*AbsListView.OnScrollListener
     public boolean onContextItemSelected(MenuItem item) {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         MessData md = messData.get(info.position);
+        String nick = md.getNick();
         String msg = md.getText();
+        JabberServiceContact jabberServiceContact = (JabberServiceContact) currentContact;
         switch (item.getItemId()) {
             case MENU_COPY_TEXT:
                 if (null == md) {
@@ -228,6 +235,25 @@ public class ChatView extends Fragment implements /*AbsListView.OnScrollListener
                 sb.append(Clipboard.serialize(md.isIncoming(), md.getNick() + " " + md.strTime, msg));
                 sb.append("\n-----\n");
                 Clipboard.setClipBoardText(0 == sb.length() ? null : sb.toString());
+                break;
+
+            case MucUsersView.COMMAND_PRIVATE:
+                String jid = Jid.realJidToSawimJid(jabberServiceContact.getUserId() + "/" + nick);
+                JabberServiceContact c = (JabberServiceContact) protocol.getItemByUIN(jid);
+                if (null == c) {
+                    c = (JabberServiceContact) protocol.createTempContact(jid);
+                    protocol.addTempContact(c);
+                }
+                pause(getCurrentChat());
+                resetSpinner();
+                openChat(protocol, c);
+                resume(getCurrentChat());
+                break;
+            case MucUsersView.COMMAND_INFO:
+                protocol.showUserInfo(getActivity(), jabberServiceContact.getPrivateContact(nick));
+                break;
+            case MucUsersView.COMMAND_STATUS:
+                protocol.showStatus(jabberServiceContact.getPrivateContact(nick));
                 break;
 
             case ACTION_ADD_TO_HISTORY:
@@ -268,7 +294,6 @@ public class ChatView extends Fragment implements /*AbsListView.OnScrollListener
     @Override
     public void onDestroy() {
         super.onDestroy();
-        destroy(chat);
     }
 
     @Override
@@ -283,40 +308,30 @@ public class ChatView extends Fragment implements /*AbsListView.OnScrollListener
         resume(chat);
     }
 
-    public void destroy(Chat chat) {
-        General.getInstance().setOnUpdateChat(null);
-        if (chat != null) {
-            chat.resetUnreadMessages();
-            chat.setVisibleChat(false);
-            if (chat.empty())
-                ChatHistory.instance.unregisterChat(chat);
-            chat = null;
-        }
-    }
-
     public void pause(Chat chat) {
+        View v = chatListView.getChildAt(0);
+        int offset = 0;
+        if (v != null)
+            offset = Math.abs(v.getTop());
         if (chat == null) return;
-            addLastPosition(chat.getContact().getUserId(), chatListView.getFirstVisiblePosition());
+            addLastPosition(chatListView.getFirstVisiblePosition(), offset);
+
+        General.getInstance().setOnUpdateChat(null);
+        chat.resetUnreadMessages();
+        chat.setVisibleChat(false);
+        if (chat.empty())
+            ChatHistory.instance.unregisterChat(chat);
+        chat = null;
     }
 
     public void resume(final Chat chat) {
         if (chat == null) return;
-        final int size = chat.getMessData().size();
-        final int unreadMessages = chat.getAllMessagesCount();
-        final int lastPosition = getLastPosition(chat.getContact().getUserId()) + 1;
+        final Chat.ScrollState lastPosition = getLastPosition(chat.getContact().getUserId());
         /*chatListView.post(new Runnable() {
             @Override
             public void run() {*/
-                if (lastPosition >= 0) {
-                    chatListView.setScroll(false);
-                    setPosition(lastPosition);
-                } else {
-                    if (unreadMessages > 0) {
-                        chatListView.setScroll(false);
-                        setPosition(size - 1 - unreadMessages);
-                    } else {
-                        if (chatListView.isScroll()) setPosition(chatListView.getCount());
-                    }
+                if (lastPosition != null) {
+                    chatListView.setSelectionFromTop(lastPosition.position + 1, lastPosition.offset);
                 }
         //    }
         //});
@@ -324,27 +339,23 @@ public class ChatView extends Fragment implements /*AbsListView.OnScrollListener
         updateChat();
     }
 
-    private void setPosition(int position) {
-        chatListView.setSelection(position);
-    }
-
     private void forceGoToChat(int position) {
         pause(chat);
-        destroy(chat);
-        ChatHistory chatHistory = ChatHistory.instance;
-        Chat current = chatHistory.chatAt(position);
+        Chat current = ChatHistory.instance.chatAt(position);
         if (current == null) return;
         openChat(current.getProtocol(), current.getContact());
         resume(current);
     }
 
-    private void addLastPosition(String jid, int position) {
-        positionHash.put(jid, position);
+    private void addLastPosition(int position, int offset) {
+        Chat.ScrollState scrollState = new Chat.ScrollState();
+        scrollState.position = position;
+        scrollState.offset = offset;
+        chat.scrollState = scrollState;
     }
 
-    private int getLastPosition(String jid) {
-        if (positionHash.containsKey(jid)) return positionHash.remove(jid);
-        else return -1;
+    private Chat.ScrollState getLastPosition(String jid) {
+        return chat.scrollState;
     }
 
     public void openChat(Protocol p, Contact c) {
@@ -356,13 +367,12 @@ public class ChatView extends Fragment implements /*AbsListView.OnScrollListener
         currentContact = c;
         chat = protocol.getChat(currentContact);
         messData = chat.getMessData();
-        chatListView = (MyListView) currentActivity.findViewById(R.id.chat_history_list);
+        chatListView = (ListView) currentActivity.findViewById(R.id.chat_history_list);
         adapter.init(currentActivity, chat, messData);
         messageEditor.addTextChangedListener(textWatcher);
         chatListView.setStackFromBottom(true);
         chatListView.setTranscriptMode(ListView.TRANSCRIPT_MODE_NORMAL);
         chatListView.setOnCreateContextMenuListener(this);
-        //chatListView.setOnScrollListener(this);
         chatListView.setOnItemClickListener(new ChatClick());
         chatListView.setFocusable(true);
         chatListView.setCacheColorHint(0x00000000);
@@ -378,9 +388,9 @@ public class ChatView extends Fragment implements /*AbsListView.OnScrollListener
         sidebar.setVisibility(View.GONE);
         sidebar.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
         if (currentContact instanceof JabberServiceContact && currentContact.isConference()) {
-            mucUsersView = new MucUsersView();
             mucUsersView.init(protocol, (JabberServiceContact) currentContact);
-            mucUsersView.show(currentActivity, nickList, usersImage, this);
+            mucUsersView.show(this, nickList);
+            usersImage.setVisibility(View.VISIBLE);
             if (sidebar.getVisibility() == View.VISIBLE) {
                 sidebar.setVisibility(View.VISIBLE);
             } else {
@@ -600,14 +610,6 @@ public class ChatView extends Fragment implements /*AbsListView.OnScrollListener
                 || (EditorInfo.IME_ACTION_DONE == actionId)
                 || (EditorInfo.IME_ACTION_SEND == actionId);
     }
-
-    /*public void onScrollStateChanged(AbsListView view, int scrollState) {
-    }
-
-    public void onScroll(AbsListView view, final int firstVisibleItem, final int visibleItemCount, final int totalItemCount) {
-        if (firstVisibleItem + visibleItemCount == totalItemCount) chatListView.setScroll(true);
-        else chatListView.setScroll(false);
-    }*/
 
     private TextWatcher textWatcher = new TextWatcher() {
         private String previousText;

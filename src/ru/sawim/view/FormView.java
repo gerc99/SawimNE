@@ -5,12 +5,12 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 import ru.sawim.R;
-import ru.sawim.SawimApplication;
 import ru.sawim.activities.FormActivity;
 import ru.sawim.models.form.Forms;
 
@@ -59,19 +59,19 @@ public class FormView extends Fragment implements Forms.OnUpdateForm, View.OnCli
         return v;
     }
 
-    private void buildList(LinearLayout convertView) {
+    private void buildList(final LinearLayout convertView) {
         convertView.removeAllViews();
         List<Forms.Control> controls = Forms.getInstance().controls;
         for (int position = 0; position < controls.size(); ++position) {
             final Forms.Control c = controls.get(position);
-            ImageView imageView = new ImageView(getActivity());
-            TextView textView = new TextView(getActivity());
-            TextView descView = new TextView(getActivity());
-            TextView labelView = new TextView(getActivity());
-            CheckBox checkBox = new CheckBox(getActivity());
-            Spinner spinner = new Spinner(getActivity());
-            SeekBar seekBar = new SeekBar(getActivity());
-            EditText editText = new EditText(getActivity());
+            final ImageView imageView = new ImageView(getActivity());
+            final TextView textView = new TextView(getActivity());
+            final TextView descView = new TextView(getActivity());
+            final TextView labelView = new TextView(getActivity());
+            final CheckBox checkBox = new CheckBox(getActivity());
+            final MySpinner spinner = new MySpinner(getActivity());
+            final SeekBar seekBar = new SeekBar(getActivity());
+            final EditText editText = new EditText(getActivity());
 
             descView.setVisibility(TextView.GONE);
             labelView.setVisibility(TextView.GONE);
@@ -121,7 +121,7 @@ public class FormView extends Fragment implements Forms.OnUpdateForm, View.OnCli
                 spinner.setAdapter(adapter);
                 spinner.setPrompt(c.description);
                 spinner.setSelection(c.current);
-                spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                spinner.setOnItemSelectedEvenIfUnchangedListener(new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
                         c.current = position;
@@ -153,6 +153,30 @@ public class FormView extends Fragment implements Forms.OnUpdateForm, View.OnCli
                     }
                 });
                 convertView.addView(seekBar);
+            } else if (Forms.CONTROL_GAUGE_FONT == c.type) {
+                descView.setVisibility(TextView.VISIBLE);
+                drawFontText(c, descView);
+                seekBar.setVisibility(SeekBar.VISIBLE);
+                seekBar.setMax(60);
+                seekBar.setProgress(c.level);
+                seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                    @Override
+                    public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                        c.level = i;
+                        drawFontText(c, descView);
+                        Forms.getInstance().controlUpdated(c);
+                    }
+
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+                    }
+
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+                    }
+                });
+                convertView.addView(descView);
+                convertView.addView(seekBar);
             } else if (Forms.CONTROL_IMAGE == c.type) {
                 drawText(c, labelView, descView, convertView);
                 imageView.setVisibility(ImageView.VISIBLE);
@@ -174,6 +198,13 @@ public class FormView extends Fragment implements Forms.OnUpdateForm, View.OnCli
             descView.setVisibility(TextView.VISIBLE);
             descView.setText(c.description);
             convertView.addView(descView);
+        }
+    }
+
+    private void drawFontText(Forms.Control c, TextView descView) {
+        if (c.description != null) {
+            descView.setTextSize(c.level);
+            descView.setText(c.description + "(" + c.level + ")");
         }
     }
 

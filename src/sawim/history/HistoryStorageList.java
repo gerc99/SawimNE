@@ -3,7 +3,6 @@ package sawim.history;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.view.ContextMenu;
-import android.view.ContextThemeWrapper;
 import android.view.Menu;
 import android.widget.Toast;
 import ru.sawim.General;
@@ -19,7 +18,6 @@ import javax.microedition.rms.*;
 import sawim.*;
 import sawim.util.JLocale;
 import sawim.comm.*;
-//import sawim.ui.text.TextListController;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
 

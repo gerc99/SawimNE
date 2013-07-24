@@ -108,14 +108,14 @@ public class MessagesAdapter extends BaseAdapter implements MyTextView.TextLinkC
             msgTime.setVisibility(TextView.GONE);
             msgText.setText("* " + mData.getNick() + " " + mData.fullText);
             msgText.setTextColor(Scheme.getColor(mData.isIncoming() ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG));
-            msgText.setTextSize(14);
+            msgText.setTextSize(General.getFontSize() - 2);
         } else if (mData.isPresence()) {
             msgImage.setVisibility(ImageView.GONE);
             msgNick.setVisibility(TextView.GONE);
             msgTime.setVisibility(TextView.GONE);
             msgText.setText(mData.getNick() + mData.fullText);
             msgText.setTextColor(Scheme.getColor(Scheme.THEME_CHAT_INMSG));
-            msgText.setTextSize(14);
+            msgText.setTextSize(General.getFontSize() - 2);
         } else {
             if (mData.iconIndex != Message.ICON_NONE) {
                 Icon icon = Message.msgIcons.iconAt(mData.iconIndex);
@@ -136,7 +136,7 @@ public class MessagesAdapter extends BaseAdapter implements MyTextView.TextLinkC
             msgTime.setVisibility(TextView.VISIBLE);
             msgTime.setText(mData.strTime);
             msgTime.setTextColor(Scheme.getColor(mData.isIncoming() ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG));
-            msgTime.setTextSize(10);
+            msgTime.setTextSize(General.getFontSize() - 4);
 
             byte color = Scheme.THEME_TEXT;
             if (mData.isIncoming() && !chat.getContact().isSingleUserContact()

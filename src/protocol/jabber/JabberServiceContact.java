@@ -295,6 +295,11 @@ public class JabberServiceContact extends JabberContact {
         return null;
     }
 
+    public Contact getPrivateContact(String nick) {
+        String jid = Jid.realJidToSawimJid(getUserId() + "/" + nick);
+        return getProtocol().createTempContact(jid);
+    }
+
     public void setSubject(String subject) {
         JabberContact.SubContact c = getContact(getMyName());
         if (isConference && isOnline()) {

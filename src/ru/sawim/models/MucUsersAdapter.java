@@ -44,7 +44,10 @@ public class MucUsersAdapter extends BaseAdapter {
     private static ImageList affiliationIcons = ImageList.createImageList("/jabber-affiliations.png");
     Context context;
 
-    public MucUsersAdapter(Context context, Jabber jabber, JabberServiceContact conf) {
+    public MucUsersAdapter() {
+    }
+
+    public void init(Context context, Jabber jabber, JabberServiceContact conf) {
         this.context = context;
         protocol = jabber;
         conference = conf;
@@ -158,18 +161,11 @@ public class MucUsersAdapter extends BaseAdapter {
         }
         return null;
     }
-    public Contact getContactForVCard(String nick) {
-        String jid = Jid.realJidToSawimJid(conference.getUserId() + "/" + nick);
-        return protocol.createTempContact(jid);
-    }
-    public Contact getPrivateContact(String nick) {
-        String jid = Jid.realJidToSawimJid(conference.getUserId() + "/" + nick);
-        return protocol.createTempContact(jid);
-    }
 
     public void setMucRole(String nick, String role) {
         protocol.getConnection().setMucRole(conference.getUserId(), nick, role);
     }
+
     public void setMucAffiliation(String nick, String affiliation) {
         JabberContact.SubContact c = conference.getExistSubContact(nick);
         if ((null == c) || (null == c.realJid)) {
@@ -178,9 +174,11 @@ public class MucUsersAdapter extends BaseAdapter {
         protocol.getConnection().setMucAffiliation(conference.getUserId(),
                 c.realJid, affiliation);
     }
+
     public void setMucRoleR(String nick, String role, String setReason) {
         protocol.getConnection().setMucRoleR(conference.getUserId(), nick, role, setReason);
     }
+
     public void setMucAffiliationR(String nick, String affiliation, String setReason) {
         JabberContact.SubContact c = conference.getExistSubContact(nick);
         if ((null == c) || (null == c.realJid)) {

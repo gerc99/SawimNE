@@ -40,7 +40,7 @@
                   android:orientation="horizontal"
                   android:layout_width="fill_parent"
                   android:layout_height="fill_parent">
-        <ru.sawim.view.MyListView
+        <ListView
                 android:id="@+id/chat_history_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

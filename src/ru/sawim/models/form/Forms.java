@@ -30,6 +30,7 @@ public class Forms {
     public static final byte CONTROL_GAUGE = 4;
     public static final byte CONTROL_IMAGE = 5;
     public static final byte CONTROL_LINK = 6;
+    public static final byte CONTROL_GAUGE_FONT = 7;
     private OnUpdateForm updateFormListener;
     private FormListener formListener;
     private OnBackPressed backPressedListener;
@@ -172,6 +173,13 @@ public class Forms {
         label = (null == label) ? " " : label;
         Control c = create(controlId, CONTROL_GAUGE, null, JLocale.getString(label));
         c.level = current / 10;
+        add(c);
+    }
+
+    public void addFontVolumeControl(int controlId, String label, int current) {
+        label = (null == label) ? " " : label;
+        Control c = create(controlId, CONTROL_GAUGE_FONT, null, JLocale.getString(label));
+        c.level = current;
         add(c);
     }
 

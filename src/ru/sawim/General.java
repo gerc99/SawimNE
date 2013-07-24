@@ -10,6 +10,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.os.Handler;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.widget.Toast;
 import sawim.Options;
 import sawim.Updater;
@@ -43,6 +44,7 @@ public class General {
             + "/" + android.os.Build.VERSION.RELEASE;
 
     private boolean paused = true;
+    private static int fontSize;
 
     public void init() {
         instance = this;
@@ -88,6 +90,7 @@ public class General {
         new ru.sawim.config.Options().load();
         JLocale.setCurrUiLanguage(Options.getString(Options.OPTION_UI_LANGUAGE));
         Scheme.setColorScheme(Options.getInt(Options.OPTION_COLOR_SCHEME));
+        updateOptions();
         Updater.startUIUpdater();
 
         try {
@@ -154,21 +157,12 @@ public class General {
         }
     }
 
+    public static void updateOptions() {
+        fontSize = Options.getInt(Options.OPTION_FONT_SCHEME);
+    }
+
     public static int getFontSize() {
-        Resources res = SawimApplication.getInstance().getResources();
-        switch (Options.getInt(Options.OPTION_FONT_SCHEME)) {
-            case 0:
-                return res.getDimensionPixelSize(R.dimen.smallest_10_font_size);
-            case 1:
-                return res.getDimensionPixelSize(R.dimen.smallest_13_font_size);
-            case 2:
-                return res.getDimensionPixelSize(R.dimen.small_font_size);
-            case 3:
-                return res.getDimensionPixelSize(R.dimen.medium_font_size);
-            case 4:
-                return res.getDimensionPixelSize(R.dimen.large_font_size);
-        }
-        return 15;
+        return fontSize;
     }
 
     public InputStream getResourceAsStream(Context c, Class origClass, String name) {

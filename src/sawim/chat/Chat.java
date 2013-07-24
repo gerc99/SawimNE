@@ -1,6 +1,5 @@
 package sawim.chat;
 
-import android.util.Log;
 import ru.sawim.General;
 import sawim.Options;
 import sawim.chat.message.Message;
@@ -31,11 +30,17 @@ public final class Chat {
     private List<MessData> messData = new ArrayList<MessData>();
     private boolean visibleChat;
     public static final String ADDRESS = ", ";
+    public ScrollState scrollState;
 
     public Chat(Protocol p, Contact item) {
         contact = item;
         protocol = p;
         fillFromHistory();
+    }
+
+    public static class ScrollState {
+        public int position;
+        public int offset;
     }
 
     void setContact(Contact item) {
@@ -196,9 +201,7 @@ public final class Chat {
     public boolean hasHistory() {
         return contact.hasHistory();
     }
-    private int getMessCount() {
-            return messCount();
-    }
+
     private void fillFromHistory() {
         if (!hasHistory()) {
             return;
@@ -242,7 +245,7 @@ public final class Chat {
         return history;
     }
 
-    public int messCount() {
+    private int getMessCount() {
         return messData.size();
     }
 
@@ -288,7 +291,7 @@ public final class Chat {
     }
 
     private short messageCounter = 0;
-    private short allMessagesCounter = 0;
+    private short otherMessageCounter = 0;
     private byte sysNoticeCounter = 0;
     private byte authRequestCounter = 0;
 
@@ -303,10 +306,10 @@ public final class Chat {
 
     public void resetUnreadMessages() {
         boolean notEmpty = (0 < messageCounter)
-                || (0 < allMessagesCounter)
+                || (0 < otherMessageCounter)
                 || (0 < sysNoticeCounter);
         messageCounter = 0;
-        allMessagesCounter = 0;
+        otherMessageCounter = 0;
         sysNoticeCounter = 0;
         if (notEmpty) {
             contact.updateChatState(this);
@@ -315,14 +318,16 @@ public final class Chat {
     }
 
     public int getUnreadMessageCount() {
-        return messageCounter + sysNoticeCounter + authRequestCounter;
+        return messageCounter + sysNoticeCounter + authRequestCounter
+                + otherMessageCounter;
     }
     public int getPersonalUnreadMessageCount() {
         return messageCounter + sysNoticeCounter + authRequestCounter;
     }
-	public int getAllMessagesCount() {
-	    return allMessagesCounter;
-	}
+    public int getOtherMessageCount() {
+        return sysNoticeCounter + authRequestCounter
+                + otherMessageCounter;
+    }
     public int getAuthRequestCounter() {
         return authRequestCounter;
     }
@@ -332,7 +337,7 @@ public final class Chat {
             return Message.ICON_IN_MSG_HI;
         } else if (0 < authRequestCounter) {
             return Message.ICON_SYSREQ;
-        } else if (0 < allMessagesCounter) {
+        } else if (0 < otherMessageCounter) {
             return Message.ICON_IN_MSG;
         } else if (0 < sysNoticeCounter) {
             return Message.ICON_SYS_OK;
@@ -448,6 +453,7 @@ public final class Chat {
                 messageCounter = inc(messageCounter);
                 if (!contact.isSingleUserContact()
                         && !isHighlight(message.getProcessedText(), getMyName())) {
+                    otherMessageCounter = inc(otherMessageCounter);
                     messageCounter--;
                 }
             }
@@ -463,7 +469,6 @@ public final class Chat {
             addTextToForm(message, getFrom(message));
         }
         if (inc) {
-            allMessagesCounter = inc(allMessagesCounter);
             contact.updateChatState(this);
             ChatHistory.instance.updateChatList();
         }
@@ -483,7 +488,7 @@ public final class Chat {
     }
 
     MessData getUnreadMessage(int num) {
-        int index = getMessCount() - getAllMessagesCount() + num;
+        int index = getMessCount() - getOtherMessageCount() + num;
         return getMessageDataByIndex(index);
     }
 

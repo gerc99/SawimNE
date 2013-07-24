@@ -5,7 +5,6 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
-import android.view.ContextThemeWrapper;
 import ru.sawim.General;
 import ru.sawim.view.TextBoxView;
 import sawim.FileTransfer;

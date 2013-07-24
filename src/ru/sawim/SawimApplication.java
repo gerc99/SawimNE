@@ -121,6 +121,14 @@ public class SawimApplication extends Application {
         ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).cancelAll();
     }
 
+    private void bindService() {
+        bindService(new Intent(this, SawimService.class), serviceConnection, BIND_AUTO_CREATE);
+    }
+
+    public void unbindService() {
+        unbindService(serviceConnection);
+    }
+
     public boolean isNetworkAvailable() {
         return networkStateReceiver.isNetworkAvailable();
     }

@@ -85,7 +85,7 @@ public class RosterAdapter extends BaseAdapter {
     public View getView(int i, View convertView, ViewGroup viewGroup) {
         TreeNode o = getItem(i);
         ViewHolderRoster holder;
-        Protocol protocol = vcl.getProtocol(vcl.getCurrProtocol());
+        Protocol protocol = vcl.getCurrentProtocol();
         if (convertView == null) {
             convertView = mInflater.inflate(R.layout.roster_item, null);
             holder = new ViewHolderRoster(vcl, convertView);
