@@ -93,16 +93,16 @@ public class RosterAdapter extends BaseAdapter {
         } else {
             holder = (ViewHolderRoster) convertView.getTag();
         }
-        if (type == ONLINE_CONTACTS && o.isContact()) {
-            holder.populateFromContact(protocol, (Contact) o);
-        } else {
-            if (o != null)
+        if (o != null)
+            if (type == ONLINE_CONTACTS && o.isContact()) {
+                holder.populateFromContact(protocol, (Contact) o);
+            } else {
                 if (o.isGroup()) {
                     holder.populateFromGroup((Group) o);
                 } else if (o.isContact()) {
                     holder.populateFromContact(protocol, (Contact) o);
                 }
-        }
+            }
         return convertView;
     }
 

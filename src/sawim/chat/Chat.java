@@ -30,7 +30,6 @@ public final class Chat {
     private List<MessData> messData = new ArrayList<MessData>();
     private boolean visibleChat;
     public static final String ADDRESS = ", ";
-    public ScrollState scrollState;
 
     public Chat(Protocol p, Contact item) {
         contact = item;

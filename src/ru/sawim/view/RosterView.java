@@ -180,13 +180,13 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
     }
 
     private void rebuildRoster() {
-    //    owner.getProtocol(owner.getCurrProtocol()).sort();
+        owner.updateOptions();
+        owner.getProtocol(owner.getCurrProtocol()).sort();
         while (!updateQueue.isEmpty()) {
             Group group = (Group) updateQueue.firstElement();
             updateQueue.removeElementAt(0);
             owner.updateGroup(group);
         }
-        owner.updateOptions();
     //    try {
             TreeNode current = currentNode;
             currentNode = null;

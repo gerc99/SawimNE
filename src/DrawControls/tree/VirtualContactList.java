@@ -107,12 +107,8 @@ public final class VirtualContactList {
     }
 
     public void updateOptions() {
-        boolean groups = useGroups;
         useGroups = Options.getBoolean(Options.OPTION_USER_GROUPS) && getCurrPage() == RosterAdapter.ALL_CONTACTS;
         hideOffline = /*Options.getBoolean(Options.OPTION_CL_HIDE_OFFLINE)*/getCurrPage() == RosterAdapter.ONLINE_CONTACTS;
-        if (groups && !useGroups) {
-            Util.sort(getCurrentProtocol().getSortedContacts());
-        }
     }
 
     public final Protocol getProtocol(Group g) {

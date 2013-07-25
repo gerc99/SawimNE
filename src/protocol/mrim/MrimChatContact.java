@@ -5,6 +5,7 @@ package protocol.mrim;
 
 import android.view.ContextMenu;
 import android.view.Menu;
+import protocol.ContactMenu;
 import protocol.Protocol;
 import protocol.StatusInfo;
 import ru.sawim.R;
@@ -35,10 +36,10 @@ public final class MrimChatContact extends MrimContact {
     }
     protected void initContextMenu(Protocol protocol, ContextMenu contactMenu) {
         if (isTemp()) {
-            contactMenu.add(Menu.FIRST, USER_MENU_ADD_USER, 2, R.string.connect);
+            contactMenu.add(Menu.FIRST, ContactMenu.USER_MENU_ADD_USER, 2, R.string.connect);
         } else {
-            contactMenu.add(Menu.FIRST, CONFERENCE_DISCONNECT, 2, R.string.leave_chat);
-            contactMenu.add(Menu.FIRST, USER_MENU_USERS_LIST, 2, R.string.list_of_users);
+            contactMenu.add(Menu.FIRST, ContactMenu.CONFERENCE_DISCONNECT, 2, R.string.leave_chat);
+            contactMenu.add(Menu.FIRST, ContactMenu.USER_MENU_USERS_LIST, 2, R.string.list_of_users);
         }
         addChatItems(contactMenu);
     }

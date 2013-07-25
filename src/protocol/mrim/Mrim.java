@@ -259,18 +259,18 @@ public class Mrim extends Protocol {
                 new sawim.forms.SmsForm(this, contact.getPhones()).show();
                 break;
 
-            case Contact.CONFERENCE_DISCONNECT:
-                new ContactMenu(this, c).doAction(SawimActivity.getInstance(), Contact.USER_MENU_USER_REMOVE);
+            case ContactMenu.CONFERENCE_DISCONNECT:
+                new ContactMenu(this, c).doAction(SawimActivity.getInstance(), ContactMenu.USER_MENU_USER_REMOVE);
                 break;
 
-            case MrimContact.USER_MENU_PS_VISIBLE:
-            case MrimContact.USER_MENU_PS_INVISIBLE:
-            case MrimContact.USER_MENU_PS_IGNORE:
+            case ContactMenu.USER_MENU_PS_VISIBLE:
+            case ContactMenu.USER_MENU_PS_INVISIBLE:
+            case ContactMenu.USER_MENU_PS_IGNORE:
                 int flags = contact.getFlags();
                 switch (action) {
-                    case MrimContact.USER_MENU_PS_VISIBLE:   flags ^= MrimContact.CONTACT_FLAG_VISIBLE; break;
-                    case MrimContact.USER_MENU_PS_INVISIBLE: flags ^= MrimContact.CONTACT_FLAG_INVISIBLE; break;
-                    case MrimContact.USER_MENU_PS_IGNORE:    flags ^= MrimContact.CONTACT_FLAG_IGNORE; break;
+                    case ContactMenu.USER_MENU_PS_VISIBLE:   flags ^= MrimContact.CONTACT_FLAG_VISIBLE; break;
+                    case ContactMenu.USER_MENU_PS_INVISIBLE: flags ^= MrimContact.CONTACT_FLAG_INVISIBLE; break;
+                    case ContactMenu.USER_MENU_PS_IGNORE:    flags ^= MrimContact.CONTACT_FLAG_IGNORE; break;
                 }
                 contact.setFlags(flags);
                 getConnection().updateContact(contact);
@@ -278,7 +278,7 @@ public class Mrim extends Protocol {
                 break;
             
         }
-        if (MrimChatContact.USER_MENU_USERS_LIST == action) {
+        if (ContactMenu.USER_MENU_USERS_LIST == action) {
             VirtualListModel list = new VirtualListModel();
             Vector members = ((MrimChatContact)c).getMembers();
             for (int i = 0; i < members.size(); ++i) {
@@ -289,7 +289,7 @@ public class Mrim extends Protocol {
             tl.setModel(list);
             tl.show();
 
-        } else if (MrimChatContact.USER_MENU_ADD_USER == action) {
+        } else if (ContactMenu.USER_MENU_ADD_USER == action) {
             if (isConnected()) {
                 addContact(contact);
                 getConnection().putMultiChatGetMembers(contact.getUserId());

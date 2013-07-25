@@ -3,13 +3,10 @@ package protocol.mrim;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.SubMenu;
+import protocol.*;
 import sawim.Options;
 import sawim.comm.StringConvertor;
 import sawim.modules.DebugLog;
-import protocol.Contact;
-import protocol.Group;
-import protocol.Protocol;
-import protocol.XStatusInfo;
 import ru.sawim.R;
 
 public class MrimContact extends Contact {
@@ -67,7 +64,7 @@ public class MrimContact extends Contact {
 
     public void addChatMenuItems(ContextMenu model) {
         if (isOnline() && Options.getBoolean(Options.OPTION_ALARM)) {
-            model.add(Menu.FIRST, USER_MENU_WAKE, 2, R.string.wake);
+            model.add(Menu.FIRST, ContactMenu.USER_MENU_WAKE, 2, R.string.wake);
         }
     }
     protected void initContextMenu(Protocol protocol, ContextMenu contactMenu) {
@@ -81,19 +78,19 @@ public class MrimContact extends Contact {
         if (protocol.isConnected()) {
             initPrivacyMenu(menu);
             if (isTemp()) {
-                menu.add(Menu.FIRST, USER_MENU_ADD_USER, 2, R.string.add_user);
+                menu.add(Menu.FIRST, ContactMenu.USER_MENU_ADD_USER, 2, R.string.add_user);
             } else {
                 if (protocol.getGroupItems().size() > 1) {
-                    menu.add(Menu.FIRST, USER_MENU_MOVE, 2, R.string.move_to_group);
+                    menu.add(Menu.FIRST, ContactMenu.USER_MENU_MOVE, 2, R.string.move_to_group);
                 }
                 if (!isAuth()) {
-                    menu.add(Menu.FIRST, USER_MENU_REQU_AUTH, 2, R.string.requauth);
+                    menu.add(Menu.FIRST, ContactMenu.USER_MENU_REQU_AUTH, 2, R.string.requauth);
                 }
-                menu.add(Menu.FIRST, USER_MENU_RENAME, 2, R.string.rename);
+                menu.add(Menu.FIRST, ContactMenu.USER_MENU_RENAME, 2, R.string.rename);
             }
         }
         if ((protocol.isConnected() || isTemp()) && protocol.inContactList(this)) {
-            menu.add(Menu.FIRST, USER_MENU_USER_REMOVE, 2, R.string.remove);
+            menu.add(Menu.FIRST, ContactMenu.USER_MENU_USER_REMOVE, 2, R.string.remove);
         }
     }
 

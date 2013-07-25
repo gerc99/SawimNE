@@ -70,11 +70,7 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
     private ImageButton sendButton;
     private EditText messageEditor;
     private Bitmap usersIcon = ImageList.createImageList("/participants.png").iconAt(0).getImage();
-
-    private static final int MENU_COPY_TEXT = 4;
-    private static final int ACTION_ADD_TO_HISTORY = 5;
-    private static final int ACTION_TO_NOTES = 6;
-    private static final int ACTION_QUOTE = 7;
+    private static Hashtable<String, Chat.ScrollState> positionHash = new Hashtable<String, Chat.ScrollState>();
 
     @Override
     public void onActivityCreated(Bundle b) {
@@ -127,27 +123,27 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
         final MyMenu menu = new MyMenu(getActivity());
         boolean accessible = chat.getWritable() && (currentContact.isSingleUserContact() || currentContact.isOnline());
         if (0 < chat.getAuthRequestCounter()) {
-            menu.add(JLocale.getString("grant"), Contact.USER_MENU_GRANT_AUTH);
-            menu.add(JLocale.getString("deny"), Contact.USER_MENU_DENY_AUTH);
+            menu.add(JLocale.getString("grant"), ContactMenu.USER_MENU_GRANT_AUTH);
+            menu.add(JLocale.getString("deny"), ContactMenu.USER_MENU_DENY_AUTH);
         }
         if (!currentContact.isAuth()) {
-            menu.add(JLocale.getString("requauth"), Contact.USER_MENU_REQU_AUTH);
+            menu.add(JLocale.getString("requauth"), ContactMenu.USER_MENU_REQU_AUTH);
         }
         if (accessible) {
             if (sawim.modules.fs.FileSystem.isSupported()) {
-                menu.add(JLocale.getString("ft_name"), Contact.USER_MENU_FILE_TRANS);
+                menu.add(JLocale.getString("ft_name"), ContactMenu.USER_MENU_FILE_TRANS);
             }
             if (FileTransfer.isPhotoSupported()) {
-                menu.add(JLocale.getString("ft_cam"), Contact.USER_MENU_CAM_TRANS);
+                menu.add(JLocale.getString("ft_cam"), ContactMenu.USER_MENU_CAM_TRANS);
             }
         }
-        menu.add(getActivity().getResources().getString(R.string.user_statuses), Contact.USER_MENU_STATUSES);
+        menu.add(getActivity().getResources().getString(R.string.user_statuses), ContactMenu.USER_MENU_STATUSES);
         if (!currentContact.isSingleUserContact() && currentContact.isOnline()) {
-            menu.add(JLocale.getString("leave_chat"), Contact.CONFERENCE_DISCONNECT);
+            menu.add(JLocale.getString("leave_chat"), ContactMenu.CONFERENCE_DISCONNECT);
         }
-        menu.add(JLocale.getString("delete_chat"), Contact.ACTION_CURRENT_DEL_CHAT);
-        menu.add(JLocale.getString("all_contact_except_this"), Contact.ACTION_DEL_ALL_CHATS_EXCEPT_CUR);
-        menu.add(JLocale.getString("all_contacts"), Contact.ACTION_DEL_ALL_CHATS);
+        menu.add(JLocale.getString("delete_chat"), ContactMenu.ACTION_CURRENT_DEL_CHAT);
+        menu.add(JLocale.getString("all_contact_except_this"), ContactMenu.ACTION_DEL_ALL_CHATS_EXCEPT_CUR);
+        menu.add(JLocale.getString("all_contacts"), ContactMenu.ACTION_DEL_ALL_CHATS);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(getActivity(), R.style.AlertDialogCustom));
         builder.setTitle(currentContact.getName());
@@ -156,7 +152,7 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 switch (menu.getItem(which).idItem) {
-                    case Contact.ACTION_CURRENT_DEL_CHAT:
+                    case ContactMenu.ACTION_CURRENT_DEL_CHAT:
                         /*chat.removeMessagesAtCursor(chatListView.getFirstVisiblePosition() + 1);
                         if (0 < messData.size()) {
                             updateChat();
@@ -165,7 +161,7 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
                         getActivity().finish();
                         break;
 
-                    case Contact.ACTION_DEL_ALL_CHATS_EXCEPT_CUR:
+                    case ContactMenu.ACTION_DEL_ALL_CHATS_EXCEPT_CUR:
                         chatListView.post(new Runnable() {
                             @Override
                             public void run() {
@@ -174,7 +170,7 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
                         });
                         break;
 
-                    case Contact.ACTION_DEL_ALL_CHATS:
+                    case ContactMenu.ACTION_DEL_ALL_CHATS:
                         chatListView.post(new Runnable() {
                             @Override
                             public void run() {
@@ -195,16 +191,18 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, android.view.ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        menu.add(Menu.FIRST, MENU_COPY_TEXT, 0, android.R.string.copy);
-        menu.add(Menu.FIRST, ACTION_QUOTE, 0, JLocale.getString("quote"));
-        menu.add(Menu.FIRST, MucUsersView.COMMAND_PRIVATE, 0, R.string.open_private);
-        menu.add(Menu.FIRST, MucUsersView.COMMAND_INFO, 0, R.string.info);
-        menu.add(Menu.FIRST, MucUsersView.COMMAND_STATUS, 0, R.string.user_statuses);
+        menu.add(Menu.FIRST, ContactMenu.MENU_COPY_TEXT, 0, android.R.string.copy);
+        menu.add(Menu.FIRST, ContactMenu.ACTION_QUOTE, 0, JLocale.getString("quote"));
+        if (currentContact instanceof JabberServiceContact && currentContact.isConference()) {
+            menu.add(Menu.FIRST, ContactMenu.COMMAND_PRIVATE, 0, R.string.open_private);
+            menu.add(Menu.FIRST, ContactMenu.COMMAND_INFO, 0, R.string.info);
+            menu.add(Menu.FIRST, ContactMenu.COMMAND_STATUS, 0, R.string.user_statuses);
+        }
         if (protocol instanceof Jabber) {
-            menu.add(Menu.FIRST, ACTION_TO_NOTES, 0, R.string.add_to_notes);
+            menu.add(Menu.FIRST, ContactMenu.ACTION_TO_NOTES, 0, R.string.add_to_notes);
         }
         if (!Options.getBoolean(Options.OPTION_HISTORY) && chat.hasHistory()) {
-            menu.add(Menu.FIRST, ACTION_ADD_TO_HISTORY, 0, JLocale.getString("add_to_history"));
+            menu.add(Menu.FIRST, ContactMenu.ACTION_ADD_TO_HISTORY, 0, JLocale.getString("add_to_history"));
         }
         currentContact.addChatMenuItems(menu);
     }
@@ -217,7 +215,7 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
         String msg = md.getText();
         JabberServiceContact jabberServiceContact = (JabberServiceContact) currentContact;
         switch (item.getItemId()) {
-            case MENU_COPY_TEXT:
+            case ContactMenu.MENU_COPY_TEXT:
                 if (null == md) {
                     return false;
                 }
@@ -227,7 +225,7 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
                 Clipboard.setClipBoardText(msg + "\n");
                 break;
 
-            case ACTION_QUOTE:
+            case ContactMenu.ACTION_QUOTE:
                 StringBuffer sb = new StringBuffer();
                 if (md.isMe()) {
                     msg = "*" + md.getNick() + " " + msg;
@@ -237,7 +235,7 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
                 Clipboard.setClipBoardText(0 == sb.length() ? null : sb.toString());
                 break;
 
-            case MucUsersView.COMMAND_PRIVATE:
+            case ContactMenu.COMMAND_PRIVATE:
                 String jid = Jid.realJidToSawimJid(jabberServiceContact.getUserId() + "/" + nick);
                 JabberServiceContact c = (JabberServiceContact) protocol.getItemByUIN(jid);
                 if (null == c) {
@@ -249,18 +247,18 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
                 openChat(protocol, c);
                 resume(getCurrentChat());
                 break;
-            case MucUsersView.COMMAND_INFO:
+            case ContactMenu.COMMAND_INFO:
                 protocol.showUserInfo(getActivity(), jabberServiceContact.getPrivateContact(nick));
                 break;
-            case MucUsersView.COMMAND_STATUS:
+            case ContactMenu.COMMAND_STATUS:
                 protocol.showStatus(jabberServiceContact.getPrivateContact(nick));
                 break;
 
-            case ACTION_ADD_TO_HISTORY:
+            case ContactMenu.ACTION_ADD_TO_HISTORY:
                 chat.addTextToHistory(md);
                 break;
 
-            case ACTION_TO_NOTES:
+            case ContactMenu.ACTION_TO_NOTES:
                 MirandaNotes notes = ((Jabber)protocol).getMirandaNotes();
                 notes.showIt();
                 MirandaNotes.Note note = notes.addEmptyNote();
@@ -309,40 +307,31 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
     }
 
     public void pause(Chat chat) {
-        View v = chatListView.getChildAt(0);
-        int offset = 0;
-        if (v != null)
-            offset = Math.abs(v.getTop());
         if (chat == null) return;
-            addLastPosition(chatListView.getFirstVisiblePosition(), offset);
+        View item = chatListView.getChildAt(0);
+        int offset = (item == null) ? 0 : Math.abs(item.getBottom());
+        addLastPosition(chatListView.getFirstVisiblePosition(), offset);
 
         General.getInstance().setOnUpdateChat(null);
         chat.resetUnreadMessages();
         chat.setVisibleChat(false);
         if (chat.empty())
             ChatHistory.instance.unregisterChat(chat);
-        chat = null;
     }
 
     public void resume(final Chat chat) {
         if (chat == null) return;
         final Chat.ScrollState lastPosition = getLastPosition(chat.getContact().getUserId());
-        /*chatListView.post(new Runnable() {
-            @Override
-            public void run() {*/
-                if (lastPosition != null) {
-                    chatListView.setSelectionFromTop(lastPosition.position + 1, lastPosition.offset);
-                }
-        //    }
-        //});
+        if (lastPosition != null)
+            chatListView.setSelectionFromTop(lastPosition.position + 1, lastPosition.offset);
         chat.resetUnreadMessages();
         updateChat();
     }
 
     private void forceGoToChat(int position) {
-        pause(chat);
         Chat current = ChatHistory.instance.chatAt(position);
         if (current == null) return;
+        pause(chat);
         openChat(current.getProtocol(), current.getContact());
         resume(current);
     }
@@ -351,11 +340,12 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
         Chat.ScrollState scrollState = new Chat.ScrollState();
         scrollState.position = position;
         scrollState.offset = offset;
-        chat.scrollState = scrollState;
+        positionHash.put(currentContact.getUserId(), scrollState);
     }
 
     private Chat.ScrollState getLastPosition(String jid) {
-        return chat.scrollState;
+        if (positionHash.containsKey(jid)) return positionHash.remove(jid);
+        else return null;
     }
 
     public void openChat(Protocol p, Contact c) {
@@ -397,7 +387,6 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
                 sidebar.setVisibility(View.GONE);
             }
         } else {
-            mucUsersView = null;
             usersImage.setVisibility(View.GONE);
             nickList.setVisibility(View.GONE);
         }
@@ -454,9 +443,8 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
 
     private void updatePosition() {
         //chatListView.requestLayout();
-        //boolean scroll = chatListView.isScroll();
         if (adapter != null) {
-                if (/*scroll && */adapter.getCount() >= 1) {
+                if (adapter.getCount() >= 1) {
                 //    setPosition(adapter.getCount());
                 }
             adapter.notifyDataSetChanged();
@@ -473,12 +461,11 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
                 updatePosition();
             }
         });
-        updateMucList();
-        RosterView rosterView = (RosterView) getActivity().getSupportFragmentManager().findFragmentById(R.id.roster_fragment);
+        /*RosterView rosterView = (RosterView) getActivity().getSupportFragmentManager().findFragmentById(R.id.roster_fragment);
         if (rosterView != null) {
             rosterView.updateBarProtocols();
             rosterView.updateRoster();
-        }
+        }*/
     }
 
     @Override

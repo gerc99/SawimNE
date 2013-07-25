@@ -521,42 +521,37 @@ public final class Jabber extends Protocol implements FormListener {
             connection.sendMessage(nickserv, "IDENTIFY " + password);
         }
     }
-	public static final int CONFERENCE_AFFILIATION_LIST = 11;
-	public static final int CONFERENCE_OWNERS = 25;
-	public static final int CONFERENCE_ADMINS = 21;
-	public static final int CONFERENCE_MEMBERS = 22;
-	public static final int CONFERENCE_INBAN = 23;
 
     protected void doAction(final FragmentActivity a, Contact c, int cmd) {
         final JabberContact contact = (JabberContact) c;
         switch (cmd) {
-            case JabberServiceContact.GATE_CONNECT:
+            case ContactMenu.GATE_CONNECT:
                 getConnection().sendPresence((JabberServiceContact) contact);
                 ContactList.getInstance().activate();
                 break;
 
-            case JabberServiceContact.GATE_DISCONNECT:
+            case ContactMenu.GATE_DISCONNECT:
                 getConnection().sendPresenceUnavailable(c.getUserId());
                 ContactList.getInstance().activate();
                 break;
 
-            case JabberServiceContact.GATE_REGISTER:
+            case ContactMenu.GATE_REGISTER:
                 getConnection().register(c.getUserId());
                 break;
 
-            case JabberServiceContact.GATE_UNREGISTER:
+            case ContactMenu.GATE_UNREGISTER:
                 getConnection().unregister(c.getUserId());
                 getConnection().removeGateContacts(c.getUserId());
                 ContactList.getInstance().activate();
                 break;
 
-            case JabberServiceContact.GATE_ADD:
+            case ContactMenu.GATE_ADD:
                 Search s = this.getSearchForm();
                 s.setJabberGate(c.getUserId());
                 s.show("", false);
                 break;
 
-            case JabberServiceContact.USER_MENU_USERS_LIST:
+            case ContactMenu.USER_MENU_USERS_LIST:
                 if (contact.isOnline() || !isConnected()) {
                     //new ConferenceParticipants(this, (JabberServiceContact) c).show();
                 } else {
@@ -566,7 +561,7 @@ public final class Jabber extends Protocol implements FormListener {
                     sd.showIt();
                 }
                 break;
-			case JabberServiceContact.COMMAND_TITLE:
+			case ContactMenu.COMMAND_TITLE:
                 TextBoxView textbox = new TextBoxView();
                 textbox.setString("/title " + c.getStatusText());
                 textbox.setTextBoxListener(new TextBoxView.TextBoxListener() {
@@ -578,56 +573,56 @@ public final class Jabber extends Protocol implements FormListener {
                 textbox.show(SawimActivity.getInstance().getSupportFragmentManager(), "title_conf");
                 break;
 
-            case JabberServiceContact.CONFERENCE_CONNECT:
+            case ContactMenu.CONFERENCE_CONNECT:
                 join((JabberServiceContact) c);
                 break;
 
-            case JabberServiceContact.CONFERENCE_OPTIONS:
+            case ContactMenu.CONFERENCE_OPTIONS:
                 showOptionsForm((JabberServiceContact) c);
                 break;
 
-            case JabberServiceContact.CONFERENCE_OWNER_OPTIONS:
+            case ContactMenu.CONFERENCE_OWNER_OPTIONS:
                 connection.requestOwnerForm(c.getUserId());
                 break;
-			case CONFERENCE_OWNERS:
+			case ContactMenu.CONFERENCE_OWNERS:
 			    AffiliationListConf alc = getAffiliationListConf();
                 alc.setServer(c.getUserId(), c.getMyName());
                 getConnection().requestAffiliationListConf(c.getUserId(), "ow" + "ner");
                 alc.showIt();
 				break;
-			case CONFERENCE_ADMINS:
+			case ContactMenu.CONFERENCE_ADMINS:
 			    AffiliationListConf al = getAffiliationListConf();
                 al.setServer(c.getUserId(), c.getMyName());
                 getConnection().requestAffiliationListConf(c.getUserId(), "ad" + "min");
                 al.showIt();
 				break;
-			case CONFERENCE_MEMBERS:
+			case ContactMenu.CONFERENCE_MEMBERS:
 			    AffiliationListConf affiliationListConf = getAffiliationListConf();
                 affiliationListConf.setServer(c.getUserId(), c.getMyName());
                 getConnection().requestAffiliationListConf(c.getUserId(), "mem" + "ber");
                 affiliationListConf.showIt();
 				break;
-			case CONFERENCE_INBAN:
+			case ContactMenu.CONFERENCE_INBAN:
 			    AffiliationListConf aff = getAffiliationListConf();
                 aff.setServer(c.getUserId(), c.getMyName());
                 getConnection().requestAffiliationListConf(c.getUserId(), "ou" + "tcast");
                 aff.showIt();
 				break;
 
-            case JabberServiceContact.CONFERENCE_DISCONNECT:
+            case ContactMenu.CONFERENCE_DISCONNECT:
                 leave((JabberServiceContact) c);
                 ContactList.getInstance().activate();
                 break;
 
-            case JabberServiceContact.CONFERENCE_ADD:
+            case ContactMenu.CONFERENCE_ADD:
                 addContact(c);
                 ContactList.getInstance().activate();
                 break;
 
-            case JabberContact.USER_MENU_CONNECTIONS:
+            case ContactMenu.USER_MENU_CONNECTIONS:
                 showListOfSubcontacts(contact);
                 break;
-			case JabberContact.USER_INVITE:
+			case ContactMenu.USER_INVITE:
 			    try {
 	                showInviteForm(c.getUserId() + '/' + ((JabberContact)c).getCurrentSubContact().resource);
 		        } catch (Exception e) {
@@ -635,17 +630,17 @@ public final class Jabber extends Protocol implements FormListener {
 		        }
                 break;
 
-			case JabberContact.USER_MENU_SEEN:
+			case ContactMenu.USER_MENU_SEEN:
                 getConnection().showContactSeen(c.getUserId());
 				ContactList.getInstance().activate();
                 break;
 
-            case JabberContact.USER_MENU_ADHOC:
+            case ContactMenu.USER_MENU_ADHOC:
                 AdHoc adhoc = new AdHoc(this, contact);
                 adhoc.show();
                 break;
 
-            case JabberContact.USER_MENU_REMOVE_ME:
+            case ContactMenu.USER_MENU_REMOVE_ME:
                 removeMe(c.getUserId());
                 ContactList.getInstance().activate();
                 break;
@@ -678,7 +673,7 @@ public final class Jabber extends Protocol implements FormListener {
 
     public void showUserInfo(final FragmentActivity a, Contact contact) {
         if (!contact.isSingleUserContact()) {
-            doAction(a, contact, JabberContact.USER_MENU_USERS_LIST);
+            doAction(a, contact, ContactMenu.USER_MENU_USERS_LIST);
             return;
         }
 

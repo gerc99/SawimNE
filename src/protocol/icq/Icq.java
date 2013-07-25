@@ -254,18 +254,18 @@ public class Icq extends Protocol {
                 ContactList.getInstance().activate();
                 break;
 
-            case Contact.USER_MENU_PS_VISIBLE:
-            case Contact.USER_MENU_PS_INVISIBLE:
-            case Contact.USER_MENU_PS_IGNORE:
+            case ContactMenu.USER_MENU_PS_VISIBLE:
+            case ContactMenu.USER_MENU_PS_INVISIBLE:
+            case ContactMenu.USER_MENU_PS_IGNORE:
                 int list = IGNORE_LIST;
                 switch (action) {
-                    case Contact.USER_MENU_PS_VISIBLE:
+                    case ContactMenu.USER_MENU_PS_VISIBLE:
                         list = VISIBLE_LIST;
                         break;
-                    case Contact.USER_MENU_PS_INVISIBLE:
+                    case ContactMenu.USER_MENU_PS_INVISIBLE:
                         list = INVISIBLE_LIST;
                         break;
-                    case Contact.USER_MENU_PS_IGNORE:
+                    case ContactMenu.USER_MENU_PS_IGNORE:
                         list = IGNORE_LIST;
                         break;
                 }

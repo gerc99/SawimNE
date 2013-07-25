@@ -223,9 +223,9 @@ abstract public class Contact extends TreeNode implements Sortable {
             String ignoreList = inIgnoreList()
                     ? "rem_ignore_list": "add_ignore_list";
 
-            menu.add(Menu.FIRST, USER_MENU_PS_VISIBLE, 2, visibleList);
-            menu.add(Menu.FIRST, USER_MENU_PS_INVISIBLE, 2, invisibleList);
-            menu.add(Menu.FIRST, USER_MENU_PS_IGNORE, 2, ignoreList);
+            menu.add(Menu.FIRST, ContactMenu.USER_MENU_PS_VISIBLE, 2, visibleList);
+            menu.add(Menu.FIRST, ContactMenu.USER_MENU_PS_INVISIBLE, 2, invisibleList);
+            menu.add(Menu.FIRST, ContactMenu.USER_MENU_PS_IGNORE, 2, ignoreList);
         }
     }
 
@@ -303,55 +303,6 @@ abstract public class Contact extends TreeNode implements Sortable {
         return ((booleanValues >>> 16) & 0xFF) - 1;
     }
 
-    public static final int GATE_CONNECT = 0;
-    public static final int GATE_DISCONNECT = 1;
-    public static final int GATE_REGISTER = 2;
-    public static final int GATE_UNREGISTER = 3;
-    public static final int GATE_ADD = 4;
-    public static final int CONFERENCE_CONNECT = 5;
-    public static final int CONFERENCE_OPTIONS = 6;
-    public static final int CONFERENCE_OWNER_OPTIONS = 7;
-    public static final int CONFERENCE_ADD = 8;
-    public static final int COMMAND_TITLE = 9;
-    public static final int USER_MENU_CONNECTIONS = 10;
-    public static final int USER_MENU_REMOVE_ME   = 11;
-    public static final int USER_MENU_ADHOC       = 12;
-    public static final int USER_MENU_SEEN   = 13;
-    public static final int USER_INVITE = 14;
-
-    public static final int ACTION_CURRENT_DEL_CHAT = 15;
-    public static final int ACTION_DEL_ALL_CHATS_EXCEPT_CUR = 16;
-    public static final int ACTION_DEL_ALL_CHATS = 17;
-
-    public static final int USER_MENU_REQU_AUTH        = 1004;
-    public static final int USER_MENU_USER_REMOVE      = 1007;
-    public static final int USER_MENU_RENAME           = 1009;
-    public static final int USER_MENU_USER_INFO        = 1012;
-    public static final int USER_MENU_MOVE             = 1015;
-    public static final int USER_MENU_STATUSES         = 1016;
-    public static final int USER_MENU_HISTORY          = 1025;
-    public static final int USER_MENU_ADD_USER         = 1018;
-
-    public static final int USER_MENU_GRANT_AUTH       = 1021;
-    public static final int USER_MENU_DENY_AUTH        = 1022;
-
-    public static final int USER_MENU_PS_VISIBLE       = 1034;
-    public static final int USER_MENU_PS_INVISIBLE     = 1035;
-    public static final int USER_MENU_PS_IGNORE        = 1036;
-
-    public static final int USER_MENU_USERS_LIST = 1037;
-    public static final int USER_MANAGE_CONTACT = 1038;
-
-    public static final int USER_MENU_WAKE = 13;
-    public static final int USER_MENU_FILE_TRANS = 1005;
-    public static final int USER_MENU_CAM_TRANS  = 1006;
-	
-	public static final int USER_MENU_TRACK  = 1042;
-	public static final int USER_MENU_TRACK_CONF = 1045;
-	
-	public static final int USER_MENU_ANNOTATION  = 1043;
-    public static final int CONFERENCE_DISCONNECT = 1040;
-
     protected abstract void initManageContactMenu(Protocol protocol, SubMenu menu);
     protected void initContextMenu(Protocol protocol, ContextMenu contactMenu) {
         addChatItems(contactMenu);
@@ -363,11 +314,11 @@ abstract public class Contact extends TreeNode implements Sortable {
     protected final void addChatItems(ContextMenu menu) {
         if (isSingleUserContact()) {
             if (!isAuth()) {
-                menu.add(Menu.FIRST, USER_MENU_REQU_AUTH, 2, R.string.requauth);
+                menu.add(Menu.FIRST, ContactMenu.USER_MENU_REQU_AUTH, 2, R.string.requauth);
             }
         }
         if (!isTemp() && !isConference()) {
-            menu.add(Menu.FIRST, USER_MENU_TRACK, 2, R.string.extra_settings);
+            menu.add(Menu.FIRST, ContactMenu.USER_MENU_TRACK, 2, R.string.extra_settings);
 		}
         if (isSingleUserContact() || isOnline()) {
             /*if (sawim.modules.fs.FileSystem.isSupported()) {
@@ -380,14 +331,14 @@ abstract public class Contact extends TreeNode implements Sortable {
         }
     }
     protected final void addGeneralItems(Protocol protocol, ContextMenu menu) {
-        menu.add(Menu.FIRST, USER_MENU_USER_INFO, 2, R.string.user_info);
-        SubMenu manageContact = menu.addSubMenu(Menu.FIRST, USER_MANAGE_CONTACT, 2, R.string.manage);
+        menu.add(Menu.FIRST, ContactMenu.USER_MENU_USER_INFO, 2, R.string.user_info);
+        SubMenu manageContact = menu.addSubMenu(Menu.FIRST, ContactMenu.USER_MANAGE_CONTACT, 2, R.string.manage);
         initManageContactMenu(protocol, manageContact);
         if (!isTemp()) {
-            menu.add(Menu.FIRST, USER_MENU_HISTORY, 2, R.string.history);
+            menu.add(Menu.FIRST, ContactMenu.USER_MENU_HISTORY, 2, R.string.history);
         }
         if (isOnline()) {
-            menu.add(Menu.FIRST, USER_MENU_STATUSES, 2, R.string.statuses);
+            menu.add(Menu.FIRST, ContactMenu.USER_MENU_STATUSES, 2, R.string.statuses);
         }
     }
 }

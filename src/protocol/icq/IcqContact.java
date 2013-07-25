@@ -5,6 +5,7 @@ import DrawControls.icons.ImageList;
 import android.view.Menu;
 import android.view.SubMenu;
 import protocol.Contact;
+import protocol.ContactMenu;
 import protocol.Protocol;
 import ru.sawim.R;
 
@@ -63,16 +64,16 @@ public class IcqContact extends Contact {
             initPrivacyMenu(menu);
             
             if (temp) {
-                menu.add(Menu.FIRST, USER_MENU_ADD_USER, 2, R.string.add_user);
+                menu.add(Menu.FIRST, ContactMenu.USER_MENU_ADD_USER, 2, R.string.add_user);
             } else {
                 if (protocol.getGroupItems().size() > 1) {
-                    menu.add(Menu.FIRST, USER_MENU_MOVE, 2, R.string.move_to_group);
+                    menu.add(Menu.FIRST, ContactMenu.USER_MENU_MOVE, 2, R.string.move_to_group);
                 }
                 if (!isAuth()) {
-                    menu.add(Menu.FIRST, USER_MENU_REQU_AUTH, 2, R.string.requauth);
+                    menu.add(Menu.FIRST, ContactMenu.USER_MENU_REQU_AUTH, 2, R.string.requauth);
                 }
                 if (inList) {
-                    menu.add(Menu.FIRST, USER_MENU_RENAME, 2, R.string.rename);
+                    menu.add(Menu.FIRST, ContactMenu.USER_MENU_RENAME, 2, R.string.rename);
                 }
             }
         }
@@ -81,7 +82,7 @@ public class IcqContact extends Contact {
                 menu.add(Menu.FIRST, USER_MENU_REMOVE_ME, 2, R.string.remove_me);
             }
             if (inList) {
-                menu.add(Menu.FIRST, USER_MENU_USER_REMOVE, 2, R.string.remove);
+                menu.add(Menu.FIRST, ContactMenu.USER_MENU_USER_REMOVE, 2, R.string.remove);
             }
         }
     }
