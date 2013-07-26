@@ -160,10 +160,12 @@ public class VirtualListView extends Fragment implements VirtualList.OnVirtualLi
     }
 
     @Override
-    public void setCurrentItemIndex(final int i) {
+    public void setCurrentItemIndex(final int i, final boolean isSelected) {
         VirtualListActivity.getInstance().runOnUiThread(new Runnable() {
              @Override
              public void run() {
+                 if (isSelected)
+                    adapter.setSelectedItem(i);
                  lv.setSelection(i);
              }
          });

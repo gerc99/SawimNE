@@ -120,11 +120,11 @@ public class ExternalApi {
         return uri.toString();
     }
 
-    public void showHistory(HistoryStorage history) {
+    /*public void showHistory(HistoryStorage history) {
         String historyFilePath = history.getAndroidStorage().getTextFile();
         Intent intent = new Intent(Intent.ACTION_VIEW);
         Uri uri = Uri.parse("file://" + historyFilePath);
         intent.setDataAndType(uri, "text/plain");
         activity.startActivity(intent);
-    }
+    }*/
 }

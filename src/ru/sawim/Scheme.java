@@ -164,7 +164,7 @@ public class Scheme {
         System.arraycopy(scheme, 0, currentTheme, 0 , currentTheme.length);
     }
 
-    public static int getColor(int color) {
+    public static int getColor(byte color) {
         return 0xff000000 | getScheme()[color];
     }
 

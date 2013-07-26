@@ -1,7 +1,6 @@
 package ru.sawim.models;
 
 import DrawControls.icons.Icon;
-import DrawControls.icons.ImageList;
 import DrawControls.tree.TreeNode;
 import DrawControls.tree.VirtualContactList;
 import android.database.DataSetObserver;
@@ -17,12 +16,9 @@ import protocol.Contact;
 import protocol.Group;
 import protocol.Protocol;
 import protocol.XStatusInfo;
-import protocol.mrim.Mrim;
-import protocol.mrim.MrimPhoneContact;
 import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.Scheme;
-import sawim.Options;
 import sawim.chat.ChatHistory;
 import sawim.chat.message.Message;
 import sawim.modules.tracking.Tracking;
@@ -44,12 +40,14 @@ public class RosterAdapter extends BaseAdapter {
     private List<TreeNode> items;
     private LayoutInflater mInflater;
     private int type;
+    Protocol protocol;
 
     public RosterAdapter(LayoutInflater inf, VirtualContactList vcl, List<TreeNode> drawItems, int type) {
         mInflater = inf;
         this.vcl = vcl;
         items = drawItems;
         this.type = type;
+        protocol = vcl.getCurrentProtocol();
     }
 
     @Override
@@ -83,9 +81,7 @@ public class RosterAdapter extends BaseAdapter {
 
     @Override
     public View getView(int i, View convertView, ViewGroup viewGroup) {
-        TreeNode o = getItem(i);
         ViewHolderRoster holder;
-        Protocol protocol = vcl.getCurrentProtocol();
         if (convertView == null) {
             convertView = mInflater.inflate(R.layout.roster_item, null);
             holder = new ViewHolderRoster(vcl, convertView);
@@ -93,6 +89,7 @@ public class RosterAdapter extends BaseAdapter {
         } else {
             holder = (ViewHolderRoster) convertView.getTag();
         }
+        TreeNode o = getItem(i);
         if (o != null)
             if (type == ONLINE_CONTACTS && o.isContact()) {
                 holder.populateFromContact(protocol, (Contact) o);
@@ -107,43 +104,45 @@ public class RosterAdapter extends BaseAdapter {
     }
 
     static class ViewHolderRoster {
-
-        View item = null;
-        private TextView itemName = null;
-        private TextView itemDescriptionText = null;
-        private ImageView itemFirstImage = null;
-        private ImageView itemSecondImage = null;
-        private ImageView itemThirdImage;
-        private ImageView itemFourthImage;
-        private ImageView itemFifthImage;
-        private VirtualContactList vcl;
-        ImageList groupIcons = ImageList.createImageList("/gricons.png");
+        final View item;
+        private final TextView itemName;
+        private final TextView itemDescriptionText;
+        private final ImageView itemFirstImage;
+        private final ImageView itemSecondImage;
+        private final ImageView itemThirdImage;
+        private final ImageView itemFourthImage;
+        private final ImageView itemFifthImage;
+        private final VirtualContactList vcl;
 
         public ViewHolderRoster(VirtualContactList vcl, View item) {
             this.vcl = vcl;
             this.item = item;
+            itemName = (TextView) item.findViewById(R.id.item_name);
+            itemDescriptionText = (TextView) item.findViewById(R.id.item_description);
+            itemFirstImage = (ImageView) item.findViewById(R.id.first_image);
+            itemSecondImage = (ImageView) item.findViewById(R.id.second_image);
+            itemThirdImage = (ImageView) item.findViewById(R.id.third_image);
+            itemFourthImage = (ImageView) item.findViewById(R.id.fourth_rule_image);
+            itemFifthImage = (ImageView) item.findViewById(R.id.fifth_rule_image);
         }
 
         void populateFromGroup(Group g) {
-            boolean isExpanded = g.isExpanded();
-            TextView itemName = getItemName();
             itemName.setTextSize(General.getFontSize());
             itemName.setText(g.getText());
             itemName.setTextColor(Scheme.getColor(Scheme.THEME_GROUP));
             itemName.setTypeface(Typeface.DEFAULT);
 
-            ImageView firstImage = getItemFirstImage();
-            firstImage.setVisibility(ImageView.VISIBLE);
-            firstImage.setImageBitmap((isExpanded) ? groupIcons.iconAt(1).getImage() : groupIcons.iconAt(0).getImage());
+            itemFirstImage.setVisibility(ImageView.VISIBLE);
+            itemFirstImage.setImageBitmap(g.getLeftIcon().getImage());
 
-            getItemDescriptionText().setVisibility(TextView.GONE);
-            getItemThirdImage().setVisibility(ImageView.GONE);
-            getItemSecondImage().setVisibility(ImageView.GONE);
-            getItemFifthRuleImage().setVisibility(ImageView.GONE);
+            itemDescriptionText.setVisibility(TextView.GONE);
+            itemThirdImage.setVisibility(ImageView.GONE);
+            itemSecondImage.setVisibility(ImageView.GONE);
+            itemFifthImage.setVisibility(ImageView.GONE);
 
             Icon messIcon = ChatHistory.instance.getUnreadMessageIcon(g.getContacts());
-            ImageView messImage = getItemFourthRuleImage();
-            if (isExpanded || messIcon == null) {
+            ImageView messImage = itemFourthImage;
+            if (g.isExpanded() || messIcon == null) {
                 messImage.setVisibility(ImageView.GONE);
             } else {
                 messImage.setVisibility(ImageView.VISIBLE);
@@ -152,7 +151,6 @@ public class RosterAdapter extends BaseAdapter {
         }
 
         void populateFromContact(Protocol p, Contact item) {
-            TextView itemName = getItemName();
             itemName.setTextSize(General.getFontSize());
             if (item.subcontactsS() == 0)
                 itemName.setText(item.getText());
@@ -161,46 +159,40 @@ public class RosterAdapter extends BaseAdapter {
             itemName.setTextColor(Scheme.getColor(item.getTextTheme()));
             itemName.setTypeface(item.hasChat() ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT);
 
-            TextView itemStausText = getItemDescriptionText();
-            itemStausText.setTextSize(General.getFontSize() - 2);
-            if (Options.getBoolean(Options.OPTION_SHOW_STATUS_LINE)) {
-                itemStausText.setVisibility(TextView.VISIBLE);
-                itemStausText.setText(vcl.getStatusMessage(item));
-                itemStausText.setTextColor(Scheme.getColor(Scheme.THEME_CONTACT_STATUS));
+            itemDescriptionText.setTextSize(General.getFontSize() - 2);
+            if (General.showStatusLine) {
+                itemDescriptionText.setVisibility(TextView.VISIBLE);
+                itemDescriptionText.setText(vcl.getStatusMessage(item));
+                itemDescriptionText.setTextColor(Scheme.getColor(Scheme.THEME_CONTACT_STATUS));
             } else {
-                itemStausText.setVisibility(TextView.GONE);
+                itemDescriptionText.setVisibility(TextView.GONE);
             }
 
-            ImageView statusImage = getItemFirstImage();
-            Icon icStatus = p.getStatusInfo().getIcon(item.getStatusIndex());
-            if (item instanceof MrimPhoneContact)
-                icStatus = Mrim.getPhoneContactIcon();
+            Icon icStatus = item.getLeftIcon();
             if (icStatus == null) {
-                statusImage.setVisibility(ImageView.GONE);
+                itemFirstImage.setVisibility(ImageView.GONE);
             } else {
-                statusImage.setVisibility(ImageView.VISIBLE);
-                statusImage.setImageBitmap(icStatus.getImage());
+                itemFirstImage.setVisibility(ImageView.VISIBLE);
+                itemFirstImage.setImageBitmap(icStatus.getImage());
             }
             if (item.isTyping()) {
-                statusImage.setImageBitmap(Message.msgIcons.iconAt(Message.ICON_TYPE).getImage());
+                itemFirstImage.setImageBitmap(Message.msgIcons.iconAt(Message.ICON_TYPE).getImage());
             } else {
                 Icon icMess = Message.msgIcons.iconAt(item.getUnreadMessageIcon());
                 if (icMess != null)
-                    statusImage.setImageBitmap(icMess.getImage());
+                    itemFirstImage.setImageBitmap(icMess.getImage());
             }
 
-            ImageView xStatusImage = getItemSecondImage();
             if (item.getXStatusIndex() == XStatusInfo.XSTATUS_NONE) {
-                xStatusImage.setVisibility(ImageView.GONE);
+                itemSecondImage.setVisibility(ImageView.GONE);
             } else {
-                xStatusImage.setVisibility(ImageView.VISIBLE);
-                xStatusImage.setImageBitmap(p.getXStatusInfo().getIcon(item.getXStatusIndex()).getImage());
+                itemSecondImage.setVisibility(ImageView.VISIBLE);
+                itemSecondImage.setImageBitmap(p.getXStatusInfo().getIcon(item.getXStatusIndex()).getImage());
             }
 
             if (!item.isTemp()) {
                 Icon icAuth = item.authIcon.iconAt(0);
-                ImageView thirdImage = getItemThirdImage();
-                thirdImage.setVisibility(ImageView.VISIBLE);
+                itemThirdImage.setVisibility(ImageView.VISIBLE);
                 if (item.isAuth()) {
                     int privacyList = -1;
                     if (item.inIgnoreList()) {
@@ -211,73 +203,29 @@ public class RosterAdapter extends BaseAdapter {
                         privacyList = 2;
                     }
                     if (privacyList != -1)
-                        thirdImage.setImageBitmap(item.serverListsIcons.iconAt(privacyList).getImage());
+                        itemThirdImage.setImageBitmap(item.serverListsIcons.iconAt(privacyList).getImage());
                     else
-                        thirdImage.setVisibility(ImageView.GONE);
+                        itemThirdImage.setVisibility(ImageView.GONE);
                 } else {
-                    thirdImage.setImageBitmap(icAuth.getImage());
+                    itemThirdImage.setImageBitmap(icAuth.getImage());
                 }
             }
 
             Icon icClient = (null != p.clientInfo) ? p.clientInfo.getIcon(item.clientIndex) : null;
-            ImageView itemClientImage = getItemFourthRuleImage();
-            if (icClient != null && !Options.getBoolean(Options.OPTION_HIDE_ICONS_CLIENTS)) {
-                itemClientImage.setVisibility(ImageView.VISIBLE);
-                itemClientImage.setImageBitmap(icClient.getImage());
+            if (icClient != null && !General.hideIconsClient) {
+                itemFourthImage.setVisibility(ImageView.VISIBLE);
+                itemFourthImage.setImageBitmap(icClient.getImage());
             } else {
-                itemClientImage.setVisibility(ImageView.GONE);
+                itemFourthImage.setVisibility(ImageView.GONE);
             }
 
-            ImageView itemFifthRuleImage = getItemFifthRuleImage();
             String id = item.getUserId();
             if (Tracking.isTrackingEvent(id, Tracking.GLOBAL) == Tracking.TRUE) {
-                itemFifthRuleImage.setVisibility(ImageView.VISIBLE);
-                itemFifthRuleImage.setImageBitmap(Tracking.getTrackIcon(id).getImage());
+                itemFifthImage.setVisibility(ImageView.VISIBLE);
+                itemFifthImage.setImageBitmap(Tracking.getTrackIcon(id).getImage());
             } else {
-                itemFifthRuleImage.setVisibility(ImageView.GONE);
+                itemFifthImage.setVisibility(ImageView.GONE);
             }
-        }
-
-        public TextView getItemName() {
-            if (itemName == null)
-                itemName = (TextView) item.findViewById(R.id.item_name);
-            return itemName;
-        }
-
-        public TextView getItemDescriptionText() {
-            if (itemDescriptionText == null)
-                itemDescriptionText = (TextView) item.findViewById(R.id.item_description);
-            return itemDescriptionText;
-        }
-
-        public ImageView getItemFirstImage() {
-            if (itemFirstImage == null)
-                itemFirstImage = (ImageView) item.findViewById(R.id.first_image);
-            return itemFirstImage;
-        }
-
-        public ImageView getItemSecondImage() {
-            if (itemSecondImage == null)
-                itemSecondImage = (ImageView) item.findViewById(R.id.second_image);
-            return itemSecondImage;
-        }
-
-        public ImageView getItemThirdImage() {
-            if (itemThirdImage == null)
-                itemThirdImage = (ImageView) item.findViewById(R.id.third_image);
-            return itemThirdImage;
-        }
-
-        public ImageView getItemFourthRuleImage() {
-            if (itemFourthImage == null)
-                itemFourthImage = (ImageView) item.findViewById(R.id.fourth_rule_image);
-            return itemFourthImage;
-        }
-
-        public ImageView getItemFifthRuleImage() {
-            if (itemFifthImage == null)
-                itemFifthImage = (ImageView) item.findViewById(R.id.fifth_rule_image);
-            return itemFifthImage;
         }
     }
 }

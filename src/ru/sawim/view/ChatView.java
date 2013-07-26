@@ -52,12 +52,11 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
     private Chat chat;
     private Protocol protocol;
     private Contact currentContact;
-    private List<MessData> messData;
     private boolean sendByEnter;
     private ListView nickList;
     private ListView chatListView;
     private MySpinner spinner;
-    private MucUsersView mucUsersView = new MucUsersView();
+    private MucUsersView mucUsersView;
     private MessagesAdapter adapter = new MessagesAdapter();
     private ChatsSpinnerAdapter chatsSpinnerAdapter;
     private LinearLayout chatBarLayout;
@@ -162,7 +161,7 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
                         break;
 
                     case ContactMenu.ACTION_DEL_ALL_CHATS_EXCEPT_CUR:
-                        chatListView.post(new Runnable() {
+                        getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 ChatHistory.instance.removeAll(chat);
@@ -171,7 +170,7 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
                         break;
 
                     case ContactMenu.ACTION_DEL_ALL_CHATS:
-                        chatListView.post(new Runnable() {
+                        getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 ChatHistory.instance.removeAll(null);
@@ -210,10 +209,9 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-        MessData md = messData.get(info.position);
+        MessData md = adapter.getItem(info.position);
         String nick = md.getNick();
         String msg = md.getText();
-        JabberServiceContact jabberServiceContact = (JabberServiceContact) currentContact;
         switch (item.getItemId()) {
             case ContactMenu.MENU_COPY_TEXT:
                 if (null == md) {
@@ -236,7 +234,7 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
                 break;
 
             case ContactMenu.COMMAND_PRIVATE:
-                String jid = Jid.realJidToSawimJid(jabberServiceContact.getUserId() + "/" + nick);
+                String jid = Jid.realJidToSawimJid(currentContact.getUserId() + "/" + nick);
                 JabberServiceContact c = (JabberServiceContact) protocol.getItemByUIN(jid);
                 if (null == c) {
                     c = (JabberServiceContact) protocol.createTempContact(jid);
@@ -248,10 +246,10 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
                 resume(getCurrentChat());
                 break;
             case ContactMenu.COMMAND_INFO:
-                protocol.showUserInfo(getActivity(), jabberServiceContact.getPrivateContact(nick));
+                protocol.showUserInfo(getActivity(), ((JabberServiceContact) currentContact).getPrivateContact(nick));
                 break;
             case ContactMenu.COMMAND_STATUS:
-                protocol.showStatus(jabberServiceContact.getPrivateContact(nick));
+                protocol.showStatus(((JabberServiceContact) currentContact).getPrivateContact(nick));
                 break;
 
             case ContactMenu.ACTION_ADD_TO_HISTORY:
@@ -309,8 +307,7 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
     public void pause(Chat chat) {
         if (chat == null) return;
         View item = chatListView.getChildAt(0);
-        int offset = (item == null) ? 0 : Math.abs(item.getBottom());
-        addLastPosition(chatListView.getFirstVisiblePosition(), offset);
+        addLastPosition(chatListView.getFirstVisiblePosition(), (item == null) ? 0 : Math.abs(item.getBottom()));
 
         General.getInstance().setOnUpdateChat(null);
         chat.resetUnreadMessages();
@@ -319,13 +316,18 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
             ChatHistory.instance.unregisterChat(chat);
     }
 
-    public void resume(final Chat chat) {
+    public void resume(Chat chat) {
         if (chat == null) return;
         final Chat.ScrollState lastPosition = getLastPosition(chat.getContact().getUserId());
         if (lastPosition != null)
             chatListView.setSelectionFromTop(lastPosition.position + 1, lastPosition.offset);
-        chat.resetUnreadMessages();
         updateChat();
+
+        General.getInstance().setOnUpdateChat(this);
+        chat.resetUnreadMessages();
+        chat.setVisibleChat(true);
+        if (chat.empty())
+            ChatHistory.instance.registerChat(chat);
     }
 
     private void forceGoToChat(int position) {
@@ -349,17 +351,12 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
     }
 
     public void openChat(Protocol p, Contact c) {
-        chat = null;
-        General.getInstance().setOnUpdateChat(null);
-        General.getInstance().setOnUpdateChat(this);
-        final FragmentActivity currentActivity = getActivity();
         protocol = p;
         currentContact = c;
+        final FragmentActivity currentActivity = getActivity();
         chat = protocol.getChat(currentContact);
-        messData = chat.getMessData();
         chatListView = (ListView) currentActivity.findViewById(R.id.chat_history_list);
-        adapter.init(currentActivity, chat, messData);
-        messageEditor.addTextChangedListener(textWatcher);
+        adapter.init(currentActivity, chat.getMessData());
         chatListView.setStackFromBottom(true);
         chatListView.setTranscriptMode(ListView.TRANSCRIPT_MODE_NORMAL);
         chatListView.setOnCreateContextMenuListener(this);
@@ -367,17 +364,15 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
         chatListView.setFocusable(true);
         chatListView.setCacheColorHint(0x00000000);
         chatListView.setAdapter(adapter);
-        chat.setVisibleChat(true);
         if (spinner.getOnItemSelectedEvenIfUnchangedListener() == null)
             initSpinner();
         int background = Scheme.getColorWithAlpha(Scheme.THEME_BACKGROUND);
         chat_viewLayout.setBackgroundColor(background);
-        messageEditor.setBackgroundColor(background);
-        messageEditor.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
 
         sidebar.setVisibility(View.GONE);
         sidebar.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
         if (currentContact instanceof JabberServiceContact && currentContact.isConference()) {
+            mucUsersView = new MucUsersView();
             mucUsersView.init(protocol, (JabberServiceContact) currentContact);
             mucUsersView.show(this, nickList);
             usersImage.setVisibility(View.VISIBLE);
@@ -411,7 +406,13 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
                 new SmilesView().show(currentActivity.getSupportFragmentManager(), "show-smiles");
             }
         });
-
+        messageEditor.addTextChangedListener(textWatcher);
+        messageEditor.setBackgroundColor(background);
+        messageEditor.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
+        if (sendByEnter) {
+            messageEditor.setImeOptions(EditorInfo.IME_ACTION_SEND);
+            messageEditor.setOnEditorActionListener(enterListener);
+        }
         sendByEnter = Options.getBoolean(Options.OPTION_SIMPLE_INPUT);
         if (sendByEnter) {
             sendButton.setVisibility(ImageButton.GONE);
@@ -425,10 +426,6 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
                 }
             });
         }
-        if (sendByEnter) {
-            messageEditor.setImeOptions(EditorInfo.IME_ACTION_SEND);
-            messageEditor.setOnEditorActionListener(enterListener);
-        }
     }
 
     private void updateChatIcon() {
@@ -441,24 +438,15 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
         }
     }
 
-    private void updatePosition() {
-        //chatListView.requestLayout();
-        if (adapter != null) {
-                if (adapter.getCount() >= 1) {
-                //    setPosition(adapter.getCount());
-                }
-            adapter.notifyDataSetChanged();
-        }
-    }
-
     @Override
     public void updateChat() {
-        if (chatListView == null) return;
-        chatListView.post(new Runnable() {
+        getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 updateChatIcon();
-                updatePosition();
+                if (adapter != null) {
+                    adapter.refreshList(chat.getMessData());
+                }
             }
         });
         /*RosterView rosterView = (RosterView) getActivity().getSupportFragmentManager().findFragmentById(R.id.roster_fragment);
@@ -466,20 +454,6 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
             rosterView.updateBarProtocols();
             rosterView.updateRoster();
         }*/
-    }
-
-    @Override
-    public void addMessage(final Chat chat, final MessData mess) {
-        if (chatListView == null) return;
-        chatListView.post(new Runnable() {
-            @Override
-            public void run() {
-                if (adapter != null) {
-                    chat.removeOldMessages();
-                    chat.getMessData().add(mess);
-                }
-            }
-        });
     }
 
     @Override

@@ -228,9 +228,8 @@ public final class VirtualContactList {
     }
 
     public void removeFromGroup(Group g, Contact c) {
-        if (g.getContacts().removeElement(c)) {
+        if (g.getContacts().removeElement(c))
             g.updateGroupData();
-        }
     }
 
     public void addToGroup(Group group, Contact contact) {
@@ -242,25 +241,14 @@ public final class VirtualContactList {
             onUpdateRoster.putIntoQueue(group);
     }
 
-    /*private Protocol getProtocol(Group g) {
-        for (int i = 0; i < getProtocolCount(); ++i) {
-            Protocol p = getProtocol(i);
-            if (-1 != Util.getIndex(p.getGroupItems(), g)) {
-                return p;
-            }
-        }
-        return getProtocol(0);
-    }*/
-
     public final void setActiveContact(Contact cItem) {
-        if (onUpdateRoster != null) {
+        if (onUpdateRoster != null)
             onUpdateRoster.setCurrentNode(cItem);
-        }
     }
 
     public String getStatusMessage(Contact contact) {
         String message;
-        Protocol protocol = /*getContactProtocol(contact)*/getCurrentProtocol();
+        Protocol protocol = getCurrentProtocol();
         if (protocol == null) return "";
         if (XStatusInfo.XSTATUS_NONE != contact.getXStatusIndex()) {
             message = contact.getXStatusText();
@@ -276,8 +264,8 @@ public final class VirtualContactList {
         if (!StringConvertor.isEmpty(message)) {
             return message;
         }
-        String status = protocol.getStatusInfo().getName(contact.getStatusIndex());
-        return (status == null) ? "" : status;
+        message = protocol.getStatusInfo().getName(contact.getStatusIndex());
+        return (message == null) ? "" : message;
     }
 
     public interface OnUpdateRoster {

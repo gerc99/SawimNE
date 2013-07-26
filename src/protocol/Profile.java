@@ -31,6 +31,7 @@ public final class Profile {
             + "|GTalk"
             + "|Ya.Online"
             + "|QIP"
+            + "|vk.com (api)"
     ).substring(1), '|');
     public static final byte[] protocolTypes = new byte[] {
             PROTOCOL_ICQ,
@@ -43,6 +44,7 @@ public final class Profile {
             PROTOCOL_GTALK,
             PROTOCOL_YANDEX,
             PROTOCOL_QIP,
+            PROTOCOL_VK_API,
     };
     public static final String[] protocolIds = new String[] {
             "UIN/E-mail",
@@ -55,6 +57,7 @@ public final class Profile {
             "Login",
             "Login",
             "Login",
+            "E-mail/phone",
     };
 
     public byte protocolType;

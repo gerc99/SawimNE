@@ -157,7 +157,7 @@ public final class MirandaNotes {
         for (int i = 0; i < size; ++i) {
             addNote((Note)notes.elementAt(i));
         }
-        screen.setCurrentItemIndex(index);
+        screen.setCurrentItemIndex(index, false);
     }
 
     public Note addEmptyNote() {
@@ -169,7 +169,7 @@ public final class MirandaNotes {
         notes.removeElementAt(currItem);
     }
     private void selectNote(Note note) {
-        screen.setCurrentItemIndex(notes.indexOf(note));
+        screen.setCurrentItemIndex(notes.indexOf(note), false);
     }
 
     public void showNoteEditor(Note n) {

@@ -20,21 +20,21 @@ public class HistoryStorage {
     private String storageName;
     private Storage historyStore;
     private int currRecordCount = -1;
-    private AndroidHistoryStorage androidStorage;
+    //private AndroidHistoryStorage androidStorage;
 
     public HistoryStorage(Contact contact) {
         this.contact = contact;
         uniqueUserId = ContactList.getInstance().getProtocol(contact).getUniqueUserId(contact);
         storageName = getRSName();
-        androidStorage = new AndroidHistoryStorage(this);
+        //androidStorage = new AndroidHistoryStorage(this);
     }
     public Contact getContact() {
         return contact;
     }
 
-    public AndroidHistoryStorage getAndroidStorage() {
-        return androidStorage;
-    }
+    //public AndroidHistoryStorage getAndroidStorage() {
+    //    return androidStorage;
+    //}
 
     public static HistoryStorage getHistory(Contact contact) {
         return new HistoryStorage(contact);

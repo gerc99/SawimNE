@@ -340,7 +340,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
                 currIndex++;
             }
         }
-        screen.setCurrentItemIndex(index);
+        screen.setCurrentItemIndex(index, true);
     }
     public void textboxAction(TextBoxView box, boolean ok) {
         if (!ok) {

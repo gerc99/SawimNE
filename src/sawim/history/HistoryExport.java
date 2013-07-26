@@ -91,7 +91,7 @@ class HistoryExport implements Runnable, FileBrowserListener {
         int guiStep = Math.max(messageCount / 100, 1) * 5;
         for (int i = 0, curStep = 0; i < messageCount; ++i) {
             CachedRecord record = storage.getRecord(i);
-            write(os, " " + ((record.type == 0) ? nick : me)
+            write(os, " " + ((record.type == 0) ? (c.isConference() ? record.from : nick) : me)
                     + " (" + record.date + "):\r\n");
             write(os, StringConvertor.restoreCrLf(record.text) + "\r\n");
             curStep++;

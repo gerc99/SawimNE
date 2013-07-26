@@ -1,5 +1,7 @@
 package protocol;
 
+import DrawControls.icons.Icon;
+import DrawControls.icons.ImageList;
 import DrawControls.tree.TreeNode;
 import sawim.comm.Sortable;
 import sawim.comm.Util;
@@ -14,6 +16,7 @@ public class Group extends TreeNode implements Sortable {
     private String caption = null;
     private int groupId;
     private boolean expanded = false;
+    private static final ImageList groupIcons = ImageList.createImageList("/gricons.png");
 
     public static final int NOT_IN_GROUP = -1;
 
@@ -108,6 +111,11 @@ public class Group extends TreeNode implements Sortable {
 
     public final String getText() {
         return caption;
+    }
+
+    @Override
+    public Icon getLeftIcon() {
+        return expanded ? groupIcons.iconAt(1) : groupIcons.iconAt(0);
     }
 
     @Override

@@ -149,7 +149,7 @@ public final class ChatHistory {
         Contact c = item.getContact();
         c.updateChatState(null);
         item.getProtocol().ui_updateContact(c);
-        if (0 < item.getOtherMessageCount()) {
+        if (0 < item.getUnreadMessageCount()) {
             ContactList.getInstance().markMessages(c);
         }
     }
@@ -247,7 +247,7 @@ public final class ChatHistory {
         int current = 0;
         for (int i = 0; i < historyTable.size(); ++i) {
             Chat chat = chatAt(i);
-            if (0 < chat.getOtherMessageCount()) {
+            if (0 < chat.getUnreadMessageCount()) {
                 return i;
             }
             if (currentContact == chat.getContact()) {
@@ -386,7 +386,7 @@ public final class ChatHistory {
             for (int i = getTotal() - 1; 0 <= i; --i) {
                 Chat chat = chatAt(i);
                 
-                int count = chat.getOtherMessageCount();
+                int count = chat.getUnreadMessageCount();
                 for (int j = 0; j < count; ++j) {
                     MessData message = chat.getUnreadMessage(j);
                     ByteArrayOutputStream out = new ByteArrayOutputStream();

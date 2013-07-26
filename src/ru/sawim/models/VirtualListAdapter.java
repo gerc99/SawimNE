@@ -1,6 +1,7 @@
 package ru.sawim.models;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +26,7 @@ public class VirtualListAdapter extends BaseAdapter {
 
     private Context baseContext;
     private List<VirtualListItem> items;
+    private int selectedItem = -1;
 
     public VirtualListAdapter(Context context, List<VirtualListItem> items) {
         this.baseContext = context;
@@ -50,6 +52,10 @@ public class VirtualListAdapter extends BaseAdapter {
     @Override
     public long getItemId(int i) {
         return i;
+    }
+
+    public void setSelectedItem(int position) {
+        selectedItem = position;
     }
 
     @Override
@@ -104,6 +110,12 @@ public class VirtualListAdapter extends BaseAdapter {
         if (element.getImage() != null) {
             holder.imageView.setVisibility(ImageView.VISIBLE);
             holder.imageView.setImageBitmap(element.getImage());
+        }
+        LinearLayout activeItem = (LinearLayout) convertView;
+        if (i == selectedItem && selectedItem != -1) {
+            activeItem.setBackgroundColor(Color.MAGENTA);
+        } else {
+            activeItem.setBackgroundColor(Color.WHITE);
         }
         return convertView;
     }

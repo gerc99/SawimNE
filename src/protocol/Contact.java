@@ -1,5 +1,6 @@
 package protocol;
 
+import DrawControls.icons.Icon;
 import DrawControls.icons.ImageList;
 import DrawControls.tree.TreeNode;
 import android.support.v4.app.FragmentActivity;
@@ -65,23 +66,34 @@ abstract public class Contact extends TreeNode implements Sortable {
     public final String getName() {
         return name;
     }
+
     public void setName(String newName) {
         if (!StringConvertor.isEmpty(newName)) {
     	    name = newName;
         }
     }
+
     public final void setGroupId(int id) {
         groupId = id;
     }
+
     public final int getGroupId() {
         return groupId;
     }
+
     public final void setGroup(Group group) {
         setGroupId((null == group) ? Group.NOT_IN_GROUP : group.getId());
     }
+
     public String getDefaultGroupName() {
         return null;
     }
+
+    @Override
+    public Icon getLeftIcon() {
+        return getProtocol().getStatusInfo().getIcon(getStatusIndex());
+    }
+
     public Protocol getProtocol() {
         return ContactList.getInstance().getProtocol(this);
     }
@@ -90,9 +102,11 @@ abstract public class Contact extends TreeNode implements Sortable {
         xstatus = index;
         xstatusText = (XStatusInfo.XSTATUS_NONE == index) ? null : text;
     }
+
     public final int getXStatusIndex() {
         return xstatus;
     }
+
     public final String getXStatusText() {
         return xstatusText;
     }
@@ -118,12 +132,15 @@ abstract public class Contact extends TreeNode implements Sortable {
         setXStatus(XStatusInfo.XSTATUS_NONE, null);
         beginTyping(false);
     }
+
     public final byte getStatusIndex() {
         return status;
     }
+
     public final String getStatusText() {
         return statusText;
     }
+
     protected final void setStatus(byte statusIndex, String text) {
         if (!isOnline() && (StatusInfo.STATUS_OFFLINE != statusIndex)) {
             setTimeOfChaingingStatus(General.getCurrentGmtTime());
@@ -166,21 +183,27 @@ abstract public class Contact extends TreeNode implements Sortable {
             booleanValues &= ~key;
         }
     }
+
     public final boolean isTemp() {
         return (booleanValues & CONTACT_IS_TEMP) != 0;
     }
+
     public final boolean isAuth() {
         return (booleanValues & CONTACT_NO_AUTH) == 0;
     }
+
     public final void setBooleanValues(byte vals) {
         booleanValues = (booleanValues & ~0xFF) | (vals & 0x7F);
     }
+
     public final byte getBooleanValues() {
         return (byte)(booleanValues & 0x7F);
     }
+
     public final void setTempFlag(boolean isTemp) {
         setBooleanValue(Contact.CONTACT_IS_TEMP, isTemp);
     }
+
     public final void beginTyping(boolean typing) {
         if (typing && isOnline()) {
             booleanValues |= TYPING;
@@ -188,12 +211,15 @@ abstract public class Contact extends TreeNode implements Sortable {
             booleanValues &= ~TYPING;
         }
     }
+
     public final boolean isTyping() {
         return (booleanValues & TYPING) != 0;
     }
+
     public final boolean hasChat() {
         return (booleanValues & HAS_CHAT) != 0;
     }
+
     public final void updateChatState(Chat chat) {
         int icon = -1;
         if (null != chat) {
@@ -299,15 +325,18 @@ abstract public class Contact extends TreeNode implements Sortable {
     public final boolean hasUnreadMessage() {
         return 0 != (booleanValues & 0x00FF0000);
     }
+
     public final int getUnreadMessageIcon() {
         return ((booleanValues >>> 16) & 0xFF) - 1;
     }
 
     protected abstract void initManageContactMenu(Protocol protocol, SubMenu menu);
+
     protected void initContextMenu(Protocol protocol, ContextMenu contactMenu) {
         addChatItems(contactMenu);
         addGeneralItems(protocol, contactMenu);
     }
+
     public void addChatMenuItems(ContextMenu model) {
     }
 

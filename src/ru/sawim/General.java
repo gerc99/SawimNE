@@ -45,6 +45,9 @@ public class General {
 
     private boolean paused = true;
     private static int fontSize;
+    public static boolean hideIconsClient;
+    public static boolean showStatusLine;
+
 
     public void init() {
         instance = this;
@@ -159,6 +162,8 @@ public class General {
 
     public static void updateOptions() {
         fontSize = Options.getInt(Options.OPTION_FONT_SCHEME);
+        showStatusLine = Options.getBoolean(Options.OPTION_SHOW_STATUS_LINE);
+        hideIconsClient = Options.getBoolean(Options.OPTION_HIDE_ICONS_CLIENTS);
     }
 
     public static int getFontSize() {
@@ -224,7 +229,6 @@ public class General {
 
     public interface OnUpdateChat {
         void updateChat();
-        void addMessage(Chat chat, MessData messData);
         void updateMucList();
         void pastText(String s);
     }

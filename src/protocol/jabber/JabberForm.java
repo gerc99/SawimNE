@@ -70,17 +70,9 @@ final class JabberForm implements FormListener {
         if (apply) {
             if (0 < form.getSize()) {
                 doAction();
-                form.back();
             }
-        } else {
-            switch (type) {
-                case TYPE_CAPTCHA:
-                    Contact c = jabber.getItemByUIN(jid);
-                    ContactList.getInstance().activate(c);
-                    return;
-            }
-            form.back();
         }
+        form.back();
     }
 
     void error(String description) {
@@ -122,12 +114,10 @@ final class JabberForm implements FormListener {
 
             case TYPE_CAPTCHA:
                 jabber.getConnection().requestRawXml(getCaptchaXml());
-                ContactList.getInstance().activate(jabber.getItemByUIN(jid));
                 break;
 
             case TYPE_OWNER:
                 jabber.getConnection().requestRawXml(getOwnerXml());
-                ContactList.getInstance().activate(jabber.getItemByUIN(jid));
                 break;
 
             case TYPE_NONE:

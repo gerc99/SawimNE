@@ -33,9 +33,7 @@ public final class Jabber extends Protocol implements FormListener {
     private ServiceDiscovery disco = null;
 	private AffiliationListConf alistc = null;
 	private MirandaNotes notes = null;
-    
     public static final JabberXStatus xStatus = new JabberXStatus();
-    
     private final Vector bots = new Vector();
 
     public Jabber() {
@@ -63,7 +61,6 @@ public final class Jabber extends Protocol implements FormListener {
     };
 
     private ImageList createStatusIcons(byte type) {
-        
         String file = "jabber";
         switch (type) {
             case Profile.PROTOCOL_GTALK:
@@ -149,7 +146,6 @@ public final class Jabber extends Protocol implements FormListener {
     }
 
     public boolean hasVCardEditor() {
-        
         switch (getProfile().protocolType) {
             case Profile.PROTOCOL_FACEBOOK:
             case Profile.PROTOCOL_VK:
@@ -157,7 +153,6 @@ public final class Jabber extends Protocol implements FormListener {
             case Profile.PROTOCOL_ODNOKLASSNIKI:
                 return false;
         }
-        
         return true;
     }
 

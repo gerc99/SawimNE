@@ -153,6 +153,10 @@ public final class ContactList {
             case Profile.PROTOCOL_JABBER:
                 protocol = new Jabber();
                 break;
+
+            case Profile.PROTOCOL_VK_API:
+                protocol = new protocol.vk.Vk();
+                break;
         }
         if (null == protocol) {
             return;

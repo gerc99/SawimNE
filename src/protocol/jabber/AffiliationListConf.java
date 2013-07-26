@@ -181,7 +181,7 @@ public final class AffiliationListConf implements FormListener, TextBoxView.Text
             }
             currIndex++;
         }
-        screen.setCurrentItemIndex(index);
+        screen.setCurrentItemIndex(index, true);
     }
 
     public void textboxAction(TextBoxView box, boolean ok) {

@@ -21,7 +21,8 @@ public final class ClientInfo {
     }
     public Icon getIcon(int clientIndex) {
         if ((null != iconIndexes) && (CLI_NONE != clientIndex)) {
-            clientIndex = iconIndexes[clientIndex];
+            if (clientIndex < iconIndexes.length)
+                clientIndex = iconIndexes[clientIndex];
         }
         return icons.iconAt(clientIndex);
     }

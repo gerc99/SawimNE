@@ -71,7 +71,7 @@ public class VirtualList {
         void update();
         void back();
         int getCurrItem();
-        void setCurrentItemIndex(int index);
+        void setCurrentItemIndex(int index, boolean isSelected);
     }
 
     public void updateModel() {
@@ -90,9 +90,9 @@ public class VirtualList {
         return 0;
     }
 
-    public void setCurrentItemIndex(int currentItemIndex) {
+    public void setCurrentItemIndex(int currentItemIndex, boolean isSelected) {
         if (virtualListListener != null)
-            virtualListListener.setCurrentItemIndex(currentItemIndex);
+            virtualListListener.setCurrentItemIndex(currentItemIndex, isSelected);
     }
 
     public interface OnBuildOptionsMenu {

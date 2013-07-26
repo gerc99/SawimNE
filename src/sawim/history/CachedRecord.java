@@ -1,8 +1,4 @@
-
 package sawim.history;
-
-import sawim.comm.Util;
-
 
 
 public class CachedRecord {

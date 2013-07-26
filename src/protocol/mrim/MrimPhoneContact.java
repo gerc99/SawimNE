@@ -23,13 +23,13 @@ public class MrimPhoneContact extends MrimContact {
         return 0x100000;
     }
 
-    public void getLeftIcons(Icon[] icons) {
-        icons[0] = Mrim.getPhoneContactIcon();
+    public Icon getLeftIcon() {
+        return Mrim.getPhoneContactIcon();
     }
+
     public void activate(Protocol p) {
         if (hasChat()) {
             p.getChat(this).activate();
-            
         } else {
             new ContactMenu(p, this).doAction(SawimActivity.getInstance(), USER_MENU_SEND_SMS);
         }

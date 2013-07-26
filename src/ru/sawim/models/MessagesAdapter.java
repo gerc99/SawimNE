@@ -26,6 +26,7 @@ import sawim.chat.MessData;
 import sawim.chat.message.Message;
 import ru.sawim.Scheme;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -39,15 +40,17 @@ public class MessagesAdapter extends BaseAdapter implements MyTextView.TextLinkC
 
     private Context baseContext;
     private List<MessData> items;
-    private Chat chat;
+    private LayoutInflater inf;
 
-    public MessagesAdapter() {
+    public void init(Context context, List<MessData> items) {
+        baseContext = context;
+        inf = LayoutInflater.from(baseContext);
+        this.items = items;
     }
 
-    public void init(Context context, Chat chat, List<MessData> items) {
-        this.baseContext = context;
-        this.chat = chat;
-        this.items = items;
+    public void refreshList(List<MessData> list) {
+        items = list;
+        notifyDataSetChanged();
     }
 
     @Override
@@ -70,7 +73,6 @@ public class MessagesAdapter extends BaseAdapter implements MyTextView.TextLinkC
         View row = convertView;
         ViewHolder holder;
         if (row == null) {
-            LayoutInflater inf = LayoutInflater.from(baseContext);
             row = inf.inflate(R.layout.chat_item, null);
             holder = new ViewHolder();
             holder.msgImage = (ImageView) row.findViewById(R.id.msg_icon);
@@ -83,74 +85,61 @@ public class MessagesAdapter extends BaseAdapter implements MyTextView.TextLinkC
         }
         MessData mData = items.get(index);
         String text = mData.getText();
-        ImageView msgImage = holder.msgImage;
-        TextView msgNick = holder.msgNick;
-        TextView msgTime = holder.msgTime;
-        MyTextView msgText = holder.msgText;
+        boolean incoming = mData.isIncoming();
 
-        msgText.setOnTextLinkClickListener(this);
         ((ViewGroup)row).setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
-        byte bg = Scheme.THEME_BACKGROUND;
+        byte bg;
         if (mData.isService()) {
             bg = Scheme.THEME_CHAT_BG_SYSTEM;
         } else if ((index & 1) == 0) {
-            bg = mData.isIncoming() ? Scheme.THEME_CHAT_BG_IN : Scheme.THEME_CHAT_BG_OUT;
+            bg = incoming ? Scheme.THEME_CHAT_BG_IN : Scheme.THEME_CHAT_BG_OUT;
         } else {
-            bg = mData.isIncoming() ? Scheme.THEME_CHAT_BG_IN_ODD : Scheme.THEME_CHAT_BG_OUT_ODD;
+            bg = incoming ? Scheme.THEME_CHAT_BG_IN_ODD : Scheme.THEME_CHAT_BG_OUT_ODD;
         }
         row.setBackgroundColor(Scheme.getColor(bg));
         if (mData.fullText == null) {
+            holder.msgText.setOnTextLinkClickListener(this);
             mData.fullText = TextFormatter.getFormattedText(text, baseContext);
         }
-        if (mData.isMe()) {
-            msgImage.setVisibility(ImageView.GONE);
-            msgNick.setVisibility(TextView.GONE);
-            msgTime.setVisibility(TextView.GONE);
-            msgText.setText("* " + mData.getNick() + " " + mData.fullText);
-            msgText.setTextColor(Scheme.getColor(mData.isIncoming() ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG));
-            msgText.setTextSize(General.getFontSize() - 2);
-        } else if (mData.isPresence()) {
-            msgImage.setVisibility(ImageView.GONE);
-            msgNick.setVisibility(TextView.GONE);
-            msgTime.setVisibility(TextView.GONE);
-            msgText.setText(mData.getNick() + mData.fullText);
-            msgText.setTextColor(Scheme.getColor(Scheme.THEME_CHAT_INMSG));
-            msgText.setTextSize(General.getFontSize() - 2);
+        if (mData.isMe() || mData.isPresence()) {
+            holder.msgImage.setVisibility(ImageView.GONE);
+            holder.msgNick.setVisibility(TextView.GONE);
+            holder.msgTime.setVisibility(TextView.GONE);
+            if (mData.isMe())
+                holder.msgText.setText("* " + mData.getNick() + " " + mData.fullText);
+            else
+                holder.msgText.setText(mData.getNick() + mData.fullText);
+            holder.msgText.setTextColor(mData.getColor());
+            holder.msgText.setTextSize(General.getFontSize() - 2);
         } else {
             if (mData.iconIndex != Message.ICON_NONE) {
                 Icon icon = Message.msgIcons.iconAt(mData.iconIndex);
                 if (icon == null) {
-                    msgImage.setVisibility(ImageView.GONE);
+                    holder.msgImage.setVisibility(ImageView.GONE);
                 } else {
-                    msgImage.setVisibility(ImageView.VISIBLE);
-                    msgImage.setImageBitmap(icon.getImage());
+                    holder.msgImage.setVisibility(ImageView.VISIBLE);
+                    holder.msgImage.setImageBitmap(icon.getImage());
                 }
             }
 
-            msgNick.setVisibility(TextView.VISIBLE);
-            msgNick.setText(mData.getNick());
-            msgNick.setTextColor(Scheme.getColor(mData.isIncoming() ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG));
-            msgNick.setTypeface(Typeface.DEFAULT_BOLD);
-            msgNick.setTextSize(General.getFontSize());
+            holder.msgNick.setVisibility(TextView.VISIBLE);
+            holder.msgNick.setText(mData.getNick());
+            holder.msgNick.setTextColor(Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG));
+            holder.msgNick.setTypeface(Typeface.DEFAULT_BOLD);
+            holder.msgNick.setTextSize(General.getFontSize());
 
-            msgTime.setVisibility(TextView.VISIBLE);
-            msgTime.setText(mData.strTime);
-            msgTime.setTextColor(Scheme.getColor(mData.isIncoming() ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG));
-            msgTime.setTextSize(General.getFontSize() - 4);
+            holder.msgTime.setVisibility(TextView.VISIBLE);
+            holder.msgTime.setText(mData.strTime);
+            holder.msgTime.setTextColor(Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG));
+            holder.msgTime.setTextSize(General.getFontSize() - 4);
 
-            byte color = Scheme.THEME_TEXT;
-            if (mData.isIncoming() && !chat.getContact().isSingleUserContact()
-                    && Chat.isHighlight(text, chat.getMyName())) {
-                color = Scheme.THEME_CHAT_HIGHLIGHT_MSG;
-            }
-
-            msgText.setText(mData.fullText);
-            msgText.setTextColor(Scheme.getColor(color));
-            msgText.setTextSize(General.getFontSize());
-            MovementMethod m = msgText.getMovementMethod();
+            holder.msgText.setText(mData.fullText);
+            holder.msgText.setTextColor(mData.getColor());
+            holder.msgText.setTextSize(General.getFontSize());
+            MovementMethod m = holder.msgText.getMovementMethod();
             if ((m == null) || !(m instanceof LinkMovementMethod)) {
-                if (msgText.getLinksClickable()) {
-                    msgText.setMovementMethod(LinkMovementMethod.getInstance());
+                if (holder.msgText.getLinksClickable()) {
+                    holder.msgText.setMovementMethod(LinkMovementMethod.getInstance());
                 }
             }
         }
