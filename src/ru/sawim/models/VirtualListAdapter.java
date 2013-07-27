@@ -113,9 +113,9 @@ public class VirtualListAdapter extends BaseAdapter {
         }
         LinearLayout activeItem = (LinearLayout) convertView;
         if (i == selectedItem && selectedItem != -1) {
-            activeItem.setBackgroundColor(Color.MAGENTA);
+            activeItem.setBackgroundColor(Scheme.getInversColor(Scheme.THEME_BACKGROUND));
         } else {
-            activeItem.setBackgroundColor(Color.WHITE);
+            activeItem.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
         }
         return convertView;
     }

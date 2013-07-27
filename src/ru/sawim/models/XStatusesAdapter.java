@@ -11,6 +11,7 @@ import android.widget.*;
 import protocol.Protocol;
 import protocol.XStatusInfo;
 import ru.sawim.R;
+import ru.sawim.Scheme;
 
 /**
  * Created with IntelliJ IDEA.
@@ -65,10 +66,10 @@ public class XStatusesAdapter extends BaseAdapter {
         wr.populateFrom(item);
 
         LinearLayout activeItem = (LinearLayout) row;
-        if (position == selectedItem) {
-            activeItem.setBackgroundColor(Color.BLUE);
+        if (item == selectedItem) {
+            activeItem.setBackgroundColor(Scheme.getInversColor(Scheme.THEME_BACKGROUND));
         } else {
-            activeItem.setBackgroundColor(Color.WHITE);
+            activeItem.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
         }
         return row;
     }
@@ -80,33 +81,21 @@ public class XStatusesAdapter extends BaseAdapter {
 
         public ItemWrapper(View item) {
             this.item = item;
+            itemImage = (ImageView) item.findViewById(R.id.second_image);
+            itemXStatus = (TextView) item.findViewById(R.id.itemXStatus);
         }
 
         void populateFrom(int item) {
             --item;
-            ImageView imageView = getItemImage();
             Icon ic = statusInfo.getIcon(item);
-            getItemXStatus().setText(statusInfo.getName(item));
+            itemXStatus.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
+            itemXStatus.setText(statusInfo.getName(item));
             if (ic != null) {
-                imageView.setVisibility(ImageView.VISIBLE);
-                imageView.setImageBitmap(ic.getImage());
+                itemImage.setVisibility(ImageView.VISIBLE);
+                itemImage.setImageBitmap(ic.getImage());
             } else {
-                imageView.setVisibility(ImageView.GONE);
+                itemImage.setVisibility(ImageView.GONE);
             }
-        }
-
-        public TextView getItemXStatus() {
-            if (itemXStatus == null) {
-                itemXStatus = (TextView) item.findViewById(R.id.itemXStatus);
-            }
-            return itemXStatus;
-        }
-
-        public ImageView getItemImage() {
-            if (itemImage == null) {
-                itemImage = (ImageView) item.findViewById(R.id.second_image);
-            }
-            return itemImage;
         }
     }
 }

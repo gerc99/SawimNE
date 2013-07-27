@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
+import ru.sawim.Scheme;
 import sawim.forms.PrivateStatusForm;
 import sawim.util.JLocale;
 import protocol.Protocol;
@@ -76,53 +77,39 @@ public class StatusesAdapter extends BaseAdapter {
         wr.populateFrom(item);
         LinearLayout activeItem = (LinearLayout) row;
         if (item == selectedItem) {
-            activeItem.setBackgroundColor(Color.BLUE);
+            activeItem.setBackgroundColor(Scheme.getInversColor(Scheme.THEME_BACKGROUND));
         } else {
-            activeItem.setBackgroundColor(Color.WHITE);
+            activeItem.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
         }
         return row;
     }
 
     public class ItemWrapper {
         View item = null;
-
         private TextView itemStatus = null;
-
         private ImageView itemImage = null;
 
         public ItemWrapper(View item) {
             this.item = item;
+            itemImage = (ImageView) item.findViewById(R.id.first_image);
+            itemStatus = (TextView) item.findViewById(R.id.itemStatus);
         }
 
         void populateFrom(int item) {
-            ImageView imageView = getItemImage();
             if (type == StatusesView.ADAPTER_STATUS) {
                 Icon ic = statusInfo.getIcon((byte) item);
-                getItemStatus().setText(statusInfo.getName((byte) item));
+                itemStatus.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
+                itemStatus.setText(statusInfo.getName((byte) item));
                 if (ic != null) {
-                    imageView.setVisibility(ImageView.VISIBLE);
-                    getItemImage().setImageBitmap(ic.getImage());
+                    itemImage.setVisibility(ImageView.VISIBLE);
+                    itemImage.setImageBitmap(ic.getImage());
                 } else {
-                    imageView.setVisibility(ImageView.GONE);
+                    itemImage.setVisibility(ImageView.GONE);
                 }
             } else {
-                getItemStatus().setText(JLocale.getString(PrivateStatusForm.statusNames(protocol)[item]));
-                imageView.setImageBitmap(PrivateStatusForm.privateStatusIcons.iconAt(item).getImage());
+                itemStatus.setText(JLocale.getString(PrivateStatusForm.statusNames(protocol)[item]));
+                itemImage.setImageBitmap(PrivateStatusForm.privateStatusIcons.iconAt(item).getImage());
             }
-        }
-
-        public TextView getItemStatus() {
-            if (itemStatus == null) {
-                itemStatus = (TextView) item.findViewById(R.id.itemStatus);
-            }
-            return itemStatus;
-        }
-
-        public ImageView getItemImage() {
-            if (itemImage == null) {
-                itemImage = (ImageView) item.findViewById(R.id.first_image);
-            }
-            return itemImage;
         }
     }
 }
