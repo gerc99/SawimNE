@@ -288,11 +288,6 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
-
-    @Override
     public void onPause() {
         super.onPause();
         pause(chat);
@@ -321,13 +316,13 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
         final Chat.ScrollState lastPosition = getLastPosition(chat.getContact().getUserId());
         if (lastPosition != null)
             chatListView.setSelectionFromTop(lastPosition.position + 1, lastPosition.offset);
-        updateChat();
 
         General.getInstance().setOnUpdateChat(this);
         chat.resetUnreadMessages();
         chat.setVisibleChat(true);
         if (chat.empty())
             ChatHistory.instance.registerChat(chat);
+        updateChat();
     }
 
     private void forceGoToChat(int position) {
@@ -356,7 +351,7 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
         final FragmentActivity currentActivity = getActivity();
         chat = protocol.getChat(currentContact);
         chatListView = (ListView) currentActivity.findViewById(R.id.chat_history_list);
-        adapter.init(currentActivity, chat.getMessData());
+        adapter.init(currentActivity, chat);
         chatListView.setStackFromBottom(true);
         chatListView.setTranscriptMode(ListView.TRANSCRIPT_MODE_NORMAL);
         chatListView.setOnCreateContextMenuListener(this);

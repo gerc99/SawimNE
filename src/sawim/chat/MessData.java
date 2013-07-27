@@ -11,7 +11,6 @@ public final class MessData {
     public String strTime;
     public int iconIndex;
     private short rowData;
-    private int color;
 
     public SpannableStringBuilder fullText;
 
@@ -22,7 +21,7 @@ public final class MessData {
     public static final short SERVICE = 16;
     public static final short PRESENCE = 32;
 
-    public MessData(long time, String text, String nick, short flags, int iconIndex, int color) {
+    public MessData(long time, String text, String nick, short flags, int iconIndex) {
         this.text = text;
         this.nick = nick;
         this.time = time;
@@ -30,7 +29,6 @@ public final class MessData {
         this.iconIndex = iconIndex;
         boolean today = (General.getCurrentGmtTime() - 24 * 60 * 60 < time);
         strTime = Util.getLocalDateString(time, today);
-        this.color = color;
     }
 
     public long getTime() {
@@ -63,9 +61,5 @@ public final class MessData {
 
     public boolean isPresence() {
         return (rowData & PRESENCE) != 0;
-    }
-
-    public int getColor() {
-        return color;
     }
 }

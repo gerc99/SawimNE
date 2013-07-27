@@ -59,7 +59,8 @@ public class MyTextView extends TextView {
                                 buffer.getSpanEnd(link[0]));
                     }
                     if (action == MotionEvent.ACTION_UP) {
-                        mListener.onTextLinkClick(this, link[0].getURL());
+                        if (mListener != null)
+                            mListener.onTextLinkClick(this, link[0].getURL());
                     }
                     return true;
                 }

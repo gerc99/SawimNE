@@ -91,7 +91,10 @@ abstract public class Contact extends TreeNode implements Sortable {
 
     @Override
     public Icon getLeftIcon() {
-        return getProtocol().getStatusInfo().getIcon(getStatusIndex());
+        Protocol p = getProtocol();
+        if (p != null)
+            return p.getStatusInfo().getIcon(getStatusIndex());
+        return null;
     }
 
     public Protocol getProtocol() {

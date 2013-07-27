@@ -39,13 +39,15 @@ import java.util.List;
 public class MessagesAdapter extends BaseAdapter implements MyTextView.TextLinkClickListener {
 
     private Context baseContext;
+    private Chat chat;
     private List<MessData> items;
     private LayoutInflater inf;
 
-    public void init(Context context, List<MessData> items) {
+    public void init(Context context, Chat chat) {
         baseContext = context;
         inf = LayoutInflater.from(baseContext);
-        this.items = items;
+        this.chat = chat;
+        items = chat.getMessData();
     }
 
     public void refreshList(List<MessData> list) {
@@ -88,6 +90,7 @@ public class MessagesAdapter extends BaseAdapter implements MyTextView.TextLinkC
         boolean incoming = mData.isIncoming();
 
         ((ViewGroup)row).setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
+        holder.msgText.setOnTextLinkClickListener(this);
         byte bg;
         if (mData.isService()) {
             bg = Scheme.THEME_CHAT_BG_SYSTEM;
@@ -98,18 +101,19 @@ public class MessagesAdapter extends BaseAdapter implements MyTextView.TextLinkC
         }
         row.setBackgroundColor(Scheme.getColor(bg));
         if (mData.fullText == null) {
-            holder.msgText.setOnTextLinkClickListener(this);
             mData.fullText = TextFormatter.getFormattedText(text, baseContext);
         }
         if (mData.isMe() || mData.isPresence()) {
             holder.msgImage.setVisibility(ImageView.GONE);
             holder.msgNick.setVisibility(TextView.GONE);
             holder.msgTime.setVisibility(TextView.GONE);
-            if (mData.isMe())
+            if (mData.isMe()) {
+                holder.msgText.setTextColor(Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG));
                 holder.msgText.setText("* " + mData.getNick() + " " + mData.fullText);
-            else
+            } else {
+                holder.msgText.setTextColor(Scheme.getColor(Scheme.THEME_CHAT_INMSG));
                 holder.msgText.setText(mData.getNick() + mData.fullText);
-            holder.msgText.setTextColor(mData.getColor());
+            }
             holder.msgText.setTextSize(General.getFontSize() - 2);
         } else {
             if (mData.iconIndex != Message.ICON_NONE) {
@@ -134,7 +138,11 @@ public class MessagesAdapter extends BaseAdapter implements MyTextView.TextLinkC
             holder.msgTime.setTextSize(General.getFontSize() - 4);
 
             holder.msgText.setText(mData.fullText);
-            holder.msgText.setTextColor(mData.getColor());
+            byte color = Scheme.THEME_TEXT;
+            if (incoming && !chat.getContact().isSingleUserContact()
+                    && Chat.isHighlight(text, chat.getMyName()))
+                color = Scheme.THEME_CHAT_HIGHLIGHT_MSG;
+            holder.msgText.setTextColor(Scheme.getColor(color));
             holder.msgText.setTextSize(General.getFontSize());
             MovementMethod m = holder.msgText.getMovementMethod();
             if ((m == null) || !(m instanceof LinkMovementMethod)) {

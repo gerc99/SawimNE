@@ -132,8 +132,13 @@ public class RosterAdapter extends BaseAdapter {
             itemName.setTextColor(Scheme.getColor(Scheme.THEME_GROUP));
             itemName.setTypeface(Typeface.DEFAULT);
 
-            itemFirstImage.setVisibility(ImageView.VISIBLE);
-            itemFirstImage.setImageBitmap(g.getLeftIcon().getImage());
+            Icon icGroup = g.getLeftIcon();
+            if (icGroup == null)
+                itemFirstImage.setVisibility(ImageView.GONE);
+            else {
+                itemFirstImage.setVisibility(ImageView.VISIBLE);
+                itemFirstImage.setImageBitmap(icGroup.getImage());
+            }
 
             itemDescriptionText.setVisibility(TextView.GONE);
             itemThirdImage.setVisibility(ImageView.GONE);

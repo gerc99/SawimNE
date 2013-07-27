@@ -91,7 +91,7 @@ public final class Chat {
     }
 
     public void addFileProgress(String caption, String text) {
-        addMessage(new MessData(General.getCurrentGmtTime(), text, caption, MessData.PROGRESS, Message.ICON_NONE, Scheme.getColor(Scheme.THEME_TEXT)));
+        addMessage(new MessData(General.getCurrentGmtTime(), text, caption, MessData.PROGRESS, Message.ICON_NONE));
     }
 
     public int getIcon(Message message, boolean incoming) {
@@ -401,13 +401,11 @@ public final class Chat {
             }
         }
         short flags = 0;
-        byte color = Scheme.THEME_TEXT;
         if (incoming) {
             flags |= MessData.INCOMING;
         }
         if (isMe) {
             flags |= MessData.ME;
-            color = incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG;
         }
         if (Util.hasURL(messageText)) {
             flags |= MessData.URLS;
@@ -415,10 +413,8 @@ public final class Chat {
         if (message instanceof SystemNotice) {
             flags |= MessData.SERVICE;
         }
-        if (incoming && !getContact().isSingleUserContact()
-                && Chat.isHighlight(messageText, getMyName()))
-            color = Scheme.THEME_CHAT_HIGHLIGHT_MSG;
-        final MessData mData = new MessData(message.getNewDate(), messageText, from, flags, getIcon(message, incoming), Scheme.getColor(color));
+
+        final MessData mData = new MessData(message.getNewDate(), messageText, from, flags, getIcon(message, incoming));
         if (!incoming) {
             message.setVisibleIcon(mData);
         }
@@ -433,7 +429,7 @@ public final class Chat {
     public void addPresence(SystemNotice message) {
         ChatHistory.instance.registerChat(this);
         String messageText = message.getProcessedText();
-        addMessage(new MessData(message.getNewDate(), messageText, message.getName(), MessData.PRESENCE, Message.ICON_NONE, Scheme.getColor(Scheme.THEME_CHAT_INMSG)));
+        addMessage(new MessData(message.getNewDate(), messageText, message.getName(), MessData.PRESENCE, Message.ICON_NONE));
         if (!isVisibleChat()) {
             contact.updateChatState(this);
             ChatHistory.instance.updateChatList();

@@ -400,15 +400,10 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
 
     @Override
     public void updateRoster() {
-        SawimApplication.getInstance().runInBackground(new Runnable() {
+        getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        rebuildRoster();
-                    }
-                });
+                rebuildRoster();
             }
         });
     }
