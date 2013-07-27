@@ -40,14 +40,12 @@ public class RosterAdapter extends BaseAdapter {
     private List<TreeNode> items;
     private LayoutInflater mInflater;
     private int type;
-    Protocol protocol;
 
     public RosterAdapter(LayoutInflater inf, VirtualContactList vcl, List<TreeNode> drawItems, int type) {
         mInflater = inf;
         this.vcl = vcl;
         items = drawItems;
         this.type = type;
-        protocol = vcl.getCurrentProtocol();
     }
 
     @Override
@@ -89,6 +87,7 @@ public class RosterAdapter extends BaseAdapter {
         } else {
             holder = (ViewHolderRoster) convertView.getTag();
         }
+        Protocol protocol = vcl.getCurrentProtocol();
         TreeNode o = getItem(i);
         if (o != null)
             if (type == ONLINE_CONTACTS && o.isContact()) {

@@ -40,18 +40,19 @@ public class MessagesAdapter extends BaseAdapter implements MyTextView.TextLinkC
 
     private Context baseContext;
     private Chat chat;
-    private List<MessData> items;
+    private List<MessData> items = new ArrayList<MessData>();
     private LayoutInflater inf;
 
     public void init(Context context, Chat chat) {
         baseContext = context;
         inf = LayoutInflater.from(baseContext);
         this.chat = chat;
-        items = chat.getMessData();
+        refreshList(chat.getMessData());
     }
 
     public void refreshList(List<MessData> list) {
-        items = list;
+        items.clear();
+        items.addAll(list);
         notifyDataSetChanged();
     }
 
