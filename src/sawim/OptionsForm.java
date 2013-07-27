@@ -137,8 +137,6 @@ public class OptionsForm implements FormListener, ControlStateListener {
                 saveOptionSelector(Options.OPTION_CL_SORT_BY);
                 saveOptionBoolean(Options.OPTION_SHOW_PLATFORM);
                 saveOptionBoolean(Options.OPTION_HISTORY);
-                //saveOptionSelector(Options.OPTION_CHAT_PRESENSEFONT_SCHEME);
-                //GraphicsEx.setChatPresenseFont(Options.getInt(Options.OPTION_CHAT_PRESENSEFONT_SCHEME));
                 saveOptionBoolean(Options.OPTION_TITLE_IN_CONFERENCE);
                 saveOptionString(Options.UNAVAILABLE_NESSAGE);
                 saveOptionBoolean(Options.OPTION_SIMPLE_INPUT);
@@ -210,7 +208,6 @@ public class OptionsForm implements FormListener, ControlStateListener {
                     form.addSelector(Options.OPTION_UI_LANGUAGE, "language", JLocale.langAvailableName, cur);
                 }
                 loadOptionFontGauge(Options.OPTION_FONT_SCHEME, "fonts");
-                //loadOptionInt(Options.OPTION_MIN_ITEM_SIZE, "item_height_multiplier", minItems, minItemMultipliers);
 
                 form.addString("contact_list", null);
                 setChecked("show_user_groups", Options.OPTION_USER_GROUPS);
@@ -232,9 +229,7 @@ public class OptionsForm implements FormListener, ControlStateListener {
 				setChecked("show_platform", Options.OPTION_SHOW_PLATFORM);
                 setChecked("use_history", Options.OPTION_HISTORY);
                 loadOptionInt(Options.OPTION_MAX_MSG_COUNT, "max_message_count", "10|50|100|250|500|1000");
-				//createSelector("presense_fonts",
-                //        "10sp" + "|" + "fonts_smallest" + "|" + "fonts_small" + "|" + "fonts_normal" + "|" + "fonts_large",
-                //        Options.OPTION_CHAT_PRESENSEFONT_SCHEME);
+
 				setChecked("title_in_conference",  Options.OPTION_TITLE_IN_CONFERENCE);
 				loadOptionString(Options.UNAVAILABLE_NESSAGE, "post_outputs");
                 setChecked("use_simple_input", Options.OPTION_SIMPLE_INPUT);
@@ -284,17 +279,8 @@ public class OptionsForm implements FormListener, ControlStateListener {
 
     public void controlStateChanged(int id) {
         switch (id) {
-            case Options.OPTION_COLOR_SCHEME:
-                //saveOptionSelector(Options.OPTION_COLOR_SCHEME);
-                break;
             case Options.OPTION_FONT_SCHEME:
                 saveOptionSelector(Options.OPTION_FONT_SCHEME);
-                break;
-			case Options.OPTION_CHAT_PRESENSEFONT_SCHEME:
-				//saveOptionSelector(Options.OPTION_CHAT_PRESENSEFONT_SCHEME);
-                break;
-            case Options.OPTION_MIN_ITEM_SIZE:
-                //saveOptionInt(Options.OPTION_MIN_ITEM_SIZE, minItemMultipliers);
                 break;
         }
     }

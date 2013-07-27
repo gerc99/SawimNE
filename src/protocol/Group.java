@@ -3,12 +3,11 @@ package protocol;
 import DrawControls.icons.Icon;
 import DrawControls.icons.ImageList;
 import DrawControls.tree.TreeNode;
-import sawim.comm.Sortable;
 import sawim.comm.Util;
 import java.util.Vector;
 
 
-public class Group extends TreeNode implements Sortable {
+public class Group extends TreeNode {
 
     private String name;
     private final Vector contacts = new Vector();
@@ -42,7 +41,7 @@ public class Group extends TreeNode implements Sortable {
 
     public final void setExpandFlag(boolean value) {
         expanded = value;
-        sort();
+        //sort();
     }
 
     public final String getName() {
@@ -95,10 +94,7 @@ public class Group extends TreeNode implements Sortable {
                 onlineCount++;
             }
         }
-        caption = getName();
-        if (0 < total) {
-            caption += " (" + onlineCount + "/" + total + ")";
-        }
+        updateGroupData(total, onlineCount);
     }
 
     public final void updateGroupData(int total, int onlineCount) {
@@ -106,7 +102,6 @@ public class Group extends TreeNode implements Sortable {
         if (0 < total) {
             caption += " (" + onlineCount + "/" + total + ")";
         }
-        sort();
     }
 
     public final String getText() {
@@ -119,7 +114,7 @@ public class Group extends TreeNode implements Sortable {
     }
 
     @Override
-    protected int getType() {
+    protected byte getType() {
         return TreeNode.GROUP;
     }
 

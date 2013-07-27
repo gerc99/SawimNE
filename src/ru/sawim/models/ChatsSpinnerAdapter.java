@@ -58,7 +58,7 @@ public class ChatsSpinnerAdapter extends BaseAdapter implements SpinnerAdapter {
         HeaderViewHolder headerViewHolder;
         Chat chat = getItem(position);
         if (v == null) {
-            v = layoutInflater.inflate(R.layout.spinner_item, null);
+            v = layoutInflater.inflate(R.layout.chats_spinner_item, null);
             headerViewHolder = new HeaderViewHolder();
             headerViewHolder.header = (TextView) v.findViewById(R.id.header);
             v.setTag(headerViewHolder);
@@ -78,7 +78,7 @@ public class ChatsSpinnerAdapter extends BaseAdapter implements SpinnerAdapter {
         DropDownViewHolder dropDownViewHolder;
         Chat chat = getItem(position);
         if (v == null) {
-            v = layoutInflater.inflate(R.layout.spinner_dropdown_item, null);
+            v = layoutInflater.inflate(R.layout.chats_spinner_dropdown_item, null);
             dropDownViewHolder = new DropDownViewHolder();
             dropDownViewHolder.imageView = (ImageView) v.findViewById(R.id.image_icon);
             dropDownViewHolder.label = (TextView) v.findViewById(R.id.label);

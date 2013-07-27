@@ -1,6 +1,7 @@
 package ru.sawim.activities;
 
 import android.content.Intent;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.KeyEvent;
@@ -29,6 +30,7 @@ public class ChatActivity extends FragmentActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         THIS = this;
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
         setContentView(R.layout.chat_fragment);
         ExternalApi.instance.setActivity(this);
         Intent i = getIntent();

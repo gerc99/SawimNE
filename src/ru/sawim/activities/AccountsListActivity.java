@@ -3,6 +3,7 @@ package ru.sawim.activities;
 import android.accounts.AccountAuthenticatorResponse;
 import android.accounts.AccountManager;
 import android.app.Activity;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
@@ -34,6 +35,7 @@ public class AccountsListActivity extends FragmentActivity implements JabberRegi
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         instance = this;
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
         setContentView(R.layout.accounts_list_fragment);
 
         mResultBundle = savedInstanceState;

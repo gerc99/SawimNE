@@ -3,19 +3,20 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
               android:layout_width="match_parent"
-              android:layout_height="match_parent">
+              android:layout_height="match_parent"
+              android:id="@+id/data_form">
 
     <ScrollView android:layout_weight="1"
                 android:id="@+id/data_form_scroll"
                 android:layout_margin="5dp"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent">
-    <LinearLayout
-            android:id="@+id/data_form_linear"
-            android:orientation="vertical"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent">
-    </LinearLayout>
+        <LinearLayout
+                android:id="@+id/data_form_linear"
+                android:orientation="vertical"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
+        </LinearLayout>
     </ScrollView>
 
     <LinearLayout android:layout_weight="0"

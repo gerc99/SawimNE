@@ -1,5 +1,6 @@
 package ru.sawim.activities;
 
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
@@ -26,6 +27,7 @@ public class VirtualListActivity extends FragmentActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         instance = this;
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
         setContentView(R.layout.virtual_list_fragment);
     }
 

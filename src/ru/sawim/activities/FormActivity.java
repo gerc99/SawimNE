@@ -1,5 +1,6 @@
 package ru.sawim.activities;
 
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import ru.sawim.R;
@@ -25,6 +26,7 @@ public class FormActivity extends FragmentActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         instance = this;
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
         setContentView(R.layout.form_fragment);
         setTitle(Forms.getInstance().caption);
     }

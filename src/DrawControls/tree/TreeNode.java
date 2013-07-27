@@ -1,13 +1,10 @@
 package DrawControls.tree;
 
-
 import DrawControls.icons.Icon;
 
 public abstract class TreeNode {
-    public static final int GROUP = 0;
-    public static final int CONTACT = 1;
-
-    protected abstract String getText();
+    public static final byte GROUP = 0;
+    public static final byte CONTACT = 1;
 
     public boolean isGroup() {
         return getType() == GROUP;
@@ -17,7 +14,11 @@ public abstract class TreeNode {
         return getType() == CONTACT;
     }
 
-    protected abstract Icon getLeftIcon();
+    protected abstract byte getType();
+    public abstract String getText();
+    public abstract int getNodeWeight();
 
-    protected abstract int getType();
+    public Icon getLeftIcon() {
+       return null;
+    }
 }

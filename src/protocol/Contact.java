@@ -9,17 +9,15 @@ import android.view.Menu;
 import android.view.SubMenu;
 import ru.sawim.view.FileProgressView;
 import ru.sawim.General;
-import sawim.Options;
 import sawim.chat.Chat;
 import sawim.cl.ContactList;
-import sawim.comm.Sortable;
 import sawim.comm.StringConvertor;
 import sawim.modules.tracking.Tracking;
 import ru.sawim.Scheme;
 import ru.sawim.R;
 
 
-abstract public class Contact extends TreeNode implements Sortable {
+abstract public class Contact extends TreeNode {
     public static final ImageList authIcon = ImageList.createImageList("/auth.png");
     public static final ImageList serverListsIcons = ImageList.createImageList("/serverlists.png");
 
@@ -291,29 +289,27 @@ abstract public class Contact extends TreeNode implements Sortable {
     }
 
      @Override
-     protected int getType() {
+     protected byte getType() {
          return TreeNode.CONTACT;
      }
 
      public final int getNodeWeight() {
         if (/*Options.getBoolean(Options.OPTION_SORT_UP_WITH_MSG)
                 && */hasUnreadMessage()) {
-            return 0;
+            return 5;
         }
         if (!isSingleUserContact()) {
             return isOnline() ? 9 : 50;
         }
-        int sortType = Options.getInt(Options.OPTION_CL_SORT_BY);
-        if (ContactList.SORT_BY_NAME == sortType) {
+        if (ContactList.SORT_BY_NAME == General.sortType) {
             return 20;
         }
         if (isOnline()) {
 			if (hasChat()) {
 				return 10;
 			}
-            switch (sortType) {
+            switch (General.sortType) {
                 case ContactList.SORT_BY_STATUS:
-
                     return 20 + StatusInfo.getWidth(getStatusIndex());
                 case ContactList.SORT_BY_ONLINE:
                     return 20;

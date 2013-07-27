@@ -1,5 +1,7 @@
 package sawim.comm;
 
+import DrawControls.tree.TreeNode;
+import android.util.Log;
 import ru.sawim.General;
 import sawim.Options;
 import sawim.util.JLocale;
@@ -927,7 +929,7 @@ public class Util {
         return 0;
     }
 
-    public static int compareNodes(Sortable node1, Sortable node2) {
+    public static int compareNodes(TreeNode node1, TreeNode node2) {
         int result = node1.getNodeWeight() - node2.getNodeWeight();
         if (0 == result) {
             result = StringConvertor.stringCompare(node1.getText(), node2.getText());
@@ -937,10 +939,10 @@ public class Util {
 
     public static void sort(Vector subnodes) {
         for (int i = 1; i < subnodes.size(); ++i) {
-            Sortable currNode = (Sortable)subnodes.elementAt(i);
+            TreeNode currNode = (TreeNode)subnodes.elementAt(i);
             int j = i - 1;
             for (; j >= 0; --j) {
-                Sortable itemJ = (Sortable)subnodes.elementAt(j);
+                TreeNode itemJ = (TreeNode)subnodes.elementAt(j);
                 if (compareNodes(itemJ, currNode) <= 0) {
                     break;
                 }

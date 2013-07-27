@@ -47,7 +47,7 @@ public class General {
     private static int fontSize;
     public static boolean hideIconsClient;
     public static boolean showStatusLine;
-
+    public static int sortType;
 
     public void init() {
         instance = this;
@@ -55,28 +55,6 @@ public class General {
 
     public static General getInstance() {
         return instance;
-    }
-
-    public static long getCurrentGmtTime() {
-        return System.currentTimeMillis() / 1000
-                + Options.getInt(Options.OPTION_LOCAL_OFFSET) * 3600;
-    }
-
-    public static void openUrl(String url) {
-        Search search = ContactList.getInstance().getManager().getCurrentProtocol().getSearchForm();
-        search.show(Util.getUrlWithoutProtocol(url), true);
-    }
-
-    public static java.io.InputStream getResourceAsStream(String name) {
-        InputStream in;
-        in = sawim.modules.fs.FileSystem.openSawimFile(name);
-        if (null == in) {
-            try {
-                in = SawimApplication.getInstance().getAssets().open(name.substring(1));
-            } catch (Exception ignored) {
-            }
-        }
-        return in;
     }
 
     public void startApp() {
@@ -115,6 +93,13 @@ public class General {
         }
     }
 
+    public static void updateOptions() {
+        fontSize = Options.getInt(Options.OPTION_FONT_SCHEME);
+        showStatusLine = Options.getBoolean(Options.OPTION_SHOW_STATUS_LINE);
+        hideIconsClient = Options.getBoolean(Options.OPTION_HIDE_ICONS_CLIENTS);
+        sortType = Options.getInt(Options.OPTION_CL_SORT_BY);
+    }
+
     public void quit() {
         ContactList cl = ContactList.getInstance();
         /*boolean wait;
@@ -129,12 +114,34 @@ public class General {
         }
         cl.safeSave();
         //if (wait) {
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e1) {
-            }
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e1) {
+        }
         //}
         ChatHistory.instance.saveUnreadMessages();
+    }
+
+    public static long getCurrentGmtTime() {
+        return System.currentTimeMillis() / 1000
+                + Options.getInt(Options.OPTION_LOCAL_OFFSET) * 3600;
+    }
+
+    public static void openUrl(String url) {
+        Search search = ContactList.getInstance().getManager().getCurrentProtocol().getSearchForm();
+        search.show(Util.getUrlWithoutProtocol(url), true);
+    }
+
+    public static java.io.InputStream getResourceAsStream(String name) {
+        InputStream in;
+        in = sawim.modules.fs.FileSystem.openSawimFile(name);
+        if (null == in) {
+            try {
+                in = SawimApplication.getInstance().getAssets().open(name.substring(1));
+            } catch (Exception ignored) {
+            }
+        }
+        return in;
     }
 
     public static boolean isPaused() {
@@ -158,12 +165,6 @@ public class General {
             Thread.sleep(50);
         } catch (Exception e) {
         }
-    }
-
-    public static void updateOptions() {
-        fontSize = Options.getInt(Options.OPTION_FONT_SCHEME);
-        showStatusLine = Options.getBoolean(Options.OPTION_SHOW_STATUS_LINE);
-        hideIconsClient = Options.getBoolean(Options.OPTION_HIDE_ICONS_CLIENTS);
     }
 
     public static int getFontSize() {

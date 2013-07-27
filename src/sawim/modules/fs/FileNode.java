@@ -1,20 +1,20 @@
-
-
-
 package sawim.modules.fs;
 
-import sawim.comm.Sortable;
+import DrawControls.tree.TreeNode;
 
-
-public class FileNode implements Sortable {
+public class FileNode extends TreeNode {
     final private String path;
     final private String filename;
     private long size = -1;
-
     
     public FileNode(String path, String filename) {
         this.path = path;
         this.filename = filename;
+    }
+
+    @Override
+    public byte getType() {
+        return 0;
     }
 
     public String getText() {

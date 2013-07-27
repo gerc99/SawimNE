@@ -1,19 +1,22 @@
 package ru.sawim.view;
 
 import android.app.Activity;
+import android.content.Context;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
+import ru.sawim.General;
 import ru.sawim.R;
-import ru.sawim.activities.FormActivity;
+import ru.sawim.Scheme;
 import ru.sawim.models.form.Forms;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -25,9 +28,10 @@ import java.util.List;
  */
 public class FormView extends Fragment implements Forms.OnUpdateForm, View.OnClickListener {
 
-    LinearLayout listLayout;
+    private LinearLayout listLayout;
     private Button okButton;
     private Button cancelButton;
+    private HashMap<Integer, ViewHolder> viewHolderHash = new HashMap<Integer, ViewHolder>();
 
     @Override
     public void onAttach(Activity a) {
@@ -55,8 +59,47 @@ public class FormView extends Fragment implements Forms.OnUpdateForm, View.OnCli
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.form, container, false);
+        LinearLayout rootLayout = (LinearLayout) v.findViewById(R.id.data_form);
+        rootLayout.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
         listLayout = (LinearLayout) v.findViewById(R.id.data_form_linear);
         return v;
+    }
+
+    @Override
+    public void updateForm() {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                buildList(listLayout);
+            }
+        });
+    }
+
+    @Override
+    public void back() {
+        getActivity().finish();
+    }
+
+    @Override
+    public void onClick(View view) {
+        if (view.equals(cancelButton)) {
+            Forms.getInstance().getFormListener().formAction(Forms.getInstance(), false);
+        } else if (view.equals(okButton)) {
+            new Thread() {
+                public void run() {
+                    getActivity().runOnUiThread(new Runnable() {
+                        public void run() {
+                            Forms.getInstance().getFormListener().formAction(Forms.getInstance(), true);
+                        }
+                    });
+                }
+            }.start();
+        }
+    }
+
+    public boolean onBackPressed() {
+        if (Forms.getInstance().getBackPressedListener() == null) return true;
+        return Forms.getInstance().getBackPressedListener().back();
     }
 
     private void buildList(final LinearLayout convertView) {
@@ -64,14 +107,27 @@ public class FormView extends Fragment implements Forms.OnUpdateForm, View.OnCli
         List<Forms.Control> controls = Forms.getInstance().controls;
         for (int position = 0; position < controls.size(); ++position) {
             final Forms.Control c = controls.get(position);
-            final ImageView imageView = new ImageView(getActivity());
-            final TextView textView = new TextView(getActivity());
-            final TextView descView = new TextView(getActivity());
-            final TextView labelView = new TextView(getActivity());
-            final CheckBox checkBox = new CheckBox(getActivity());
-            final MySpinner spinner = new MySpinner(getActivity());
-            final SeekBar seekBar = new SeekBar(getActivity());
-            final EditText editText = new EditText(getActivity());
+            ViewHolder holder = viewHolderHash.get(position);
+            if (holder == null) {
+                holder = new ViewHolder();
+                holder.imageView = new ImageView(getActivity());
+                holder.textView = new TextView(getActivity());
+                holder.descView = new TextView(getActivity());
+                holder.labelView = new TextView(getActivity());
+                holder.checkBox = new CheckBox(getActivity());
+                holder.spinner = new MySpinner(getActivity());
+                holder.seekBar = new SeekBar(getActivity());
+                holder.editText = new EditText(getActivity());
+                viewHolderHash.put(position, holder);
+            }
+            final ImageView imageView = holder.imageView;
+            final TextView textView = holder.textView;
+            final TextView descView = holder.descView;
+            final TextView labelView = holder.labelView;
+            final CheckBox checkBox = holder.checkBox;
+            final MySpinner spinner = holder.spinner;
+            final SeekBar seekBar = holder.seekBar;
+            final EditText editText = holder.editText;
 
             descView.setVisibility(TextView.GONE);
             labelView.setVisibility(TextView.GONE);
@@ -81,6 +137,15 @@ public class FormView extends Fragment implements Forms.OnUpdateForm, View.OnCli
             spinner.setVisibility(Spinner.GONE);
             seekBar.setVisibility(SeekBar.GONE);
             editText.setVisibility(EditText.GONE);
+            setAllTextSize(descView, labelView, textView, checkBox, editText, General.getFontSize());
+            descView.setTextColor(Scheme.getInversColor(Scheme.THEME_TEXT));
+            labelView.setTextColor(Scheme.getInversColor(Scheme.THEME_TEXT));
+            textView.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
+            checkBox.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
+            spinner.getBackground().setColorFilter(Scheme.getColor(Scheme.THEME_BACKGROUND), PorterDuff.Mode.MULTIPLY);
+            seekBar.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
+            editText.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
+            editText.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
             if (Forms.CONTROL_TEXT == c.type) {
                 drawText(c, labelView, descView, convertView);
             } else if (Forms.CONTROL_INPUT == c.type) {
@@ -89,11 +154,9 @@ public class FormView extends Fragment implements Forms.OnUpdateForm, View.OnCli
                 editText.setText(c.text);
                 editText.addTextChangedListener(new TextWatcher() {
 
-                    public void afterTextChanged(Editable s) {
-                    }
+                    public void afterTextChanged(Editable s) { }
 
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                    }
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
 
                     public void onTextChanged(CharSequence s, int start, int before, int count) {
                         c.text = s.toString();
@@ -116,8 +179,7 @@ public class FormView extends Fragment implements Forms.OnUpdateForm, View.OnCli
             } else if (Forms.CONTROL_SELECT == c.type) {
                 drawText(c, labelView, descView, convertView);
                 spinner.setVisibility(Spinner.VISIBLE);
-                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, c.items);
-                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                MySpinnerAdapter adapter = new MySpinnerAdapter(getActivity(), c.items);
                 spinner.setAdapter(adapter);
                 spinner.setPrompt(c.description);
                 spinner.setSelection(c.current);
@@ -145,17 +207,16 @@ public class FormView extends Fragment implements Forms.OnUpdateForm, View.OnCli
                     }
 
                     @Override
-                    public void onStartTrackingTouch(SeekBar seekBar) {
-                    }
+                    public void onStartTrackingTouch(SeekBar seekBar) { }
 
                     @Override
-                    public void onStopTrackingTouch(SeekBar seekBar) {
-                    }
+                    public void onStopTrackingTouch(SeekBar seekBar) { }
                 });
                 convertView.addView(seekBar);
             } else if (Forms.CONTROL_GAUGE_FONT == c.type) {
+                final String text = c.description + "(" + c.level + ")";
                 descView.setVisibility(TextView.VISIBLE);
-                drawFontText(c, descView);
+                descView.setText(text);
                 seekBar.setVisibility(SeekBar.VISIBLE);
                 seekBar.setMax(60);
                 seekBar.setProgress(c.level);
@@ -163,17 +224,16 @@ public class FormView extends Fragment implements Forms.OnUpdateForm, View.OnCli
                     @Override
                     public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                         c.level = i;
-                        drawFontText(c, descView);
+                        setAllTextSize(descView, labelView, textView, checkBox, editText, c.level);
+                        descView.setText(text);
                         Forms.getInstance().controlUpdated(c);
                     }
 
                     @Override
-                    public void onStartTrackingTouch(SeekBar seekBar) {
-                    }
+                    public void onStartTrackingTouch(SeekBar seekBar) { }
 
                     @Override
-                    public void onStopTrackingTouch(SeekBar seekBar) {
-                    }
+                    public void onStopTrackingTouch(SeekBar seekBar) { }
                 });
                 convertView.addView(descView);
                 convertView.addView(seekBar);
@@ -186,6 +246,14 @@ public class FormView extends Fragment implements Forms.OnUpdateForm, View.OnCli
                 drawText(c, labelView, descView, convertView);
             }
         }
+    }
+
+    private void setAllTextSize(TextView descView, TextView labelView, TextView textView, CheckBox checkBox, EditText editText, int size) {
+        descView.setTextSize(size - 1);
+        labelView.setTextSize(size - 1);
+        textView.setTextSize(size);
+        checkBox.setTextSize(size);
+        editText.setTextSize(size);
     }
 
     private void drawText(Forms.Control c, TextView labelView, TextView descView, LinearLayout convertView) {
@@ -201,47 +269,92 @@ public class FormView extends Fragment implements Forms.OnUpdateForm, View.OnCli
         }
     }
 
-    private void drawFontText(Forms.Control c, TextView descView) {
-        if (c.description != null) {
-            descView.setTextSize(c.level);
-            descView.setText(c.description + "(" + c.level + ")");
-        }
+    static class ViewHolder {
+        ImageView imageView;
+        TextView textView;
+        TextView descView;
+        TextView labelView;
+        CheckBox checkBox;
+        MySpinner spinner;
+        SeekBar seekBar;
+        EditText editText;
     }
 
-    @Override
-    public void updateForm() {
-        FormActivity.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                buildList(listLayout);
+    static class MySpinnerAdapter extends BaseAdapter implements SpinnerAdapter {
+
+        private String[] items;
+        Context context;
+        LayoutInflater layoutInflater;
+
+        public MySpinnerAdapter(Context context, String[] items) {
+            this.context = context;
+            layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            this.items = items;
+        }
+
+        @Override
+        public int getCount() {
+            return items.length;
+        }
+
+        @Override
+        public String getItem(int i) {
+            return items[i];
+        }
+
+        @Override
+        public long getItemId(int i) {
+            return i;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup viewGroup) {
+            View v = convertView;
+            HeaderViewHolder headerViewHolder;
+            String string = getItem(position);
+            if (v == null) {
+                v = layoutInflater.inflate(R.layout.spinner_item, null);
+                headerViewHolder = new HeaderViewHolder();
+                headerViewHolder.header = (TextView) v.findViewById(R.id.header);
+                v.setTag(headerViewHolder);
+            } else {
+                headerViewHolder = (HeaderViewHolder) v.getTag();
             }
-        });
-    }
-
-    @Override
-    public void back() {
-        getActivity().finish();
-    }
-
-    @Override
-    public void onClick(View view) {
-        if (view.equals(cancelButton)) {
-            Forms.getInstance().getFormListener().formAction(Forms.getInstance(), false);
-        } else if (view.equals(okButton)) {
-            new Thread() {
-                public void run() {
-                    FormActivity.getInstance().runOnUiThread(new Runnable() {
-                        public void run() {
-                            Forms.getInstance().getFormListener().formAction(Forms.getInstance(), true);
-                        }
-                    });
-                }
-            }.start();
+            if (string == null) return v;
+            headerViewHolder.header.setTextSize(General.getFontSize());
+            headerViewHolder.header.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
+            headerViewHolder.header.setText(string);
+            return v;
         }
-    }
 
-    public boolean onBackPressed() {
-        if (Forms.getInstance().getBackPressedListener() == null) return true;
-        return Forms.getInstance().getBackPressedListener().back();
+        @Override
+        public View getDropDownView(int position, View convertView, ViewGroup parent) {
+            View v = convertView;
+            DropDownViewHolder dropDownViewHolder;
+            String string = getItem(position);
+            if (v == null) {
+                v = layoutInflater.inflate(R.layout.spinner_dropdown_item, null);
+                dropDownViewHolder = new DropDownViewHolder();
+                dropDownViewHolder.label = (TextView) v.findViewById(R.id.label);
+                v.setTag(dropDownViewHolder);
+            } else {
+                dropDownViewHolder = (DropDownViewHolder) v.getTag();
+            }
+            if (string == null) return v;
+            v.setBackgroundColor(Scheme.getInversColor(Scheme.THEME_BACKGROUND));
+
+            dropDownViewHolder.label.setTextSize(General.getFontSize());
+            dropDownViewHolder.label.setTextColor(Scheme.getInversColor(Scheme.THEME_TEXT));
+            dropDownViewHolder.label.setText(string);
+            return v;
+        }
+
+        static class HeaderViewHolder {
+            TextView header;
+        }
+
+        static class DropDownViewHolder {
+            TextView label;
+        }
     }
 }
