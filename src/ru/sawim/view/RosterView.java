@@ -181,7 +181,6 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
 
     private void rebuildRoster() {
         owner.updateOptions();
-        owner.getProtocol(owner.getCurrProtocol()).sort();
         while (!updateQueue.isEmpty()) {
             Group group = (Group) updateQueue.firstElement();
             updateQueue.removeElementAt(0);

@@ -163,16 +163,6 @@ abstract public class Protocol {
         return getStatusInfo().getIcon(StatusInfo.STATUS_OFFLINE);
     }
 
-    public final void sort() {
-        synchronized (rosterLockObject) {
-            if (getContactList().getManager().useGroups) {
-                Util.sort(getSortedGroups());
-            } else {
-                Util.sort(getSortedContacts());
-            }
-        }
-    }
-
     public final void setContactListStub() {
         synchronized (rosterLockObject) {
             contacts = new Vector();
@@ -770,10 +760,6 @@ abstract public class Protocol {
 
     private void ui_updateGroup(Group group) {
         if (getContactList().getManager().useGroups) {
-            synchronized (rosterLockObject) {
-                group.updateGroupData();
-                Util.sort(sortedGroups);
-            }
             getContactList().getManager().update(group);
         }
     }

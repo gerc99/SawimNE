@@ -145,6 +145,7 @@ public final class VirtualContactList {
         Vector groups = p.getSortedGroups();
         for (int groupIndex = 0; groupIndex < groups.size(); ++groupIndex) {
             g = (Group) groups.elementAt(groupIndex);
+            g.sort();
             contactCounter = 0;
             onlineContactCounter = 0;
             drawItems.add(g);
@@ -168,6 +169,7 @@ public final class VirtualContactList {
         }
 
         g = p.getNotInListGroup();
+        g.sort();
         drawItems.add(g);
         contacts = g.getContacts();
         contactCounter = 0;
@@ -184,16 +186,17 @@ public final class VirtualContactList {
             if (c.isOnline())
                 ++onlineContactCounter;
         }
-        g.updateGroupData(contactsSize, onlineContactCounter);
         if (0 == contactCounter) {
             drawItems.remove(drawItems.size() - 1);
         }
+        g.updateGroupData(contactsSize, onlineContactCounter);
     }
 
     private void rebuildFlatItemsWOG(Protocol p, List<TreeNode> drawItems) {
         boolean all = !hideOffline;
         Contact c;
         Vector contacts = p.getSortedContacts();
+        Util.sort(contacts);
         for (int contactIndex = 0; contactIndex < contacts.size(); ++contactIndex) {
             c = (Contact) contacts.elementAt(contactIndex);
             if (all || c.isVisibleInContactList() || (c == selectedItem)) {
