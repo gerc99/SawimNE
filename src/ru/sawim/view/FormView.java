@@ -145,7 +145,6 @@ public class FormView extends Fragment implements Forms.OnUpdateForm, View.OnCli
             spinner.getBackground().setColorFilter(Scheme.getColor(Scheme.THEME_BACKGROUND), PorterDuff.Mode.MULTIPLY);
             seekBar.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
             editText.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
-            editText.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
             if (Forms.CONTROL_TEXT == c.type) {
                 drawText(c, labelView, descView, convertView);
             } else if (Forms.CONTROL_INPUT == c.type) {
@@ -214,9 +213,8 @@ public class FormView extends Fragment implements Forms.OnUpdateForm, View.OnCli
                 });
                 convertView.addView(seekBar);
             } else if (Forms.CONTROL_GAUGE_FONT == c.type) {
-                final String text = c.description + "(" + c.level + ")";
                 descView.setVisibility(TextView.VISIBLE);
-                descView.setText(text);
+                descView.setText(c.description + "(" + c.level + ")");
                 seekBar.setVisibility(SeekBar.VISIBLE);
                 seekBar.setMax(60);
                 seekBar.setProgress(c.level);
@@ -224,8 +222,8 @@ public class FormView extends Fragment implements Forms.OnUpdateForm, View.OnCli
                     @Override
                     public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                         c.level = i;
-                        setAllTextSize(descView, labelView, textView, checkBox, editText, c.level);
-                        descView.setText(text);
+                        descView.setTextSize(c.level);
+                        descView.setText(c.description + "(" + c.level + ")");
                         Forms.getInstance().controlUpdated(c);
                     }
 

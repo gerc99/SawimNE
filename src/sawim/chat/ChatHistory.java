@@ -1,6 +1,7 @@
 package sawim.chat;
 
 import DrawControls.icons.Icon;
+import android.util.Log;
 import sawim.chat.message.Message;
 import sawim.chat.message.PlainMessage;
 import sawim.cl.ContactList;
@@ -31,9 +32,7 @@ public final class ChatHistory {
     }
 
     public Chat chatAt(int index) {
-        if ((index < historyTable.size()) && (index >= 0))
-            return historyTable.get(index);
-        return null;
+        return historyTable.get(index);
     }
 
     public Contact contactAt(int index) {
@@ -124,9 +123,31 @@ public final class ChatHistory {
     }
     
     public void registerChat(Chat item) {
-        if (-1 == Util.getIndex(historyTable, item)) {
+        if (!contains(historyTable, item.getContact().getUserId())) {
             historyTable.add(item);
             item.getContact().updateChatState(item);
+        }
+    }
+
+    private static boolean contains(List<Chat> list, String id) {
+        int size = list.size();
+        for (int i = 0; i < size; ++i) {
+            if (list.get(i).getContact().getUserId() == id) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void unregisterChat(Chat item) {
+        if (null == item) return;
+        historyTable.remove(item);
+        item.clear();
+        Contact c = item.getContact();
+        c.updateChatState(null);
+        item.getProtocol().ui_updateContact(c);
+        if (0 < item.getUnreadMessageCount()) {
+            ContactList.getInstance().markMessages(c);
         }
     }
 
@@ -140,18 +161,6 @@ public final class ChatHistory {
             }
         }
         ContactList.getInstance().markMessages(null);
-    }
-
-    public void unregisterChat(Chat item) {
-        if (null == item) return;
-        historyTable.remove(item);
-        item.clear();
-        Contact c = item.getContact();
-        c.updateChatState(null);
-        item.getProtocol().ui_updateContact(c);
-        if (0 < item.getUnreadMessageCount()) {
-            ContactList.getInstance().markMessages(c);
-        }
     }
 
     private void removeChat(Chat chat) {
@@ -171,11 +180,11 @@ public final class ChatHistory {
     }
 
     private void clearChat(Chat chat) {
-        if (chat.isHuman() && !chat.getContact().isTemp()) {
+        //if (chat.isHuman() && !chat.getContact().isTemp()) {
         //    chat.removeReadMessages();
-        } else {
+        //} else {
             unregisterChat(chat);
-        }
+        //}
     }
 
     public void removeAll(Chat except) {

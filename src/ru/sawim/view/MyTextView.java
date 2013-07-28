@@ -21,6 +21,8 @@ import ru.sawim.models.MessagesAdapter;
 public class MyTextView extends TextView {
 
     TextLinkClickListener mListener;
+    private boolean isSecondTap;
+    private boolean isLongTap;
 
     public MyTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -36,34 +38,47 @@ public class MyTextView extends TextView {
         if (text instanceof Spannable) {
             Spannable buffer = (Spannable) text;
             int action = event.getAction();
-            if ((action == MotionEvent.ACTION_UP)
-                    || (action == MotionEvent.ACTION_DOWN)) {
-                int x = (int) event.getX();
-                int y = (int) event.getY();
 
-                x -= getTotalPaddingLeft();
-                y -= getTotalPaddingTop();
+            int x = (int) event.getX();
+            int y = (int) event.getY();
 
-                x += getScrollX();
-                y += getScrollY();
+            x -= getTotalPaddingLeft();
+            y -= getTotalPaddingTop();
 
-                Layout layout = getLayout();
-                int line = layout.getLineForVertical(y);
-                int off = layout.getOffsetForHorizontal(line, x);
+            x += getScrollX();
+            y += getScrollY();
 
-                URLSpan[] link = buffer.getSpans(off, off, URLSpan.class);
-                if (link.length != 0) {
-                    if (action == MotionEvent.ACTION_DOWN) {
-                        Selection.setSelection(buffer,
-                                buffer.getSpanStart(link[0]),
-                                buffer.getSpanEnd(link[0]));
-                    }
-                    if (action == MotionEvent.ACTION_UP) {
-                        if (mListener != null)
-                            mListener.onTextLinkClick(this, link[0].getURL());
-                    }
-                    return true;
+            Layout layout = getLayout();
+            int line = layout.getLineForVertical(y);
+            int off = layout.getOffsetForHorizontal(line, x);
+
+            final URLSpan[] link = buffer.getSpans(off, off, URLSpan.class);
+            if (action == MotionEvent.ACTION_CANCEL || action == MotionEvent.ACTION_OUTSIDE) {
+                isSecondTap = true;
+            }
+            if (link.length != 0) {
+                if (action == MotionEvent.ACTION_DOWN) {
+                    isSecondTap = false;
+                    isLongTap = false;
+                    Selection.setSelection(buffer,
+                            buffer.getSpanStart(link[0]),
+                            buffer.getSpanEnd(link[0]));
+                    postDelayed(new Runnable() {
+                        public void run() {
+                            if (mListener != null && !isSecondTap) {
+                                isLongTap = true;
+                                mListener.onTextLinkClick(MyTextView.this, link[0].getURL());
+                            }
+                        }
+                    }, 700L);
                 }
+                if (action == MotionEvent.ACTION_UP) {
+                    if (!isLongTap) {
+                        isSecondTap = true;
+                        link[0].onClick(MyTextView.this);
+                    }
+                }
+                return true;
             }
         }
         return false;

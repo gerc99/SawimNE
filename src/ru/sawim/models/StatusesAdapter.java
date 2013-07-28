@@ -2,7 +2,6 @@ package ru.sawim.models;
 
 import DrawControls.icons.Icon;
 import android.content.Context;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -91,8 +90,8 @@ public class StatusesAdapter extends BaseAdapter {
 
         public ItemWrapper(View item) {
             this.item = item;
-            itemImage = (ImageView) item.findViewById(R.id.first_image);
-            itemStatus = (TextView) item.findViewById(R.id.itemStatus);
+            itemImage = (ImageView) item.findViewById(R.id.image);
+            itemStatus = (TextView) item.findViewById(R.id.status);
         }
 
         void populateFrom(int item) {

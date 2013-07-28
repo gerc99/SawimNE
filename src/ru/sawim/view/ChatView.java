@@ -21,6 +21,7 @@ import android.widget.*;
 import protocol.Contact;
 import protocol.ContactMenu;
 import protocol.Protocol;
+import protocol.StatusInfo;
 import protocol.jabber.*;
 import ru.sawim.General;
 import ru.sawim.R;
@@ -161,21 +162,11 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
                         break;
 
                     case ContactMenu.ACTION_DEL_ALL_CHATS_EXCEPT_CUR:
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                ChatHistory.instance.removeAll(chat);
-                            }
-                        });
+                        ChatHistory.instance.removeAll(chat);
                         break;
 
                     case ContactMenu.ACTION_DEL_ALL_CHATS:
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                ChatHistory.instance.removeAll(null);
-                            }
-                        });
+                        ChatHistory.instance.removeAll(null);
                         getActivity().finish();
                         break;
 
@@ -299,6 +290,13 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
         resume(chat);
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (chat.empty())
+            ChatHistory.instance.unregisterChat(chat);
+    }
+
     public void pause(Chat chat) {
         if (chat == null) return;
         View item = chatListView.getChildAt(0);
@@ -306,22 +304,19 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
 
         General.getInstance().setOnUpdateChat(null);
         chat.resetUnreadMessages();
-        chat.setVisibleChat(false);
-        if (chat.empty())
-            ChatHistory.instance.unregisterChat(chat);
     }
 
     public void resume(Chat chat) {
         if (chat == null) return;
         final Chat.ScrollState lastPosition = getLastPosition(chat.getContact().getUserId());
-        if (lastPosition != null)
+        if (lastPosition != null && lastPosition.position > 0)
             chatListView.setSelectionFromTop(lastPosition.position + 1, lastPosition.offset);
+        else
+            chatListView.setSelection(0);
 
+        ChatHistory.instance.registerChat(chat);
         General.getInstance().setOnUpdateChat(this);
         chat.resetUnreadMessages();
-        chat.setVisibleChat(true);
-        if (chat.empty())
-            ChatHistory.instance.registerChat(chat);
         updateChat();
     }
 
@@ -398,6 +393,7 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
         smileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                hideKeyboard(view);
                 new SmilesView().show(currentActivity.getSupportFragmentManager(), "show-smiles");
             }
         });
@@ -467,6 +463,10 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
         public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
             MessData msg = (MessData) adapterView.getAdapter().getItem(position);
             setText("");
+            if (currentContact instanceof JabberServiceContact) {
+                if (((JabberServiceContact) currentContact).getContact(msg.getNick()) == null)
+                    Toast.makeText(getActivity(), getString(R.string.contact_walked), Toast.LENGTH_LONG).show();
+            }
             setText(chat.onMessageSelected(msg));
         }
     }
@@ -483,7 +483,7 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
         }
     }
 
-    public void hideKeyboard(View view) {
+    private void hideKeyboard(View view) {
         InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }

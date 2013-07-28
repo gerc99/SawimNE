@@ -16,11 +16,9 @@ import ru.sawim.R;
 import ru.sawim.Scheme;
 import sawim.Options;
 import sawim.util.JLocale;
-import protocol.Contact;
 import protocol.jabber.Jabber;
 import protocol.jabber.JabberContact;
 import protocol.jabber.JabberServiceContact;
-import protocol.jabber.Jid;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -252,7 +250,7 @@ public class MucUsersAdapter extends BaseAdapter {
 
         public ImageView getItemStatusImage() {
             if (itemStatusImage == null) {
-                itemStatusImage = (ImageView) item.findViewById(R.id.first_image);
+                itemStatusImage = (ImageView) item.findViewById(R.id.image);
             }
             return itemStatusImage;
         }

@@ -27,24 +27,24 @@ import java.util.List;
  */
 public class ChatsSpinnerAdapter extends BaseAdapter implements SpinnerAdapter {
 
-    private final List<Chat> chats;
+    private final ChatHistory chatHistory;
     Context context;
     LayoutInflater layoutInflater;
 
     public ChatsSpinnerAdapter(Context context) {
         this.context = context;
         layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        chats = ChatHistory.instance.historyTable;
+        chatHistory = ChatHistory.instance;
     }
 
     @Override
     public int getCount() {
-        return chats.size();
+        return chatHistory.getTotal();
     }
 
     @Override
     public Chat getItem(int i) {
-        return ChatHistory.instance.chatAt(i);
+        return chatHistory.chatAt(i);
     }
 
     @Override

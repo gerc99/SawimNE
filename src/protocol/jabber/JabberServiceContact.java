@@ -307,7 +307,7 @@ public class JabberServiceContact extends JabberContact {
         }
     }
 
-    JabberContact.SubContact getContact(String nick) {
+    public JabberContact.SubContact getContact(String nick) {
         if (StringConvertor.isEmpty(nick)) {
             return null;
         }

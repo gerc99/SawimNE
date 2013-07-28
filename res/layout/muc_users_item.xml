@@ -6,7 +6,7 @@
         android:layout_height="wrap_content"
         android:paddingTop="5dp" android:paddingBottom="5dp">
     <ImageView
-            android:id="@+id/first_image"
+            android:id="@+id/image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"/>

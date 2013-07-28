@@ -5,7 +5,6 @@ import DrawControls.tree.TreeNode;
 import DrawControls.tree.VirtualContactList;
 import android.database.DataSetObserver;
 import android.graphics.Typeface;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +22,7 @@ import sawim.chat.ChatHistory;
 import sawim.chat.message.Message;
 import sawim.modules.tracking.Tracking;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -37,15 +37,20 @@ public class RosterAdapter extends BaseAdapter {
     public static final int ALL_CONTACTS = 0;
     public static final int ONLINE_CONTACTS = 1;
     private VirtualContactList vcl;
-    private List<TreeNode> items;
+    private List<TreeNode> items = new ArrayList<TreeNode>();
     private LayoutInflater mInflater;
     private int type;
 
-    public RosterAdapter(LayoutInflater inf, VirtualContactList vcl, List<TreeNode> drawItems, int type) {
+    public RosterAdapter(LayoutInflater inf, VirtualContactList vcl, List<TreeNode> items, int type) {
         mInflater = inf;
         this.vcl = vcl;
-        items = drawItems;
+        this.items = items;
         this.type = type;
+    }
+
+    public void refreshList(List<TreeNode> newItems) {
+        items = newItems;
+        notifyDataSetChanged();
     }
 
     @Override
@@ -118,7 +123,7 @@ public class RosterAdapter extends BaseAdapter {
             this.item = item;
             itemName = (TextView) item.findViewById(R.id.item_name);
             itemDescriptionText = (TextView) item.findViewById(R.id.item_description);
-            itemFirstImage = (ImageView) item.findViewById(R.id.first_image);
+            itemFirstImage = (ImageView) item.findViewById(R.id.image);
             itemSecondImage = (ImageView) item.findViewById(R.id.second_image);
             itemThirdImage = (ImageView) item.findViewById(R.id.third_image);
             itemFourthImage = (ImageView) item.findViewById(R.id.fourth_rule_image);

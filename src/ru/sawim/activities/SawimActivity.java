@@ -204,11 +204,9 @@ public class SawimActivity extends FragmentActivity {
         Protocol p = ContactList.getInstance().getCurrProtocol();
         switch (item.getItemId()) {
             case MENU_CONNECT:
-                if (p.isConnected()) {
-                    p.setStatus(StatusInfo.STATUS_OFFLINE, "");
-                } else {
-                    p.setStatus(StatusInfo.STATUS_ONLINE, "");
-                }
+                p.setStatus(p.isConnected()
+                        ? StatusInfo.STATUS_OFFLINE : StatusInfo.STATUS_ONLINE, "");
+                Thread.yield();
                 break;
             case MENU_STATUS:
                 new StatusesView(p, StatusesView.ADAPTER_STATUS).show(getSupportFragmentManager(), "change-status");

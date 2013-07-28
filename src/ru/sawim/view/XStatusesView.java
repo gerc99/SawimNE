@@ -56,7 +56,7 @@ public class XStatusesView extends DialogFragment {
                 dialogXStatusText.setTitle(protocol.getXStatusInfo().getName(position - 1));
                 if (position == 0) {
                     setXStatus(-1, "", "");
-                    dialogXStatusText.dismiss();
+                    dismiss();
                     return;
                 }
 

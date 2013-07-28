@@ -36,9 +36,11 @@ abstract public class Contact extends TreeNode {
     public final boolean isOnline() {
         return (StatusInfo.STATUS_OFFLINE != status);
     }
+
     public void setTimeOfChaingingStatus(long time) {
         chaingingStatusTime = time;
     }
+
 	public String annotations = null;
 
 	public byte isHistory() {
@@ -53,6 +55,7 @@ abstract public class Contact extends TreeNode {
 	public byte subcontactsS() {
 		return (byte)0;
 	}
+
 	public boolean isConference() {
 	    return false;
 	}

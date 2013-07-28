@@ -131,6 +131,17 @@ public final class FileTransfer implements FileBrowserListener,
         }
     }
 
+    public void processPhoto(final byte[] data) {
+        setData(new ByteArrayInputStream(data), data.length);
+        String timestamp = Util.getLocalDateString(General.getCurrentGmtTime(), false);
+        String photoName = "photo-"
+                + timestamp.replace('.', '-').replace(' ', '-')
+                + ".jpg";
+        setFileName(photoName);
+        askForNameDesc();
+        showPreview(data);
+    }
+
     public void onDirectorySelect(String s0) {
     }
 
@@ -166,8 +177,6 @@ public final class FileTransfer implements FileBrowserListener,
             cItem.showFileProgress(FormActivity.getInstance());
         } else {
             destroy();
-            form.back();
-            ContactList.getInstance().activate();
         }
     }
 
@@ -273,17 +282,6 @@ public final class FileTransfer implements FileBrowserListener,
             handleException(new SawimException(194, 2));
         }
         destroy();
-    }
-
-    public void processPhoto(final byte[] data) {
-        setData(new ByteArrayInputStream(data), data.length);
-        String timestamp = Util.getLocalDateString(General.getCurrentGmtTime(), false);
-        String photoName = "photo-"
-                + timestamp.replace('.', '-').replace(' ', '-')
-                + ".jpg";
-        setFileName(photoName);
-        askForNameDesc();
-        showPreview(data);
     }
 
     private void showPreview(final byte[] image) {

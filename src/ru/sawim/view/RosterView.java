@@ -55,7 +55,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
     private PagerTitleStrip indicator;
     private List<View> pages = new ArrayList<View>();
     private CustomPagerAdapter pagerAdapter;
-    private ArrayList<BaseAdapter> adaptersPages = new ArrayList<BaseAdapter>();
+    private ArrayList<RosterAdapter> adaptersPages = new ArrayList<RosterAdapter>();
     private RosterAdapter allRosterAdapter;
     private RosterAdapter onlineRosterAdapter;
     private VirtualContactList owner;
@@ -143,40 +143,24 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
     }
 
     @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View v = inflater.inflate(R.layout.roster_view, null);
+        rosterViewLayout = (LinearLayout) v.findViewById(R.id.roster_view);
+        rosterBarLayout = (LinearLayout) v.findViewById(R.id.roster_bar);
+        progressBar = (ProgressBar) v.findViewById(R.id.myprogressbar);
+        HorizontalScrollView horizontalScrollView = (HorizontalScrollView) v.findViewById(R.id.horizontalScrollView);
+        topLinearLayout = (LinearLayout) horizontalScrollView.findViewById(R.id.topLinearLayout);
+        viewPager = (ViewPager) v.findViewById(R.id.view_pager);
+        indicator = (PagerTitleStrip) viewPager.findViewById(R.id.pagerTitleStrip);
+        return v;
+    }
+
+    @Override
     public void putIntoQueue(Group g) {
         if (-1 == Util.getIndex(updateQueue, g)) {
             updateQueue.addElement(g);
         }
-    }
-
-    //private void setCurrentItemIndex(final int currentIndex) {
-    //    ((ListView) pages.get(viewPager.getCurrentItem())).setSelection(currentIndex);
-    //}
-
-    private int getCurrItem() {
-        return ((ListView) pages.get(viewPager.getCurrentItem())).getFirstVisiblePosition();
-    }
-
-    private TreeNode getCurrentNode() {
-        return getSafeNode(getCurrItem());
-    }
-
-    @Override
-    public void setCurrentNode(TreeNode node) {
-        if (null != node) {
-            currentNode = node;
-        }
-    }
-
-    public TreeNode getSafeNode(int index) {
-        if ((index < items.size()) && (index >= 0))
-            return items.get(index);
-        return null;
-    }
-
-    private void setExpandFlag(Group node, boolean value) {
-        setCurrentNode(getCurrentNode());
-        node.setExpandFlag(value);
     }
 
     private void rebuildRoster() {
@@ -189,7 +173,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
     //    try {
             TreeNode current = currentNode;
             currentNode = null;
-            //int prevIndex = getCurrItem();
+            int prevIndex = getCurrItem();
             if (null != current) {
                 if ((current.isContact()) && owner.useGroups) {
                     Contact c = (Contact) current;
@@ -207,7 +191,8 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
             }
             items.clear();
             owner.buildFlatItems(items);
-            updatePage(viewPager.getCurrentItem());
+            if (adaptersPages != null && adaptersPages.size() > 0)
+                adaptersPages.get(viewPager.getCurrentItem()).notifyDataSetChanged();
             /* (null != current) {
                 int currentIndex = Util.getIndex(items, current);
                 if ((prevIndex != currentIndex) && (-1 != currentIndex)) {
@@ -222,112 +207,44 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
     //    }
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (owner == null) return;
-        if (owner.getProtocolCount() == 0) return;
-        owner.setOnUpdateRoster(this);
-        update();
-        updateRoster();
+    /*private void setCurrentItemIndex(final int currentIndex) {
+        ((ListView) pages.get(viewPager.getCurrentItem())).setSelection(currentIndex);
+    }*/
+
+    private int getCurrItem() {
+        return ((ListView) pages.get(viewPager.getCurrentItem())).getFirstVisiblePosition();
+    }
+
+    private TreeNode getCurrentNode() {
+        return getSafeNode(getCurrItem());
+    }
+
+    public TreeNode getSafeNode(int index) {
+        if ((index < items.size()) && (index >= 0))
+            return items.get(index);
+        return null;
+    }
+
+    private void setExpandFlag(Group node, boolean value) {
+        //setCurrentNode(getCurrentNode());
+        node.setExpandFlag(value);
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-        if (owner == null) return;
-        owner.setOnUpdateRoster(null);
-    }
-
-    @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-        ChatView viewer = (ChatView) getActivity().getSupportFragmentManager()
-                .findFragmentById(R.id.chat_fragment);
-        TreeNode item = ((RosterAdapter)adaptersPages.get(viewPager.getCurrentItem())).getItem(position);
-        if (item.isContact()) {
-            Protocol p = owner.getCurrentProtocol();
-            Contact c = ((Contact) item);
-            c.activate(p);
-            if (!isInLayout()) return;
-            if (viewer == null || !viewer.isInLayout()) {
-                Intent intent = new Intent(getActivity(), ChatActivity.class);
-                intent.putExtra("protocol_id", p.getUserId());
-                intent.putExtra("contact_id", c.getUserId());
-                getActivity().startActivity(intent);
-            } else {
-                Chat chat = viewer.getCurrentChat();
-                viewer.pause(chat);
-                if (c != null) {
-                    viewer.openChat(p, c);
-                    viewer.resume(viewer.getCurrentChat());
-                }
+    public void updateRoster() {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                rebuildRoster();
             }
-        } else if (item.isGroup()) {
-            Group group = (Group) item;
-            setExpandFlag(group, !group.isExpanded());
+        });
+    }
+
+    @Override
+    public void setCurrentNode(TreeNode node) {
+        if (null != node) {
+            currentNode = node;
         }
-        updateRoster();
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.roster_view, null);
-        rosterViewLayout = (LinearLayout) v.findViewById(R.id.roster_view);
-        rosterBarLayout = (LinearLayout) v.findViewById(R.id.roster_bar);
-        progressBar = (ProgressBar) v.findViewById(R.id.myprogressbar);
-        HorizontalScrollView horizontalScrollView = (HorizontalScrollView) v.findViewById(R.id.horizontalScrollView);
-        topLinearLayout = (LinearLayout) horizontalScrollView.findViewById(R.id.topLinearLayout);
-        viewPager = (ViewPager) v.findViewById(R.id.view_pager);
-        indicator = (PagerTitleStrip) viewPager.findViewById(R.id.pagerTitleStrip);
-        return v;
-    }
-
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-        contextMenuInfo = (AdapterView.AdapterContextMenuInfo) menuInfo;
-        TreeNode node = ((RosterAdapter)((ListView) v).getAdapter()).getItem(contextMenuInfo.position);
-        Protocol p = owner.getCurrentProtocol();
-        if (node.isContact()) {
-            new ContactMenu(((Contact) node).getProtocol(), (Contact) node).getContextMenu(menu);
-        }
-        if (node.isGroup()) {
-            if (p.isConnected()) {
-                new ManageContactListForm(p, (Group) node).showMenu(getActivity());
-            }
-        }
-    }
-
-    @Override
-    public boolean onContextItemSelected(final android.view.MenuItem item) {
-        AdapterView.AdapterContextMenuInfo menuInfo = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-        if (menuInfo == null)
-            menuInfo = contextMenuInfo;
-        TreeNode node = ((RosterAdapter)adaptersPages.get(viewPager.getCurrentItem())).getItem(menuInfo.position);
-        if (node.isContact()) {
-            final Contact c = (Contact) node;
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    new ContactMenu(c.getProtocol(), c).doAction(getActivity(), item.getItemId());
-                }
-            });
-            return true;
-        }
-        return super.onContextItemSelected(item);
-    }
-
-    @Override
-    public void onClick(View view) {
-        owner.setCurrProtocol(view.getId());
-        update();
-    }
-
-    @Override
-    public boolean onLongClick(View view) {
-        new StatusesView(owner.getProtocol(view.getId()), StatusesView.ADAPTER_STATUS).show(getActivity().getSupportFragmentManager(), "change-status");
-        return false;
     }
 
     @Override
@@ -337,15 +254,15 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-            if (p.isConnecting()) {
-                progressBar.setVisibility(ProgressBar.VISIBLE);
-                byte percent = p.getConnectingProgress();
-                Rect bounds = progressBar.getProgressDrawable().getBounds();
-                progressBar.getProgressDrawable().setBounds(bounds);
-                progressBar.setProgress(percent);
-            } else {
-                progressBar.setVisibility(ProgressBar.GONE);
-            }
+                if (p.isConnecting()) {
+                    progressBar.setVisibility(ProgressBar.VISIBLE);
+                    byte percent = p.getConnectingProgress();
+                    Rect bounds = progressBar.getProgressDrawable().getBounds();
+                    progressBar.getProgressDrawable().setBounds(bounds);
+                    progressBar.setProgress(percent);
+                } else {
+                    progressBar.setVisibility(ProgressBar.GONE);
+                }
             }
         });
     }
@@ -393,18 +310,97 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         });
     }
 
-    private void updatePage(final int currPage) {
-        if (adaptersPages != null && adaptersPages.size() > 0)
-            adaptersPages.get(currPage).notifyDataSetChanged();
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (owner == null) return;
+        if (owner.getProtocolCount() == 0) return;
+        owner.setOnUpdateRoster(this);
+        update();
+        updateRoster();
     }
 
     @Override
-    public void updateRoster() {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                rebuildRoster();
+    public void onPause() {
+        super.onPause();
+        if (owner == null) return;
+        owner.setOnUpdateRoster(null);
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+        ChatView viewer = (ChatView) getActivity().getSupportFragmentManager()
+                .findFragmentById(R.id.chat_fragment);
+        TreeNode item = adaptersPages.get(viewPager.getCurrentItem()).getItem(position);
+        if (item.isContact()) {
+            Protocol p = owner.getCurrentProtocol();
+            Contact c = ((Contact) item);
+            c.activate(p);
+            if (!isInLayout()) return;
+            if (viewer == null || !viewer.isInLayout()) {
+                Intent intent = new Intent(getActivity(), ChatActivity.class);
+                intent.putExtra("protocol_id", p.getUserId());
+                intent.putExtra("contact_id", c.getUserId());
+                getActivity().startActivity(intent);
+            } else {
+                Chat chat = viewer.getCurrentChat();
+                viewer.pause(chat);
+                if (c != null) {
+                    viewer.openChat(p, c);
+                    viewer.resume(viewer.getCurrentChat());
+                }
             }
-        });
+        } else if (item.isGroup()) {
+            Group group = (Group) item;
+            setExpandFlag(group, !group.isExpanded());
+        }
+        updateRoster();
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        contextMenuInfo = (AdapterView.AdapterContextMenuInfo) menuInfo;
+        TreeNode node = ((RosterAdapter)((ListView) v).getAdapter()).getItem(contextMenuInfo.position);
+        Protocol p = owner.getCurrentProtocol();
+        if (node.isContact()) {
+            new ContactMenu(((Contact) node).getProtocol(), (Contact) node).getContextMenu(menu);
+        }
+        if (node.isGroup()) {
+            if (p.isConnected()) {
+                new ManageContactListForm(p, (Group) node).showMenu(getActivity());
+            }
+        }
+    }
+
+    @Override
+    public boolean onContextItemSelected(final android.view.MenuItem item) {
+        AdapterView.AdapterContextMenuInfo menuInfo = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        if (menuInfo == null)
+            menuInfo = contextMenuInfo;
+        TreeNode node = adaptersPages.get(viewPager.getCurrentItem()).getItem(menuInfo.position);
+        if (node.isContact()) {
+            final Contact c = (Contact) node;
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    new ContactMenu(c.getProtocol(), c).doAction(getActivity(), item.getItemId());
+                }
+            });
+            return true;
+        }
+        return super.onContextItemSelected(item);
+    }
+
+    @Override
+    public void onClick(View view) {
+        owner.setCurrProtocol(view.getId());
+        update();
+    }
+
+    @Override
+    public boolean onLongClick(View view) {
+        new StatusesView(owner.getProtocol(view.getId()), StatusesView.ADAPTER_STATUS).show(getActivity().getSupportFragmentManager(), "change-status");
+        return false;
     }
 }

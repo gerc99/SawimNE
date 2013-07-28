@@ -12,13 +12,24 @@ import ru.sawim.activities.SawimActivity;
 public class VirtualList {
     protected VirtualListModel model;
     private String caption;
-    private static VirtualList instance = new VirtualList();
+    private static VirtualList instance;
     private OnVirtualListListener virtualListListener;
     private OnBuildOptionsMenu buildOptionsMenu;
     private OnBuildContextMenu buildContextMenu;
     private OnClickListListener itemClickListListener;
 
+    private VirtualList() {
+        super();
+    }
+
     public static VirtualList getInstance() {
+        if (instance == null) {
+            synchronized (VirtualList.class){
+                if (instance == null){
+                    instance = new VirtualList();
+                }
+            }
+        }
         return instance;
     }
 

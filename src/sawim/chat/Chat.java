@@ -1,7 +1,6 @@
 package sawim.chat;
 
 import ru.sawim.General;
-import ru.sawim.Scheme;
 import sawim.Options;
 import sawim.chat.message.Message;
 import sawim.chat.message.PlainMessage;
@@ -29,7 +28,6 @@ public final class Chat {
     private HistoryStorage history;
     private boolean showStatus = true;
     private List<MessData> messData = new ArrayList<MessData>();
-    private boolean visibleChat;
     public static final String ADDRESS = ", ";
 
     public Chat(Protocol p, Contact item) {
@@ -128,7 +126,8 @@ public final class Chat {
     }
 
     public void sendMessage(String message) {
-        ChatHistory.instance.registerChat(this);
+        if (getMessCount() <= 1)
+            ChatHistory.instance.registerChat(this);
         //if (!contact.isSingleUserContact() && message.endsWith(", ")) {
         //    message = "";
         //}
@@ -427,7 +426,8 @@ public final class Chat {
     }
 
     public void addPresence(SystemNotice message) {
-        ChatHistory.instance.registerChat(this);
+        if (getMessCount() <= 1)
+            ChatHistory.instance.registerChat(this);
         String messageText = message.getProcessedText();
         addMessage(new MessData(message.getNewDate(), messageText, message.getName(), MessData.PRESENCE, Message.ICON_NONE));
         if (!isVisibleChat()) {
@@ -437,7 +437,8 @@ public final class Chat {
     }
 
     public void addMessage(Message message, boolean toHistory) {
-        ChatHistory.instance.registerChat(this);
+        if (getMessCount() <= 1)
+            ChatHistory.instance.registerChat(this);
         boolean inc = !isVisibleChat();
         if (message instanceof PlainMessage) {
             addTextToForm(message, getFrom(message));
@@ -471,7 +472,8 @@ public final class Chat {
     }
 
     public void addMyMessage(PlainMessage message) {
-        ChatHistory.instance.registerChat(this);
+        if (getMessCount() <= 1)
+            ChatHistory.instance.registerChat(this);
         resetUnreadMessages();
         addTextToForm(message, getFrom(message));
         if (isHistory()) {
@@ -493,10 +495,6 @@ public final class Chat {
     }
 
     public boolean isVisibleChat() {
-        return visibleChat;
-    }
-
-    public void setVisibleChat(boolean visibleChat) {
-        this.visibleChat = visibleChat;
+        return General.getInstance().getUpdateChatListener() != null;
     }
 }

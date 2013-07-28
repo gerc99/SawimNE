@@ -28,13 +28,17 @@ public final class VirtualContactList {
     }
 
     public void update(TreeNode node) {
-        if (onUpdateRoster != null)
-            onUpdateRoster.updateRoster();
+        synchronized (getCurrentProtocol().rosterLockObject) {
+            if (onUpdateRoster != null)
+                onUpdateRoster.updateRoster();
+        }
     }
 
     public final void update() {
-        if (onUpdateRoster != null)
-            onUpdateRoster.updateRoster();
+        synchronized (getCurrentProtocol().rosterLockObject) {
+            if (onUpdateRoster != null)
+                onUpdateRoster.updateRoster();
+        }
     }
 
     public void updateBarProtocols() {
@@ -143,6 +147,7 @@ public final class VirtualContactList {
         int onlineContactCounter;
         boolean all = !hideOffline;
         Vector groups = p.getSortedGroups();
+        Util.sort(groups);
         for (int groupIndex = 0; groupIndex < groups.size(); ++groupIndex) {
             g = (Group) groups.elementAt(groupIndex);
             g.sort();

@@ -155,7 +155,8 @@ public class ContactMenu implements TextBoxView.TextBoxListener {
                     } else {
                         history = HistoryStorage.getHistory(contact);
                     }
-                    new HistoryStorageList().show(history);
+                    if (history.getHistorySize() > 0)
+                        new HistoryStorageList().show(history);
                     //ru.sawim.activities.SawimActivity.getInstance().showHistory(history);
                 }
                 break;

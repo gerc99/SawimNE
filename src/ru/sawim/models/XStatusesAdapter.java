@@ -2,7 +2,6 @@ package ru.sawim.models;
 
 import DrawControls.icons.Icon;
 import android.content.Context;
-import android.graphics.Color;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -56,7 +55,7 @@ public class XStatusesAdapter extends BaseAdapter {
         View row = convView;
         if (row == null) {
             LayoutInflater inf = LayoutInflater.from(baseContext);
-            row = inf.inflate(R.layout.xstatus_item, null);
+            row = inf.inflate(R.layout.status_item, null);
             wr = new ItemWrapper(row);
             row.setTag(wr);
         } else {
@@ -81,8 +80,8 @@ public class XStatusesAdapter extends BaseAdapter {
 
         public ItemWrapper(View item) {
             this.item = item;
-            itemImage = (ImageView) item.findViewById(R.id.second_image);
-            itemXStatus = (TextView) item.findViewById(R.id.itemXStatus);
+            itemImage = (ImageView) item.findViewById(R.id.image);
+            itemXStatus = (TextView) item.findViewById(R.id.status);
         }
 
         void populateFrom(int item) {

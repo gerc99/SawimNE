@@ -34,7 +34,7 @@ import java.util.Vector;
 
 abstract public class Protocol {
     private static final int RECONNECT_COUNT = 20;
-    private final Object rosterLockObject = new Object();
+    public final Object rosterLockObject = new Object();
     public ClientInfo clientInfo;
     protected Vector contacts = new Vector();
     protected Vector groups = new Vector();

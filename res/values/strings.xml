@@ -212,4 +212,5 @@
     <string name="press_menu_for_connect">Press the menu button and choose action</string>
     <string name="add_conference">Add conference</string>
     <string name="include_setting_the_story">To preserve the history, include setting the story too</string>
+    <string name="contact_walked">Contact walked out of the conference</string>
 </resources>

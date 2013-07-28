@@ -1,6 +1,7 @@
 package sawim.history;
 
 
+import protocol.net.TcpSocket;
 import ru.sawim.General;
 import sawim.SawimException;
 import sawim.cl.ContactList;
@@ -15,6 +16,7 @@ import sawim.util.JLocale;
 import protocol.Contact;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 
 
@@ -23,6 +25,7 @@ class HistoryExport implements Runnable, FileBrowserListener {
     private String directory;
 
     private HistoryStorageList screen;
+    private JSR75FileSystem file;
     String contact;
     int currentMessage;
     int messageCount;
@@ -39,6 +42,19 @@ class HistoryExport implements Runnable, FileBrowserListener {
     }
 
     public void onFileSelect(String s0) throws SawimException {
+       /* file = FileSystem.getInstance();
+        try {
+            file.openFile(filename);
+            setFileName(file.getName());
+
+            InputStream is = file.openInputStream();
+            int fileSize = (int) file.fileSize();
+            setData(is, fileSize);
+            askForNameDesc();
+        } catch (Exception e) {
+            closeFile();
+            throw new SawimException(191, 3);
+        }*/
     }
 
     public void onDirectorySelect(String dir) {
@@ -140,6 +156,15 @@ class HistoryExport implements Runnable, FileBrowserListener {
         } finally {
             storage.closeHistory();
         }
+    }
+
+    private void closeFile() {
+        if (null != file) {
+            file.close();
+            file = null;
+        }
+        //TcpSocket.close(fis);
+        //fis = null;
     }
 }
 
