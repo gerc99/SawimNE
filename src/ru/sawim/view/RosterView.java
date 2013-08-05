@@ -49,6 +49,7 @@ import java.util.Vector;
 public class RosterView extends Fragment implements View.OnClickListener, ListView.OnItemClickListener, Roster.OnUpdateRoster, View.OnLongClickListener {
 
     private static final String TAG = "RosterView";
+    private HorizontalScrollView horizontalScrollView;
     private LinearLayout protocolBarLayout;
     private ProgressBar progressBar;
     private ViewPager viewPager;
@@ -79,7 +80,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
             if (protocolCount == 0) {
                 startActivity(new Intent(currentActivity, AccountsListActivity.class));
                 return;
-            } else if (protocolCount == 1 && roster.getCurrentProtocol().getContactItems().size() == 0) {
+            } else if (protocolCount == 1 && roster.getCurrentProtocol().getContactItems().size() == 0 && !roster.getCurrentProtocol().isConnecting()) {
                 Toast.makeText(getActivity(), R.string.press_menu_for_connect, Toast.LENGTH_LONG).show();
             }
         }
@@ -154,7 +155,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         LinearLayout rosterViewLayout = (LinearLayout) v.findViewById(R.id.roster_view);
         rosterViewLayout.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
         progressBar = (ProgressBar) v.findViewById(R.id.myprogressbar);
-        HorizontalScrollView horizontalScrollView = (HorizontalScrollView) v.findViewById(R.id.horizontalScrollView);
+        horizontalScrollView = (HorizontalScrollView) v.findViewById(R.id.horizontalScrollView);
         GradientDrawable gd = new GradientDrawable(
                 GradientDrawable.Orientation.TOP_BOTTOM,
                 new int[] {Scheme.getColor(Scheme.THEME_CAP_BACKGROUND),Scheme.getColor(Scheme.THEME_BACKGROUND)});
@@ -312,6 +313,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
                         protocolBarLayout.addView(imageBarButtons, i);
                     }
                 } else {
+                    horizontalScrollView.setVisibility(LinearLayout.GONE);
                     protocolBarLayout.setVisibility(LinearLayout.GONE);
                 }
             }

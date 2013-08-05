@@ -197,6 +197,8 @@
     <string name="private_message">Приватное сообщение</string>
     <string name="instant_reconnection">Мгновенно переподкючать при потере сети</string>
     <string name="invitation_sent">Приглашение отправлено</string>
+    <string name="save_avatar">Сохранить аватар</string>
+    <string name="saved">Сохранено</string>
 
 
 </resources>

@@ -1,10 +1,14 @@
 package sawim.search;
 
 import android.graphics.Bitmap;
+import android.os.Environment;
 import android.support.v4.app.FragmentActivity;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
+import ru.sawim.R;
+import ru.sawim.SawimApplication;
 import ru.sawim.activities.SawimActivity;
 import ru.sawim.models.form.VirtualListItem;
 import sawim.Clipboard;
@@ -27,6 +31,10 @@ import protocol.jabber.*;
 import protocol.mrim.*;
 import ru.sawim.General;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.util.List;
 
 public class UserInfo implements PhotoListener, FileBrowserListener {
@@ -34,7 +42,7 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
     private VirtualList profileView;
     private boolean avatarIsLoaded = false;
     private boolean searchResult = false;
-    public Bitmap avatar;
+    public byte[] avatar;
     public String status;
     public protocol.jabber.XmlNode vCard;
     public final String realUin;
@@ -85,12 +93,13 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
         searchResult = true;
     }
 
-    private static final int INFO_MENU_COPY     = 1040;
-    private static final int INFO_MENU_COPY_ALL = 1041;
-    private static final int INFO_MENU_EDIT     = 1044;
-    private static final int INFO_MENU_REMOVE_AVATAR = 1045;
-    private static final int INFO_MENU_ADD_AVATAR    = 1046;
-    private static final int INFO_MENU_TAKE_AVATAR   = 1047;
+    private static final int INFO_MENU_SAVE_AVATAR = 1;
+    private static final int INFO_MENU_COPY     = 2;
+    private static final int INFO_MENU_COPY_ALL = 3;
+    private static final int INFO_MENU_EDIT     = 4;
+    private static final int INFO_MENU_REMOVE_AVATAR = 5;
+    private static final int INFO_MENU_ADD_AVATAR    = 6;
+    private static final int INFO_MENU_TAKE_AVATAR   = 7;
 
     public void setOptimalName() {
         Contact contact = protocol.getItemByUIN(uin);
@@ -163,7 +172,7 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
         profile.addParam("fax",      workFax);
 
         profile.setHeader("avatar");
-        profile.addAvatar(null, avatar);
+        profile.addAvatar(null, General.avatarBitmap(avatar));
     }
     private void addMenu() {
         addContextMenu();
@@ -216,6 +225,8 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
             public void onCreateContextMenu(ContextMenu menu, int listItem) {
                 menu.add(Menu.FIRST, INFO_MENU_COPY, 2, JLocale.getString("copy_text"));
                 menu.add(Menu.FIRST, INFO_MENU_COPY_ALL, 2, JLocale.getString("copy_all_text"));
+                if (avatar != null)
+                    menu.add(Menu.FIRST, INFO_MENU_SAVE_AVATAR, 2, SawimApplication.getInstance().getString(R.string.save_avatar));
             }
 
             @Override
@@ -235,9 +246,41 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
                         }
                         Clipboard.setClipBoardText(s.toString());
                         break;
+
+                    case INFO_MENU_SAVE_AVATAR:
+                        byte[] buffer = avatar;
+                        File file = new File(PATH);
+                        file.mkdir();
+
+                        try {
+                            if (file.list(new Filter(realUin)).length > 0) return;
+                            if (buffer != null) {
+                                FileOutputStream fos = new FileOutputStream(PATH + realUin.replace("/", "%") + ".png");
+                                fos.write(buffer);
+                                fos.close();
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        Toast.makeText(SawimApplication.getContext(), R.string.saved, Toast.LENGTH_SHORT).show();
+                        break;
                 }
             }
         });
+    }
+
+    private static final String PATH =  Environment.getExternalStorageDirectory().getAbsolutePath()+"/sawimne/avatars/";
+    private static class Filter implements FilenameFilter {
+        private String jid;
+
+        public Filter(String jid) {
+            this.jid = jid;
+        }
+
+        @Override
+        public boolean accept(File dir, String filename) {
+            return filename.contains(jid);
+        }
     }
     public void setProfileViewToWait() {
         VirtualListModel profile = profileView.getModel();
@@ -299,7 +342,7 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
     public void setAvatar(byte[] data) {
         avatar = null;
         if (null != data) {
-            avatar = General.avatarBitmap(data);
+            avatar = data;
         }
     }
 

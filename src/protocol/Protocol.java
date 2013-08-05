@@ -939,7 +939,7 @@ abstract public class Protocol {
         if (!silent) {
             addMessageNotify(chat, contact, message);
         }
-        if (chat.typeNewMessageIcon != chat.getNewMessageIcon()) {
+        if (chat.typeNewMessageIcon != chat.getNewMessageIcon() || chat.isVisibleChat()) {
             chat.typeNewMessageIcon = chat.getNewMessageIcon();
             getContactList().update(contact);
             getContactList().markMessages(contact);
