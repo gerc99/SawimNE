@@ -1,9 +1,8 @@
 package protocol.jabber;
 
-import android.util.Log;
 import ru.sawim.activities.FormActivity;
 import ru.sawim.activities.SawimActivity;
-import sawim.cl.ContactList;
+import sawim.roster.Roster;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
 import sawim.util.JLocale;
@@ -14,7 +13,7 @@ import ru.sawim.models.form.Forms;
 public final class AdHoc implements FormListener, ControlStateListener {
     private JabberContact contact;
     private Jabber protocol;
-    private String jid;
+    private String jid = "";
     private String[] nodes;
     private String[] names;
     private XForm commandForm;
@@ -138,7 +137,7 @@ public final class AdHoc implements FormListener, ControlStateListener {
 			}
         } else {
             execForm();
-            ContactList.getInstance().activate(contact);
+            Roster.getInstance().activate(contact);
         }
         form.backForm();
     }

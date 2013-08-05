@@ -6,7 +6,7 @@ import sawim.Options;
 import sawim.chat.Chat;
 import sawim.chat.message.PlainMessage;
 import sawim.chat.message.SystemNotice;
-import sawim.cl.ContactList;
+import sawim.roster.Roster;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
 import sawim.modules.DebugLog;
@@ -267,7 +267,7 @@ public final class MrimConnection extends ClientConnection {
                     General.maximize();
                 }
                 
-                ContactList.getInstance().activateWithMsg(from + " (SMS):\n" + msg);
+                Roster.getInstance().activateWithMsg(from + " (SMS):\n" + msg);
             }
             MagicEye.addAction(mrim, fromEmail, "SMS", msg);
             return;

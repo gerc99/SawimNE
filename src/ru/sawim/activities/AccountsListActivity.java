@@ -2,7 +2,6 @@ package ru.sawim.activities;
 
 import android.accounts.AccountAuthenticatorResponse;
 import android.accounts.AccountManager;
-import android.app.Activity;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -13,7 +12,6 @@ import protocol.Profile;
 import protocol.jabber.JabberRegistration;
 import ru.sawim.R;
 import ru.sawim.view.AccountsListView;
-import sawim.cl.ContactList;
 
 /**
  * Created with IntelliJ IDEA.

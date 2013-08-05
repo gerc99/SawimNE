@@ -41,7 +41,6 @@ public class TextFormatter {
 
     public static SpannableStringBuilder getFormattedText(String text, Context context) {
         SpannableStringBuilder builder = new SpannableStringBuilder(text);
-        //if (Linkify.addLinks(builder, 1)) return builder;
         return detectEmotions(context, builder);
     }
 }

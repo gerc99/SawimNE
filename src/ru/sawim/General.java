@@ -1,24 +1,16 @@
 package ru.sawim;
 
 import android.content.Context;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.os.Handler;
 import android.util.DisplayMetrics;
-import android.util.Log;
-import android.widget.Toast;
 import sawim.Options;
 import sawim.Updater;
-import sawim.chat.Chat;
 import sawim.chat.ChatHistory;
-import sawim.chat.MessData;
 import ru.sawim.activities.SawimActivity;
-import sawim.cl.ContactList;
+import sawim.roster.Roster;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
 import sawim.modules.*;
@@ -83,9 +75,8 @@ public class General {
             gc();
 
             Options.loadAccounts();
-            ContactList.getInstance().initUI();
-            ContactList.getInstance().initAccounts();
-            ContactList.getInstance().loadAccounts();
+            Roster.getInstance().initAccounts();
+            Roster.getInstance().loadAccounts();
             sawim.modules.tracking.Tracking.loadTrackingFromRMS();
         } catch (Exception e) {
             DebugLog.panic("init", e);
@@ -101,10 +92,10 @@ public class General {
     }
 
     public void quit() {
-        ContactList cl = ContactList.getInstance();
+        Roster cl = Roster.getInstance();
         /*boolean wait;
         try {
-            wait = cl.disconnect();
+            wait = roster.disconnect();
         } catch (Exception e) {
             return;
         }*/
@@ -128,7 +119,7 @@ public class General {
     }
 
     public static void openUrl(String url) {
-        Search search = ContactList.getInstance().getManager().getCurrentProtocol().getSearchForm();
+        Search search = Roster.getInstance().getCurrentProtocol().getSearchForm();
         search.show(Util.getUrlWithoutProtocol(url), true);
     }
 
@@ -232,5 +223,6 @@ public class General {
         void updateChat();
         void updateMucList();
         void pastText(String s);
+
     }
 }

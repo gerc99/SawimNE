@@ -7,7 +7,7 @@ import DrawControls.icons.*;
 import java.io.*;
 import java.util.Vector;
 import sawim.chat.message.PlainMessage;
-import sawim.cl.ContactList;
+import sawim.roster.Roster;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
 import sawim.search.*;
@@ -274,7 +274,7 @@ public class Mrim extends Protocol {
                 }
                 contact.setFlags(flags);
                 getConnection().updateContact(contact);
-                ContactList.getInstance().activate();
+                Roster.getInstance().update();
                 break;
             
         }
@@ -326,7 +326,7 @@ public class Mrim extends Protocol {
         if (contact instanceof MrimPhoneContact) {
             return;
         }
-        StatusView statusView = ContactList.getInstance().getStatusView();
+        StatusView statusView = Roster.getInstance().getStatusView();
         statusView.init(this, contact);
         statusView.initUI();
 

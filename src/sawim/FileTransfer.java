@@ -6,14 +6,12 @@ import protocol.Contact;
 import protocol.Protocol;
 import protocol.net.TcpSocket;
 import ru.sawim.General;
-import ru.sawim.activities.ChatActivity;
 import ru.sawim.activities.FormActivity;
 import ru.sawim.activities.SawimActivity;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
 import sawim.chat.Chat;
-import sawim.chat.ChatHistory;
-import sawim.cl.ContactList;
+import sawim.roster.Roster;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
 import sawim.modules.DebugLog;
@@ -207,7 +205,7 @@ public final class FileTransfer implements FileBrowserListener,
         chat.activate();
         cItem.addFileProgress();
         chat.addFileProgress(JLocale.getEllipsisString("sending_file"), getProgressText());
-        ContactList.getInstance().addTransfer(this);
+        Roster.getInstance().addTransfer(this);
     }
 
     public void setProgress(int percent) {
@@ -223,7 +221,7 @@ public final class FileTransfer implements FileBrowserListener,
             }
             changeFileProgress(percent, JLocale.getEllipsisString("sending_file"));
             if (100 == percent) {
-                ContactList.getInstance().removeTransfer(false);
+                Roster.getInstance().removeTransfer(false);
                 changeFileProgress(percent, "complete");
                 return;
             }
@@ -252,7 +250,7 @@ public final class FileTransfer implements FileBrowserListener,
     public void destroy() {
         try {
             closeFile();
-            ContactList.getInstance().removeTransfer(false);
+            Roster.getInstance().removeTransfer(false);
             name_Desc.back();
             General.gc();
         } catch (Exception ignored) {

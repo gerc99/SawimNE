@@ -1,10 +1,9 @@
 package sawim.modules;
 
-import android.util.Log;
 import ru.sawim.SawimApplication;
 import ru.sawim.General;
 import sawim.Options;
-import sawim.cl.ContactList;
+import sawim.roster.Roster;
 import protocol.Profile;
 import protocol.Protocol;
 import protocol.StatusInfo;
@@ -29,11 +28,11 @@ public final class AutoAbsence {
         if (absence) {
             return;
         }
-        int count = ContactList.getInstance().getManager().getProtocolCount();
+        int count = Roster.getInstance().getProtocolCount();
         protos = new Protocol[count];
         profiles = new Profile[count];
         for (int i = 0; i < count; ++i) {
-            Protocol p = ContactList.getInstance().getManager().getProtocol(i);
+            Protocol p = Roster.getInstance().getProtocol(i);
             if (isSupported(p)) {
                 Profile pr = new Profile();
                 protos[i] = p;

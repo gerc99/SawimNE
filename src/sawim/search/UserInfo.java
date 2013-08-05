@@ -2,9 +2,12 @@ package sawim.search;
 
 import android.graphics.Bitmap;
 import android.support.v4.app.FragmentActivity;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import ru.sawim.activities.SawimActivity;
+import ru.sawim.models.form.VirtualListItem;
+import sawim.Clipboard;
 import sawim.ExternalApi;
 import ru.sawim.models.list.VirtualListModel;
 import ru.sawim.models.list.VirtualList;
@@ -23,6 +26,8 @@ import protocol.icq.*;
 import protocol.jabber.*;
 import protocol.mrim.*;
 import ru.sawim.General;
+
+import java.util.List;
 
 public class UserInfo implements PhotoListener, FileBrowserListener {
     private final Protocol protocol;
@@ -79,6 +84,9 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
     void setSeachResultFlag() {
         searchResult = true;
     }
+
+    private static final int INFO_MENU_COPY     = 1040;
+    private static final int INFO_MENU_COPY_ALL = 1041;
     private static final int INFO_MENU_EDIT     = 1044;
     private static final int INFO_MENU_REMOVE_AVATAR = 1045;
     private static final int INFO_MENU_ADD_AVATAR    = 1046;
@@ -158,6 +166,7 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
         profile.addAvatar(null, avatar);
     }
     private void addMenu() {
+        addContextMenu();
         profileView.setBuildOptionsMenu(new VirtualList.OnBuildOptionsMenu() {
             @Override
             public void onCreateOptionsMenu(Menu menu) {
@@ -200,11 +209,42 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
             }
         });
     }
+
+    private void addContextMenu() {
+        profileView.setOnBuildContextMenu(new VirtualList.OnBuildContextMenu() {
+            @Override
+            public void onCreateContextMenu(ContextMenu menu, int listItem) {
+                menu.add(Menu.FIRST, INFO_MENU_COPY, 2, JLocale.getString("copy_text"));
+                menu.add(Menu.FIRST, INFO_MENU_COPY_ALL, 2, JLocale.getString("copy_all_text"));
+            }
+
+            @Override
+            public void onContextItemSelected(int listItem, int itemMenuId) {
+                switch (itemMenuId) {
+                    case INFO_MENU_COPY:
+                        VirtualListItem item = profileView.getModel().elements.get(listItem);
+                        Clipboard.setClipBoardText(item.getLabel() + "\n" + item.getDescStr());
+                        break;
+
+                    case INFO_MENU_COPY_ALL:
+                        StringBuffer s = new StringBuffer();
+                        List<VirtualListItem> listItems = profileView.getModel().elements;
+                        for (int i = 0; i < listItems.size(); ++i) {
+                            s.append(listItems.get(i).getLabel()).append("\n")
+                                    .append(listItems.get(i).getDescStr()).append("\n");
+                        }
+                        Clipboard.setClipBoardText(s.toString());
+                        break;
+                }
+            }
+        });
+    }
     public void setProfileViewToWait() {
         VirtualListModel profile = profileView.getModel();
         profile.clear();
         profile.addParam(protocol.getUserIdName(), uin);
         profile.setInfoMessage(JLocale.getString("wait"));
+        addContextMenu();
         profileView.setModel(profile);
     }
 

@@ -5,17 +5,14 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.ImageView;
-import android.widget.SpinnerAdapter;
-import android.widget.TextView;
+import android.widget.*;
 import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.Scheme;
 import sawim.chat.Chat;
-import sawim.chat.ChatHistory;
 import sawim.chat.message.Message;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,24 +24,30 @@ import java.util.List;
  */
 public class ChatsSpinnerAdapter extends BaseAdapter implements SpinnerAdapter {
 
-    private final ChatHistory chatHistory;
+    private List<Chat> items = new ArrayList<Chat>();
     Context context;
     LayoutInflater layoutInflater;
 
-    public ChatsSpinnerAdapter(Context context) {
+    public ChatsSpinnerAdapter(Context context, List<Chat> items) {
         this.context = context;
         layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        chatHistory = ChatHistory.instance;
+        this.items = items;
+        refreshList(items);
+    }
+
+    public void refreshList(List<Chat> newItems) {
+        items = newItems;
+        notifyDataSetChanged();
     }
 
     @Override
     public int getCount() {
-        return chatHistory.getTotal();
+        return items.size();
     }
 
     @Override
     public Chat getItem(int i) {
-        return chatHistory.chatAt(i);
+        return items.get(i);
     }
 
     @Override
@@ -55,40 +58,47 @@ public class ChatsSpinnerAdapter extends BaseAdapter implements SpinnerAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup viewGroup) {
         View v = convertView;
-        HeaderViewHolder headerViewHolder;
-        Chat chat = getItem(position);
+        ViewHolder viewHolder;
+        final Chat chat = getItem(position);
         if (v == null) {
-            v = layoutInflater.inflate(R.layout.chats_spinner_item, null);
-            headerViewHolder = new HeaderViewHolder();
-            headerViewHolder.header = (TextView) v.findViewById(R.id.header);
-            v.setTag(headerViewHolder);
+            v = layoutInflater.inflate(R.layout.chats_spinner_dropdown_item, null);
+            viewHolder = new ViewHolder();
+            viewHolder.imageView = (ImageView) v.findViewById(R.id.image_icon);
+            viewHolder.label = (TextView) v.findViewById(R.id.label);
+            v.setTag(viewHolder);
         } else {
-            headerViewHolder = (HeaderViewHolder) v.getTag();
+            viewHolder = (ViewHolder) v.getTag();
         }
         if (chat == null) return v;
-        headerViewHolder.header.setTextSize(General.getFontSize());
-        headerViewHolder.header.setTextColor(Scheme.getColor(Scheme.THEME_CAP_TEXT));
-        headerViewHolder.header.setText(chat.getContact().getName());
+        Icon icStatus = chat.getContact().getLeftIcon();
+        Icon icMess = Message.msgIcons.iconAt(chat.getContact().getUnreadMessageIcon());
+        if (icMess == null)
+            viewHolder.imageView.setImageBitmap(icStatus.getImage());
+        else
+            viewHolder.imageView.setImageBitmap(icMess.getImage());
+        viewHolder.label.setTextSize(General.getFontSize());
+        viewHolder.label.setTextColor(Scheme.getColor(Scheme.THEME_CAP_TEXT));
+        viewHolder.label.setText(chat.getContact().getName());
         return v;
     }
 
     @Override
     public View getDropDownView(int position, View convertView, ViewGroup parent) {
         View v = convertView;
-        DropDownViewHolder dropDownViewHolder;
-        Chat chat = getItem(position);
+        ViewHolder dropDownViewHolder;
+        final Chat chat = getItem(position);
         if (v == null) {
             v = layoutInflater.inflate(R.layout.chats_spinner_dropdown_item, null);
-            dropDownViewHolder = new DropDownViewHolder();
+            dropDownViewHolder = new ViewHolder();
             dropDownViewHolder.imageView = (ImageView) v.findViewById(R.id.image_icon);
             dropDownViewHolder.label = (TextView) v.findViewById(R.id.label);
             v.setTag(dropDownViewHolder);
         } else {
-            dropDownViewHolder = (DropDownViewHolder) v.getTag();
+            dropDownViewHolder = (ViewHolder) v.getTag();
         }
         if (chat == null) return v;
-        v.setBackgroundColor(Scheme.getColor(Scheme.THEME_CAP_BACKGROUND));
-        Icon icStatus = chat.getProtocol().getStatusInfo().getIcon(chat.getContact().getStatusIndex());
+        v.setBackgroundColor(Scheme.getInversColor(Scheme.THEME_CAP_BACKGROUND));
+        Icon icStatus = chat.getContact().getLeftIcon();
         Icon icMess = Message.msgIcons.iconAt(chat.getContact().getUnreadMessageIcon());
         if (icMess == null)
             dropDownViewHolder.imageView.setImageBitmap(icStatus.getImage());
@@ -101,11 +111,7 @@ public class ChatsSpinnerAdapter extends BaseAdapter implements SpinnerAdapter {
         return v;
     }
 
-    static class HeaderViewHolder {
-        TextView header;
-    }
-
-    static class DropDownViewHolder {
+    static class ViewHolder {
         ImageView imageView;
         TextView label;
     }

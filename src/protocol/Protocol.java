@@ -12,7 +12,7 @@ import sawim.chat.ChatHistory;
 import sawim.chat.message.Message;
 import sawim.chat.message.PlainMessage;
 import sawim.chat.message.SystemNotice;
-import sawim.cl.ContactList;
+import sawim.roster.Roster;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
 import sawim.io.Storage;
@@ -34,7 +34,7 @@ import java.util.Vector;
 
 abstract public class Protocol {
     private static final int RECONNECT_COUNT = 20;
-    public final Object rosterLockObject = new Object();
+    private final Object rosterLockObject = new Object();
     public ClientInfo clientInfo;
     protected Vector contacts = new Vector();
     protected Vector groups = new Vector();
@@ -102,7 +102,7 @@ abstract public class Protocol {
             setPassword(null);
         }
 
-        String rms = "cl-" + getUserId();
+        String rms = "roster-" + getUserId();
         rmsName = (32 < rms.length()) ? rms.substring(0, 32) : rms;
     }
 
@@ -199,8 +199,8 @@ abstract public class Protocol {
             Util.sort(sortedGroups);
             updateContacts(notInListGroup);
         }
-        if (getContactList().getManager().getProtocolCount() == 0) return;
-        getContactList().getManager().update();
+        if (getContactList().getProtocolCount() == 0) return;
+        getContactList().update();
         needSave();
     }
 
@@ -215,12 +215,12 @@ abstract public class Protocol {
                 }
             }
         }
-        getContactList().getManager().update();
+        getContactList().update();
         needSave();
     }
 
     private void updateContacts(Group group) {
-        getContactList().getManager().updateGroup(this, group);
+        getContactList().updateGroup(this, group);
     }
 
     public final boolean isConnecting() {
@@ -236,9 +236,9 @@ abstract public class Protocol {
         if (100 == percent) {
             reconnect_attempts = RECONNECT_COUNT;
             getContactList().updateConnectionStatus();
-            getContactList().getManager().updateBarProtocols();
+            getContactList().updateBarProtocols();
         }
-        getContactList().getManager().updateProgressBar();
+        getContactList().updateProgressBar();
     }
 
     public void sendFile(FileTransfer transfer, String filename, String description) {
@@ -294,7 +294,7 @@ abstract public class Protocol {
 
     public final void needSave() {
         needSave = true;
-        ContactList.getInstance().needRosterSave();
+        Roster.getInstance().needRosterSave();
     }
 
     public final boolean safeSave() {
@@ -495,7 +495,7 @@ abstract public class Protocol {
         s_addContact(contact);
         contact.setTempFlag(false);
         cl_addContact(contact);
-        getContactList().getManager().setActiveContact(contact);
+        getContactList().setActiveContact(contact);
         needSave();
         s_addedContact(contact);
     }
@@ -545,9 +545,9 @@ abstract public class Protocol {
             userCloseConnection();
         }
         setStatusesOffline();
-        getContactList().getManager().updateBarProtocols();
-        getContactList().getManager().updateProgressBar();
-        getContactList().getManager().update();
+        getContactList().updateBarProtocols();
+        getContactList().updateProgressBar();
+        getContactList().update();
         getContactList().updateConnectionStatus();
         if (user) {
             DebugLog.println("disconnect " + getUserId());
@@ -599,7 +599,7 @@ abstract public class Protocol {
         Contact item = getItemByUIN(uin);
         if (null != item) {
             beginTyping(item, type);
-            getContactList().getManager().update();
+            getContactList().update();
         }
     }
 
@@ -640,7 +640,7 @@ abstract public class Protocol {
             c.setOfflineStatus();
         }
         synchronized (rosterLockObject) {
-            if (getContactList().getManager().useGroups) {
+            if (getContactList().useGroups) {
                 for (int i = groups.size() - 1; i >= 0; --i) {
                     ((Group) groups.elementAt(i)).updateGroupData();
                 }
@@ -686,8 +686,8 @@ abstract public class Protocol {
         return null;
     }
 
-    public final ContactList getContactList() {
-        return ContactList.getInstance();
+    public final Roster getContactList() {
+        return Roster.getInstance();
     }
 
     public final boolean inContactList(Contact contact) {
@@ -708,7 +708,7 @@ abstract public class Protocol {
         setLastStatusChangeTime();
         if (isConnected()) {
             s_updateOnlineStatus();
-            getContactList().getManager().updateProgressBar();
+            getContactList().updateProgressBar();
         }
     }
 
@@ -746,7 +746,7 @@ abstract public class Protocol {
         if (null == g) {
             g = notInListGroup;
         }
-        getContactList().getManager().removeFromGroup(g, c);
+        getContactList().removeFromGroup(g, c);
     }
 
     private void ui_addContactToGroup(Contact contact, Group group) {
@@ -755,12 +755,12 @@ abstract public class Protocol {
         if (null == group) {
             group = notInListGroup;
         }
-        getContactList().getManager().addToGroup(group, contact);
+        getContactList().addToGroup(group, contact);
     }
 
     private void ui_updateGroup(Group group) {
-        if (getContactList().getManager().useGroups) {
-            getContactList().getManager().update(group);
+        if (getContactList().useGroups) {
+            getContactList().update(group);
         }
     }
 
@@ -798,9 +798,9 @@ abstract public class Protocol {
             if (null == group) {
                 group = notInListGroup;
             }
-            getContactList().getManager().putIntoQueue(group);
+            getContactList().putIntoQueue(group);
         }
-        getContactList().getManager().update(contact);
+        getContactList().update(contact);
     }
 
     private void cl_addContact(Contact contact) {
@@ -834,7 +834,7 @@ abstract public class Protocol {
             sortedContacts.removeElement(contact);
             ui_removeFromAnyGroup(contact);
         }
-        getContactList().getManager().update(contact);
+        getContactList().update(contact);
     }
 
     private void cl_addGroup(Group group) {
@@ -857,7 +857,7 @@ abstract public class Protocol {
         synchronized (rosterLockObject) {
             sortedGroups.removeElement(group);
         }
-        getContactList().getManager().update(group);
+        getContactList().update(group);
     }
 
     public final void addLocalContact(Contact contact) {
@@ -939,9 +939,12 @@ abstract public class Protocol {
         if (!silent) {
             addMessageNotify(chat, contact, message);
         }
-        getContactList().markMessages(contact);
-        getContactList().getManager().update(contact);
-        getContactList().getManager().updateBarProtocols();
+        if (chat.typeNewMessageIcon != chat.getNewMessageIcon()) {
+            chat.typeNewMessageIcon = chat.getNewMessageIcon();
+            getContactList().update(contact);
+            getContactList().markMessages(contact);
+            getContactList().updateBarProtocols();
+        }
     }
 
     private void addMessageNotify(Chat chat, Contact contact, Message message) {
@@ -996,7 +999,7 @@ abstract public class Protocol {
         if (!isPersonal) {
             return;
         }
-        getContactList().getManager().setActiveContact(contact);
+        getContactList().setActiveContact(contact);
     }
 
     protected boolean isBlogBot(String userId) {
@@ -1045,7 +1048,7 @@ abstract public class Protocol {
     public final void processException(SawimException e) {
         DebugLog.println("process exception: " + e.getMessage());
         getContactList().activateWithMsg(getUserId() + "\n" + e.getMessage());
-        if (!SawimApplication.getInstance().isNetworkAvailable()) {
+        if (!SawimApplication.getInstance().isNetworkAvailable() && Options.getBoolean(Options.OPTION_INSTANT_RECONNECTION)) {
             e = new SawimException(123, 0);
         }
         if (e.isReconnectable()) {

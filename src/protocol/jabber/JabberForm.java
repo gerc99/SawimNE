@@ -1,9 +1,7 @@
 package protocol.jabber;
 
-import android.util.Log;
-import sawim.cl.ContactList;
+import sawim.roster.Roster;
 import sawim.comm.Util;
-import protocol.Contact;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
 
@@ -81,7 +79,7 @@ final class JabberForm implements FormListener {
     }
 
     void success() {
-        ContactList.getInstance().activate(jabber.getItemByUIN(jid));
+        Roster.getInstance().activate(jabber.getItemByUIN(jid));
     }
 
     private String getCaptchaXml() {

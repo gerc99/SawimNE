@@ -32,7 +32,7 @@ import android.support.v4.app.FragmentActivity;
 import android.view.*;
 import sawim.Options;
 import sawim.OptionsForm;
-import sawim.cl.ContactList;
+import sawim.roster.Roster;
 import sawim.forms.ManageContactListForm;
 import sawim.forms.SmsForm;
 import sawim.modules.DebugLog;
@@ -148,7 +148,7 @@ public class SawimActivity extends FragmentActivity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         menu.clear();
-        Protocol p = ContactList.getInstance().getCurrProtocol();
+        Protocol p = Roster.getInstance().getCurrProtocol();
         if (p != null) {
             menu.add(Menu.NONE, MENU_CONNECT, Menu.NONE, R.string.connect);
             menu.findItem(MENU_CONNECT).setTitle((p.isConnected() || p.isConnecting()) ? R.string.disconnect : R.string.connect);
@@ -157,9 +157,9 @@ public class SawimActivity extends FragmentActivity {
             if ((p instanceof Icq) || (p instanceof Mrim))
                 menu.add(Menu.NONE, MENU_PRIVATE_STATUS, Menu.NONE, R.string.private_status);
 
-            int count = ContactList.getInstance().getManager().getProtocolCount();
+            int count = Roster.getInstance().getProtocolCount();
             for (int i = 0; i < count; ++i) {
-                Protocol pr = ContactList.getInstance().getManager().getProtocol(i);
+                Protocol pr = Roster.getInstance().getProtocol(i);
                 if ((pr instanceof Mrim) && pr.isConnected()) {
                     menu.add(Menu.NONE, MENU_SEND_SMS, Menu.NONE, R.string.send_sms);
                 }
@@ -201,10 +201,10 @@ public class SawimActivity extends FragmentActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        Protocol p = ContactList.getInstance().getCurrProtocol();
+        Protocol p = Roster.getInstance().getCurrProtocol();
         switch (item.getItemId()) {
             case MENU_CONNECT:
-                p.setStatus(p.isConnected()
+                p.setStatus((p.isConnected() || p.isConnecting())
                         ? StatusInfo.STATUS_OFFLINE : StatusInfo.STATUS_ONLINE, "");
                 Thread.yield();
                 break;

@@ -1,7 +1,6 @@
 package sawim.comm;
 
-import DrawControls.tree.TreeNode;
-import android.util.Log;
+import sawim.roster.TreeNode;
 import ru.sawim.General;
 import sawim.Options;
 import sawim.util.JLocale;

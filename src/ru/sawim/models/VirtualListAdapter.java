@@ -9,6 +9,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.models.form.VirtualListItem;
 import ru.sawim.Scheme;
@@ -93,6 +94,7 @@ public class VirtualListAdapter extends BaseAdapter {
             if (element.getThemeTextLabel() > -1) {
                 holder.labelView.setTextColor(Scheme.getColor(element.getThemeTextLabel()));
             }
+            holder.labelView.setTextSize(General.getFontSize());
             holder.labelView.setText(element.getLabel());
         }
         if (element.getDescStr() != null) {
@@ -100,16 +102,18 @@ public class VirtualListAdapter extends BaseAdapter {
             if (element.getThemeTextDesc() > -1) {
                 holder.descView.setTextColor(Scheme.getColor(element.getThemeTextDesc()));
             }
+            holder.descView.setTextSize(General.getFontSize());
             holder.descView.setText(element.getDescStr());
         } else {
             if (element.getDescSpan() != null) {
                 holder.descView.setVisibility(TextView.VISIBLE);
+                holder.descView.setTextSize(General.getFontSize());
                 holder.descView.setText(element.getDescSpan());
             }
         }
         if (element.getImage() != null) {
             holder.imageView.setVisibility(ImageView.VISIBLE);
-            holder.imageView.setImageBitmap(element.getImage());
+            holder.imageView.setImageDrawable(element.getImage());
         }
         LinearLayout activeItem = (LinearLayout) convertView;
         if (i == selectedItem && selectedItem != -1) {

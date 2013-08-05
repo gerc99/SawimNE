@@ -11,7 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 import sawim.Options;
-import sawim.cl.ContactList;
+import sawim.roster.Roster;
 import protocol.Profile;
 import protocol.Protocol;
 import ru.sawim.R;
@@ -74,7 +74,7 @@ public class AccountsAdapter extends BaseAdapter {
 
         void populateFrom(final int position) {
             final Profile account = getItem(position);
-            Protocol p = ContactList.getInstance().getProtocol(account);
+            Protocol p = Roster.getInstance().getProtocol(account);
             if (null != p) {
                 ImageView icProtocol = getImageProtocol();
                 Icon ic = p.getStatusInfo().getIcon((byte) 0);
@@ -96,7 +96,7 @@ public class AccountsAdapter extends BaseAdapter {
                 public void onClick(View v) {
                     ToggleButton t = (ToggleButton) v.findViewById(R.id.toggle_button);
                     account.isActive = t.isChecked();
-                    ContactList.setCurrentProtocol();
+                    Roster.getInstance().setCurrentProtocol();
                     Options.saveAccount(account);
                     notifyDataSetChanged();
                 }

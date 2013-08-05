@@ -11,7 +11,7 @@ import protocol.icq.packet.ToIcqSrvPacket;
 import protocol.icq.plugin.XtrazMessagePlugin;
 import sawim.Options;
 import sawim.chat.message.PlainMessage;
-import sawim.cl.ContactList;
+import sawim.roster.Roster;
 import sawim.comm.GUID;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
@@ -251,7 +251,7 @@ public class Icq extends Protocol {
         switch (action) {
             case IcqContact.USER_MENU_REMOVE_ME:
                 sendRemoveMePacket(contact.getUserId());
-                ContactList.getInstance().activate();
+                Roster.getInstance().update();
                 break;
 
             case ContactMenu.USER_MENU_PS_VISIBLE:
@@ -270,7 +270,7 @@ public class Icq extends Protocol {
                         break;
                 }
                 changeServerList(list, (IcqContact) contact);
-                ContactList.getInstance().activate();
+                Roster.getInstance().update();
                 break;
 
         }
@@ -923,8 +923,8 @@ public class Icq extends Protocol {
     }
 
     public void showStatus(Contact contact) {
-        StatusView statusView = ContactList.getInstance().getStatusView();
-        ContactList.getInstance().setCurrentContact(contact);
+        StatusView statusView = Roster.getInstance().getStatusView();
+        Roster.getInstance().setCurrentContact(contact);
         _updateStatusView(statusView, contact);
         statusView.showIt();
         if ((XStatusInfo.XSTATUS_NONE != contact.getXStatusIndex())
@@ -935,7 +935,7 @@ public class Icq extends Protocol {
     }
 
     public void updateStatusView(Contact contact) {
-        StatusView statusView = ContactList.getInstance().getStatusView();
+        StatusView statusView = Roster.getInstance().getStatusView();
         if (contact == statusView.getContact()) {
             _updateStatusView(statusView, contact);
         }

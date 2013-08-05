@@ -6,6 +6,7 @@ import java.util.Vector;
 
 import DrawControls.icons.Icon;
 import DrawControls.icons.ImageList;
+import android.graphics.drawable.Drawable;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
@@ -31,11 +32,11 @@ public final class TrackingForm implements TextBoxView.TextBoxListener {
     private static final int STATUS = 0;
     private static final int TYPING = 2;
     private static final int MESSAGE = 3;
-    private static final ImageList statusList = ImageList.createImageList("/form.png");
+
     private static final ImageList lineList1 = ImageList.createImageList("/track.png");
-    public static final Icon No = statusList.iconAt(NO);
-    public static final Icon Yes = statusList.iconAt(YES);
-    private static final Icon Nothing = statusList.iconAt(NOTHING);
+    public static final Drawable No = SawimApplication.getContext().getResources().getDrawable(android.R.drawable.checkbox_off_background);
+    public static final Drawable Yes = SawimApplication.getContext().getResources().getDrawable(android.R.drawable.checkbox_on_background);
+    private static final Drawable Nothing = SawimApplication.getContext().getResources().getDrawable(android.R.drawable.radiobutton_off_background);
     private static final Icon Track = lineList1.iconAt(TRACK);
     private static final Icon TrackON = lineList1.iconAt(TRACKON);
     private static final Icon TrackOFF = lineList1.iconAt(TRACKOFF);
@@ -96,7 +97,7 @@ public final class TrackingForm implements TextBoxView.TextBoxListener {
         return JLocale.getString(key);
     }
 
-    private Line createLine(int id_event, int id_action, Icon s_icon, Icon l_icon, String name, boolean isAll, boolean isEvent) {
+    private Line createLine(int id_event, int id_action, Drawable s_icon, Icon l_icon, String name, boolean isAll, boolean isEvent) {
         Line line = new Line();
         line.id_event = id_event;
         line.id_action = id_action;
@@ -109,7 +110,7 @@ public final class TrackingForm implements TextBoxView.TextBoxListener {
         return line;
     }
 
-	private Line createLine(int id_event, int id_action, Icon s_icon, Icon l_icon, String name, boolean isEvent) {
+	private Line createLine(int id_event, int id_action, Drawable s_icon, Icon l_icon, String name, boolean isEvent) {
         Line line = new Line();
         line.id_event = id_event;
         line.id_action = id_action;
@@ -210,8 +211,8 @@ public final class TrackingForm implements TextBoxView.TextBoxListener {
 
     }
 
-    private Icon convertStatusToIcon(int status) {
-        Icon icon=No;
+    private Drawable convertStatusToIcon(int status) {
+        Drawable icon=No;
         switch (status){
             case NO: icon=No; break;
             case YES: icon=Yes; break;
@@ -266,7 +267,7 @@ public final class TrackingForm implements TextBoxView.TextBoxListener {
         VirtualListItem record = model.createNewParser(true);
 		Line line = getLine(0);
 		if (line.status_icon != null) {
-            record.addIcon(line.status_icon);
+            record.addDrawable(line.status_icon);
         }
         if (line.line_icon != null) {
             record.addIcon(line.line_icon);
@@ -284,7 +285,7 @@ public final class TrackingForm implements TextBoxView.TextBoxListener {
 		VirtualListItem record = model.createNewParser(true);
         Line line = getLine(index);
         if (line.status_icon != null) {
-            record.addIcon(line.status_icon);
+            record.addDrawable(line.status_icon);
         }
         if (line.line_icon != null) {
             record.addIcon(line.line_icon);
@@ -459,7 +460,7 @@ public final class TrackingForm implements TextBoxView.TextBoxListener {
     public static class Line {
         public int id_event;
         public int id_action;
-        public Icon status_icon;
+        public Drawable status_icon;
         public Icon line_icon;
         public String name;
 		public boolean isAll;

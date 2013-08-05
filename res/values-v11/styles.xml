@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="AppThemeLightNoBar" parent="android:style/Theme.Holo.Light.NoActionBar">
+        <item name="android:editTextStyle">@style/EditText</item>
     </style>
     <style name="AppThemeDarkNoBar" parent="android:style/Theme.Holo.NoActionBar">
+        <item name="android:editTextStyle">@style/EditText</item>
     </style>
 
     <style name="AppThemeLight" parent="android:style/Theme.Holo.Light">
+        <item name="android:editTextStyle">@style/EditText</item>
     </style>
     <style name="AppThemeDark" parent="android:style/Theme.Holo">
+        <item name="android:editTextStyle">@style/EditText</item>
     </style>
 
     <style name="AlertDialogCustom"></style>

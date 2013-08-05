@@ -5,7 +5,7 @@ import sawim.Options;
 import sawim.chat.message.Message;
 import sawim.chat.message.PlainMessage;
 import sawim.chat.message.SystemNotice;
-import sawim.cl.ContactList;
+import sawim.roster.Roster;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
 import sawim.history.CachedRecord;
@@ -29,6 +29,7 @@ public final class Chat {
     private boolean showStatus = true;
     private List<MessData> messData = new ArrayList<MessData>();
     public static final String ADDRESS = ", ";
+    private boolean visibleChat;
 
     public Chat(Protocol p, Contact item) {
         contact = item;
@@ -122,7 +123,7 @@ public final class Chat {
         if (showStatus) {
             showStatusPopup();
         }
-        ContactList.getInstance().activate(contact);
+        Roster.getInstance().activate(contact);
     }
 
     public void sendMessage(String message) {
@@ -289,6 +290,7 @@ public final class Chat {
         return md.getTime();
     }
 
+    public int typeNewMessageIcon = Message.ICON_NONE;
     private short messageCounter = 0;
     private short otherMessageCounter = 0;
     private byte sysNoticeCounter = 0;
@@ -304,6 +306,7 @@ public final class Chat {
     }
 
     public void resetUnreadMessages() {
+        typeNewMessageIcon = Message.ICON_NONE;
         boolean notEmpty = (0 < messageCounter)
                 || (0 < otherMessageCounter)
                 || (0 < sysNoticeCounter);
@@ -341,7 +344,7 @@ public final class Chat {
         } else if (0 < sysNoticeCounter) {
             return Message.ICON_SYS_OK;
         }
-        return -1;
+        return Message.ICON_NONE;
     }
 
     private short inc(short val) {
@@ -495,6 +498,10 @@ public final class Chat {
     }
 
     public boolean isVisibleChat() {
-        return General.getInstance().getUpdateChatListener() != null;
+        return visibleChat;
+    }
+
+    public void setVisibleChat(boolean visibleChat) {
+        this.visibleChat = visibleChat;
     }
 }

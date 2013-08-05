@@ -9,7 +9,7 @@ import ru.sawim.Scheme;
 import ru.sawim.models.form.VirtualListItem;
 import ru.sawim.models.list.VirtualList;
 import ru.sawim.models.list.VirtualListModel;
-import sawim.cl.ContactList;
+import sawim.roster.Roster;
 import sawim.comm.StringConvertor;
 
 import sawim.util.JLocale;
@@ -241,7 +241,7 @@ public final class AffiliationListConf implements FormListener, TextBoxView.Text
 				        affiliationI[enterData.getSelectorValue(AFFILIATION)], 
 				        reason);
 				} catch (Exception e) {}
-				ContactList.getInstance().activate();
+				Roster.getInstance().update();
             }
             enterData.back();
             enterData = null;

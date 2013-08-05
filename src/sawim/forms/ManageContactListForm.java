@@ -6,7 +6,7 @@ import android.support.v4.app.FragmentActivity;
 import android.view.*;
 import ru.sawim.SawimApplication;
 import ru.sawim.view.menu.MyMenu;
-import sawim.cl.ContactList;
+import sawim.roster.Roster;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
 import sawim.search.Search;
@@ -77,7 +77,7 @@ public final class ManageContactListForm implements FormListener, TextBoxView.Te
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 protocol.moveContactTo(contact, protocol.getGroupById(itemsId.get(which)));
-                ContactList.getInstance().activate();
+                Roster.getInstance().update();
             }
         });
         builder.create().show();
@@ -211,7 +211,7 @@ public final class ManageContactListForm implements FormListener, TextBoxView.Te
         if (null != contact) {
             if (renameContactTextbox == box) {
                 protocol.renameContact(contact, renameContactTextbox.getString());
-                ContactList.getInstance().activate();
+                Roster.getInstance().update();
                 renameContactTextbox.setString(null);
             }
             return;
@@ -223,25 +223,25 @@ public final class ManageContactListForm implements FormListener, TextBoxView.Te
         String groupName_ = groupName.getString();
         boolean isExist = null != protocol.getGroup(groupName_);
         if (0 == groupName_.length()) {
-            ContactList.getInstance().activate();
+            Roster.getInstance().update();
             return;
         }
         switch (action) {
             case ADD_GROUP:
                 if (!isExist) {
                     protocol.addGroup(protocol.createGroup(groupName_));
-                    ContactList.getInstance().activate();
+                    Roster.getInstance().update();
                 }
                 break;
 
             case RENAME_GROUP:
                 boolean isMyName = group.getName().equals(groupName_);
                 if (isMyName) {
-                    ContactList.getInstance().activate();
+                    Roster.getInstance().update();
 
                 } else if (!isExist) {
                     protocol.renameGroup(group, groupName_);
-                    ContactList.getInstance().activate();
+                    Roster.getInstance().update();
                 }
                 break;
         }

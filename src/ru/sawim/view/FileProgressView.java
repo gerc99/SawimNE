@@ -14,7 +14,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import ru.sawim.General;
 import ru.sawim.R;
-import sawim.cl.ContactList;
+import sawim.roster.Roster;
 import sawim.comm.Util;
 
 /**
@@ -43,7 +43,7 @@ public class FileProgressView extends DialogFragment {
         closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ContactList.getInstance().removeTransfer(true);
+                Roster.getInstance().removeTransfer(true);
             }
         });
         return v;

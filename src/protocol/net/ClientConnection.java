@@ -3,7 +3,6 @@ package protocol.net;
 import ru.sawim.General;
 import sawim.SawimException;
 import sawim.chat.message.PlainMessage;
-import sawim.comm.StringConvertor;
 import sawim.modules.DebugLog;
 import protocol.Protocol;
 
@@ -19,8 +18,8 @@ public abstract class ClientConnection implements Runnable {
     private long nextPingTime;
     private long pongTime;
 
-    private static final int PING_INTERVAL = 90 ;
-    private static final int PONG_TIMEOUT = 4 * 60 ;
+    private static final int PING_INTERVAL = 90;
+    private static final int PONG_TIMEOUT = 4 * 60;
 
     protected final void setPingInterval(long interval) {
         keepAliveInterv = Math.min(keepAliveInterv, interval);
@@ -106,7 +105,6 @@ public abstract class ClientConnection implements Runnable {
         if (nextPingTime <= now) {
             if (usePong) {
                 pingForPong();
-
             } else {
                 ping();
             }
@@ -126,7 +124,6 @@ public abstract class ClientConnection implements Runnable {
     }
     public final boolean isMessageExist(long msgId) {
         if (-1 < msgId) {
-            PlainMessage msg = null;
             for (int i = 0; i < messages.size(); ++i) {
                 PlainMessage m = (PlainMessage)messages.elementAt(i);
                 if (m.getMessageId() == msgId) {

@@ -14,7 +14,7 @@ import org.microemu.util.AndroidRecordStoreManager;
 import ru.sawim.service.SawimService;
 import ru.sawim.service.SawimServiceConnection;
 import sawim.chat.ChatHistory;
-import sawim.cl.ContactList;
+import sawim.roster.Roster;
 import sawim.modules.DebugLog;
 
 import java.util.concurrent.ExecutorService;
@@ -74,8 +74,8 @@ public class SawimApplication extends Application {
         runInBackground(new Runnable() {
             @Override
             public void run() {
-                if (ContactList.getInstance().getManager() != null)
-                    ContactList.getInstance().autoConnect();
+                if (Roster.getInstance() != null)
+                    Roster.getInstance().autoConnect();
             }
         });
     }
@@ -119,14 +119,6 @@ public class SawimApplication extends Application {
         unregisterReceiver(networkStateReceiver);
         stopService(new Intent(this, SawimService.class));
         ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).cancelAll();
-    }
-
-    private void bindService() {
-        bindService(new Intent(this, SawimService.class), serviceConnection, BIND_AUTO_CREATE);
-    }
-
-    public void unbindService() {
-        unbindService(serviceConnection);
     }
 
     public boolean isNetworkAvailable() {

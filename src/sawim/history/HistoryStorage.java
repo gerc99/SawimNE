@@ -1,6 +1,6 @@
 package sawim.history;
 
-import sawim.cl.ContactList;
+import sawim.roster.Roster;
 import sawim.comm.Util;
 import sawim.io.Storage;
 import protocol.Contact;
@@ -24,7 +24,7 @@ public class HistoryStorage {
 
     public HistoryStorage(Contact contact) {
         this.contact = contact;
-        uniqueUserId = ContactList.getInstance().getProtocol(contact).getUniqueUserId(contact);
+        uniqueUserId = Roster.getInstance().getProtocol(contact).getUniqueUserId(contact);
         storageName = getRSName();
         //androidStorage = new AndroidHistoryStorage(this);
     }

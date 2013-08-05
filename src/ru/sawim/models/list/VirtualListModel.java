@@ -113,7 +113,7 @@ public final class VirtualListModel {
                 line.addLabel(JLocale.getString(langStr) + ": ",
                         Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
             }
-            line.addBitmapImage(img);
+            line.addImage(img);
             addPar(line);
         }
     }

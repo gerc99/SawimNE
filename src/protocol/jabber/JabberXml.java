@@ -6,6 +6,7 @@ import sawim.SawimException;
 import sawim.Options;
 import sawim.chat.message.PlainMessage;
 import sawim.chat.message.SystemNotice;
+import sawim.roster.Roster;
 import sawim.comm.Config;
 import sawim.comm.MD5;
 import sawim.comm.StringConvertor;
@@ -780,7 +781,7 @@ public final class JabberXml extends ClientConnection {
                     
                     DebugLog.println("ver " + jid + " " + name + " " + ver + " in " + os);
                     
-                    StatusView sv = sawim.cl.ContactList.getInstance().getStatusView();
+                    StatusView sv = Roster.getInstance().getStatusView();
                     Contact c = sv.getContact();
                     
                     if ((null != c) && c.getUserId().equals(jid)) {

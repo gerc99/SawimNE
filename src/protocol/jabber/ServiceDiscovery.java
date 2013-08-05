@@ -8,7 +8,7 @@ import ru.sawim.General;
 import ru.sawim.models.form.VirtualListItem;
 import ru.sawim.models.list.VirtualList;
 import java.util.Vector;
-import sawim.cl.ContactList;
+import sawim.roster.Roster;
 import ru.sawim.models.list.VirtualListModel;
 import sawim.util.JLocale;
 import sawim.comm.*;
@@ -104,7 +104,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
                         case COMMAND_ADD:
                             Contact c = jabber.createTempContact(jid);
                             jabber.addContact(c);
-                            ContactList.getInstance().activate(c);
+                            Roster.getInstance().activate(c);
                             break;
 
                         case COMMAND_SET:

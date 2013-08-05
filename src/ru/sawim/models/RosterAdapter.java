@@ -1,16 +1,14 @@
 package ru.sawim.models;
 
 import DrawControls.icons.Icon;
-import DrawControls.tree.TreeNode;
-import DrawControls.tree.VirtualContactList;
+import android.content.Context;
+import android.widget.*;
+import sawim.roster.TreeNode;
 import android.database.DataSetObserver;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.ImageView;
-import android.widget.TextView;
 import protocol.Contact;
 import protocol.Group;
 import protocol.Protocol;
@@ -20,6 +18,7 @@ import ru.sawim.R;
 import ru.sawim.Scheme;
 import sawim.chat.ChatHistory;
 import sawim.chat.message.Message;
+import sawim.roster.Roster;
 import sawim.modules.tracking.Tracking;
 
 import java.util.ArrayList;
@@ -36,21 +35,17 @@ public class RosterAdapter extends BaseAdapter {
 
     public static final int ALL_CONTACTS = 0;
     public static final int ONLINE_CONTACTS = 1;
-    private VirtualContactList vcl;
+    public static final int ACTIVE_CONTACTS = 2;
+    private final Roster roster;
     private List<TreeNode> items = new ArrayList<TreeNode>();
-    private LayoutInflater mInflater;
+    private final Context mInflater;
     private int type;
 
-    public RosterAdapter(LayoutInflater inf, VirtualContactList vcl, List<TreeNode> items, int type) {
+    public RosterAdapter(Context inf, Roster vcl, List<TreeNode> items, int type) {
         mInflater = inf;
-        this.vcl = vcl;
+        this.roster = vcl;
         this.items = items;
         this.type = type;
-    }
-
-    public void refreshList(List<TreeNode> newItems) {
-        items = newItems;
-        notifyDataSetChanged();
     }
 
     @Override
@@ -60,11 +55,15 @@ public class RosterAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
+        if (type == ACTIVE_CONTACTS)
+            return ChatHistory.instance.getTotal();
         return items.size();
     }
 
     @Override
     public TreeNode getItem(int i) {
+        if (type == ACTIVE_CONTACTS)
+            return ChatHistory.instance.chatAt(i).getContact();
         if ((items.size() > i) && (i >= 0))
             return items.get(i);
         return null;
@@ -73,6 +72,19 @@ public class RosterAdapter extends BaseAdapter {
     @Override
     public long getItemId(int i) {
         return i;
+    }
+
+    public void buildFlatItems(List<TreeNode> items) {
+        Protocol p = roster.getCurrentProtocol();
+        if (p == null) return;
+    //    synchronized (p.getRosterLockObject()) {
+            if (roster.useGroups) {
+                roster.rebuildFlatItemsWG(p, items);
+            } else {
+                roster.rebuildFlatItemsWOG(p, items);
+            }
+            notifyDataSetChanged();
+    //    }
     }
 
     @Override
@@ -86,16 +98,16 @@ public class RosterAdapter extends BaseAdapter {
     public View getView(int i, View convertView, ViewGroup viewGroup) {
         ViewHolderRoster holder;
         if (convertView == null) {
-            convertView = mInflater.inflate(R.layout.roster_item, null);
-            holder = new ViewHolderRoster(vcl, convertView);
+            convertView = new RosterItemView(mInflater);
+            holder = new ViewHolderRoster(roster, (RosterItemView) convertView);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolderRoster) convertView.getTag();
         }
-        Protocol protocol = vcl.getCurrentProtocol();
+        Protocol protocol = roster.getCurrentProtocol();
         TreeNode o = getItem(i);
         if (o != null)
-            if (type == ONLINE_CONTACTS && o.isContact()) {
+            if (type != ALL_CONTACTS && o.isContact()) {
                 holder.populateFromContact(protocol, (Contact) o);
             } else {
                 if (o.isGroup()) {
@@ -116,18 +128,29 @@ public class RosterAdapter extends BaseAdapter {
         private final ImageView itemThirdImage;
         private final ImageView itemFourthImage;
         private final ImageView itemFifthImage;
-        private final VirtualContactList vcl;
+        private final Roster vcl;
 
-        public ViewHolderRoster(VirtualContactList vcl, View item) {
+        /*public ViewHolderRoster(Roster vcl, View item) {
             this.vcl = vcl;
             this.item = item;
             itemName = (TextView) item.findViewById(R.id.item_name);
             itemDescriptionText = (TextView) item.findViewById(R.id.item_description);
-            itemFirstImage = (ImageView) item.findViewById(R.id.image);
+            itemFirstImage = (ImageView) item.findViewById(R.id.first_image);
             itemSecondImage = (ImageView) item.findViewById(R.id.second_image);
             itemThirdImage = (ImageView) item.findViewById(R.id.third_image);
             itemFourthImage = (ImageView) item.findViewById(R.id.fourth_rule_image);
             itemFifthImage = (ImageView) item.findViewById(R.id.fifth_rule_image);
+        }*/
+        public ViewHolderRoster(Roster vcl, RosterItemView item) {
+            this.vcl = vcl;
+            this.item = item;
+            itemName = item.itemName;
+            itemDescriptionText = item.itemDescriptionText;
+            itemFirstImage = item.itemFirstImage;
+            itemSecondImage = item.itemSecondImage;
+            itemThirdImage = item.itemThirdImage;
+            itemFourthImage = item.itemFourthImage;
+            itemFifthImage = item.itemFifthImage;
         }
 
         void populateFromGroup(Group g) {

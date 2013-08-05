@@ -1,7 +1,3 @@
-
-
-
-
 package sawim.io;
 
 import ru.sawim.General;

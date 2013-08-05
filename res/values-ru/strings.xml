@@ -121,33 +121,8 @@
     <string name="off">Выкл</string>
     <string name="save">Сохранить</string>
 
-    <string name="info_main">Main info</string>
-    <string name="info_nick">Nick</string>
-    <string name="info_name">Name</string>
-    <string name="info_gender">Gender</string>
-    <string name="info_age">Age</string>
-    <string name="info_email">Email</string>
-    <string name="info_birth_day">Birth day</string>
-    <string name="info_cell_phone">Cell phone</string>
-    <string name="info_home_page">Home page</string>
-    <string name="info_interests">Interests</string>
-    <string name="info_notes">Notes</string>
-    <string name="info_addr">Address</string>
-    <string name="info_city">City</string>
-    <string name="info_state">State</string>
-    <string name="info_phone">Phone</string>
-    <string name="info_fax">Fax</string>
-    <string name="info_work_title">Work title</string>
-    <string name="info_depart">Depart</string>
-    <string name="info_position">Position</string>
-
     <!-- Antispam -->
     <string name="antispam">Антиспам</string>
-    <string name="antispam_enable">Antispam enable</string>
-    <string name="antispam_msg">Message</string>
-    <string name="antispam_msg_hello">Hello message</string>
-    <string name="antispam_msg_answer">Answer</string>
-    <string name="antispam_keywords">Keywords</string>
 
     <string name="list_of_users">Участники</string>
     <string name="leave_chat">Покинуть чат</string>
@@ -209,4 +184,19 @@
     <string name="add_conference">Добавить конференцию</string>
     <string name="include_setting_the_story">Для сохранения истории, включите в настройках историю тоже</string>
     <string name="contact_walked">Контакт вышел из конференции</string>
+    <string name="close">Закрыть</string>
+    <string name="messages_are_deleted">Сообщения удалены</string>
+
+    <string name="actions">Действия</string>
+    <string name="reply">Ответить</string>
+    <string name="view_comments">Комментарии</string>
+    <string name="recommend_post">Рекомендовать пост</string>
+    <string name="subscribe">Подписаться</string>
+    <string name="unsubscribe">Отписаться</string>
+    <string name="to_black_list">В черный список</string>
+    <string name="private_message">Приватное сообщение</string>
+    <string name="instant_reconnection">Мгновенно переподкючать при потере сети</string>
+    <string name="invitation_sent">Приглашение отправлено</string>
+
+
 </resources>

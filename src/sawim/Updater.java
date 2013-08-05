@@ -1,6 +1,6 @@
 package sawim;
 
-import sawim.cl.ContactList;
+import sawim.roster.Roster;
 import sawim.modules.DebugLog;
 
 import java.util.Timer;
@@ -31,7 +31,7 @@ public class Updater extends TimerTask {
 
     public void run() {
         try {
-            ContactList.getInstance().timerAction();
+            Roster.getInstance().timerAction();
         } catch (OutOfMemoryError out) {
             // nothing
         } catch (Exception e) {

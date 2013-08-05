@@ -5,7 +5,7 @@ import protocol.mrim.*;
 import protocol.Protocol;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
-import sawim.cl.ContactList;
+import sawim.roster.Roster;
 import sawim.util.JLocale;
 
 public class SmsForm implements FormListener {
@@ -16,7 +16,7 @@ public class SmsForm implements FormListener {
 
         Protocol[] protos;
         if (null == protocol) {
-            protos = ContactList.getInstance().getProtocols();
+            protos = Roster.getInstance().getProtocols();
         } else {
             protos = new Protocol[] {protocol};
         }

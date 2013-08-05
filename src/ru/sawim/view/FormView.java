@@ -144,7 +144,7 @@ public class FormView extends Fragment implements Forms.OnUpdateForm, View.OnCli
             checkBox.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
             spinner.getBackground().setColorFilter(Scheme.getColor(Scheme.THEME_BACKGROUND), PorterDuff.Mode.MULTIPLY);
             seekBar.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
-            editText.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
+            editText.setTextColor(Scheme.getInversColor(Scheme.THEME_TEXT));
             if (Forms.CONTROL_TEXT == c.type) {
                 drawText(c, labelView, descView, convertView);
             } else if (Forms.CONTROL_INPUT == c.type) {

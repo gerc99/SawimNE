@@ -1,6 +1,6 @@
 package sawim.history;
 
-import sawim.cl.ContactList;
+import sawim.roster.Roster;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
 import ru.sawim.config.HomeDirectory;
@@ -78,7 +78,7 @@ public class AndroidHistoryStorage {
         cachedRecord.date = header.substring(loginTimeDelim + 1);
         cachedRecord.text = msg.substring(msg.indexOf("]\n") + 2);
         cachedRecord.type = 0;
-        if (ContactList.getInstance().getProtocol(historyStorage.getContact())
+        if (Roster.getInstance().getProtocol(historyStorage.getContact())
                 .getNick().equals(cachedRecord.from)) {
             cachedRecord.type = 1;
         }

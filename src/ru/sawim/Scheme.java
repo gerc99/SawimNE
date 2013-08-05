@@ -1,5 +1,6 @@
 package ru.sawim;
 
+import android.graphics.Color;
 import sawim.Options;
 import sawim.comm.Config;
 import sawim.comm.Util;
@@ -173,7 +174,6 @@ public class Scheme {
     }
 
     public static int getInversColor(int c) {
-        int color = getScheme()[c];
-        return 0xFF550000 ^ color;
+        return 0xFF550000 ^ getScheme()[c];
     }
 }

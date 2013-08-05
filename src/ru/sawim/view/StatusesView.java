@@ -2,14 +2,12 @@ package ru.sawim.view;
 
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import sawim.Options;
-import sawim.cl.ContactList;
 import protocol.Protocol;
 import ru.sawim.R;
 import ru.sawim.models.StatusesAdapter;

@@ -12,10 +12,9 @@ import android.text.InputType;
 import android.view.*;
 import android.widget.*;
 import protocol.Protocol;
-import ru.sawim.SawimApplication;
 import ru.sawim.activities.AccountsListActivity;
 import sawim.Options;
-import sawim.cl.ContactList;
+import sawim.roster.Roster;
 import sawim.comm.StringConvertor;
 import protocol.Profile;
 import protocol.StatusInfo;
@@ -80,14 +79,14 @@ public class AccountsListView extends Fragment {
                                 new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int id) {
-                                        Protocol p = ContactList.getInstance().getProtocol(Options.getAccount(accountID));
+                                        Protocol p = Roster.getInstance().getProtocol(Options.getAccount(accountID));
                                         android.accounts.Account acc = new android.accounts.Account(Options.getId(accountID), getString(R.string.app_name));
                                         AccountManager am = AccountManager.get(getActivity());
                                         am.removeAccount(acc, null, null);
                                         if (p != null)
                                             p.setStatus(StatusInfo.STATUS_OFFLINE, "");
                                         Options.delAccount(accountID);
-                                        ContactList.setCurrentProtocol();
+                                        Roster.getInstance().setCurrentProtocol();
                                         Options.safeSave();
                                         update();
                                     }
@@ -117,7 +116,7 @@ public class AccountsListView extends Fragment {
     public void addAccount(int num, Profile acc) {
         addAccountAuthenticator(acc.userId);
         Options.setAccount(num, acc);
-        ContactList.setCurrentProtocol();
+        Roster.getInstance().setCurrentProtocol();
         update();
     }
 

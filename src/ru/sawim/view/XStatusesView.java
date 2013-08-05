@@ -10,7 +10,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import sawim.cl.ContactList;
+import sawim.roster.Roster;
 import sawim.comm.StringConvertor;
 import sawim.io.Storage;
 import protocol.Protocol;
@@ -34,7 +34,7 @@ public class XStatusesView extends DialogFragment {
     private Protocol protocol;
 
     public XStatusesView() {
-        protocol = ContactList.getInstance().getCurrProtocol();
+        protocol = Roster.getInstance().getCurrProtocol();
         load();
     }
 

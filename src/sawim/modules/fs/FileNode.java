@@ -1,6 +1,6 @@
 package sawim.modules.fs;
 
-import DrawControls.tree.TreeNode;
+import sawim.roster.TreeNode;
 
 public class FileNode extends TreeNode {
     final private String path;

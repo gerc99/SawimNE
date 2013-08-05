@@ -4,11 +4,15 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.support.v4.app.FragmentActivity;
 import android.view.ContextMenu;
+import android.widget.Toast;
 import protocol.jabber.Jabber;
+import ru.sawim.General;
+import ru.sawim.R;
 import ru.sawim.view.TextBoxView;
 import sawim.FileTransfer;
+import sawim.chat.ChatHistory;
 import sawim.chat.message.PlainMessage;
-import sawim.cl.ContactList;
+import sawim.roster.Roster;
 import sawim.comm.Util;
 import sawim.forms.ManageContactListForm;
 import sawim.history.HistoryStorage;
@@ -85,6 +89,7 @@ public class ContactMenu implements TextBoxView.TextBoxListener {
     public static final int USER_MENU_TRACK_CONF = 59;
     public static final int USER_MENU_ANNOTATION = 60;
     public static final int CONFERENCE_DISCONNECT = 61;
+    public static final int USER_MENU_CLOSE_CHAT = 62;
 
     private Contact contact;
     private Protocol protocol;
@@ -123,11 +128,16 @@ public class ContactMenu implements TextBoxView.TextBoxListener {
             case USER_MENU_USER_REMOVE:
                 HistoryStorage.getHistory(contact).removeHistory();
                 protocol.removeContact(contact);
-                ContactList.getInstance().activate();
+                Roster.getInstance().update();
                 break;
 
             case USER_MENU_STATUSES:
                 protocol.showStatus(contact);
+                break;
+
+            case USER_MENU_CLOSE_CHAT:
+                ChatHistory.instance.unregisterChat(protocol.getChat(contact));
+                Toast.makeText(a, a.getString(R.string.messages_are_deleted), Toast.LENGTH_LONG).show();
                 break;
 
             case USER_MENU_WAKE:

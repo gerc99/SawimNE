@@ -1,7 +1,7 @@
 package sawim;
 
 import android.util.Log;
-import sawim.cl.ContactList;
+import sawim.roster.Roster;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
 import sawim.forms.PrivateStatusForm;
@@ -72,7 +72,7 @@ public class Options {
     public static final int OPTION_NOTIFY_IN_AWAY      = 179;   
     public static final int OPTION_ALARM               = 176;   
     public static final int OPTION_BLOG_NOTIFY         = 180;   
-    public static final int OPTION_RECREATE_TEXTBOX    = 181;   
+    public static final int OPTION_INSTANT_RECONNECTION    = 181;
     public static final int OPTION_SIMPLE_INPUT        = 182;
 
     private static final Vector listOfProfiles = new Vector();
@@ -96,18 +96,6 @@ public class Options {
         }
     }
 
-    public static Profile getAccount(String id) {
-        for (int i = 0; i < listOfProfiles.size(); ++i) {
-            Profile p = (Profile)listOfProfiles.elementAt(i);
-            Log.e("OptionsgetAccount", "-"+id+"="+p.userId+"-");
-            if (p.userId.equals(id)) {
-                Log.e("OptionsgetAccount", ""+id+ " "+p.userId);
-                return p;
-            }
-        }
-        return (Profile)listOfProfiles.elementAt(0);
-    }
-
     public static String getId(int id) {
         Profile p = (Profile)listOfProfiles.elementAt(id);
         return p.userId;
@@ -128,18 +116,8 @@ public class Options {
         return Options.getInt(Options.OPTIONS_CURR_ACCOUNT);
     }
 
-    public static void delAccount(String id) {
-        for (int i = 0; i < listOfProfiles.size(); ++i) {
-            Profile p = (Profile)listOfProfiles.elementAt(i);
-            Log.e("Optionsdel", ""+id+" "+p.userId);
-            if (p.userId.equals(id)) {
-                delAccount(i);
-            }
-        }
-    }
-
     public static void delAccount(int num) {
-        ContactList.getInstance().getManager().removeProtocol(num);
+        Roster.getInstance().removeProtocol(num);
         synchronized (listOfProfiles) {
             listOfProfiles.removeElementAt(num);
             int current = getCurrentAccount();
@@ -338,6 +316,7 @@ public class Options {
 		setString (Options.UNAVAILABLE_NESSAGE,            "I'll be back"); 
         setString (Options.OPTION_UI_LANGUAGE,        JLocale.getSystemLanguage());
 		setBoolean(Options.OPTION_SHOW_PLATFORM,      false);
+        setBoolean(Options.OPTION_INSTANT_RECONNECTION,   true);
         setInt    (Options.OPTION_CL_SORT_BY,         0);
 		setBoolean(Options.OPTION_TITLE_IN_CONFERENCE,   true);
         setBoolean(Options.OPTION_CL_HIDE_OFFLINE,    false);

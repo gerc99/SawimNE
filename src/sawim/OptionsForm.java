@@ -4,7 +4,7 @@ import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
-import sawim.cl.ContactList;
+import sawim.roster.Roster;
 import sawim.comm.*;
 import sawim.modules.*;
 import sawim.util.*;
@@ -132,17 +132,17 @@ public class OptionsForm implements FormListener, ControlStateListener {
                 //saveOptionSelector(Options.OPTION_USER_ACCOUNTS);
                 //saveOptionBoolean(Options.OPTION_CL_HIDE_OFFLINE);
                 saveOptionBoolean(Options.OPTION_SAVE_TEMP_CONTACT);
-        //        saveOptionBoolean(Options.OPTION_SORT_UP_WITH_MSG);
+                //saveOptionBoolean(Options.OPTION_SORT_UP_WITH_MSG);
                 saveOptionBoolean(Options.OPTION_SHOW_STATUS_LINE);
                 saveOptionSelector(Options.OPTION_CL_SORT_BY);
                 saveOptionBoolean(Options.OPTION_SHOW_PLATFORM);
                 saveOptionBoolean(Options.OPTION_HISTORY);
+                saveOptionInt(Options.OPTION_MAX_MSG_COUNT);
                 saveOptionBoolean(Options.OPTION_TITLE_IN_CONFERENCE);
                 saveOptionString(Options.UNAVAILABLE_NESSAGE);
                 saveOptionBoolean(Options.OPTION_SIMPLE_INPUT);
-                saveOptionInt(Options.OPTION_MAX_MSG_COUNT);
 
-                ContactList.getInstance().getManager().update();
+                saveOptionBoolean(Options.OPTION_INSTANT_RECONNECTION);
                 SawimActivity.getInstance().recreateActivity();
                 break;
 
@@ -233,6 +233,7 @@ public class OptionsForm implements FormListener, ControlStateListener {
 				setChecked("title_in_conference",  Options.OPTION_TITLE_IN_CONFERENCE);
 				loadOptionString(Options.UNAVAILABLE_NESSAGE, "post_outputs");
                 setChecked("use_simple_input", Options.OPTION_SIMPLE_INPUT);
+                setChecked(SawimApplication.getContext().getString(R.string.instant_reconnection), Options.OPTION_INSTANT_RECONNECTION);
                 break;
 
             case OPTIONS_SIGNALING:

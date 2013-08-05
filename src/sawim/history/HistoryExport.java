@@ -1,10 +1,9 @@
 package sawim.history;
 
 
-import protocol.net.TcpSocket;
 import ru.sawim.General;
 import sawim.SawimException;
-import sawim.cl.ContactList;
+import sawim.roster.Roster;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
 import sawim.modules.Notify;
@@ -16,7 +15,6 @@ import sawim.util.JLocale;
 import protocol.Contact;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 
 
@@ -78,7 +76,7 @@ class HistoryExport implements Runnable, FileBrowserListener {
             if (ex instanceof SawimException) {
                 e = (SawimException) ex;
             }
-            ContactList.getInstance().activateWithMsg(e.getMessage());
+            Roster.getInstance().activateWithMsg(e.getMessage());
         }
     }
 

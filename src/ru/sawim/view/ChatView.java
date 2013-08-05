@@ -7,7 +7,9 @@ import android.content.*;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -15,6 +17,8 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.*;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
@@ -62,7 +66,6 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
     private ChatsSpinnerAdapter chatsSpinnerAdapter;
     private LinearLayout chatBarLayout;
     private LinearLayout chat_viewLayout;
-    private LinearLayout sidebar;
     private ImageButton usersImage;
     private ImageButton chatsImage;
     private ImageButton menuButton;
@@ -75,13 +78,21 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
     @Override
     public void onActivityCreated(Bundle b) {
         super.onActivityCreated(b);
-        chatBarLayout.setBackgroundColor(Scheme.getColorWithAlpha(Scheme.THEME_CAP_BACKGROUND));
+        GradientDrawable gd = new GradientDrawable(
+                GradientDrawable.Orientation.TOP_BOTTOM,
+                new int[] {Scheme.getColor(Scheme.THEME_CAP_BACKGROUND),Scheme.getColor(Scheme.THEME_BACKGROUND)});
+        gd.setCornerRadius(0f);
+        chatBarLayout.setBackgroundDrawable(gd);
+        //chatBarLayout.setBackgroundColor(Scheme.getColorWithAlpha(Scheme.THEME_CAP_BACKGROUND));
         usersImage.getBackground().setColorFilter(Scheme.getColor(Scheme.THEME_CAP_BACKGROUND), PorterDuff.Mode.MULTIPLY);
         usersImage.setImageBitmap(usersIcon);
         usersImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                sidebar.setVisibility(sidebar.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
+                nickList.startAnimation(nickList.getVisibility() == View.VISIBLE
+                        ? AnimationUtils.makeOutAnimation(getActivity(), true)
+                        : AnimationUtils.makeInAnimation(getActivity(), false));
+                nickList.setVisibility(nickList.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
                 updateChat();
             }
         });
@@ -96,12 +107,20 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
         });
     }
 
+    public boolean hasBack() {
+        if (nickList.getVisibility() == View.VISIBLE) {
+            nickList.setVisibility(View.GONE);
+            return false;
+        }
+        return true;
+    }
+
     public void resetSpinner() {
         spinner.setOnItemSelectedEvenIfUnchangedListener(null);
     }
 
     private void initSpinner() {
-        chatsSpinnerAdapter = new ChatsSpinnerAdapter(getActivity());
+        chatsSpinnerAdapter = new ChatsSpinnerAdapter(getActivity(), ChatHistory.instance.historyTable);
         spinner.setAdapter(chatsSpinnerAdapter);
         spinner.getBackground().setColorFilter(Scheme.getColor(Scheme.THEME_CAP_BACKGROUND), PorterDuff.Mode.MULTIPLY);
         spinner.setSelection(ChatHistory.instance.getItemChat(currentContact));
@@ -264,17 +283,16 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.chat, container, false);
         chat_viewLayout = (LinearLayout) v.findViewById(R.id.chat_view);
-        chatBarLayout = (LinearLayout) v.findViewById(R.id.chat_bar);
-        usersImage = (ImageButton) v.findViewById(R.id.usersImage);
-        spinner = (MySpinner) v.findViewById(R.id.spinner);
-        chatsImage = (ImageButton) v.findViewById(R.id.chatsImage);
-        nickList = (ListView) v.findViewById(R.id.muc_user_list);
-        sidebar = (LinearLayout) v.findViewById(R.id.sidebar);
+        chatBarLayout = (LinearLayout) chat_viewLayout.findViewById(R.id.chat_bar);
+        usersImage = (ImageButton) chatBarLayout.findViewById(R.id.usersImage);
+        spinner = (MySpinner) chatBarLayout.findViewById(R.id.spinner);
+        chatsImage = (ImageButton) chatBarLayout.findViewById(R.id.chatsImage);
+        nickList = (ListView) chat_viewLayout.findViewById(R.id.muc_user_list);
 
-        menuButton = (ImageButton) v.findViewById(R.id.menu_button);
-        smileButton = (ImageButton) v.findViewById(R.id.input_smile_button);
-        sendButton = (ImageButton) v.findViewById(R.id.input_send_button);
-        messageEditor = (EditText) v.findViewById(R.id.messageBox);
+        menuButton = (ImageButton) chat_viewLayout.findViewById(R.id.menu_button);
+        smileButton = (ImageButton) chat_viewLayout.findViewById(R.id.input_smile_button);
+        sendButton = (ImageButton) chat_viewLayout.findViewById(R.id.input_send_button);
+        messageEditor = (EditText) chat_viewLayout.findViewById(R.id.messageBox);
         return v;
     }
 
@@ -302,6 +320,7 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
         View item = chatListView.getChildAt(0);
         addLastPosition(chatListView.getFirstVisiblePosition(), (item == null) ? 0 : Math.abs(item.getBottom()));
 
+        chat.setVisibleChat(false);
         General.getInstance().setOnUpdateChat(null);
         chat.resetUnreadMessages();
     }
@@ -309,11 +328,12 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
     public void resume(Chat chat) {
         if (chat == null) return;
         final Chat.ScrollState lastPosition = getLastPosition(chat.getContact().getUserId());
-        if (lastPosition != null && lastPosition.position > 0)
+        if (lastPosition != null && lastPosition.position > 0) {
             chatListView.setSelectionFromTop(lastPosition.position + 1, lastPosition.offset);
-        else
+        } else if (currentContact.isConference())
             chatListView.setSelection(0);
 
+        chat.setVisibleChat(true);
         ChatHistory.instance.registerChat(chat);
         General.getInstance().setOnUpdateChat(this);
         chat.resetUnreadMessages();
@@ -352,24 +372,23 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
         chatListView.setOnCreateContextMenuListener(this);
         chatListView.setOnItemClickListener(new ChatClick());
         chatListView.setFocusable(true);
-        chatListView.setCacheColorHint(0x00000000);
         chatListView.setAdapter(adapter);
         if (spinner.getOnItemSelectedEvenIfUnchangedListener() == null)
             initSpinner();
         int background = Scheme.getColorWithAlpha(Scheme.THEME_BACKGROUND);
         chat_viewLayout.setBackgroundColor(background);
 
-        sidebar.setVisibility(View.GONE);
-        sidebar.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
+        nickList.setVisibility(View.GONE);
+        nickList.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
         if (currentContact instanceof JabberServiceContact && currentContact.isConference()) {
             mucUsersView = new MucUsersView();
             mucUsersView.init(protocol, (JabberServiceContact) currentContact);
             mucUsersView.show(this, nickList);
             usersImage.setVisibility(View.VISIBLE);
-            if (sidebar.getVisibility() == View.VISIBLE) {
-                sidebar.setVisibility(View.VISIBLE);
+            if (nickList.getVisibility() == View.VISIBLE) {
+                nickList.setVisibility(View.VISIBLE);
             } else {
-                sidebar.setVisibility(View.GONE);
+                nickList.setVisibility(View.GONE);
             }
         } else {
             usersImage.setVisibility(View.GONE);
@@ -414,6 +433,16 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
                 @Override
                 public void onClick(View view) {
                     send();
+                    if (nickList.getVisibility() == View.VISIBLE)
+                        nickList.setVisibility(View.GONE);
+                }
+            });
+            sendButton.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    insert("/me ");
+                    showKeyboard();
+                    return true;
                 }
             });
         }
@@ -434,10 +463,11 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                if (chatsSpinnerAdapter != null)
+                    chatsSpinnerAdapter.refreshList(ChatHistory.instance.historyTable);
                 updateChatIcon();
-                if (adapter != null) {
+                if (adapter != null)
                     adapter.refreshList(chat.getMessData());
-                }
             }
         });
         /*RosterView rosterView = (RosterView) getActivity().getSupportFragmentManager().findFragmentById(R.id.roster_fragment);
@@ -462,12 +492,13 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
             MessData msg = (MessData) adapterView.getAdapter().getItem(position);
-            setText("");
             if (currentContact instanceof JabberServiceContact) {
                 if (((JabberServiceContact) currentContact).getContact(msg.getNick()) == null)
                     Toast.makeText(getActivity(), getString(R.string.contact_walked), Toast.LENGTH_LONG).show();
             }
             setText(chat.onMessageSelected(msg));
+            if (nickList.getVisibility() == View.VISIBLE)
+                nickList.setVisibility(View.GONE);
         }
     }
 

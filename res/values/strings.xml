@@ -121,37 +121,9 @@
     <string name="off">Off</string>
     <string name="save">Save</string>
 
-    <string name="info_main">Main info</string>
-    <string name="info_nick">Nick</string>
-    <string name="info_name">Name</string>
-    <string name="info_gender">Gender</string>
-    <string name="info_age">Age</string>
-    <string name="info_email">Email</string>
-    <string name="info_birth_day">Birth day</string>
-    <string name="info_cell_phone">Cell phone</string>
-    <string name="info_home_page">Home page</string>
-    <string name="info_interests">Interests</string>
-    <string name="info_notes">Notes</string>
-    <string name="info_addr">Address</string>
-    <string name="info_city">City</string>
-    <string name="info_state">State</string>
-    <string name="info_phone">Phone</string>
-    <string name="info_fax">Fax</string>
-    <string name="info_work_title">Work title</string>
-    <string name="info_depart">Depart</string>
-    <string name="info_position">Position</string>
-
     <!-- Antispam -->
     <string name="antispam">Antispam</string>
-    <string name="antispam_enable">Antispam enable</string>
-    <string name="antispam_msg">Message</string>
-    <string name="antispam_msg_hello">Hello message</string>
-    <string name="antispam_msg_answer">Answer</string>
-    <string name="antispam_keywords">Keywords</string>
 
-    <!-- Magig Eye -->
-    <string name="read_xtraz">Read Xtraz</string>
-    <string name="read_status_message">Read status message</string>
     <string name="list_of_users">Muc users</string>
     <string name="leave_chat">Leave chat</string>
     <string name="crash_toast_text_email">Please send crashdump via email to help fix the issue !</string>
@@ -213,4 +185,18 @@
     <string name="add_conference">Add conference</string>
     <string name="include_setting_the_story">To preserve the history, include setting the story too</string>
     <string name="contact_walked">Contact walked out of the conference</string>
+    <string name="close">Close</string>
+    <string name="messages_are_deleted">Messages are deleted</string>
+
+    <string name="actions">Actions</string>
+    <string name="reply">Reply</string>
+    <string name="view_comments">View comments</string>
+    <string name="recommend_post">Recommend post</string>
+    <string name="subscribe">Subscribe</string>
+    <string name="unsubscribe">Unsubscribe</string>
+    <string name="to_black_list">To blacklist</string>
+    <string name="private_message">Private message</string>
+    <string name="instant_reconnection">Instant reconnection</string>
+    <string name="invitation_sent">Invitation sent</string>
+
 </resources>

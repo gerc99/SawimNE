@@ -2,7 +2,7 @@ package protocol;
 
 import DrawControls.icons.Icon;
 import DrawControls.icons.ImageList;
-import DrawControls.tree.TreeNode;
+import sawim.roster.TreeNode;
 import sawim.comm.Util;
 import java.util.Vector;
 

@@ -61,13 +61,11 @@ final class Socket {
     }
 
     public void write(byte[] data) throws SawimException {
-        
         if (compressed) {
             zout.write(data);
             zout.flush();
             return;
         }
-        
         socket.write(data, 0, data.length);
         socket.flush();
     }

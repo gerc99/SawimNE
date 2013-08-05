@@ -13,7 +13,7 @@ import android.util.Log;
 import ru.sawim.R;
 import ru.sawim.Tray;
 import sawim.chat.ChatHistory;
-import sawim.cl.ContactList;
+import sawim.roster.Roster;
 import ru.sawim.activities.SawimActivity;
 
 public class SawimService extends Service {
@@ -31,7 +31,7 @@ public class SawimService extends Service {
         super.onCreate();
         Log.i(LOG_TAG, "onStart();");
         tray = new Tray(this);
-        if (ContactList.getInstance().getManager() != null)
+        if (Roster.getInstance() != null)
             tray.startForegroundCompat(R.string.app_name, getNotification());//
         else {
             tray.stopForegroundCompat(R.string.app_name);
@@ -63,12 +63,12 @@ public class SawimService extends Service {
         final int icon;
         if (0 < allUnread) {
             icon = version2 ? R.drawable.ic2_tray_msg : R.drawable.ic3_tray_msg;
-        } else if (ContactList.getInstance().isConnected()) {
+        } else if (Roster.getInstance().isConnected()) {
             icon = /*version2 ? R.drawable.ic2_tray_on : */R.drawable.ic3_tray/*_on*/;
             stateMsg = getText(R.string.online);
         } else {
             icon = /*version2 ? R.drawable.ic2_tray_off : */R.drawable.ic3_tray/*_off*/;
-            if (ContactList.getInstance().isConnecting()) {
+            if (Roster.getInstance().isConnecting()) {
                 stateMsg = getText(R.string.connecting);
             } else {
                 stateMsg = getText(R.string.offline);

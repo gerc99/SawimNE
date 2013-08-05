@@ -5,11 +5,12 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.widget.Toast;
 import ru.sawim.General;
 import ru.sawim.view.TextBoxView;
 import sawim.FileTransfer;
 import sawim.chat.message.PlainMessage;
-import sawim.cl.ContactList;
+import sawim.roster.Roster;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
 import sawim.search.Search;
@@ -522,12 +523,12 @@ public final class Jabber extends Protocol implements FormListener {
         switch (cmd) {
             case ContactMenu.GATE_CONNECT:
                 getConnection().sendPresence((JabberServiceContact) contact);
-                ContactList.getInstance().activate();
+                Roster.getInstance().update();
                 break;
 
             case ContactMenu.GATE_DISCONNECT:
                 getConnection().sendPresenceUnavailable(c.getUserId());
-                ContactList.getInstance().activate();
+                Roster.getInstance().update();
                 break;
 
             case ContactMenu.GATE_REGISTER:
@@ -537,7 +538,7 @@ public final class Jabber extends Protocol implements FormListener {
             case ContactMenu.GATE_UNREGISTER:
                 getConnection().unregister(c.getUserId());
                 getConnection().removeGateContacts(c.getUserId());
-                ContactList.getInstance().activate();
+                Roster.getInstance().update();
                 break;
 
             case ContactMenu.GATE_ADD:
@@ -606,12 +607,12 @@ public final class Jabber extends Protocol implements FormListener {
 
             case ContactMenu.CONFERENCE_DISCONNECT:
                 leave((JabberServiceContact) c);
-                ContactList.getInstance().activate();
+                Roster.getInstance().update();
                 break;
 
             case ContactMenu.CONFERENCE_ADD:
                 addContact(c);
-                ContactList.getInstance().activate();
+                Roster.getInstance().update();
                 break;
 
             case ContactMenu.USER_MENU_CONNECTIONS:
@@ -620,14 +621,12 @@ public final class Jabber extends Protocol implements FormListener {
 			case ContactMenu.USER_INVITE:
 			    try {
 	                showInviteForm(c.getUserId() + '/' + ((JabberContact)c).getCurrentSubContact().resource);
-		        } catch (Exception e) {
-		            
-		        }
+		        } catch (Exception e) { }
                 break;
 
 			case ContactMenu.USER_MENU_SEEN:
                 getConnection().showContactSeen(c.getUserId());
-				ContactList.getInstance().activate();
+				Roster.getInstance().update();
                 break;
 
             case ContactMenu.USER_MENU_ADHOC:
@@ -637,7 +636,7 @@ public final class Jabber extends Protocol implements FormListener {
 
             case ContactMenu.USER_MENU_REMOVE_ME:
                 removeMe(c.getUserId());
-                ContactList.getInstance().activate();
+                Roster.getInstance().update();
                 break;
 
         }
@@ -660,7 +659,7 @@ public final class Jabber extends Protocol implements FormListener {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 c.setActiveResource((String) items.get(which));
-                ContactList.getInstance().activate();
+                Roster.getInstance().update();
             }
         });
         builder.create().show();
@@ -729,7 +728,7 @@ public final class Jabber extends Protocol implements FormListener {
     }
 
     public void showStatus(Contact contact) {
-        StatusView statusView = ContactList.getInstance().getStatusView();
+        StatusView statusView = Roster.getInstance().getStatusView();
         try {
             if (contact.isOnline() && contact.isSingleUserContact()) {
                 String jid = contact.getUserId();
@@ -826,11 +825,9 @@ public final class Jabber extends Protocol implements FormListener {
                         join(enterConf);
                     }
                 }
-                ContactList.getInstance().activate();
-                enterData.back();
-            } else {
-                enterData.back();
+                //Roster.getInstance().update();
             }
+            enterData.back();
             enterData = null;
             enterConf = null;
         }
@@ -838,10 +835,10 @@ public final class Jabber extends Protocol implements FormListener {
             if (apply) {
 				String[] onlineConferenceI = Util.explode(onlineConference(getContactItems()), '|');
 				getConnection().sendInvite(onlineConferenceI[enterDataInvite.getSelectorValue(JID_MESS_TO)], enterDataInvite.getTextFieldValue(JID_INVITE_TO), enterDataInvite.getTextFieldValue(REASON_INVITE));
-				ContactList.getInstance().activate();
-			} else {
-                enterDataInvite.back();
-            }
+				//Roster.getInstance().update();
+                Toast.makeText(SawimApplication.getContext(), R.string.invitation_sent, Toast.LENGTH_LONG).show();
+			}
+            enterDataInvite.back();
 			enterDataInvite = null;
         }
     }

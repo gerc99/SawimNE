@@ -42,10 +42,8 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
     public void show(final ChatView chatView, ListView nickList) {
         final FragmentActivity activity = chatView.getActivity();
         usersAdapter.init(activity, (Jabber) protocol, jabberServiceContact);
-        nickList.setCacheColorHint(0x00000000);
         nickList.setBackgroundColor(Scheme.getInversColor(Scheme.THEME_BACKGROUND));
         nickList.setAdapter(usersAdapter);
-        nickList.setVisibility(View.VISIBLE);
         nickList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {

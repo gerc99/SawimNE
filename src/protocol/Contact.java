@@ -2,7 +2,7 @@ package protocol;
 
 import DrawControls.icons.Icon;
 import DrawControls.icons.ImageList;
-import DrawControls.tree.TreeNode;
+import sawim.roster.TreeNode;
 import android.support.v4.app.FragmentActivity;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -10,7 +10,7 @@ import android.view.SubMenu;
 import ru.sawim.view.FileProgressView;
 import ru.sawim.General;
 import sawim.chat.Chat;
-import sawim.cl.ContactList;
+import sawim.roster.Roster;
 import sawim.comm.StringConvertor;
 import sawim.modules.tracking.Tracking;
 import ru.sawim.Scheme;
@@ -99,7 +99,7 @@ abstract public class Contact extends TreeNode {
     }
 
     public Protocol getProtocol() {
-        return ContactList.getInstance().getProtocol(this);
+        return Roster.getInstance().getProtocol(this);
     }
 
     public final void setXStatus(int index, String text) {
@@ -154,10 +154,10 @@ abstract public class Contact extends TreeNode {
     }
 
     public void activate(Protocol p) {
-        ContactList.getInstance().setCurrentContact(this);
+        Roster.getInstance().setCurrentContact(this);
     }
 
-    FileProgressView fileProgressView;
+    private FileProgressView fileProgressView;
     public void addFileProgress() {
         fileProgressView = new FileProgressView();
     }
@@ -201,7 +201,7 @@ abstract public class Contact extends TreeNode {
     }
 
     public final byte getBooleanValues() {
-        return (byte)(booleanValues & 0x7F);
+        return (byte) (booleanValues & 0x7F);
     }
 
     public final void setTempFlag(boolean isTemp) {
@@ -304,7 +304,7 @@ abstract public class Contact extends TreeNode {
         if (!isSingleUserContact()) {
             return isOnline() ? 9 : 50;
         }
-        if (ContactList.SORT_BY_NAME == General.sortType) {
+        if (Roster.SORT_BY_NAME == General.sortType) {
             return 20;
         }
         if (isOnline()) {
@@ -312,9 +312,9 @@ abstract public class Contact extends TreeNode {
 				return 10;
 			}
             switch (General.sortType) {
-                case ContactList.SORT_BY_STATUS:
+                case Roster.SORT_BY_STATUS:
                     return 20 + StatusInfo.getWidth(getStatusIndex());
-                case ContactList.SORT_BY_ONLINE:
+                case Roster.SORT_BY_ONLINE:
                     return 20;
             }
         }
@@ -370,6 +370,9 @@ abstract public class Contact extends TreeNode {
         }
         if (isOnline()) {
             menu.add(Menu.FIRST, ContactMenu.USER_MENU_STATUSES, 2, R.string.statuses);
+        }
+        if (hasChat()) {
+            menu.add(Menu.FIRST, ContactMenu.USER_MENU_CLOSE_CHAT, 2, R.string.close);
         }
     }
 }

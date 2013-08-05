@@ -2,9 +2,13 @@ package ru.sawim.models.form;
 
 import DrawControls.icons.Icon;
 import DrawControls.icons.Image;
+import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.text.Spannable;
 import ru.sawim.General;
+import ru.sawim.SawimApplication;
 import ru.sawim.activities.VirtualListActivity;
 import sawim.TextFormatter;
 
@@ -17,7 +21,7 @@ import sawim.TextFormatter;
  */
 public class VirtualListItem {
     private int marginLeft = 0;
-    private Bitmap image;
+    private Drawable image;
     private String label = null;
     private String descStr = null;
     private Spannable descSpan = null;
@@ -79,19 +83,19 @@ public class VirtualListItem {
         return font;
     }
 
-    public void addBitmapImage(Bitmap b) {
-        image = b;
-    }
-
     public void addIcon(Icon ic) {
-        image = ic.getImage();
+        image = new BitmapDrawable(SawimApplication.getInstance().getResources(), ic.getImage());
     }
 
     public void addImage(Bitmap ic) {
+        image = new BitmapDrawable(SawimApplication.getInstance().getResources(), ic);
+    }
+
+    public void addDrawable(Drawable ic) {
         image = ic;
     }
 
-    public Bitmap getImage() {
+    public Drawable getImage() {
         return image;
     }
 

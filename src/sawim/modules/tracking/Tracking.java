@@ -9,7 +9,7 @@ import ru.sawim.General;
 import sawim.chat.Chat;
 import sawim.chat.message.Message;
 import sawim.chat.message.PlainMessage;
-import sawim.cl.ContactList;
+import sawim.roster.Roster;
 import sawim.modules.MagicEye;
 import sawim.modules.Notify;
 import sawim.util.JLocale;
@@ -402,7 +402,7 @@ public final class Tracking {
                     if (track_prev.idAction == ACTION_MESSAGE) {
                         String str = track.valueAction;
                         if (str.length() != 0)
-                            ContactList.getInstance().getManager().getCurrentProtocol().sendMessage(item, str, true);
+                            Roster.getInstance().getCurrentProtocol().sendMessage(item, str, true);
                     }
                 }
                 break;

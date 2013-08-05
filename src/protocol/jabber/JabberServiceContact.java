@@ -12,7 +12,7 @@ import ru.sawim.activities.SawimActivity;
 import ru.sawim.models.RosterAdapter;
 import sawim.Options;
 import sawim.chat.message.SystemNotice;
-import sawim.cl.ContactList;
+import sawim.roster.Roster;
 import sawim.comm.StringConvertor;
 import sawim.modules.tracking.Tracking;
 import sawim.util.JLocale;
@@ -104,7 +104,7 @@ public class JabberServiceContact extends JabberContact {
     }
 
     public boolean isVisibleInContactList() {
-        if (ContactList.getInstance().getManager().getCurrPage() != RosterAdapter.ONLINE_CONTACTS
+        if (Roster.getInstance().getCurrPage() != RosterAdapter.ONLINE_CONTACTS
         /*!Options.getBoolean(Options.OPTION_CL_HIDE_OFFLINE)*/)
             return true;
         return isConference() || isGate ? super.isVisibleInContactList() : true;
@@ -374,6 +374,9 @@ public class JabberServiceContact extends JabberContact {
         }
         if (isPrivate) {
             initManageContactMenu(protocol, manageContact);
+        }
+        if (hasChat()) {
+            contactMenu.add(Menu.FIRST, ContactMenu.USER_MENU_CLOSE_CHAT, 2, R.string.close);
         }
     }
 

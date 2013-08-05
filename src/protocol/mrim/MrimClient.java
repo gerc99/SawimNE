@@ -45,7 +45,7 @@ public final class MrimClient {
             return;
         }
 
-        String clientClient = getValue(caps, "cl" + "ient");
+        String clientClient = getValue(caps, "roster" + "ient");
         String clientName = getValue(caps, "n" + "ame");
         short clientIndex = ClientInfo.CLI_NONE;
         for (short idIndex = 0; idIndex < clientIds.length; ++idIndex) {

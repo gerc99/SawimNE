@@ -5,11 +5,9 @@ import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
 import ru.sawim.General;
 import sawim.ExternalApi;
-import sawim.cl.ContactList;
+import sawim.roster.Roster;
 import protocol.Contact;
 import protocol.Protocol;
 import ru.sawim.R;
@@ -35,7 +33,7 @@ public class ChatActivity extends FragmentActivity {
         ExternalApi.instance.setActivity(this);
         Intent i = getIntent();
         ChatView view = (ChatView) getSupportFragmentManager().findFragmentById(R.id.chat_fragment);
-        Protocol protocol = ContactList.getInstance().getProtocol(i.getStringExtra("protocol_id"));
+        Protocol protocol = Roster.getInstance().getProtocol(i.getStringExtra("protocol_id"));
         Contact currentContact = protocol.getItemByUIN(i.getStringExtra("contact_id"));
         view.openChat(protocol, currentContact);
     }
@@ -65,5 +63,13 @@ public class ChatActivity extends FragmentActivity {
     public void onResume() {
         super.onResume();
         General.maximize();
+    }
+
+    @Override
+    public void onBackPressed() {
+        ChatView view = (ChatView) getSupportFragmentManager().findFragmentById(R.id.chat_fragment);
+        if (view != null)
+            if (view.hasBack())
+                super.onBackPressed();
     }
 }

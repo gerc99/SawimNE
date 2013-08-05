@@ -5,7 +5,6 @@
         android:layout_height="fill_parent"
         android:orientation="vertical"
         xmlns:android="http://schemas.android.com/apk/res/android">
-
     <LinearLayout
             android:id="@+id/chat_bar"
             android:layout_width="match_parent"
@@ -16,92 +15,83 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="center_vertical"
-                android:layout_weight="1" android:minWidth="76dp"/>
-        <LinearLayout
-                android:id="@+id/widget45"
+                android:minWidth="76dp"/>
+        <ru.sawim.view.MySpinner
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:orientation="vertical" android:layout_gravity="center_vertical"
-                android:layout_weight="15">
-            <ru.sawim.view.MySpinner
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:id="@+id/spinner"
-                    android:layout_gravity="center_horizontal"/>
-        </LinearLayout>
+                android:id="@+id/spinner"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="1"/>
         <ImageButton
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:id="@+id/chatsImage" android:layout_gravity="center_vertical"
-                android:layout_weight="1" android:minWidth="76dp"/>
+                android:id="@+id/chatsImage"
+                android:minWidth="76dp"
+                android:layout_gravity="center_vertical"/>
     </LinearLayout>
-
-    <LinearLayout android:layout_weight="2"
-                  android:orientation="horizontal"
-                  android:layout_width="fill_parent"
-                  android:layout_height="fill_parent">
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="2">
         <ListView
                 android:id="@+id/chat_history_list"
-                android:layout_width="match_parent"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:divider="@null"
                 android:dividerHeight="0dp"
                 android:layout_weight="1"
-                android:fastScrollEnabled="true" android:layout_marginBottom="8dp"/>
-        <LinearLayout android:id="@+id/sidebar"
-                      android:orientation="vertical"
-                      android:layout_width="match_parent"
-                      android:layout_height="match_parent" android:layout_weight="1.5">
-            <ListView android:id="@+id/muc_user_list"
-                      android:visibility="gone"
-                      android:layout_width="fill_parent"
-                      android:layout_height="wrap_content"/>
-        </LinearLayout>
+                android:fastScrollEnabled="true"
+                android:scrollingCache="false"
+                android:animationCache="false"
+                android:cacheColorHint="#00000000"
+                android:listSelector="#00000000"/>
+
+        <ListView android:id="@+id/muc_user_list"
+                  android:visibility="gone"
+                  android:layout_width="fill_parent"
+                  android:layout_height="wrap_content"
+                  android:layout_weight="1.5"
+                  android:scrollingCache="false"
+                  android:animationCache="false"
+                  android:cacheColorHint="#00000000"/>
     </LinearLayout>
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                  android:orientation="horizontal"
+    <LinearLayout android:orientation="horizontal"
                   android:layout_width="match_parent"
                   android:layout_height="wrap_content"
                   style="@style/InputBar">
+        <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:id="@+id/menu_button"
+                android:layout_gravity="center"
+                android:src="@android:drawable/ic_menu_sort_by_size"
+                style="@style/InputBar.Button"/>
+        <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:id="@+id/input_smile_button"
+                android:layout_gravity="center"
+                android:src="@drawable/input_smile_button"
+                style="@style/InputBar.Button"/>
 
-        <LinearLayout
-                android:orientation="horizontal"
+        <EditText
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
+                android:id="@+id/messageBox"
+                android:layout_gravity="center|left"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:maxLines="4"
+                android:layout_weight="0.87"
+                style="@style/InputBar.EditText"
+                android:inputType="textMultiLine|textCapSentences"/>
+        <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:id="@+id/input_send_button"
                 android:layout_gravity="center"
-                style="@style/InputBar.Editor">
-            <ImageButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="fill_parent"
-                    android:id="@+id/menu_button"
-                    android:layout_gravity="center"
-                    android:src="@android:drawable/ic_menu_sort_by_size"
-                    style="@style/InputBar.Button"/>
-            <ImageButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="fill_parent"
-                    android:id="@+id/input_smile_button"
-                    android:layout_gravity="center"
-                    android:src="@drawable/input_smile_button"
-                    style="@style/InputBar.Button"/>
-
-            <EditText
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
-                    android:id="@+id/messageBox" android:layout_gravity="center|left"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentTop="true"
-                    android:maxLines="4"
-                    android:layout_weight="0.87"
-                    style="@style/InputBar.EditText" android:inputType="textMultiLine|textCapSentences"/>
-            <ImageButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="fill_parent"
-                    android:id="@+id/input_send_button"
-                    android:layout_gravity="center"
-                    android:src="@drawable/input_send_button"
-                    style="@style/InputBar.Button"/>
-
-        </LinearLayout>
+                android:src="@drawable/input_send_button"
+                style="@style/InputBar.Button"/>
     </LinearLayout>
 </LinearLayout>

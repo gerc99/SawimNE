@@ -1,12 +1,10 @@
 package sawim.chat;
 
 import DrawControls.icons.Icon;
-import android.util.Log;
 import sawim.chat.message.Message;
 import sawim.chat.message.PlainMessage;
-import sawim.cl.ContactList;
+import sawim.roster.Roster;
 import sawim.comm.StringConvertor;
-import sawim.comm.Util;
 import sawim.io.Storage;
 import protocol.Contact;
 import protocol.Protocol;
@@ -147,7 +145,7 @@ public final class ChatHistory {
         c.updateChatState(null);
         item.getProtocol().ui_updateContact(c);
         if (0 < item.getUnreadMessageCount()) {
-            ContactList.getInstance().markMessages(c);
+            Roster.getInstance().markMessages(c);
         }
     }
 
@@ -160,14 +158,14 @@ public final class ChatHistory {
                 key.getContact().updateChatState(null);
             }
         }
-        ContactList.getInstance().markMessages(null);
+        Roster.getInstance().markMessages(null);
     }
 
     private void removeChat(Chat chat) {
         if (null != chat) {
             clearChat(chat);
             //if (General.getSawim().getDisplay().remove(chat)) {
-            //    ContactList.getInstance()._setActiveContact(null);
+            //    Roster.getInstance()._setActiveContact(null);
             //}
             //setCurrentItemIndex(getCurrItem());
             //invalidate();
@@ -175,7 +173,7 @@ public final class ChatHistory {
         if (0 < getSize()) {
             //restore();
         } else {
-            ContactList.getInstance().activate();
+            Roster.getInstance().update();
         }
     }
 
@@ -198,7 +196,7 @@ public final class ChatHistory {
         //    restore();
 
         } else {
-            ContactList.getInstance().activate();
+            Roster.getInstance().update();
         }
     }
 
@@ -252,7 +250,7 @@ public final class ChatHistory {
                 return i;
             }
         }
-        Contact currentContact = ContactList.getInstance().getCurrentContact();
+        Contact currentContact = Roster.getInstance().getCurrentContact();
         int current = 0;
         for (int i = 0; i < historyTable.size(); ++i) {
             Chat chat = chatAt(i);
@@ -307,7 +305,7 @@ public final class ChatHistory {
         if (getTotal() <= 0) return;
 		Chat current = chatAt(getPreferredItem());
         if (0 < current.getUnreadMessageCount()) {
-            current.activate();
+            current.update();
             return;
         }
 	}
@@ -318,7 +316,7 @@ public final class ChatHistory {
             return;
         }
         int nextChatNum = (chatNum + (next ? 1 : -1) + getTotal()) % getTotal();
-        chatAt(nextChatNum).activate();
+        chatAt(nextChatNum).update();
     }
 
     private static final int MENU_SELECT = 1;
@@ -329,7 +327,7 @@ public final class ChatHistory {
     protected void doSawimAction(int action) {
         switch (action) {
             case NativeCanvas.Sawim_SELECT:
-                getSelectedChat().activate();
+                getSelectedChat().update();
                 return;
 
             case NativeCanvas.Sawim_BACK:
@@ -423,7 +421,7 @@ public final class ChatHistory {
                 String nick = in.readUTF();
                 String text = in.readUTF();
                 long time = in.readLong();
-                Protocol protocol = ContactList.getInstance().getProtocol(account);
+                Protocol protocol = Roster.getInstance().getProtocol(account);
                 if (null == protocol) {
                     continue;
                 }
