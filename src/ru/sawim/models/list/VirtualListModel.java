@@ -4,6 +4,7 @@ import DrawControls.icons.Icon;
 import java.util.ArrayList;
 import java.util.List;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import ru.sawim.models.form.VirtualListItem;
 import sawim.comm.StringConvertor;
 import ru.sawim.Scheme;
@@ -83,9 +84,18 @@ public final class VirtualListModel {
     }
 
     public void addParam(String langStr, String str) {
+        addParam(langStr, str, false);
+    }
+
+    public void addParamWithLinks(String langStr, String str) {
+        addParam(langStr, str, true);
+    }
+
+    public void addParam(String langStr, String str, boolean hasLinks) {
         if (!StringConvertor.isEmpty(str)) {
             addHeader();
             VirtualListItem line = createNewParser(true);
+            line.setHasLinks(hasLinks);
             line.addLabel(JLocale.getString(langStr) + ": ",
                     Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
             line.addDescription(str, Scheme.THEME_PARAM_VALUE, Scheme.FONT_STYLE_PLAIN);
@@ -101,7 +111,7 @@ public final class VirtualListModel {
                 line.addLabel(JLocale.getString(langStr) + ": ",
                         Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
             }
-            line.addIcon(img);
+            line.addImage(img.getImage());
             addPar(line);
         }
     }
@@ -113,7 +123,7 @@ public final class VirtualListModel {
                 line.addLabel(JLocale.getString(langStr) + ": ",
                         Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
             }
-            line.addImage(img);
+            line.addBitmap(img);
             addPar(line);
         }
     }

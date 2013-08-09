@@ -4,7 +4,6 @@ import DrawControls.icons.AniIcon;
 import DrawControls.icons.Icon;
 import android.content.Context;
 
-import android.graphics.Bitmap;
 import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.BitmapDrawable;
 import android.util.Log;
@@ -66,16 +65,7 @@ public class SmilesAdapter extends BaseAdapter {
         return convView;
     }
 
-    private final static int DURATION = 100;
     private AnimationDrawable mAnimation = null;
-
-    private void startFrameAnimation(ImageView mImage, Bitmap bm) {
-        BitmapDrawable frame = new BitmapDrawable(baseContext.getResources(), bm);
-        mAnimation = new AnimationDrawable();
-        mAnimation.setOneShot(false);
-        mAnimation.addFrame(frame, DURATION);
-        mImage.setBackgroundDrawable(mAnimation);
-    }
 
     private void stopFrameAnimation() {
         if (mAnimation.isRunning()) {
@@ -90,32 +80,28 @@ public class SmilesAdapter extends BaseAdapter {
 
         public ItemWrapper(View item) {
             this.item = item;
+            itemImage = (ImageView) item.findViewById(R.id.smileImage);
         }
 
         void populateAniFrom(AniIcon ic) {
+            mAnimation = new AnimationDrawable();
             if (ic != null) {
-                Log.e("frameCount", "" + ic.getImages().length);
+                mAnimation.setOneShot(false);
                 for (int frameNum = 0; frameNum < ic.getImages().length; ++frameNum) {
-                    startFrameAnimation(getItemImage(), ic.getImages()[frameNum].getImage());
+                    mAnimation.addFrame(ic.getImages()[frameNum].getImage(), ic.getDelays()[frameNum]);
                 }
-                if (!mAnimation.isRunning()) {
-                    mAnimation.setVisible(true, true);
-                    mAnimation.start();
-                }
+                itemImage.setImageDrawable(mAnimation);
+            }
+            if (!mAnimation.isRunning()) {
+                mAnimation.setVisible(true, true);
+                mAnimation.start();
             }
         }
 
         void populateFrom(Icon ic) {
             if (ic != null) {
-                getItemImage().setImageBitmap(ic.getImage());
+                itemImage.setImageDrawable(ic.getImage());
             }
-        }
-
-        public ImageView getItemImage() {
-            if (itemImage == null) {
-                itemImage = (ImageView) item.findViewById(R.id.smileImage);
-            }
-            return itemImage;
         }
     }
 }

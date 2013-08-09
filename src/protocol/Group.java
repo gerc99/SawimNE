@@ -109,7 +109,7 @@ public class Group extends TreeNode {
     }
 
     @Override
-    public Icon getLeftIcon() {
+    public Icon getLeftIcon(Protocol p) {
         return expanded ? groupIcons.iconAt(1) : groupIcons.iconAt(0);
     }
 

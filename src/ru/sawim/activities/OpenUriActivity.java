@@ -1,9 +1,10 @@
-package ru.sawim;
+package ru.sawim.activities;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.net.Uri;
+import ru.sawim.R;
 import sawim.roster.Roster;
 import protocol.Contact;
 import protocol.Protocol;

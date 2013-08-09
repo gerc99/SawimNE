@@ -200,5 +200,6 @@
     <string name="invitation_sent">Invitation sent</string>
     <string name="save_avatar">Save avatar</string>
     <string name="saved">Saved</string>
+    <string name="added">Added</string>
 
 </resources>

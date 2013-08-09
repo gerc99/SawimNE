@@ -199,6 +199,7 @@
     <string name="invitation_sent">Приглашение отправлено</string>
     <string name="save_avatar">Сохранить аватар</string>
     <string name="saved">Сохранено</string>
+    <string name="added">Добавлено</string>
 
 
 </resources>

@@ -1,10 +1,12 @@
 package ru.sawim;
 
+import DrawControls.icons.ImageList;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
 import android.util.DisplayMetrics;
 import sawim.Options;
 import sawim.Updater;
@@ -36,24 +38,26 @@ public class General {
             + "/" + android.os.Build.VERSION.RELEASE;
 
     private boolean paused = true;
+    public static ImageList affiliationIcons = ImageList.createImageList("/jabber-affiliations.png");
+    public static BitmapDrawable usersIcon = ImageList.createImageList("/participants.png").iconAt(0).getImage();
     private static int fontSize;
     public static boolean hideIconsClient;
     public static boolean showStatusLine;
     public static int sortType;
 
-    public void init() {
-        instance = this;
-    }
-
     public static General getInstance() {
         return instance;
+    }
+
+    public void init() {
+        instance = this;
     }
 
     public void startApp() {
         if (!paused && (null != General.instance)) {
             return;
         }
-        General.instance = this;
+        instance = this;
         instance.paused = false;
 
         ru.sawim.config.HomeDirectory.init();

@@ -237,6 +237,7 @@ abstract public class Protocol {
             reconnect_attempts = RECONNECT_COUNT;
             getContactList().updateConnectionStatus();
             getContactList().updateBarProtocols();
+            getContactList().update();
         }
         getContactList().updateProgressBar();
     }
@@ -627,13 +628,6 @@ abstract public class Protocol {
         }
     }
 
-    private void updateChatStatus(Contact c) {
-        Chat chat = ChatHistory.instance.getChat(c);
-        if (null != chat) {
-            chat.updateStatus();
-        }
-    }
-
     protected final void setStatusesOffline() {
         for (int i = contacts.size() - 1; i >= 0; --i) {
             Contact c = (Contact) contacts.elementAt(i);
@@ -787,8 +781,13 @@ abstract public class Protocol {
         getContactList().markMessages(contact);
     }
 
+    private static final int UPDATE_INTERVAL = 500;
+    private static long lastUpdate;
+
     public final void ui_changeContactStatus(Contact contact) {
-        updateChatStatus(contact);
+        long now = System.currentTimeMillis();
+        if ((now - lastUpdate) < UPDATE_INTERVAL) return;
+        lastUpdate = now;
         ui_updateContact(contact);
     }
 

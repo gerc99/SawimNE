@@ -91,11 +91,8 @@ abstract public class Contact extends TreeNode {
     }
 
     @Override
-    public Icon getLeftIcon() {
-        Protocol p = getProtocol();
-        if (p != null)
-            return p.getStatusInfo().getIcon(getStatusIndex());
-        return null;
+    public Icon getLeftIcon(Protocol p) {
+        return p.getStatusInfo().getIcon(getStatusIndex());
     }
 
     public Protocol getProtocol() {

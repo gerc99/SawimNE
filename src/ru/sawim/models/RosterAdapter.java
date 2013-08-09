@@ -108,7 +108,10 @@ public class RosterAdapter extends BaseAdapter {
         TreeNode o = getItem(i);
         if (o != null)
             if (type != ALL_CONTACTS && o.isContact()) {
-                holder.populateFromContact(protocol, (Contact) o);
+                if (type == ACTIVE_CONTACTS)
+                    holder.populateFromContact(((Contact) o).getProtocol(), (Contact) o);
+                else
+                    holder.populateFromContact(protocol, (Contact) o);
             } else {
                 if (o.isGroup()) {
                     holder.populateFromGroup((Group) o);
@@ -159,12 +162,12 @@ public class RosterAdapter extends BaseAdapter {
             itemName.setTextColor(Scheme.getColor(Scheme.THEME_GROUP));
             itemName.setTypeface(Typeface.DEFAULT);
 
-            Icon icGroup = g.getLeftIcon();
+            Icon icGroup = g.getLeftIcon(null);
             if (icGroup == null)
                 itemFirstImage.setVisibility(ImageView.GONE);
             else {
                 itemFirstImage.setVisibility(ImageView.VISIBLE);
-                itemFirstImage.setImageBitmap(icGroup.getImage());
+                itemFirstImage.setImageDrawable(icGroup.getImage());
             }
 
             itemDescriptionText.setVisibility(TextView.GONE);
@@ -178,7 +181,7 @@ public class RosterAdapter extends BaseAdapter {
                 messImage.setVisibility(ImageView.GONE);
             } else {
                 messImage.setVisibility(ImageView.VISIBLE);
-                messImage.setImageBitmap(messIcon.getImage());
+                messImage.setImageDrawable(messIcon.getImage());
             }
         }
 
@@ -200,26 +203,26 @@ public class RosterAdapter extends BaseAdapter {
                 itemDescriptionText.setVisibility(TextView.GONE);
             }
 
-            Icon icStatus = item.getLeftIcon();
+            Icon icStatus = item.getLeftIcon(p);
             if (icStatus == null) {
                 itemFirstImage.setVisibility(ImageView.GONE);
             } else {
                 itemFirstImage.setVisibility(ImageView.VISIBLE);
-                itemFirstImage.setImageBitmap(icStatus.getImage());
+                itemFirstImage.setImageDrawable(icStatus.getImage());
             }
             if (item.isTyping()) {
-                itemFirstImage.setImageBitmap(Message.msgIcons.iconAt(Message.ICON_TYPE).getImage());
+                itemFirstImage.setImageDrawable(Message.msgIcons.iconAt(Message.ICON_TYPE).getImage());
             } else {
                 Icon icMess = Message.msgIcons.iconAt(item.getUnreadMessageIcon());
                 if (icMess != null)
-                    itemFirstImage.setImageBitmap(icMess.getImage());
+                    itemFirstImage.setImageDrawable(icMess.getImage());
             }
 
             if (item.getXStatusIndex() == XStatusInfo.XSTATUS_NONE) {
                 itemSecondImage.setVisibility(ImageView.GONE);
             } else {
                 itemSecondImage.setVisibility(ImageView.VISIBLE);
-                itemSecondImage.setImageBitmap(p.getXStatusInfo().getIcon(item.getXStatusIndex()).getImage());
+                itemSecondImage.setImageDrawable(p.getXStatusInfo().getIcon(item.getXStatusIndex()).getImage());
             }
 
             if (!item.isTemp()) {
@@ -235,18 +238,18 @@ public class RosterAdapter extends BaseAdapter {
                         privacyList = 2;
                     }
                     if (privacyList != -1)
-                        itemThirdImage.setImageBitmap(item.serverListsIcons.iconAt(privacyList).getImage());
+                        itemThirdImage.setImageDrawable(item.serverListsIcons.iconAt(privacyList).getImage());
                     else
                         itemThirdImage.setVisibility(ImageView.GONE);
                 } else {
-                    itemThirdImage.setImageBitmap(icAuth.getImage());
+                    itemThirdImage.setImageDrawable(icAuth.getImage());
                 }
             }
 
             Icon icClient = (null != p.clientInfo) ? p.clientInfo.getIcon(item.clientIndex) : null;
             if (icClient != null && !General.hideIconsClient) {
                 itemFourthImage.setVisibility(ImageView.VISIBLE);
-                itemFourthImage.setImageBitmap(icClient.getImage());
+                itemFourthImage.setImageDrawable(icClient.getImage());
             } else {
                 itemFourthImage.setVisibility(ImageView.GONE);
             }
@@ -254,7 +257,7 @@ public class RosterAdapter extends BaseAdapter {
             String id = item.getUserId();
             if (Tracking.isTrackingEvent(id, Tracking.GLOBAL) == Tracking.TRUE) {
                 itemFifthImage.setVisibility(ImageView.VISIBLE);
-                itemFifthImage.setImageBitmap(Tracking.getTrackIcon(id).getImage());
+                itemFifthImage.setImageDrawable(Tracking.getTrackIcon(id).getImage());
             } else {
                 itemFifthImage.setVisibility(ImageView.GONE);
             }

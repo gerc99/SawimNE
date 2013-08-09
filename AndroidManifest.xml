@@ -44,7 +44,7 @@
                 <data android:mimeType="*/*"/>
             </intent-filter>
         </activity>
-        <activity android:name=".OpenUriActivity"
+        <activity android:name=".activities.OpenUriActivity"
                   android:theme="@style/AppThemeDarkNoBar"
                   android:label="@string/app_name"
                   android:windowSoftInputMode="stateAlwaysHidden|adjustResize"

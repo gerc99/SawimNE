@@ -2,6 +2,7 @@ package sawim.roster;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.widget.Toast;
 import protocol.*;
 import protocol.icq.Icq;
@@ -363,8 +364,7 @@ public final class Roster {
     }
 
     public void update(TreeNode node) {
-        if (onUpdateRoster != null)
-            onUpdateRoster.updateRoster();
+        update();
     }
 
     public final void update() {
@@ -545,6 +545,7 @@ public final class Roster {
     }
 
     public void updateGroup(Group group) {
+        if (group == null) return;
         if (useGroups) {
             group.updateGroupData();
             group.sort();

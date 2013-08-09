@@ -18,6 +18,8 @@ public class ImageList {
     private static Hashtable files = new Hashtable();
     private static ImageList instance;
     private Icon[] icons;
+    private int width = 0;
+    private int height = 0;
 
     public ImageList() {
         instance = this;
@@ -25,6 +27,14 @@ public class ImageList {
 
     public static ImageList getInstance() {
         return instance;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
     }
 
     static public ImageList createImageList(String resName) {
@@ -41,7 +51,7 @@ public class ImageList {
         return icons;
     }
     
-    /*public void load(String resName, int count) throws IOException {
+    public void load(String resName, int count) throws IOException {
         Image resImage = loadImage(resName);
         if (null == resImage) {
             return;
@@ -52,17 +62,20 @@ public class ImageList {
         height = imgHeight;
 
         Vector tmpIcons = new Vector();
+        int size = (int) SawimApplication.getInstance().getResources().getDisplayMetrics().density;
         for (int y = 0; y < imgHeight; y += height) {
             for (int x = 0; x < imgWidth; x += width) {
-                Bitmap bitmap = Bitmap.createBitmap(resImage.getBitmap(), x, y, width, height);
-                Icon icon = new Icon(bitmap);
-
-                tmpIcons.addElement(icon);
+                Bitmap bitmap = Bitmap.createScaledBitmap(
+                        Bitmap.createBitmap(resImage.getBitmap(), x, y, width, height), width*size, height*size, true);
+                bitmap.setDensity(0);
+                BitmapDrawable drawable = new BitmapDrawable(SawimApplication.getInstance().getContext().getResources(), bitmap);
+                drawable.setBounds(0, 0, (int) (drawable.getIntrinsicWidth() * 0.5), (int) (drawable.getIntrinsicHeight() * 0.5));
+                tmpIcons.addElement(new Icon(drawable));
             }
         }
         icons = new Icon[tmpIcons.size()];
         tmpIcons.copyInto(icons);
-    }*/
+    }
 
     public Icon iconAt(int index) {
         if (0 <= index && index < size()) {
@@ -93,10 +106,10 @@ public class ImageList {
         Vector tmpIcons = new Vector();
         for (int y = 0; y < imgHeight; y += height) {
             for (int x = 0; x < imgWidth; x += width) {
-                //Bitmap bitmap = Bitmap.createBitmap(resImage.getBitmap(), x, y, width, height);
                 Bitmap bitmap = scalingIconForDPI(Bitmap.createBitmap(resImage.getBitmap(), x, y, width, height));
-                Icon icon = new Icon(bitmap);
-                tmpIcons.addElement(icon);
+                BitmapDrawable drawable = new BitmapDrawable(SawimApplication.getInstance().getContext().getResources(), bitmap);
+                drawable.setBounds(0, 0, width, height);
+                tmpIcons.addElement(new Icon(drawable));
             }
         }
         icons = new Icon[tmpIcons.size()];
@@ -104,7 +117,6 @@ public class ImageList {
     }
 
     public static Bitmap scalingIconForDPI(Bitmap originBitmap) {
-        BitmapDrawable output = null;
         if (originBitmap != null) {
             switch (SawimApplication.getInstance().getResources().getDisplayMetrics().densityDpi) {
                 case 120:
@@ -123,10 +135,8 @@ public class ImageList {
                     return originBitmap;
             }
             originBitmap.setDensity(0);
-            output = new BitmapDrawable(SawimApplication.getInstance().getResources(), originBitmap);
-            output.setBounds(0, 0, (int) (output.getIntrinsicWidth() * 0.5), (int) (output.getIntrinsicHeight() * 0.5));
         }
-        return output.getBitmap();
+        return originBitmap;
     }
 
     public static Bitmap scalingCaptchaIconForDPI(Bitmap originBitmap) {

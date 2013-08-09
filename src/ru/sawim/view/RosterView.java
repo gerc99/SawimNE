@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.util.Log;
+import ru.sawim.SawimApplication;
 import sawim.roster.TreeNode;
 import android.content.Intent;
 import android.graphics.PorterDuff;
@@ -179,22 +180,22 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
 
     /*private void setCurrentItemIndex(final int currentIndex) {
         ((ListView) pages.get(viewPager.getCurrentItem())).setSelection(currentIndex);
-    }*/
+    }
 
-    //private int getCurrItem() {
-    //     if ((viewPager.getCurrentItem() < pages.size())
-    //      return ((ListView) pages.get(viewPager.getCurrentItem())).getFirstVisiblePosition();
-    //}
+    private int getCurrItem() {
+         if ((viewPager.getCurrentItem() < pages.size())
+          return ((ListView) pages.get(viewPager.getCurrentItem())).getFirstVisiblePosition();
+    }
 
-    //private TreeNode getCurrentNode() {
-    //    return getSafeNode(getCurrItem());
-    //}
+    private TreeNode getCurrentNode() {
+        return getSafeNode(getCurrItem());
+    }
 
     public TreeNode getSafeNode(int index) {
         if ((index < items.size()) && (index >= 0))
             return items.get(index);
         return null;
-    }
+    }*/
 
     private void setExpandFlag(Group node, boolean value) {
         //setCurrentNode(getCurrentNode());
@@ -203,7 +204,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
 
     @Override
     public void updateRoster() {
-        getActivity().runOnUiThread(new Runnable() {
+        SawimApplication.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 roster.updateOptions();
@@ -215,7 +216,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
                 //    try {
                 TreeNode current = currentNode;
                 currentNode = null;
-    //            int prevIndex = getCurrItem();
+                //            int prevIndex = getCurrItem();
                 if (null != current) {
                     if ((current.isContact()) && roster.useGroups) {
                         Contact c = (Contact) current;
@@ -306,10 +307,10 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
                         imageBarButtons.getBackground().setColorFilter(Scheme.getColor(Scheme.THEME_CAP_BACKGROUND), PorterDuff.Mode.MULTIPLY);
                         if (i == roster.getCurrentItemProtocol())
                             imageBarButtons.getBackground().setColorFilter(Scheme.getColor(Scheme.THEME_BACKGROUND), PorterDuff.Mode.SCREEN);
-                        imageBarButtons.setImageBitmap(protocol.getCurrentStatusIcon().getImage());
+                        imageBarButtons.setImageDrawable(protocol.getCurrentStatusIcon().getImage());
                         Icon messageIcon = ChatHistory.instance.getUnreadMessageIcon(protocol);
                         if (null != messageIcon)
-                            imageBarButtons.setImageBitmap(messageIcon.getImage());
+                            imageBarButtons.setImageDrawable(messageIcon.getImage());
                         protocolBarLayout.addView(imageBarButtons, i);
                     }
                 } else {
@@ -327,7 +328,6 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         if (roster.getProtocolCount() == 0) return;
         roster.setOnUpdateRoster(this);
         update();
-        updateRoster();
     }
 
     @Override
@@ -343,12 +343,10 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
                 .findFragmentById(R.id.chat_fragment);
         TreeNode item = adaptersPages.get(viewPager.getCurrentItem()).getItem(position);
         if (item.isContact()) {
-            Protocol p;
+            Protocol p = roster.getCurrProtocol();
             Contact c = ((Contact) item);
             if (viewPager.getCurrentItem() == RosterAdapter.ACTIVE_CONTACTS)
                 p = c.getProtocol();
-            else
-                p = roster.getCurrProtocol();
             c.activate(p);
             if (!isInLayout()) return;
             if (viewer == null || !viewer.isInLayout()) {
@@ -359,6 +357,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
             } else {
                 Chat chat = viewer.getCurrentChat();
                 viewer.pause(chat);
+                viewer.resetSpinner();
                 if (c != null) {
                     viewer.openChat(p, c);
                     viewer.resume(viewer.getCurrentChat());
@@ -377,8 +376,10 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         contextMenuInfo = (AdapterView.AdapterContextMenuInfo) menuInfo;
         TreeNode node = ((RosterAdapter)((ListView) v).getAdapter()).getItem(contextMenuInfo.position);
         Protocol p = roster.getCurrentProtocol();
+        if (viewPager.getCurrentItem() == RosterAdapter.ACTIVE_CONTACTS)
+            p = ((Contact) node).getProtocol();
         if (node.isContact()) {
-            new ContactMenu(((Contact) node).getProtocol(), (Contact) node).getContextMenu(menu);
+            new ContactMenu(p, (Contact) node).getContextMenu(menu);
         }
         if (node.isGroup()) {
             if (p.isConnected()) {
@@ -392,13 +393,17 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         AdapterView.AdapterContextMenuInfo menuInfo = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         if (menuInfo == null)
             menuInfo = contextMenuInfo;
-        TreeNode node = adaptersPages.get(viewPager.getCurrentItem()).getItem(menuInfo.position);
+        final TreeNode node = adaptersPages.get(viewPager.getCurrentItem()).getItem(menuInfo.position);
+        if (node == null) return false;
         if (node.isContact()) {
             final Contact c = (Contact) node;
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    new ContactMenu(c.getProtocol(), c).doAction(getActivity(), item.getItemId());
+                    Protocol p = roster.getCurrentProtocol();
+                    if (viewPager.getCurrentItem() == RosterAdapter.ACTIVE_CONTACTS)
+                        p = ((Contact) node).getProtocol();
+                    new ContactMenu(p, c).doAction(getActivity(), item.getItemId());
                 }
             });
             return true;

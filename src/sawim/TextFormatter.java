@@ -3,6 +3,7 @@ package sawim;
 import DrawControls.icons.Icon;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ImageSpan;
@@ -28,9 +29,8 @@ public class TextFormatter {
                 if (message.startsWith(smiles.getSmileText(smileIndex), index)) {
                     int length = smiles.getSmileText(smileIndex).length();
                     Icon icon = smiles.getSmileIcon(smileIndex);
-                    builder.setSpan(new ImageSpan(context,
-                            icon.getImage(),
-                            ImageSpan.ALIGN_BASELINE), index, index + length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    Drawable drawable = icon.getImage();
+                    builder.setSpan(new ImageSpan(drawable), index, index + length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                     index += length - 1;
                 }
                 smileIndex = smiles.getSmileChars().indexOf(message.charAt(index), smileIndex + 1);

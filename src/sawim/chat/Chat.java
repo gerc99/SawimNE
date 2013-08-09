@@ -26,7 +26,6 @@ public final class Chat {
     private Contact contact;
     private boolean writable = true;
     private HistoryStorage history;
-    private boolean showStatus = true;
     private List<MessData> messData = new ArrayList<MessData>();
     public static final String ADDRESS = ", ";
     private boolean visibleChat;
@@ -44,11 +43,6 @@ public final class Chat {
 
     void setContact(Contact item) {
         contact = item;
-    }
-
-    public void updateStatus() {
-        showStatus = true;
-        showStatusPopup();
     }
 
     public Protocol getProtocol() {
@@ -120,9 +114,6 @@ public final class Chat {
     }
 
     public void activate() {
-        if (showStatus) {
-            showStatusPopup();
-        }
         Roster.getInstance().activate(contact);
     }
 
@@ -192,10 +183,6 @@ public final class Chat {
         }
         String nick = ((null == md) || md.isFile()) ? null : md.getNick();
         return writeMessageTo(getMyName().equals(nick) ? null : nick);
-    }
-    
-    private void showStatusPopup() {
-        showStatus = false;
     }
 
     public boolean hasHistory() {

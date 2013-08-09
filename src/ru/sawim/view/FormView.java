@@ -238,7 +238,7 @@ public class FormView extends Fragment implements Forms.OnUpdateForm, View.OnCli
             } else if (Forms.CONTROL_IMAGE == c.type) {
                 drawText(c, labelView, descView, convertView);
                 imageView.setVisibility(ImageView.VISIBLE);
-                imageView.setImageBitmap(c.image);
+                imageView.setImageDrawable(c.image);
                 convertView.addView(imageView);
             } else if (Forms.CONTROL_LINK == c.type) {
                 drawText(c, labelView, descView, convertView);

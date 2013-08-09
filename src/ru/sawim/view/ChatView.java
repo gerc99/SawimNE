@@ -9,6 +9,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -62,7 +63,7 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
     private ListView chatListView;
     private MySpinner spinner;
     private MucUsersView mucUsersView;
-    private MessagesAdapter adapter = new MessagesAdapter();
+    private MessagesAdapter adapter;
     private ChatsSpinnerAdapter chatsSpinnerAdapter;
     private LinearLayout chatBarLayout;
     private LinearLayout chat_viewLayout;
@@ -72,7 +73,6 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
     private ImageButton smileButton;
     private ImageButton sendButton;
     private EditText messageEditor;
-    private Bitmap usersIcon = ImageList.createImageList("/participants.png").iconAt(0).getImage();
     private static Hashtable<String, Chat.ScrollState> positionHash = new Hashtable<String, Chat.ScrollState>();
 
     @Override
@@ -85,7 +85,7 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
         chatBarLayout.setBackgroundDrawable(gd);
         //chatBarLayout.setBackgroundColor(Scheme.getColorWithAlpha(Scheme.THEME_CAP_BACKGROUND));
         usersImage.getBackground().setColorFilter(Scheme.getColor(Scheme.THEME_CAP_BACKGROUND), PorterDuff.Mode.MULTIPLY);
-        usersImage.setImageBitmap(usersIcon);
+        usersImage.setImageDrawable(General.usersIcon);
         usersImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -311,6 +311,7 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        if (chat == null) return;
         if (chat.empty())
             ChatHistory.instance.unregisterChat(chat);
     }
@@ -365,36 +366,14 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
         currentContact = c;
         final FragmentActivity currentActivity = getActivity();
         chat = protocol.getChat(currentContact);
-        chatListView = (ListView) currentActivity.findViewById(R.id.chat_history_list);
-        adapter.init(currentActivity, chat);
-        chatListView.setStackFromBottom(true);
-        chatListView.setTranscriptMode(ListView.TRANSCRIPT_MODE_NORMAL);
-        chatListView.setOnCreateContextMenuListener(this);
-        chatListView.setOnItemClickListener(new ChatClick());
-        chatListView.setFocusable(true);
-        chatListView.setAdapter(adapter);
+
         if (spinner.getOnItemSelectedEvenIfUnchangedListener() == null)
             initSpinner();
+        initList();
+        initMucUsers();
+
         int background = Scheme.getColorWithAlpha(Scheme.THEME_BACKGROUND);
         chat_viewLayout.setBackgroundColor(background);
-
-        nickList.setVisibility(View.GONE);
-        nickList.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
-        if (currentContact instanceof JabberServiceContact && currentContact.isConference()) {
-            mucUsersView = new MucUsersView();
-            mucUsersView.init(protocol, (JabberServiceContact) currentContact);
-            mucUsersView.show(this, nickList);
-            usersImage.setVisibility(View.VISIBLE);
-            if (nickList.getVisibility() == View.VISIBLE) {
-                nickList.setVisibility(View.VISIBLE);
-            } else {
-                nickList.setVisibility(View.GONE);
-            }
-        } else {
-            usersImage.setVisibility(View.GONE);
-            nickList.setVisibility(View.GONE);
-        }
-
         if (General.isTablet(currentActivity)) {
             menuButton.setVisibility(ImageButton.VISIBLE);
             menuButton.setBackgroundColor(background);
@@ -448,13 +427,49 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
         }
     }
 
+    private void initList() {
+        chatListView = (ListView) getActivity().findViewById(R.id.chat_history_list);
+        chatListView.setStackFromBottom(true);
+        chatListView.setTranscriptMode(ListView.TRANSCRIPT_MODE_NORMAL);
+        chatListView.setOnCreateContextMenuListener(this);
+        chatListView.setOnItemClickListener(new ChatClick());
+        chatListView.setFocusable(true);
+        if (chatListView.getAdapter() == null) {
+            adapter = new MessagesAdapter();
+            adapter.init(getActivity(), chat);
+            chatListView.setAdapter(adapter);
+        } else {
+            adapter.refreshList(chat.getMessData());
+            chatListView.setAdapter(adapter);
+        }
+    }
+
+    private void initMucUsers() {
+        nickList.setVisibility(View.GONE);
+        nickList.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
+        if (currentContact instanceof JabberServiceContact && currentContact.isConference()) {
+            mucUsersView = new MucUsersView();
+            mucUsersView.init(protocol, (JabberServiceContact) currentContact);
+            mucUsersView.show(this, nickList);
+            usersImage.setVisibility(View.VISIBLE);
+            if (nickList.getVisibility() == View.VISIBLE) {
+                nickList.setVisibility(View.VISIBLE);
+            } else {
+                nickList.setVisibility(View.GONE);
+            }
+        } else {
+            usersImage.setVisibility(View.GONE);
+            nickList.setVisibility(View.GONE);
+        }
+    }
+
     private void updateChatIcon() {
         Icon icMess = ChatHistory.instance.getUnreadMessageIcon();
         if (icMess == null) {
             chatsImage.setVisibility(ImageView.GONE);
         } else {
             chatsImage.setVisibility(ImageView.VISIBLE);
-            chatsImage.setImageBitmap(icMess.getImage());
+            chatsImage.setImageDrawable(icMess.getImage());
         }
     }
 

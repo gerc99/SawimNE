@@ -41,6 +41,7 @@
                 android:divider="@null"
                 android:dividerHeight="0dp"
                 android:layout_weight="1"
+                android:layout_marginBottom="8dp"
                 android:fastScrollEnabled="true"
                 android:scrollingCache="false"
                 android:animationCache="false"
@@ -52,6 +53,7 @@
                   android:layout_width="fill_parent"
                   android:layout_height="wrap_content"
                   android:layout_weight="1.5"
+                  android:layout_marginBottom="8dp"
                   android:scrollingCache="false"
                   android:animationCache="false"
                   android:cacheColorHint="#00000000"/>

@@ -1,6 +1,7 @@
 package sawim.roster;
 
 import DrawControls.icons.Icon;
+import protocol.Protocol;
 
 public abstract class TreeNode {
     public static final byte GROUP = 0;
@@ -18,7 +19,7 @@ public abstract class TreeNode {
     public abstract String getText();
     public abstract int getNodeWeight();
 
-    public Icon getLeftIcon() {
+    public Icon getLeftIcon(Protocol p) {
        return null;
     }
 }

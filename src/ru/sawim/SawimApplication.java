@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.os.Handler;
 import android.os.Message;
 import org.microemu.MIDletBridge;
 import org.microemu.app.Common;
@@ -37,6 +38,7 @@ public class SawimApplication extends Application {
     private NetworkStateReceiver networkStateReceiver = new NetworkStateReceiver();
 
     private final ExecutorService backgroundExecutor;
+    private final Handler handler;
 
     public static SawimApplication getInstance() {
         return instance;
@@ -47,6 +49,7 @@ public class SawimApplication extends Application {
     }
 
     public SawimApplication() {
+        handler = new Handler();
         backgroundExecutor = Executors
                 .newSingleThreadExecutor(new ThreadFactory() {
                     @Override
@@ -66,7 +69,6 @@ public class SawimApplication extends Application {
         new General().init();
         Thread.setDefaultUncaughtExceptionHandler(ExceptionHandler.inContext(getApplicationContext()));
         super.onCreate();
-        Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
         MIDletInit();
         new General().startApp();
         ChatHistory.instance.loadUnreadMessages();
@@ -78,6 +80,10 @@ public class SawimApplication extends Application {
                     Roster.getInstance().autoConnect();
             }
         });
+    }
+
+    public void runOnUiThread(final Runnable runnable) {
+        handler.post(runnable);
     }
 
     public void runInBackground(final Runnable runnable) {

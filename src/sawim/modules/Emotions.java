@@ -4,6 +4,7 @@ package sawim.modules;
 import DrawControls.icons.AniImageList;
 import DrawControls.icons.Icon;
 import DrawControls.icons.ImageList;
+import android.util.Log;
 import ru.sawim.General;
 import sawim.comm.StringConvertor;
 import protocol.net.TcpSocket;
@@ -166,8 +167,7 @@ public final class Emotions {
     }
 
     private ImageList loadIcons(int iconsSize) throws IOException {
-        ImageList emoImages = null;
-        emoImages = new AniImageList();
+        ImageList emoImages = new AniImageList();
         emoImages.load("/smiles", iconsSize, iconsSize);
         if (0 < emoImages.size()) {
             isAniSmiles = true;
@@ -186,8 +186,8 @@ public final class Emotions {
         General.gc();
         long mem = Runtime.getRuntime().freeMemory();
 
-        InputStream stream = null;
-        stream = General.getResourceAsStream("/smiles/smiles.txt");
+        InputStream stream = General.getResourceAsStream("/smiles/smiles.txt");
+
         if (null == stream) {
             stream = General.getResourceAsStream("/smiles.txt");
         }
@@ -205,6 +205,7 @@ public final class Emotions {
             smileParser(content, textCorr, selEmotions);
             TcpSocket.close(dos);
         } catch (Exception e) {
+            Log.e("smiles", "load " + e.getMessage());
         }
         TcpSocket.close(stream);
         if (0 == emoImages.size()) {

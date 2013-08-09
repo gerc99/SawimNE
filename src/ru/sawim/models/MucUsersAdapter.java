@@ -39,7 +39,6 @@ public class MucUsersAdapter extends BaseAdapter {
     private JabberServiceContact conference;
     private List<Object> items = new ArrayList<Object>();
     private Jabber protocol;
-    private static ImageList affiliationIcons = ImageList.createImageList("/jabber-affiliations.png");
     Context context;
 
     public MucUsersAdapter() {
@@ -114,9 +113,10 @@ public class MucUsersAdapter extends BaseAdapter {
         Vector subcontacts = conference.subcontacts;
         for (int i = 0; i < subcontacts.size(); ++i) {
             JabberContact.SubContact contact = (JabberContact.SubContact) subcontacts.elementAt(i);
-            if (contact.priority == priority) {
-                count++;
-            }
+            if (contact != null)
+                if (contact.priority == priority) {
+                    count++;
+                }
         }
         return (count);
     }
@@ -137,7 +137,7 @@ public class MucUsersAdapter extends BaseAdapter {
 
     private void addLayerToListOfSubcontacts(String layer, int size, byte priority) {
         boolean hasLayer = false;
-        items.add(JLocale.getString(layer) + "(" + size + ")");
+        items.add(JLocale.getString(layer)/* + "(" + size + ")"*/);
         Vector subcontacts = conference.subcontacts;
         for (int i = 0; i < subcontacts.size(); ++i) {
             JabberContact.SubContact contact = (JabberContact.SubContact) subcontacts.elementAt(i);
@@ -225,7 +225,7 @@ public class MucUsersAdapter extends BaseAdapter {
             getItemClientImage().setVisibility(ImageView.GONE);
             TextView itemLayer = getItemName();
             itemLayer.setTextSize(General.getFontSize() - 2);
-            itemLayer.setTypeface(Typeface.SANS_SERIF);
+            itemLayer.setTypeface(Typeface.DEFAULT_BOLD);
             itemLayer.setText(layer);
             itemLayer.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
         }
@@ -236,13 +236,13 @@ public class MucUsersAdapter extends BaseAdapter {
             itemName.setTextSize(General.getFontSize());
             itemName.setText(c.resource);
             itemName.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
-            getItemStatusImage().setImageBitmap(protocol.getStatusInfo().getIcon(c.status).getImage());
-            getItemAffilationImage().setImageBitmap(affiliationIcons.iconAt(JabberServiceContact.getAffiliationName(c.priorityA)).getImage());
+            getItemStatusImage().setImageDrawable(protocol.getStatusInfo().getIcon(c.status).getImage());
+            getItemAffilationImage().setImageDrawable(General.affiliationIcons.iconAt(JabberServiceContact.getAffiliationName(c.priorityA)).getImage());
             Icon ic = protocol.clientInfo.getIcon(c.client);
             ImageView itemClientImage = getItemClientImage();
             if (ic != null && !Options.getBoolean(Options.OPTION_HIDE_ICONS_CLIENTS)) {
                 itemClientImage.setVisibility(ImageView.VISIBLE);
-                itemClientImage.setImageBitmap(ic.getImage());
+                itemClientImage.setImageDrawable(ic.getImage());
             } else {
                 itemClientImage.setVisibility(ImageView.GONE);
             }

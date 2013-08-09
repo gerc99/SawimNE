@@ -66,7 +66,7 @@ public final class StatusView {
         if (!StringConvertor.isEmpty(str)) {
             VirtualListItem line = model.createNewParser(true);
             if (null != img) {
-                line.addIcon(img);
+                line.addImage(img.getImage());
             }
             line.addDescription(str, Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
             model.addPar(line);

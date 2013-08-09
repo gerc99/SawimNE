@@ -80,7 +80,7 @@ public class AccountsAdapter extends BaseAdapter {
                 Icon ic = p.getStatusInfo().getIcon((byte) 0);
                 if (ic != null) {
                     icProtocol.setVisibility(ImageView.VISIBLE);
-                    icProtocol.setImageBitmap(ic.getImage());
+                    icProtocol.setImageDrawable(ic.getImage());
                 } else {
                     icProtocol.setVisibility(ImageView.GONE);
                 }

@@ -267,10 +267,10 @@ public final class TrackingForm implements TextBoxView.TextBoxListener {
         VirtualListItem record = model.createNewParser(true);
 		Line line = getLine(0);
 		if (line.status_icon != null) {
-            record.addDrawable(line.status_icon);
+            record.addImage(line.status_icon);
         }
         if (line.line_icon != null) {
-            record.addIcon(line.line_icon);
+            record.addImage(line.line_icon.getImage());
         }
 		record.addDescription(line.name, Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
 		model.addPar(record);
@@ -285,10 +285,10 @@ public final class TrackingForm implements TextBoxView.TextBoxListener {
 		VirtualListItem record = model.createNewParser(true);
         Line line = getLine(index);
         if (line.status_icon != null) {
-            record.addDrawable(line.status_icon);
+            record.addImage(line.status_icon);
         }
         if (line.line_icon != null) {
-            record.addIcon(line.line_icon);
+            record.addImage(line.line_icon.getImage());
         }
         if (line.isEvent) {
             record.addDescription(20, line.name, Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);

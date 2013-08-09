@@ -91,7 +91,7 @@ public class XStatusesAdapter extends BaseAdapter {
             itemXStatus.setText(statusInfo.getName(item));
             if (ic != null) {
                 itemImage.setVisibility(ImageView.VISIBLE);
-                itemImage.setImageBitmap(ic.getImage());
+                itemImage.setImageDrawable(ic.getImage());
             } else {
                 itemImage.setVisibility(ImageView.GONE);
             }

@@ -1,5 +1,3 @@
-
-
 package sawim.comm;
 
 import java.io.ByteArrayInputStream;
@@ -51,7 +49,6 @@ public final class StringConvertor {
         return hexString.toString();
     }
 
-    
     public static boolean isDataUCS2(byte[] array, int start, int lenght) {
         if ((lenght & 1) != 0) {
             return false;
@@ -61,11 +58,9 @@ public final class StringConvertor {
         boolean result = true;
         for (int i = start; i < end; i += 2) {
             b = array[i];
-            
             if (0 < b && b < 0x09) {
                 return true;
             }
-            
             if (0x00 == b && array[i + 1] != 0) {
                 return true;
             }
@@ -112,7 +107,6 @@ public final class StringConvertor {
         }
         return true;
     }
-
     
     public static byte[] stringToByteArray1251(String s) {
         if (null == s) {
@@ -136,8 +130,6 @@ public final class StringConvertor {
                 case 1105:
                     buf[i] = -72;
                     break;
-
-                    
                 case 1168:
                     buf[i] = -91;
                     break;
@@ -162,8 +154,6 @@ public final class StringConvertor {
                 case 1111:
                     buf[i] = -65;
                     break;
-                    
-
                 default:
                     if (ch >= '\u0410' && ch <= '\u044F') {
                         buf[i] = (byte) ((ch - 1040) + 192);
@@ -176,7 +166,6 @@ public final class StringConvertor {
         return buf;
     }
 
-    
     public static String byteArray1251ToString(byte buf[], int pos, int len) {
         if (systemWin1251) {
             try {
@@ -196,8 +185,6 @@ public final class StringConvertor {
                 case 184:
                     stringbuffer.append('\u0451');
                     break;
-
-                    
                 case 165:
                     stringbuffer.append('\u0490');
                     break;
@@ -222,8 +209,6 @@ public final class StringConvertor {
                 case 191:
                     stringbuffer.append('\u0457');
                     break;
-                    
-
                 default:
                     try {
                         if (ch >= 192 && ch <= 255) {
@@ -241,7 +226,6 @@ public final class StringConvertor {
 
     public static String utf8beByteArrayToString(byte[] buf, int off, int len) {
         try {
-            
             if ((0 < len) && (0x00 == buf[off + len - 1])) {
                 len--;
             }
@@ -268,27 +252,19 @@ public final class StringConvertor {
         }
         return ucs2be;
     }
-
-
     
     public static String ucs2beByteArrayToString(byte[] buf, int off, int len) {
-
-        
         if ((off + len > buf.length) || (len % 2 != 0)) {
             return "";
         }
-
-        
         StringBuffer sb = new StringBuffer();
         int end = off + len;
         for (int i = off; i < end; i += 2) {
             sb.append((char)Util.getWordBE(buf, i));
         }
         return removeCr(sb.toString());
-
     }
 
-    
     public static String removeCr(String val) {
         if (val.indexOf('\r') < 0) {
             return val;
@@ -306,7 +282,6 @@ public final class StringConvertor {
         }
         return result.toString();
     }
-
     
     public static String restoreCrLf(String val) {
         StringBuffer result = new StringBuffer();
@@ -323,9 +298,7 @@ public final class StringConvertor {
         return result.toString();
     }
 
-    
     public static byte[] stringToByteArrayUtf8(String val) {
-        
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             char ch;
@@ -353,15 +326,11 @@ public final class StringConvertor {
         return null;
     }
 
-    
     public static byte[] stringToByteArray(String val) {
         return isEmpty(val) ? new byte[0] : val.getBytes();
     }
-
     
     public static String byteArrayToString(byte[] buf, int off, int len) {
-
-        
         if (buf.length < off + len) {
             return "";
         }
@@ -373,12 +342,10 @@ public final class StringConvertor {
             return "";
         }
 
-        
         if (isDataUCS2(buf, off, len)) {
             return ucs2beByteArrayToString(buf, off, len);
         }
 
-        
         if (isDataUTF8(buf, off, len)) {
             return utf8beByteArrayToString(buf, off, len);
         }
@@ -386,9 +353,7 @@ public final class StringConvertor {
         return byteArrayToWinString(buf, off, len);
     }
 
-
     public static String byteArrayToWinString(byte[] buf, int off, int len) {
-        
         if (buf.length < off + len) {
             return "";
         }
@@ -452,7 +417,7 @@ public final class StringConvertor {
     }
 
     public static char toLowerCase(char c) {
-        if (c >= 'A' && c <= 'Z' || c >= '\300'
+        /*if (c >= 'A' && c <= 'Z' || c >= '\300'
                 && c <= '\326' || c >= '\330'
                 && c <= '\336' || c >= '\u0400'
                 && c <= '\u042F') {
@@ -463,12 +428,12 @@ public final class StringConvertor {
                 return (char)(c + 80);
             }
             return (char)(c + 32);
-        }
+        }*/
         return Character.toLowerCase(c);
     }
 
     public static char toUpperCase(char c) {
-        if (c >= 'a' && c <= 'z' || c >= '\337'
+        /*if (c >= 'a' && c <= 'z' || c >= '\337'
                 && c <= '\366' || c >= '\370'
                 && c <= '\377' || c >= '\u0430'
                 && c <= '\u045F') {
@@ -479,7 +444,7 @@ public final class StringConvertor {
                 return (char)(c - 80);
             }
             return (char)(c - 32);
-        }
+        }*/
         return Character.toUpperCase(c);
     }
     private boolean equalsSubstring(String s1, int pos, String s2) {
@@ -503,7 +468,6 @@ public final class StringConvertor {
         return -1;
     }
     private String convertChar(String str, int pos, int wordIndex) {
-
         char ch = str.charAt(pos);
         if (toLowerCase(ch) == ch) {
             return to[wordIndex];
@@ -576,10 +540,8 @@ public final class StringConvertor {
         return result;
     }
 
-
     private StringConvertor(String name, String[] from, String[] to) {
         this.name = name;
-
         this.from = from;
         this.to = to;
         for (int i = 0; i < from.length; ++i) {
@@ -596,8 +558,7 @@ public final class StringConvertor {
         
         String mrimContent = Config.loadResource("/mrim-replaces.txt");
         Config.parseIniConfig(mrimContent, configs);
-        
-        
+
         String jabberContent = Config.loadResource("/jabber-replaces.txt");
         Config.parseIniConfig(jabberContent, configs);
         
@@ -633,9 +594,11 @@ public final class StringConvertor {
     public static boolean isEmpty(String value) {
         return (null == value) || (0 == value.length());
     }
+
     public static String notNull(String value) {
         return (null == value) ? "" : value;
     }
+
     public static String trim(String msg) {
         if (StringConvertor.isEmpty(msg)) {
             return "";
@@ -652,7 +615,6 @@ public final class StringConvertor {
         }
         return "";
     }
-
 
     private static int cutIndex(String str, char ch, int cutIndex, int length) {
         int chIndex = str.lastIndexOf(ch, length);

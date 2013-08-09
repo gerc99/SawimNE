@@ -2,8 +2,11 @@ package ru.sawim.models.form;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import ru.sawim.SawimApplication;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
 import sawim.modules.DebugLog;
@@ -104,7 +107,7 @@ public class Forms {
         public String[] items;// select
         public int current;
         public int level;// gauge
-        public Bitmap image;
+        public Drawable image;
     }
 
     public Forms(String caption_, FormListener l) {
@@ -233,9 +236,15 @@ public class Forms {
         add(c);
     }
 
-    public void addBitmap(Bitmap img) {
+    public void addDrawable(Drawable img) {
         Control c = create(-1, CONTROL_IMAGE, null, null);
         c.image = img;
+        add(c);
+    }
+
+    public void addBitmap(Bitmap img) {
+        Control c = create(-1, CONTROL_IMAGE, null, null);
+        c.image = new BitmapDrawable(SawimApplication.getContext().getResources(), img);
         add(c);
     }
 

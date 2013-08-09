@@ -4,7 +4,10 @@ import android.support.v4.app.FragmentActivity;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 import ru.sawim.General;
+import ru.sawim.R;
+import ru.sawim.SawimApplication;
 import ru.sawim.models.form.VirtualListItem;
 import ru.sawim.models.list.VirtualList;
 import java.util.Vector;
@@ -55,6 +58,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
                 if (Jid.isConference(jid)) {
                     Contact c = jabber.createTempContact(jid);
                     jabber.addContact(c);
+                    Toast.makeText(SawimApplication.getContext(), R.string.added, Toast.LENGTH_SHORT).show();
                 } else if (Jid.isKnownGate(jid)) {
                     jabber.getConnection().register(jid);
                 } else {

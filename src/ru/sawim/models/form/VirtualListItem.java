@@ -29,6 +29,7 @@ public class VirtualListItem {
     private byte themeTextDesc = -1;
     private byte font;
     private boolean itemSelectable;
+    private boolean hasLinks;
 
     public VirtualListItem(boolean itemSelectable) {
         this.itemSelectable = itemSelectable;
@@ -83,16 +84,12 @@ public class VirtualListItem {
         return font;
     }
 
-    public void addIcon(Icon ic) {
-        image = new BitmapDrawable(SawimApplication.getInstance().getResources(), ic.getImage());
-    }
-
-    public void addImage(Bitmap ic) {
-        image = new BitmapDrawable(SawimApplication.getInstance().getResources(), ic);
-    }
-
-    public void addDrawable(Drawable ic) {
+    public void addImage(Drawable ic) {
         image = ic;
+    }
+
+    public void addBitmap(Bitmap b) {
+        image = new BitmapDrawable(SawimApplication.getContext().getResources(), b);
     }
 
     public Drawable getImage() {
@@ -109,5 +106,14 @@ public class VirtualListItem {
 
     public boolean isItemSelectable() {
         return itemSelectable;
+    }
+
+
+    public void setHasLinks(boolean hasLinks) {
+        this.hasLinks = hasLinks;
+    }
+
+    public boolean isHasLinks() {
+        return hasLinks;
     }
 }

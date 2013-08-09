@@ -29,8 +29,7 @@
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"
                 android:id="@+id/description"
-                android:padding="5dp"
-                android:autoLink="email|web"/>
+                android:padding="5dp"/>
     </LinearLayout>
 
 </LinearLayout>

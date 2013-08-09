@@ -1,15 +1,16 @@
 package DrawControls.icons;
 
-import android.graphics.Bitmap;
+
+import android.graphics.drawable.BitmapDrawable;
 
 public class Icon {
-    private Bitmap image;
+    private BitmapDrawable image;
 
-    public Icon(Bitmap image) {
+    public Icon(BitmapDrawable image) {
         this.image = image;
     }
     
-    public Bitmap getImage() {
+    public BitmapDrawable getImage() {
         return image;
     }
 }

@@ -125,7 +125,7 @@ public class MessagesAdapter extends BaseAdapter implements MyTextView.TextLinkC
                     holder.msgImage.setVisibility(ImageView.GONE);
                 } else {
                     holder.msgImage.setVisibility(ImageView.VISIBLE);
-                    holder.msgImage.setImageBitmap(icon.getImage());
+                    holder.msgImage.setImageDrawable(icon.getImage());
                 }
             }
 

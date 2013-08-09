@@ -46,8 +46,10 @@ public class ChatsSpinnerAdapter extends BaseAdapter implements SpinnerAdapter {
     }
 
     @Override
-    public Chat getItem(int i) {
-        return items.get(i);
+    public Chat getItem(int index) {
+        if ((index < items.size()) && (index >= 0))
+            return items.get(index);
+        return null;
     }
 
     @Override
@@ -70,12 +72,12 @@ public class ChatsSpinnerAdapter extends BaseAdapter implements SpinnerAdapter {
             viewHolder = (ViewHolder) v.getTag();
         }
         if (chat == null) return v;
-        Icon icStatus = chat.getContact().getLeftIcon();
+        Icon icStatus = chat.getContact().getLeftIcon(chat.getProtocol());
         Icon icMess = Message.msgIcons.iconAt(chat.getContact().getUnreadMessageIcon());
         if (icMess == null)
-            viewHolder.imageView.setImageBitmap(icStatus.getImage());
+            viewHolder.imageView.setImageDrawable(icStatus.getImage());
         else
-            viewHolder.imageView.setImageBitmap(icMess.getImage());
+            viewHolder.imageView.setImageDrawable(icMess.getImage());
         viewHolder.label.setTextSize(General.getFontSize());
         viewHolder.label.setTextColor(Scheme.getColor(Scheme.THEME_CAP_TEXT));
         viewHolder.label.setText(chat.getContact().getName());
@@ -98,12 +100,12 @@ public class ChatsSpinnerAdapter extends BaseAdapter implements SpinnerAdapter {
         }
         if (chat == null) return v;
         v.setBackgroundColor(Scheme.getInversColor(Scheme.THEME_CAP_BACKGROUND));
-        Icon icStatus = chat.getContact().getLeftIcon();
+        Icon icStatus = chat.getContact().getLeftIcon(chat.getProtocol());
         Icon icMess = Message.msgIcons.iconAt(chat.getContact().getUnreadMessageIcon());
         if (icMess == null)
-            dropDownViewHolder.imageView.setImageBitmap(icStatus.getImage());
+            dropDownViewHolder.imageView.setImageDrawable(icStatus.getImage());
         else
-            dropDownViewHolder.imageView.setImageBitmap(icMess.getImage());
+            dropDownViewHolder.imageView.setImageDrawable(icMess.getImage());
 
         dropDownViewHolder.label.setTextSize(General.getFontSize());
         dropDownViewHolder.label.setTextColor(Scheme.getColor(Scheme.THEME_CAP_TEXT));
