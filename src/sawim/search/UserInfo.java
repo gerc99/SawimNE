@@ -1,8 +1,6 @@
 package sawim.search;
 
-import android.graphics.Bitmap;
 import android.os.Environment;
-import android.support.v4.app.FragmentActivity;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,6 +18,7 @@ import sawim.SawimException;
 import sawim.comm.Util;
 import sawim.forms.*;
 
+import sawim.modules.DebugLog;
 import sawim.modules.fs.*;
 import sawim.modules.photo.*;
 
@@ -32,9 +31,7 @@ import protocol.mrim.*;
 import ru.sawim.General;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FilenameFilter;
 import java.util.List;
 
 public class UserInfo implements PhotoListener, FileBrowserListener {
@@ -192,7 +189,7 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
             }
 
             @Override
-            public void onOptionsItemSelected(FragmentActivity activity, MenuItem item) {
+            public void onOptionsItemSelected(MenuItem item) {
                 switch (item.getItemId()) {
                     case INFO_MENU_EDIT:
                         new EditInfo(protocol, UserInfo.this).init().show();
@@ -250,38 +247,29 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
                     case INFO_MENU_SAVE_AVATAR:
                         byte[] buffer = avatar;
                         File file = new File(PATH);
-                        file.mkdir();
+                        if (!file.exists())
+                            file.mkdirs();
 
                         try {
-                            if (file.list(new Filter(realUin)).length > 0) return;
                             if (buffer != null) {
-                                FileOutputStream fos = new FileOutputStream(PATH + realUin.replace("/", "%") + ".png");
+                                String avatar = PATH + realUin.replace("/", "%") + ".png";
+                                FileOutputStream fos = new FileOutputStream(avatar);
                                 fos.write(buffer);
                                 fos.close();
                             }
                         } catch (Exception e) {
+                            DebugLog.println("Save avatar exception " + e.getMessage());
                             e.printStackTrace();
                         }
-                        Toast.makeText(SawimApplication.getContext(), R.string.saved, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(SawimApplication.getContext(), R.string.saved + " " + avatar, Toast.LENGTH_SHORT).show();
                         break;
                 }
             }
         });
     }
 
-    private static final String PATH =  Environment.getExternalStorageDirectory().getAbsolutePath()+"/sawimne/avatars/";
-    private static class Filter implements FilenameFilter {
-        private String jid;
+    private static final String PATH = Environment.getExternalStorageDirectory().getAbsolutePath()+"/sawimne/avatars/";
 
-        public Filter(String jid) {
-            this.jid = jid;
-        }
-
-        @Override
-        public boolean accept(File dir, String filename) {
-            return filename.contains(jid);
-        }
-    }
     public void setProfileViewToWait() {
         VirtualListModel profile = profileView.getModel();
         profile.clear();

@@ -23,7 +23,6 @@ Author(s): Artyomov Denis
 
 package sawim.modules;
 
-import android.support.v4.app.FragmentActivity;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -88,7 +87,7 @@ public final class MagicEye {
             }
 
             @Override
-            public void onOptionsItemSelected(FragmentActivity activity, MenuItem item) {
+            public void onOptionsItemSelected(MenuItem item) {
                 switch (item.getItemId()) {
                     case MENU_CLEAN:
                         synchronized (instance) {

@@ -2,8 +2,9 @@ package protocol.jabber;
 
 import android.view.ContextMenu;
 import android.view.Menu;
-import android.view.SubMenu;
 import protocol.*;
+import ru.sawim.SawimApplication;
+import ru.sawim.view.menu.MyMenu;
 import sawim.Options;
 import sawim.comm.Config;
 import sawim.comm.StringConvertor;
@@ -34,7 +35,7 @@ public class JabberContact extends Contact {
     public void addChatMenuItems(ContextMenu model) {
         if (isOnline() && !(this instanceof JabberServiceContact)) {
             if (Options.getBoolean(Options.OPTION_ALARM)) {
-                model.add(Menu.FIRST, ContactMenu.USER_MENU_WAKE, 2, R.string.wake);
+                model.add(Menu.NONE, ContactMenu.USER_MENU_WAKE, Menu.NONE, R.string.wake);
             }
         }
     }
@@ -42,43 +43,43 @@ public class JabberContact extends Contact {
         addChatItems(contactMenu);
 
 		if (!isOnline() && isAuth() && !isTemp()) {
-            contactMenu.add(Menu.FIRST, ContactMenu.USER_MENU_SEEN, 2, R.string.contact_seen);
+            contactMenu.add(Menu.NONE, ContactMenu.USER_MENU_SEEN, Menu.NONE, R.string.contact_seen);
 		}
 		if (isOnline() && isAuth()) {
-            contactMenu.add(Menu.FIRST, ContactMenu.USER_INVITE, 2, R.string.invite);
+            contactMenu.add(Menu.NONE, ContactMenu.USER_INVITE, Menu.NONE, R.string.invite);
 		}
-        contactMenu.add(Menu.FIRST, ContactMenu.USER_MENU_ANNOTATION, 2, R.string.notes);
+        contactMenu.add(Menu.NONE, ContactMenu.USER_MENU_ANNOTATION, Menu.NONE, R.string.notes);
         if (0 < subcontacts.size()) {
-            contactMenu.add(Menu.FIRST, ContactMenu.USER_MENU_CONNECTIONS, 2, R.string.list_of_connections);
+            contactMenu.add(Menu.NONE, ContactMenu.USER_MENU_CONNECTIONS, Menu.NONE, R.string.list_of_connections);
         }
         addGeneralItems(protocol, contactMenu);
     }
-    protected void initManageContactMenu(Protocol protocol, SubMenu menu) {
+    protected void initManageContactMenu(Protocol protocol, MyMenu menu) {
         if (protocol.isConnected()) {
             if (isOnline()) {
-                menu.add(Menu.FIRST, ContactMenu.USER_MENU_ADHOC, 2, R.string.adhoc);
+                menu.add(SawimApplication.getContext().getString(R.string.adhoc), ContactMenu.USER_MENU_ADHOC);
             }
             if (isTemp()) {
-                menu.add(Menu.FIRST, ContactMenu.USER_MENU_ADD_USER, 2, R.string.add_user);
+                menu.add(SawimApplication.getContext().getString(R.string.add_user), ContactMenu.CONFERENCE_ADD);
 
             } else {
                 if (protocol.getGroupItems().size() > 1) {
-                    menu.add(Menu.FIRST, ContactMenu.USER_MENU_MOVE, 2, R.string.move_to_group);
+                    menu.add(SawimApplication.getContext().getString(R.string.move_to_group), ContactMenu.USER_MENU_MOVE);
                 }
                 if (!isAuth()) {
-                    menu.add(Menu.FIRST, ContactMenu.USER_MENU_REQU_AUTH, 2, R.string.requauth);
+                    menu.add(SawimApplication.getContext().getString(R.string.requauth), ContactMenu.USER_MENU_REQU_AUTH);
                 }
             }
             if (!isTemp()) {
-                menu.add(Menu.FIRST, ContactMenu.USER_MENU_RENAME, 2, R.string.rename);
+                menu.add(SawimApplication.getContext().getString(R.string.rename), ContactMenu.USER_MENU_RENAME);
             }
         }
         if (protocol.isConnected() || (isTemp() && protocol.inContactList(this))) {
             if (protocol.isConnected()) {
-                menu.add(Menu.FIRST, ContactMenu.USER_MENU_REMOVE_ME, 2, R.string.remove_me);
+                menu.add(SawimApplication.getContext().getString(R.string.remove_me), ContactMenu.USER_MENU_REMOVE_ME);
             }
             if (protocol.inContactList(this)) {
-                menu.add(Menu.FIRST, ContactMenu.USER_MENU_USER_REMOVE, 2, R.string.remove);
+                menu.add(SawimApplication.getContext().getString(R.string.remove), ContactMenu.USER_MENU_USER_REMOVE);
             }
         }
     }

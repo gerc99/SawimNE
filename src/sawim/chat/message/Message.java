@@ -54,7 +54,7 @@ public abstract class Message {
             mData.iconIndex = state;
         }
         if (General.getInstance().getUpdateChatListener() != null)
-            General.getInstance().getUpdateChatListener().updateChat();
+            General.getInstance().getUpdateChatListener().updateChat(contact);
     }
 
     public final void setName(String name) {

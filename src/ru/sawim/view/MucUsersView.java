@@ -138,7 +138,7 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
                                                    chatView.resume(chatView.getCurrentChat());
                                                    break;
                                                case ContactMenu.COMMAND_INFO:
-                                                   protocol.showUserInfo(activity, jabberServiceContact.getPrivateContact(nick));
+                                                   protocol.showUserInfo(jabberServiceContact.getPrivateContact(nick));
                                                    break;
                                                case ContactMenu.COMMAND_STATUS:
                                                    protocol.showStatus(jabberServiceContact.getPrivateContact(nick));

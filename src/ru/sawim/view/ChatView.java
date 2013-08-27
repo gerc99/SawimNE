@@ -40,8 +40,11 @@ import sawim.chat.Chat;
 import sawim.chat.ChatHistory;
 import sawim.chat.MessData;
 import ru.sawim.Scheme;
+import sawim.modules.DebugLog;
+import sawim.roster.Roster;
 import sawim.util.JLocale;
 
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -52,9 +55,11 @@ import java.util.List;
  * Time: 20:30
  * To change this template use File | Settings | File Templates.
  */
-public class ChatView extends Fragment implements General.OnUpdateChat {
+public class ChatView extends SawimFragment implements General.OnUpdateChat {
 
-    private static final String TAG = "ChatView";
+    public static final String TAG = "ChatView";
+    public static final String PROTOCOL_ID = "protocol_id";
+    public static final String CONTACT_ID = "contact_id";
     private Chat chat;
     private Protocol protocol;
     private Contact currentContact;
@@ -66,6 +71,7 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
     private MessagesAdapter adapter;
     private ChatsSpinnerAdapter chatsSpinnerAdapter;
     private LinearLayout chatBarLayout;
+    private LinearLayout chatLayout;
     private LinearLayout chat_viewLayout;
     private ImageButton usersImage;
     private ImageButton chatsImage;
@@ -93,7 +99,6 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
                         ? AnimationUtils.makeOutAnimation(getActivity(), true)
                         : AnimationUtils.makeInAnimation(getActivity(), false));
                 nickList.setVisibility(nickList.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
-                updateChat();
             }
         });
 
@@ -190,7 +195,7 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
                         break;
 
                     default:
-                        new ContactMenu(protocol, currentContact).doAction(getActivity(), menu.getItem(which).idItem);
+                        new ContactMenu(protocol, currentContact).doAction(menu.getItem(which).idItem);
                 }
             }
         });
@@ -256,7 +261,7 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
                 resume(getCurrentChat());
                 break;
             case ContactMenu.COMMAND_INFO:
-                protocol.showUserInfo(getActivity(), ((JabberServiceContact) currentContact).getPrivateContact(nick));
+                protocol.showUserInfo(((JabberServiceContact) currentContact).getPrivateContact(nick));
                 break;
             case ContactMenu.COMMAND_STATUS:
                 protocol.showStatus(((JabberServiceContact) currentContact).getPrivateContact(nick));
@@ -281,13 +286,18 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+    /*    if (savedInstanceState != null) {
+            protocol = Roster.getInstance().getProtocol(savedInstanceState.getString(PROTOCOL_ID));
+            currentContact = protocol.getItemByUIN(savedInstanceState.getString(CONTACT_ID));
+        } */
         View v = inflater.inflate(R.layout.chat, container, false);
         chat_viewLayout = (LinearLayout) v.findViewById(R.id.chat_view);
+        chatLayout = (LinearLayout) chat_viewLayout.findViewById(R.id.list);
+
         chatBarLayout = (LinearLayout) chat_viewLayout.findViewById(R.id.chat_bar);
         usersImage = (ImageButton) chatBarLayout.findViewById(R.id.usersImage);
         spinner = (MySpinner) chatBarLayout.findViewById(R.id.spinner);
         chatsImage = (ImageButton) chatBarLayout.findViewById(R.id.chatsImage);
-        nickList = (ListView) chat_viewLayout.findViewById(R.id.muc_user_list);
 
         menuButton = (ImageButton) chat_viewLayout.findViewById(R.id.menu_button);
         smileButton = (ImageButton) chat_viewLayout.findViewById(R.id.input_smile_button);
@@ -319,7 +329,7 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
     public void pause(Chat chat) {
         if (chat == null) return;
         View item = chatListView.getChildAt(0);
-        addLastPosition(chatListView.getFirstVisiblePosition(), (item == null) ? 0 : Math.abs(item.getBottom()));
+        addLastPosition(chat.getContact().getUserId(), chatListView.getFirstVisiblePosition(), (item == null) ? 0 : Math.abs(item.getBottom()));
 
         chat.setVisibleChat(false);
         General.getInstance().setOnUpdateChat(null);
@@ -328,17 +338,19 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
 
     public void resume(Chat chat) {
         if (chat == null) return;
-        final Chat.ScrollState lastPosition = getLastPosition(chat.getContact().getUserId());
+        Chat.ScrollState lastPosition = getLastPosition(chat.getContact().getUserId());
         if (lastPosition != null && lastPosition.position > 0) {
+            DebugLog.println(TAG + " currContact = " + chat.getContact().getUserId() + " position = " + lastPosition.position);
             chatListView.setSelectionFromTop(lastPosition.position + 1, lastPosition.offset);
-        } else if (currentContact.isConference())
+        } else
             chatListView.setSelection(0);
 
         chat.setVisibleChat(true);
         ChatHistory.instance.registerChat(chat);
         General.getInstance().setOnUpdateChat(this);
         chat.resetUnreadMessages();
-        updateChat();
+        updateChatIcon();
+        updateList();
     }
 
     private void forceGoToChat(int position) {
@@ -349,11 +361,11 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
         resume(current);
     }
 
-    private void addLastPosition(int position, int offset) {
+    private void addLastPosition(String jid, int position, int offset) {
         Chat.ScrollState scrollState = new Chat.ScrollState();
         scrollState.position = position;
         scrollState.offset = offset;
-        positionHash.put(currentContact.getUserId(), scrollState);
+        positionHash.put(jid, scrollState);
     }
 
     private Chat.ScrollState getLastPosition(String jid) {
@@ -426,9 +438,18 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
             });
         }
     }
-
     private void initList() {
-        chatListView = (ListView) getActivity().findViewById(R.id.chat_history_list);
+        chatListView = new ListView(getActivity());
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        lp.weight = 1;
+        lp.bottomMargin = 8;
+        chatListView.setDivider(null);
+        chatListView.setDividerHeight(0);
+        chatListView.setLayoutParams(lp);
+        chatListView.setCacheColorHint(0);
+        chatListView.setScrollingCacheEnabled(false);
+        chatListView.setAnimationCacheEnabled(false);
+        chatListView.setFastScrollEnabled(true);
         chatListView.setStackFromBottom(true);
         chatListView.setTranscriptMode(ListView.TRANSCRIPT_MODE_NORMAL);
         chatListView.setOnCreateContextMenuListener(this);
@@ -442,9 +463,17 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
             adapter.refreshList(chat.getMessData());
             chatListView.setAdapter(adapter);
         }
+        chatLayout.removeAllViews();
+        chatLayout.addView(chatListView);
     }
 
     private void initMucUsers() {
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        nickList = new ListView(getActivity());
+        lp.weight = (float) 1.5;
+        lp.bottomMargin = 8;
+        nickList.setLayoutParams(lp);
+        nickList.setCacheColorHint(0);
         nickList.setVisibility(View.GONE);
         nickList.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
         if (currentContact instanceof JabberServiceContact && currentContact.isConference()) {
@@ -461,6 +490,7 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
             usersImage.setVisibility(View.GONE);
             nickList.setVisibility(View.GONE);
         }
+        chatLayout.addView(nickList);
     }
 
     private void updateChatIcon() {
@@ -474,22 +504,23 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
     }
 
     @Override
-    public void updateChat() {
+    public void updateChat(final Contact contact) {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (chatsSpinnerAdapter != null)
-                    chatsSpinnerAdapter.refreshList(ChatHistory.instance.historyTable);
                 updateChatIcon();
-                if (adapter != null)
-                    adapter.refreshList(chat.getMessData());
+                if (contact == currentContact) {
+                    updateList();
+                }
             }
         });
-        /*RosterView rosterView = (RosterView) getActivity().getSupportFragmentManager().findFragmentById(R.id.roster_fragment);
-        if (rosterView != null) {
-            rosterView.updateBarProtocols();
-            rosterView.updateRoster();
-        }*/
+    }
+
+    private void updateList() {
+        if (chatsSpinnerAdapter != null)
+            chatsSpinnerAdapter.refreshList(ChatHistory.instance.historyTable);
+        if (adapter != null)
+            adapter.refreshList(chat.getMessData());
     }
 
     @Override
@@ -503,12 +534,35 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
         });
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        Bundle args = getArguments();
+        if (args != null) {
+            Protocol protocol = Roster.getInstance().getProtocol(args.getString(PROTOCOL_ID));
+            Contact currentContact = protocol.getItemByUIN(args.getString(CONTACT_ID));
+            openChat(protocol, currentContact);
+        } else if (currentContact != null) {
+            // Set article based on saved instance state defined during onCreateView
+            openChat(protocol, currentContact);
+        }
+    }
+
+    /*@Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putString(ChatView.PROTOCOL_ID, protocol.getUserId());
+        outState.putString(ChatView.CONTACT_ID, currentContact.getUserId());
+    }*/
+
     private class ChatClick implements ListView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
             MessData msg = (MessData) adapterView.getAdapter().getItem(position);
             if (currentContact instanceof JabberServiceContact) {
-                if (((JabberServiceContact) currentContact).getContact(msg.getNick()) == null)
+                JabberServiceContact jabberServiceContact = ((JabberServiceContact) currentContact);
+                if (jabberServiceContact.getContact(msg.getNick()) == null && !jabberServiceContact.getUserId().equals(msg.getNick()))
                     Toast.makeText(getActivity(), getString(R.string.contact_walked), Toast.LENGTH_LONG).show();
             }
             setText(chat.onMessageSelected(msg));
@@ -554,7 +608,8 @@ public class ChatView extends Fragment implements General.OnUpdateChat {
         hideKeyboard(messageEditor);
         chat.sendMessage(getText());
         resetText();
-        updateChat();
+        updateList();
+        //updatePosition();
     }
 
     private boolean canAdd(String what) {

@@ -1,16 +1,13 @@
-
-
 package sawim.modules.tracking;
 
 import java.util.Vector;
-
 import DrawControls.icons.Icon;
 import DrawControls.icons.ImageList;
 import android.graphics.drawable.Drawable;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
-import ru.sawim.activities.VirtualListActivity;
+import ru.sawim.activities.SawimActivity;
 import ru.sawim.models.form.VirtualListItem;
 import ru.sawim.models.list.VirtualList;
 import ru.sawim.models.list.VirtualListModel;
@@ -319,7 +316,7 @@ public final class TrackingForm implements TextBoxView.TextBoxListener {
 		InputBox.setTextBoxListener(this);
 		InputBox.setCaption(JLocale.getString("mass"));
         InputBox.setString(text);
-        InputBox.show(VirtualListActivity.getInstance().getSupportFragmentManager(), JLocale.getString("message"));
+        InputBox.show(SawimActivity.getInstance().getSupportFragmentManager(), JLocale.getString("message"));
     }
 
     public void backToCL() {

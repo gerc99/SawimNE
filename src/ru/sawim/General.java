@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.util.DisplayMetrics;
+import protocol.Contact;
 import sawim.Options;
 import sawim.Updater;
 import sawim.chat.ChatHistory;
@@ -49,14 +50,10 @@ public class General {
         return instance;
     }
 
-    public void init() {
-        instance = this;
-    }
-
     public void startApp() {
-        if (!paused && (null != General.instance)) {
+        /*if (!paused && (null != General.instance)) {
             return;
-        }
+        }*/
         instance = this;
         instance.paused = false;
 
@@ -84,7 +81,7 @@ public class General {
             sawim.modules.tracking.Tracking.loadTrackingFromRMS();
         } catch (Exception e) {
             DebugLog.panic("init", e);
-            DebugLog.instance.activateCrashLog();
+            DebugLog.instance.activate();
         }
     }
 
@@ -224,7 +221,7 @@ public class General {
     }
 
     public interface OnUpdateChat {
-        void updateChat();
+        void updateChat(Contact contact);
         void updateMucList();
         void pastText(String s);
 

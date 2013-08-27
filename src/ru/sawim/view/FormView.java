@@ -4,7 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -14,9 +15,9 @@ import android.widget.*;
 import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.Scheme;
+import ru.sawim.activities.SawimActivity;
 import ru.sawim.models.form.Forms;
 
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -26,12 +27,12 @@ import java.util.List;
  * Time: 21:30
  * To change this template use File | Settings | File Templates.
  */
-public class FormView extends Fragment implements Forms.OnUpdateForm, View.OnClickListener {
+public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.OnClickListener {
 
+    public static final String TAG = "FormView";
     private LinearLayout listLayout;
     private Button okButton;
     private Button cancelButton;
-    private HashMap<Integer, ViewHolder> viewHolderHash = new HashMap<Integer, ViewHolder>();
 
     @Override
     public void onAttach(Activity a) {
@@ -49,9 +50,13 @@ public class FormView extends Fragment implements Forms.OnUpdateForm, View.OnCli
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         okButton = (Button) getActivity().findViewById(R.id.data_form_ok);
+        okButton.getBackground().setColorFilter(Scheme.getColor(Scheme.THEME_BACKGROUND), PorterDuff.Mode.MULTIPLY);
+        okButton.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
         okButton.setOnClickListener(this);
         buildList(listLayout);
         cancelButton = (Button) getActivity().findViewById(R.id.data_form_cancel);
+        cancelButton.getBackground().setColorFilter(Scheme.getColor(Scheme.THEME_BACKGROUND), PorterDuff.Mode.MULTIPLY);
+        cancelButton.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
         cancelButton.setOnClickListener(this);
     }
 
@@ -63,6 +68,21 @@ public class FormView extends Fragment implements Forms.OnUpdateForm, View.OnCli
         rootLayout.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
         listLayout = (LinearLayout) v.findViewById(R.id.data_form_linear);
         return v;
+    }
+
+    public static void show(FragmentActivity a) {
+        if (a.getSupportFragmentManager()
+                .findFragmentById(R.id.chat_fragment) != null)
+            a.setContentView(R.layout.intercalation_layout);
+        FormView newFragment = new FormView();
+        FragmentTransaction transaction = a.getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragment_container, newFragment, FormView.TAG);
+        transaction.addToBackStack(null);
+        transaction.commitAllowingStateLoss();
+    }
+
+    public static void show() {
+        show(SawimActivity.getInstance());
     }
 
     @Override
@@ -77,7 +97,11 @@ public class FormView extends Fragment implements Forms.OnUpdateForm, View.OnCli
 
     @Override
     public void back() {
-        getActivity().finish();
+        if (SawimActivity.getInstance().getSupportFragmentManager()
+                .findFragmentById(R.id.chat_fragment) != null)
+            SawimActivity.getInstance().recreateActivity();
+        else
+            getFragmentManager().popBackStack();
     }
 
     @Override
@@ -97,7 +121,7 @@ public class FormView extends Fragment implements Forms.OnUpdateForm, View.OnCli
         }
     }
 
-    public boolean onBackPressed() {
+    public boolean hasBack() {
         if (Forms.getInstance().getBackPressedListener() == null) return true;
         return Forms.getInstance().getBackPressedListener().back();
     }
@@ -107,19 +131,16 @@ public class FormView extends Fragment implements Forms.OnUpdateForm, View.OnCli
         List<Forms.Control> controls = Forms.getInstance().controls;
         for (int position = 0; position < controls.size(); ++position) {
             final Forms.Control c = controls.get(position);
-            ViewHolder holder = viewHolderHash.get(position);
-            if (holder == null) {
-                holder = new ViewHolder();
-                holder.imageView = new ImageView(getActivity());
-                holder.textView = new TextView(getActivity());
-                holder.descView = new TextView(getActivity());
-                holder.labelView = new TextView(getActivity());
-                holder.checkBox = new CheckBox(getActivity());
-                holder.spinner = new MySpinner(getActivity());
-                holder.seekBar = new SeekBar(getActivity());
-                holder.editText = new EditText(getActivity());
-                viewHolderHash.put(position, holder);
-            }
+            ViewHolder holder = new ViewHolder();
+            holder.imageView = new ImageView(getActivity());
+            holder.textView = new TextView(getActivity());
+            holder.descView = new TextView(getActivity());
+            holder.labelView = new TextView(getActivity());
+            holder.checkBox = new CheckBox(getActivity());
+            holder.spinner = new MySpinner(getActivity());
+            holder.seekBar = new SeekBar(getActivity());
+            holder.editText = new EditText(getActivity());
+
             final ImageView imageView = holder.imageView;
             final TextView textView = holder.textView;
             final TextView descView = holder.descView;

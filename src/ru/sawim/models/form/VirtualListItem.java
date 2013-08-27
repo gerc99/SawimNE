@@ -1,15 +1,11 @@
 package ru.sawim.models.form;
 
-import DrawControls.icons.Icon;
-import DrawControls.icons.Image;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.Spannable;
-import ru.sawim.General;
 import ru.sawim.SawimApplication;
-import ru.sawim.activities.VirtualListActivity;
+import ru.sawim.activities.SawimActivity;
 import sawim.TextFormatter;
 
 /**
@@ -55,7 +51,7 @@ public class VirtualListItem {
     }
 
     public void addTextWithSmiles(String text, byte themeText, byte font) {
-        descSpan = TextFormatter.getFormattedText(text, VirtualListActivity.getInstance());
+        descSpan = TextFormatter.getFormattedText(text, SawimActivity.getInstance());
         this.themeTextDesc = themeText;
         this.font = font;
     }

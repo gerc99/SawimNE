@@ -1,19 +1,14 @@
-
-
 package sawim.search;
 
-import android.support.v4.app.FragmentActivity;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
-import ru.sawim.activities.FormActivity;
 import ru.sawim.models.list.VirtualList;
 import ru.sawim.models.list.VirtualListModel;
 import java.util.Vector;
 
 import sawim.roster.*;
 import sawim.comm.*;
-//import sawim.ui.text.TextListController;
 import sawim.util.*;
 import protocol.*;
 import protocol.icq.*;
@@ -89,7 +84,7 @@ public final class Search implements FormListener, ControlStateListener {
             }
             Contact contact = protocol.createTempContact(userid);
             if (null != contact) {
-                protocol.showUserInfo(FormActivity.getInstance(), contact);
+                protocol.showUserInfo(contact);
             }
         }
     }
@@ -253,7 +248,7 @@ public final class Search implements FormListener, ControlStateListener {
             }
 
             @Override
-            public void onOptionsItemSelected(FragmentActivity activity, MenuItem item) {
+            public void onOptionsItemSelected(MenuItem item) {
                 switch (item.getItemId()) {
                     case MENU_NEXT:
                         nextOrPrev(true);

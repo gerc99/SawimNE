@@ -137,13 +137,12 @@ public class OptionsForm implements FormListener, ControlStateListener {
                 saveOptionSelector(Options.OPTION_CL_SORT_BY);
                 saveOptionBoolean(Options.OPTION_SHOW_PLATFORM);
                 saveOptionBoolean(Options.OPTION_HISTORY);
-                saveOptionInt(Options.OPTION_MAX_MSG_COUNT);
+    //            saveOptionInt(Options.OPTION_MAX_MSG_COUNT);
                 saveOptionBoolean(Options.OPTION_TITLE_IN_CONFERENCE);
                 saveOptionString(Options.UNAVAILABLE_NESSAGE);
                 saveOptionBoolean(Options.OPTION_SIMPLE_INPUT);
 
                 saveOptionBoolean(Options.OPTION_INSTANT_RECONNECTION);
-                SawimActivity.getInstance().recreateActivity();
                 break;
 
             case OPTIONS_SIGNALING:
@@ -228,7 +227,7 @@ public class OptionsForm implements FormListener, ControlStateListener {
                 form.addString("chat", null);
 				setChecked("show_platform", Options.OPTION_SHOW_PLATFORM);
                 setChecked("use_history", Options.OPTION_HISTORY);
-                loadOptionInt(Options.OPTION_MAX_MSG_COUNT, "max_message_count", "10|50|100|250|500|1000");
+        //        loadOptionInt(Options.OPTION_MAX_MSG_COUNT, "max_message_count", "10|50|100|250|500|1000");
 
 				setChecked("title_in_conference",  Options.OPTION_TITLE_IN_CONFERENCE);
 				loadOptionString(Options.UNAVAILABLE_NESSAGE, "post_outputs");

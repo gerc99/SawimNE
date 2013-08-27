@@ -1135,10 +1135,10 @@ abstract public class Protocol {
         }
     }
 
-    protected void doAction(FragmentActivity a, Contact contact, int cmd) {
+    protected void doAction(Contact contact, int cmd) {
     }
 
-    public void showUserInfo(FragmentActivity a, Contact contact) {
+    public void showUserInfo(Contact contact) {
     }
 
     public void showStatus(Contact contact) {

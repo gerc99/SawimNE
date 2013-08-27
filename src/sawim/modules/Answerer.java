@@ -2,11 +2,11 @@ package sawim.modules;
 
 import java.util.Vector;
 
-import android.support.v4.app.FragmentActivity;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
+import ru.sawim.activities.SawimActivity;
 import ru.sawim.models.list.VirtualList;
 import ru.sawim.models.list.VirtualListModel;
 import sawim.*;
@@ -90,7 +90,7 @@ public final class Answerer implements FormListener {
             }
 
             @Override
-            public void onOptionsItemSelected(FragmentActivity activity, MenuItem item) {
+            public void onOptionsItemSelected(MenuItem item) {
                 switch (item.getItemId()) {
                     case MENU_ADD:
                         dictionary.addElement(" = ");
@@ -103,7 +103,7 @@ public final class Answerer implements FormListener {
 
                     case MENU_CLEAR:
                         popupAction();
-                        Toast.makeText(activity, "All removed", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(SawimActivity.getInstance(), "All removed", Toast.LENGTH_SHORT).show();
                         break;
 
                     case MENU_ON_OFF:

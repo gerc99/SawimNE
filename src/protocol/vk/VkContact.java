@@ -1,9 +1,10 @@
 package protocol.vk;
 
-import android.view.SubMenu;
+import android.support.v4.app.FragmentActivity;
 import protocol.Contact;
 import protocol.Protocol;
 import protocol.StatusInfo;
+import ru.sawim.view.menu.MyMenu;
 
 /**
  * Created with IntelliJ IDEA.
@@ -22,7 +23,7 @@ public class VkContact extends Contact {
         return uid;
     }
     @Override
-    protected void initManageContactMenu(Protocol protocol, SubMenu menu) {
+    protected void initManageContactMenu(Protocol protocol, MyMenu menu) {
     }
 
     public void setOnlineStatus() {

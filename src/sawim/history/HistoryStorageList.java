@@ -2,15 +2,12 @@ package sawim.history;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.support.v4.app.FragmentActivity;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 import ru.sawim.General;
 import ru.sawim.activities.SawimActivity;
-import ru.sawim.activities.VirtualListActivity;
 import ru.sawim.models.form.VirtualListItem;
 import ru.sawim.Scheme;
 import ru.sawim.models.list.VirtualList;
@@ -70,7 +67,7 @@ public final class HistoryStorageList implements Runnable, FormListener {
             }
 
             @Override
-            public void onOptionsItemSelected(FragmentActivity activity, MenuItem item) {
+            public void onOptionsItemSelected(MenuItem item) {
                 select(item.getItemId(), 0);
             }
         });
@@ -157,7 +154,7 @@ public final class HistoryStorageList implements Runnable, FormListener {
                 items[0] = JLocale.getString("currect_contact");
                 items[1] = JLocale.getString("all_contact_except_this");
                 items[2] = JLocale.getString("all_contacts");
-				AlertDialog.Builder builder = new AlertDialog.Builder(VirtualListActivity.getInstance());
+				AlertDialog.Builder builder = new AlertDialog.Builder(SawimActivity.getInstance());
                 builder.setCancelable(true);
                 builder.setTitle(JLocale.getString("history"));
                 builder.setItems(items, new DialogInterface.OnClickListener() {
@@ -195,7 +192,7 @@ public final class HistoryStorageList implements Runnable, FormListener {
                     String sb = JLocale.getString("hist_cur") + ": " + getSize()  + "\n"
                             + JLocale.getString("hist_size") + ": " + (rs.getSize() / 1024) + "\n"
                             + JLocale.getString("hist_avail") + ": " + (rs.getSizeAvailable() / 1024) + "\n";
-                    Toast.makeText(VirtualListActivity.getInstance(), sb, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SawimActivity.getInstance(), sb, Toast.LENGTH_SHORT).show();
                 } catch (Exception ignored) {
                 }
                 break;

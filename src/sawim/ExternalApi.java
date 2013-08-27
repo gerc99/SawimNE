@@ -11,6 +11,7 @@ import sawim.history.HistoryStorage;
 import sawim.modules.DebugLog;
 import sawim.modules.photo.PhotoListener;
 
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 public class ExternalApi {
@@ -96,6 +97,16 @@ public class ExternalApi {
             DebugLog.panic("activity", ignored);
         }
         return false;
+    }
+
+    public void acceptFile(Uri fileUri) {
+        try {
+            InputStream is = activity.getContentResolver().openInputStream(fileUri);
+            fileTransferListener.onFileSelect(is, getFileName(fileUri));
+            fileTransferListener = null;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     private String getFileName(Uri fileUri) {

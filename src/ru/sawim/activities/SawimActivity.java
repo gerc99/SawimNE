@@ -29,7 +29,10 @@ import android.content.Intent;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.*;
+import ru.sawim.view.*;
+import sawim.ExternalApi;
 import sawim.Options;
 import sawim.OptionsForm;
 import sawim.roster.Roster;
@@ -46,8 +49,6 @@ import protocol.icq.Icq;
 import protocol.jabber.Jabber;
 import protocol.mrim.Mrim;
 import ru.sawim.*;
-import ru.sawim.view.StatusesView;
-import ru.sawim.view.XStatusesView;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -63,12 +64,13 @@ public class SawimActivity extends FragmentActivity {
     }
 
     @Override
-    public void onCreate(Bundle icicle) {
-        super.onCreate(icicle);
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
         setContentView(R.layout.main);
         instance = this;
+        ExternalApi.instance.setActivity(this);
 
         Logger.removeAllAppenders();
         Logger.setLocationEnabled(false);
@@ -104,6 +106,17 @@ public class SawimActivity extends FragmentActivity {
                 }
             }
         }));
+
+        if (findViewById(R.id.fragment_container) != null) {
+            if (savedInstanceState != null) {
+                return;
+            }
+            RosterView rosterView = new RosterView();
+            rosterView.setArguments(getIntent().getExtras());
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.fragment_container, rosterView, RosterView.TAG).commit();
+        }
+
     }
 
     @Override
@@ -120,7 +133,53 @@ public class SawimActivity extends FragmentActivity {
 
     @Override
     public void onBackPressed() {
-        moveTaskToBack(true);
+        SawimFragment chatView = (SawimFragment) getSupportFragmentManager().findFragmentByTag(ChatView.TAG);
+        SawimFragment formView = (SawimFragment) getSupportFragmentManager().findFragmentByTag(FormView.TAG);
+        SawimFragment virtualListView = (SawimFragment) getSupportFragmentManager().findFragmentByTag(VirtualListView.TAG);
+        if (chatView != null) {
+            if (chatView.hasBack())
+                super.onBackPressed();
+        } else if (virtualListView != null) {
+            if (virtualListView.hasBack()) {
+                back();
+            }
+        } else if (formView != null) {
+            if (formView.hasBack())
+                back();
+        } else super.onBackPressed();
+    }
+
+    @Override
+    public boolean onKeyUp(int key, KeyEvent event) {
+        if (key == KeyEvent.KEYCODE_MENU) {
+            ChatView view = (ChatView) getSupportFragmentManager().findFragmentByTag(ChatView.TAG);
+            if (view != null) {
+                view.showMenu();
+                return true;
+            } else
+                super.onKeyUp(key, event);
+        }
+        return super.onKeyUp(key, event);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        ChatView view = (ChatView) getSupportFragmentManager().findFragmentByTag(ChatView.TAG);
+        if (view != null) {
+            if (ExternalApi.instance.onActivityResult(requestCode, resultCode, data)) {
+                super.onActivityResult(requestCode, resultCode, data);
+            }
+            return;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void back() {
+        if (SawimActivity.getInstance().getSupportFragmentManager()
+                .findFragmentById(R.id.chat_fragment) != null)
+            recreateActivity();
+        else
+            super.onBackPressed();
     }
 
     public void recreateActivity() {
@@ -148,6 +207,16 @@ public class SawimActivity extends FragmentActivity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         menu.clear();
+        VirtualListView virtualListView = (VirtualListView) getSupportFragmentManager().findFragmentByTag(VirtualListView.TAG);
+        SawimFragment formView = (SawimFragment) getSupportFragmentManager().findFragmentByTag(FormView.TAG);
+        if (formView != null) {
+            return false;
+        }
+        if (virtualListView != null) {
+            virtualListView.onCreateOptionsMenu(menu);
+            return true;
+        }
+
         Protocol p = Roster.getInstance().getCurrProtocol();
         if (p != null) {
             menu.add(Menu.NONE, MENU_CONNECT, Menu.NONE, R.string.connect);
@@ -201,6 +270,12 @@ public class SawimActivity extends FragmentActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        VirtualListView virtualListView = (VirtualListView) getSupportFragmentManager().findFragmentByTag(VirtualListView.TAG);
+        if (virtualListView != null) {
+            virtualListView.onOptionsItemSelect(item);
+            return super.onOptionsItemSelected(item);
+        }
+
         Protocol p = Roster.getInstance().getCurrProtocol();
         switch (item.getItemId()) {
             case MENU_CONNECT:
@@ -237,7 +312,7 @@ public class SawimActivity extends FragmentActivity {
                 new ManageContactListForm(p).showMenu(this);
                 break;
             case MENU_MYSELF:
-                p.showUserInfo(this, p.createTempContact(p.getUserId(), p.getNick()));
+                p.showUserInfo(p.createTempContact(p.getUserId(), p.getNick()));
                 break;
             case MENU_MICROBLOG:
                 ((Mrim)p).getMicroBlog().activate();

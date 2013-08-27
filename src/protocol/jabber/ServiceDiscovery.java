@@ -1,6 +1,5 @@
 package protocol.jabber;
 
-import android.support.v4.app.FragmentActivity;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -8,6 +7,7 @@ import android.widget.Toast;
 import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
+import ru.sawim.activities.SawimActivity;
 import ru.sawim.models.form.VirtualListItem;
 import ru.sawim.models.list.VirtualList;
 import java.util.Vector;
@@ -131,18 +131,18 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
             }
 
             @Override
-            public void onOptionsItemSelected(FragmentActivity activity, MenuItem item) {
+            public void onOptionsItemSelected(MenuItem item) {
                 switch (item.getItemId()) {
                     case COMMAND_SEARCH:
                         searchBox.setString("");
                         searchBox.setTextBoxListener(ServiceDiscovery.this);
-                        searchBox.show(activity.getSupportFragmentManager(), JLocale.getString("service_discovery_search"));
+                        searchBox.show(SawimActivity.getInstance().getSupportFragmentManager(), JLocale.getString("service_discovery_search"));
                         break;
 
                     case COMMAND_SET_SERVER:
                         serverBox.setString(serverJid);
                         serverBox.setTextBoxListener(ServiceDiscovery.this);
-                        serverBox.show(activity.getSupportFragmentManager(), JLocale.getString("service_discovery_server"));
+                        serverBox.show(SawimActivity.getInstance().getSupportFragmentManager(), JLocale.getString("service_discovery_server"));
                         break;
 
                     case COMMAND_HOME:

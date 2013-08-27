@@ -1,13 +1,9 @@
 package ru.sawim.models.list;
 
-import android.content.Intent;
-import android.support.v4.app.FragmentActivity;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
-import ru.sawim.SawimApplication;
-import ru.sawim.activities.VirtualListActivity;
-import ru.sawim.activities.SawimActivity;
+import ru.sawim.view.VirtualListView;
 
 public class VirtualList {
     protected VirtualListModel model;
@@ -108,7 +104,7 @@ public class VirtualList {
 
     public interface OnBuildOptionsMenu {
         void onCreateOptionsMenu(Menu menu);
-        void onOptionsItemSelected(FragmentActivity activity, MenuItem item);
+        void onOptionsItemSelected(MenuItem item);
     }
 
     public OnBuildOptionsMenu getBuildOptionsMenu() {
@@ -133,10 +129,6 @@ public class VirtualList {
     }
 
     public void show() {
-        SawimActivity.getInstance().startActivity(new Intent(SawimActivity.getInstance(), VirtualListActivity.class));
-    }
-
-    public void showCrashLog() {
-        SawimApplication.getInstance().startActivity(new Intent(SawimApplication.getInstance(), VirtualListActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+        VirtualListView.show();
     }
 }

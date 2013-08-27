@@ -1,6 +1,7 @@
 package protocol.mrim;
 
 import DrawControls.icons.Icon;
+import android.support.v4.app.FragmentActivity;
 import android.view.ContextMenu;
 import android.view.Menu;
 import protocol.Contact;
@@ -23,7 +24,7 @@ public class MrimPhoneContact extends MrimContact {
         return 0x100000;
     }
 
-    public Icon getLeftIcon() {
+    public Icon getLeftIcon(Protocol p) {
         return Mrim.getPhoneContactIcon();
     }
 
@@ -31,7 +32,7 @@ public class MrimPhoneContact extends MrimContact {
         if (hasChat()) {
             p.getChat(this).activate();
         } else {
-            new ContactMenu(p, this).doAction(SawimActivity.getInstance(), USER_MENU_SEND_SMS);
+            new ContactMenu(p, this).doAction(USER_MENU_SEND_SMS);
         }
     }
     protected void initContextMenu(Protocol protocol, ContextMenu menu) {
@@ -43,6 +44,7 @@ public class MrimPhoneContact extends MrimContact {
         menu.add(Menu.FIRST, ContactMenu.USER_MENU_USER_REMOVE, 2, JLocale.getString("remove"));
         menu.add(Menu.FIRST, ContactMenu.USER_MENU_RENAME, 2, JLocale.getString("rename"));
     }
+
     public boolean isVisibleInContactList() {
         return true;
     }

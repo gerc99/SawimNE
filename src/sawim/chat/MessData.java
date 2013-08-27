@@ -1,6 +1,7 @@
 package sawim.chat;
 
 import android.text.SpannableStringBuilder;
+import android.util.Log;
 import ru.sawim.General;
 import sawim.comm.Util;
 
@@ -28,6 +29,8 @@ public final class MessData {
         this.rowData = flags;
         this.iconIndex = iconIndex;
         boolean today = (General.getCurrentGmtTime() - 24 * 60 * 60 < time);
+
+        Log.e("getCurrentGmtTime ", "" + (General.getCurrentGmtTime() - 24 * 60 * 60));
         strTime = Util.getLocalDateString(time, today);
     }
 

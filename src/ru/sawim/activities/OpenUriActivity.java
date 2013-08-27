@@ -20,6 +20,7 @@ import ru.sawim.activities.SawimActivity;
  * @author vladimir
  */
 public class OpenUriActivity extends Activity {
+
     public void onStart() {
         super.onStart();
         Intent intent = getIntent();
@@ -41,8 +42,7 @@ public class OpenUriActivity extends Activity {
         }
     }
 
-
-    public boolean process(Uri uri) {
+    private boolean process(Uri uri) {
         try {
             String path = uri.toString();
             if (path.startsWith("xmpp")) {
@@ -54,7 +54,7 @@ public class OpenUriActivity extends Activity {
         }
     }
 
-    public void processXmpp(String path) {
+    private void processXmpp(String path) {
         String jid = path;
         if (-1 < path.indexOf('?')) {
             jid = path.substring(0, path.indexOf('?'));

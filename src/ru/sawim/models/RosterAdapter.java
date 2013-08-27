@@ -6,7 +6,6 @@ import android.widget.*;
 import sawim.roster.TreeNode;
 import android.database.DataSetObserver;
 import android.graphics.Typeface;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import protocol.Contact;
@@ -14,7 +13,6 @@ import protocol.Group;
 import protocol.Protocol;
 import protocol.XStatusInfo;
 import ru.sawim.General;
-import ru.sawim.R;
 import ru.sawim.Scheme;
 import sawim.chat.ChatHistory;
 import sawim.chat.message.Message;
@@ -38,11 +36,11 @@ public class RosterAdapter extends BaseAdapter {
     public static final int ACTIVE_CONTACTS = 2;
     private final Roster roster;
     private List<TreeNode> items = new ArrayList<TreeNode>();
-    private final Context mInflater;
+    private final Context context;
     private int type;
 
-    public RosterAdapter(Context inf, Roster vcl, List<TreeNode> items, int type) {
-        mInflater = inf;
+    public RosterAdapter(Context context, Roster vcl, List<TreeNode> items, int type) {
+        this.context = context;
         this.roster = vcl;
         this.items = items;
         this.type = type;
@@ -62,8 +60,6 @@ public class RosterAdapter extends BaseAdapter {
 
     @Override
     public TreeNode getItem(int i) {
-        if (type == ACTIVE_CONTACTS)
-            return ChatHistory.instance.chatAt(i).getContact();
         if ((items.size() > i) && (i >= 0))
             return items.get(i);
         return null;
@@ -77,14 +73,12 @@ public class RosterAdapter extends BaseAdapter {
     public void buildFlatItems(List<TreeNode> items) {
         Protocol p = roster.getCurrentProtocol();
         if (p == null) return;
-    //    synchronized (p.getRosterLockObject()) {
-            if (roster.useGroups) {
-                roster.rebuildFlatItemsWG(p, items);
-            } else {
-                roster.rebuildFlatItemsWOG(p, items);
-            }
-            notifyDataSetChanged();
-    //    }
+        if (roster.useGroups) {
+            roster.rebuildFlatItemsWG(p, items);
+        } else {
+            roster.rebuildFlatItemsWOG(p, items);
+        }
+        notifyDataSetChanged();
     }
 
     @Override
@@ -98,7 +92,7 @@ public class RosterAdapter extends BaseAdapter {
     public View getView(int i, View convertView, ViewGroup viewGroup) {
         ViewHolderRoster holder;
         if (convertView == null) {
-            convertView = new RosterItemView(mInflater);
+            convertView = new RosterItemView(context);
             holder = new ViewHolderRoster(roster, (RosterItemView) convertView);
             convertView.setTag(holder);
         } else {
@@ -108,10 +102,11 @@ public class RosterAdapter extends BaseAdapter {
         TreeNode o = getItem(i);
         if (o != null)
             if (type != ALL_CONTACTS && o.isContact()) {
-                if (type == ACTIVE_CONTACTS)
-                    holder.populateFromContact(((Contact) o).getProtocol(), (Contact) o);
-                else
+                if (type != ACTIVE_CONTACTS)
                     holder.populateFromContact(protocol, (Contact) o);
+                else
+                    if (((Contact) o).hasChat())
+                        holder.populateFromContact(((Contact) o).getProtocol(), (Contact) o);
             } else {
                 if (o.isGroup()) {
                     holder.populateFromGroup((Group) o);
@@ -133,17 +128,6 @@ public class RosterAdapter extends BaseAdapter {
         private final ImageView itemFifthImage;
         private final Roster vcl;
 
-        /*public ViewHolderRoster(Roster vcl, View item) {
-            this.vcl = vcl;
-            this.item = item;
-            itemName = (TextView) item.findViewById(R.id.item_name);
-            itemDescriptionText = (TextView) item.findViewById(R.id.item_description);
-            itemFirstImage = (ImageView) item.findViewById(R.id.first_image);
-            itemSecondImage = (ImageView) item.findViewById(R.id.second_image);
-            itemThirdImage = (ImageView) item.findViewById(R.id.third_image);
-            itemFourthImage = (ImageView) item.findViewById(R.id.fourth_rule_image);
-            itemFifthImage = (ImageView) item.findViewById(R.id.fifth_rule_image);
-        }*/
         public ViewHolderRoster(Roster vcl, RosterItemView item) {
             this.vcl = vcl;
             this.item = item;

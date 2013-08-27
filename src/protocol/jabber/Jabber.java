@@ -3,7 +3,6 @@ package protocol.jabber;
 import DrawControls.icons.ImageList;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.widget.Toast;
 import ru.sawim.General;
@@ -518,7 +517,7 @@ public final class Jabber extends Protocol implements FormListener {
         }
     }
 
-    protected void doAction(final FragmentActivity a, Contact c, int cmd) {
+    protected void doAction(Contact c, int cmd) {
         final JabberContact contact = (JabberContact) c;
         switch (cmd) {
             case ContactMenu.GATE_CONNECT:
@@ -665,18 +664,20 @@ public final class Jabber extends Protocol implements FormListener {
         builder.create().show();
     }
 
-    public void showUserInfo(final FragmentActivity a, Contact contact) {
+    public void showUserInfo(Contact contact) {
         if (!contact.isSingleUserContact()) {
-            doAction(a, contact, ContactMenu.USER_MENU_USERS_LIST);
+            doAction(contact, ContactMenu.USER_MENU_USERS_LIST);
             return;
         }
 
         String realJid = contact.getUserId();
         if (Jid.isConference(realJid) && (-1 != realJid.indexOf('/'))) {
             JabberServiceContact conference = (JabberServiceContact) getItemByUIN(Jid.getBareJid(realJid));
-            String r = conference.getRealJid(Jid.getResource(realJid, ""));
-            if (!StringConvertor.isEmpty(r)) {
-                realJid = r;
+            if (conference != null) {
+                String r = conference.getRealJid(Jid.getResource(realJid, ""));
+                if (!StringConvertor.isEmpty(r)) {
+                    realJid = r;
+                }
             }
         }
         UserInfo data;

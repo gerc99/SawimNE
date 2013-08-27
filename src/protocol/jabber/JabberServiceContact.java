@@ -2,14 +2,14 @@ package protocol.jabber;
 
 import android.view.ContextMenu;
 import android.view.Menu;
-import android.view.SubMenu;
 import protocol.Contact;
 import protocol.ContactMenu;
 import protocol.Protocol;
 import protocol.StatusInfo;
 import ru.sawim.R;
-import ru.sawim.activities.SawimActivity;
+import ru.sawim.SawimApplication;
 import ru.sawim.models.RosterAdapter;
+import ru.sawim.view.menu.MyMenu;
 import sawim.Options;
 import sawim.chat.message.SystemNotice;
 import sawim.roster.Roster;
@@ -323,89 +323,88 @@ public class JabberServiceContact extends JabberContact {
     protected void initContextMenu(Protocol protocol, ContextMenu contactMenu) {
         if (isGate) {
             if (isOnline()) {
-                contactMenu.add(Menu.FIRST, ContactMenu.GATE_DISCONNECT, 2, R.string.disconnect);
-                contactMenu.add(Menu.FIRST, ContactMenu.USER_MENU_ADHOC, 2, R.string.adhoc);
+                contactMenu.add(Menu.NONE, ContactMenu.GATE_DISCONNECT, Menu.NONE, R.string.disconnect);
+                contactMenu.add(Menu.NONE, ContactMenu.USER_MENU_ADHOC, Menu.NONE, R.string.adhoc);
             } else {
-                contactMenu.add(Menu.FIRST, ContactMenu.GATE_CONNECT, 2, R.string.connect);
-                contactMenu.add(Menu.FIRST, ContactMenu.GATE_REGISTER, 2, R.string.register);
-                contactMenu.add(Menu.FIRST, ContactMenu.GATE_UNREGISTER, 2, R.string.unregister);
+                contactMenu.add(Menu.NONE, ContactMenu.GATE_CONNECT, Menu.NONE, R.string.connect);
+                contactMenu.add(Menu.NONE, ContactMenu.GATE_REGISTER, Menu.NONE, R.string.register);
+                contactMenu.add(Menu.NONE, ContactMenu.GATE_UNREGISTER, Menu.NONE, R.string.unregister);
             }
-            contactMenu.add(Menu.FIRST, ContactMenu.USER_MENU_TRACK_CONF, 2, R.string.extra_settings);
+            contactMenu.add(Menu.NONE, ContactMenu.USER_MENU_TRACK_CONF, Menu.NONE, R.string.extra_settings);
         }
         if (isConference) {
             if (isOnline()) {
-                contactMenu.add(Menu.FIRST, ContactMenu.CONFERENCE_DISCONNECT, 2, R.string.leave_chat);
+                contactMenu.add(Menu.NONE, ContactMenu.CONFERENCE_DISCONNECT, Menu.NONE, R.string.leave_chat);
             } else {
-                contactMenu.add(Menu.FIRST, ContactMenu.CONFERENCE_CONNECT, 2, R.string.connect);
+                contactMenu.add(Menu.NONE, ContactMenu.CONFERENCE_CONNECT, Menu.NONE, R.string.connect);
             }
             if (!isOnline()) {//
-                contactMenu.add(Menu.FIRST, ContactMenu.USER_MENU_USERS_LIST, 2, R.string.list_of_users);
+                contactMenu.add(Menu.NONE, ContactMenu.USER_MENU_USERS_LIST, Menu.NONE, R.string.list_of_users);
             }
-            contactMenu.add(Menu.FIRST, ContactMenu.CONFERENCE_OPTIONS, 2, R.string.options);
+            contactMenu.add(Menu.NONE, ContactMenu.CONFERENCE_OPTIONS, Menu.NONE, R.string.options);
             if (isOnline()) {
                 SubContact my = getContact(getMyName());
                 if (null != my) {
                     if (AFFILIATION_OWNER == my.priorityA) {
-                        contactMenu.add(Menu.FIRST, ContactMenu.CONFERENCE_OWNER_OPTIONS, 2, R.string.owner_options);
+                        contactMenu.add(Menu.NONE, ContactMenu.CONFERENCE_OWNER_OPTIONS, Menu.NONE, R.string.owner_options);
                     }
                     if (AFFILIATION_ADMIN <= my.priorityA) {
-                        contactMenu.add(Menu.FIRST, ContactMenu.CONFERENCE_AFFILIATION_LIST, 2, R.string.conf_aff_list);
-                        contactMenu.add(Menu.FIRST, ContactMenu.COMMAND_TITLE, 2, R.string.set_theme_conference);
+                        contactMenu.add(Menu.NONE, ContactMenu.CONFERENCE_AFFILIATION_LIST, Menu.NONE, R.string.conf_aff_list);
+                        contactMenu.add(Menu.NONE, ContactMenu.COMMAND_TITLE, Menu.NONE, R.string.set_theme_conference);
                     }
                 }
             }
-            contactMenu.add(Menu.FIRST, ContactMenu.USER_MENU_TRACK_CONF, 2, R.string.extra_settings);
+            contactMenu.add(Menu.NONE, ContactMenu.USER_MENU_TRACK_CONF, Menu.NONE, R.string.extra_settings);
         }
         if ((isOnline() && isConference && canWrite()) || isPrivate) {
             addChatItems(contactMenu);
         }
         if (isPrivate || isGate) {
-            contactMenu.add(Menu.FIRST, ContactMenu.USER_MENU_USER_INFO, 2, R.string.info);
+            contactMenu.add(Menu.NONE, ContactMenu.USER_MENU_USER_INFO, Menu.NONE, R.string.info);
         }
-        SubMenu manageContact = contactMenu.addSubMenu(Menu.FIRST, ContactMenu.USER_MANAGE_CONTACT, 2, R.string.manage);
         if (!isPrivate) {
-            initManageContactMenu(protocol, manageContact);
+            contactMenu.add(Menu.NONE, ContactMenu.USER_MANAGE_CONTACT, Menu.NONE, R.string.manage);
             if (!isTemp()) {
-                contactMenu.add(Menu.FIRST, ContactMenu.USER_MENU_HISTORY, 2, R.string.history);
+                contactMenu.add(Menu.NONE, ContactMenu.USER_MENU_HISTORY, Menu.NONE, R.string.history);
             }
         }
         if (isOnline()) {
-            contactMenu.add(Menu.FIRST, ContactMenu.USER_MENU_STATUSES, 2, R.string.user_statuses);
+            contactMenu.add(Menu.NONE, ContactMenu.USER_MENU_STATUSES, Menu.NONE, R.string.user_statuses);
         }
         if (isPrivate) {
-            initManageContactMenu(protocol, manageContact);
+            contactMenu.add(Menu.NONE, ContactMenu.USER_MANAGE_CONTACT, Menu.NONE, R.string.manage);
         }
         if (hasChat()) {
-            contactMenu.add(Menu.FIRST, ContactMenu.USER_MENU_CLOSE_CHAT, 2, R.string.close);
+            contactMenu.add(Menu.NONE, ContactMenu.USER_MENU_CLOSE_CHAT, Menu.NONE, R.string.close);
         }
     }
 
-    protected void initManageContactMenu(Protocol protocol, SubMenu menu) {
+    protected void initManageContactMenu(Protocol protocol, MyMenu menu) {
         if (protocol.isConnected()) {
             if (isOnline() && isPrivate) {
-                menu.add(Menu.FIRST, ContactMenu.USER_MENU_ADHOC, 2, R.string.adhoc);
+                menu.add(SawimApplication.getContext().getString(R.string.adhoc), ContactMenu.USER_MENU_ADHOC);
             }
             if (isConference && isTemp()) {
-                menu.add(Menu.FIRST, ContactMenu.CONFERENCE_ADD, 2, R.string.add_user);
+                menu.add(SawimApplication.getContext().getString(R.string.add_user), ContactMenu.CONFERENCE_ADD);
             }
             if (isGate) {
                 if ((1 < protocol.getGroupItems().size()) && !isTemp()) {
-                    menu.add(Menu.FIRST, ContactMenu.USER_MENU_MOVE, 2, R.string.move_to_group);
+                    menu.add(SawimApplication.getContext().getString(R.string.move_to_group), ContactMenu.USER_MENU_MOVE);
                 }
                 if (!isAuth()) {
-                    menu.add(Menu.FIRST, ContactMenu.USER_MENU_REQU_AUTH, 2, R.string.requauth);
+                    menu.add(SawimApplication.getContext().getString(R.string.requauth), ContactMenu.USER_MENU_REQU_AUTH);
                 }
                 if (!protocol.getGroupItems().isEmpty()) {
-                    menu.add(Menu.FIRST, ContactMenu.GATE_ADD, 2, R.string.add_user);
+                    menu.add(SawimApplication.getContext().getString(R.string.add_user), ContactMenu.GATE_ADD);
                 }
-                menu.add(Menu.FIRST, ContactMenu.USER_MENU_REMOVE_ME, 2, R.string.remove_me);
+                menu.add(SawimApplication.getContext().getString(R.string.remove_me), ContactMenu.USER_MENU_REMOVE_ME);
             }
         }
         if (protocol.inContactList(this)) {
             if (!isPrivate) {
-                menu.add(Menu.FIRST, ContactMenu.USER_MENU_RENAME, 2, R.string.rename);
+                menu.add(SawimApplication.getContext().getString(R.string.rename), ContactMenu.USER_MENU_RENAME);
             }
-            menu.add(Menu.FIRST, ContactMenu.USER_MENU_USER_REMOVE, 2, R.string.remove);
+            menu.add(SawimApplication.getContext().getString(R.string.remove), ContactMenu.USER_MENU_USER_REMOVE);
         }
     }
 
@@ -430,7 +429,7 @@ public class JabberServiceContact extends JabberContact {
             super.activate(p);
 
         } else if (isConference && p.isConnected()) {
-            new ContactMenu(p, this).doAction(SawimActivity.getInstance(), ContactMenu.CONFERENCE_CONNECT);
+            new ContactMenu(p, this).doAction(ContactMenu.CONFERENCE_CONNECT);
         }
     }
 

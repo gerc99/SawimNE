@@ -4,11 +4,15 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.support.v4.app.FragmentActivity;
 import android.view.ContextMenu;
+import android.view.ContextThemeWrapper;
 import android.widget.Toast;
 import protocol.jabber.Jabber;
 import ru.sawim.General;
 import ru.sawim.R;
+import ru.sawim.SawimApplication;
+import ru.sawim.activities.SawimActivity;
 import ru.sawim.view.TextBoxView;
+import ru.sawim.view.menu.MyMenu;
 import sawim.FileTransfer;
 import sawim.chat.ChatHistory;
 import sawim.chat.message.PlainMessage;
@@ -104,7 +108,8 @@ public class ContactMenu implements TextBoxView.TextBoxListener {
         contact.initContextMenu(protocol, menu);
     }
 
-    public void doAction(final FragmentActivity a, int cmd) {
+    public void doAction(int cmd) {
+        final SawimActivity activity = SawimActivity.getInstance();
         switch (cmd) {
             case USER_MENU_TRACK:
                 new sawim.modules.tracking.TrackingForm(contact.getUserId()).activate();
@@ -117,7 +122,7 @@ public class ContactMenu implements TextBoxView.TextBoxListener {
                 messageTextbox = new TextBoxView();
                 messageTextbox.setTextBoxListener(this);
                 messageTextbox.setString(contact.annotations);
-                messageTextbox.show(a.getSupportFragmentManager(), "message");
+                messageTextbox.show(activity.getSupportFragmentManager(), "message");
                 return;
             }
 
@@ -135,9 +140,24 @@ public class ContactMenu implements TextBoxView.TextBoxListener {
                 protocol.showStatus(contact);
                 break;
 
+            case USER_MANAGE_CONTACT:
+                final MyMenu menu = new MyMenu(activity);
+                contact.initManageContactMenu(protocol, menu);
+                AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(activity, R.style.AlertDialogCustom));
+                builder.setCancelable(true);
+                builder.setTitle(SawimApplication.getContext().getString(R.string.manage_contact_list));
+                builder.setAdapter(menu, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        doAction(menu.getItem(which).idItem);
+                    }
+                });
+                builder.create().show();
+                break;
+
             case USER_MENU_CLOSE_CHAT:
                 ChatHistory.instance.unregisterChat(protocol.getChat(contact));
-                Toast.makeText(a, a.getString(R.string.messages_are_deleted), Toast.LENGTH_LONG).show();
+                Toast.makeText(activity, activity.getString(R.string.messages_are_deleted), Toast.LENGTH_LONG).show();
                 break;
 
             case USER_MENU_WAKE:
@@ -146,15 +166,15 @@ public class ContactMenu implements TextBoxView.TextBoxListener {
                 break;
 
             case USER_MENU_FILE_TRANS:
-                new FileTransfer(a, protocol, contact).startFileTransfer();
+                new FileTransfer(activity, protocol, contact).startFileTransfer();
                 break;
 
             case USER_MENU_CAM_TRANS:
-                new FileTransfer(a, protocol, contact).startPhotoTransfer();
+                new FileTransfer(activity, protocol, contact).startPhotoTransfer();
                 break;
 
             case USER_MENU_RENAME:
-                new ManageContactListForm(protocol, contact).showContactRename(a);
+                new ManageContactListForm(protocol, contact).showContactRename(activity);
                 break;
 
             case USER_MENU_HISTORY:
@@ -172,11 +192,11 @@ public class ContactMenu implements TextBoxView.TextBoxListener {
                 break;
 
             case USER_MENU_MOVE:
-                new ManageContactListForm(protocol, contact).showContactMove(a);
+                new ManageContactListForm(protocol, contact).showContactMove(activity);
                 break;
 
             case USER_MENU_USER_INFO:
-                protocol.showUserInfo(a, contact);
+                protocol.showUserInfo(contact);
                 break;
 
             case CONFERENCE_AFFILIATION_LIST:
@@ -185,29 +205,29 @@ public class ContactMenu implements TextBoxView.TextBoxListener {
                 items[1] = JLocale.getString("admins");
                 items[2] = JLocale.getString("members");
                 items[3] = JLocale.getString("inban");
-                AlertDialog.Builder builder = new AlertDialog.Builder(a);
-                builder.setTitle(contact.getName());
-                builder.setCancelable(true);
-                builder.setItems(items, new DialogInterface.OnClickListener() {
+                AlertDialog.Builder b = new AlertDialog.Builder(activity);
+                b.setTitle(contact.getName());
+                b.setCancelable(true);
+                b.setItems(items, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         switch (which) {
                             case 0:
-                                protocol.doAction(a, contact, CONFERENCE_OWNERS);
+                                protocol.doAction(contact, CONFERENCE_OWNERS);
                                 break;
                             case 1:
-                                protocol.doAction(a, contact, CONFERENCE_ADMINS);
+                                protocol.doAction(contact, CONFERENCE_ADMINS);
                                 break;
                             case 2:
-                                protocol.doAction(a, contact, CONFERENCE_MEMBERS);
+                                protocol.doAction(contact, CONFERENCE_MEMBERS);
                                 break;
                             case 3:
-                                protocol.doAction(a, contact, CONFERENCE_INBAN);
+                                protocol.doAction(contact, CONFERENCE_INBAN);
                                 break;
                         }
                     }
                 });
-                builder.create().show();
+                b.create().show();
                 break;
 
             case USER_MENU_REQU_AUTH:
@@ -225,7 +245,7 @@ public class ContactMenu implements TextBoxView.TextBoxListener {
                 break;
 
             default:
-                protocol.doAction(a, contact, cmd);
+                protocol.doAction(contact, cmd);
         }
     }
 

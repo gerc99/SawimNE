@@ -247,7 +247,7 @@ public class Icq extends Protocol {
                 UpdateContactListAction.ACTION_DEL));
     }
 
-    protected void doAction(FragmentActivity a, Contact contact, int action) {
+    protected void doAction(Contact contact, int action) {
         switch (action) {
             case IcqContact.USER_MENU_REMOVE_ME:
                 sendRemoveMePacket(contact.getUserId());
@@ -906,7 +906,7 @@ public class Icq extends Protocol {
         sendAuthResult(userId, false);
     }
 
-    public void showUserInfo(FragmentActivity a, Contact contact) {
+    public void showUserInfo(Contact contact) {
         final UserInfo data;
         if (isConnected()) {
             data = getUserInfo(contact);

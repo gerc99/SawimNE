@@ -42,6 +42,10 @@ public class MyTextView extends TextView {
         super(context, attrs);
     }
 
+    public MyTextView(Context context) {
+        super(context);
+    }
+
     public void setTextWithLinks(SpannableStringBuilder ssb, JuickMenu.Mode mode) {
         if (mode != JuickMenu.Mode.none) {
             ArrayList<Hyperlink> msgList = new ArrayList<Hyperlink>();

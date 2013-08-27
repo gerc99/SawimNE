@@ -1,18 +1,15 @@
 package ru.sawim.models.form;
 
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
 import ru.sawim.SawimApplication;
+import ru.sawim.view.FormView;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
 import sawim.modules.DebugLog;
 import sawim.util.JLocale;
-import ru.sawim.activities.FormActivity;
-import ru.sawim.activities.SawimActivity;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,20 +39,21 @@ public class Forms {
     private static Forms instance;
 
     public void back() {
-        updateFormListener.back();
+        backForm();
         destroy();
     }
 
     public void backForm() {
-        updateFormListener.back();
+        if (updateFormListener != null)
+            updateFormListener.back();
     }
 
     public void show() {
-        SawimActivity.getInstance().startActivity(new Intent(SawimActivity.getInstance(), FormActivity.class));
+        FormView.show();
     }
 
     public void show(FragmentActivity a) {
-        a.startActivity(new Intent(a, FormActivity.class));
+        FormView.show(a);
     }
 
     public void invalidate() {
@@ -299,7 +297,6 @@ public class Forms {
     }
     public int getSelectorValue(int controlId) {
         try {
-            Log.e("Forms", ""+controlId);
             return get(controlId).current;
         } catch (Exception e) {
             DebugLog.panic("getSelectorValue", e);

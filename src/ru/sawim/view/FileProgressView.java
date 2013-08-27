@@ -44,6 +44,7 @@ public class FileProgressView extends DialogFragment {
             @Override
             public void onClick(View view) {
                 Roster.getInstance().removeTransfer(true);
+                FileProgressView.this.dismiss();
             }
         });
         return v;

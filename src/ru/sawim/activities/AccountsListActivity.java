@@ -76,12 +76,6 @@ public class AccountsListActivity extends FragmentActivity implements JabberRegi
             view.addAccount(num, acc);
     }
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        SawimActivity.getInstance().recreateActivity();
-    }
-
     public void finish() {
         if (mAccountAuthenticatorResponse != null) {
             if (mResultBundle != null) {

@@ -6,10 +6,10 @@ import protocol.Contact;
 import protocol.Protocol;
 import protocol.net.TcpSocket;
 import ru.sawim.General;
-import ru.sawim.activities.FormActivity;
 import ru.sawim.activities.SawimActivity;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
+import ru.sawim.view.FileProgressView;
 import sawim.chat.Chat;
 import sawim.roster.Roster;
 import sawim.comm.StringConvertor;
@@ -51,11 +51,27 @@ public final class FileTransfer implements FileBrowserListener,
     private JSR75FileSystem file;
     private Forms name_Desc;
     private FragmentActivity activity;
+    private FileProgressView fileProgressView;
 
     public FileTransfer(FragmentActivity a, Protocol p, Contact _cItem) {
         activity = a;
         protocol = p;
         cItem = _cItem;
+    }
+
+
+    public void addFileProgress() {
+        fileProgressView = new FileProgressView();
+    }
+
+    public void changeFileProgress(int percent, String caption, String text) {
+        if (fileProgressView != null)
+            fileProgressView.changeFileProgress(percent, caption, text);
+    }
+
+    public void showFileProgress(FragmentActivity a) {
+        if (fileProgressView != null)
+            fileProgressView.show(a.getSupportFragmentManager(), "file");
     }
 
     public static boolean isPhotoSupported() {
@@ -96,15 +112,21 @@ public final class FileTransfer implements FileBrowserListener,
     }
 
     public void onFileSelect(InputStream in, String fileName) {
-        try {
+        //try {
             setFileName(fileName);
-            int fileSize = in.available();
-            setData(in, fileSize);
+        int fileSize = 0;
+        try {
+            fileSize = in.available();
+        } catch (IOException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        setData(in, fileSize);
             askForNameDesc();
-        } catch (Exception e) {
+        /*} catch (Exception e) {
             closeFile();
             handleException(new SawimException(191, 6));
-        }
+            Log.e("Send", e.getMessage());
+        }*/
     }
 
     public void onFileSelect(String filename) throws SawimException {
@@ -172,7 +194,7 @@ public final class FileTransfer implements FileBrowserListener,
                 setProgress(0);
                 new Thread(this).start();
             }
-            cItem.showFileProgress(FormActivity.getInstance());
+            showFileProgress(activity);
         } else {
             destroy();
         }
@@ -183,7 +205,7 @@ public final class FileTransfer implements FileBrowserListener,
     }
 
     private void changeFileProgress(int percent, String message) {
-        cItem.changeFileProgress(percent, JLocale.getEllipsisString("sending_file"),
+        changeFileProgress(percent, JLocale.getEllipsisString("sending_file"),
                 getProgressText() + "\n"
                         + JLocale.getString(message));
     }
@@ -203,7 +225,7 @@ public final class FileTransfer implements FileBrowserListener,
     private void addProgress() {
         chat = protocol.getChat(cItem);
         chat.activate();
-        cItem.addFileProgress();
+        addFileProgress();
         chat.addFileProgress(JLocale.getEllipsisString("sending_file"), getProgressText());
         Roster.getInstance().addTransfer(this);
     }

@@ -31,12 +31,7 @@ public class SawimService extends Service {
         super.onCreate();
         Log.i(LOG_TAG, "onStart();");
         tray = new Tray(this);
-        if (Roster.getInstance() != null)
-            tray.startForegroundCompat(R.string.app_name, getNotification());//
-        else {
-            tray.stopForegroundCompat(R.string.app_name);
-            System.exit(0);
-        }
+        tray.startForegroundCompat(R.string.app_name, getNotification());//
         //musicReceiver = new MusicReceiver(this);
         //this.registerReceiver(musicReceiver, musicReceiver.getIntentFilter());
         //scrobbling finished
@@ -59,15 +54,14 @@ public class SawimService extends Service {
         int allUnread = ChatHistory.instance.getPersonalUnreadMessageCount(true);
         CharSequence stateMsg = "";
 
-        boolean version2 = (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB);
         final int icon;
         if (0 < allUnread) {
-            icon = version2 ? R.drawable.ic2_tray_msg : R.drawable.ic3_tray_msg;
+            icon = R.drawable.ic_tray_msg;
         } else if (Roster.getInstance().isConnected()) {
-            icon = /*version2 ? R.drawable.ic2_tray_on : */R.drawable.ic3_tray/*_on*/;
+            icon = R.drawable.ic_tray_on;
             stateMsg = getText(R.string.online);
         } else {
-            icon = /*version2 ? R.drawable.ic2_tray_off : */R.drawable.ic3_tray/*_off*/;
+            icon = R.drawable.ic_tray_off;
             if (Roster.getInstance().isConnecting()) {
                 stateMsg = getText(R.string.connecting);
             } else {

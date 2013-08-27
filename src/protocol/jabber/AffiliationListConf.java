@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import ru.sawim.Scheme;
+import ru.sawim.activities.SawimActivity;
 import ru.sawim.models.form.VirtualListItem;
 import ru.sawim.models.list.VirtualList;
 import ru.sawim.models.list.VirtualListModel;
@@ -61,7 +62,7 @@ public final class AffiliationListConf implements FormListener, TextBoxView.Text
             }
 
             @Override
-            public void onOptionsItemSelected(FragmentActivity activity, MenuItem item) {
+            public void onOptionsItemSelected(MenuItem item) {
                 switch (item.getItemId()) {
                     case COMMAND_ADD:
                         showOptionsForm("", "");
@@ -69,7 +70,7 @@ public final class AffiliationListConf implements FormListener, TextBoxView.Text
 
                     case COMMAND_SEARCH:
                         searchBox.setTextBoxListener(AffiliationListConf.this);
-                        searchBox.show(activity.getSupportFragmentManager(), "service_discovery_search");
+                        searchBox.show(SawimActivity.getInstance().getSupportFragmentManager(), "service_discovery_search");
                         break;
                 }
             }

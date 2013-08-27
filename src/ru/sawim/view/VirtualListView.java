@@ -4,10 +4,11 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.view.*;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import ru.sawim.activities.VirtualListActivity;
+import ru.sawim.activities.SawimActivity;
 import ru.sawim.models.form.VirtualListItem;
 import ru.sawim.Scheme;
 import ru.sawim.models.list.VirtualList;
@@ -22,8 +23,9 @@ import ru.sawim.models.list.VirtualListModel;
  * Time: 13:22
  * To change this template use File | Settings | File Templates.
  */
-public class VirtualListView extends Fragment implements VirtualList.OnVirtualListListener, VirtualListModel.OnAddListListener {
+public class VirtualListView extends SawimFragment implements VirtualList.OnVirtualListListener, VirtualListModel.OnAddListListener {
 
+    public static final String TAG = "VirtualListView";
     private VirtualListAdapter adapter;
     private VirtualList list = VirtualList.getInstance();
     private ListView lv;
@@ -92,7 +94,7 @@ public class VirtualListView extends Fragment implements VirtualList.OnVirtualLi
 
     @Override
     public void addList(final VirtualListItem item) {
-        VirtualListActivity.getInstance().runOnUiThread(new Runnable() {
+        SawimActivity.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 list.getModel().elements.add(item);
@@ -103,7 +105,7 @@ public class VirtualListView extends Fragment implements VirtualList.OnVirtualLi
 
     @Override
     public void clearList() {
-        VirtualListActivity.getInstance().runOnUiThread(new Runnable() {
+        SawimActivity.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 list.getModel().elements.clear();
@@ -114,7 +116,7 @@ public class VirtualListView extends Fragment implements VirtualList.OnVirtualLi
 
     @Override
     public void removeFirstText() {
-        VirtualListActivity.getInstance().runOnUiThread(new Runnable() {
+        SawimActivity.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 if (list.getModel().elements.size() > 0)
@@ -124,9 +126,20 @@ public class VirtualListView extends Fragment implements VirtualList.OnVirtualLi
         });
     }
 
+    public static void show() {
+        if (SawimActivity.getInstance().getSupportFragmentManager()
+                .findFragmentById(R.id.chat_fragment) != null)
+            SawimActivity.getInstance().setContentView(R.layout.intercalation_layout);
+        VirtualListView newFragment = new VirtualListView();
+        FragmentTransaction transaction = SawimActivity.getInstance().getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragment_container, newFragment, VirtualListView.TAG);
+        transaction.addToBackStack(null);
+        transaction.commit();
+    }
+
     @Override
     public void update() {
-        VirtualListActivity.getInstance().runOnUiThread(new Runnable() {
+        SawimActivity.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 adapter.notifyDataSetChanged();
@@ -136,10 +149,14 @@ public class VirtualListView extends Fragment implements VirtualList.OnVirtualLi
 
     @Override
     public void back() {
-        getActivity().finish();
+        if (SawimActivity.getInstance().getSupportFragmentManager()
+                .findFragmentById(R.id.chat_fragment) != null)
+            SawimActivity.getInstance().recreateActivity();
+        else
+            getFragmentManager().popBackStack();
     }
 
-    public boolean onBackPressed() {
+    public boolean hasBack() {
         if (list.getClickListListener() == null) return true;
         return list.getClickListListener().back();
     }
@@ -149,9 +166,9 @@ public class VirtualListView extends Fragment implements VirtualList.OnVirtualLi
             list.getBuildOptionsMenu().onCreateOptionsMenu(menu);
     }
 
-    public void onOptionsItemSelected(FragmentActivity activity, MenuItem item) {
+    public void onOptionsItemSelect(MenuItem item) {
         if (list.getBuildOptionsMenu() != null)
-            list.getBuildOptionsMenu().onOptionsItemSelected(activity, item);
+            list.getBuildOptionsMenu().onOptionsItemSelected(item);
     }
 
     @Override
@@ -161,7 +178,7 @@ public class VirtualListView extends Fragment implements VirtualList.OnVirtualLi
 
     @Override
     public void setCurrentItemIndex(final int i, final boolean isSelected) {
-        VirtualListActivity.getInstance().runOnUiThread(new Runnable() {
+        SawimActivity.getInstance().runOnUiThread(new Runnable() {
              @Override
              public void run() {
                  if (isSelected)

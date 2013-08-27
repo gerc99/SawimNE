@@ -2,7 +2,6 @@ package protocol.jabber;
 
 import java.util.List;
 import java.util.Vector;
-import android.support.v4.app.FragmentActivity;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -39,11 +38,11 @@ public final class MirandaNotes {
         screen.setBuildOptionsMenu(new VirtualList.OnBuildOptionsMenu() {
             @Override
             public void onCreateOptionsMenu(Menu menu) {
-                menu.add(Menu.FIRST, COMMAND_ADD, 2, JLocale.getString("add_to_list"));
+                menu.add(Menu.NONE, COMMAND_ADD, Menu.NONE, JLocale.getString("add_to_list"));
             }
 
             @Override
-            public void onOptionsItemSelected(FragmentActivity activity, MenuItem item) {
+            public void onOptionsItemSelected(MenuItem item) {
                 switch (item.getItemId()) {
                     case COMMAND_ADD: {
                         new NoteEditor(addEmptyNote()).showIt();

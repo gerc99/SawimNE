@@ -1,6 +1,5 @@
 package sawim.modules;
 
-import android.support.v4.app.FragmentActivity;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -196,7 +195,7 @@ public final class DebugLog {
             }
 
             @Override
-            public void onOptionsItemSelected(FragmentActivity activity, MenuItem item) {
+            public void onOptionsItemSelected(MenuItem item) {
                 switch (item.getItemId()) {
                     case MENU_CLEAN:
                         model.clear();
@@ -206,14 +205,10 @@ public final class DebugLog {
             }
         });
     }
+
     public void activate() {
         init();
         list.show();
-    }
-
-    public void activateCrashLog() {
-        init();
-        list.showCrashLog();
     }
 
     private void removeOldRecords() {

@@ -1,12 +1,15 @@
 package ru.sawim.view.menu;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
+import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
+import protocol.Protocol;
 import ru.sawim.General;
 import ru.sawim.R;
-import ru.sawim.activities.ChatActivity;
+import ru.sawim.view.ChatView;
+import sawim.chat.Chat;
 
 /**
  * Created with IntelliJ IDEA.
@@ -22,13 +25,13 @@ public class JuickMenu implements DialogInterface.OnClickListener {
     public static final String PSTO  = "psto@psto.net";
     public enum Mode {none, juick, psto};
 
-    private Context context;
-    private String currentProtocol;
+    private FragmentActivity activity;
+    private Protocol currentProtocol;
     private String currentContact;
     private String text;
 
-    public JuickMenu(Context baseContext, String currentProtocol, String currentContact, String clickedString) {
-        context = baseContext;
+    public JuickMenu(FragmentActivity activity, Protocol currentProtocol, String currentContact, String clickedString) {
+        this.activity = activity;
         text = clickedString;
         this.currentProtocol = currentProtocol;
         this.currentContact = currentContact;
@@ -38,22 +41,22 @@ public class JuickMenu implements DialogInterface.OnClickListener {
         CharSequence[] items = null;
         if (text.startsWith("#")) {
             items = new CharSequence[6];
-            items[0] = context.getString(R.string.reply);
-            items[1] = context.getString(R.string.view_comments);
-            items[2] = context.getString(R.string.recommend_post);
-            items[3] = context.getString(R.string.subscribe);
-            items[4] = context.getString(R.string.unsubscribe);
-            items[5] = context.getString(R.string.remove);
+            items[0] = activity.getString(R.string.reply);
+            items[1] = activity.getString(R.string.view_comments);
+            items[2] = activity.getString(R.string.recommend_post);
+            items[3] = activity.getString(R.string.subscribe);
+            items[4] = activity.getString(R.string.unsubscribe);
+            items[5] = activity.getString(R.string.remove);
         } else if (text.startsWith("@")) {
             items = new CharSequence[5];
             items[0] = text;
-            items[1] = context.getString(R.string.private_message);
-            items[2] = context.getString(R.string.subscribe);
-            items[3] = context.getString(R.string.unsubscribe);
-            items[4] = context.getString(R.string.to_black_list);
+            items[1] = activity.getString(R.string.private_message);
+            items[2] = activity.getString(R.string.subscribe);
+            items[3] = activity.getString(R.string.unsubscribe);
+            items[4] = activity.getString(R.string.to_black_list);
         }
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle(R.string.actions);
         builder.setItems(items, this);
         try {
@@ -65,10 +68,27 @@ public class JuickMenu implements DialogInterface.OnClickListener {
 
     public void onClick(DialogInterface dialog, int which) {
         if (currentContact.equals(JUBO)) {
-            Intent intent = new Intent(context, ChatActivity.class);
-            intent.putExtra("protocol_id", currentProtocol);
-            intent.putExtra("contact_id", "juick@juick.com");
-            context.startActivity(intent);
+            ChatView chatView = (ChatView) activity.getSupportFragmentManager()
+                    .findFragmentById(R.id.chat_fragment);
+            if (chatView == null) {
+                ChatView newFragment = new ChatView();
+                Bundle args = new Bundle();
+                args.putString(ChatView.PROTOCOL_ID, currentProtocol.getUserId());
+                args.putString(ChatView.CONTACT_ID, currentContact);
+                newFragment.setArguments(args);
+                FragmentTransaction transaction = activity.getSupportFragmentManager().beginTransaction();
+                transaction.replace(R.id.fragment_container, newFragment, ChatView.TAG);
+                transaction.addToBackStack(null);
+                transaction.commit();
+            } else {
+                Chat chat = chatView.getCurrentChat();
+                chatView.pause(chat);
+                chatView.resetSpinner();
+                if (currentProtocol != null) {
+                    chatView.openChat(currentProtocol, currentProtocol.getItemByUIN("juick@juick.com"));
+                    chatView.resume(chatView.getCurrentChat());
+                }
+            }
         }
         String textToInser = "";
         if (text.startsWith("#")) {

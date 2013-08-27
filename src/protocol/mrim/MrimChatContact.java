@@ -3,6 +3,7 @@
 
 package protocol.mrim;
 
+import android.support.v4.app.FragmentActivity;
 import android.view.ContextMenu;
 import android.view.Menu;
 import protocol.ContactMenu;

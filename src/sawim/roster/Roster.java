@@ -325,7 +325,7 @@ public final class Roster {
     public final void markMessages(Contact contact) {
         SawimApplication.getInstance().updateAppIcon();
         if (General.getInstance().getUpdateChatListener() != null)
-            General.getInstance().getUpdateChatListener().updateChat();
+            General.getInstance().getUpdateChatListener().updateChat(contact);
     }
 
     public void updateConnectionStatus() {

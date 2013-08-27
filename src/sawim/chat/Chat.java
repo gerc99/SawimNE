@@ -244,7 +244,7 @@ public final class Chat {
         messData.clear();
     }
 
-    public void removeMessages(final int limit) {
+    /*public void removeMessages(final int limit) {
         if (messData.size() < limit) {
             return;
         }
@@ -263,7 +263,7 @@ public final class Chat {
 
     public void removeMessagesAtCursor(int currPoss) {
         removeMessages(messData.size() - currPoss - 1);
-    }
+    }*/
 
     public boolean empty() {
         return 0 == getMessCount();
@@ -411,7 +411,7 @@ public final class Chat {
     }
 
     private void addMessage(MessData mData) {
-        removeOldMessages();
+        //removeOldMessages();
         messData.add(mData);
     }
 

@@ -2,8 +2,9 @@ package protocol.mrim;
 
 import android.view.ContextMenu;
 import android.view.Menu;
-import android.view.SubMenu;
 import protocol.*;
+import ru.sawim.SawimApplication;
+import ru.sawim.view.menu.MyMenu;
 import sawim.Options;
 import sawim.comm.StringConvertor;
 import sawim.modules.DebugLog;
@@ -74,23 +75,23 @@ public class MrimContact extends Contact {
         }
         addGeneralItems(protocol, contactMenu);
     }
-    protected void initManageContactMenu(Protocol protocol, SubMenu menu) {
+    protected void initManageContactMenu(Protocol protocol, MyMenu menu) {
         if (protocol.isConnected()) {
             initPrivacyMenu(menu);
             if (isTemp()) {
-                menu.add(Menu.FIRST, ContactMenu.USER_MENU_ADD_USER, 2, R.string.add_user);
+                menu.add(SawimApplication.getContext().getString(R.string.add_user), ContactMenu.USER_MENU_ADD_USER);
             } else {
                 if (protocol.getGroupItems().size() > 1) {
-                    menu.add(Menu.FIRST, ContactMenu.USER_MENU_MOVE, 2, R.string.move_to_group);
+                    menu.add(SawimApplication.getContext().getString(R.string.move_to_group), ContactMenu.USER_MENU_MOVE);
                 }
                 if (!isAuth()) {
-                    menu.add(Menu.FIRST, ContactMenu.USER_MENU_REQU_AUTH, 2, R.string.requauth);
+                    menu.add(SawimApplication.getContext().getString(R.string.requauth), ContactMenu.USER_MENU_REQU_AUTH);
                 }
-                menu.add(Menu.FIRST, ContactMenu.USER_MENU_RENAME, 2, R.string.rename);
+                menu.add(SawimApplication.getContext().getString(R.string.rename), ContactMenu.USER_MENU_RENAME);
             }
         }
         if ((protocol.isConnected() || isTemp()) && protocol.inContactList(this)) {
-            menu.add(Menu.FIRST, ContactMenu.USER_MENU_USER_REMOVE, 2, R.string.remove);
+            menu.add(SawimApplication.getContext().getString(R.string.remove), ContactMenu.USER_MENU_USER_REMOVE);
         }
     }
 

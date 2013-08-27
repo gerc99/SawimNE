@@ -15,26 +15,4 @@
                 android:layout_height="50dip">
         </LinearLayout>
     </HorizontalScrollView>
-    <ProgressBar
-            android:id="@+id/myprogressbar"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_alignParentTop="true"
-            android:max="100"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginBottom="1dp"/>
-    <android.support.v4.view.ViewPager
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/view_pager">
-        <android.support.v4.view.PagerTitleStrip
-                android:id="@+id/pager_title_strip"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="top">
-        </android.support.v4.view.PagerTitleStrip>
-    </android.support.v4.view.ViewPager>
 </LinearLayout>

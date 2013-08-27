@@ -2,12 +2,10 @@ package protocol;
 
 import DrawControls.icons.Icon;
 import DrawControls.icons.ImageList;
+import ru.sawim.view.menu.MyMenu;
 import sawim.roster.TreeNode;
-import android.support.v4.app.FragmentActivity;
 import android.view.ContextMenu;
 import android.view.Menu;
-import android.view.SubMenu;
-import ru.sawim.view.FileProgressView;
 import ru.sawim.General;
 import sawim.chat.Chat;
 import sawim.roster.Roster;
@@ -154,19 +152,6 @@ abstract public class Contact extends TreeNode {
         Roster.getInstance().setCurrentContact(this);
     }
 
-    private FileProgressView fileProgressView;
-    public void addFileProgress() {
-        fileProgressView = new FileProgressView();
-    }
-
-    public void changeFileProgress(int percent, String caption, String text) {
-        fileProgressView.changeFileProgress(percent, caption, text);
-    }
-
-    public void showFileProgress(FragmentActivity activity) {
-        fileProgressView.show(activity.getSupportFragmentManager(), "file");
-    }
-
     public static final byte CONTACT_NO_AUTH       = 1 << 1; 
     private static final byte CONTACT_IS_TEMP      = 1 << 3; 
     
@@ -241,7 +226,7 @@ abstract public class Contact extends TreeNode {
     public final boolean inIgnoreList() {
         return (booleanValues & SL_IGNORE) != 0;
     }
-    protected final void initPrivacyMenu(SubMenu menu) {
+    protected final void initPrivacyMenu(MyMenu menu) {
         if (!isTemp()) {
             String visibleList = inVisibleList()
                     ? "rem_visible_list" : "add_visible_list";
@@ -250,9 +235,9 @@ abstract public class Contact extends TreeNode {
             String ignoreList = inIgnoreList()
                     ? "rem_ignore_list": "add_ignore_list";
 
-            menu.add(Menu.FIRST, ContactMenu.USER_MENU_PS_VISIBLE, 2, visibleList);
-            menu.add(Menu.FIRST, ContactMenu.USER_MENU_PS_INVISIBLE, 2, invisibleList);
-            menu.add(Menu.FIRST, ContactMenu.USER_MENU_PS_IGNORE, 2, ignoreList);
+            menu.add(visibleList, ContactMenu.USER_MENU_PS_VISIBLE);
+            menu.add(invisibleList, ContactMenu.USER_MENU_PS_INVISIBLE);
+            menu.add(ignoreList, ContactMenu.USER_MENU_PS_IGNORE);
         }
     }
 
@@ -329,7 +314,7 @@ abstract public class Contact extends TreeNode {
         return ((booleanValues >>> 16) & 0xFF) - 1;
     }
 
-    protected abstract void initManageContactMenu(Protocol protocol, SubMenu menu);
+    protected abstract void initManageContactMenu(Protocol protocol, MyMenu menu);
 
     protected void initContextMenu(Protocol protocol, ContextMenu contactMenu) {
         addChatItems(contactMenu);
@@ -342,11 +327,11 @@ abstract public class Contact extends TreeNode {
     protected final void addChatItems(ContextMenu menu) {
         if (isSingleUserContact()) {
             if (!isAuth()) {
-                menu.add(Menu.FIRST, ContactMenu.USER_MENU_REQU_AUTH, 2, R.string.requauth);
+                menu.add(Menu.NONE, ContactMenu.USER_MENU_REQU_AUTH, Menu.NONE, R.string.requauth);
             }
         }
         if (!isTemp() && !isConference()) {
-            menu.add(Menu.FIRST, ContactMenu.USER_MENU_TRACK, 2, R.string.extra_settings);
+            menu.add(Menu.NONE, ContactMenu.USER_MENU_TRACK, Menu.NONE, R.string.extra_settings);
 		}
         if (isSingleUserContact() || isOnline()) {
             /*if (sawim.modules.fs.FileSystem.isSupported()) {
@@ -359,17 +344,16 @@ abstract public class Contact extends TreeNode {
         }
     }
     protected final void addGeneralItems(Protocol protocol, ContextMenu menu) {
-        menu.add(Menu.FIRST, ContactMenu.USER_MENU_USER_INFO, 2, R.string.user_info);
-        SubMenu manageContact = menu.addSubMenu(Menu.FIRST, ContactMenu.USER_MANAGE_CONTACT, 2, R.string.manage);
-        initManageContactMenu(protocol, manageContact);
+        menu.add(Menu.NONE, ContactMenu.USER_MENU_USER_INFO, Menu.NONE, R.string.user_info);
+        menu.add(Menu.NONE, ContactMenu.USER_MANAGE_CONTACT, Menu.NONE, R.string.manage);
         if (!isTemp()) {
-            menu.add(Menu.FIRST, ContactMenu.USER_MENU_HISTORY, 2, R.string.history);
+            menu.add(Menu.NONE, ContactMenu.USER_MENU_HISTORY, Menu.NONE, R.string.history);
         }
         if (isOnline()) {
-            menu.add(Menu.FIRST, ContactMenu.USER_MENU_STATUSES, 2, R.string.statuses);
+            menu.add(Menu.NONE, ContactMenu.USER_MENU_STATUSES, Menu.NONE, R.string.statuses);
         }
         if (hasChat()) {
-            menu.add(Menu.FIRST, ContactMenu.USER_MENU_CLOSE_CHAT, 2, R.string.close);
+            menu.add(Menu.NONE, ContactMenu.USER_MENU_CLOSE_CHAT, Menu.NONE, R.string.close);
         }
     }
 }

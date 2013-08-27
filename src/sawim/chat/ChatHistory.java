@@ -30,7 +30,9 @@ public final class ChatHistory {
     }
 
     public Chat chatAt(int index) {
-        return historyTable.get(index);
+        if ((index < historyTable.size()) && (index >= 0))
+            return historyTable.get(index);
+        return null;
     }
 
     public Contact contactAt(int index) {
