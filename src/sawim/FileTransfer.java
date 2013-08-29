@@ -60,16 +60,16 @@ public final class FileTransfer implements FileBrowserListener,
     }
 
 
-    public void addFileProgress() {
+    private void addFileProgress() {
         fileProgressView = new FileProgressView();
     }
 
-    public void changeFileProgress(int percent, String caption, String text) {
+    private void changeFileProgress(int percent, String caption, String text) {
         if (fileProgressView != null)
             fileProgressView.changeFileProgress(percent, caption, text);
     }
 
-    public void showFileProgress(FragmentActivity a) {
+    private void showFileProgress(FragmentActivity a) {
         if (fileProgressView != null)
             fileProgressView.show(a.getSupportFragmentManager(), "file");
     }

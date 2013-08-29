@@ -1832,9 +1832,9 @@ public final class JabberXml extends ClientConnection {
         hResp.finish();
 
         String quote = "\"";
-        if (Profile.PROTOCOL_VK == getJabber().getProfile().protocolType) {
-            quote = "";
-        }
+    //    if (Profile.PROTOCOL_VK == getJabber().getProfile().protocolType) {
+    //        quote = "";
+    //    }
         return MD5.toBase64(StringConvertor.stringToByteArrayUtf8(
                 new StringBuffer()
                 .append("username=\"").append(user)

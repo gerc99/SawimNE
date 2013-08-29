@@ -1,24 +1,18 @@
 package ru.sawim.view;
 
 import DrawControls.icons.Icon;
-import DrawControls.icons.ImageList;
 import android.app.AlertDialog;
 import android.content.*;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.PorterDuff;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.*;
-import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -26,7 +20,6 @@ import android.widget.*;
 import protocol.Contact;
 import protocol.ContactMenu;
 import protocol.Protocol;
-import protocol.StatusInfo;
 import protocol.jabber.*;
 import ru.sawim.General;
 import ru.sawim.R;
@@ -43,10 +36,7 @@ import ru.sawim.Scheme;
 import sawim.modules.DebugLog;
 import sawim.roster.Roster;
 import sawim.util.JLocale;
-
-import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -64,8 +54,8 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
     private Protocol protocol;
     private Contact currentContact;
     private boolean sendByEnter;
-    private ListView nickList;
-    private ListView chatListView;
+    private MyListView nickList;
+    private MyListView chatListView;
     private MySpinner spinner;
     private MucUsersView mucUsersView;
     private MessagesAdapter adapter;
@@ -110,14 +100,6 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
                 forceGoToChat(ChatHistory.instance.getPreferredItem());
             }
         });
-    }
-
-    public boolean hasBack() {
-        if (nickList.getVisibility() == View.VISIBLE) {
-            nickList.setVisibility(View.GONE);
-            return false;
-        }
-        return true;
     }
 
     public void resetSpinner() {
@@ -307,6 +289,19 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        Bundle args = getArguments();
+        if (args != null) {
+            Protocol protocol = Roster.getInstance().getProtocol(args.getString(PROTOCOL_ID));
+            Contact currentContact = protocol.getItemByUIN(args.getString(CONTACT_ID));
+            openChat(protocol, currentContact);
+        }/* else if (currentContact != null) {
+            openChat(protocol, currentContact);
+        }*/
+    }
+
+    @Override
     public void onPause() {
         super.onPause();
         pause(chat);
@@ -328,6 +323,10 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
 
     public void pause(Chat chat) {
         if (chat == null) return;
+        Bundle args = getArguments();
+        args.putString(ChatView.PROTOCOL_ID, protocol.getUserId());
+        args.putString(ChatView.CONTACT_ID, currentContact.getUserId());
+
         View item = chatListView.getChildAt(0);
         addLastPosition(chat.getContact().getUserId(), chatListView.getFirstVisiblePosition(), (item == null) ? 0 : Math.abs(item.getBottom()));
 
@@ -351,6 +350,14 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
         chat.resetUnreadMessages();
         updateChatIcon();
         updateList();
+    }
+
+    public boolean hasBack() {
+        if (nickList.getVisibility() == View.VISIBLE) {
+            nickList.setVisibility(View.GONE);
+            return false;
+        }
+        return true;
     }
 
     private void forceGoToChat(int position) {
@@ -439,16 +446,11 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
         }
     }
     private void initList() {
-        chatListView = new ListView(getActivity());
+        chatListView = new MyListView(getActivity());
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         lp.weight = 1;
         lp.bottomMargin = 8;
-        chatListView.setDivider(null);
-        chatListView.setDividerHeight(0);
         chatListView.setLayoutParams(lp);
-        chatListView.setCacheColorHint(0);
-        chatListView.setScrollingCacheEnabled(false);
-        chatListView.setAnimationCacheEnabled(false);
         chatListView.setFastScrollEnabled(true);
         chatListView.setStackFromBottom(true);
         chatListView.setTranscriptMode(ListView.TRANSCRIPT_MODE_NORMAL);
@@ -469,11 +471,10 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
 
     private void initMucUsers() {
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        nickList = new ListView(getActivity());
+        nickList = new MyListView(getActivity());
         lp.weight = (float) 1.5;
         lp.bottomMargin = 8;
         nickList.setLayoutParams(lp);
-        nickList.setCacheColorHint(0);
         nickList.setVisibility(View.GONE);
         nickList.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
         if (currentContact instanceof JabberServiceContact && currentContact.isConference()) {
@@ -534,24 +535,9 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
         });
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        Bundle args = getArguments();
-        if (args != null) {
-            Protocol protocol = Roster.getInstance().getProtocol(args.getString(PROTOCOL_ID));
-            Contact currentContact = protocol.getItemByUIN(args.getString(CONTACT_ID));
-            openChat(protocol, currentContact);
-        } else if (currentContact != null) {
-            // Set article based on saved instance state defined during onCreateView
-            openChat(protocol, currentContact);
-        }
-    }
-
     /*@Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-
         outState.putString(ChatView.PROTOCOL_ID, protocol.getUserId());
         outState.putString(ChatView.CONTACT_ID, currentContact.getUserId());
     }*/

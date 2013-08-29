@@ -75,9 +75,9 @@ public final class Jabber extends Protocol implements FormListener {
             case Profile.PROTOCOL_YANDEX:
                 file = "ya";
                 break;
-            case Profile.PROTOCOL_VK:
-                file = "vk";
-                break;
+    //        case Profile.PROTOCOL_VK:
+    //            file = "vk";
+    //            break;
             case Profile.PROTOCOL_QIP:
                 file = "qip";
                 break;
@@ -138,7 +138,7 @@ public final class Jabber extends Protocol implements FormListener {
     public boolean hasS2S() {
         switch (getProfile().protocolType) {
             case Profile.PROTOCOL_FACEBOOK:
-            case Profile.PROTOCOL_VK:
+    //        case Profile.PROTOCOL_VK:
             case Profile.PROTOCOL_ODNOKLASSNIKI:
                 return false;
         }
@@ -148,7 +148,7 @@ public final class Jabber extends Protocol implements FormListener {
     public boolean hasVCardEditor() {
         switch (getProfile().protocolType) {
             case Profile.PROTOCOL_FACEBOOK:
-            case Profile.PROTOCOL_VK:
+    //        case Profile.PROTOCOL_VK:
             case Profile.PROTOCOL_LJ:
             case Profile.PROTOCOL_ODNOKLASSNIKI:
                 return false;
@@ -360,8 +360,8 @@ public final class Jabber extends Protocol implements FormListener {
                 return "livejournal.com";
             case Profile.PROTOCOL_YANDEX:
                 return getYandexDomain(domain);
-            case Profile.PROTOCOL_VK:
-                return "vkmessenger.com";
+    //        case Profile.PROTOCOL_VK:
+    //            return "vkmessenger.com";
             case Profile.PROTOCOL_QIP:
                 return "webim.qip.ru";
             case Profile.PROTOCOL_ODNOKLASSNIKI:
@@ -507,7 +507,7 @@ public final class Jabber extends Protocol implements FormListener {
             setContactStatus(c, c.getMyName(), StatusInfo.STATUS_ONLINE, "", 0);
             c.doJoining();
         }
-
+        if (connection == null) return;
         connection.sendPresence(c);
         String password = c.getPassword();
         if (Jid.isIrcConference(jid) && !StringConvertor.isEmpty(password)) {

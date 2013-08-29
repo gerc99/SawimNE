@@ -120,7 +120,6 @@ public class Forms {
 
     public void destroy() {
         clearForm();
-        clearListeners();
     }
 
     public void clearListeners() {

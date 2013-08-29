@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import protocol.Contact;
 import sawim.Options;
 import sawim.Updater;
@@ -83,6 +84,7 @@ public class General {
             DebugLog.panic("init", e);
             DebugLog.instance.activate();
         }
+        DebugLog.startTests();
     }
 
     public static void updateOptions() {

@@ -15,14 +15,14 @@ import ru.sawim.view.MyTextView;
  * Time: 20:37
  * To change this template use File | Settings | File Templates.
  */
-public class ChatItemView extends RelativeLayout {
+public class MessageItemView extends RelativeLayout {
 
     public ImageView msgImage;
     public TextView msgNick;
     public TextView msgTime;
     public MyTextView msgText;
 
-    public ChatItemView(Context context) {
+    public MessageItemView(Context context) {
         super(context);
         msgImage = new ImageView(context);
         msgNick = new TextView(context);
@@ -59,5 +59,4 @@ public class ChatItemView extends RelativeLayout {
         msgText.setLinksClickable(false);
         addView(msgText, lp);
     }
-
 }

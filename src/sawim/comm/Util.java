@@ -1,6 +1,5 @@
 package sawim.comm;
 
-import android.util.Log;
 import sawim.roster.TreeNode;
 import ru.sawim.General;
 import sawim.Options;
@@ -333,27 +332,23 @@ public class Util {
             return 0;
         }
     }
-
-
     
     public static long createCurrentLocalTime() {
         return gmtTimeToLocalTime(General.getCurrentGmtTime());
     }
 
     public static String getLocalDayOfWeek(long gmtTime) {
-        
         Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
         cal.setTime(new Date(Util.gmtTimeToLocalTime(gmtTime) * 1000));
         String[] days = {"", "sunday", "monday", "tuesday", "wednesday",
                 "thursday", "friday", "saturday"};
         return JLocale.getString(days[cal.get(Calendar.DAY_OF_WEEK)]);
     }
+
     public static String getLocalDateString(long gmtDate, boolean onlyTime) {
         if (0 == gmtDate) return "***error***";
         int[] localDate = createDate(gmtTimeToLocalTime(gmtDate));
-
         StringBuffer sb = new StringBuffer(16);
-
         if (!onlyTime) {
             sb.append(Util.makeTwo(localDate[TIME_DAY]))
               .append('.')
@@ -362,11 +357,9 @@ public class Util {
               .append(localDate[TIME_YEAR])
               .append(' ');
         }
-
         sb.append(Util.makeTwo(localDate[TIME_HOUR]))
           .append(':')
           .append(Util.makeTwo(localDate[TIME_MINUTE]));
-
         return sb.toString();
     }
     public static String getDate(String format, long anyDate) {
@@ -382,7 +375,6 @@ public class Util {
         return format;
     }
 
-    
     public static String getUtcDateString(long gmtTime) {
         return getDate("%Y-%m-%dT%H:%M:%SZ", gmtTime);
     }
@@ -424,7 +416,6 @@ public class Util {
         }
     }
 
-    
     private static int[] createDate(long value) {
         int total_days, last_days, i;
         int sec, min, hour, day, mon, year;
@@ -533,8 +524,6 @@ public class Util {
         
         return JLocale.getString(suf[field]);
     }
-
-
     
     public static int uniqueValue() {
         int time = (int)(General.getCurrentGmtTime() & 0x7FFF);
@@ -640,6 +629,7 @@ public class Util {
             urls.addElement(url);
         }
     }
+
     private static void parseForUrl(Vector result, String msg, char ch, int before, int after, int limit) {
         if (limit <= result.size()) {
             return;
@@ -686,6 +676,7 @@ public class Util {
             }
         }
     }
+
     public static String getUrlWithoutProtocol(String url) {
         int index = url.indexOf(':');
         if (-1 != index) {
@@ -699,10 +690,12 @@ public class Util {
         }
         return url;
     }
+
     public static String notUrls(String str) {
         str = StringConvertor.notNull(str);
         return (-1 != str.indexOf("http://")) ? "" : str;
     }
+
     public static boolean hasURL(String msg) {
         if (null == msg) return false;
         Vector result = new Vector();
@@ -712,9 +705,9 @@ public class Util {
         parseForUrl(result, msg, '@', URL_CHAR_PREV, URL_CHAR_OTHER, 1);
         return !result.isEmpty();
     }
+
     public static Vector parseMessageForURL(String msg) {
         if (null == msg) return null;
-        
         final int MAX_LINK_COUNT = 100;
         Vector result = new Vector();
         parseForUrl(result, msg, '.', URL_CHAR_PREV, URL_CHAR_OTHER, MAX_LINK_COUNT);
@@ -758,12 +751,10 @@ public class Util {
     }
 
     public static String replace(String text, String[] from, String[] to, String keys) {
-        
         StringBuffer result = new StringBuffer();
         int pos = 0;
         while (pos < text.length()) {
             char ch = text.charAt(pos);
-
             int index = keys.indexOf(ch);
             while (-1 != index) {
                 if (text.startsWith(from[index], pos)) {
@@ -773,16 +764,13 @@ public class Util {
                 }
                 index = keys.indexOf(text.charAt(pos), index + 1);
             }
-
             if (-1 == index) {
                 result.append(ch);
                 pos++;
             }
         }
-
         return result.toString();
     }
-
     
     static public String[] explode(String text, char separator) {
         if (StringConvertor.isEmpty(text)) {
@@ -801,6 +789,7 @@ public class Util {
         tmp.copyInto(result);
         return result;
     }
+
     static public String implode(String[] text, String separator) {
         StringBuffer result = new StringBuffer();
         for (int i = 0; i < text.length; ++i) {

@@ -106,19 +106,9 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
 
     @Override
     public void onClick(View view) {
-        if (view.equals(cancelButton)) {
-            Forms.getInstance().getFormListener().formAction(Forms.getInstance(), false);
-        } else if (view.equals(okButton)) {
-            new Thread() {
-                public void run() {
-                    getActivity().runOnUiThread(new Runnable() {
-                        public void run() {
-                            Forms.getInstance().getFormListener().formAction(Forms.getInstance(), true);
-                        }
-                    });
-                }
-            }.start();
-        }
+        if (Forms.getInstance().getFormListener() != null)
+            Forms.getInstance().getFormListener().formAction(Forms.getInstance(), view.equals(okButton));
+        Forms.getInstance().clearListeners();
     }
 
     public boolean hasBack() {

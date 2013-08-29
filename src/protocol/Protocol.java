@@ -87,11 +87,11 @@ abstract public class Protocol {
         String rawUin = StringConvertor.notNull(account.userId);
         if (!StringConvertor.isEmpty(rawUin)) {
             byte type = account.protocolType;
-            if ((Profile.PROTOCOL_VK == type)
+    /*        if ((Profile.PROTOCOL_VK == type)
                     && (0 < Util.strToIntDef(rawUin, 0))) {
                 rawUin = "id" + rawUin;
                 account.userId = rawUin;
-            }
+            }*/
             String domain = getDefaultDomain(type);
             if ((null != domain) && (-1 == rawUin.indexOf('@'))) {
                 rawUin += domain;
@@ -124,8 +124,8 @@ abstract public class Protocol {
                 return "@livejournal.com";
             case Profile.PROTOCOL_YANDEX:
                 return "@ya.ru";
-            case Profile.PROTOCOL_VK:
-                return "@vk.com";
+    //        case Profile.PROTOCOL_VK:
+    //            return "@vk.com";
             case Profile.PROTOCOL_QIP:
                 return "@qip.ru";
             case Profile.PROTOCOL_ODNOKLASSNIKI:

@@ -63,7 +63,7 @@ public final class TrackingForm implements TextBoxView.TextBoxListener {
             @Override
             public boolean back() {
                 saveList();
-                backToCL();
+                Tracking.setTrackIcon(TrackingForm.this.uin, TRACK);
                 screen.clearAll();
                 return true;
             }
@@ -311,17 +311,12 @@ public final class TrackingForm implements TextBoxView.TextBoxListener {
 		showList();
     }
 
-    public void activateInputBox(String text) {
+    private void activateInputBox(String text) {
         InputBox = new TextBoxView();
 		InputBox.setTextBoxListener(this);
 		InputBox.setCaption(JLocale.getString("mass"));
         InputBox.setString(text);
         InputBox.show(SawimActivity.getInstance().getSupportFragmentManager(), JLocale.getString("message"));
-    }
-
-    public void backToCL() {
-        Tracking.setTrackIcon(uin, TRACK);
-        screen.back();
     }
 
     private void changeStatus(int index) {
@@ -425,7 +420,7 @@ public final class TrackingForm implements TextBoxView.TextBoxListener {
 	public void textboxAction(TextBoxView box, boolean ok) {
         if ((box == InputBox) && ok) {
 		    setLineText(InputBox.getString());
-			screen.back();
+			//screen.back();
 			return;
 		}
 	}

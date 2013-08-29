@@ -139,7 +139,7 @@ public final class Roster {
             case Profile.PROTOCOL_FACEBOOK:
             case Profile.PROTOCOL_LJ:
             case Profile.PROTOCOL_YANDEX:
-            case Profile.PROTOCOL_VK:
+    //        case Profile.PROTOCOL_VK:
             case Profile.PROTOCOL_QIP:
             case Profile.PROTOCOL_ODNOKLASSNIKI:
                 return Profile.PROTOCOL_JABBER;

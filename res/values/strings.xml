@@ -201,5 +201,12 @@
     <string name="save_avatar">Save avatar</string>
     <string name="saved">Saved</string>
     <string name="added">Added</string>
+    <string name="about_program">About program</string>
+    <string name="about_program_desc">SawIM NE (new engine) - Mobile IM-client</string>
+    <string name="version">Version</string>
+    <string name="author">Author</string>
+    <string name="registration_jid">Registration Jabber ID</string>
+    <string name="sign_in_jabber">Sign in Jabber</string>
+    <string name="sign_into_other_networks">Sign into other networks</string>
 
 </resources>

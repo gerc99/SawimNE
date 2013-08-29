@@ -2,8 +2,6 @@ package ru.sawim.view;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.view.*;
 import android.widget.AdapterView;
@@ -28,7 +26,7 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
     public static final String TAG = "VirtualListView";
     private VirtualListAdapter adapter;
     private VirtualList list = VirtualList.getInstance();
-    private ListView lv;
+    private MyListView lv;
     private AdapterView.AdapterContextMenuInfo contextMenuInfo;
 
     @Override
@@ -59,8 +57,7 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
         Activity currentActivity = getActivity();
         currentActivity.setTitle(list.getCaption());
         adapter = new VirtualListAdapter(currentActivity, list.getModel().elements);
-        lv = (ListView) currentActivity.findViewById(R.id.list_view);
-        lv.setCacheColorHint(0x00000000);
+        lv = (MyListView) currentActivity.findViewById(R.id.list_view);
         lv.setAdapter(adapter);
         lv.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
         lv.setOnItemClickListener(new ListView.OnItemClickListener() {
@@ -153,7 +150,7 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
                 .findFragmentById(R.id.chat_fragment) != null)
             SawimActivity.getInstance().recreateActivity();
         else
-            getFragmentManager().popBackStack();
+            SawimActivity.getInstance().getSupportFragmentManager().popBackStack();
     }
 
     public boolean hasBack() {

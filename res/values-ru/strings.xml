@@ -200,6 +200,12 @@
     <string name="save_avatar">Сохранить аватар</string>
     <string name="saved">Сохранено</string>
     <string name="added">Добавлено</string>
-
+    <string name="about_program">О программе</string>
+    <string name="about_program_desc">SawIM NE (new engine) - Мобильный IM-клиент</string>
+    <string name="version">Версия</string>
+    <string name="author">Автор</string>
+    <string name="registration_jid">Зарегистрировать Jabber ID</string>
+    <string name="sign_in_jabber">Войти в Jabber</string>
+    <string name="sign_into_other_networks">Войти в другие сети</string>
 
 </resources>

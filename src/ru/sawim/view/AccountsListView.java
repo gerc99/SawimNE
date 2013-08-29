@@ -65,7 +65,6 @@ public class AccountsListView extends Fragment {
         final int protocolType = account.protocolType;
 
         switch (item.getItemId()) {
-
             case R.id.menu_edit:
                 new LoginDialog(protocolType, accountID, true).show(getActivity().getSupportFragmentManager(), "login");
                 return true;
@@ -143,7 +142,7 @@ public class AccountsListView extends Fragment {
         builder.create().show();
     }
 
-    public class LoginDialog extends DialogFragment {
+     class LoginDialog extends DialogFragment {
         private int type;
         public int id;
         private boolean isEdit;
@@ -215,6 +214,7 @@ public class AccountsListView extends Fragment {
                     if (isEdit) {
                         addAccount(id, account);
                     } else {
+                        account.isActive = true;
                         addAccount(Options.getAccountCount() + 1, account);
                     }
                     dismiss();
@@ -222,5 +222,5 @@ public class AccountsListView extends Fragment {
             });
             return dialogLogin;
         }
-    }
+     }
 }

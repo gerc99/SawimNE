@@ -14,6 +14,7 @@ import ru.sawim.models.list.VirtualListModel;
 import sawim.util.JLocale;
 
 import java.util.List;
+import java.util.TimeZone;
 
 public final class DebugLog {
     public static final DebugLog instance = new DebugLog();
@@ -105,7 +106,7 @@ public final class DebugLog {
     }
 
     public static void startTests() {
-        println("1329958015 " + Util.createGmtTime(2012, 02, 23, 4, 46, 55));
+        //println("1329958015 " + Util.createGmtTime(2012, 02, 23, 4, 46, 55));
 
         println("TimeZone info");
         java.util.TimeZone tz = java.util.TimeZone.getDefault();
@@ -113,7 +114,10 @@ public final class DebugLog {
         println("Daylight: " + tz.useDaylightTime());
         println("ID: " + tz.getID());
 
-        MD5 md5 = new MD5();
+        int time = TimeZone.getDefault().getRawOffset() / (1000 * 60 * 60);
+        println("GMT "+time);
+
+        /*MD5 md5 = new MD5();
         md5.init();
         md5.updateASCII("\u0422\u0435\u0441\u0442");
         md5.finish();
@@ -140,7 +144,7 @@ public final class DebugLog {
         assert0("replace (1): failed", Util.replace("text2text23", "2", "3"), "text3text33");
         assert0("replace (2): failed", Util.replace("text22text2223", "22", "3"), "text3text323");
         assert0("replace (3): failed", Util.replace("text22text22", "22", "3"), "text3text3");
-        assert0("replace (4): failed", Util.replace("text3text33", "22", "3"), "text3text33");
+        assert0("replace (4): failed", Util.replace("text3text33", "22", "3"), "text3text33");*/
 
     }
 

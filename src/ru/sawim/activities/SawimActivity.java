@@ -29,7 +29,7 @@ import android.content.Intent;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
+import android.support.v4.app.FragmentTransaction;
 import android.view.*;
 import ru.sawim.view.*;
 import sawim.ExternalApi;
@@ -108,15 +108,12 @@ public class SawimActivity extends FragmentActivity {
         }));
 
         if (findViewById(R.id.fragment_container) != null) {
-            if (savedInstanceState != null) {
-                return;
-            }
+            if (savedInstanceState != null) return;
             RosterView rosterView = new RosterView();
             rosterView.setArguments(getIntent().getExtras());
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.fragment_container, rosterView, RosterView.TAG).commit();
         }
-
     }
 
     @Override
@@ -140,9 +137,8 @@ public class SawimActivity extends FragmentActivity {
             if (chatView.hasBack())
                 super.onBackPressed();
         } else if (virtualListView != null) {
-            if (virtualListView.hasBack()) {
+            if (virtualListView.hasBack())
                 back();
-            }
         } else if (formView != null) {
             if (formView.hasBack())
                 back();
@@ -194,15 +190,16 @@ public class SawimActivity extends FragmentActivity {
     private static final int MENU_SEND_SMS = 4;
     private static final int MENU_SOUND = 5;
     private static final int MENU_OPTIONS = 6;
-    private static final int MENU_QUIT = 13;//OptionsForm
-    private static final int MENU_MORE = 14;
-    private static final int MENU_DISCO = 15;
-    private static final int MENU_NOTES = 16;
-    private static final int MENU_GROUPS = 17;
-    private static final int MENU_MYSELF = 18;
-    private static final int MENU_MICROBLOG = 19;//ManageContactListForm
-    private static final int MENU_MAGIC_EYE = 20;
-    private static final int MENU_DEBUG_LOG = 21;
+    private static final int MENU_ABOUT = 13; //OptionsForm
+    private static final int MENU_QUIT = 14;
+    private static final int MENU_MORE = 15;
+    private static final int MENU_DISCO = 16;
+    private static final int MENU_NOTES = 17;
+    private static final int MENU_GROUPS = 18;
+    private static final int MENU_MYSELF = 19;
+    private static final int MENU_MICROBLOG = 20;//ManageContactListForm
+    private static final int MENU_MAGIC_EYE = 21;
+    private static final int MENU_DEBUG_LOG = 22;
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
@@ -263,6 +260,7 @@ public class SawimActivity extends FragmentActivity {
         optionsMenu.add(Menu.NONE, OptionsForm.OPTIONS_ABSENCE, Menu.NONE, R.string.absence);
         optionsMenu.add(Menu.NONE, OptionsForm.OPTIONS_ANSWERER, Menu.NONE, R.string.answerer);
 
+        menu.add(Menu.NONE, MENU_ABOUT, Menu.NONE, R.string.about_program);
         menu.add(Menu.NONE, MENU_DEBUG_LOG, Menu.NONE, R.string.debug);
         menu.add(Menu.NONE, MENU_QUIT, Menu.NONE, R.string.quit);
         return super.onPrepareOptionsMenu(menu);
@@ -275,7 +273,6 @@ public class SawimActivity extends FragmentActivity {
             virtualListView.onOptionsItemSelect(item);
             return super.onOptionsItemSelected(item);
         }
-
         Protocol p = Roster.getInstance().getCurrProtocol();
         switch (item.getItemId()) {
             case MENU_CONNECT:
@@ -301,7 +298,6 @@ public class SawimActivity extends FragmentActivity {
             case MENU_MAGIC_EYE:
                 MagicEye.instance.activate();
                 break;
-
             case MENU_DISCO:
                 ((Jabber)p).getServiceDiscovery().showIt();
                 break;
@@ -339,6 +335,9 @@ public class SawimActivity extends FragmentActivity {
 
             case MENU_DEBUG_LOG:
                 DebugLog.instance.activate();
+                break;
+            case MENU_ABOUT:
+                new AboutProgramView().show(getSupportFragmentManager(), AboutProgramView.TAG);
                 break;
             case MENU_QUIT:
                 General.getInstance().quit();

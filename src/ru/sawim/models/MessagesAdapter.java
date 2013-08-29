@@ -7,11 +7,9 @@ import android.graphics.Typeface;
 
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import protocol.Protocol;
@@ -27,7 +25,6 @@ import sawim.chat.message.Message;
 import ru.sawim.Scheme;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -76,26 +73,18 @@ public class MessagesAdapter extends BaseAdapter implements MyTextView.TextLinkC
 
     @Override
     public View getView(int index, View row, ViewGroup viewGroup) {
-        ViewHolder holder;
         if (row == null) {
             Log.e("MessagesAdapter", "row == null");
-            row = new ChatItemView(activity);
-            holder = new ViewHolder();
-            holder.msgImage = ((ChatItemView) row).msgImage;
-            holder.msgNick = ((ChatItemView) row).msgNick;
-            holder.msgTime = ((ChatItemView) row).msgTime;
-            holder.msgText = ((ChatItemView) row).msgText;
-            row.setTag(holder);
-        } else {
-            holder = (ViewHolder) row.getTag();
+            row = new MessageItemView(activity);
         }
+        MessageItemView item = ((MessageItemView) row);
         MessData mData = items.get(index);
         String nick = mData.getNick();
         String text = mData.getText();
         boolean incoming = mData.isIncoming();
 
         ((ViewGroup)row).setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
-        holder.msgText.setOnTextLinkClickListener(this);
+        item.msgText.setOnTextLinkClickListener(this);
         byte bg;
         if (mData.isService()) {
             bg = Scheme.THEME_CHAT_BG_SYSTEM;
@@ -109,51 +98,51 @@ public class MessagesAdapter extends BaseAdapter implements MyTextView.TextLinkC
             mData.fullText = TextFormatter.getFormattedText(text, activity);
         }
         if (mData.isMe() || mData.isPresence()) {
-            holder.msgImage.setVisibility(ImageView.GONE);
-            holder.msgNick.setVisibility(TextView.GONE);
-            holder.msgTime.setVisibility(TextView.GONE);
-            holder.msgText.setTextSize(General.getFontSize() - 2);
+            item.msgImage.setVisibility(ImageView.GONE);
+            item.msgNick.setVisibility(TextView.GONE);
+            item.msgTime.setVisibility(TextView.GONE);
+            item.msgText.setTextSize(General.getFontSize() - 2);
             if (mData.isMe()) {
-                holder.msgText.setTextColor(Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG));
-                holder.msgText.setText("* " + nick + " " + mData.fullText);
+                item.msgText.setTextColor(Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG));
+                item.msgText.setText("* " + nick + " " + mData.fullText);
             } else {
-                holder.msgText.setTextColor(Scheme.getColor(Scheme.THEME_CHAT_INMSG));
-                holder.msgText.setText(nick + mData.fullText);
+                item.msgText.setTextColor(Scheme.getColor(Scheme.THEME_CHAT_INMSG));
+                item.msgText.setText(nick + mData.fullText);
             }
         } else {
             if (mData.iconIndex != Message.ICON_NONE) {
                 Icon icon = Message.msgIcons.iconAt(mData.iconIndex);
                 if (icon == null) {
-                    holder.msgImage.setVisibility(ImageView.GONE);
+                    item.msgImage.setVisibility(ImageView.GONE);
                 } else {
-                    holder.msgImage.setVisibility(ImageView.VISIBLE);
-                    holder.msgImage.setImageDrawable(icon.getImage());
+                    item.msgImage.setVisibility(ImageView.VISIBLE);
+                    item.msgImage.setImageDrawable(icon.getImage());
                 }
             }
 
-            holder.msgNick.setVisibility(TextView.VISIBLE);
-            holder.msgNick.setTextColor(Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG));
-            holder.msgNick.setTypeface(Typeface.DEFAULT_BOLD);
-            holder.msgNick.setTextSize(General.getFontSize());
-            holder.msgNick.setText(nick);
+            item.msgNick.setVisibility(TextView.VISIBLE);
+            item.msgNick.setTextColor(Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG));
+            item.msgNick.setTypeface(Typeface.DEFAULT_BOLD);
+            item.msgNick.setTextSize(General.getFontSize());
+            item.msgNick.setText(nick);
 
-            holder.msgTime.setVisibility(TextView.VISIBLE);
-            holder.msgTime.setTextColor(Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG));
-            holder.msgTime.setTextSize(General.getFontSize() - 4);
-            holder.msgTime.setText(mData.strTime);
+            item.msgTime.setVisibility(TextView.VISIBLE);
+            item.msgTime.setTextColor(Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG));
+            item.msgTime.setTextSize(General.getFontSize() - 4);
+            item.msgTime.setText(mData.strTime);
 
             byte color = Scheme.THEME_TEXT;
             if (incoming && !chat.getContact().isSingleUserContact()
                     && Chat.isHighlight(text, chat.getMyName()))
                 color = Scheme.THEME_CHAT_HIGHLIGHT_MSG;
-            holder.msgText.setTextColor(Scheme.getColor(color));
-            holder.msgText.setTextSize(General.getFontSize());
+            item.msgText.setTextColor(Scheme.getColor(color));
+            item.msgText.setTextSize(General.getFontSize());
             if (currentContact.equals(JuickMenu.JUICK) || currentContact.equals(JuickMenu.JUBO))
-                holder.msgText.setTextWithLinks(mData.fullText, JuickMenu.Mode.juick);
+                item.msgText.setTextWithLinks(mData.fullText, JuickMenu.Mode.juick);
             else if (currentContact.equals(JuickMenu.PSTO))
-                holder.msgText.setTextWithLinks(mData.fullText, JuickMenu.Mode.psto);
+                item.msgText.setTextWithLinks(mData.fullText, JuickMenu.Mode.psto);
             else
-                holder.msgText.setTextWithLinks(mData.fullText, JuickMenu.Mode.none);
+                item.msgText.setTextWithLinks(mData.fullText, JuickMenu.Mode.none);
         }
         return row;
     }
@@ -185,12 +174,5 @@ public class MessagesAdapter extends BaseAdapter implements MyTextView.TextLinkC
             });
             builder.create().show();
         }
-    }
-
-    static class ViewHolder {
-        ImageView msgImage;
-        TextView msgNick;
-        TextView msgTime;
-        MyTextView msgText;
     }
 }

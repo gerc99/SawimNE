@@ -124,6 +124,7 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
                                        @Override
                                        public void onClick(DialogInterface dialog, int which) {
                                            currMucNik = nick;
+                                           chatView.hasBack();
                                            switch (menu.getItem(which).idItem) {
                                                case ContactMenu.COMMAND_PRIVATE:
                                                    String jid = Jid.realJidToSawimJid(jabberServiceContact.getUserId() + "/" + nick);
