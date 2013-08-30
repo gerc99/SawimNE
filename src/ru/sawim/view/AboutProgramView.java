@@ -27,6 +27,7 @@ public class AboutProgramView extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         getDialog().setTitle(R.string.about_program);
+        getDialog().setCanceledOnTouchOutside(true);
         View v = inflater.inflate(R.layout.about_program, container, false);
         LinearLayout aboutLayout = (LinearLayout) v.findViewById(R.id.about_linear);
         aboutLayout.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));

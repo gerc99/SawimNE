@@ -21,6 +21,7 @@ public final class MessData {
     public static final short PROGRESS = 8;
     public static final short SERVICE = 16;
     public static final short PRESENCE = 32;
+    public static final short MARKED = 64;
 
     public MessData(long time, String text, String nick, short flags, int iconIndex) {
         this.text = text;
@@ -62,5 +63,13 @@ public final class MessData {
 
     public boolean isPresence() {
         return (rowData & PRESENCE) != 0;
+    }
+
+    public boolean isMarked() {
+        return (rowData & MARKED) != 0;
+    }
+
+    public void setMarked(boolean marked) {
+        rowData = (short) (marked ? (rowData | MARKED) : (rowData & ~MARKED));
     }
 }

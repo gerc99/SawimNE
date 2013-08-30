@@ -94,7 +94,6 @@ public class RosterAdapter extends BaseAdapter {
     @Override
     public View getView(int i, View convertView, ViewGroup viewGroup) {
         if (convertView == null) {
-            Log.e("RosterAdapter", "convertView == null");
             convertView = new RosterItemView(context);
         }
         Protocol protocol = roster.getCurrentProtocol();

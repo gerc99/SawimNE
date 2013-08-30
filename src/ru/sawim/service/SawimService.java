@@ -12,6 +12,8 @@ import android.os.Messenger;
 import android.util.Log;
 import ru.sawim.R;
 import ru.sawim.Tray;
+import ru.sawim.view.ChatView;
+import sawim.chat.Chat;
 import sawim.chat.ChatHistory;
 import sawim.roster.Roster;
 import ru.sawim.activities.SawimActivity;
@@ -76,11 +78,18 @@ public class SawimService extends Service {
             notification.ledOffMS = 1000;
             notification.flags |= android.app.Notification.FLAG_SHOW_LIGHTS;
 
-            notification.number = unread;
+            //notification.number = unread;
             stateMsg = String.format((String) getText(R.string.unread_messages), unread);
         }
-
-        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this, SawimActivity.class), 0);
+        Intent notificationIntent = new Intent(this, SawimActivity.class);
+        Chat current = ChatHistory.instance.chatAt(ChatHistory.instance.getPreferredItem());
+        if (current != null && ChatHistory.instance.getPreferredItem() > -1) {
+            //stateMsg = current.
+            notificationIntent.setAction(SawimActivity.NOTIFY);
+            notificationIntent.putExtra(ChatView.PROTOCOL_ID, current.getProtocol().getUserId());
+            notificationIntent.putExtra(ChatView.CONTACT_ID, current.getContact().getUserId());
+        }
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
         notification.setLatestEventInfo(this, getText(R.string.app_name), stateMsg, contentIntent);
         return notification;
     }

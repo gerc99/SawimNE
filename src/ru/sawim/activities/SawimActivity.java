@@ -25,12 +25,16 @@
 
 package ru.sawim.activities;
 
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.*;
+import protocol.Contact;
 import ru.sawim.view.*;
 import sawim.ExternalApi;
 import sawim.Options;
@@ -57,6 +61,8 @@ import java.io.PrintStream;
 public class SawimActivity extends FragmentActivity {
 
     public static final String LOG_TAG = "SawimActivity";
+
+    public static String NOTIFY = "ru.sawim.notify";
 
     private static SawimActivity instance;
     public static SawimActivity getInstance() {
@@ -113,6 +119,19 @@ public class SawimActivity extends FragmentActivity {
             rosterView.setArguments(getIntent().getExtras());
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.fragment_container, rosterView, RosterView.TAG).commit();
+        }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        if (NOTIFY.equals(intent.getAction())) {
+            RosterView rosterView = (RosterView) getSupportFragmentManager().findFragmentByTag(RosterView.TAG);
+            if (rosterView == null)
+                rosterView = (RosterView) getSupportFragmentManager().findFragmentById(R.id.roster_fragment);
+            Protocol protocol = Roster.getInstance().getProtocol(intent.getStringExtra(ChatView.PROTOCOL_ID));
+            Contact contact = protocol.getItemByUIN(intent.getStringExtra(ChatView.CONTACT_ID));
+            rosterView.openChat(protocol, contact);
+            SawimApplication.getInstance().updateAppIcon();
         }
     }
 

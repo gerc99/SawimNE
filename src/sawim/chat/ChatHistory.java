@@ -253,7 +253,7 @@ public final class ChatHistory {
             }
         }
         Contact currentContact = Roster.getInstance().getCurrentContact();
-        int current = 0;
+        int current = -1;
         for (int i = 0; i < historyTable.size(); ++i) {
             Chat chat = chatAt(i);
             if (0 < chat.getUnreadMessageCount()) {

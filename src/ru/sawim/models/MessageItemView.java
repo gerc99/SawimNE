@@ -2,10 +2,8 @@ package ru.sawim.models;
 
 import android.content.Context;
 import android.text.util.Linkify;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
+import android.util.Log;
+import android.widget.*;
 import ru.sawim.view.MyTextView;
 
 /**
@@ -20,6 +18,7 @@ public class MessageItemView extends RelativeLayout {
     public ImageView msgImage;
     public TextView msgNick;
     public TextView msgTime;
+    public CheckBox checkBox;
     public MyTextView msgText;
 
     public MessageItemView(Context context) {
@@ -27,11 +26,11 @@ public class MessageItemView extends RelativeLayout {
         msgImage = new ImageView(context);
         msgNick = new TextView(context);
         msgTime = new TextView(context);
+        checkBox = new CheckBox(context);
         msgText = new MyTextView(context);
-        build();
     }
 
-    private void build() {
+    public void build() {
         RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
         lp.addRule(ALIGN_PARENT_LEFT);
         lp.addRule(ALIGN_PARENT_TOP);
@@ -41,18 +40,23 @@ public class MessageItemView extends RelativeLayout {
         lp = new RelativeLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
         lp.addRule(ALIGN_PARENT_RIGHT);
         lp.addRule(ALIGN_PARENT_TOP);
-        msgTime.setId(3);
-        addView(msgTime, lp);
+        if (checkBox.getVisibility() != CheckBox.GONE) {
+            checkBox.setId(9);
+            addView(checkBox, lp);
+        } else {
+            msgTime.setId(3);
+            addView(msgTime, lp);
+        }
 
         lp = new RelativeLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-        lp.addRule(LEFT_OF, msgTime.getId());
+        lp.addRule(LEFT_OF, checkBox.getVisibility() != CheckBox.GONE ? checkBox.getId() : msgTime.getId());
         lp.addRule(RIGHT_OF, msgImage.getId());
         msgNick.setLines(1);
         msgNick.setId(2);
         addView(msgNick, lp);
 
         lp = new RelativeLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-        lp.addRule(BELOW, msgTime.getId());
+        lp.addRule(BELOW, checkBox.getVisibility() != CheckBox.GONE ? checkBox.getId() : msgTime.getId());
         msgText.setId(4);
         msgText.setAutoLinkMask(Linkify.EMAIL_ADDRESSES | Linkify.WEB_URLS);
         msgText.setScrollContainer(false);

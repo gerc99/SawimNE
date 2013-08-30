@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.*;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
@@ -33,7 +32,6 @@ import sawim.chat.Chat;
 import sawim.chat.ChatHistory;
 import sawim.chat.MessData;
 import ru.sawim.Scheme;
-import sawim.modules.DebugLog;
 import sawim.roster.Roster;
 import sawim.util.JLocale;
 import java.util.Hashtable;
@@ -70,6 +68,8 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
     private ImageButton sendButton;
     private EditText messageEditor;
     private static Hashtable<String, Chat.ScrollState> positionHash = new Hashtable<String, Chat.ScrollState>();
+    private static Protocol lastprotocol;
+    private static Contact lastContact;
 
     @Override
     public void onActivityCreated(Bundle b) {
@@ -85,6 +85,7 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
         usersImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (nickList == null) return;
                 nickList.startAnimation(nickList.getVisibility() == View.VISIBLE
                         ? AnimationUtils.makeOutAnimation(getActivity(), true)
                         : AnimationUtils.makeInAnimation(getActivity(), false));
@@ -128,6 +129,8 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
     public void showMenu() {
         final MyMenu menu = new MyMenu(getActivity());
         boolean accessible = chat.getWritable() && (currentContact.isSingleUserContact() || currentContact.isOnline());
+        menu.add(getString(adapter.isMultiСitation() ?
+                R.string.disable_multi_citation : R.string.include_multi_citation), ContactMenu.MENU_MULTI_CITATION);
         if (0 < chat.getAuthRequestCounter()) {
             menu.add(JLocale.getString("grant"), ContactMenu.USER_MENU_GRANT_AUTH);
             menu.add(JLocale.getString("deny"), ContactMenu.USER_MENU_DENY_AUTH);
@@ -158,6 +161,16 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 switch (menu.getItem(which).idItem) {
+                    case ContactMenu.MENU_MULTI_CITATION:
+                        if (adapter.isMultiСitation()) {
+                            adapter.setMultiСitation(false);
+                        } else {
+                            adapter.setMultiСitation(true);
+                            Toast.makeText(getActivity(), R.string.hint_multi_citation, Toast.LENGTH_LONG).show();
+                        }
+                        chatListView.setAdapter(adapter);
+                        break;
+
                     case ContactMenu.ACTION_CURRENT_DEL_CHAT:
                         /*chat.removeMessagesAtCursor(chatListView.getFirstVisiblePosition() + 1);
                         if (0 < messData.size()) {
@@ -268,10 +281,6 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-    /*    if (savedInstanceState != null) {
-            protocol = Roster.getInstance().getProtocol(savedInstanceState.getString(PROTOCOL_ID));
-            currentContact = protocol.getItemByUIN(savedInstanceState.getString(CONTACT_ID));
-        } */
         View v = inflater.inflate(R.layout.chat, container, false);
         chat_viewLayout = (LinearLayout) v.findViewById(R.id.chat_view);
         chatLayout = (LinearLayout) chat_viewLayout.findViewById(R.id.list);
@@ -294,11 +303,13 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
         Bundle args = getArguments();
         if (args != null) {
             Protocol protocol = Roster.getInstance().getProtocol(args.getString(PROTOCOL_ID));
-            Contact currentContact = protocol.getItemByUIN(args.getString(CONTACT_ID));
-            openChat(protocol, currentContact);
+            Contact contact = protocol.getItemByUIN(args.getString(CONTACT_ID));
+            openChat(protocol, contact);
         }/* else if (currentContact != null) {
             openChat(protocol, currentContact);
         }*/
+        if (getActivity().findViewById(R.id.fragment_container) == null && lastContact != null)
+            openChat(lastprotocol, lastContact);
     }
 
     @Override
@@ -317,15 +328,18 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
     public void onDestroy() {
         super.onDestroy();
         if (chat == null) return;
-        if (chat.empty())
-            ChatHistory.instance.unregisterChat(chat);
+        if (chat.empty()) ChatHistory.instance.unregisterChat(chat);
     }
 
     public void pause(Chat chat) {
         if (chat == null) return;
+        lastprotocol = protocol;
+        lastContact = currentContact;
         Bundle args = getArguments();
-        args.putString(ChatView.PROTOCOL_ID, protocol.getUserId());
-        args.putString(ChatView.CONTACT_ID, currentContact.getUserId());
+        if (args != null) {
+            args.putString(ChatView.PROTOCOL_ID, protocol.getUserId());
+            args.putString(ChatView.CONTACT_ID, currentContact.getUserId());
+        }
 
         View item = chatListView.getChildAt(0);
         addLastPosition(chat.getContact().getUserId(), chatListView.getFirstVisiblePosition(), (item == null) ? 0 : Math.abs(item.getBottom()));
@@ -338,11 +352,9 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
     public void resume(Chat chat) {
         if (chat == null) return;
         Chat.ScrollState lastPosition = getLastPosition(chat.getContact().getUserId());
-        if (lastPosition != null && lastPosition.position > 0) {
-            DebugLog.println(TAG + " currContact = " + chat.getContact().getUserId() + " position = " + lastPosition.position);
+        if (lastPosition != null && lastPosition.position > 0)
             chatListView.setSelectionFromTop(lastPosition.position + 1, lastPosition.offset);
-        } else
-            chatListView.setSelection(0);
+         else chatListView.setSelection(0);
 
         chat.setVisibleChat(true);
         ChatHistory.instance.registerChat(chat);
@@ -362,7 +374,7 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
 
     private void forceGoToChat(int position) {
         Chat current = ChatHistory.instance.chatAt(position);
-        if (current == null) return;
+        if (current == null || position == -1) return;
         pause(chat);
         openChat(current.getProtocol(), current.getContact());
         resume(current);
@@ -538,6 +550,7 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
     /*@Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        Log.e(TAG, "___________===");
         outState.putString(ChatView.PROTOCOL_ID, protocol.getUserId());
         outState.putString(ChatView.CONTACT_ID, currentContact.getUserId());
     }*/

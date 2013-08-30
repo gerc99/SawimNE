@@ -4,6 +4,7 @@ import DrawControls.icons.Icon;
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import ru.sawim.SawimApplication;
 import ru.sawim.activities.SawimActivity;
 import sawim.roster.TreeNode;
@@ -355,6 +356,31 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         roster.setOnUpdateRoster(null);
     }
 
+    public void openChat(Protocol p, Contact c) {
+        c.activate(p);
+        ChatView chatView = (ChatView) getActivity().getSupportFragmentManager()
+                .findFragmentById(R.id.chat_fragment);
+        if (chatView == null) {
+            ChatView newFragment = new ChatView();
+            Bundle args = new Bundle();
+            args.putString(ChatView.PROTOCOL_ID, p.getUserId());
+            args.putString(ChatView.CONTACT_ID, c.getUserId());
+            newFragment.setArguments(args);
+            FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.fragment_container, newFragment, ChatView.TAG);
+            transaction.addToBackStack(null);
+            transaction.commit();
+        } else {
+            Chat chat = chatView.getCurrentChat();
+            chatView.pause(chat);
+            chatView.resetSpinner();
+            if (c != null) {
+                chatView.openChat(p, c);
+                chatView.resume(chatView.getCurrentChat());
+            }
+        }
+    }
+
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
         TreeNode item = adaptersPages.get(viewPager.getCurrentItem()).getItem(position);
@@ -363,28 +389,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
             Contact c = ((Contact) item);
             if (viewPager.getCurrentItem() == RosterAdapter.ACTIVE_CONTACTS)
                 p = c.getProtocol();
-            c.activate(p);
-            ChatView chatView = (ChatView) getActivity().getSupportFragmentManager()
-                    .findFragmentById(R.id.chat_fragment);
-            if (chatView == null) {
-                ChatView newFragment = new ChatView();
-                Bundle args = new Bundle();
-                args.putString(ChatView.PROTOCOL_ID, p.getUserId());
-                args.putString(ChatView.CONTACT_ID, c.getUserId());
-                newFragment.setArguments(args);
-                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                transaction.replace(R.id.fragment_container, newFragment, ChatView.TAG);
-                transaction.addToBackStack(null);
-                transaction.commit();
-            } else {
-                Chat chat = chatView.getCurrentChat();
-                chatView.pause(chat);
-                chatView.resetSpinner();
-                if (c != null) {
-                    chatView.openChat(p, c);
-                    chatView.resume(chatView.getCurrentChat());
-                }
-            }
+            openChat(p, c);
         } else if (item.isGroup()) {
             Group group = (Group) item;
             setExpandFlag(group, !group.isExpanded());

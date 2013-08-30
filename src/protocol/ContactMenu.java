@@ -94,6 +94,7 @@ public class ContactMenu implements TextBoxView.TextBoxListener {
     public static final int USER_MENU_ANNOTATION = 60;
     public static final int CONFERENCE_DISCONNECT = 61;
     public static final int USER_MENU_CLOSE_CHAT = 62;
+    public static final int MENU_MULTI_CITATION = 63;
 
     private Contact contact;
     private Protocol protocol;

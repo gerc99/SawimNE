@@ -243,8 +243,8 @@ public final class FileTransfer implements FileBrowserListener,
             }
             changeFileProgress(percent, JLocale.getEllipsisString("sending_file"));
             if (100 == percent) {
-                Roster.getInstance().removeTransfer(false);
                 changeFileProgress(percent, "complete");
+                destroy();
                 return;
             }
         } catch (Exception ignored) {

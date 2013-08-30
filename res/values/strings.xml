@@ -208,5 +208,8 @@
     <string name="registration_jid">Registration Jabber ID</string>
     <string name="sign_in_jabber">Sign in Jabber</string>
     <string name="sign_into_other_networks">Sign into other networks</string>
+    <string name="include_multi_citation">Include multi citation</string>
+    <string name="disable_multi_citation">Disable multi citation</string>
+    <string name="hint_multi_citation">Check the message and long press in the input box, select \"Paste\"</string>
 
 </resources>

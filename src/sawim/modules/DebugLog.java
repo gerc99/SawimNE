@@ -114,7 +114,7 @@ public final class DebugLog {
         println("Daylight: " + tz.useDaylightTime());
         println("ID: " + tz.getID());
 
-        int time = TimeZone.getDefault().getRawOffset() / (1000 * 60 * 60);
+        int time = TimeZone.getDefault().getDSTSavings() + TimeZone.getDefault().getRawOffset() / (1000 * 60 * 60);
         println("GMT "+time);
 
         /*MD5 md5 = new MD5();
