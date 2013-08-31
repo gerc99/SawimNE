@@ -36,7 +36,6 @@ public class PlainMessage extends Message {
     public boolean isOffline() {
         return offline;
     }
-
     
     public String getText() {
         return text;

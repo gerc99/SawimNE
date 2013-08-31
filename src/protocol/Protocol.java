@@ -924,7 +924,7 @@ abstract public class Protocol {
             return;
         }
         Chat chat = getChat(contact);
-        boolean isHighlight = Chat.isHighlight(message.getText(), contact.getMyName());
+        boolean isHighlight = Chat.isHighlight(message.getProcessedText(), contact.getMyName());
         chat.addMessage(message, !silent && !message.isWakeUp(), isHighlight);
         if (message instanceof SystemNotice) {
             SystemNotice notice = (SystemNotice) message;

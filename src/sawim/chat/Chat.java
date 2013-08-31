@@ -29,7 +29,6 @@ public final class Chat {
     private List<MessData> messData = new ArrayList<MessData>();
     public static final String ADDRESS = ", ";
     private boolean visibleChat;
-    private boolean isSingleUserContact;
 
     public Chat(Protocol p, Contact item) {
         contact = item;
@@ -44,7 +43,6 @@ public final class Chat {
 
     void setContact(Contact item) {
         contact = item;
-        isSingleUserContact = contact.isSingleUserContact();
     }
 
     public Protocol getProtocol() {
@@ -98,7 +96,7 @@ public final class Chat {
             return Message.ICON_SYSREQ;
         }
         if (incoming) {
-            if (!isSingleUserContact && !isHighlight) {
+            if (!contact.isSingleUserContact() && !isHighlight) {
                 return Message.ICON_IN_MSG;
             }
             return Message.ICON_IN_MSG_HI;
@@ -116,7 +114,6 @@ public final class Chat {
 
     public void activate() {
         Roster.getInstance().activate(contact);
-        isSingleUserContact = contact.isSingleUserContact();
     }
 
     public void sendMessage(String message) {
@@ -173,11 +170,11 @@ public final class Chat {
         if (contact instanceof JabberContact) {
             service |= Jid.isGate(contact.getUserId());
         }
-        return !service && isSingleUserContact;
+        return !service && contact.isSingleUserContact();
     }
 
     public String onMessageSelected(MessData md) {
-        if (isSingleUserContact) {
+        if (contact.isSingleUserContact()) {
             if (isBlogBot()) {
                 return getBlogPostId(md.getText());
             }
@@ -221,7 +218,7 @@ public final class Chat {
                 } else {
                     message = new PlainMessage(protocol, contact, date, rec.text);
                 }
-                addTextToForm(message, getFrom(message), false);
+                addTextToForm(message, contact.isConference() ? rec.from : getFrom(message), Chat.isHighlight(message.getProcessedText(), contact.getMyName()));
             }
             hist.closeHistory();
         }
@@ -441,7 +438,7 @@ public final class Chat {
             }
             if (inc) {
                 messageCounter = inc(messageCounter);
-                if (!isSingleUserContact && !isHighlight) {
+                if (!contact.isSingleUserContact() && !isHighlight) {
                     otherMessageCounter = inc(otherMessageCounter);
                     messageCounter--;
                 }
