@@ -124,21 +124,22 @@ public class SawimActivity extends FragmentActivity {
 
     @Override
     protected void onNewIntent(Intent intent) {
-        if (NOTIFY.equals(intent.getAction())) {
-            RosterView rosterView = (RosterView) getSupportFragmentManager().findFragmentByTag(RosterView.TAG);
-            if (rosterView == null)
-                rosterView = (RosterView) getSupportFragmentManager().findFragmentById(R.id.roster_fragment);
-            Protocol protocol = Roster.getInstance().getProtocol(intent.getStringExtra(ChatView.PROTOCOL_ID));
-            Contact contact = protocol.getItemByUIN(intent.getStringExtra(ChatView.CONTACT_ID));
-            rosterView.openChat(protocol, contact);
-            SawimApplication.getInstance().updateAppIcon();
-        }
+        super.onNewIntent(intent);
+        setIntent(intent);
     }
 
     @Override
     public void onResume() {
         super.onResume();
         General.maximize();
+        if (NOTIFY.equals(getIntent().getAction())) {
+            RosterView rosterView = (RosterView) getSupportFragmentManager().findFragmentByTag(RosterView.TAG);
+            if (rosterView == null)
+                rosterView = (RosterView) getSupportFragmentManager().findFragmentById(R.id.roster_fragment);
+            Protocol protocol = Roster.getInstance().getProtocol(getIntent().getStringExtra(ChatView.PROTOCOL_ID));
+            Contact contact = protocol.getItemByUIN(getIntent().getStringExtra(ChatView.CONTACT_ID));
+            rosterView.openChat(protocol, contact, true);
+        }
     }
 
     @Override

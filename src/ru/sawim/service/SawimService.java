@@ -77,14 +77,14 @@ public class SawimService extends Service {
             notification.ledOnMS = 300;
             notification.ledOffMS = 1000;
             notification.flags |= android.app.Notification.FLAG_SHOW_LIGHTS;
-
             //notification.number = unread;
             stateMsg = String.format((String) getText(R.string.unread_messages), unread);
         }
         Intent notificationIntent = new Intent(this, SawimActivity.class);
         Chat current = ChatHistory.instance.chatAt(ChatHistory.instance.getPreferredItem());
-        if (current != null && ChatHistory.instance.getPreferredItem() > -1) {
-            //stateMsg = current.
+        if (current != null && 0 < current.getUnreadMessageCount()) {
+
+            stateMsg = current.getMessageDataByIndex(current.getMessData().size() - 1).getText();
             notificationIntent.setAction(SawimActivity.NOTIFY);
             notificationIntent.putExtra(ChatView.PROTOCOL_ID, current.getProtocol().getUserId());
             notificationIntent.putExtra(ChatView.CONTACT_ID, current.getContact().getUserId());

@@ -924,7 +924,8 @@ abstract public class Protocol {
             return;
         }
         Chat chat = getChat(contact);
-        chat.addMessage(message, !silent && !message.isWakeUp());
+        boolean isHighlight = Chat.isHighlight(message.getText(), contact.getMyName());
+        chat.addMessage(message, !silent && !message.isWakeUp(), isHighlight);
         if (message instanceof SystemNotice) {
             SystemNotice notice = (SystemNotice) message;
             if (SystemNotice.SYS_NOTICE_AUTHREQ == notice.getSysnoteType()) {
@@ -936,7 +937,7 @@ abstract public class Protocol {
             }
         }
         if (!silent) {
-            addMessageNotify(chat, contact, message);
+            addMessageNotify(chat, contact, message, isHighlight);
         }
         if (chat.typeNewMessageIcon != chat.getNewMessageIcon() || chat.isVisibleChat()) {
             chat.typeNewMessageIcon = chat.getNewMessageIcon();
@@ -946,10 +947,10 @@ abstract public class Protocol {
         }
     }
 
-    private void addMessageNotify(Chat chat, Contact contact, Message message) {
+    private void addMessageNotify(Chat chat, Contact contact, Message message, boolean isHighlight) {
         boolean isPersonal = contact.isSingleUserContact();
         boolean isBlog = isBlogBot(contact.getUserId());
-        boolean isHuman = isBlog || chat.isHuman() || !contact.isSingleUserContact();
+        boolean isHuman = isBlog || chat.isHuman() || !isPersonal;
         if (isBot(contact)) {
             isHuman = false;
         }
@@ -959,7 +960,7 @@ abstract public class Protocol {
             String myName = contact.getMyName();
             isPersonal = msg.startsWith(myName)
                     && msg.startsWith(" ", myName.length() + 1);
-            isMention = Chat.isHighlight(msg, myName);
+            isMention = isHighlight;
         }
         if (Options.getBoolean(Options.OPTION_ANSWERER)) {
             Answerer.getInstance().checkMessage(this, contact, message);
@@ -967,8 +968,7 @@ abstract public class Protocol {
         String id = contact.getUserId();
         if (message.isOffline()) {
         } else if (isPersonal) {
-            if (contact.isSingleUserContact()
-                    && contact.isAuth() && !contact.isTemp()
+            if (contact.isAuth() && !contact.isTemp()
                     && message.isWakeUp()) {
                 playNotification(Notify.NOTIFY_ALARM);
 
@@ -1124,7 +1124,7 @@ abstract public class Protocol {
                 if (!cmdExecuted) {
                     String text = JLocale.getString("jabber_command_not_found");
                     SystemNotice notice = new SystemNotice(this, SystemNotice.SYS_NOTICE_MESSAGE, to.getUserId(), text);
-                    getChat(to).addMessage(notice, false);
+                    getChat(to).addMessage(notice, false, false);
                 }
                 return;
             }

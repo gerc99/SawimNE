@@ -29,6 +29,7 @@ public final class Chat {
     private List<MessData> messData = new ArrayList<MessData>();
     public static final String ADDRESS = ", ";
     private boolean visibleChat;
+    private boolean isSingleUserContact;
 
     public Chat(Protocol p, Contact item) {
         contact = item;
@@ -43,6 +44,7 @@ public final class Chat {
 
     void setContact(Contact item) {
         contact = item;
+        isSingleUserContact = contact.isSingleUserContact();
     }
 
     public Protocol getProtocol() {
@@ -84,10 +86,10 @@ public final class Chat {
     }
 
     public void addFileProgress(String caption, String text) {
-        addMessage(new MessData(General.getCurrentGmtTime(), text, caption, MessData.PROGRESS, Message.ICON_NONE));
+        addMessage(new MessData(General.getCurrentGmtTime(), text, caption, MessData.PROGRESS, Message.ICON_NONE, false));
     }
 
-    public int getIcon(Message message, boolean incoming) {
+    private int getIcon(Message message, boolean incoming, boolean isHighlight) {
         if (message instanceof SystemNotice) {
             int type = ((SystemNotice)message).getSysnoteType();
             if (SystemNotice.SYS_NOTICE_MESSAGE == type) {
@@ -96,8 +98,7 @@ public final class Chat {
             return Message.ICON_SYSREQ;
         }
         if (incoming) {
-            if (!contact.isSingleUserContact()
-                    && !isHighlight(message.getProcessedText(), getMyName())) {
+            if (!isSingleUserContact && !isHighlight) {
                 return Message.ICON_IN_MSG;
             }
             return Message.ICON_IN_MSG_HI;
@@ -115,6 +116,7 @@ public final class Chat {
 
     public void activate() {
         Roster.getInstance().activate(contact);
+        isSingleUserContact = contact.isSingleUserContact();
     }
 
     public void sendMessage(String message) {
@@ -171,11 +173,11 @@ public final class Chat {
         if (contact instanceof JabberContact) {
             service |= Jid.isGate(contact.getUserId());
         }
-        return !service && contact.isSingleUserContact();
+        return !service && isSingleUserContact;
     }
 
     public String onMessageSelected(MessData md) {
-        if (contact.isSingleUserContact()) {
+        if (isSingleUserContact) {
             if (isBlogBot()) {
                 return getBlogPostId(md.getText());
             }
@@ -219,7 +221,7 @@ public final class Chat {
                 } else {
                     message = new PlainMessage(protocol, contact, date, rec.text);
                 }
-                addTextToForm(message, getFrom(message));
+                addTextToForm(message, getFrom(message), false);
             }
             hist.closeHistory();
         }
@@ -375,7 +377,7 @@ public final class Chat {
         return senderName;
     }
 
-    private void addTextToForm(Message message, String from) {
+    private void addTextToForm(Message message, String from, boolean isHighlight) {
         boolean incoming = message.isIncoming();
         String messageText = message.getProcessedText();
         messageText = StringConvertor.removeCr(messageText);
@@ -403,7 +405,7 @@ public final class Chat {
             flags |= MessData.SERVICE;
         }
 
-        final MessData mData = new MessData(message.getNewDate(), messageText, from, flags, getIcon(message, incoming));
+        final MessData mData = new MessData(message.getNewDate(), messageText, from, flags, getIcon(message, incoming, isHighlight), isHighlight);
         if (!incoming) {
             message.setVisibleIcon(mData);
         }
@@ -419,27 +421,27 @@ public final class Chat {
         if (getMessCount() <= 1)
             ChatHistory.instance.registerChat(this);
         String messageText = message.getProcessedText();
-        addMessage(new MessData(message.getNewDate(), messageText, message.getName(), MessData.PRESENCE, Message.ICON_NONE));
+        addMessage(new MessData(message.getNewDate(), messageText, message.getName(), MessData.PRESENCE, Message.ICON_NONE, false));
         if (!isVisibleChat()) {
             contact.updateChatState(this);
             ChatHistory.instance.updateChatList();
         }
     }
 
-    public void addMessage(Message message, boolean toHistory) {
+    public void addMessage(Message message, boolean toHistory, boolean isHighlight) {
         if (getMessCount() <= 1)
             ChatHistory.instance.registerChat(this);
         boolean inc = !isVisibleChat();
+        String from = getFrom(message);
         if (message instanceof PlainMessage) {
-            addTextToForm(message, getFrom(message));
+            addTextToForm(message, from, isHighlight);
             if (toHistory && isHistory()) {
-                final String nick = getFrom(message);
+                final String nick = from;
                 addToHistory(message.getText(), true, nick, message.getNewDate());
             }
             if (inc) {
                 messageCounter = inc(messageCounter);
-                if (!contact.isSingleUserContact()
-                        && !isHighlight(message.getProcessedText(), getMyName())) {
+                if (!isSingleUserContact && !isHighlight) {
                     otherMessageCounter = inc(otherMessageCounter);
                     messageCounter--;
                 }
@@ -453,7 +455,7 @@ public final class Chat {
                 sysNoticeCounter = inc(sysNoticeCounter);
             }
             MagicEye.addAction(protocol, contact.getUserId(), message.getText());
-            addTextToForm(message, getFrom(message));
+            addTextToForm(message, from, isHighlight);
         }
         if (inc) {
             contact.updateChatState(this);
@@ -462,12 +464,13 @@ public final class Chat {
     }
 
     public void addMyMessage(PlainMessage message) {
+        String from = getFrom(message);
         if (getMessCount() <= 1)
             ChatHistory.instance.registerChat(this);
         resetUnreadMessages();
-        addTextToForm(message, getFrom(message));
+        addTextToForm(message, from, false);
         if (isHistory()) {
-            addToHistory(message.getText(), false, getFrom(message), message.getNewDate());
+            addToHistory(message.getText(), false, from, message.getNewDate());
         }
     }
 

@@ -126,8 +126,6 @@ public final class MrimConnection extends ClientConnection {
 
     protected void connect() throws SawimException {
         setProgress(0);
-
-        
         DebugLog.println("go");
         
         String server = getServer();
@@ -201,7 +199,6 @@ public final class MrimConnection extends ClientConnection {
             }
             secondCounter = 0;
         }
-
         return false;
     }
 
@@ -227,7 +224,6 @@ public final class MrimConnection extends ClientConnection {
         if (!isAuth && StringConvertor.isEmpty(msg)) {
             return;
         }
-
         try {
             if (isAuth && (5 < msg.length())) {
                 MrimBuffer buffer = new MrimBuffer(Util.base64decode(msg.trim()));
@@ -243,7 +239,6 @@ public final class MrimConnection extends ClientConnection {
             msg = "";
         }
         msg = StringConvertor.convert(StringConvertor.MRIM2Sawim, msg);
-
         if (-1 == from.indexOf('@')) {
             MrimContact contact = mrim.getContactByPhone(from);
             String fromEmail = from;
@@ -256,13 +251,11 @@ public final class MrimConnection extends ClientConnection {
                 if (contact instanceof MrimPhoneContact) {
                     chat.setWritable(false);
                 }
-                chat.addMessage(message, false);
+                chat.addMessage(message, false, false);
                 if (!(contact instanceof MrimPhoneContact)) {
                     fromEmail = contact.getUserId();
                 }
-
             } else {
-                
                 if (General.isPaused()) {
                     General.maximize();
                 }

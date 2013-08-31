@@ -37,19 +37,19 @@ import java.util.List;
 public class MessagesAdapter extends BaseAdapter implements MyTextView.TextLinkClickListener {
 
     private FragmentActivity activity;
-    private Chat chat;
     private List<MessData> items = new ArrayList<MessData>();
     private Protocol currentProtocol;
     private String currentContact;
+    private boolean isSingleUserContact;
 
     private boolean isMultiСitation = false;
     private StringBuffer sb = new StringBuffer();
 
     public void init(FragmentActivity activity, Chat chat) {
         this.activity = activity;
-        this.chat = chat;
         currentProtocol = chat.getProtocol();
         currentContact = chat.getContact().getUserId();
+        isSingleUserContact = chat.getContact().isSingleUserContact();
         refreshList(chat.getMessData());
     }
 
@@ -108,8 +108,8 @@ public class MessagesAdapter extends BaseAdapter implements MyTextView.TextLinkC
                 if (mData.isMe()) {
                     msg = "*" + mData.getNick() + " " + msg;
                 }
-                sb.append(msg);
-                sb.append("\n");
+                sb.append(Clipboard.serialize(mData.isIncoming(), mData.getNick() + " " + mData.strTime, msg));
+                sb.append("\n-----\n");
                 Clipboard.setClipBoardText(0 == sb.length() ? null : sb.toString());
             }
         });
@@ -157,8 +157,7 @@ public class MessagesAdapter extends BaseAdapter implements MyTextView.TextLinkC
             item.msgTime.setText(mData.strTime);
 
             byte color = Scheme.THEME_TEXT;
-            if (incoming && !chat.getContact().isSingleUserContact()
-                    && Chat.isHighlight(text, chat.getMyName()))
+            if (incoming && !isSingleUserContact && mData.isHighLight())
                 color = Scheme.THEME_CHAT_HIGHLIGHT_MSG;
             item.msgText.setTextColor(Scheme.getColor(color));
             item.msgText.setTextSize(General.getFontSize());

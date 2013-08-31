@@ -356,7 +356,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         roster.setOnUpdateRoster(null);
     }
 
-    public void openChat(Protocol p, Contact c) {
+    public void openChat(Protocol p, Contact c, boolean allowingStateLoss) {
         c.activate(p);
         ChatView chatView = (ChatView) getActivity().getSupportFragmentManager()
                 .findFragmentById(R.id.chat_fragment);
@@ -369,7 +369,10 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
             FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.fragment_container, newFragment, ChatView.TAG);
             transaction.addToBackStack(null);
-            transaction.commit();
+            if (allowingStateLoss)
+                transaction.commitAllowingStateLoss();
+            else
+                transaction.commit();
         } else {
             Chat chat = chatView.getCurrentChat();
             chatView.pause(chat);
@@ -389,7 +392,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
             Contact c = ((Contact) item);
             if (viewPager.getCurrentItem() == RosterAdapter.ACTIVE_CONTACTS)
                 p = c.getProtocol();
-            openChat(p, c);
+            openChat(p, c, false);
         } else if (item.isGroup()) {
             Group group = (Group) item;
             setExpandFlag(group, !group.isExpanded());

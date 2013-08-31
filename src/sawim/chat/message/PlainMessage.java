@@ -11,9 +11,10 @@ public class PlainMessage extends Message {
     private String text;
     private int messageId;
     private boolean offline;
+    private boolean isHighlight;
     public static final String CMD_WAKEUP = "/wakeup";
     public static final String CMD_ME = "/me ";
-    
+
     public static final int MESSAGE_LIMIT = 1024;
 
     
@@ -25,7 +26,6 @@ public class PlainMessage extends Message {
         this.text = text;
         this.offline = offline;
     }
-
     
     public PlainMessage(Protocol protocol, Contact rcvr, long date, String text) {
         super(date, protocol, rcvr, false);

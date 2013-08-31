@@ -207,8 +207,8 @@
     <string name="registration_jid">Зарегистрировать Jabber ID</string>
     <string name="sign_in_jabber">Войти в Jabber</string>
     <string name="sign_into_other_networks">Войти в другие сети</string>
-    <string name="include_multi_citation">Включить мультицитирование</string>
-    <string name="disable_multi_citation">Выключить мультицитирование</string>
+    <string name="include_multi_citation">Вкл мультицитирование</string>
+    <string name="disable_multi_citation">Откл мультицитирование</string>
     <string name="hint_multi_citation">Отметьте сообщения и долгим нажатием в поле вводе выберите \"Вставить\"</string>
 
 </resources>

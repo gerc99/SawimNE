@@ -1,7 +1,6 @@
 package sawim.chat;
 
 import android.text.SpannableStringBuilder;
-import android.util.Log;
 import ru.sawim.General;
 import sawim.comm.Util;
 
@@ -12,6 +11,7 @@ public final class MessData {
     public String strTime;
     public int iconIndex;
     private short rowData;
+    private boolean isHighLight;
 
     public SpannableStringBuilder fullText;
 
@@ -23,7 +23,8 @@ public final class MessData {
     public static final short PRESENCE = 32;
     public static final short MARKED = 64;
 
-    public MessData(long time, String text, String nick, short flags, int iconIndex) {
+    public MessData(long time, String text, String nick, short flags, int iconIndex, boolean highLight) {
+        isHighLight = highLight;
         this.text = text;
         this.nick = nick;
         this.time = time;
@@ -71,5 +72,9 @@ public final class MessData {
 
     public void setMarked(boolean marked) {
         rowData = (short) (marked ? (rowData | MARKED) : (rowData & ~MARKED));
+    }
+
+    public boolean isHighLight() {
+        return isHighLight;
     }
 }

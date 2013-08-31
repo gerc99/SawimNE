@@ -348,7 +348,8 @@ public class Options {
         setBoolean(Options.OPTION_SILENT_MODE,        false);
         setBoolean(Options.OPTION_CLASSIC_CHAT,       false);
         setBoolean(Options.OPTION_BRING_UP,           false);
-        int time = TimeZone.getDefault().getRawOffset() / (1000 * 60 * 60);
+        int time = TimeZone.getDefault().getDSTSavings() / (1000 * 60 * 60)
+                + TimeZone.getDefault().getRawOffset() / (1000 * 60 * 60);
         setInt    (Options.OPTION_GMT_OFFSET,        time);
         setInt    (Options.OPTION_LOCAL_OFFSET,      0);
         setBoolean(OPTION_ALARM, true);
