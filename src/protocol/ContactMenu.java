@@ -2,12 +2,10 @@ package protocol;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.support.v4.app.FragmentActivity;
 import android.view.ContextMenu;
 import android.view.ContextThemeWrapper;
 import android.widget.Toast;
 import protocol.jabber.Jabber;
-import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.activities.SawimActivity;
@@ -134,7 +132,7 @@ public class ContactMenu implements TextBoxView.TextBoxListener {
             case USER_MENU_USER_REMOVE:
                 HistoryStorage.getHistory(contact).removeHistory();
                 protocol.removeContact(contact);
-                Roster.getInstance().update();
+                Roster.getInstance().updateOnUi();
                 break;
 
             case USER_MENU_STATUSES:

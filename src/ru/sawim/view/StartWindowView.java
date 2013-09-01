@@ -18,6 +18,7 @@ import android.widget.TextView;
 import protocol.Profile;
 import protocol.jabber.JabberRegistration;
 import ru.sawim.R;
+import ru.sawim.SawimApplication;
 import ru.sawim.activities.SawimActivity;
 import sawim.Options;
 import sawim.comm.StringConvertor;
@@ -82,7 +83,7 @@ public class StartWindowView extends Fragment {
     }
 
     private void addAccountAuthenticator(String id) {
-        Account account = new Account(id, getString(R.string.app_name));
+        Account account = new Account(id, SawimApplication.getContext().getString(R.string.app_name));
         AccountManager am = AccountManager.get(getActivity());
         boolean accountCreated = am.addAccountExplicitly(account, null, null);
         Bundle extras = getActivity().getIntent().getExtras();
@@ -90,7 +91,7 @@ public class StartWindowView extends Fragment {
             AccountAuthenticatorResponse response = extras.getParcelable(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE);
             Bundle result = new Bundle();
             result.putString(AccountManager.KEY_ACCOUNT_NAME, id);
-            result.putString(AccountManager.KEY_ACCOUNT_TYPE, getString(R.string.app_name));
+            result.putString(AccountManager.KEY_ACCOUNT_TYPE, SawimApplication.getContext().getString(R.string.app_name));
             if (response != null)
                 response.onResult(result);
         }

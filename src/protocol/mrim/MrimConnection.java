@@ -549,7 +549,7 @@ public final class MrimConnection extends ClientConnection {
             lastContact = null;
 
         } else if (MrimPacket.MRIM_CS_MODIFY_CONTACT_ACK == cmd) {
-            DebugLog.println("contact update status " + packetData.getDWord());
+            DebugLog.println("contact updateOnUi status " + packetData.getDWord());
         } else if (MrimPacket.MRIM_CS_CONTACT_LIST2 == cmd) {
             getContactList(packetData);
 
@@ -788,7 +788,7 @@ public final class MrimConnection extends ClientConnection {
             notify = false;
             flags = MrimPacket.MESSAGE_FLAG_ALARM;
             //text = "/wakeup Wake up and be free!\n" +
-            //        "Please, update your client on http://sawim.net.ru/";
+            //        "Please, updateOnUi your client on http://sawim.net.ru/";
         }
 
         MrimPacket packet = MrimPacket.getMessagePacket(to, text, flags);

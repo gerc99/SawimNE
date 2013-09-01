@@ -77,7 +77,7 @@ public final class ManageContactListForm implements FormListener, TextBoxView.Te
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 protocol.moveContactTo(contact, protocol.getGroupById(itemsId.get(which)));
-                Roster.getInstance().update();
+                Roster.getInstance().updateOnUi();
             }
         });
         builder.create().show();
@@ -211,7 +211,7 @@ public final class ManageContactListForm implements FormListener, TextBoxView.Te
         if (null != contact) {
             if (renameContactTextbox == box) {
                 protocol.renameContact(contact, renameContactTextbox.getString());
-                Roster.getInstance().update();
+                Roster.getInstance().updateOnUi();
                 renameContactTextbox.setString(null);
             }
             return;
@@ -223,25 +223,25 @@ public final class ManageContactListForm implements FormListener, TextBoxView.Te
         String groupName_ = groupName.getString();
         boolean isExist = null != protocol.getGroup(groupName_);
         if (0 == groupName_.length()) {
-            Roster.getInstance().update();
+            Roster.getInstance().updateOnUi();
             return;
         }
         switch (action) {
             case ADD_GROUP:
                 if (!isExist) {
                     protocol.addGroup(protocol.createGroup(groupName_));
-                    Roster.getInstance().update();
+                    Roster.getInstance().updateOnUi();
                 }
                 break;
 
             case RENAME_GROUP:
                 boolean isMyName = group.getName().equals(groupName_);
                 if (isMyName) {
-                    Roster.getInstance().update();
+                    Roster.getInstance().updateOnUi();
 
                 } else if (!isExist) {
                     protocol.renameGroup(group, groupName_);
-                    Roster.getInstance().update();
+                    Roster.getInstance().updateOnUi();
                 }
                 break;
         }

@@ -7,7 +7,6 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
 import ru.sawim.photo.CameraActivity;
-import sawim.history.HistoryStorage;
 import sawim.modules.DebugLog;
 import sawim.modules.photo.PhotoListener;
 
@@ -89,7 +88,7 @@ public class ExternalApi {
             } else if (RESULT_EXTERNAL_FILE == requestCode) {
                 Uri fileUri = data.getData();
                 InputStream is = activity.getContentResolver().openInputStream(fileUri);
-                fileTransferListener.onFileSelect(is, getFileName(fileUri));
+                fileTransferListener.onFileSelect(is, getFileName(fileUri, activity));
                 fileTransferListener = null;
                 return true;
             }
@@ -99,22 +98,12 @@ public class ExternalApi {
         return false;
     }
 
-    public void acceptFile(Uri fileUri) {
-        try {
-            InputStream is = activity.getContentResolver().openInputStream(fileUri);
-            fileTransferListener.onFileSelect(is, getFileName(fileUri));
-            fileTransferListener = null;
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private String getFileName(Uri fileUri) {
-        String file = getRealPathFromUri(fileUri);
+    public static String getFileName(Uri fileUri, FragmentActivity activity) {
+        String file = getRealPathFromUri(fileUri, activity);
         return file.substring(file.lastIndexOf('/') + 1);
     }
 
-    private String getRealPathFromUri(Uri uri) {
+    private static String getRealPathFromUri(Uri uri, FragmentActivity activity) {
         try {
             if ("content".equals(uri.getScheme())) {
                 String[] proj = {MediaStore.MediaColumns.DATA};

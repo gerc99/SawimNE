@@ -198,7 +198,7 @@ public class UpdateContactListAction extends IcqAction {
         }
         if (0 != errorCode) {
             
-            DebugLog.println("update action = " + action
+            DebugLog.println("updateOnUi action = " + action
                     + " state = " + state
                     + " ret code = " + retCode);
             

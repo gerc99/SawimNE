@@ -24,8 +24,9 @@
 
     <style name="AlertDialogCustom" parent="android:Theme.DeviceDefault.Dialog">
         <item name="android:background">@color/alert_dialog_background_color</item>
+        <item name="android:windowBackground">@color/alert_dialog_background_color</item>
         <item name="android:textColor">@color/alert_dialog_text_color</item>
-        <item name="android:typeface">monospace</item>
+        <item name="android:typeface">normal</item>
         <item name="android:textSize">10sp</item>
     </style>
 

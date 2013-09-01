@@ -1,8 +1,6 @@
 package protocol;
 
 import DrawControls.icons.Icon;
-import android.support.v4.app.FragmentActivity;
-import android.util.Log;
 import sawim.FileTransfer;
 import ru.sawim.General;
 import sawim.SawimException;
@@ -199,8 +197,8 @@ abstract public class Protocol {
             Util.sort(sortedGroups);
             updateContacts(notInListGroup);
         }
-        if (getContactList().getProtocolCount() == 0) return;
-        getContactList().update();
+        if (getRoster().getProtocolCount() == 0) return;
+        getRoster().updateOnUi();
         needSave();
     }
 
@@ -215,12 +213,12 @@ abstract public class Protocol {
                 }
             }
         }
-        getContactList().update();
+        getRoster().updateOnUi();
         needSave();
     }
 
     private void updateContacts(Group group) {
-        getContactList().updateGroup(this, group);
+        getRoster().updateGroup(this, group);
     }
 
     public final boolean isConnecting() {
@@ -231,15 +229,20 @@ abstract public class Protocol {
         return progress;
     }
 
-    public final void setConnectingProgress(int percent) {
-        this.progress = (byte) ((percent < 0) ? 100 : percent);
-        if (100 == percent) {
-            reconnect_attempts = RECONNECT_COUNT;
-            getContactList().updateConnectionStatus();
-            getContactList().updateBarProtocols();
-            getContactList().update();
-        }
-        getContactList().updateProgressBar();
+    public final void setConnectingProgress(final int percent) {
+        SawimApplication.getInstance().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                progress = (byte) ((percent < 0) ? 100 : percent);
+                if (100 == percent) {
+                    reconnect_attempts = RECONNECT_COUNT;
+                    getRoster().updateConnectionStatus();
+                    getRoster().updateBarProtocols();
+                    getRoster().update(null);
+                }
+                getRoster().updateProgressBar();
+            }
+        });
     }
 
     public void sendFile(FileTransfer transfer, String filename, String description) {
@@ -496,7 +499,7 @@ abstract public class Protocol {
         s_addContact(contact);
         contact.setTempFlag(false);
         cl_addContact(contact);
-        getContactList().setActiveContact(contact);
+        getRoster().setActiveContact(contact);
         needSave();
         s_addedContact(contact);
     }
@@ -546,10 +549,15 @@ abstract public class Protocol {
             userCloseConnection();
         }
         setStatusesOffline();
-        getContactList().updateBarProtocols();
-        getContactList().updateProgressBar();
-        getContactList().update();
-        getContactList().updateConnectionStatus();
+        SawimApplication.getInstance().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                getRoster().updateBarProtocols();
+                getRoster().updateProgressBar();
+                getRoster().update(null);
+            }
+        });
+        getRoster().updateConnectionStatus();
         if (user) {
             DebugLog.println("disconnect " + getUserId());
         }
@@ -600,7 +608,7 @@ abstract public class Protocol {
         Contact item = getItemByUIN(uin);
         if (null != item) {
             beginTyping(item, type);
-            getContactList().update();
+            getRoster().updateOnUi();
         }
     }
 
@@ -634,7 +642,7 @@ abstract public class Protocol {
             c.setOfflineStatus();
         }
         synchronized (rosterLockObject) {
-            if (getContactList().useGroups) {
+            if (getRoster().useGroups) {
                 for (int i = groups.size() - 1; i >= 0; --i) {
                     ((Group) groups.elementAt(i)).updateGroupData();
                 }
@@ -680,7 +688,7 @@ abstract public class Protocol {
         return null;
     }
 
-    public final Roster getContactList() {
+    public final Roster getRoster() {
         return Roster.getInstance();
     }
 
@@ -702,7 +710,12 @@ abstract public class Protocol {
         setLastStatusChangeTime();
         if (isConnected()) {
             s_updateOnlineStatus();
-            getContactList().updateProgressBar();
+            SawimApplication.getInstance().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    getRoster().updateProgressBar();
+                }
+            });
         }
     }
 
@@ -740,7 +753,7 @@ abstract public class Protocol {
         if (null == g) {
             g = notInListGroup;
         }
-        getContactList().removeFromGroup(g, c);
+        getRoster().removeFromGroup(g, c);
     }
 
     private void ui_addContactToGroup(Contact contact, Group group) {
@@ -749,12 +762,17 @@ abstract public class Protocol {
         if (null == group) {
             group = notInListGroup;
         }
-        getContactList().addToGroup(group, contact);
+        getRoster().addToGroup(group, contact);
     }
 
-    private void ui_updateGroup(Group group) {
-        if (getContactList().useGroups) {
-            getContactList().update(group);
+    private void ui_updateGroup(final Group group) {
+        if (getRoster().useGroups) {
+            SawimApplication.getInstance().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    getRoster().update(group);
+                }
+            });
         }
     }
 
@@ -778,7 +796,7 @@ abstract public class Protocol {
         if (Options.getBoolean(Options.OPTION_SORT_UP_WITH_MSG)) {
             ui_updateContact(contact);
         }
-        getContactList().markMessages(contact);
+        getRoster().markMessages(contact);
     }
 
     private static final int UPDATE_INTERVAL = 500;
@@ -791,15 +809,20 @@ abstract public class Protocol {
         ui_updateContact(contact);
     }
 
-    public final void ui_updateContact(Contact contact) {
+    public final void ui_updateContact(final Contact contact) {
         synchronized (rosterLockObject) {
             Group group = getGroup(contact);
             if (null == group) {
                 group = notInListGroup;
             }
-            getContactList().putIntoQueue(group);
+            getRoster().putIntoQueue(group);
         }
-        getContactList().update(contact);
+        SawimApplication.getInstance().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                getRoster().update(contact);
+            }
+        });
     }
 
     private void cl_addContact(Contact contact) {
@@ -827,13 +850,18 @@ abstract public class Protocol {
         ui_updateContact(contact);
     }
 
-    private void cl_removeContact(Contact contact) {
+    private void cl_removeContact(final Contact contact) {
         contacts.removeElement(contact);
         synchronized (rosterLockObject) {
             sortedContacts.removeElement(contact);
             ui_removeFromAnyGroup(contact);
         }
-        getContactList().update(contact);
+        SawimApplication.getInstance().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                getRoster().update(contact);
+            }
+        });
     }
 
     private void cl_addGroup(Group group) {
@@ -851,12 +879,17 @@ abstract public class Protocol {
         ui_updateGroup(group);
     }
 
-    private void cl_removeGroup(Group group) {
+    private void cl_removeGroup(final Group group) {
         groups.removeElement(group);
         synchronized (rosterLockObject) {
             sortedGroups.removeElement(group);
         }
-        getContactList().update(group);
+        SawimApplication.getInstance().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                getRoster().update(group);
+            }
+        });
     }
 
     public final void addLocalContact(Contact contact) {
@@ -941,9 +974,19 @@ abstract public class Protocol {
         }
         if (chat.typeNewMessageIcon != chat.getNewMessageIcon() || chat.isVisibleChat()) {
             chat.typeNewMessageIcon = chat.getNewMessageIcon();
-            getContactList().update(contact);
-            getContactList().markMessages(contact);
-            getContactList().updateBarProtocols();
+            if (contact != Roster.getInstance().getCurrentContact()) {
+                SawimApplication.getInstance().updateAppIcon();
+            }
+            if (General.getInstance().getUpdateChatListener() != null)
+                General.getInstance().getUpdateChatListener().updateChat(contact);
+            final Contact finalContact = contact;
+            SawimApplication.getInstance().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    getRoster().update(finalContact);
+                    getRoster().updateBarProtocols();
+                }
+            });
         }
     }
 
@@ -998,7 +1041,7 @@ abstract public class Protocol {
         if (!isPersonal) {
             return;
         }
-        getContactList().setActiveContact(contact);
+        getRoster().setActiveContact(contact);
     }
 
     protected boolean isBlogBot(String userId) {
@@ -1046,7 +1089,7 @@ abstract public class Protocol {
 
     public final void processException(SawimException e) {
         DebugLog.println("process exception: " + e.getMessage());
-        getContactList().activateWithMsg(getUserId() + "\n" + e.getMessage());
+        getRoster().activateWithMsg(getUserId() + "\n" + e.getMessage());
         if (!SawimApplication.getInstance().isNetworkAvailable() && Options.getBoolean(Options.OPTION_INSTANT_RECONNECTION)) {
             e = new SawimException(123, 0);
         }
@@ -1076,7 +1119,7 @@ abstract public class Protocol {
     }
 
     public final void showException(SawimException e) {
-        getContactList().activateWithMsg(getUserId() + "\n" + e.getMessage());
+        getRoster().activateWithMsg(getUserId() + "\n" + e.getMessage());
     }
 
     public final void dismiss() {

@@ -1,13 +1,10 @@
 package sawim;
 
 import DrawControls.icons.Icon;
-import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ImageSpan;
-import android.text.util.Linkify;
 import sawim.modules.Emotions;
 
 /**
@@ -20,8 +17,7 @@ import sawim.modules.Emotions;
 public class TextFormatter {
     static Emotions smiles = Emotions.instance;
 
-    private static SpannableStringBuilder detectEmotions(Context context,
-                                                         SpannableStringBuilder builder) {
+    private static SpannableStringBuilder detectEmotions(SpannableStringBuilder builder) {
         String message = builder.toString();
         for (int index = 0; index < message.length(); ++index) {
             int smileIndex = smiles.getSmileChars().indexOf(message.charAt(index));
@@ -39,8 +35,8 @@ public class TextFormatter {
         return builder;
     }
 
-    public static SpannableStringBuilder getFormattedText(String text, Context context) {
+    public static SpannableStringBuilder getFormattedText(String text) {
         SpannableStringBuilder builder = new SpannableStringBuilder(text);
-        return detectEmotions(context, builder);
+        return detectEmotions(builder);
     }
 }

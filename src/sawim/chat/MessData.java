@@ -13,7 +13,7 @@ public final class MessData {
     private short rowData;
     private boolean isHighLight;
 
-    public SpannableStringBuilder fullText;
+    public SpannableStringBuilder cacheText;
 
     public static final short URLS = 1;
     public static final short INCOMING = 2;

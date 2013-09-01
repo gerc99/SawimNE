@@ -2,7 +2,6 @@ package protocol.jabber;
 
 import java.util.Vector;
 
-import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import ru.sawim.Scheme;
@@ -242,7 +241,7 @@ public final class AffiliationListConf implements FormListener, TextBoxView.Text
 				        affiliationI[enterData.getSelectorValue(AFFILIATION)], 
 				        reason);
 				} catch (Exception e) {}
-				Roster.getInstance().update();
+				Roster.getInstance().updateOnUi();
             }
             enterData.back();
             enterData = null;

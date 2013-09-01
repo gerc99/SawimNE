@@ -39,6 +39,8 @@ import ru.sawim.view.*;
 import sawim.ExternalApi;
 import sawim.Options;
 import sawim.OptionsForm;
+import sawim.chat.Chat;
+import sawim.chat.ChatHistory;
 import sawim.roster.Roster;
 import sawim.forms.ManageContactListForm;
 import sawim.forms.SmsForm;
@@ -61,8 +63,6 @@ import java.io.PrintStream;
 public class SawimActivity extends FragmentActivity {
 
     public static final String LOG_TAG = "SawimActivity";
-
-    public static String NOTIFY = "ru.sawim.notify";
 
     private static SawimActivity instance;
     public static SawimActivity getInstance() {
@@ -123,23 +123,15 @@ public class SawimActivity extends FragmentActivity {
     }
 
     @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        setIntent(intent);
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
         General.maximize();
-        if (NOTIFY.equals(getIntent().getAction())) {
-            RosterView rosterView = (RosterView) getSupportFragmentManager().findFragmentByTag(RosterView.TAG);
-            if (rosterView == null)
-                rosterView = (RosterView) getSupportFragmentManager().findFragmentById(R.id.roster_fragment);
-            Protocol protocol = Roster.getInstance().getProtocol(getIntent().getStringExtra(ChatView.PROTOCOL_ID));
-            Contact contact = protocol.getItemByUIN(getIntent().getStringExtra(ChatView.CONTACT_ID));
-            rosterView.openChat(protocol, contact, true);
-        }
+        RosterView rosterView = (RosterView) getSupportFragmentManager().findFragmentByTag(RosterView.TAG);
+        if (rosterView == null)
+            rosterView = (RosterView) getSupportFragmentManager().findFragmentById(R.id.roster_fragment);
+        Chat current = ChatHistory.instance.chatAt(ChatHistory.instance.getPreferredItem());
+        if (current != null)
+            rosterView.openChat(current.getProtocol(), current.getContact(), true);
     }
 
     @Override

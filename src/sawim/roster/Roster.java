@@ -2,7 +2,6 @@ package sawim.roster;
 
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.widget.Toast;
 import protocol.*;
 import protocol.icq.Icq;
@@ -111,7 +110,7 @@ public final class Roster {
             listOfProfiles.addElement(p);
         }*/
         cl.addProtocols(listOfProfiles);
-        update();
+        updateOnUi();
     }
 
     public void initAccounts() {
@@ -226,7 +225,7 @@ public final class Roster {
             setActiveContact(c);
         }
         setAlwaysVisibleNode(c);
-        update();
+        updateOnUi();
     }
 
     public void activateWithMsg(final String message) {
@@ -236,7 +235,7 @@ public final class Roster {
                 Toast.makeText(SawimApplication.getContext(), message, Toast.LENGTH_LONG).show();
             }
         });
-        update();
+        updateOnUi();
     }
 
     public void autoConnect() {
@@ -319,7 +318,7 @@ public final class Roster {
             }
             p.getNotInListGroup().setExpandFlag(false);
         }
-        contactList.update();
+        contactList.updateOnUi();
     }*/
 
     public final void markMessages(Contact contact) {
@@ -364,12 +363,18 @@ public final class Roster {
     }
 
     public void update(TreeNode node) {
-        update();
-    }
-
-    public final void update() {
         if (onUpdateRoster != null)
             onUpdateRoster.updateRoster();
+    }
+
+    public final void updateOnUi() {
+        SawimApplication.getInstance().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (onUpdateRoster != null)
+                    onUpdateRoster.updateRoster();
+            }
+        });
     }
 
     public void updateBarProtocols() {

@@ -23,9 +23,12 @@ import ru.sawim.models.RosterAdapter;
 import sawim.ExternalApi;
 import sawim.FileTransfer;
 import sawim.chat.ChatHistory;
+import sawim.modules.DebugLog;
 import sawim.roster.Roster;
 import sawim.roster.TreeNode;
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -89,7 +92,6 @@ public class SendToView extends Fragment implements AdapterView.OnItemClickListe
         if (item.isContact()) {
             Protocol p = roster.getCurrProtocol();
             Contact c = ((Contact) item);
-            c.activate(p);
             Intent intent = getActivity().getIntent();
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             String type = intent.getType();
@@ -99,6 +101,7 @@ public class SendToView extends Fragment implements AdapterView.OnItemClickListe
                 ChatView newFragment = new ChatView();
                 Bundle args = new Bundle();
                 newFragment.pastText(intent.getStringExtra(Intent.EXTRA_TEXT));
+                c.activate(p);
                 args.putString(ChatView.PROTOCOL_ID, p.getUserId());
                 args.putString(ChatView.CONTACT_ID, c.getUserId());
                 newFragment.setArguments(args);
@@ -107,9 +110,14 @@ public class SendToView extends Fragment implements AdapterView.OnItemClickListe
                 transaction.addToBackStack(null);
                 transaction.commit();
             } else {
-                ExternalApi.instance.setActivity(getActivity());
-                new FileTransfer(getActivity(), p, c).startFileTransfer();
-                ExternalApi.instance.acceptFile(data);
+                try {
+                    InputStream is = getActivity().getContentResolver().openInputStream(data);
+                    FileTransfer fileTransfer = new FileTransfer(getActivity(), p, c);
+                    fileTransfer.setFinish(true);
+                    fileTransfer.onFileSelect(is, ExternalApi.getFileName(data, getActivity()));
+                } catch (FileNotFoundException e) {
+                    DebugLog.panic("onFileSelect", e);
+                }
             }
         } else if (item.isGroup()) {
             Group group = (Group) item;

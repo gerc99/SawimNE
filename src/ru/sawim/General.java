@@ -63,7 +63,7 @@ public class General {
         Scheme.load();
         Options.loadOptions();
         new ru.sawim.config.Options().load();
-        JLocale.setCurrUiLanguage(Options.getString(Options.OPTION_UI_LANGUAGE));
+        JLocale.setCurrUiLanguage(/*Options.getString(Options.OPTION_UI_LANGUAGE)*/JLocale.getSystemLanguage());
         Scheme.setColorScheme(Options.getInt(Options.OPTION_COLOR_SCHEME));
         updateOptions();
         Updater.startUIUpdater();

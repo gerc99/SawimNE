@@ -2,7 +2,6 @@ package protocol.icq;
 
 import DrawControls.icons.Icon;
 import DrawControls.icons.ImageList;
-import android.support.v4.app.FragmentActivity;
 import protocol.*;
 import protocol.icq.action.*;
 import protocol.icq.packet.Packet;
@@ -251,7 +250,7 @@ public class Icq extends Protocol {
         switch (action) {
             case IcqContact.USER_MENU_REMOVE_ME:
                 sendRemoveMePacket(contact.getUserId());
-                Roster.getInstance().update();
+                Roster.getInstance().updateOnUi();
                 break;
 
             case ContactMenu.USER_MENU_PS_VISIBLE:
@@ -270,7 +269,7 @@ public class Icq extends Protocol {
                         break;
                 }
                 changeServerList(list, (IcqContact) contact);
-                Roster.getInstance().update();
+                Roster.getInstance().updateOnUi();
                 break;
 
         }
@@ -924,7 +923,6 @@ public class Icq extends Protocol {
 
     public void showStatus(Contact contact) {
         StatusView statusView = Roster.getInstance().getStatusView();
-        Roster.getInstance().setCurrentContact(contact);
         _updateStatusView(statusView, contact);
         statusView.showIt();
         if ((XStatusInfo.XSTATUS_NONE != contact.getXStatusIndex())

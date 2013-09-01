@@ -52,6 +52,7 @@ public final class FileTransfer implements FileBrowserListener,
     private Forms name_Desc;
     private FragmentActivity activity;
     private FileProgressView fileProgressView;
+    private boolean isFinish = false;
 
     public FileTransfer(FragmentActivity a, Protocol p, Contact _cItem) {
         activity = a;
@@ -59,6 +60,9 @@ public final class FileTransfer implements FileBrowserListener,
         cItem = _cItem;
     }
 
+    public void setFinish(boolean finish) {
+        this.isFinish = finish;
+    }
 
     private void addFileProgress() {
         fileProgressView = new FileProgressView();
@@ -270,6 +274,7 @@ public final class FileTransfer implements FileBrowserListener,
     }
 
     public void destroy() {
+        if (isFinish) activity.finish();
         try {
             closeFile();
             Roster.getInstance().removeTransfer(false);

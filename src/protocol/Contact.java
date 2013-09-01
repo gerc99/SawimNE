@@ -2,6 +2,7 @@ package protocol;
 
 import DrawControls.icons.Icon;
 import DrawControls.icons.ImageList;
+import ru.sawim.SawimApplication;
 import ru.sawim.view.menu.MyMenu;
 import sawim.roster.TreeNode;
 import android.view.ContextMenu;
@@ -13,6 +14,7 @@ import sawim.comm.StringConvertor;
 import sawim.modules.tracking.Tracking;
 import ru.sawim.Scheme;
 import ru.sawim.R;
+import sawim.util.JLocale;
 
 
 abstract public class Contact extends TreeNode {
@@ -235,9 +237,9 @@ abstract public class Contact extends TreeNode {
             String ignoreList = inIgnoreList()
                     ? "rem_ignore_list": "add_ignore_list";
 
-            menu.add(visibleList, ContactMenu.USER_MENU_PS_VISIBLE);
-            menu.add(invisibleList, ContactMenu.USER_MENU_PS_INVISIBLE);
-            menu.add(ignoreList, ContactMenu.USER_MENU_PS_IGNORE);
+            menu.add(JLocale.getString(visibleList), ContactMenu.USER_MENU_PS_VISIBLE);
+            menu.add(JLocale.getString(invisibleList), ContactMenu.USER_MENU_PS_INVISIBLE);
+            menu.add(JLocale.getString(ignoreList), ContactMenu.USER_MENU_PS_IGNORE);
         }
     }
 

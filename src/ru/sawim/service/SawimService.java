@@ -12,8 +12,6 @@ import android.os.Messenger;
 import android.util.Log;
 import ru.sawim.R;
 import ru.sawim.Tray;
-import ru.sawim.view.ChatView;
-import sawim.chat.Chat;
 import sawim.chat.ChatHistory;
 import sawim.roster.Roster;
 import ru.sawim.activities.SawimActivity;
@@ -54,7 +52,7 @@ public class SawimService extends Service {
     private Notification getNotification() {
         int unread = ChatHistory.instance.getPersonalUnreadMessageCount(false);
         int allUnread = ChatHistory.instance.getPersonalUnreadMessageCount(true);
-        CharSequence stateMsg = "";
+        CharSequence stateMsg = ChatHistory.instance.getLastMessage();;
 
         final int icon;
         if (0 < allUnread) {
@@ -81,14 +79,6 @@ public class SawimService extends Service {
             stateMsg = String.format((String) getText(R.string.unread_messages), unread);
         }
         Intent notificationIntent = new Intent(this, SawimActivity.class);
-        Chat current = ChatHistory.instance.chatAt(ChatHistory.instance.getPreferredItem());
-        if (current != null && 0 < current.getUnreadMessageCount()) {
-
-            stateMsg = current.getMessageDataByIndex(current.getMessData().size() - 1).getText();
-            notificationIntent.setAction(SawimActivity.NOTIFY);
-            notificationIntent.putExtra(ChatView.PROTOCOL_ID, current.getProtocol().getUserId());
-            notificationIntent.putExtra(ChatView.CONTACT_ID, current.getContact().getUserId());
-        }
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
         notification.setLatestEventInfo(this, getText(R.string.app_name), stateMsg, contentIntent);
         return notification;

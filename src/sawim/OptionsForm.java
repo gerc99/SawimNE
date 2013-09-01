@@ -117,10 +117,10 @@ public class OptionsForm implements FormListener, ControlStateListener {
                     saveOptionSelector(Options.OPTION_COLOR_SCHEME);
                     Scheme.setColorScheme(Options.getInt(Options.OPTION_COLOR_SCHEME));
                 }
-                if (JLocale.langAvailable.length > 1) {
-                    int lang = form.getSelectorValue(Options.OPTION_UI_LANGUAGE);
-                    Options.setString(Options.OPTION_UI_LANGUAGE, JLocale.langAvailable[lang]);
-                }
+                //if (JLocale.langAvailable.length > 1) {
+                //    int lang = form.getSelectorValue(Options.OPTION_UI_LANGUAGE);
+                //    Options.setString(Options.OPTION_UI_LANGUAGE, JLocale.langAvailable[lang]);
+                //}
 
                 saveOptionFontGauge(Options.OPTION_FONT_SCHEME);
                 //GraphicsEx.setFontScheme(Options.getInt(Options.OPTION_FONT_SCHEME));
@@ -196,7 +196,7 @@ public class OptionsForm implements FormListener, ControlStateListener {
                 if (colorSchemes.length > 1) {
                     form.addSelector(Options.OPTION_COLOR_SCHEME, "color_scheme", colorSchemes, Options.getInt(Options.OPTION_COLOR_SCHEME));
                 }
-                if (JLocale.langAvailable.length > 1) {
+            /*    if (JLocale.langAvailable.length > 1) {
                     int cur = 0;
                     String curLang = Options.getString(Options.OPTION_UI_LANGUAGE);
                     for (int j = 0; j < JLocale.langAvailable.length; ++j) {
@@ -205,7 +205,7 @@ public class OptionsForm implements FormListener, ControlStateListener {
                         }
                     }
                     form.addSelector(Options.OPTION_UI_LANGUAGE, "language", JLocale.langAvailableName, cur);
-                }
+                }*/
                 loadOptionFontGauge(Options.OPTION_FONT_SCHEME, "fonts");
 
                 form.addString("contact_list", null);

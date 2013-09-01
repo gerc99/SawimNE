@@ -119,8 +119,8 @@ public class MessagesAdapter extends BaseAdapter implements MyTextView.TextLinkC
         else if ((index & 1) == 0) bg = incoming ? Scheme.THEME_CHAT_BG_IN : Scheme.THEME_CHAT_BG_OUT;
         else bg = incoming ? Scheme.THEME_CHAT_BG_IN_ODD : Scheme.THEME_CHAT_BG_OUT_ODD;
         row.setBackgroundColor(Scheme.getColor(bg));
-        if (mData.fullText == null) {
-            mData.fullText = TextFormatter.getFormattedText(text, activity);
+        if (mData.cacheText == null) {
+            mData.cacheText = TextFormatter.getFormattedText(text);
         }
         if (mData.isMe() || mData.isPresence()) {
             item.msgImage.setVisibility(ImageView.GONE);
@@ -129,10 +129,10 @@ public class MessagesAdapter extends BaseAdapter implements MyTextView.TextLinkC
             item.msgText.setTextSize(General.getFontSize() - 2);
             if (mData.isMe()) {
                 item.msgText.setTextColor(Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG));
-                item.msgText.setText("* " + nick + " " + mData.fullText);
+                item.msgText.setText("* " + nick + " " + mData.cacheText);
             } else {
                 item.msgText.setTextColor(Scheme.getColor(Scheme.THEME_CHAT_INMSG));
-                item.msgText.setText(nick + mData.fullText);
+                item.msgText.setText(nick + mData.cacheText);
             }
         } else {
             if (mData.iconIndex != Message.ICON_NONE) {
@@ -162,11 +162,11 @@ public class MessagesAdapter extends BaseAdapter implements MyTextView.TextLinkC
             item.msgText.setTextColor(Scheme.getColor(color));
             item.msgText.setTextSize(General.getFontSize());
             if (currentContact.equals(JuickMenu.JUICK) || currentContact.equals(JuickMenu.JUBO))
-                item.msgText.setTextWithLinks(mData.fullText, JuickMenu.Mode.juick);
+                item.msgText.setTextWithLinks(mData.cacheText, JuickMenu.Mode.juick);
             else if (currentContact.equals(JuickMenu.PSTO))
-                item.msgText.setTextWithLinks(mData.fullText, JuickMenu.Mode.psto);
+                item.msgText.setTextWithLinks(mData.cacheText, JuickMenu.Mode.psto);
             else
-                item.msgText.setTextWithLinks(mData.fullText, JuickMenu.Mode.none);
+                item.msgText.setTextWithLinks(mData.cacheText, JuickMenu.Mode.none);
         }
         return row;
     }
