@@ -565,7 +565,7 @@ public final class Jabber extends Protocol implements FormListener {
                         sendMessage(contact, box.getString(), true);
                     }
                 });
-                textbox.show(SawimActivity.getInstance().getSupportFragmentManager(), "title_conf");
+                textbox.show(General.sawimActivity.getSupportFragmentManager(), "title_conf");
                 break;
 
             case ContactMenu.CONFERENCE_CONNECT:
@@ -651,7 +651,7 @@ public final class Jabber extends Protocol implements FormListener {
                 selected = i;
             }
         }
-		AlertDialog.Builder builder = new AlertDialog.Builder(SawimActivity.getInstance());
+		AlertDialog.Builder builder = new AlertDialog.Builder(General.sawimActivity);
         builder.setCancelable(true);
         builder.setTitle(c.getName());
         builder.setSingleChoiceItems(Util.vectorToArray(items), selected, new DialogInterface.OnClickListener() {
@@ -826,7 +826,7 @@ public final class Jabber extends Protocol implements FormListener {
                         join(enterConf);
                     }
                 }
-                //Roster.getInstance().updateOnUi();
+                //Roster.getSawimActivity().updateOnUi();
             }
             enterData.back();
             enterData = null;
@@ -836,7 +836,7 @@ public final class Jabber extends Protocol implements FormListener {
             if (apply) {
 				String[] onlineConferenceI = Util.explode(onlineConference(getContactItems()), '|');
 				getConnection().sendInvite(onlineConferenceI[enterDataInvite.getSelectorValue(JID_MESS_TO)], enterDataInvite.getTextFieldValue(JID_INVITE_TO), enterDataInvite.getTextFieldValue(REASON_INVITE));
-				//Roster.getInstance().updateOnUi();
+				//Roster.getSawimActivity().updateOnUi();
                 Toast.makeText(SawimApplication.getContext(), R.string.invitation_sent, Toast.LENGTH_LONG).show();
 			}
             enterDataInvite.back();

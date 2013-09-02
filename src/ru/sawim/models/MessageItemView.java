@@ -1,9 +1,11 @@
 package ru.sawim.models;
 
 import android.content.Context;
+import android.graphics.PorterDuff;
 import android.text.util.Linkify;
 import android.util.Log;
 import android.widget.*;
+import ru.sawim.Scheme;
 import ru.sawim.view.MyTextView;
 
 /**
@@ -42,6 +44,7 @@ public class MessageItemView extends RelativeLayout {
         lp.addRule(ALIGN_PARENT_TOP);
         if (checkBox.getVisibility() != CheckBox.GONE) {
             checkBox.setId(9);
+            checkBox.setBackgroundColor(Scheme.getInversColor(Scheme.THEME_BACKGROUND));
             addView(checkBox, lp);
         } else {
             msgTime.setId(3);

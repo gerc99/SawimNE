@@ -4,6 +4,7 @@ import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import protocol.Contact;
+import ru.sawim.General;
 import ru.sawim.activities.SawimActivity;
 import ru.sawim.view.TextBoxView;
 import sawim.Clipboard;
@@ -163,7 +164,7 @@ public final class MicroBlog implements TextBoxView.TextBoxListener {
         replayTo = StringConvertor.notNull(to);
         postEditor = new TextBoxView();
         postEditor.setTextBoxListener(this);
-        postEditor.show(SawimActivity.getInstance().getSupportFragmentManager(), StringConvertor.isEmpty(replayTo) ? "message" : "reply");
+        postEditor.show(General.sawimActivity.getSupportFragmentManager(), StringConvertor.isEmpty(replayTo) ? "message" : "reply");
     }
 
     public void textboxAction(TextBoxView box, boolean ok) {

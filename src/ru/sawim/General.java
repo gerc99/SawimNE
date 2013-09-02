@@ -8,10 +8,11 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import protocol.Contact;
+import ru.sawim.view.ChatView;
 import sawim.Options;
 import sawim.Updater;
+import sawim.chat.Chat;
 import sawim.chat.ChatHistory;
 import ru.sawim.activities.SawimActivity;
 import sawim.roster.Roster;
@@ -23,6 +24,7 @@ import sawim.util.JLocale;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Hashtable;
 
 /**
  * Created with IntelliJ IDEA.
@@ -39,6 +41,8 @@ public class General {
     public static final String PHONE = "android/" + android.os.Build.MODEL
             + "/" + android.os.Build.VERSION.RELEASE;
 
+    public static SawimActivity sawimActivity;
+    public static Hashtable<String, Chat.ScrollState> positionHash = new Hashtable<String, Chat.ScrollState>();
     private boolean paused = true;
     public static ImageList affiliationIcons = ImageList.createImageList("/jabber-affiliations.png");
     public static BitmapDrawable usersIcon = ImageList.createImageList("/participants.png").iconAt(0).getImage();
@@ -193,7 +197,7 @@ public class General {
     public static Bitmap avatarBitmap(byte[] buffer) {
         if (buffer == null) return null;
         DisplayMetrics metrics = new DisplayMetrics();
-        SawimActivity.getInstance().getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        sawimActivity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
         float scaleWidth = metrics.scaledDensity;
         float scaleHeight = metrics.scaledDensity;
 

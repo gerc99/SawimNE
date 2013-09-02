@@ -167,7 +167,7 @@ public final class ChatHistory {
         if (null != chat) {
             clearChat(chat);
             //if (General.getSawim().getDisplay().remove(chat)) {
-            //    Roster.getInstance()._setActiveContact(null);
+            //    Roster.getSawimActivity()._setActiveContact(null);
             //}
             //setCurrentItemIndex(getCurrItem());
             //invalidate();
@@ -246,13 +246,13 @@ public final class ChatHistory {
         return current;
     }
 
-    public String getLastMessage() {
+    public String getLastMessage(String defMess) {
         Chat current = chatAt(getPreferredItem());
         if (current != null) {
             MessData md = current.getMessageDataByIndex(current.getMessData().size() - 1);
             return md.getNick() + ": " + md.getText();
         }
-        return "";
+        return defMess;
     }
 
     public int getPreferredItem() {
@@ -261,7 +261,7 @@ public final class ChatHistory {
                 return i;
             }
         }
-        //Contact currentContact = Roster.getInstance().getCurrentContact();
+        //Contact currentContact = Roster.getSawimActivity().getCurrentContact();
         int current = -1;
         for (int i = 0; i < historyTable.size(); ++i) {
             Chat chat = chatAt(i);

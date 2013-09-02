@@ -4,6 +4,7 @@ import java.util.Vector;
 
 import android.view.Menu;
 import android.view.MenuItem;
+import ru.sawim.General;
 import ru.sawim.Scheme;
 import ru.sawim.activities.SawimActivity;
 import ru.sawim.models.form.VirtualListItem;
@@ -69,7 +70,7 @@ public final class AffiliationListConf implements FormListener, TextBoxView.Text
 
                     case COMMAND_SEARCH:
                         searchBox.setTextBoxListener(AffiliationListConf.this);
-                        searchBox.show(SawimActivity.getInstance().getSupportFragmentManager(), "service_discovery_search");
+                        searchBox.show(General.sawimActivity.getSupportFragmentManager(), "service_discovery_search");
                         break;
                 }
             }

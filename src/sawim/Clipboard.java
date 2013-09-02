@@ -3,11 +3,8 @@ package sawim;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.os.Build;
-import ru.sawim.SawimApplication;
+import ru.sawim.General;
 import ru.sawim.activities.SawimActivity;
-import sawim.comm.StringConvertor;
-
-import java.util.concurrent.atomic.AtomicReference;
 
 public final class Clipboard {
 
@@ -34,16 +31,16 @@ public final class Clipboard {
     }
 
     public static void putToClipboard(final String text) {
-        //SawimApplication.getInstance().runOnUiThread(new Runnable() {
+        //SawimApplication.getSawimActivity().runOnUiThread(new Runnable() {
         //    public void run() {
                 try {
                     if (Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
                         android.text.ClipboardManager clipboard = (android.text.ClipboardManager)
-                                SawimActivity.getInstance().getSystemService(SawimActivity.CLIPBOARD_SERVICE);
+                                General.sawimActivity.getSystemService(SawimActivity.CLIPBOARD_SERVICE);
                         clipboard.setText(text);
                     } else {
                         ClipboardManager clipboard = (ClipboardManager)
-                                SawimActivity.getInstance().getSystemService(SawimActivity.CLIPBOARD_SERVICE);
+                                General.sawimActivity.getSystemService(SawimActivity.CLIPBOARD_SERVICE);
                         clipboard.setPrimaryClip(ClipData.newPlainText("", text));
                     }
                 } catch (Throwable e) {

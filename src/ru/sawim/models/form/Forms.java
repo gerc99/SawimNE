@@ -120,6 +120,7 @@ public class Forms {
 
     public void destroy() {
         clearForm();
+        Forms.getInstance().clearListeners();
     }
 
     public void clearListeners() {

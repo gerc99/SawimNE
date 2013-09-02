@@ -6,6 +6,7 @@ import android.view.ContextMenu;
 import android.view.ContextThemeWrapper;
 import android.widget.Toast;
 import protocol.jabber.Jabber;
+import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.activities.SawimActivity;
@@ -108,7 +109,7 @@ public class ContactMenu implements TextBoxView.TextBoxListener {
     }
 
     public void doAction(int cmd) {
-        final SawimActivity activity = SawimActivity.getInstance();
+        final SawimActivity activity = General.sawimActivity;
         switch (cmd) {
             case USER_MENU_TRACK:
                 new sawim.modules.tracking.TrackingForm(contact.getUserId()).activate();
@@ -186,7 +187,7 @@ public class ContactMenu implements TextBoxView.TextBoxListener {
                     }
                     if (history.getHistorySize() > 0)
                         new HistoryStorageList().show(history);
-                    //ru.sawim.activities.SawimActivity.getInstance().showHistory(history);
+                    //ru.sawim.activities.SawimActivity.getSawimActivity().showHistory(history);
                 }
                 break;
 

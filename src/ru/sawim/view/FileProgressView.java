@@ -54,7 +54,10 @@ public class FileProgressView extends DialogFragment {
         final String strTime = Util.getLocalDateString(General.getCurrentGmtTime(), true);
         FragmentActivity activity = getActivity();
         if (activity == null) return;
-        if (percent == 100) dismiss();
+        if (percent == 100) {
+            Roster.getInstance().removeTransfer(true);
+            dismiss();
+        }
         Handler handler = new Handler(activity.getMainLooper());
         handler.post(new Runnable() {
             @Override

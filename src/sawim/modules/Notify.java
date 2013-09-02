@@ -2,7 +2,6 @@ package sawim.modules;
 
 import android.content.Context;
 import android.os.Vibrator;
-import android.util.Log;
 import ru.sawim.General;
 import ru.sawim.SawimApplication;
 import ru.sawim.activities.SawimActivity;
@@ -86,12 +85,12 @@ public class Notify implements Runnable {
     }
 
     public boolean vibrate(final int duration) {
-        if (SawimActivity.getInstance() == null) return false;
+        if (General.sawimActivity == null) return false;
         final Vibrator vibrator = (Vibrator) SawimApplication.getInstance().getSystemService(Context.VIBRATOR_SERVICE);
         if (null == vibrator) {
             return false;
         }
-        //SawimApplication.getInstance().runOnUiThread(new Runnable() {
+        //SawimApplication.getSawimActivity().runOnUiThread(new Runnable() {
         //    @Override
         //    public void run() {
                 if (600 < duration) {

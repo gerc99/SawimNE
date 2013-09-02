@@ -4,6 +4,7 @@ import java.util.Vector;
 import DrawControls.icons.Icon;
 import DrawControls.icons.ImageList;
 import android.graphics.drawable.Drawable;
+import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
@@ -316,7 +317,7 @@ public final class TrackingForm implements TextBoxView.TextBoxListener {
 		InputBox.setTextBoxListener(this);
 		InputBox.setCaption(JLocale.getString("mass"));
         InputBox.setString(text);
-        InputBox.show(SawimActivity.getInstance().getSupportFragmentManager(), JLocale.getString("message"));
+        InputBox.show(General.sawimActivity.getSupportFragmentManager(), JLocale.getString("message"));
     }
 
     private void changeStatus(int index) {

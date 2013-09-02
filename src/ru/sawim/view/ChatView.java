@@ -11,7 +11,9 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.*;
+import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -67,7 +69,7 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
     private ImageButton smileButton;
     private ImageButton sendButton;
     private EditText messageEditor;
-    private static Hashtable<String, Chat.ScrollState> positionHash = new Hashtable<String, Chat.ScrollState>();
+
     private static Protocol lastProtocol;
     private static Contact lastContact;
 
@@ -87,9 +89,12 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
                 @Override
                 public void onClick(View view) {
                     if (nickList == null) return;
+                    Animation inAnimation = AnimationUtils.makeInAnimation(General.sawimActivity, false);
+                    Animation outAnimation = AnimationUtils.makeOutAnimation(General.sawimActivity, true);
+                    inAnimation.setDuration(200);
+                    outAnimation.setDuration(200);
                     nickList.startAnimation(nickList.getVisibility() == View.VISIBLE
-                            ? AnimationUtils.makeOutAnimation(getActivity(), true)
-                            : AnimationUtils.makeInAnimation(getActivity(), false));
+                            ? outAnimation : inAnimation);
                     nickList.setVisibility(nickList.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
                 }
             });
@@ -110,7 +115,7 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
     }
 
     private void initSpinner() {
-        chatsSpinnerAdapter = new ChatsSpinnerAdapter(getActivity(), ChatHistory.instance.historyTable);
+        chatsSpinnerAdapter = new ChatsSpinnerAdapter(General.sawimActivity, ChatHistory.instance.historyTable);
         spinner.setAdapter(chatsSpinnerAdapter);
         spinner.getBackground().setColorFilter(Scheme.getColor(Scheme.THEME_CAP_BACKGROUND), PorterDuff.Mode.MULTIPLY);
         spinner.setSelection(ChatHistory.instance.getItemChat(currentContact));
@@ -129,7 +134,7 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
     }
 
     public void showMenu() {
-        final MyMenu menu = new MyMenu(getActivity());
+        final MyMenu menu = new MyMenu(General.sawimActivity);
         boolean accessible = chat.getWritable() && (currentContact.isSingleUserContact() || currentContact.isOnline());
         menu.add(getString(adapter.isMultiСitation() ?
                 R.string.disable_multi_citation : R.string.include_multi_citation), ContactMenu.MENU_MULTI_CITATION);
@@ -148,7 +153,7 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
                 menu.add(JLocale.getString("ft_cam"), ContactMenu.USER_MENU_CAM_TRANS);
             }
         }
-        menu.add(getActivity().getResources().getString(R.string.user_statuses), ContactMenu.USER_MENU_STATUSES);
+        menu.add(General.sawimActivity.getResources().getString(R.string.user_statuses), ContactMenu.USER_MENU_STATUSES);
         if (!currentContact.isSingleUserContact() && currentContact.isOnline()) {
             menu.add(JLocale.getString("leave_chat"), ContactMenu.CONFERENCE_DISCONNECT);
         }
@@ -156,7 +161,7 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
         menu.add(JLocale.getString("all_contact_except_this"), ContactMenu.ACTION_DEL_ALL_CHATS_EXCEPT_CUR);
         menu.add(JLocale.getString("all_contacts"), ContactMenu.ACTION_DEL_ALL_CHATS);
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(getActivity(), R.style.AlertDialogCustom));
+        AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(General.sawimActivity, R.style.AlertDialogCustom));
         builder.setTitle(currentContact.getName());
         builder.setCancelable(true);
         builder.setAdapter(menu, new DialogInterface.OnClickListener() {
@@ -168,7 +173,7 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
                             adapter.setMultiСitation(false);
                         } else {
                             adapter.setMultiСitation(true);
-                            Toast.makeText(getActivity(), R.string.hint_multi_citation, Toast.LENGTH_LONG).show();
+                            Toast.makeText(General.sawimActivity, R.string.hint_multi_citation, Toast.LENGTH_LONG).show();
                         }
                         chatListView.setAdapter(adapter);
                         break;
@@ -179,7 +184,7 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
                             updateChat();
                         }*/
                         ChatHistory.instance.unregisterChat(chat);
-                        if (getActivity().findViewById(R.id.fragment_container) != null)
+                        if (General.sawimActivity.findViewById(R.id.fragment_container) != null)
                             getFragmentManager().popBackStack();
                         else
                             chat_viewLayout.setVisibility(LinearLayout.GONE);
@@ -191,7 +196,7 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
 
                     case ContactMenu.ACTION_DEL_ALL_CHATS:
                         ChatHistory.instance.removeAll(null);
-                        if (getActivity().findViewById(R.id.fragment_container) != null)
+                        if (General.sawimActivity.findViewById(R.id.fragment_container) != null)
                             getFragmentManager().popBackStack();
                         else
                             chat_viewLayout.setVisibility(LinearLayout.GONE);
@@ -302,6 +307,8 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
         smileButton = (ImageButton) chat_viewLayout.findViewById(R.id.input_smile_button);
         sendButton = (ImageButton) chat_viewLayout.findViewById(R.id.input_send_button);
         messageEditor = (EditText) chat_viewLayout.findViewById(R.id.messageBox);
+        if (General.sawimActivity.findViewById(R.id.fragment_container) == null)
+            chat_viewLayout.setVisibility(LinearLayout.VISIBLE);
         return v;
     }
 
@@ -314,7 +321,7 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
             Contact contact = protocol.getItemByUIN(args.getString(CONTACT_ID));
             openChat(protocol, contact);
         }
-        if (getActivity().findViewById(R.id.fragment_container) == null) {
+        if (General.sawimActivity.findViewById(R.id.fragment_container) == null) {
             if (lastContact == null)
                 chat_viewLayout.setVisibility(LinearLayout.GONE);
             else
@@ -362,9 +369,10 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
     public void resume(Chat chat) {
         if (chat == null) return;
         Chat.ScrollState lastPosition = getLastPosition(chat.getContact().getUserId());
-        if (lastPosition != null && lastPosition.position > 0)
+        if (lastPosition != null && lastPosition.position > 0) {
+            Log.e(TAG, "77777777777  "+lastPosition.position + 1);
             chatListView.setSelectionFromTop(lastPosition.position + 1, lastPosition.offset);
-         else chatListView.setSelection(0);
+        } else chatListView.setSelection(0);
 
         chat.setVisibleChat(true);
         ChatHistory.instance.registerChat(chat);
@@ -394,20 +402,18 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
         Chat.ScrollState scrollState = new Chat.ScrollState();
         scrollState.position = position;
         scrollState.offset = offset;
-        positionHash.put(jid, scrollState);
+        General.positionHash.put(jid, scrollState);
     }
 
     private Chat.ScrollState getLastPosition(String jid) {
-        if (positionHash.containsKey(jid)) return positionHash.remove(jid);
+        if (General.positionHash.containsKey(jid)) return General.positionHash.remove(jid);
         else return null;
     }
 
     public void openChat(Protocol p, Contact c) {
-        if (getActivity().findViewById(R.id.fragment_container) == null)
-            chat_viewLayout.setVisibility(LinearLayout.VISIBLE);
         protocol = p;
         currentContact = c;
-        final FragmentActivity currentActivity = getActivity();
+        final FragmentActivity currentActivity = General.sawimActivity;
         chat = protocol.getChat(currentContact);
 
         if (spinner.getOnItemSelectedEvenIfUnchangedListener() == null)
@@ -415,7 +421,7 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
         initList();
         initMucUsers();
 
-        int background = Scheme.getColorWithAlpha(Scheme.THEME_BACKGROUND);
+        int background = Scheme.getColor(Scheme.THEME_BACKGROUND);
         chat_viewLayout.setBackgroundColor(background);
         if (General.isTablet(currentActivity)) {
             menuButton.setVisibility(ImageButton.VISIBLE);
@@ -439,7 +445,7 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
             }
         });
         messageEditor.addTextChangedListener(textWatcher);
-        messageEditor.setBackgroundColor(background);
+        messageEditor.getBackground().setColorFilter(background, PorterDuff.Mode.MULTIPLY);;
         messageEditor.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
         if (sendByEnter) {
             messageEditor.setImeOptions(EditorInfo.IME_ACTION_SEND);
@@ -469,10 +475,11 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
             });
         }
     }
+
     private void initList() {
-        chatListView = new MyListView(getActivity());
+        chatListView = new MyListView(General.sawimActivity);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT && getResources().getDisplayMetrics().densityDpi < 200)
             lp.weight = 10;
         else
             lp.weight = 1;
@@ -486,7 +493,7 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
         chatListView.setFocusable(true);
         if (chatListView.getAdapter() == null) {
             adapter = new MessagesAdapter();
-            adapter.init(getActivity(), chat);
+            adapter.init(General.sawimActivity, chat);
             chatListView.setAdapter(adapter);
         } else {
             adapter.refreshList(chat.getMessData());
@@ -498,8 +505,8 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
 
     private void initMucUsers() {
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        nickList = new MyListView(getActivity());
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
+        nickList = new MyListView(General.sawimActivity);
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT && getResources().getDisplayMetrics().densityDpi < 200)
             lp.weight = 0;
         else
             lp.weight = (float) 1.5;
@@ -542,7 +549,7 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
 
     @Override
     public void updateChat(final Contact contact) {
-        getActivity().runOnUiThread(new Runnable() {
+        General.sawimActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 updateChatIcon();
@@ -562,7 +569,7 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
 
     @Override
     public void updateMucList() {
-        getActivity().runOnUiThread(new Runnable() {
+        General.sawimActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 if (mucUsersView != null)
@@ -586,7 +593,7 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
             if (currentContact instanceof JabberServiceContact) {
                 JabberServiceContact jabberServiceContact = ((JabberServiceContact) currentContact);
                 if (jabberServiceContact.getContact(msg.getNick()) == null && !jabberServiceContact.getUserId().equals(msg.getNick()))
-                    Toast.makeText(getActivity(), getString(R.string.contact_walked), Toast.LENGTH_LONG).show();
+                    Toast.makeText(General.sawimActivity, getString(R.string.contact_walked), Toast.LENGTH_LONG).show();
             }
             setText(chat.onMessageSelected(msg));
             if (nickList.getVisibility() == View.VISIBLE && getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
@@ -601,13 +608,13 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
     private void showKeyboard(View view) {
         Configuration conf = Resources.getSystem().getConfiguration();
         if (conf.hardKeyboardHidden != Configuration.HARDKEYBOARDHIDDEN_NO) {
-            InputMethodManager keyboard = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            InputMethodManager keyboard = (InputMethodManager) General.sawimActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
             keyboard.showSoftInput(view, InputMethodManager.SHOW_FORCED);
         }
     }
 
     private void hideKeyboard(View view) {
-        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        InputMethodManager imm = (InputMethodManager) General.sawimActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
@@ -618,7 +625,7 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
 
     @Override
     public void pastText(final String text) {
-        getActivity().runOnUiThread(new Runnable() {
+        General.sawimActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 insert(" " + text + " ");
@@ -646,7 +653,7 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
     }
 
     private void resetText() {
-        getActivity().runOnUiThread(new Runnable() {
+        General.sawimActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 messageEditor.setText("");
@@ -659,7 +666,7 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
     }
 
     private void setText(final String text) {
-        getActivity().runOnUiThread(new Runnable() {
+        General.sawimActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 String t = null == text ? "" : text;

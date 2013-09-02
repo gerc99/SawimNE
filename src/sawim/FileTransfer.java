@@ -111,7 +111,7 @@ public final class FileTransfer implements FileBrowserListener,
     }
 
     public void startPhotoTransfer() {
-        ExternalApi.instance.setActivity(SawimActivity.getInstance());
+        ExternalApi.instance.setActivity(General.sawimActivity);
         ExternalApi.instance.startCamera(this, 1024, 768);
     }
 
@@ -247,8 +247,8 @@ public final class FileTransfer implements FileBrowserListener,
             }
             changeFileProgress(percent, JLocale.getEllipsisString("sending_file"));
             if (100 == percent) {
+                Roster.getInstance().removeTransfer(false);
                 changeFileProgress(percent, "complete");
-                destroy();
                 return;
             }
         } catch (Exception ignored) {
@@ -274,14 +274,15 @@ public final class FileTransfer implements FileBrowserListener,
     }
 
     public void destroy() {
-        if (isFinish) activity.finish();
         try {
             closeFile();
             Roster.getInstance().removeTransfer(false);
-            name_Desc.back();
             General.gc();
         } catch (Exception ignored) {
         }
+        name_Desc.back();
+        if (isFinish) activity.finish();
+        fileProgressView = null;
     }
 
     public void run() {

@@ -4,13 +4,13 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.net.Uri;
+import ru.sawim.General;
 import ru.sawim.R;
 import sawim.roster.Roster;
 import protocol.Contact;
 import protocol.Protocol;
 import protocol.jabber.Jabber;
 import protocol.jabber.Jid;
-import ru.sawim.activities.SawimActivity;
 
 /**
  * Created with IntelliJ IDEA.
@@ -25,7 +25,7 @@ public class OpenUriActivity extends Activity {
         super.onStart();
         Intent intent = getIntent();
         if (Intent.ACTION_VIEW.equals(intent.getAction())) {
-            final boolean delay = null == SawimActivity.getInstance();
+            final boolean delay = null == General.sawimActivity;
             final Uri uri = intent.getData();
             startActivity(new Intent(this, SawimActivity.class));
             new Thread(new Runnable() {
@@ -88,7 +88,7 @@ public class OpenUriActivity extends Activity {
     }
 
     private void alert() {
-		AlertDialog.Builder alertDialog = new AlertDialog.Builder(SawimActivity.getInstance());
+		AlertDialog.Builder alertDialog = new AlertDialog.Builder(General.sawimActivity);
         alertDialog.setCancelable(true);
         alertDialog.setTitle(getText(R.string.app_name));
         alertDialog.setMessage(getText(R.string.xmppAccountDontFound));

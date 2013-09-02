@@ -17,6 +17,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import protocol.Profile;
 import protocol.jabber.JabberRegistration;
+import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.activities.SawimActivity;
@@ -104,11 +105,11 @@ public class StartWindowView extends Fragment {
     }
 
     private void back() {
-        if (SawimActivity.getInstance().getSupportFragmentManager()
+        if (General.sawimActivity.getSupportFragmentManager()
                 .findFragmentById(R.id.chat_fragment) != null)
-            SawimActivity.getInstance().recreateActivity();
+            General.sawimActivity.recreateActivity();
         else
-            SawimActivity.getInstance().getSupportFragmentManager().popBackStack();
+            General.sawimActivity.getSupportFragmentManager().popBackStack();
     }
 
     class LoginDialog extends DialogFragment {

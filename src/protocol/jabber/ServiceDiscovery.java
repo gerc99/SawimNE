@@ -136,13 +136,13 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
                     case COMMAND_SEARCH:
                         searchBox.setString("");
                         searchBox.setTextBoxListener(ServiceDiscovery.this);
-                        searchBox.show(SawimActivity.getInstance().getSupportFragmentManager(), JLocale.getString("service_discovery_search"));
+                        searchBox.show(General.sawimActivity.getSupportFragmentManager(), JLocale.getString("service_discovery_search"));
                         break;
 
                     case COMMAND_SET_SERVER:
                         serverBox.setString(serverJid);
                         serverBox.setTextBoxListener(ServiceDiscovery.this);
-                        serverBox.show(SawimActivity.getInstance().getSupportFragmentManager(), JLocale.getString("service_discovery_server"));
+                        serverBox.show(General.sawimActivity.getSupportFragmentManager(), JLocale.getString("service_discovery_server"));
                         break;
 
                     case COMMAND_HOME:

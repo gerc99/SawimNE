@@ -52,7 +52,7 @@ public class SawimService extends Service {
     private Notification getNotification() {
         int unread = ChatHistory.instance.getPersonalUnreadMessageCount(false);
         int allUnread = ChatHistory.instance.getPersonalUnreadMessageCount(true);
-        CharSequence stateMsg = ChatHistory.instance.getLastMessage();;
+        CharSequence stateMsg = "";
 
         final int icon;
         if (0 < allUnread) {
@@ -79,6 +79,8 @@ public class SawimService extends Service {
             stateMsg = String.format((String) getText(R.string.unread_messages), unread);
         }
         Intent notificationIntent = new Intent(this, SawimActivity.class);
+        notificationIntent.setAction(SawimActivity.NOTIFY);
+        stateMsg = ChatHistory.instance.getLastMessage(stateMsg.toString());
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
         notification.setLatestEventInfo(this, getText(R.string.app_name), stateMsg, contentIntent);
         return notification;

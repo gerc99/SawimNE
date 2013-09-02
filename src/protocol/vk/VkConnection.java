@@ -1,6 +1,6 @@
 package protocol.vk;
 
-import ru.sawim.SawimApplication;
+import ru.sawim.General;
 import sawim.chat.message.PlainMessage;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -21,7 +21,7 @@ import java.util.Vector;
  * @author vladimir
  */
 public class VkConnection implements Runnable {
-    private VkApp api = new VkApp(SawimActivity.getInstance());
+    private VkApp api = new VkApp(General.sawimActivity);
     private Vk vk;
     private volatile boolean running = true;
     VkConnection(Vk vk) {
@@ -33,7 +33,7 @@ public class VkConnection implements Runnable {
             api.showLoginDialog(vk.getUserId(), vk.getPassword());
         }
 
-        final SawimActivity a = SawimActivity.getInstance();
+        final SawimActivity a = General.sawimActivity;
         a.runOnUiThread(new Runnable() {
             public void run() {
                 if (!api.hasAccessToken()) api.showLoginDialog(vk.getUserId(), vk.getPassword());

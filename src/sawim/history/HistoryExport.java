@@ -40,7 +40,7 @@ class HistoryExport implements Runnable, FileBrowserListener {
     }
 
     public void onFileSelect(String s0) throws SawimException {
-       /* file = FileSystem.getInstance();
+       /* file = FileSystem.getSawimActivity();
         try {
             file.openFile(filename);
             setFileName(file.getName());

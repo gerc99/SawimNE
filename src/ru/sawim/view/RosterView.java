@@ -5,7 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
 import android.support.v4.app.FragmentTransaction;
-import ru.sawim.SawimApplication;
+import ru.sawim.General;
 import ru.sawim.activities.SawimActivity;
 import sawim.roster.TreeNode;
 import android.graphics.PorterDuff;
@@ -65,6 +65,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
     private HashMap<Integer, ImageButton> protocolIconsHash = new HashMap<Integer, ImageButton>();
     private final LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
     private ViewPager.LayoutParams viewPagerLayoutParams;
+    private PagerTitleStrip indicator;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -130,20 +131,13 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         protocolBarLayout = new LinearLayout(activity);
         protocolBarLayout.setOrientation(LinearLayout.HORIZONTAL);
         protocolBarLayout.setLayoutParams(protocolBarLayoutLP);
-
-        GradientDrawable gd = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
-                new int[] {Scheme.getColor(Scheme.THEME_CAP_BACKGROUND),Scheme.getColor(Scheme.THEME_BACKGROUND)});
-        gd.setCornerRadius(0f);
-        horizontalScrollView.setBackgroundDrawable(gd);
         horizontalScrollView.addView(protocolBarLayout);
 
         progressBar = new ProgressBar(activity, null, android.R.attr.progressBarStyleHorizontal);
         progressBar.setMax(100);
 
         viewPager = new ViewPager(activity);
-        PagerTitleStrip indicator = new PagerTitleStrip(activity);
-        indicator.setTextColor(Scheme.getColor(Scheme.THEME_GROUP));
-        indicator.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
+        indicator = new PagerTitleStrip(activity);
         viewPagerLayoutParams = new ViewPager.LayoutParams();
         viewPagerLayoutParams.height = ViewPager.LayoutParams.WRAP_CONTENT;
         viewPagerLayoutParams.width = ViewPager.LayoutParams.MATCH_PARENT;
@@ -158,6 +152,10 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
 
             LinearLayout.LayoutParams horizontalScrollViewLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 70);
             horizontalScrollViewLP.gravity = Gravity.CENTER_VERTICAL;
+            GradientDrawable gd = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
+                    new int[] {Scheme.getColor(Scheme.THEME_CAP_BACKGROUND),Scheme.getColor(Scheme.THEME_BACKGROUND)});
+            gd.setCornerRadius(0f);
+            horizontalScrollView.setBackgroundDrawable(gd);
             addViewInLayout(horizontalScrollView, 0, horizontalScrollViewLP, true);
 
             LinearLayout.LayoutParams ProgressBarLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -182,7 +180,8 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
                 public void onPageScrollStateChanged(int state) {
                 }
             });
-
+            indicator.setTextColor(Scheme.getColor(Scheme.THEME_GROUP));
+            indicator.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
             addViewInLayout(viewPager, 2, viewPagerLayoutParams, true);
         }
     }
@@ -206,11 +205,11 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
     }
 
     private static void showStartWindow() {
-        if (SawimActivity.getInstance().getSupportFragmentManager()
+        if (General.sawimActivity.getSupportFragmentManager()
                 .findFragmentById(R.id.chat_fragment) != null)
-            SawimActivity.getInstance().setContentView(R.layout.intercalation_layout);
+            General.sawimActivity.setContentView(R.layout.intercalation_layout);
         StartWindowView newFragment = new StartWindowView();
-        FragmentTransaction transaction = SawimActivity.getInstance().getSupportFragmentManager().beginTransaction();
+        FragmentTransaction transaction = General.sawimActivity.getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment_container, newFragment, StartWindowView.TAG);
         transaction.addToBackStack(null);
         transaction.commitAllowingStateLoss();
@@ -369,13 +368,13 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         ChatView chatView = (ChatView) getActivity().getSupportFragmentManager()
                 .findFragmentById(R.id.chat_fragment);
         if (chatView == null) {
-            ChatView newFragment = new ChatView();
+            chatView = new ChatView();
             Bundle args = new Bundle();
             args.putString(ChatView.PROTOCOL_ID, p.getUserId());
             args.putString(ChatView.CONTACT_ID, c.getUserId());
-            newFragment.setArguments(args);
+            chatView.setArguments(args);
             FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.fragment_container, newFragment, ChatView.TAG);
+            transaction.replace(R.id.fragment_container, chatView, ChatView.TAG);
             transaction.addToBackStack(null);
             if (allowingStateLoss)
                 transaction.commitAllowingStateLoss();

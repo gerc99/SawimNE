@@ -196,7 +196,7 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
                         break;
 
                     case INFO_MENU_TAKE_AVATAR:
-                        ExternalApi.instance.setActivity(SawimActivity.getInstance());
+                        ExternalApi.instance.setActivity(General.sawimActivity);
                         ExternalApi.instance.startCamera(UserInfo.this, 640, 480);
                         break;
 

@@ -14,6 +14,7 @@ import org.microemu.cldc.file.FileSystem;
 import org.microemu.util.AndroidRecordStoreManager;
 import ru.sawim.service.SawimService;
 import ru.sawim.service.SawimServiceConnection;
+import ru.sawim.view.ChatView;
 import sawim.chat.ChatHistory;
 import sawim.roster.Roster;
 import sawim.modules.DebugLog;

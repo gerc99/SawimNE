@@ -140,7 +140,7 @@ public final class FileBrowser implements Runnable {
 
             case NativeCanvas.Sawim_BACK:
                 if ((null != errorMessage) || FileSystem.ROOT_DIRECTORY.equals(currDir)) {
-                    Roster.getInstance().updateOnUi();
+                    Roster.getSawimActivity().updateOnUi();
 
                 } else {
                     int d = currDir.lastIndexOf('/', currDir.length() - 2);

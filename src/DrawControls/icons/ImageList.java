@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 
+import android.util.Log;
 import ru.sawim.General;
 import ru.sawim.SawimApplication;
 
@@ -126,6 +127,7 @@ public class ImageList {
                         return originBitmap;
                     break;
                 case 160:
+                case 180:
                     if (originBitmap.getWidth() > 24)
                         originBitmap = Bitmap.createScaledBitmap(originBitmap, 24, 24, true);
                     else

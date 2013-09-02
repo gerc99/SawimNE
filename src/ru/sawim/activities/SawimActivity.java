@@ -25,12 +25,12 @@
 
 package ru.sawim.activities;
 
-import android.app.NotificationManager;
-import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.*;
@@ -63,11 +63,7 @@ import java.io.PrintStream;
 public class SawimActivity extends FragmentActivity {
 
     public static final String LOG_TAG = "SawimActivity";
-
-    private static SawimActivity instance;
-    public static SawimActivity getInstance() {
-        return instance;
-    }
+    public static String NOTIFY = "ru.sawim.notify";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -75,7 +71,7 @@ public class SawimActivity extends FragmentActivity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
         setContentView(R.layout.main);
-        instance = this;
+        General.sawimActivity = this;
         ExternalApi.instance.setActivity(this);
 
         Logger.removeAllAppenders();
@@ -120,18 +116,81 @@ public class SawimActivity extends FragmentActivity {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.fragment_container, rosterView, RosterView.TAG).commit();
         }
+        handleIntent(getIntent());
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        handleIntent(intent);
+    }
+
+    private void handleIntent(Intent intent) {
+        if (NOTIFY.equals(intent.getAction())) {
+            Chat current = ChatHistory.instance.chatAt(ChatHistory.instance.getPreferredItem());
+            if (current != null)
+                openChat(current.getProtocol(), current.getContact(), true);
+        }
+    }
+
+    private ChatView createChatView(Protocol p, Contact c, FragmentManager fragmentManager, boolean addToBackStack, boolean allowingStateLoss) {
+        ChatView chatView = new ChatView();
+        Bundle args = new Bundle();
+        args.putString(ChatView.PROTOCOL_ID, p.getUserId());
+        args.putString(ChatView.CONTACT_ID, c.getUserId());
+        chatView.setArguments(args);
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.replace(R.id.fragment_container, chatView, ChatView.TAG);
+        if (addToBackStack)
+            transaction.addToBackStack(null);
+        if (allowingStateLoss)
+            transaction.commitAllowingStateLoss();
+        else
+            transaction.commit();
+        return chatView;
+    }
+
+    private void replaceChat(ChatView chatView, Protocol p, Contact c) {
+        Chat chat = chatView.getCurrentChat();
+        chatView.pause(chat);
+        chatView.resetSpinner();
+        if (c != null) {
+            chatView.openChat(p, c);
+            chatView.resume(chatView.getCurrentChat());
+        }
+    }
+
+    private void openChat(Protocol p, Contact c, boolean allowingStateLoss) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        c.activate(p);
+        if (fragmentManager.getFragments() == null) {
+            Log.e(LOG_TAG, "fragmentManager.getFragments() == null");
+            createChatView(p, c, fragmentManager, true, allowingStateLoss);
+            return;
+        }
+        Fragment lastFragment = fragmentManager.getFragments().get(fragmentManager.getFragments().size() - 1);
+        if (lastFragment == null || lastFragment.getTag() == null) return;
+        if (lastFragment.getTag() == RosterView.TAG) {
+            Log.e(LOG_TAG, "lastFragment.getTag() == RosterView.TAG");
+            createChatView(p, c, fragmentManager, true, allowingStateLoss);
+        } else {
+            Log.e(LOG_TAG, "replaceChat ");
+            createChatView(p, c, fragmentManager, false, allowingStateLoss);
+            return;
+        }
+        ChatView chatView = (ChatView) fragmentManager.findFragmentById(R.id.chat_fragment);
+        if (chatView == null) {
+            //createChatView(p, c, fragmentManager, allowingStateLoss);
+        } else {
+            replaceChat(chatView, p, c);
+        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
         General.maximize();
-        RosterView rosterView = (RosterView) getSupportFragmentManager().findFragmentByTag(RosterView.TAG);
-        if (rosterView == null)
-            rosterView = (RosterView) getSupportFragmentManager().findFragmentById(R.id.roster_fragment);
-        Chat current = ChatHistory.instance.chatAt(ChatHistory.instance.getPreferredItem());
-        if (current != null)
-            rosterView.openChat(current.getProtocol(), current.getContact(), true);
     }
 
     @Override
@@ -183,7 +242,7 @@ public class SawimActivity extends FragmentActivity {
     }
 
     private void back() {
-        if (SawimActivity.getInstance().getSupportFragmentManager()
+        if (General.sawimActivity.getSupportFragmentManager()
                 .findFragmentById(R.id.chat_fragment) != null)
             recreateActivity();
         else
