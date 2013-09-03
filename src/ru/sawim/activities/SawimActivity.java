@@ -122,7 +122,7 @@ public class SawimActivity extends FragmentActivity {
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        setIntent(intent);
+        //setIntent(intent);
         handleIntent(intent);
     }
 
@@ -151,39 +151,39 @@ public class SawimActivity extends FragmentActivity {
         return chatView;
     }
 
-    private void replaceChat(ChatView chatView, Protocol p, Contact c) {
-        Chat chat = chatView.getCurrentChat();
-        chatView.pause(chat);
-        chatView.resetSpinner();
-        if (c != null) {
-            chatView.openChat(p, c);
-            chatView.resume(chatView.getCurrentChat());
-        }
-    }
-
     private void openChat(Protocol p, Contact c, boolean allowingStateLoss) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         c.activate(p);
-        if (fragmentManager.getFragments() == null) {
-            Log.e(LOG_TAG, "fragmentManager.getFragments() == null");
-            createChatView(p, c, fragmentManager, true, allowingStateLoss);
-            return;
-        }
-        Fragment lastFragment = fragmentManager.getFragments().get(fragmentManager.getFragments().size() - 1);
-        if (lastFragment == null || lastFragment.getTag() == null) return;
-        if (lastFragment.getTag() == RosterView.TAG) {
-            Log.e(LOG_TAG, "lastFragment.getTag() == RosterView.TAG");
-            createChatView(p, c, fragmentManager, true, allowingStateLoss);
-        } else {
-            Log.e(LOG_TAG, "replaceChat ");
-            createChatView(p, c, fragmentManager, false, allowingStateLoss);
-            return;
+        Log.e(LOG_TAG, "openChat");
+        if (findViewById(R.id.fragment_container) != null) {
+            if (fragmentManager.getFragments() == null) {
+                Log.e(LOG_TAG, "fragmentManager.getFragments() == null");
+                createChatView(p, c, fragmentManager, true, allowingStateLoss);
+                return;
+            }
+            Fragment lastFragment = fragmentManager.getFragments().get(fragmentManager.getFragments().size() - 1);
+            if (lastFragment == null || lastFragment.getTag() == null) {
+                Log.e(LOG_TAG, "lastFragment.getTag() == null");
+                createChatView(p, c, fragmentManager, true, allowingStateLoss);
+                return;
+            }
+            Log.e(LOG_TAG, "lastFragment != null");
+            if (lastFragment.getTag() == RosterView.TAG) {
+                Log.e(LOG_TAG, "== RosterView.TAG");
+                createChatView(p, c, fragmentManager, true, allowingStateLoss);
+            } else if (lastFragment.getTag() == ChatView.TAG) {
+                Log.e(LOG_TAG, "!! RosterView.TAG");
+                createChatView(p, c, fragmentManager, false, allowingStateLoss);
+            }
         }
         ChatView chatView = (ChatView) fragmentManager.findFragmentById(R.id.chat_fragment);
-        if (chatView == null) {
-            //createChatView(p, c, fragmentManager, allowingStateLoss);
-        } else {
-            replaceChat(chatView, p, c);
+        if (chatView != null) {
+            chatView.pause(chatView.getCurrentChat());
+            chatView.resetSpinner();
+            if (c != null) {
+                chatView.openChat(p, c);
+                chatView.resume(chatView.getCurrentChat());
+            }
         }
     }
 
@@ -191,6 +191,7 @@ public class SawimActivity extends FragmentActivity {
     public void onResume() {
         super.onResume();
         General.maximize();
+        //handleIntent(getIntent());
     }
 
     @Override

@@ -1,24 +1,16 @@
 package ru.sawim.models;
 
-import DrawControls.icons.Icon;
 import android.content.Context;
-import android.util.Log;
 import android.widget.*;
 import sawim.roster.TreeNode;
 import android.database.DataSetObserver;
-import android.graphics.Typeface;
 import android.view.View;
 import android.view.ViewGroup;
 import protocol.Contact;
 import protocol.Group;
 import protocol.Protocol;
-import protocol.XStatusInfo;
-import ru.sawim.General;
-import ru.sawim.Scheme;
 import sawim.chat.ChatHistory;
-import sawim.chat.message.Message;
 import sawim.roster.Roster;
-import sawim.modules.tracking.Tracking;
 
 import java.util.ArrayList;
 import java.util.List;

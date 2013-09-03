@@ -13,9 +13,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
 
 public final class ChatHistory {
     public final List<Chat> historyTable = new ArrayList<Chat>();
@@ -27,6 +25,21 @@ public final class ChatHistory {
 
     public int getTotal() {
         return historyTable.size();
+    }
+
+    public void sort() {
+        Collections.sort(historyTable, new Comparator<Chat>() {
+            @Override
+            public int compare(Chat c1, Chat c2) {
+                if (c1.getUnreadMessageCount() == c2.getUnreadMessageCount()) {
+                    return 1;
+                }
+                if (c1.getContact().isOnline() == c2.getContact().isOnline()) {
+                    return 2;
+                }
+                return -1;
+            }
+        });
     }
 
     public Chat chatAt(int index) {
@@ -175,7 +188,7 @@ public final class ChatHistory {
         if (0 < getSize()) {
             //restore();
         } else {
-            Roster.getInstance().updateOnUi();
+            Roster.getInstance().updateRoster();
         }
     }
 
@@ -198,7 +211,7 @@ public final class ChatHistory {
         //    restore();
 
         } else {
-            Roster.getInstance().updateOnUi();
+            Roster.getInstance().updateRoster();
         }
     }
 
@@ -316,7 +329,7 @@ public final class ChatHistory {
         if (getTotal() <= 0) return;
 		Chat current = chatAt(getPreferredItem());
         if (0 < current.getUnreadMessageCount()) {
-            current.updateOnUi();
+            current.updateRoster();
             return;
         }
 	}
@@ -327,7 +340,7 @@ public final class ChatHistory {
             return;
         }
         int nextChatNum = (chatNum + (next ? 1 : -1) + getTotal()) % getTotal();
-        chatAt(nextChatNum).updateOnUi();
+        chatAt(nextChatNum).updateRoster();
     }
 
     private static final int MENU_SELECT = 1;
@@ -338,7 +351,7 @@ public final class ChatHistory {
     protected void doSawimAction(int action) {
         switch (action) {
             case NativeCanvas.Sawim_SELECT:
-                getSelectedChat().updateOnUi();
+                getSelectedChat().updateRoster();
                 return;
 
             case NativeCanvas.Sawim_BACK:

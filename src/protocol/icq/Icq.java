@@ -250,7 +250,7 @@ public class Icq extends Protocol {
         switch (action) {
             case IcqContact.USER_MENU_REMOVE_ME:
                 sendRemoveMePacket(contact.getUserId());
-                Roster.getInstance().updateOnUi();
+                Roster.getInstance().updateRoster();
                 break;
 
             case ContactMenu.USER_MENU_PS_VISIBLE:
@@ -269,7 +269,7 @@ public class Icq extends Protocol {
                         break;
                 }
                 changeServerList(list, (IcqContact) contact);
-                Roster.getInstance().updateOnUi();
+                Roster.getInstance().updateRoster();
                 break;
 
         }

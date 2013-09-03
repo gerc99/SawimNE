@@ -307,8 +307,6 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
         smileButton = (ImageButton) chat_viewLayout.findViewById(R.id.input_smile_button);
         sendButton = (ImageButton) chat_viewLayout.findViewById(R.id.input_send_button);
         messageEditor = (EditText) chat_viewLayout.findViewById(R.id.messageBox);
-        if (General.sawimActivity.findViewById(R.id.fragment_container) == null)
-            chat_viewLayout.setVisibility(LinearLayout.VISIBLE);
         return v;
     }
 
@@ -359,7 +357,7 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
         }
 
         View item = chatListView.getChildAt(0);
-        addLastPosition(chat.getContact().getUserId(), chatListView.getFirstVisiblePosition(), (item == null) ? 0 : Math.abs(item.getBottom()));
+        addLastPosition(chat.getContact().getUserId(), chatListView.getFirstVisiblePosition(), (item == null) ? 0 : Math.abs(item.getBottom()) - item.getHeight());
 
         chat.setVisibleChat(false);
         General.getInstance().setOnUpdateChat(null);
@@ -369,9 +367,10 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
     public void resume(Chat chat) {
         if (chat == null) return;
         Chat.ScrollState lastPosition = getLastPosition(chat.getContact().getUserId());
+        Log.e(TAG, "lastPosition "+chat.getContact().getUserId());
         if (lastPosition != null && lastPosition.position > 0) {
-            Log.e(TAG, "77777777777  "+lastPosition.position + 1);
-            chatListView.setSelectionFromTop(lastPosition.position + 1, lastPosition.offset);
+            Log.e(TAG, "position "+General.positionHash.size());
+            chatListView.setSelectionFromTop(lastPosition.position, lastPosition.offset);
         } else chatListView.setSelection(0);
 
         chat.setVisibleChat(true);
@@ -406,11 +405,13 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
     }
 
     private Chat.ScrollState getLastPosition(String jid) {
-        if (General.positionHash.containsKey(jid)) return General.positionHash.remove(jid);
+        if (General.positionHash.containsKey(jid)) return General.positionHash.get(jid);
         else return null;
     }
 
     public void openChat(Protocol p, Contact c) {
+        if (General.sawimActivity.findViewById(R.id.fragment_container) == null)
+            chat_viewLayout.setVisibility(LinearLayout.VISIBLE);
         protocol = p;
         currentContact = c;
         final FragmentActivity currentActivity = General.sawimActivity;

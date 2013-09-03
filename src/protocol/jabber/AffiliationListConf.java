@@ -6,7 +6,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import ru.sawim.General;
 import ru.sawim.Scheme;
-import ru.sawim.activities.SawimActivity;
 import ru.sawim.models.form.VirtualListItem;
 import ru.sawim.models.list.VirtualList;
 import ru.sawim.models.list.VirtualListModel;
@@ -242,7 +241,7 @@ public final class AffiliationListConf implements FormListener, TextBoxView.Text
 				        affiliationI[enterData.getSelectorValue(AFFILIATION)], 
 				        reason);
 				} catch (Exception e) {}
-				Roster.getInstance().updateOnUi();
+				Roster.getInstance().updateRoster();
             }
             enterData.back();
             enterData = null;

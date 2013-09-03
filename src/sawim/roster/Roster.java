@@ -110,7 +110,7 @@ public final class Roster {
             listOfProfiles.addElement(p);
         }*/
         cl.addProtocols(listOfProfiles);
-        updateOnUi();
+        updateRoster();
     }
 
     public void initAccounts() {
@@ -225,7 +225,7 @@ public final class Roster {
             setActiveContact(c);
         }
         setAlwaysVisibleNode(c);
-        updateOnUi();
+        updateRoster();
     }
 
     public void activateWithMsg(final String message) {
@@ -235,7 +235,7 @@ public final class Roster {
                 Toast.makeText(SawimApplication.getContext(), message, Toast.LENGTH_LONG).show();
             }
         });
-        updateOnUi();
+        updateRoster();
     }
 
     public void autoConnect() {
@@ -318,7 +318,7 @@ public final class Roster {
             }
             p.getNotInListGroup().setExpandFlag(false);
         }
-        contactList.updateOnUi();
+        contactList.updateRoster();
     }*/
 
     public final void markMessages(Contact contact) {
@@ -362,19 +362,13 @@ public final class Roster {
         }*/
     }
 
-    public void update(TreeNode node) {
-        if (onUpdateRoster != null)
-            onUpdateRoster.updateRoster();
+    public void updateRoster(TreeNode node) {
+        updateRoster();
     }
 
-    public final void updateOnUi() {
-        SawimApplication.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (onUpdateRoster != null)
-                    onUpdateRoster.updateRoster();
-            }
-        });
+    public final void updateRoster() {
+        if (onUpdateRoster != null)
+            onUpdateRoster.updateRoster();
     }
 
     public void updateBarProtocols() {

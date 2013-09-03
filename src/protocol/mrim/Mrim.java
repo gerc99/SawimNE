@@ -272,7 +272,7 @@ public class Mrim extends Protocol {
                 }
                 contact.setFlags(flags);
                 getConnection().updateContact(contact);
-                Roster.getInstance().updateOnUi();
+                Roster.getInstance().updateRoster();
                 break;
             
         }

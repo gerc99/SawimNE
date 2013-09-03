@@ -80,8 +80,10 @@ public class SawimService extends Service {
         }
         Intent notificationIntent = new Intent(this, SawimActivity.class);
         notificationIntent.setAction(SawimActivity.NOTIFY);
+        notificationIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         stateMsg = ChatHistory.instance.getLastMessage(stateMsg.toString());
-        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        notification.flags |= Notification.FLAG_AUTO_CANCEL;
         notification.setLatestEventInfo(this, getText(R.string.app_name), stateMsg, contentIntent);
         return notification;
     }
