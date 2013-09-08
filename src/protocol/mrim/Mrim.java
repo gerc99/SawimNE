@@ -286,6 +286,7 @@ public class Mrim extends Protocol {
             tl.setCaption(JLocale.getString("list_of_users"));
             tl.setModel(list);
             tl.show();
+            tl.updateModel();
 
         } else if (ContactMenu.USER_MENU_ADD_USER == action) {
             if (isConnected()) {

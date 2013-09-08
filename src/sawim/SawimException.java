@@ -7,7 +7,6 @@ public final class SawimException extends Exception {
 
     private int errorCode;
 
-    
     public SawimException(int errCode, int extErrCode) {
         super(JLocale.getString("error_" + errCode)
                 + " (" + errCode + "." + extErrCode + ")");

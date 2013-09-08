@@ -277,6 +277,7 @@ public final class TrackingForm implements TextBoxView.TextBoxListener {
                 addTextToForm(i);
             }
 		}
+        screen.updateModel();
     }
 
     private void addTextToForm(int index) {

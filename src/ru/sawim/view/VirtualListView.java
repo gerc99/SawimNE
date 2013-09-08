@@ -15,6 +15,9 @@ import ru.sawim.R;
 import ru.sawim.models.VirtualListAdapter;
 import ru.sawim.models.list.VirtualListModel;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created with IntelliJ IDEA.
  * User: Gerc
@@ -22,26 +25,27 @@ import ru.sawim.models.list.VirtualListModel;
  * Time: 13:22
  * To change this template use File | Settings | File Templates.
  */
-public class VirtualListView extends SawimFragment implements VirtualList.OnVirtualListListener, VirtualListModel.OnAddListListener {
+public class VirtualListView extends SawimFragment implements VirtualList.OnVirtualListListener{
 
     public static final String TAG = "VirtualListView";
     private VirtualListAdapter adapter;
     private VirtualList list = VirtualList.getInstance();
     private MyListView lv;
     private AdapterView.AdapterContextMenuInfo contextMenuInfo;
+    public List<VirtualListItem> elements;
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        list.getModel().setAddListListener(this);
         list.setVirtualListListener(this);
+        elements = new ArrayList<VirtualListItem>();
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
         list.setVirtualListListener(null);
-        list.getModel().setAddListListener(null);
+        elements.clear();
     }
 
     @Override
@@ -57,7 +61,7 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
         super.onActivityCreated(savedInstanceState);
         Activity currentActivity = getActivity();
         currentActivity.setTitle(list.getCaption());
-        adapter = new VirtualListAdapter(currentActivity, list.getModel().elements);
+        adapter = new VirtualListAdapter(currentActivity, elements);
         lv = (MyListView) currentActivity.findViewById(R.id.list_view);
         lv.setAdapter(adapter);
         lv.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
@@ -70,6 +74,8 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
         });
         currentActivity.registerForContextMenu(lv);
         lv.setOnCreateContextMenuListener(this);
+
+        update();
     }
 
     @Override
@@ -90,40 +96,6 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
         return super.onContextItemSelected(item);
     }
 
-    @Override
-    public void addList(final VirtualListItem item) {
-        General.sawimActivity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                list.getModel().elements.add(item);
-                adapter.notifyDataSetChanged();
-            }
-        });
-    }
-
-    @Override
-    public void clearList() {
-        General.sawimActivity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                list.getModel().elements.clear();
-                adapter.notifyDataSetChanged();
-            }
-        });
-    }
-
-    @Override
-    public void removeFirstText() {
-        General.sawimActivity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (list.getModel().elements.size() > 0)
-                    list.getModel().elements.remove(0);
-                adapter.notifyDataSetChanged();
-            }
-        });
-    }
-
     public static void show() {
         if (General.sawimActivity.getSupportFragmentManager()
                 .findFragmentById(R.id.chat_fragment) != null)
@@ -140,6 +112,8 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
         General.sawimActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                elements.clear();
+                elements.addAll(list.getModel().elements);
                 adapter.notifyDataSetChanged();
             }
         });

@@ -30,6 +30,7 @@ import ru.sawim.models.AccountsAdapter;
  */
 public class AccountsListView extends Fragment {
 
+    public static final String TAG = "AccountsListView";
     private AccountsAdapter accountsListAdapter;
 
     @Override

@@ -303,6 +303,7 @@ public final class HistoryStorageList implements Runnable, FormListener {
                     : Scheme.THEME_CHAT_OUTMSG, Scheme.FONT_STYLE_PLAIN);
             listMessages.addPar(parser);
             allMsg.setModel(listMessages);
+            allMsg.updateModel();
         }
     }
 

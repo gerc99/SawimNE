@@ -36,7 +36,6 @@ import sawim.chat.MessData;
 import ru.sawim.Scheme;
 import sawim.roster.Roster;
 import sawim.util.JLocale;
-import java.util.Hashtable;
 
 /**
  * Created with IntelliJ IDEA.
@@ -357,7 +356,7 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
         }
 
         View item = chatListView.getChildAt(0);
-        addLastPosition(chat.getContact().getUserId(), chatListView.getFirstVisiblePosition(), (item == null) ? 0 : Math.abs(item.getBottom()) - item.getHeight());
+        addLastPosition(chat.getContact().getUserId(), chatListView.getFirstVisiblePosition(), (item == null) ? 0 : Math.abs(item.getBottom()));
 
         chat.setVisibleChat(false);
         General.getInstance().setOnUpdateChat(null);
@@ -370,7 +369,7 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
         Log.e(TAG, "lastPosition "+chat.getContact().getUserId());
         if (lastPosition != null && lastPosition.position > 0) {
             Log.e(TAG, "position "+General.positionHash.size());
-            chatListView.setSelectionFromTop(lastPosition.position, lastPosition.offset);
+            chatListView.setSelectionFromTop(lastPosition.position + 1, lastPosition.offset);
         } else chatListView.setSelection(0);
 
         chat.setVisibleChat(true);
@@ -378,14 +377,15 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
         General.getInstance().setOnUpdateChat(this);
         chat.resetUnreadMessages();
         updateChatIcon();
-        updateList();
+        updateList(currentContact);
     }
 
     public boolean hasBack() {
-        if (nickList.getVisibility() == View.VISIBLE) {
-            nickList.setVisibility(View.GONE);
-            return false;
-        }
+        if (nickList != null)
+            if (nickList.getVisibility() == View.VISIBLE) {
+                nickList.setVisibility(View.GONE);
+                return false;
+            }
         return true;
     }
 
@@ -410,11 +410,11 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
     }
 
     public void openChat(Protocol p, Contact c) {
+        final FragmentActivity currentActivity = General.sawimActivity;
         if (General.sawimActivity.findViewById(R.id.fragment_container) == null)
             chat_viewLayout.setVisibility(LinearLayout.VISIBLE);
         protocol = p;
         currentContact = c;
-        final FragmentActivity currentActivity = General.sawimActivity;
         chat = protocol.getChat(currentContact);
 
         if (spinner.getOnItemSelectedEvenIfUnchangedListener() == null)
@@ -526,11 +526,6 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
                 usersImage.setVisibility(View.VISIBLE);
             else
                 usersImage.setVisibility(View.GONE);
-            /*if (nickList.getVisibility() == View.VISIBLE) {
-                nickList.setVisibility(View.VISIBLE);
-            } else {
-                nickList.setVisibility(View.GONE);
-            }*/
         } else {
             usersImage.setVisibility(View.GONE);
             nickList.setVisibility(View.GONE);
@@ -554,18 +549,17 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
             @Override
             public void run() {
                 updateChatIcon();
-                if (contact == currentContact) {
-                    updateList();
-                }
+                updateList(contact);
             }
         });
     }
 
-    private void updateList() {
+    private void updateList(Contact contact) {
         if (chatsSpinnerAdapter != null)
             chatsSpinnerAdapter.refreshList(ChatHistory.instance.historyTable);
-        if (adapter != null)
-            adapter.refreshList(chat.getMessData());
+        if (contact == currentContact)
+            if (adapter != null)
+                adapter.refreshList(chat.getMessData());
     }
 
     @Override
@@ -578,14 +572,6 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
             }
         });
     }
-
-    /*@Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        Log.e(TAG, "___________===");
-        outState.putString(ChatView.PROTOCOL_ID, protocol.getUserId());
-        outState.putString(ChatView.CONTACT_ID, currentContact.getUserId());
-    }*/
 
     private class ChatClick implements ListView.OnItemClickListener {
         @Override
@@ -639,7 +625,7 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
         hideKeyboard(messageEditor);
         chat.sendMessage(getText());
         resetText();
-        updateList();
+        updateList(currentContact);
         //updatePosition();
     }
 

@@ -72,12 +72,16 @@ public class ChatsSpinnerAdapter extends BaseAdapter implements SpinnerAdapter {
             viewHolder = (ViewHolder) v.getTag();
         }
         if (chat == null) return v;
-        Icon icStatus = chat.getContact().getLeftIcon(chat.getProtocol());
-        Icon icMess = Message.msgIcons.iconAt(chat.getContact().getUnreadMessageIcon());
-        if (icMess == null)
-            viewHolder.imageView.setImageDrawable(icStatus.getImage());
-        else
-            viewHolder.imageView.setImageDrawable(icMess.getImage());
+        if (chat.getContact().isTyping()) {
+            viewHolder.imageView.setImageDrawable(Message.msgIcons.iconAt(Message.ICON_TYPE).getImage());
+        } else {
+            Icon icStatus = chat.getContact().getLeftIcon(chat.getProtocol());
+            Icon icMess = Message.msgIcons.iconAt(chat.getContact().getUnreadMessageIcon());
+            if (icMess == null)
+                viewHolder.imageView.setImageDrawable(icStatus.getImage());
+            else
+                viewHolder.imageView.setImageDrawable(icMess.getImage());
+        }
         viewHolder.label.setTextSize(General.getFontSize());
         viewHolder.label.setTextColor(Scheme.getColor(Scheme.THEME_CAP_TEXT));
         viewHolder.label.setText(chat.getContact().getName());
@@ -100,12 +104,16 @@ public class ChatsSpinnerAdapter extends BaseAdapter implements SpinnerAdapter {
         }
         if (chat == null) return v;
         v.setBackgroundColor(Scheme.getInversColor(Scheme.THEME_CAP_BACKGROUND));
-        Icon icStatus = chat.getContact().getLeftIcon(chat.getProtocol());
-        Icon icMess = Message.msgIcons.iconAt(chat.getContact().getUnreadMessageIcon());
-        if (icMess == null)
-            dropDownViewHolder.imageView.setImageDrawable(icStatus.getImage());
-        else
-            dropDownViewHolder.imageView.setImageDrawable(icMess.getImage());
+        if (chat.getContact().isTyping()) {
+            dropDownViewHolder.imageView.setImageDrawable(Message.msgIcons.iconAt(Message.ICON_TYPE).getImage());
+        } else {
+            Icon icStatus = chat.getContact().getLeftIcon(chat.getProtocol());
+            Icon icMess = Message.msgIcons.iconAt(chat.getContact().getUnreadMessageIcon());
+            if (icMess == null)
+                dropDownViewHolder.imageView.setImageDrawable(icStatus.getImage());
+            else
+                dropDownViewHolder.imageView.setImageDrawable(icMess.getImage());
+        }
 
         dropDownViewHolder.label.setTextSize(General.getFontSize());
         dropDownViewHolder.label.setTextColor(Scheme.getColor(Scheme.THEME_CAP_TEXT));

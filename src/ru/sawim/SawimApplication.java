@@ -39,6 +39,7 @@ public class SawimApplication extends Application {
     private NetworkStateReceiver networkStateReceiver = new NetworkStateReceiver();
 
     private final ExecutorService backgroundExecutor;
+    private final Handler handler;
 
     public static SawimApplication getInstance() {
         return instance;
@@ -49,6 +50,7 @@ public class SawimApplication extends Application {
     }
 
     public SawimApplication() {
+        handler = new Handler();
         backgroundExecutor = Executors
                 .newSingleThreadExecutor(new ThreadFactory() {
                     @Override
@@ -78,6 +80,10 @@ public class SawimApplication extends Application {
                     Roster.getInstance().autoConnect();
             }
         });
+    }
+
+    public void runOnUiThread(final Runnable runnable) {
+        handler.post(runnable);
     }
 
     public void runInBackground(final Runnable runnable) {

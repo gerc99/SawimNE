@@ -1,13 +1,11 @@
 package sawim;
 
-import android.util.Log;
 import sawim.roster.Roster;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
 import sawim.forms.PrivateStatusForm;
 import sawim.io.Storage;
 import sawim.modules.DebugLog;
-import sawim.util.JLocale;
 import protocol.Profile;
 import protocol.StatusInfo;
 
@@ -15,65 +13,89 @@ import java.io.*;
 import java.util.TimeZone;
 import java.util.Vector;
 
-public class Options {
-    static final int OPTIONS_CURR_ACCOUNT              =  86;
-    public static final int OPTION_AA_TIME            = 106;
-    public static final int OPTION_UI_LANGUAGE         =   3;
-    public static final int OPTION_CL_SORT_BY          =  65;   
-    public static final int OPTION_CL_HIDE_OFFLINE     = 130;   
-    public static final int OPTION_MESS_NOTIF_MODE     =  66;   
-    public static final int OPTION_NOTIFY_VOLUME      =  67;   
-    public static final int OPTION_ONLINE_NOTIF_MODE   =  68;
-    public static final int OPTION_VIBRATOR            =  75;   
-    public static final int OPTION_TYPING_MODE         =  88;
-    public static final int OPTION_ONLINE_STATUS       = 192;
-    public static final int OPTION_TF_FLAGS            = 169;   
-    public static final int OPTION_MAX_MSG_COUNT       =  94;
-    public static final int OPTION_DETRANSLITERATE     = 178;
-    public static final int OPTION_ANSWERER            =  128;
-    public static final int OPTION_PRIVATE_STATUS      =  93;
-    public static final int OPTION_USER_GROUPS         = 136;   
-    public static final int OPTION_HISTORY             = 137;
-    public static final int OPTION_CLASSIC_CHAT        = 143;   
-    public static final int OPTION_COLOR_SCHEME        =  73;   
-	public static final int OPTION_CHAT_PRESENSEFONT_SCHEME         = 92;   
-	public static final int OPTION_TITLE_IN_CONFERENCE = 140; 
-	public static final int OPTION_SHOW_PLATFORM       = 129;
-	public static final int UNAVAILABLE_NESSAGE  =  1;   
-    public static final int OPTION_FONT_SCHEME         = 107;   
-    public static final int OPTION_STATUS_MESSAGE      =   7;   
-    public static final int OPTION_KEYBOARD            = 109;   
-    public static final int OPTION_MIN_ITEM_SIZE       = 110;
-    public static final int OPTION_ANTISPAM_MSG        =  24;   
-    public static final int OPTION_ANTISPAM_HELLO      =  25;   
-    public static final int OPTION_ANTISPAM_ANSWER     =  26;   
-    public static final int OPTION_ANTISPAM_ENABLE     = 158;
-    public static final int OPTION_ANTISPAM_KEYWORDS   =  29;
-    public static final int OPTION_SAVE_TEMP_CONTACT   = 147;
-    public static final int OPTION_GMT_OFFSET           =  87;   
-    public static final int OPTION_LOCAL_OFFSET         =  90;
-    public static final int OPTION_SILENT_MODE         = 150;   
-    public static final int OPTION_BRING_UP            = 151;
-    public static final int OPTION_EXT_CLKEY0          =  77;   
-    public static final int OPTION_EXT_CLKEYSTAR       =  78;   
-    public static final int OPTION_EXT_CLKEY4          =  79;   
-    public static final int OPTION_EXT_CLKEY6          =  80;   
-    public static final int OPTION_EXT_CLKEYCALL       =  81;   
-    public static final int OPTION_EXT_CLKEYPOUND      =  82;   
-    public static final int OPTION_VISIBILITY_ID       =  85;
-    public static final int OPTION_HIDE_ICONS_CLIENTS      = 160;
-    public static final int OPTION_LIGHT_THEME         =  97;
-    public static final int OPTION_INPUT_MODE          = 105;
-    public static final int OPTION_SHOW_SOFTBAR        = 167;
-    public static final int OPTION_SORT_UP_WITH_MSG    = 171;   
-    public static final int OPTION_SWAP_SEND_AND_BACK  = 172;   
-    public static final int OPTION_SHOW_STATUS_LINE    = 177;   
+/**
+ * Current record store format:
+ *
+ * Record #1: VERSION               (UTF8)
+ * Record #2: OPTION KEY            (BYTE)
+ *            OPTION VALUE          (Type depends on key)
+ *            OPTION KEY            (BYTE)
+ *            OPTION VALUE          (Type depends on key)
+ *            OPTION KEY            (BYTE)
+ *            OPTION VALUE          (Type depends on key)
+ *            ...
+ *
+ * Option key            Option value
+ *   0 -  63 (00XXXXXX)  UTF8
+ *  64 - 127 (01XXXXXX)  INTEGER
+ * 128 - 191 (10XXXXXX)  BOOLEAN
+ * 192 - 224 (110XXXXX)  LONG
+ * 225 - 255 (111XXXXX)  SHORT, BYTE-ARRAY (scrambled String)
+ */
 
-    public static final int OPTION_NOTIFY_IN_AWAY      = 179;   
-    public static final int OPTION_ALARM               = 176;   
-    public static final int OPTION_BLOG_NOTIFY         = 180;   
+public class Options {
+    ////////////////////// UTF8
+    static final int OPTION_UIN1                       =   0;
+    public static final int UNAVAILABLE_NESSAGE  =  1;
+    public static final int OPTION_UI_LANGUAGE         =   3;
+    public static final int OPTION_STATUS_MESSAGE      =   7;
+    static final int OPTION_UIN2                       =  14;
+    static final int OPTION_UIN3                       =  15;
+    static final int OPTION_NICK1                      =  21;
+    static final int OPTION_NICK2                      =  22;
+    static final int OPTION_NICK3                      =  23;
+    public static final int OPTION_ANTISPAM_MSG        =  24;
+    public static final int OPTION_ANTISPAM_HELLO      =  25;
+    public static final int OPTION_ANTISPAM_ANSWER     =  26;
+    public static final int OPTION_ANTISPAM_KEYWORDS   =  29;
+
+    ////////////////////// INTEGER
+    public static final int OPTION_CL_SORT_BY          =  65;
+    public static final int OPTION_MESS_NOTIF_MODE     =  66;
+    public static final int OPTION_NOTIFY_VOLUME      =  67;
+    public static final int OPTION_ONLINE_NOTIF_MODE   =  68;
+    public static final int OPTION_VIBRATOR            =  75;
+    public static final int OPTION_COLOR_SCHEME        =  73;
+    public static final int OPTION_VISIBILITY_ID       =  85;
+    static final int OPTIONS_CURR_ACCOUNT              =  86;
+    public static final int OPTION_GMT_OFFSET           =  87;
+    public static final int OPTION_TYPING_MODE         =  88;
+    public static final int OPTION_LOCAL_OFFSET         =  90;
+    public static final int OPTION_CHAT_PRESENSEFONT_SCHEME         = 92;
+    public static final int OPTION_PRIVATE_STATUS      =  93;
+    public static final int OPTION_MAX_MSG_COUNT       =  94;
+    public static final int OPTION_AA_TIME            = 106;
+    public static final int OPTION_FONT_SCHEME         = 107;
+    public static final int OPTION_MIN_ITEM_SIZE       = 110;
+
+    ////////////////////// BOOLEAN
+    public static final int OPTION_ANSWERER            =  128;
+    public static final int OPTION_SHOW_PLATFORM       = 129;
+    public static final int OPTION_CL_HIDE_OFFLINE     = 130;
+    public static final int OPTION_USER_GROUPS         = 136;
+    public static final int OPTION_HISTORY             = 137;
+    public static final int OPTION_TITLE_IN_CONFERENCE = 140;
+    public static final int OPTION_CLASSIC_CHAT        = 143;
+    public static final int OPTION_SAVE_TEMP_CONTACT   = 147;
+    public static final int OPTION_SILENT_MODE         = 150;
+    public static final int OPTION_BRING_UP            = 151;
+    public static final int OPTION_ANTISPAM_ENABLE     = 158;
+    public static final int OPTION_HIDE_ICONS_CLIENTS      = 160;
+    public static final int OPTION_SHOW_SOFTBAR        = 167;
+    public static final int OPTION_TF_FLAGS            = 169;
+    public static final int OPTION_SORT_UP_WITH_MSG    = 171;
+    public static final int OPTION_ALARM               = 176;
+    public static final int OPTION_SHOW_STATUS_LINE    = 177;
+    public static final int OPTION_NOTIFY_IN_AWAY      = 179;
+    public static final int OPTION_BLOG_NOTIFY         = 180;
     public static final int OPTION_INSTANT_RECONNECTION    = 181;
     public static final int OPTION_SIMPLE_INPUT        = 182;
+    public static final int OPTION_ONLINE_STATUS       = 192;
+
+    ////////////////////// SHORT, BYTE-ARRAY (scrambled String)
+    static final int OPTION_PASSWORD1                  = 228;
+    static final int OPTION_PASSWORD2                  = 229;
+    static final int OPTION_PASSWORD3                  = 230;
 
     private static final Vector listOfProfiles = new Vector();
 
@@ -189,15 +211,7 @@ public class Options {
             }
         } catch (Exception e) {
             DebugLog.panic("load accounts", e);
-            final int OPTION_NICK1                      =  21;   
-            final int OPTION_UIN1                       =   0;   
-            final int OPTION_PASSWORD1                  = 228;   
-            final int OPTION_NICK2                      =  22;   
-            final int OPTION_UIN2                       =  14;   
-            final int OPTION_PASSWORD2                  = 229;   
-            final int OPTION_NICK3                      =  23;   
-            final int OPTION_UIN3                       =  15;   
-            final int OPTION_PASSWORD3                  = 230;   
+
             addProfile(OPTION_UIN1, OPTION_PASSWORD1, OPTION_NICK1);
             addProfile(OPTION_UIN2, OPTION_PASSWORD2, OPTION_NICK2);
             addProfile(OPTION_UIN3, OPTION_PASSWORD3, OPTION_NICK3);

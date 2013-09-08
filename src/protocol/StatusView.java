@@ -70,6 +70,7 @@ public final class StatusView {
             }
             line.addDescription(str, Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
             model.addPar(line);
+            list.updateModel();
         }
     }
     public void addStatusText(String text) {
@@ -77,10 +78,12 @@ public final class StatusView {
             VirtualListItem line = model.createNewParser(true);
             line.addDescription(text, Scheme.THEME_PARAM_VALUE, Scheme.FONT_STYLE_PLAIN);
             model.addPar(line);
+            list.updateModel();
         }
     }
     public void addInfo(String key, String value) {
         model.addParam(key, value);
+        list.updateModel();
     }
     
     public void addContactStatus() {

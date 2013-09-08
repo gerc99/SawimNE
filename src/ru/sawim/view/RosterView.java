@@ -6,6 +6,7 @@ import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
 import android.support.v4.app.FragmentTransaction;
 import ru.sawim.General;
+import ru.sawim.SawimApplication;
 import ru.sawim.activities.SawimActivity;
 import sawim.roster.TreeNode;
 import android.graphics.PorterDuff;
@@ -137,6 +138,24 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         progressBar.setMax(100);
 
         viewPager = new ViewPager(activity);
+        viewPager.setAnimationCacheEnabled(false);
+        viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int i, float v, int i2) {
+            }
+
+            @Override
+            public void onPageSelected(final int pos) {
+                roster.setCurrPage(pos);
+                updateRoster();
+                if (roster.getCurrPage() == RosterAdapter.ACTIVE_CONTACTS)
+                    ChatHistory.instance.sort();
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+            }
+        });
         indicator = new PagerTitleStrip(activity);
         viewPagerLayoutParams = new ViewPager.LayoutParams();
         viewPagerLayoutParams.height = ViewPager.LayoutParams.WRAP_CONTENT;
@@ -164,22 +183,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
 
             viewPager.setAdapter(pagerAdapter);
             viewPager.setCurrentItem(roster.getCurrPage());
-            viewPager.setAnimationCacheEnabled(false);
-            viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-                @Override
-                public void onPageScrolled(int i, float v, int i2) {
-                }
 
-                @Override
-                public void onPageSelected(final int pos) {
-                    roster.setCurrPage(pos);
-                    updateRoster();
-                }
-
-                @Override
-                public void onPageScrollStateChanged(int state) {
-                }
-            });
             indicator.setTextColor(Scheme.getColor(Scheme.THEME_GROUP));
             indicator.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
             addViewInLayout(viewPager, 2, viewPagerLayoutParams, true);
@@ -249,7 +253,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
     @Override
     public void updateRoster() {
         roster.updateOptions();
-        getActivity().runOnUiThread(new Runnable() {
+        SawimApplication.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 while (!updateQueue.isEmpty()) {
@@ -275,13 +279,9 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
                 } else {
                     //current = getSafeNode(prevIndex);
                 }
-                //if (roster.getCurrPage() == RosterAdapter.ACTIVE_CONTACTS)
-                    ChatHistory.instance.sort();
-                //else {
-                    items.clear();
-                    if (adaptersPages != null && adaptersPages.size() > 0)
-                        adaptersPages.get(viewPager.getCurrentItem()).buildFlatItems(items);
-                //}
+                items.clear();
+                if (adaptersPages != null && adaptersPages.size() > 0)
+                    adaptersPages.get(viewPager.getCurrentItem()).buildFlatItems(items);
                 /*if (null != current) {
                     int currentIndex = Util.getIndex(items, current);
                     if ((prevIndex != currentIndex) && (-1 != currentIndex)) {
@@ -327,6 +327,8 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         updateRoster();
         updateBarProtocols();
         updateProgressBar();
+        if (roster.getCurrPage() == RosterAdapter.ACTIVE_CONTACTS)
+            ChatHistory.instance.sort();
     }
 
     @Override
@@ -421,6 +423,8 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
             setExpandFlag(group, !group.isExpanded());
         }
         updateRoster();
+        if (roster.getCurrPage() == RosterAdapter.ACTIVE_CONTACTS)
+            ChatHistory.instance.sort();
     }
 
     @Override

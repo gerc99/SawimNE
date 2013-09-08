@@ -130,5 +130,6 @@ public class VirtualList {
 
     public void show() {
         VirtualListView.show();
+        updateModel();
     }
 }

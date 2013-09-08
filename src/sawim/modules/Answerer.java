@@ -121,10 +121,11 @@ public final class Answerer implements FormListener {
     private void refreshList() {
 		model.clear();
         int count = dictionary.size();
-        for ( int i = 0; i < count; ++i) {
+        for (int i = 0; i < count; ++i) {
             model.addItem((String)dictionary.elementAt(i), false);
         }
         list.setModel(model);
+        list.updateModel();
     }
     
     public void load() {

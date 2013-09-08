@@ -20,7 +20,5 @@
 
 
 <resources>
-    <declare-styleable name="Divider">
-        <attr name="android:orientation"/>
-    </declare-styleable>
+
 </resources>

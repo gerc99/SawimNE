@@ -219,6 +219,7 @@ public final class Search implements FormListener, ControlStateListener {
         screen.setCaption(JLocale.getString("search_user"));
         VirtualListModel model = new VirtualListModel();
         model.setInfoMessage(JLocale.getString("wait"));
+        screen.updateModel();
         screen.setModel(model);
         screen.show();
     }
@@ -237,6 +238,7 @@ public final class Search implements FormListener, ControlStateListener {
             screen.setCaption(JLocale.getString("results") + " 0/0");
             VirtualListModel model = new VirtualListModel();
             model.setInfoMessage(JLocale.getString("no_results"));
+            screen.updateModel();
             screen.setModel(model);
         }
 

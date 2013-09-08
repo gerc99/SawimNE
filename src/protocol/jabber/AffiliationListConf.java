@@ -115,6 +115,7 @@ public final class AffiliationListConf implements FormListener, TextBoxView.Text
             VirtualListItem item = model.createNewParser(active);
             item.addDescription(serverJid, Scheme.THEME_TEXT,  Scheme.FONT_STYLE_BOLD);
             model.addPar(item);
+            screen.updateModel();
             if (active) {
                 jids.addElement(serverJid);
             }
@@ -149,6 +150,7 @@ public final class AffiliationListConf implements FormListener, TextBoxView.Text
         }
         item.addDescription(reasone, Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
         model.addPar(item);
+        screen.updateModel();
         jids.addElement(jid);
 		reasons.addElement(reasone);
     }
@@ -169,6 +171,7 @@ public final class AffiliationListConf implements FormListener, TextBoxView.Text
         wait.addDescription(JLocale.getString("wait"),
                 Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
         model.addPar(wait);
+        screen.updateModel();
     }
     
 	private void setCurrTextIndex(int textIndex) {

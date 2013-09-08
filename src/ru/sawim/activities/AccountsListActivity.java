@@ -34,13 +34,21 @@ public class AccountsListActivity extends FragmentActivity implements JabberRegi
         super.onCreate(savedInstanceState);
         instance = this;
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
-        setContentView(R.layout.accounts_list_fragment);
+        setContentView(R.layout.main);
 
         mResultBundle = savedInstanceState;
         mAccountAuthenticatorResponse =
                 getIntent().getParcelableExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE);
         if (mAccountAuthenticatorResponse != null) {
             mAccountAuthenticatorResponse.onRequestContinued();
+        }
+
+        if (findViewById(R.id.fragment_container) != null) {
+            if (savedInstanceState != null) return;
+            AccountsListView rosterView = new AccountsListView();
+            rosterView.setArguments(getIntent().getExtras());
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.fragment_container, rosterView, AccountsListView.TAG).commit();
         }
     }
 
@@ -55,7 +63,7 @@ public class AccountsListActivity extends FragmentActivity implements JabberRegi
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.add:
-                AccountsListView view = (AccountsListView) getSupportFragmentManager().findFragmentById(R.id.acconts_list_fragment);
+                AccountsListView view = (AccountsListView) getSupportFragmentManager().findFragmentByTag(AccountsListView.TAG);
                 if (view == null) return false;
                 view.addAccount();
                 return true;
@@ -63,7 +71,7 @@ public class AccountsListActivity extends FragmentActivity implements JabberRegi
             case R.id.menu_registration_jabber:
                 protocol.jabber.JabberRegistration jabberRegistration = new protocol.jabber.JabberRegistration();
                 jabberRegistration.setListener(this);
-                jabberRegistration.show();
+                jabberRegistration.init().show(this);
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -71,7 +79,7 @@ public class AccountsListActivity extends FragmentActivity implements JabberRegi
 
     @Override
     public void addAccount(int num, Profile acc) {
-        AccountsListView view = (AccountsListView) getSupportFragmentManager().findFragmentById(R.id.acconts_list_fragment);
+        AccountsListView view = (AccountsListView) getSupportFragmentManager().findFragmentByTag(AccountsListView.TAG);
         if (view != null)
             view.addAccount(num, acc);
     }

@@ -119,6 +119,7 @@ public final class MirandaNotes {
         model.addPar(wait);
         jabber.getConnection().requestMirandaNotes();
         screen.show();
+        screen.updateModel();
     }
 
     void addNote(String title, String tags, String text) {
@@ -134,6 +135,7 @@ public final class MirandaNotes {
         parser.addLabel(note.title + "\n" + "*" + note.tags, Scheme.THEME_FORM_EDIT, Scheme.FONT_STYLE_BOLD);
         parser.addDescription(note.text, Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
         model.addPar(parser);
+        screen.updateModel();
     }
 
     String getNotesStorage() {

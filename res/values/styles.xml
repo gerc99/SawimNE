@@ -55,4 +55,5 @@
         <item name="android:background">@drawable/input_edittext</item>
         <item name="android:textCursorDrawable">@null</item>
     </style>
+
 </resources>

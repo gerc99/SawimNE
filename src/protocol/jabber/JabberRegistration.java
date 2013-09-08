@@ -25,14 +25,14 @@ public class JabberRegistration implements Runnable, FormListener {
     public final static byte TYPE_NONE = 2;
     private final static int FORM_SERVER = 0;
 
-    public void show() {
+    public Forms init() {
         form = new XForm();
         type = TYPE_NEW_ACCOUNT_DOMAIN;
         id = "reg0";
         form = new XForm();
         form.init("registration", this);
         form.getForm().addTextField(FORM_SERVER, "domain", "");
-        form.getForm().show();
+        return form.getForm();
     }
     private String getServer(String domain) {
         protocol.net.SrvResolver r = new protocol.net.SrvResolver();

@@ -4,6 +4,8 @@
       <root url="jar://$PROJECT_DIR$/libs/android-support-v4.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/../../android-sdk/sources/android-16" />
+    </SOURCES>
   </library>
 </component>

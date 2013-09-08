@@ -170,6 +170,7 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
 
         profile.setHeader("avatar");
         profile.addAvatar(null, General.avatarBitmap(avatar));
+        profileView.updateModel();
     }
     private void addMenu() {
         addContextMenu();
@@ -274,7 +275,9 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
         VirtualListModel profile = profileView.getModel();
         profile.clear();
         profile.addParam(protocol.getUserIdName(), uin);
+        profileView.updateModel();
         profile.setInfoMessage(JLocale.getString("wait"));
+        profileView.updateModel();
         addContextMenu();
         profileView.setModel(profile);
     }

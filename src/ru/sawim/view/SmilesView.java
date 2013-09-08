@@ -1,6 +1,6 @@
 package ru.sawim.view;
 
-import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
@@ -11,7 +11,6 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import ru.sawim.General;
 import sawim.modules.Emotions;
-import ru.sawim.R;
 import ru.sawim.models.SmilesAdapter;
 
 /**
@@ -28,6 +27,7 @@ public class SmilesView extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(0));
         smilesAdapter = new SmilesAdapter(getActivity());
         GridView gv = new GridView(getActivity());
         gv.setNumColumns(5);

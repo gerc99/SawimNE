@@ -4,7 +4,6 @@ import DrawControls.icons.Icon;
 import java.util.ArrayList;
 import java.util.List;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import ru.sawim.models.form.VirtualListItem;
 import sawim.comm.StringConvertor;
 import ru.sawim.Scheme;
@@ -14,42 +13,22 @@ import sawim.util.JLocale;
 public final class VirtualListModel {
     public List<VirtualListItem> elements;
     private String header = null;
-    private OnAddListListener addListListener;
 
     public VirtualListModel() {
         elements = new ArrayList<VirtualListItem>();
     }
 
     public final void addPar(final VirtualListItem item) {
-        if (addListListener == null)
-            elements.add(item);
-        else
-            addListListener.addList(item);
+        elements.add(item);
     }
 
     public void clear() {
-        if (addListListener == null)
-            elements.clear();
-        else
-            addListListener.clearList();
+        elements.clear();
         header = null;
     }
 
     public void removeFirstText() {
-        if (addListListener == null)
-            elements.remove(0);
-        else
-            addListListener.removeFirstText();
-    }
-
-    public void setAddListListener(OnAddListListener addListListener) {
-        this.addListListener = addListListener;
-    }
-
-    public interface OnAddListListener {
-        void addList(VirtualListItem item);
-        void clearList();
-        void removeFirstText();
+        elements.remove(0);
     }
 
     public final VirtualListItem createNewParser(boolean itemSelectable) {
@@ -91,7 +70,7 @@ public final class VirtualListModel {
         addParam(langStr, str, true);
     }
 
-    public void addParam(String langStr, String str, boolean hasLinks) {
+    private void addParam(String langStr, String str, boolean hasLinks) {
         if (!StringConvertor.isEmpty(str)) {
             addHeader();
             VirtualListItem line = createNewParser(true);

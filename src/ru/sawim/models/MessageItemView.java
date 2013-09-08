@@ -1,9 +1,7 @@
 package ru.sawim.models;
 
 import android.content.Context;
-import android.graphics.PorterDuff;
 import android.text.util.Linkify;
-import android.util.Log;
 import android.widget.*;
 import ru.sawim.Scheme;
 import ru.sawim.view.MyTextView;

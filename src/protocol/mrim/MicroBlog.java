@@ -153,6 +153,7 @@ public final class MicroBlog implements TextBoxView.TextBoxListener {
         par.addTextWithSmiles(post, Scheme.THEME_MAGIC_EYE_TEXT, Scheme.FONT_STYLE_PLAIN);
 
         model.addPar(par);
+        list.updateModel();
         //removeOldRecords();
         return true;
     }

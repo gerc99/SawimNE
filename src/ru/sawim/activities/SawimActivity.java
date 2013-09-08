@@ -116,10 +116,10 @@ public class SawimActivity extends FragmentActivity {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.fragment_container, rosterView, RosterView.TAG).commit();
         }
-        handleIntent(getIntent());
+        //handleIntent(getIntent());
     }
 
-    @Override
+    /*@Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         //setIntent(intent);
@@ -132,7 +132,7 @@ public class SawimActivity extends FragmentActivity {
             if (current != null)
                 openChat(current.getProtocol(), current.getContact(), true);
         }
-    }
+    }*/
 
     private ChatView createChatView(Protocol p, Contact c, FragmentManager fragmentManager, boolean addToBackStack, boolean allowingStateLoss) {
         ChatView chatView = new ChatView();
@@ -151,38 +151,40 @@ public class SawimActivity extends FragmentActivity {
         return chatView;
     }
 
-    private void openChat(Protocol p, Contact c, boolean allowingStateLoss) {
+    public void openChat(Protocol p, Contact c, boolean allowingStateLoss) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         c.activate(p);
         Log.e(LOG_TAG, "openChat");
         if (findViewById(R.id.fragment_container) != null) {
-            if (fragmentManager.getFragments() == null) {
+            Fragment rosterView = getSupportFragmentManager().findFragmentByTag(RosterView.TAG);
+            ChatView chatView = (ChatView) getSupportFragmentManager().findFragmentByTag(ChatView.TAG);
+            if (fragmentManager.getFragments() == null || rosterView == null || chatView == null) {
                 Log.e(LOG_TAG, "fragmentManager.getFragments() == null");
                 createChatView(p, c, fragmentManager, true, allowingStateLoss);
                 return;
             }
-            Fragment lastFragment = fragmentManager.getFragments().get(fragmentManager.getFragments().size() - 1);
-            if (lastFragment == null || lastFragment.getTag() == null) {
-                Log.e(LOG_TAG, "lastFragment.getTag() == null");
-                createChatView(p, c, fragmentManager, true, allowingStateLoss);
-                return;
-            }
             Log.e(LOG_TAG, "lastFragment != null");
-            if (lastFragment.getTag() == RosterView.TAG) {
+            if (rosterView.isVisible()) {
                 Log.e(LOG_TAG, "== RosterView.TAG");
                 createChatView(p, c, fragmentManager, true, allowingStateLoss);
-            } else if (lastFragment.getTag() == ChatView.TAG) {
+            } else if (chatView.isVisible()) {
                 Log.e(LOG_TAG, "!! RosterView.TAG");
-                createChatView(p, c, fragmentManager, false, allowingStateLoss);
+                chatView.pause(chatView.getCurrentChat());
+                chatView.resetSpinner();
+                if (c != null) {
+                    chatView.openChat(p, c);
+                    chatView.resume(p.getChat(c));
+                }
             }
-        }
-        ChatView chatView = (ChatView) fragmentManager.findFragmentById(R.id.chat_fragment);
-        if (chatView != null) {
-            chatView.pause(chatView.getCurrentChat());
-            chatView.resetSpinner();
-            if (c != null) {
-                chatView.openChat(p, c);
-                chatView.resume(chatView.getCurrentChat());
+        } else {
+            ChatView chatView = (ChatView) fragmentManager.findFragmentById(R.id.chat_fragment);
+            if (chatView != null) {
+                chatView.pause(chatView.getCurrentChat());
+                chatView.resetSpinner();
+                if (c != null) {
+                    chatView.openChat(p, c);
+                    chatView.resume(chatView.getCurrentChat());
+                }
             }
         }
     }
@@ -221,7 +223,7 @@ public class SawimActivity extends FragmentActivity {
     public boolean onKeyUp(int key, KeyEvent event) {
         if (key == KeyEvent.KEYCODE_MENU) {
             ChatView view = (ChatView) getSupportFragmentManager().findFragmentByTag(ChatView.TAG);
-            if (view != null) {
+            if (view != null && view.isVisible()) {
                 view.showMenu();
                 return true;
             } else

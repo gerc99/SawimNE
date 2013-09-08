@@ -229,8 +229,9 @@ abstract public class Protocol {
         return progress;
     }
 
-    public final void setConnectingProgress(final int percent) {
+    public final void setConnectingProgress(int percent) {
         progress = (byte) ((percent < 0) ? 100 : percent);
+        DebugLog.println("setConnectingProgress " + percent);
         if (100 == percent) {
             reconnect_attempts = RECONNECT_COUNT;
             getRoster().updateConnectionStatus();
@@ -238,7 +239,6 @@ abstract public class Protocol {
             getRoster().updateRoster();
         }
         getRoster().updateProgressBar();
-
     }
 
     public void sendFile(FileTransfer transfer, String filename, String description) {
@@ -622,7 +622,7 @@ abstract public class Protocol {
                 } else if (Tracking.isTracking(id, Tracking.EVENT_TYPING) == Tracking.FALSE) {
                     playNotification(Notify.isSound(Notify.NOTIFY_TYPING), Notify.NOTIFY_TYPING);
                 }
-                playNotification(Notify.NOTIFY_TYPING);
+                //playNotification(Notify.NOTIFY_TYPING);
             }
         }
     }
@@ -1028,6 +1028,7 @@ abstract public class Protocol {
     }
 
     public final void connect() {
+        DebugLog.println("connect");
         isReconnect = false;
         reconnect_attempts = RECONNECT_COUNT;
         disconnect(false);

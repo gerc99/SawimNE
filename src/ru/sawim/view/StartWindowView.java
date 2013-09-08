@@ -20,7 +20,6 @@ import protocol.jabber.JabberRegistration;
 import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
-import ru.sawim.activities.SawimActivity;
 import sawim.Options;
 import sawim.comm.StringConvertor;
 import sawim.roster.Roster;
@@ -52,7 +51,7 @@ public class StartWindowView extends Fragment {
                         addAccount(num, acc);
                     }
                 });
-                jabberRegistration.show();
+                jabberRegistration.init().show(getActivity());
             }
         });
         Button signInJabberButton = (Button) v.findViewById(R.id.sign_in_jabber);
