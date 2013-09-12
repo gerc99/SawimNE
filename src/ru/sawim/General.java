@@ -3,16 +3,17 @@ package ru.sawim;
 import DrawControls.icons.ImageList;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.util.DisplayMetrics;
-import protocol.Contact;
-import ru.sawim.view.ChatView;
+import android.util.TypedValue;
+import android.view.View;
+import android.widget.LinearLayout;
 import sawim.Options;
 import sawim.Updater;
-import sawim.chat.Chat;
 import sawim.chat.ChatHistory;
 import ru.sawim.activities.SawimActivity;
 import sawim.roster.Roster;
@@ -22,9 +23,7 @@ import sawim.modules.*;
 import sawim.search.Search;
 import sawim.util.JLocale;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.util.Hashtable;
 
 /**
  * Created with IntelliJ IDEA.
@@ -38,11 +37,10 @@ public class General {
     private static General instance;
     public static final String NAME = SawimApplication.getInstance().getString(R.string.app_name);
     public static final String VERSION = SawimApplication.getInstance().getVersion();
-    public static final String PHONE = "android/" + android.os.Build.MODEL
+    public static final String PHONE = "Android/" + android.os.Build.MODEL
             + "/" + android.os.Build.VERSION.RELEASE;
 
     public static SawimActivity sawimActivity;
-    public static Hashtable<String, Chat.ScrollState> positionHash = new Hashtable<String, Chat.ScrollState>();
     private boolean paused = true;
     public static ImageList affiliationIcons = ImageList.createImageList("/jabber-affiliations.png");
     public static BitmapDrawable usersIcon = ImageList.createImageList("/participants.png").iconAt(0).getImage();
@@ -169,25 +167,6 @@ public class General {
         return fontSize;
     }
 
-    public InputStream getResourceAsStream(Context c, Class origClass, String name) {
-        try {
-            if (name.startsWith("/")) {
-                return c.getAssets().open(name.substring(1));
-            } else {
-                Package p = origClass.getPackage();
-                if (p == null) {
-                    return c.getAssets().open(name);
-                } else {
-                    String folder = origClass.getPackage().getName().replace('.', '/');
-                    return c.getAssets().open(folder + "/" + name);
-                }
-            }
-        } catch (IOException e) {
-            //Logger.debug(e); // large output with BombusMod
-            return null;
-        }
-    }
-
     public static boolean isTablet(Context context) {
         boolean xlarge = ((context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == 4);
         boolean large = ((context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_LARGE);
@@ -217,19 +196,17 @@ public class General {
         return bitmap;
     }
 
-    private OnUpdateChat updateChatListener;
-    public void setOnUpdateChat(OnUpdateChat l) {
-        updateChatListener = l;
+    public static View getDivider(Context context, int color) {
+        View v = new View(context);
+        v.setLayoutParams(new LinearLayout.LayoutParams(1, LinearLayout.LayoutParams.WRAP_CONTENT));
+        v.setBackgroundColor(color);
+        return v;
     }
 
-    public OnUpdateChat getUpdateChatListener() {
-        return updateChatListener;
-    }
-
-    public interface OnUpdateChat {
-        void updateChat(Contact contact);
-        void updateMucList();
-        void pastText(String s);
-
+    public static int dipToPixels(Context context, int dipValue) {
+        Resources r = context.getResources();
+        int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                dipValue, r.getDisplayMetrics());
+        return px;
     }
 }

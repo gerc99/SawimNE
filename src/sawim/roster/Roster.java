@@ -221,9 +221,6 @@ public final class Roster {
     }
 
     public void activate(Contact c) {
-        if (null != c) {
-            setActiveContact(c);
-        }
         setAlwaysVisibleNode(c);
         updateRoster();
     }
@@ -323,8 +320,8 @@ public final class Roster {
 
     public final void markMessages(Contact contact) {
         SawimApplication.getInstance().updateAppIcon();
-        if (General.getInstance().getUpdateChatListener() != null)
-            General.getInstance().getUpdateChatListener().updateChat(contact);
+        if (getUpdateChatListener() != null)
+            getUpdateChatListener().updateChat(contact);
     }
 
     public void updateConnectionStatus() {
@@ -567,11 +564,6 @@ public final class Roster {
             onUpdateRoster.putIntoQueue(group);
     }
 
-    public final void setActiveContact(Contact cItem) {
-        if (onUpdateRoster != null)
-            onUpdateRoster.setCurrentNode(cItem);
-    }
-
     public String getStatusMessage(Contact contact) {
         String message;
         Protocol protocol = getCurrentProtocol();
@@ -594,6 +586,22 @@ public final class Roster {
         return (message == null) ? "" : message;
     }
 
+    private OnUpdateChat updateChatListener;
+
+    public void setOnUpdateChat(OnUpdateChat l) {
+        updateChatListener = l;
+    }
+
+    public OnUpdateChat getUpdateChatListener() {
+        return updateChatListener;
+    }
+
+    public interface OnUpdateChat {
+        void updateChat(Contact contact);
+        void updateMucList();
+        void pastText(String s);
+    }
+
     public interface OnUpdateRoster {
         void updateRoster();
 
@@ -602,7 +610,5 @@ public final class Roster {
         void updateProgressBar();
 
         void putIntoQueue(Group g);
-
-        void setCurrentNode(TreeNode cItem);
     }
 }

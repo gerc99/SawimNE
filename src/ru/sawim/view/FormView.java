@@ -3,6 +3,7 @@ package ru.sawim.view;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
@@ -11,6 +12,8 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
 import ru.sawim.General;
 import ru.sawim.R;
@@ -102,15 +105,23 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
             General.sawimActivity.recreateActivity();
         else
             getFragmentManager().popBackStack();
+        hideKeyboard();
+    }
+
+    private void hideKeyboard() {
+        InputMethodManager imm = (InputMethodManager) General.sawimActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
     }
 
     @Override
     public void onClick(View view) {
         if (Forms.getInstance().getFormListener() != null)
             Forms.getInstance().getFormListener().formAction(Forms.getInstance(), view.equals(okButton));
+        hideKeyboard();
     }
 
     public boolean hasBack() {
+        hideKeyboard();
         if (Forms.getInstance().getBackPressedListener() == null) return true;
         return Forms.getInstance().getBackPressedListener().back();
     }
@@ -154,12 +165,17 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
             checkBox.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
             spinner.getBackground().setColorFilter(Scheme.getColor(Scheme.THEME_BACKGROUND), PorterDuff.Mode.MULTIPLY);
             seekBar.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
-            editText.setTextColor(Scheme.getInversColor(Scheme.THEME_TEXT));
+
             if (Forms.CONTROL_TEXT == c.type) {
                 drawText(c, labelView, descView, convertView);
             } else if (Forms.CONTROL_INPUT == c.type) {
                 drawText(c, labelView, descView, convertView);
                 editText.setVisibility(EditText.VISIBLE);
+                editText.setTextColor(Scheme.getInversColor(Scheme.THEME_TEXT));
+                GradientDrawable gd = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP,
+                        new int[] {Scheme.getInversColor(Scheme.THEME_BACKGROUND), Scheme.getColor(Scheme.THEME_BACKGROUND)});
+                editText.setBackgroundDrawable(gd);
+                editText.setHint(R.string.enter_the);
                 editText.setText(c.text);
                 editText.addTextChangedListener(new TextWatcher() {
 

@@ -36,11 +36,6 @@ public final class Chat {
         fillFromHistory();
     }
 
-    public static class ScrollState {
-        public int position;
-        public int offset;
-    }
-
     void setContact(Contact item) {
         contact = item;
     }
@@ -84,7 +79,7 @@ public final class Chat {
     }
 
     public void addFileProgress(String caption, String text) {
-        addMessage(new MessData(General.getCurrentGmtTime(), text, caption, MessData.PROGRESS, Message.ICON_NONE, false));
+        addMessage(new MessData(contact, General.getCurrentGmtTime(), text, caption, MessData.PROGRESS, Message.ICON_NONE, false));
     }
 
     private int getIcon(Message message, boolean incoming, boolean isHighlight) {
@@ -402,7 +397,7 @@ public final class Chat {
             flags |= MessData.SERVICE;
         }
 
-        final MessData mData = new MessData(message.getNewDate(), messageText, from, flags, getIcon(message, incoming, isHighlight), isHighlight);
+        final MessData mData = new MessData(contact, message.getNewDate(), messageText, from, flags, getIcon(message, incoming, isHighlight), isHighlight);
         if (!incoming) {
             message.setVisibleIcon(mData);
         }
@@ -418,7 +413,7 @@ public final class Chat {
         if (getMessCount() <= 1)
             ChatHistory.instance.registerChat(this);
         String messageText = message.getProcessedText();
-        addMessage(new MessData(message.getNewDate(), messageText, message.getName(), MessData.PRESENCE, Message.ICON_NONE, false));
+        addMessage(new MessData(contact, message.getNewDate(), messageText, message.getName(), MessData.PRESENCE, Message.ICON_NONE, false));
         if (!isVisibleChat()) {
             contact.updateChatState(this);
             ChatHistory.instance.updateChatList();

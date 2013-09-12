@@ -495,7 +495,6 @@ abstract public class Protocol {
         s_addContact(contact);
         contact.setTempFlag(false);
         cl_addContact(contact);
-        getRoster().setActiveContact(contact);
         needSave();
         s_addedContact(contact);
     }
@@ -943,8 +942,8 @@ abstract public class Protocol {
             if (contact != Roster.getInstance().getCurrentContact()) {
                 SawimApplication.getInstance().updateAppIcon();
             }
-            if (General.getInstance().getUpdateChatListener() != null)
-                General.getInstance().getUpdateChatListener().updateChat(contact);
+            if (getRoster().getUpdateChatListener() != null)
+                getRoster().getUpdateChatListener().updateChat(contact);
             getRoster().updateRoster(contact);
             getRoster().updateBarProtocols();
         }
@@ -1001,7 +1000,6 @@ abstract public class Protocol {
         if (!isPersonal) {
             return;
         }
-        getRoster().setActiveContact(contact);
     }
 
     protected boolean isBlogBot(String userId) {

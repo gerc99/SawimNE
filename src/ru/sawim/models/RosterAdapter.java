@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import protocol.Contact;
 import protocol.Group;
 import protocol.Protocol;
-import sawim.chat.ChatHistory;
 import sawim.roster.Roster;
 
 import java.util.ArrayList;
@@ -46,16 +45,12 @@ public class RosterAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        if (type == ACTIVE_CONTACTS)
-            return ChatHistory.instance.getTotal();
         return items.size();
     }
 
     @Override
     public TreeNode getItem(int i) {
-        if (type == ACTIVE_CONTACTS)
-            return ChatHistory.instance.contactAt(i);
-        else if ((items.size() > i) && (i >= 0))
+        if ((items.size() > i) && (i >= 0))
             return items.get(i);
         return null;
     }

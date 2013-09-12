@@ -13,6 +13,7 @@ import protocol.Protocol;
 import protocol.XStatusInfo;
 import ru.sawim.General;
 import ru.sawim.Scheme;
+import ru.sawim.view.MyTextView;
 import sawim.chat.ChatHistory;
 import sawim.chat.message.Message;
 import sawim.modules.tracking.Tracking;
@@ -49,6 +50,8 @@ public class RosterItemView extends RelativeLayout {
     }
 
     private void build() {
+        setAnimationCacheEnabled(false);
+        setAlwaysDrawnWithCacheEnabled(false);
         RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
         lp.alignWithParent = false;
         lp.addRule(CENTER_VERTICAL);
@@ -76,7 +79,7 @@ public class RosterItemView extends RelativeLayout {
         lp.addRule(RIGHT_OF, itemThirdImage.getId());
         lp.addRule(ALIGN_TOP, itemFifthImage.getId());
         lp.addRule(ALIGN_PARENT_TOP);
-        itemName.setSingleLine(true);
+        itemName.setLines(1);//itemName.setSingleLine(true);
         itemName.setPadding(5, 5, 5, 5);
         itemName.setId(4);
         addView(itemName, lp);
@@ -85,7 +88,7 @@ public class RosterItemView extends RelativeLayout {
         lp.alignWithParent = true;
         lp.addRule(RIGHT_OF, itemThirdImage.getId());
         lp.addRule(BELOW, itemName.getId());
-        itemDescriptionText.setSingleLine(true);
+        itemDescriptionText.setLines(1);//itemDescriptionText.setSingleLine(true);
         itemDescriptionText.setPadding(5, 0, 0, 0);
         itemDescriptionText.setId(5);
         addView(itemDescriptionText, lp);
@@ -109,9 +112,9 @@ public class RosterItemView extends RelativeLayout {
 
     void populateFromGroup(Group g) {
         itemName.setTextSize(General.getFontSize());
-        itemName.setText(g.getText());
         itemName.setTextColor(Scheme.getColor(Scheme.THEME_GROUP));
         itemName.setTypeface(Typeface.DEFAULT);
+        itemName.setText(g.getText());
 
         Icon icGroup = g.getLeftIcon(null);
         if (icGroup == null)
@@ -138,18 +141,19 @@ public class RosterItemView extends RelativeLayout {
 
     void populateFromContact(Roster roster, Protocol p, Contact item) {
         itemName.setTextSize(General.getFontSize());
+        itemName.setTextColor(Scheme.getColor(item.getTextTheme()));
+        itemName.setTypeface(item.hasChat() ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT);
         if (item.subcontactsS() == 0)
             itemName.setText(item.getText());
         else
             itemName.setText(item.getText() + " (" + item.subcontactsS() + ")");
-        itemName.setTextColor(Scheme.getColor(item.getTextTheme()));
-        itemName.setTypeface(item.hasChat() ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT);
 
-        itemDescriptionText.setTextSize(General.getFontSize() - 2);
         if (General.showStatusLine) {
+            String statusMessage = roster.getStatusMessage(item);
+            itemDescriptionText.setTextSize(General.getFontSize() - 2);
             itemDescriptionText.setVisibility(TextView.VISIBLE);
-            itemDescriptionText.setText(roster.getStatusMessage(item));
             itemDescriptionText.setTextColor(Scheme.getColor(Scheme.THEME_CONTACT_STATUS));
+            itemDescriptionText.setText(statusMessage);
         } else {
             itemDescriptionText.setVisibility(TextView.GONE);
         }

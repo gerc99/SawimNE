@@ -1,7 +1,6 @@
 package ru.sawim.models;
 
 import DrawControls.icons.Icon;
-import DrawControls.icons.ImageList;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.text.TextUtils;
@@ -250,14 +249,14 @@ public class MucUsersAdapter extends BaseAdapter {
 
         public ImageView getItemStatusImage() {
             if (itemStatusImage == null) {
-                itemStatusImage = (ImageView) item.findViewById(R.id.image);
+                itemStatusImage = (ImageView) item.findViewById(R.id.status_image);
             }
             return itemStatusImage;
         }
 
         public ImageView getItemAffilationImage() {
             if (itemAffilationImage == null) {
-                itemAffilationImage = (ImageView) item.findViewById(R.id.affilationImage);
+                itemAffilationImage = (ImageView) item.findViewById(R.id.affilation_image);
             }
             return itemAffilationImage;
         }
@@ -271,7 +270,7 @@ public class MucUsersAdapter extends BaseAdapter {
 
         public ImageView getItemClientImage() {
             if (itemClientImage == null) {
-                itemClientImage = (ImageView) item.findViewById(R.id.fourth_rule_image);
+                itemClientImage = (ImageView) item.findViewById(R.id.client_image);
             }
             return itemClientImage;
         }

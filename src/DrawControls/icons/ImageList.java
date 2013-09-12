@@ -128,7 +128,7 @@ public class ImageList {
                     break;
                 case 160:
                 case 180:
-                    if (originBitmap.getWidth() > 24)
+                    if (originBitmap.getWidth() > 24 && !General.isTablet(SawimApplication.getInstance().getContext()))
                         originBitmap = Bitmap.createScaledBitmap(originBitmap, 24, 24, true);
                     else
                         return originBitmap;

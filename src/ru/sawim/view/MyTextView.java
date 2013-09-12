@@ -1,25 +1,23 @@
 package ru.sawim.view;
 
 import android.content.ActivityNotFoundException;
+import android.content.res.Resources;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.text.*;
 import android.content.Context;
-import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
-import android.text.style.ForegroundColorSpan;
-import android.text.style.StyleSpan;
 import android.text.style.URLSpan;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.TextView;
-import ru.sawim.models.MessagesAdapter;
-import ru.sawim.view.menu.JuickMenu;
+import ru.sawim.text.InternalURLSpan;
 
-import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Hashtable;
 
 /**
  * Created with IntelliJ IDEA.
@@ -29,52 +27,97 @@ import java.util.regex.Pattern;
  * To change this template use File | Settings | File Templates.
  */
 
-public class MyTextView extends TextView {
+public class MyTextView extends View {
 
-    TextLinkClickListener mListener;
     private boolean isSecondTap;
     private boolean isLongTap;
+    private TextPaint mTextPaint;
+    private int maxLines = 0;
+    private Layout layout;
+    private CharSequence mText = "";
+    InternalURLSpan.TextLinkClickListener mListener;
 
-    Pattern juickPattern = Pattern.compile("(#[0-9]+(/[0-9]+)?)");
-    Pattern pstoPattern = Pattern.compile("(#[\\w]+(/[0-9]+)?)");
+    private static Hashtable<CharSequence, Layout> layoutHash = new Hashtable<CharSequence, Layout>();
+    private String textHash = "";
+
+    public MyTextView(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
+        initPaint();
+    }
 
     public MyTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        initPaint();
     }
 
     public MyTextView(Context context) {
         super(context);
+        initPaint();
     }
 
-    public void setTextWithLinks(SpannableStringBuilder ssb, JuickMenu.Mode mode) {
-        if (mode != JuickMenu.Mode.none) {
-            ArrayList<Hyperlink> msgList = new ArrayList<Hyperlink>();
-            if (mode == JuickMenu.Mode.juick)
-                addLinks(msgList, ssb, juickPattern);
-            else if (mode == JuickMenu.Mode.psto)
-                addLinks(msgList, ssb, pstoPattern);
-
-            for (Hyperlink link : msgList) {
-                ssb.setSpan(new StyleSpan(android.graphics.Typeface.SANS_SERIF.getStyle()), link.start, link.end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                ssb.setSpan(link.span, link.start, link.end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                ssb.setSpan(new ForegroundColorSpan(Color.BLUE), link.start, link.end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            }
-        }
-        setText(ssb);
+    private void initPaint() {
+        mTextPaint = new TextPaint();
+        mTextPaint.setAntiAlias(true);
+        mTextPaint.setTextSize(20);
+        mTextPaint.setColor(Color.BLACK);
+        mTextPaint.linkColor = Color.BLUE;
+        mTextPaint.setStyle(Paint.Style.FILL);
+        mTextPaint.setAntiAlias(true);
     }
 
-    private final void addLinks(ArrayList<Hyperlink> links, Spannable s, Pattern pattern) {
-        Matcher m = pattern.matcher(s);
-        while (m.find()) {
-            int start = m.start();
-            int end = m.end();
-            Hyperlink spec = new Hyperlink();
-            spec.textSpan = s.subSequence(start, end);
-            spec.span = new InternalURLSpan(spec.textSpan.toString());
-            spec.start = start;
-            spec.end = end;
-            links.add(spec);
+    @Override
+    protected void onDraw(Canvas canvas) {
+        canvas.save();
+        if (layout != null)
+            layout.draw(canvas);
+        canvas.restore();
+    }
+
+    @Override
+    public void requestLayout() {
+        //super.requestLayout();
+    }
+
+    public void setText(CharSequence text) {
+        this.mText = text;
+        requestLayout();
+        invalidate();
+    }
+
+    public void setTextColor(int textColor) {
+        mTextPaint.setColor(textColor);
+    }
+
+    public void setTypeface(Typeface typeface) {
+        mTextPaint.setTypeface(typeface);
+    }
+
+    public void setLines(int lines) {
+        maxLines = lines;
+    }
+
+    public void setTextSize(float textSize) {
+        Context c = getContext();
+        Resources r = (c == null) ? Resources.getSystem() : c.getResources();
+        mTextPaint.setTextSize(TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_SP, textSize, r.getDisplayMetrics()));
+    }
+
+    public void setTextHash(String textHash) {
+        this.textHash = textHash;
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        int specSize = MeasureSpec.getSize(widthMeasureSpec);
+        layout = layoutHash.get(textHash);
+        if (layout == null) {
+            if (maxLines != 0)
+                mText = TextUtils.ellipsize(mText, mTextPaint, specSize * maxLines, TextUtils.TruncateAt.END);
+            layout = new StaticLayout(mText, mTextPaint, specSize, Layout.Alignment.ALIGN_NORMAL, 1.0f, 0, false);
+            layoutHash.put(textHash, layout);
         }
+        setMeasuredDimension(specSize, layout.getLineTop(layout.getLineCount()));
     }
 
     @Override
@@ -82,22 +125,18 @@ public class MyTextView extends TextView {
         return false;
     }
 
+    @Override
     public boolean onTouchEvent(MotionEvent event) {
-        Object text = getText();
-        if (text instanceof Spannable) {
-            Spannable buffer = (Spannable) text;
+        if (mText instanceof Spannable) {
+            Spannable buffer = (Spannable) mText;
             int action = event.getAction();
 
             int x = (int) event.getX();
             int y = (int) event.getY();
 
-            x -= getTotalPaddingLeft();
-            y -= getTotalPaddingTop();
-
             x += getScrollX();
             y += getScrollY();
 
-            Layout layout = getLayout();
             int line = layout.getLineForVertical(y);
             int off = layout.getOffsetForHorizontal(line, x);
 
@@ -137,20 +176,16 @@ public class MyTextView extends TextView {
         return false;
     }
 
-    private boolean action(MotionEvent event, TextView widget, Spannable buffer) {
+    private boolean action(MotionEvent event, View widget, Spannable buffer) {
         int action = event.getAction();
         if (action == MotionEvent.ACTION_UP ||
                 action == MotionEvent.ACTION_DOWN) {
             int x = (int) event.getX();
             int y = (int) event.getY();
 
-            x -= widget.getTotalPaddingLeft();
-            y -= widget.getTotalPaddingTop();
-
             x += widget.getScrollX();
             y += widget.getScrollY();
 
-            Layout layout = widget.getLayout();
             int line = layout.getLineForVertical(y);
             int off = layout.getOffsetForHorizontal(line, x);
 
@@ -171,31 +206,7 @@ public class MyTextView extends TextView {
         return false;
     }
 
-    public void setOnTextLinkClickListener(MessagesAdapter onTextLinkClickListener) {
+    public void setOnTextLinkClickListener(InternalURLSpan.TextLinkClickListener onTextLinkClickListener) {
         this.mListener = onTextLinkClickListener;
-    }
-
-    public interface TextLinkClickListener {
-        public void onTextLinkClick(View textView, String clickedString);
-    }
-
-    private class InternalURLSpan extends ClickableSpan {
-        private String clickedSpan;
-
-        public InternalURLSpan (String clickedString) {
-            clickedSpan = clickedString;
-        }
-
-        @Override
-        public void onClick(View textView) {
-            mListener.onTextLinkClick(textView, clickedSpan);
-        }
-    }
-
-    class Hyperlink {
-        CharSequence textSpan;
-        InternalURLSpan span;
-        int start;
-        int end;
     }
 }

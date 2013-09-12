@@ -6,10 +6,10 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import protocol.Protocol;
-import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.view.ChatView;
 import sawim.chat.Chat;
+import sawim.roster.Roster;
 
 /**
  * Created with IntelliJ IDEA.
@@ -142,7 +142,7 @@ public class JuickMenu implements DialogInterface.OnClickListener {
                     break;
             }
         }
-        if (General.getInstance().getUpdateChatListener() != null)
-            General.getInstance().getUpdateChatListener().pastText(textToInser);
+        if (Roster.getInstance().getUpdateChatListener() != null)
+            Roster.getInstance().getUpdateChatListener().pastText(textToInser);
     }
 }

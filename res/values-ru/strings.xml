@@ -195,7 +195,7 @@
     <string name="unsubscribe">Отписаться</string>
     <string name="to_black_list">В черный список</string>
     <string name="private_message">Приватное сообщение</string>
-    <string name="instant_reconnection">Мгновенно переподкючать при потере сети</string>
+    <string name="instant_reconnection">Мгновенно переподключать при потере сети</string>
     <string name="invitation_sent">Приглашение отправлено</string>
     <string name="save_avatar">Сохранить аватар</string>
     <string name="saved">Сохранено</string>
@@ -210,5 +210,6 @@
     <string name="include_multi_citation">Вкл. мультицитирование</string>
     <string name="disable_multi_citation">Откл. мультицитирование</string>
     <string name="hint_multi_citation">Отметьте сообщения и долгим нажатием в поле вводе выберите \"Вставить\"</string>
-
+    <string name="hint_message">Введите сообщение</string>
+    <string name="enter_the">Введите</string>
 </resources>

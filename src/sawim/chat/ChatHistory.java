@@ -1,7 +1,6 @@
 package sawim.chat;
 
 import DrawControls.icons.Icon;
-import android.util.Log;
 import sawim.chat.message.Message;
 import sawim.chat.message.PlainMessage;
 import sawim.comm.Util;
@@ -248,7 +247,6 @@ public final class ChatHistory {
         int current = 0;
         for (int i = 0; i < historyTable.size(); ++i) {
             Chat chat = chatAt(i);
-            Log.e("getItemChat", currentContact.getUserId() + " = " + chat.getContact().getUserId());
             if (currentContact.getUserId() == chat.getContact().getUserId()) {
                 current = i;
             }

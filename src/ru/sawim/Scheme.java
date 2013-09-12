@@ -170,7 +170,7 @@ public class Scheme {
     }
 
     public static int getColorWithAlpha(int color) {
-        return 0xdd000000 | getScheme()[color];
+        return 0x33000000 | getScheme()[color];
     }
 
     public static int getInversColor(int c) {

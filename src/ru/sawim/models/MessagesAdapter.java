@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.graphics.Typeface;
 
 import android.support.v4.app.FragmentActivity;
+import android.text.util.Linkify;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -15,10 +16,11 @@ import android.widget.TextView;
 import protocol.Protocol;
 import ru.sawim.General;
 import ru.sawim.R;
+import ru.sawim.text.InternalURLSpan;
 import ru.sawim.view.MyTextView;
 import ru.sawim.view.menu.JuickMenu;
 import sawim.Clipboard;
-import sawim.TextFormatter;
+import ru.sawim.text.TextFormatter;
 import sawim.chat.Chat;
 import sawim.chat.MessData;
 import sawim.chat.message.Message;
@@ -34,16 +36,16 @@ import java.util.List;
  * Time: 21:33
  * To change this template use File | Settings | File Templates.
  */
-public class MessagesAdapter extends BaseAdapter implements MyTextView.TextLinkClickListener {
+public class MessagesAdapter extends BaseAdapter {
 
-    private FragmentActivity activity;
+    private static FragmentActivity activity;
     private List<MessData> items = new ArrayList<MessData>();
-    private Protocol currentProtocol;
-    private String currentContact;
+    private static Protocol currentProtocol;
+    private static String currentContact;
     private boolean isSingleUserContact;
+    private static TextFormatter textFormatter = new TextFormatter();
 
     private boolean isMultiСitation = false;
-    private StringBuffer sb = new StringBuffer();
 
     public void init(FragmentActivity activity, Chat chat) {
         this.activity = activity;
@@ -86,53 +88,38 @@ public class MessagesAdapter extends BaseAdapter implements MyTextView.TextLinkC
     public View getView(int index, View row, ViewGroup viewGroup) {
         if (row == null) {
             row = new MessageItemView(activity);
-            ((MessageItemView) row).checkBox.setVisibility(isMultiСitation ? CheckBox.VISIBLE : CheckBox.GONE);
             ((MessageItemView) row).build();
         }
         final MessageItemView item = ((MessageItemView) row);
         final MessData mData = items.get(index);
         String nick = mData.getNick();
-        String text = mData.getText();
         boolean incoming = mData.isIncoming();
 
         ((ViewGroup)row).setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
-        item.msgText.setOnTextLinkClickListener(this);
-        item.checkBox.setChecked(mData.isMarked());
-        item.checkBox.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View view) {
-                mData.setMarked(!mData.isMarked());
-                item.checkBox.setChecked(mData.isMarked());
-                String msg = mData.getText();
-                if (mData.isMe()) {
-                    msg = "*" + mData.getNick() + " " + msg;
-                }
-                sb.append(Clipboard.serialize(mData.isIncoming(), mData.getNick() + " " + mData.strTime, msg));
-                sb.append("\n-----\n");
-                Clipboard.setClipBoardText(0 == sb.length() ? null : sb.toString());
-            }
-        });
+        item.msgText.setOnTextLinkClickListener(textLinkClickListener);
         byte bg;
-        if (mData.isMarked()) bg = Scheme.THEME_CHAT_BG_MARKED;
-        else if (mData.isService()) bg = Scheme.THEME_CHAT_BG_SYSTEM;
-        else if ((index & 1) == 0) bg = incoming ? Scheme.THEME_CHAT_BG_IN : Scheme.THEME_CHAT_BG_OUT;
-        else bg = incoming ? Scheme.THEME_CHAT_BG_IN_ODD : Scheme.THEME_CHAT_BG_OUT_ODD;
+        if (mData.isMarked()) {
+            bg = Scheme.THEME_CHAT_BG_MARKED;
+            item.msgText.setTypeface(Typeface.DEFAULT_BOLD);
+        } else if (mData.isService())
+            bg = Scheme.THEME_CHAT_BG_SYSTEM;
+        else if ((index & 1) == 0)
+            bg = incoming ? Scheme.THEME_CHAT_BG_IN : Scheme.THEME_CHAT_BG_OUT;
+        else
+            bg = incoming ? Scheme.THEME_CHAT_BG_IN_ODD : Scheme.THEME_CHAT_BG_OUT_ODD;
         row.setBackgroundColor(Scheme.getColor(bg));
-        if (mData.cacheText == null) {
-            mData.cacheText = TextFormatter.getFormattedText(text);
-        }
         if (mData.isMe() || mData.isPresence()) {
             item.msgImage.setVisibility(ImageView.GONE);
             item.msgNick.setVisibility(TextView.GONE);
             item.msgTime.setVisibility(TextView.GONE);
+            item.msgText.setTextHash(mData.parsedText().toString());
             item.msgText.setTextSize(General.getFontSize() - 2);
             if (mData.isMe()) {
                 item.msgText.setTextColor(Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG));
-                item.msgText.setText("* " + nick + " " + mData.cacheText);
+                item.msgText.setText("* " + nick + " " + mData.parsedText());
             } else {
                 item.msgText.setTextColor(Scheme.getColor(Scheme.THEME_CHAT_INMSG));
-                item.msgText.setText(nick + mData.cacheText);
+                item.msgText.setText(nick + mData.parsedText());
             }
         } else {
             if (mData.iconIndex != Message.ICON_NONE) {
@@ -145,6 +132,7 @@ public class MessagesAdapter extends BaseAdapter implements MyTextView.TextLinkC
                 }
             }
 
+            item.msgNick.setTextHash(nick);
             item.msgNick.setVisibility(TextView.VISIBLE);
             item.msgNick.setTextColor(Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG));
             item.msgNick.setTypeface(Typeface.DEFAULT_BOLD);
@@ -159,44 +147,45 @@ public class MessagesAdapter extends BaseAdapter implements MyTextView.TextLinkC
             byte color = Scheme.THEME_TEXT;
             if (incoming && !isSingleUserContact && mData.isHighLight())
                 color = Scheme.THEME_CHAT_HIGHLIGHT_MSG;
+            item.msgText.setTextHash(mData.parsedText().toString());
             item.msgText.setTextColor(Scheme.getColor(color));
             item.msgText.setTextSize(General.getFontSize());
-            if (currentContact.equals(JuickMenu.JUICK) || currentContact.equals(JuickMenu.JUBO))
-                item.msgText.setTextWithLinks(mData.cacheText, JuickMenu.Mode.juick);
-            else if (currentContact.equals(JuickMenu.PSTO))
-                item.msgText.setTextWithLinks(mData.cacheText, JuickMenu.Mode.psto);
-            else
-                item.msgText.setTextWithLinks(mData.cacheText, JuickMenu.Mode.none);
+            item.msgText.setText(mData.parsedText());
         }
         return row;
     }
-
-    @Override
-    public void onTextLinkClick(View textView, final String clickedString) {
-        if (clickedString.length() == 0) return;
-        if (clickedString.substring(0, 1).equals("@") || clickedString.substring(0, 1).equals("#")) {
-            new JuickMenu(activity, currentProtocol, currentContact, clickedString).show();
-        } else {
-            CharSequence[] items = new CharSequence[2];
-            items[0] = activity.getString(R.string.copy);
-            items[1] = activity.getString(R.string.add_contact);
-            final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-            builder.setCancelable(true);
-            builder.setTitle(R.string.url_menu);
-            builder.setItems(items, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    switch (which) {
-                        case 0:
-                            Clipboard.setClipBoardText(clickedString);
-                            break;
-                        case 1:
-                            General.openUrl(clickedString);
-                            break;
+    public static InternalURLSpan.TextLinkClickListener textLinkClickListener = new InternalURLSpan.TextLinkClickListener() {
+        @Override
+        public void onTextLinkClick(View textView, final String clickedString) {
+            if (clickedString.length() == 0) return;
+            if (clickedString.substring(0, 1).equals("@") || clickedString.substring(0, 1).equals("#")) {
+                new JuickMenu(activity, currentProtocol, currentContact, clickedString).show();
+            } else {
+                CharSequence[] items = new CharSequence[2];
+                items[0] = activity.getString(R.string.copy);
+                items[1] = activity.getString(R.string.add_contact);
+                final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+                builder.setCancelable(true);
+                builder.setTitle(R.string.url_menu);
+                builder.setItems(items, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (which) {
+                            case 0:
+                                Clipboard.setClipBoardText(clickedString);
+                                break;
+                            case 1:
+                                General.openUrl(clickedString);
+                                break;
+                        }
                     }
+                });
+                try {
+                    builder.create().show();
+                } catch(Exception e){
+                    // WindowManager$BadTokenException will be caught and the app would not display
                 }
-            });
-            builder.create().show();
+            }
         }
-    }
+    };
 }

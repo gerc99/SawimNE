@@ -10,6 +10,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import protocol.Profile;
 import protocol.jabber.JabberRegistration;
+import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.view.AccountsListView;
 
@@ -34,7 +35,11 @@ public class AccountsListActivity extends FragmentActivity implements JabberRegi
         super.onCreate(savedInstanceState);
         instance = this;
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
-        setContentView(R.layout.main);
+        if (General.sawimActivity.getSupportFragmentManager()
+                .findFragmentById(R.id.chat_fragment) != null)
+            setContentView(R.layout.intercalation_layout);
+        else
+            setContentView(R.layout.main);
 
         mResultBundle = savedInstanceState;
         mAccountAuthenticatorResponse =

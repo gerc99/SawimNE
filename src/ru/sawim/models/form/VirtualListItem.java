@@ -5,8 +5,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.Spannable;
 import ru.sawim.SawimApplication;
-import ru.sawim.activities.SawimActivity;
-import sawim.TextFormatter;
+import ru.sawim.text.TextFormatter;
 
 /**
  * Created with IntelliJ IDEA.

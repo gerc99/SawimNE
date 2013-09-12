@@ -24,21 +24,19 @@ public class VkConnection implements Runnable {
     private VkApp api = new VkApp(General.sawimActivity);
     private Vk vk;
     private volatile boolean running = true;
+
     VkConnection(Vk vk) {
         this.vk = vk;
     }
 
     public void login() {
-        if (!api.isLogged()) {
-            api.showLoginDialog(vk.getUserId(), vk.getPassword());
+        if (!api.isLogged() || !api.hasAccessToken()) {
+            General.sawimActivity.runOnUiThread(new Runnable() {
+                public void run() {
+                    api.showLoginDialog(vk.getUserId(), vk.getPassword());
+                }
+            });
         }
-
-        final SawimActivity a = General.sawimActivity;
-        a.runOnUiThread(new Runnable() {
-            public void run() {
-                if (!api.hasAccessToken()) api.showLoginDialog(vk.getUserId(), vk.getPassword());
-            }
-        });
         new Thread(this).start();
     }
 

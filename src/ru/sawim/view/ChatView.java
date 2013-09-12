@@ -1,17 +1,20 @@
 package ru.sawim.view;
 
 import DrawControls.icons.Icon;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.*;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
+import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
+import android.text.InputType;
+import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.*;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -37,6 +40,8 @@ import ru.sawim.Scheme;
 import sawim.roster.Roster;
 import sawim.util.JLocale;
 
+import java.util.Hashtable;
+
 /**
  * Created with IntelliJ IDEA.
  * User: Gerc
@@ -44,45 +49,189 @@ import sawim.util.JLocale;
  * Time: 20:30
  * To change this template use File | Settings | File Templates.
  */
-public class ChatView extends SawimFragment implements General.OnUpdateChat {
+public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
 
     public static final String TAG = "ChatView";
     public static final String PROTOCOL_ID = "protocol_id";
     public static final String CONTACT_ID = "contact_id";
     private Chat chat;
     private Protocol protocol;
-    private Contact currentContact;
+    private Contact contact;
+    private static Protocol lastProtocol;
+    private static Contact lastContact;
     private boolean sendByEnter;
-    private MyListView nickList;
-    private MyListView chatListView;
-    private MySpinner spinner;
-    private MucUsersView mucUsersView;
-    private MessagesAdapter adapter;
-    private ChatsSpinnerAdapter chatsSpinnerAdapter;
-    private LinearLayout chatBarLayout;
-    private LinearLayout chatLayout;
-    private LinearLayout chat_viewLayout;
+
     private ImageButton usersImage;
     private ImageButton chatsImage;
     private ImageButton menuButton;
     private ImageButton smileButton;
     private ImageButton sendButton;
     private EditText messageEditor;
+    private MyListView nickList;
+    private MyListView chatListView;
+    private MySpinner spinner;
+    private ChatViewRoot chat_viewLayout;
+    private ChatBarView chatBarLayout;
+    private ChatListsView chatListsView;
+    private ChatInputBarView chatInputBarView;
+    private MucUsersView mucUsersView;
+    private MessagesAdapter adapter;
+    private ChatsSpinnerAdapter chatsSpinnerAdapter;
 
-    private static Protocol lastProtocol;
-    private static Contact lastContact;
+    public static Hashtable<String, ScrollState> positionHash = new Hashtable<String, ScrollState>();
+    public static Hashtable<String, State> chatHash = new Hashtable<String, State>();
 
     @Override
-    public void onActivityCreated(Bundle b) {
-        super.onActivityCreated(b);
-        GradientDrawable gd = new GradientDrawable(
-                GradientDrawable.Orientation.TOP_BOTTOM,
-                new int[] {Scheme.getColor(Scheme.THEME_CAP_BACKGROUND),Scheme.getColor(Scheme.THEME_BACKGROUND)});
-        gd.setCornerRadius(0f);
-        chatBarLayout.setBackgroundDrawable(gd);
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        usersImage = new ImageButton(activity);
+        spinner = new MySpinner(activity);
+        chatsImage = new ImageButton(activity);
+
+        menuButton = new ImageButton(activity);
+        smileButton = new ImageButton(activity);
+        messageEditor = new EditText(activity);
+        sendButton = new ImageButton(activity);
+
+        chatListView = new MyListView(activity);
+        nickList = new MyListView(activity);
+
+        chatBarLayout = new ChatBarView(getActivity());
+        chatListsView = new ChatListsView(getActivity());
+        chatInputBarView = new ChatInputBarView(getActivity());
+
+            chatBarLayout.setBackgroundDrawable(new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP,
+                    new int[] {Scheme.getColor(Scheme.THEME_CAP_BACKGROUND), Scheme.getColor(Scheme.THEME_BACKGROUND)}));
+            chatInputBarView.setBackgroundDrawable(new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP,
+                    new int[] {Scheme.getColor(Scheme.THEME_CAP_BACKGROUND), Scheme.getColor(Scheme.THEME_BACKGROUND)}));
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+            messageEditor.getBackground().setColorFilter(Scheme.getColor(Scheme.THEME_CAP_BACKGROUND), PorterDuff.Mode.MULTIPLY);
+        }
+    }
+
+    private class ChatViewRoot extends LinearLayout {
+
+        public ChatViewRoot(Context context) {
+            super(context);
+            setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
+            setOrientation(LinearLayout.VERTICAL);
+            setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
+            addViewInLayout(chatBarLayout, 0, chatBarLayout.getLayoutParams());
+            addViewInLayout(chatListsView, 1, chatListsView.getLayoutParams());
+            addViewInLayout(chatInputBarView, 2, chatInputBarView.getLayoutParams());
+        }
+    }
+
+    private class ChatBarView extends LinearLayout {
+
+        public ChatBarView(Context context) {
+            super(context);
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, General.dipToPixels(getActivity(), 50));
+            setOrientation(HORIZONTAL);
+            setLayoutParams(layoutParams);
+
+            LinearLayout.LayoutParams usersImageLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
+            View usersImageDivider = General.getDivider(getActivity(), Scheme.getColor(Scheme.THEME_BACKGROUND));
+            usersImageLP.gravity = Gravity.CENTER_VERTICAL;
+            usersImage.setMinimumWidth(76);
+            addViewInLayout(usersImage, 0, usersImageLP);
+            addViewInLayout(usersImageDivider, 1, usersImageDivider.getLayoutParams());
+
+            LinearLayout.LayoutParams spinnerLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
+            spinnerLP.gravity = Gravity.CENTER_HORIZONTAL;
+            spinnerLP.weight = 1;
+            addViewInLayout(spinner, 2, spinnerLP);
+
+            LinearLayout.LayoutParams chatsImageLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
+            View chatsImageDivider = General.getDivider(getActivity(), Scheme.getColor(Scheme.THEME_BACKGROUND));
+            chatsImageLP.gravity = Gravity.CENTER_VERTICAL;
+            chatsImage.setMinimumWidth(76);
+            addViewInLayout(chatsImageDivider, 3, chatsImageDivider.getLayoutParams());
+            addViewInLayout(chatsImage, 4, chatsImageLP);
+        }
+    }
+
+    private class ChatListsView extends LinearLayout {
+
+        public ChatListsView(Context context) {
+            super(context);
+            rebuild();
+        }
+
+        public void rebuild() {
+            removeAllViews();
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+            setOrientation(HORIZONTAL);
+            layoutParams.weight = 2;
+            setLayoutParams(layoutParams);
+
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT && getResources().getDisplayMetrics().densityDpi < 200)
+                lp.weight = 10;
+            else
+                lp.weight = 1;
+            lp.bottomMargin = 8;
+            addViewInLayout(chatListView, 0, lp);
+
+            lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT && getResources().getDisplayMetrics().densityDpi < 200)
+                lp.weight = 0;
+            else
+                lp.weight = (float) 1.5;
+            lp.bottomMargin = 8;
+            addViewInLayout(nickList, 1, lp);
+        }
+    }
+
+    private class ChatInputBarView extends LinearLayout {
+
+        public ChatInputBarView(Context context) {
+            super(context);
+            init();
+        }
+
+        private void init() {
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            setOrientation(HORIZONTAL);
+            setLayoutParams(layoutParams);
+
+            LinearLayout.LayoutParams menuButtonLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
+            menuButton.setImageResource(android.R.drawable.ic_menu_sort_by_size);
+            addViewInLayout(menuButton, 0, menuButtonLP);
+
+            LinearLayout.LayoutParams smileButtonLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
+            smileButton.setImageResource(R.drawable.input_smile_button);
+            addViewInLayout(smileButton, 1, smileButtonLP);
+
+            LinearLayout.LayoutParams messageEditorLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            messageEditorLP.gravity = Gravity.CENTER | Gravity.LEFT;
+            messageEditorLP.weight = (float) 0.87;
+            messageEditor.setSingleLine(true);
+            messageEditor.setPadding(20, 20, 20, 20);
+            messageEditor.setMaxLines(4);
+            messageEditor.setHorizontallyScrolling(false);
+            messageEditor.setInputType(InputType.TYPE_CLASS_TEXT
+                    | InputType.TYPE_TEXT_FLAG_MULTI_LINE
+                    | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+            messageEditor.setHint(R.string.hint_message);
+            addViewInLayout(messageEditor, 2, messageEditorLP);
+
+            LinearLayout.LayoutParams sendButtonLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
+            sendButton.setImageResource(R.drawable.input_send_button);
+            addViewInLayout(sendButton, 3, sendButtonLP);
+        }
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceStateLog) {
+        if (chat_viewLayout == null)
+            chat_viewLayout = new ChatViewRoot(getActivity());
+        else
+            ((ViewGroup)chat_viewLayout.getParent()).removeView(chat_viewLayout);
 
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            usersImage.getBackground().setColorFilter(Scheme.getColor(Scheme.THEME_CAP_BACKGROUND), PorterDuff.Mode.MULTIPLY);
+            usersImage.setBackgroundDrawable(new ColorDrawable(0));
             usersImage.setImageDrawable(General.usersIcon);
             usersImage.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -99,7 +248,7 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
             });
         } else
             usersImage.setVisibility(ImageButton.GONE);
-        chatsImage.getBackground().setColorFilter(Scheme.getColor(Scheme.THEME_CAP_BACKGROUND), PorterDuff.Mode.MULTIPLY);
+        chatsImage.setBackgroundDrawable(new ColorDrawable(0));
         chatsImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -107,206 +256,58 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
                 forceGoToChat(ChatHistory.instance.getPreferredItem());
             }
         });
-    }
 
-    public void resetSpinner() {
-        spinner.setOnItemSelectedEvenIfUnchangedListener(null);
-    }
-
-    private void initSpinner() {
-        chatsSpinnerAdapter = new ChatsSpinnerAdapter(General.sawimActivity, ChatHistory.instance.historyTable);
-        spinner.setAdapter(chatsSpinnerAdapter);
-        spinner.getBackground().setColorFilter(Scheme.getColor(Scheme.THEME_CAP_BACKGROUND), PorterDuff.Mode.MULTIPLY);
-        spinner.setSelection(ChatHistory.instance.getItemChat(currentContact));
-        spinner.setOnItemSelectedEvenIfUnchangedListener(new AdapterView.OnItemSelectedListener() {
-
+        int background = Scheme.getColor(Scheme.THEME_CAP_BACKGROUND);
+        if (General.isTablet(getActivity())) {
+            menuButton.setVisibility(ImageButton.VISIBLE);
+            menuButton.setBackgroundColor(background);
+            menuButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    showMenu();
+                }
+            });
+        } else {
+            menuButton.setVisibility(ImageButton.GONE);
+        }
+        smileButton.setBackgroundColor(background);
+        smileButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view,
-                                       int position, long id) {
-                forceGoToChat(position);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> arg0) {
+            public void onClick(View view) {
+                hideKeyboard(view);
+                new SmilesView().show(getActivity().getSupportFragmentManager(), "show-smiles");
             }
         });
-    }
-
-    public void showMenu() {
-        final MyMenu menu = new MyMenu(General.sawimActivity);
-        boolean accessible = chat.getWritable() && (currentContact.isSingleUserContact() || currentContact.isOnline());
-        menu.add(getString(adapter.isMultiСitation() ?
-                R.string.disable_multi_citation : R.string.include_multi_citation), ContactMenu.MENU_MULTI_CITATION);
-        if (0 < chat.getAuthRequestCounter()) {
-            menu.add(JLocale.getString("grant"), ContactMenu.USER_MENU_GRANT_AUTH);
-            menu.add(JLocale.getString("deny"), ContactMenu.USER_MENU_DENY_AUTH);
+        messageEditor.addTextChangedListener(textWatcher);
+        messageEditor.setTextColor(Scheme.getColor(Scheme.THEME_CAP_TEXT));
+        if (sendByEnter) {
+            messageEditor.setImeOptions(EditorInfo.IME_ACTION_SEND);
+            messageEditor.setOnEditorActionListener(enterListener);
         }
-        if (!currentContact.isAuth()) {
-            menu.add(JLocale.getString("requauth"), ContactMenu.USER_MENU_REQU_AUTH);
-        }
-        if (accessible) {
-            if (sawim.modules.fs.FileSystem.isSupported()) {
-                menu.add(JLocale.getString("ft_name"), ContactMenu.USER_MENU_FILE_TRANS);
-            }
-            if (FileTransfer.isPhotoSupported()) {
-                menu.add(JLocale.getString("ft_cam"), ContactMenu.USER_MENU_CAM_TRANS);
-            }
-        }
-        menu.add(General.sawimActivity.getResources().getString(R.string.user_statuses), ContactMenu.USER_MENU_STATUSES);
-        if (!currentContact.isSingleUserContact() && currentContact.isOnline()) {
-            menu.add(JLocale.getString("leave_chat"), ContactMenu.CONFERENCE_DISCONNECT);
-        }
-        menu.add(JLocale.getString("delete_chat"), ContactMenu.ACTION_CURRENT_DEL_CHAT);
-        menu.add(JLocale.getString("all_contact_except_this"), ContactMenu.ACTION_DEL_ALL_CHATS_EXCEPT_CUR);
-        menu.add(JLocale.getString("all_contacts"), ContactMenu.ACTION_DEL_ALL_CHATS);
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(General.sawimActivity, R.style.AlertDialogCustom));
-        builder.setTitle(currentContact.getName());
-        builder.setCancelable(true);
-        builder.setAdapter(menu, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                switch (menu.getItem(which).idItem) {
-                    case ContactMenu.MENU_MULTI_CITATION:
-                        if (adapter.isMultiСitation()) {
-                            adapter.setMultiСitation(false);
-                        } else {
-                            adapter.setMultiСitation(true);
-                            Toast.makeText(General.sawimActivity, R.string.hint_multi_citation, Toast.LENGTH_LONG).show();
-                        }
-                        chatListView.setAdapter(adapter);
-                        break;
-
-                    case ContactMenu.ACTION_CURRENT_DEL_CHAT:
-                        /*chat.removeMessagesAtCursor(chatListView.getFirstVisiblePosition() + 1);
-                        if (0 < messData.size()) {
-                            updateChat();
-                        }*/
-                        ChatHistory.instance.unregisterChat(chat);
-                        if (General.sawimActivity.findViewById(R.id.fragment_container) != null)
-                            getFragmentManager().popBackStack();
-                        else
-                            chat_viewLayout.setVisibility(LinearLayout.GONE);
-                        break;
-
-                    case ContactMenu.ACTION_DEL_ALL_CHATS_EXCEPT_CUR:
-                        ChatHistory.instance.removeAll(chat);
-                        break;
-
-                    case ContactMenu.ACTION_DEL_ALL_CHATS:
-                        ChatHistory.instance.removeAll(null);
-                        if (General.sawimActivity.findViewById(R.id.fragment_container) != null)
-                            getFragmentManager().popBackStack();
-                        else
-                            chat_viewLayout.setVisibility(LinearLayout.GONE);
-                        break;
-
-                    default:
-                        new ContactMenu(protocol, currentContact).doAction(menu.getItem(which).idItem);
+        sendByEnter = Options.getBoolean(Options.OPTION_SIMPLE_INPUT);
+        if (sendByEnter) {
+            sendButton.setVisibility(ImageButton.GONE);
+        } else {
+            sendButton.setVisibility(ImageButton.VISIBLE);
+            sendButton.setBackgroundColor(background);
+            sendButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    send();
+                    if (nickList.getVisibility() == View.VISIBLE && getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
+                        nickList.setVisibility(View.GONE);
                 }
-            }
-        });
-        builder.create().show();
-    }
-
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, android.view.ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-        menu.add(Menu.FIRST, ContactMenu.MENU_COPY_TEXT, 0, android.R.string.copy);
-        menu.add(Menu.FIRST, ContactMenu.ACTION_QUOTE, 0, JLocale.getString("quote"));
-        if (currentContact instanceof JabberServiceContact && currentContact.isConference()) {
-            menu.add(Menu.FIRST, ContactMenu.COMMAND_PRIVATE, 0, R.string.open_private);
-            menu.add(Menu.FIRST, ContactMenu.COMMAND_INFO, 0, R.string.info);
-            menu.add(Menu.FIRST, ContactMenu.COMMAND_STATUS, 0, R.string.user_statuses);
-        }
-        if (protocol instanceof Jabber) {
-            menu.add(Menu.FIRST, ContactMenu.ACTION_TO_NOTES, 0, R.string.add_to_notes);
-        }
-        if (!Options.getBoolean(Options.OPTION_HISTORY) && chat.hasHistory()) {
-            menu.add(Menu.FIRST, ContactMenu.ACTION_ADD_TO_HISTORY, 0, JLocale.getString("add_to_history"));
-        }
-        currentContact.addChatMenuItems(menu);
-    }
-
-    @Override
-    public boolean onContextItemSelected(MenuItem item) {
-        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-        MessData md = adapter.getItem(info.position);
-        String nick = md.getNick();
-        String msg = md.getText();
-        switch (item.getItemId()) {
-            case ContactMenu.MENU_COPY_TEXT:
-                if (null == md) {
-                    return false;
+            });
+            sendButton.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    insert("/me ");
+                    showKeyboard();
+                    return true;
                 }
-                if (md.isMe()) {
-                    msg = "*" + md.getNick() + " " + msg;
-                }
-                Clipboard.setClipBoardText(msg + "\n");
-                break;
-
-            case ContactMenu.ACTION_QUOTE:
-                StringBuffer sb = new StringBuffer();
-                if (md.isMe()) {
-                    msg = "*" + md.getNick() + " " + msg;
-                }
-                sb.append(Clipboard.serialize(md.isIncoming(), md.getNick() + " " + md.strTime, msg));
-                sb.append("\n-----\n");
-                Clipboard.setClipBoardText(0 == sb.length() ? null : sb.toString());
-                break;
-
-            case ContactMenu.COMMAND_PRIVATE:
-                String jid = Jid.realJidToSawimJid(currentContact.getUserId() + "/" + nick);
-                JabberServiceContact c = (JabberServiceContact) protocol.getItemByUIN(jid);
-                if (null == c) {
-                    c = (JabberServiceContact) protocol.createTempContact(jid);
-                    protocol.addTempContact(c);
-                }
-                pause(getCurrentChat());
-                resetSpinner();
-                openChat(protocol, c);
-                resume(getCurrentChat());
-                break;
-            case ContactMenu.COMMAND_INFO:
-                protocol.showUserInfo(((JabberServiceContact) currentContact).getPrivateContact(nick));
-                break;
-            case ContactMenu.COMMAND_STATUS:
-                protocol.showStatus(((JabberServiceContact) currentContact).getPrivateContact(nick));
-                break;
-
-            case ContactMenu.ACTION_ADD_TO_HISTORY:
-                chat.addTextToHistory(md);
-                break;
-
-            case ContactMenu.ACTION_TO_NOTES:
-                MirandaNotes notes = ((Jabber)protocol).getMirandaNotes();
-                notes.showIt();
-                MirandaNotes.Note note = notes.addEmptyNote();
-                note.tags = md.getNick() + " " + md.strTime;
-                note.text = md.getText();
-                notes.showNoteEditor(note);
-                break;
+            });
         }
-        return super.onContextItemSelected(item);
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.chat, container, false);
-        chat_viewLayout = (LinearLayout) v.findViewById(R.id.chat_view);
-        chatLayout = (LinearLayout) chat_viewLayout.findViewById(R.id.list);
-
-        chatBarLayout = (LinearLayout) chat_viewLayout.findViewById(R.id.chat_bar);
-        usersImage = (ImageButton) chatBarLayout.findViewById(R.id.usersImage);
-        spinner = (MySpinner) chatBarLayout.findViewById(R.id.spinner);
-        chatsImage = (ImageButton) chatBarLayout.findViewById(R.id.chatsImage);
-
-        menuButton = (ImageButton) chat_viewLayout.findViewById(R.id.menu_button);
-        smileButton = (ImageButton) chat_viewLayout.findViewById(R.id.input_smile_button);
-        sendButton = (ImageButton) chat_viewLayout.findViewById(R.id.input_send_button);
-        messageEditor = (EditText) chat_viewLayout.findViewById(R.id.messageBox);
-        return v;
+        return chat_viewLayout;
     }
 
     @Override
@@ -348,36 +349,35 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
     public void pause(Chat chat) {
         if (chat == null) return;
         lastProtocol = protocol;
-        lastContact = currentContact;
+        lastContact = contact;
         Bundle args = getArguments();
         if (args != null) {
             args.putString(ChatView.PROTOCOL_ID, protocol.getUserId());
-            args.putString(ChatView.CONTACT_ID, currentContact.getUserId());
+            args.putString(ChatView.CONTACT_ID, contact.getUserId());
         }
 
         View item = chatListView.getChildAt(0);
         addLastPosition(chat.getContact().getUserId(), chatListView.getFirstVisiblePosition(), (item == null) ? 0 : Math.abs(item.getBottom()));
 
         chat.setVisibleChat(false);
-        General.getInstance().setOnUpdateChat(null);
+        Roster.getInstance().setOnUpdateChat(null);
         chat.resetUnreadMessages();
     }
 
     public void resume(Chat chat) {
         if (chat == null) return;
-        Chat.ScrollState lastPosition = getLastPosition(chat.getContact().getUserId());
-        Log.e(TAG, "lastPosition "+chat.getContact().getUserId());
+    //    chatListsView.rebuild();
+        ScrollState lastPosition = getLastPosition(chat.getContact().getUserId());
         if (lastPosition != null && lastPosition.position > 0) {
-            Log.e(TAG, "position "+General.positionHash.size());
             chatListView.setSelectionFromTop(lastPosition.position + 1, lastPosition.offset);
         } else chatListView.setSelection(0);
 
         chat.setVisibleChat(true);
         ChatHistory.instance.registerChat(chat);
-        General.getInstance().setOnUpdateChat(this);
+        Roster.getInstance().setOnUpdateChat(this);
         chat.resetUnreadMessages();
         updateChatIcon();
-        updateList(currentContact);
+        updateList(contact);
     }
 
     public boolean hasBack() {
@@ -398,129 +398,81 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
     }
 
     private void addLastPosition(String jid, int position, int offset) {
-        Chat.ScrollState scrollState = new Chat.ScrollState();
+        ScrollState scrollState = new ScrollState();
         scrollState.position = position;
         scrollState.offset = offset;
-        General.positionHash.put(jid, scrollState);
+        positionHash.put(jid, scrollState);
     }
 
-    private Chat.ScrollState getLastPosition(String jid) {
-        if (General.positionHash.containsKey(jid)) return General.positionHash.get(jid);
+    private ScrollState getLastPosition(String jid) {
+        if (positionHash.containsKey(jid)) return positionHash.get(jid);
         else return null;
     }
 
     public void openChat(Protocol p, Contact c) {
-        final FragmentActivity currentActivity = General.sawimActivity;
         if (General.sawimActivity.findViewById(R.id.fragment_container) == null)
             chat_viewLayout.setVisibility(LinearLayout.VISIBLE);
         protocol = p;
-        currentContact = c;
-        chat = protocol.getChat(currentContact);
+        contact = c;
+        chat = protocol.getChat(contact);
 
-        if (spinner.getOnItemSelectedEvenIfUnchangedListener() == null)
-            initSpinner();
+        if (spinner.getOnItemSelectedEvenIfUnchangedListener() == null) initSpinner();
         initList();
         initMucUsers();
+    }
 
-        int background = Scheme.getColor(Scheme.THEME_BACKGROUND);
-        chat_viewLayout.setBackgroundColor(background);
-        if (General.isTablet(currentActivity)) {
-            menuButton.setVisibility(ImageButton.VISIBLE);
-            menuButton.setBackgroundColor(background);
-            menuButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    showMenu();
-                }
-            });
-        } else {
-            menuButton.setVisibility(ImageButton.GONE);
-        }
+    public void resetSpinner() {
+        spinner.setOnItemSelectedEvenIfUnchangedListener(null);
+    }
 
-        smileButton.setBackgroundColor(background);
-        smileButton.setOnClickListener(new View.OnClickListener() {
+    private void initSpinner() {
+        chatsSpinnerAdapter = new ChatsSpinnerAdapter(General.sawimActivity, ChatHistory.instance.historyTable);
+        spinner.setAdapter(chatsSpinnerAdapter);
+        spinner.getBackground().setColorFilter(Scheme.getColor(Scheme.THEME_CAP_BACKGROUND), PorterDuff.Mode.MULTIPLY);
+        spinner.setSelection(ChatHistory.instance.getItemChat(contact));
+        spinner.setOnItemSelectedEvenIfUnchangedListener(new AdapterView.OnItemSelectedListener() {
+
             @Override
-            public void onClick(View view) {
-                hideKeyboard(view);
-                new SmilesView().show(currentActivity.getSupportFragmentManager(), "show-smiles");
+            public void onItemSelected(AdapterView<?> parent, View view,
+                                       int position, long id) {
+                forceGoToChat(position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> arg0) {
             }
         });
-        messageEditor.addTextChangedListener(textWatcher);
-        messageEditor.getBackground().setColorFilter(background, PorterDuff.Mode.MULTIPLY);;
-        messageEditor.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
-        if (sendByEnter) {
-            messageEditor.setImeOptions(EditorInfo.IME_ACTION_SEND);
-            messageEditor.setOnEditorActionListener(enterListener);
-        }
-        sendByEnter = Options.getBoolean(Options.OPTION_SIMPLE_INPUT);
-        if (sendByEnter) {
-            sendButton.setVisibility(ImageButton.GONE);
-        } else {
-            sendButton.setVisibility(ImageButton.VISIBLE);
-            sendButton.setBackgroundColor(background);
-            sendButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    send();
-                    if (nickList.getVisibility() == View.VISIBLE && getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
-                        nickList.setVisibility(View.GONE);
-                }
-            });
-            sendButton.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View view) {
-                    insert("/me ");
-                    showKeyboard();
-                    return true;
-                }
-            });
-        }
     }
 
     private void initList() {
-        chatListView = new MyListView(General.sawimActivity);
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT && getResources().getDisplayMetrics().densityDpi < 200)
-            lp.weight = 10;
-        else
-            lp.weight = 1;
-        lp.bottomMargin = 8;
-        chatListView.setLayoutParams(lp);
+        State chatState = chatHash.get(contact.getUserId());
+        if (chatState == null) {
+            chatState = new State();
+            adapter = new MessagesAdapter();
+            adapter.init(General.sawimActivity, chat);
+            chatState.adapter = adapter;
+            chatHash.put(contact.getUserId(), chatState);
+        } else {
+            adapter = chatState.adapter;
+        }
+        chatListView.setAdapter(adapter);
         chatListView.setFastScrollEnabled(true);
         chatListView.setStackFromBottom(true);
         chatListView.setTranscriptMode(ListView.TRANSCRIPT_MODE_NORMAL);
         chatListView.setOnCreateContextMenuListener(this);
         chatListView.setOnItemClickListener(new ChatClick());
         chatListView.setFocusable(true);
-        if (chatListView.getAdapter() == null) {
-            adapter = new MessagesAdapter();
-            adapter.init(General.sawimActivity, chat);
-            chatListView.setAdapter(adapter);
-        } else {
-            adapter.refreshList(chat.getMessData());
-            chatListView.setAdapter(adapter);
-        }
-        chatLayout.removeAllViews();
-        chatLayout.addView(chatListView);
     }
 
     private void initMucUsers() {
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        nickList = new MyListView(General.sawimActivity);
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT && getResources().getDisplayMetrics().densityDpi < 200)
-            lp.weight = 0;
-        else
-            lp.weight = (float) 1.5;
-        lp.bottomMargin = 8;
-        nickList.setLayoutParams(lp);
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
             nickList.setVisibility(View.GONE);
         else
             nickList.setVisibility(View.VISIBLE);
         nickList.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
-        if (currentContact instanceof JabberServiceContact && currentContact.isConference()) {
+        if (contact instanceof JabberServiceContact && contact.isConference()) {
             mucUsersView = new MucUsersView();
-            mucUsersView.init(protocol, (JabberServiceContact) currentContact);
+            mucUsersView.init(protocol, (JabberServiceContact) contact);
             mucUsersView.show(this, nickList);
             if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
                 usersImage.setVisibility(View.VISIBLE);
@@ -530,7 +482,6 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
             usersImage.setVisibility(View.GONE);
             nickList.setVisibility(View.GONE);
         }
-        chatLayout.addView(nickList);
     }
 
     private void updateChatIcon() {
@@ -557,7 +508,7 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
     private void updateList(Contact contact) {
         if (chatsSpinnerAdapter != null)
             chatsSpinnerAdapter.refreshList(ChatHistory.instance.historyTable);
-        if (contact == currentContact)
+        if (contact == this.contact)
             if (adapter != null)
                 adapter.refreshList(chat.getMessData());
     }
@@ -573,23 +524,202 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
         });
     }
 
+    public static class ScrollState {
+        public int position;
+        public int offset;
+    }
+
+    public static class State {
+        public MessagesAdapter adapter;
+    }
+
+    private StringBuffer sb = new StringBuffer();
     private class ChatClick implements ListView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-            MessData msg = (MessData) adapterView.getAdapter().getItem(position);
-            if (currentContact instanceof JabberServiceContact) {
-                JabberServiceContact jabberServiceContact = ((JabberServiceContact) currentContact);
-                if (jabberServiceContact.getContact(msg.getNick()) == null && !jabberServiceContact.getUserId().equals(msg.getNick()))
-                    Toast.makeText(General.sawimActivity, getString(R.string.contact_walked), Toast.LENGTH_LONG).show();
+            MessData mData = (MessData) adapterView.getAdapter().getItem(position);
+            if (adapter.isMultiСitation()) {
+                mData.setMarked(!mData.isMarked());
+                String msg = mData.getText();
+                if (mData.isMe()) {
+                    msg = "*" + mData.getNick() + " " + msg;
+                }
+                sb.append(Clipboard.serialize(mData.isIncoming(), mData.getNick() + " " + mData.strTime, msg));
+                sb.append("\n-----\n");
+                Clipboard.setClipBoardText(0 == sb.length() ? null : sb.toString());
+                adapter.notifyDataSetChanged();
+            } else {
+                if (contact instanceof JabberServiceContact) {
+                    JabberServiceContact jabberServiceContact = ((JabberServiceContact) contact);
+                    if (jabberServiceContact.getContact(mData.getNick()) == null && !jabberServiceContact.getUserId().equals(mData.getNick()))
+                        Toast.makeText(General.sawimActivity, getString(R.string.contact_walked), Toast.LENGTH_LONG).show();
+                }
+                setText(chat.onMessageSelected(mData));
+                if (nickList.getVisibility() == View.VISIBLE && getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
+                    nickList.setVisibility(View.GONE);
             }
-            setText(chat.onMessageSelected(msg));
-            if (nickList.getVisibility() == View.VISIBLE && getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
-                nickList.setVisibility(View.GONE);
         }
     }
 
     public Chat getCurrentChat() {
         return chat;
+    }
+
+    public void showMenu() {
+        final MyMenu menu = new MyMenu(General.sawimActivity);
+        boolean accessible = chat.getWritable() && (contact.isSingleUserContact() || contact.isOnline());
+        menu.add(getString(adapter.isMultiСitation() ?
+                R.string.disable_multi_citation : R.string.include_multi_citation), ContactMenu.MENU_MULTI_CITATION);
+        if (0 < chat.getAuthRequestCounter()) {
+            menu.add(JLocale.getString("grant"), ContactMenu.USER_MENU_GRANT_AUTH);
+            menu.add(JLocale.getString("deny"), ContactMenu.USER_MENU_DENY_AUTH);
+        }
+        if (!contact.isAuth()) {
+            menu.add(JLocale.getString("requauth"), ContactMenu.USER_MENU_REQU_AUTH);
+        }
+        if (accessible) {
+            if (sawim.modules.fs.FileSystem.isSupported()) {
+                menu.add(JLocale.getString("ft_name"), ContactMenu.USER_MENU_FILE_TRANS);
+            }
+            if (FileTransfer.isPhotoSupported()) {
+                menu.add(JLocale.getString("ft_cam"), ContactMenu.USER_MENU_CAM_TRANS);
+            }
+        }
+        menu.add(General.sawimActivity.getResources().getString(R.string.user_statuses), ContactMenu.USER_MENU_STATUSES);
+        if (!contact.isSingleUserContact() && contact.isOnline()) {
+            menu.add(JLocale.getString("leave_chat"), ContactMenu.CONFERENCE_DISCONNECT);
+        }
+        menu.add(JLocale.getString("delete_chat"), ContactMenu.ACTION_CURRENT_DEL_CHAT);
+        menu.add(JLocale.getString("all_contact_except_this"), ContactMenu.ACTION_DEL_ALL_CHATS_EXCEPT_CUR);
+        menu.add(JLocale.getString("all_contacts"), ContactMenu.ACTION_DEL_ALL_CHATS);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(General.sawimActivity, R.style.AlertDialogCustom));
+        builder.setTitle(contact.getName());
+        builder.setCancelable(true);
+        builder.setAdapter(menu, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (menu.getItem(which).idItem) {
+                    case ContactMenu.MENU_MULTI_CITATION:
+                        if (adapter.isMultiСitation()) {
+                            adapter.setMultiСitation(false);
+                        } else {
+                            adapter.setMultiСitation(true);
+                            Toast.makeText(General.sawimActivity, R.string.hint_multi_citation, Toast.LENGTH_LONG).show();
+                        }
+                        break;
+
+                    case ContactMenu.ACTION_CURRENT_DEL_CHAT:
+                        /*chat.removeMessagesAtCursor(chatListView.getFirstVisiblePosition() + 1);
+                        if (0 < messData.size()) {
+                            updateChat();
+                        }*/
+                        ChatHistory.instance.unregisterChat(chat);
+                        if (General.sawimActivity.findViewById(R.id.fragment_container) != null)
+                            getFragmentManager().popBackStack();
+                        else
+                            chat_viewLayout.setVisibility(LinearLayout.GONE);
+                        break;
+
+                    case ContactMenu.ACTION_DEL_ALL_CHATS_EXCEPT_CUR:
+                        ChatHistory.instance.removeAll(chat);
+                        break;
+
+                    case ContactMenu.ACTION_DEL_ALL_CHATS:
+                        ChatHistory.instance.removeAll(null);
+                        if (General.sawimActivity.findViewById(R.id.fragment_container) != null)
+                            getFragmentManager().popBackStack();
+                        else
+                            chat_viewLayout.setVisibility(LinearLayout.GONE);
+                        break;
+
+                    default:
+                        new ContactMenu(protocol, contact).doAction(menu.getItem(which).idItem);
+                }
+            }
+        });
+        builder.create().show();
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, android.view.ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        menu.add(Menu.FIRST, ContactMenu.MENU_COPY_TEXT, 0, android.R.string.copy);
+        menu.add(Menu.FIRST, ContactMenu.ACTION_QUOTE, 0, JLocale.getString("quote"));
+        if (contact instanceof JabberServiceContact && contact.isConference()) {
+            menu.add(Menu.FIRST, ContactMenu.COMMAND_PRIVATE, 0, R.string.open_private);
+            menu.add(Menu.FIRST, ContactMenu.COMMAND_INFO, 0, R.string.info);
+            menu.add(Menu.FIRST, ContactMenu.COMMAND_STATUS, 0, R.string.user_statuses);
+        }
+        if (protocol instanceof Jabber) {
+            menu.add(Menu.FIRST, ContactMenu.ACTION_TO_NOTES, 0, R.string.add_to_notes);
+        }
+        if (!Options.getBoolean(Options.OPTION_HISTORY) && chat.hasHistory()) {
+            menu.add(Menu.FIRST, ContactMenu.ACTION_ADD_TO_HISTORY, 0, JLocale.getString("add_to_history"));
+        }
+        contact.addChatMenuItems(menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        MessData md = adapter.getItem(info.position);
+        String nick = md.getNick();
+        String msg = md.getText();
+        switch (item.getItemId()) {
+            case ContactMenu.MENU_COPY_TEXT:
+                if (null == md) {
+                    return false;
+                }
+                if (md.isMe()) {
+                    msg = "*" + md.getNick() + " " + msg;
+                }
+                Clipboard.setClipBoardText(msg + "\n");
+                break;
+
+            case ContactMenu.ACTION_QUOTE:
+                StringBuffer sb = new StringBuffer();
+                if (md.isMe()) {
+                    msg = "*" + md.getNick() + " " + msg;
+                }
+                sb.append(Clipboard.serialize(md.isIncoming(), md.getNick() + " " + md.strTime, msg));
+                sb.append("\n-----\n");
+                Clipboard.setClipBoardText(0 == sb.length() ? null : sb.toString());
+                break;
+
+            case ContactMenu.COMMAND_PRIVATE:
+                String jid = Jid.realJidToSawimJid(contact.getUserId() + "/" + nick);
+                JabberServiceContact c = (JabberServiceContact) protocol.getItemByUIN(jid);
+                if (null == c) {
+                    c = (JabberServiceContact) protocol.createTempContact(jid);
+                    protocol.addTempContact(c);
+                }
+                pause(getCurrentChat());
+                resetSpinner();
+                openChat(protocol, c);
+                resume(getCurrentChat());
+                break;
+            case ContactMenu.COMMAND_INFO:
+                protocol.showUserInfo(((JabberServiceContact) contact).getPrivateContact(nick));
+                break;
+            case ContactMenu.COMMAND_STATUS:
+                protocol.showStatus(((JabberServiceContact) contact).getPrivateContact(nick));
+                break;
+
+            case ContactMenu.ACTION_ADD_TO_HISTORY:
+                chat.addTextToHistory(md);
+                break;
+
+            case ContactMenu.ACTION_TO_NOTES:
+                MirandaNotes notes = ((Jabber)protocol).getMirandaNotes();
+                notes.showIt();
+                MirandaNotes.Note note = notes.addEmptyNote();
+                note.tags = md.getNick() + " " + md.strTime;
+                note.text = md.getText();
+                notes.showNoteEditor(note);
+                break;
+        }
+        return super.onContextItemSelected(item);
     }
 
     private void showKeyboard(View view) {
@@ -625,7 +755,7 @@ public class ChatView extends SawimFragment implements General.OnUpdateChat {
         hideKeyboard(messageEditor);
         chat.sendMessage(getText());
         resetText();
-        updateList(currentContact);
+        updateList(contact);
         //updatePosition();
     }
 

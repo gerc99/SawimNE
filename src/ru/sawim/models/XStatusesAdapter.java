@@ -80,7 +80,7 @@ public class XStatusesAdapter extends BaseAdapter {
 
         public ItemWrapper(View item) {
             this.item = item;
-            itemImage = (ImageView) item.findViewById(R.id.image);
+            itemImage = (ImageView) item.findViewById(R.id.status_image);
             itemXStatus = (TextView) item.findViewById(R.id.status);
         }
 

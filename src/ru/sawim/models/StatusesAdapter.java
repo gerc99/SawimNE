@@ -90,7 +90,7 @@ public class StatusesAdapter extends BaseAdapter {
 
         public ItemWrapper(View item) {
             this.item = item;
-            itemImage = (ImageView) item.findViewById(R.id.image);
+            itemImage = (ImageView) item.findViewById(R.id.status_image);
             itemStatus = (TextView) item.findViewById(R.id.status);
         }
 

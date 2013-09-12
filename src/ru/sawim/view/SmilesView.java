@@ -9,9 +9,9 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import ru.sawim.General;
 import sawim.modules.Emotions;
 import ru.sawim.models.SmilesAdapter;
+import sawim.roster.Roster;
 
 /**
  * Created with IntelliJ IDEA.
@@ -27,7 +27,6 @@ public class SmilesView extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(0));
         smilesAdapter = new SmilesAdapter(getActivity());
         GridView gv = new GridView(getActivity());
         gv.setNumColumns(5);
@@ -35,8 +34,8 @@ public class SmilesView extends DialogFragment {
         gv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                if (General.getInstance().getUpdateChatListener() != null)
-                    General.getInstance().getUpdateChatListener().pastText(Emotions.instance.getSmileCode(i));
+                if (Roster.getInstance().getUpdateChatListener() != null)
+                    Roster.getInstance().getUpdateChatListener().pastText(Emotions.instance.getSmileCode(i));
                 dismiss();
             }
         });

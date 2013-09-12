@@ -276,8 +276,8 @@ public final class Jabber extends Protocol implements FormListener {
 
     void setConfContactStatus(JabberServiceContact conf, String resource, byte status, String statusText, int role, int priorityA) {
         conf.__setStatus(resource, role, priorityA, status, statusText);
-        if (General.getInstance().getUpdateChatListener() != null)
-            General.getInstance().getUpdateChatListener().updateMucList();
+        if (Roster.getInstance().getUpdateChatListener() != null)
+            Roster.getInstance().getUpdateChatListener().updateMucList();
     }
 
     void setContactStatus(JabberContact c, String resource, byte status, String text, int priority) {
