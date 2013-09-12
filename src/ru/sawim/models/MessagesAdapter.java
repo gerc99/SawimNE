@@ -132,11 +132,11 @@ public class MessagesAdapter extends BaseAdapter {
                 }
             }
 
-            item.msgNick.setTextHash(nick);
             item.msgNick.setVisibility(TextView.VISIBLE);
             item.msgNick.setTextColor(Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG));
             item.msgNick.setTypeface(Typeface.DEFAULT_BOLD);
             item.msgNick.setTextSize(General.getFontSize());
+            item.msgNick.setTextHash(nick);
             item.msgNick.setText(nick);
 
             item.msgTime.setVisibility(TextView.VISIBLE);
@@ -147,9 +147,10 @@ public class MessagesAdapter extends BaseAdapter {
             byte color = Scheme.THEME_TEXT;
             if (incoming && !isSingleUserContact && mData.isHighLight())
                 color = Scheme.THEME_CHAT_HIGHLIGHT_MSG;
-            item.msgText.setTextHash(mData.parsedText().toString());
+
             item.msgText.setTextColor(Scheme.getColor(color));
             item.msgText.setTextSize(General.getFontSize());
+            item.msgText.setTextHash(mData.parsedText().toString());
             item.msgText.setText(mData.parsedText());
         }
         return row;

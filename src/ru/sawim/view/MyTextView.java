@@ -86,6 +86,7 @@ public class MyTextView extends View {
 
     public void setTextColor(int textColor) {
         mTextPaint.setColor(textColor);
+        invalidate();
     }
 
     public void setTypeface(Typeface typeface) {
@@ -111,12 +112,12 @@ public class MyTextView extends View {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int specSize = MeasureSpec.getSize(widthMeasureSpec);
         layout = layoutHash.get(textHash);
-        if (layout == null) {
+        //if (layout == null) {
             if (maxLines != 0)
                 mText = TextUtils.ellipsize(mText, mTextPaint, specSize * maxLines, TextUtils.TruncateAt.END);
             layout = new StaticLayout(mText, mTextPaint, specSize, Layout.Alignment.ALIGN_NORMAL, 1.0f, 0, false);
-            layoutHash.put(textHash, layout);
-        }
+        //    layoutHash.put(textHash, layout);
+        //}
         setMeasuredDimension(specSize, layout.getLineTop(layout.getLineCount()));
     }
 
