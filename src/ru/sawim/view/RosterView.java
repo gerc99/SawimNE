@@ -235,15 +235,15 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
                     updateQueue.removeElementAt(0);
                     roster.updateGroup(group);
                 }
-                items.clear();
+                if (adaptersPages != null && adaptersPages.size() > 0) {
+                    items.clear();
+                    adaptersPages.get(viewPager.getCurrentItem()).buildFlatItems(items);
+                }
                 if (viewPager.getCurrentItem() == RosterAdapter.ACTIVE_CONTACTS) {
+                    items.clear();
                     ChatHistory.instance.sort();
                     for (int i = 0; i < ChatHistory.instance.historyTable.size(); ++i) {
                         items.add(ChatHistory.instance.contactAt(i));
-                    }
-                } else {
-                    if (adaptersPages != null && adaptersPages.size() > 0) {
-                        adaptersPages.get(viewPager.getCurrentItem()).buildFlatItems(items);
                     }
                 }
             }
