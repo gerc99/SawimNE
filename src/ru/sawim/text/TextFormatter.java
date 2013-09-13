@@ -52,7 +52,8 @@ public class TextFormatter {
         return detectEmotions(builder);
     }
 
-    public SpannableStringBuilder getTextWithLinks(int mAutoLinkMask, SpannableStringBuilder ssb, JuickMenu.Mode mode, InternalURLSpan.TextLinkClickListener onTextLinkClickListener) {
+    public SpannableStringBuilder getTextWithLinks(int mAutoLinkMask, SpannableStringBuilder ssb, int textColor, int linkColor, JuickMenu.Mode mode, InternalURLSpan.TextLinkClickListener onTextLinkClickListener) {
+        ssb.setSpan(new ForegroundColorSpan(textColor), 0, ssb.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         if (mode != JuickMenu.Mode.none) {
             ArrayList<Hyperlink> msgList = new ArrayList<Hyperlink>();
             if (mode == JuickMenu.Mode.juick)
@@ -63,7 +64,7 @@ public class TextFormatter {
             for (Hyperlink link : msgList) {
                 ssb.setSpan(new StyleSpan(android.graphics.Typeface.SANS_SERIF.getStyle()), link.start, link.end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 ssb.setSpan(link.span, link.start, link.end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                ssb.setSpan(new ForegroundColorSpan(Color.BLUE), link.start, link.end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                ssb.setSpan(new ForegroundColorSpan(linkColor), link.start, link.end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
         }
         return getTextWithLinks(mAutoLinkMask, ssb);

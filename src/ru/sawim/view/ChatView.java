@@ -102,8 +102,8 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
 
             chatBarLayout.setBackgroundDrawable(new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP,
                     new int[] {Scheme.getColor(Scheme.THEME_CAP_BACKGROUND), Scheme.getColor(Scheme.THEME_BACKGROUND)}));
-            chatInputBarView.setBackgroundDrawable(new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP,
-                    new int[] {Scheme.getColor(Scheme.THEME_CAP_BACKGROUND), Scheme.getColor(Scheme.THEME_BACKGROUND)}));
+            //chatInputBarView.setBackgroundDrawable(new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP,
+            //        new int[] {Scheme.getColor(Scheme.THEME_CAP_BACKGROUND), Scheme.getColor(Scheme.THEME_BACKGROUND)}));
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
             messageEditor.getBackground().setColorFilter(Scheme.getColor(Scheme.THEME_CAP_BACKGROUND), PorterDuff.Mode.MULTIPLY);
         }
@@ -206,7 +206,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
             LinearLayout.LayoutParams messageEditorLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             messageEditorLP.gravity = Gravity.CENTER | Gravity.LEFT;
             messageEditorLP.weight = (float) 0.87;
-            messageEditor.setSingleLine(true);
+            messageEditor.setSingleLine(false);
             messageEditor.setPadding(20, 20, 20, 20);
             messageEditor.setMaxLines(4);
             messageEditor.setHorizontallyScrolling(false);
@@ -544,15 +544,19 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
                 if (mData.isMe()) {
                     msg = "*" + mData.getNick() + " " + msg;
                 }
-                sb.append(Clipboard.serialize(mData.isIncoming(), mData.getNick() + " " + mData.strTime, msg));
-                sb.append("\n-----\n");
+                if (mData.isMarked()) {
+                    sb.append(Clipboard.serialize(mData.isIncoming(), mData.getNick() + " " + mData.strTime, msg));
+                    sb.append("\n-----\n");
+                }
                 Clipboard.setClipBoardText(0 == sb.length() ? null : sb.toString());
                 adapter.notifyDataSetChanged();
             } else {
                 if (contact instanceof JabberServiceContact) {
                     JabberServiceContact jabberServiceContact = ((JabberServiceContact) contact);
-                    if (jabberServiceContact.getContact(mData.getNick()) == null && !jabberServiceContact.getUserId().equals(mData.getNick()))
+                    if (jabberServiceContact.getContact(mData.getNick()) == null && !jabberServiceContact.getUserId().equals(mData.getCurrentContact().getUserId())) {
                         Toast.makeText(General.sawimActivity, getString(R.string.contact_walked), Toast.LENGTH_LONG).show();
+                        return;
+                    }
                 }
                 setText(chat.onMessageSelected(mData));
                 if (nickList.getVisibility() == View.VISIBLE && getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
@@ -607,6 +611,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
                             adapter.setMultiСitation(true);
                             Toast.makeText(General.sawimActivity, R.string.hint_multi_citation, Toast.LENGTH_LONG).show();
                         }
+                        adapter.notifyDataSetChanged();
                         break;
 
                     case ContactMenu.ACTION_CURRENT_DEL_CHAT:

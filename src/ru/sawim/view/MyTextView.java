@@ -1,6 +1,7 @@
 package ru.sawim.view;
 
 import android.content.ActivityNotFoundException;
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -11,6 +12,7 @@ import android.content.Context;
 import android.text.style.ClickableSpan;
 import android.text.style.URLSpan;
 import android.util.AttributeSet;
+import android.util.FloatMath;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.MotionEvent;
@@ -36,6 +38,9 @@ public class MyTextView extends View {
     private Layout layout;
     private CharSequence mText = "";
     InternalURLSpan.TextLinkClickListener mListener;
+    private ColorStateList mTextColor;
+    private ColorStateList mLinkTextColor;
+    private int mCurTextColor;
 
     private static Hashtable<CharSequence, Layout> layoutHash = new Hashtable<CharSequence, Layout>();
     private String textHash = "";
@@ -60,7 +65,6 @@ public class MyTextView extends View {
         mTextPaint.setAntiAlias(true);
         mTextPaint.setTextSize(20);
         mTextPaint.setColor(Color.BLACK);
-        mTextPaint.linkColor = Color.BLUE;
         mTextPaint.setStyle(Paint.Style.FILL);
         mTextPaint.setAntiAlias(true);
     }
@@ -68,6 +72,8 @@ public class MyTextView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         canvas.save();
+        mTextPaint.setColor(mCurTextColor);
+        mTextPaint.drawableState = getDrawableState();
         if (layout != null)
             layout.draw(canvas);
         canvas.restore();
@@ -84,9 +90,14 @@ public class MyTextView extends View {
         invalidate();
     }
 
-    public void setTextColor(int textColor) {
-        mTextPaint.setColor(textColor);
-        invalidate();
+    public void setTextColor(int color) {
+        mTextColor = ColorStateList.valueOf(color);
+        updateTextColors();
+    }
+
+    public final void setLinkTextColor(int color) {
+        mLinkTextColor = ColorStateList.valueOf(color);
+        updateTextColors();
     }
 
     public void setTypeface(Typeface typeface) {
@@ -112,13 +123,44 @@ public class MyTextView extends View {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int specSize = MeasureSpec.getSize(widthMeasureSpec);
         layout = layoutHash.get(textHash);
-        //if (layout == null) {
+        if (layout == null) {
+            Log.e("MyTextView", "layout == null");
             if (maxLines != 0)
                 mText = TextUtils.ellipsize(mText, mTextPaint, specSize * maxLines, TextUtils.TruncateAt.END);
             layout = new StaticLayout(mText, mTextPaint, specSize, Layout.Alignment.ALIGN_NORMAL, 1.0f, 0, false);
-        //    layoutHash.put(textHash, layout);
-        //}
+            layoutHash.put(textHash, layout);
+        } else {
+            layout.increaseWidthTo(layout.getWidth());
+        }
         setMeasuredDimension(specSize, layout.getLineTop(layout.getLineCount()));
+    }
+
+    private void updateTextColors() {
+        boolean inval = false;
+        int color = mTextColor.getColorForState(getDrawableState(), 0);
+        if (color != mCurTextColor) {
+            mCurTextColor = color;
+            inval = true;
+        }
+        if (mLinkTextColor != null) {
+            color = mLinkTextColor.getColorForState(getDrawableState(), 0);
+            if (color != mTextPaint.linkColor) {
+                mTextPaint.linkColor = color;
+                inval = true;
+            }
+        }
+        if (inval) {
+            invalidate();
+        }
+    }
+
+    @Override
+    protected void drawableStateChanged() {
+        super.drawableStateChanged();
+        if (mTextColor != null && mTextColor.isStateful()
+                || (mLinkTextColor != null && mLinkTextColor.isStateful())) {
+            updateTextColors();
+        }
     }
 
     @Override

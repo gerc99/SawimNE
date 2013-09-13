@@ -6,6 +6,9 @@ import android.content.DialogInterface;
 import android.graphics.Typeface;
 
 import android.support.v4.app.FragmentActivity;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
 import android.text.util.Linkify;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,8 +45,6 @@ public class MessagesAdapter extends BaseAdapter {
     private List<MessData> items = new ArrayList<MessData>();
     private static Protocol currentProtocol;
     private static String currentContact;
-    private boolean isSingleUserContact;
-    private static TextFormatter textFormatter = new TextFormatter();
 
     private boolean isMultiСitation = false;
 
@@ -51,7 +52,6 @@ public class MessagesAdapter extends BaseAdapter {
         this.activity = activity;
         currentProtocol = chat.getProtocol();
         currentContact = chat.getContact().getUserId();
-        isSingleUserContact = chat.getContact().isSingleUserContact();
         refreshList(chat.getMessData());
     }
 
@@ -92,6 +92,7 @@ public class MessagesAdapter extends BaseAdapter {
         }
         final MessageItemView item = ((MessageItemView) row);
         final MessData mData = items.get(index);
+        SpannableStringBuilder parsedText = mData.parsedText();
         String nick = mData.getNick();
         boolean incoming = mData.isIncoming();
 
@@ -112,14 +113,14 @@ public class MessagesAdapter extends BaseAdapter {
             item.msgImage.setVisibility(ImageView.GONE);
             item.msgNick.setVisibility(TextView.GONE);
             item.msgTime.setVisibility(TextView.GONE);
-            item.msgText.setTextHash(mData.parsedText().toString());
+            item.msgText.setTextHash(parsedText.toString());
             item.msgText.setTextSize(General.getFontSize() - 2);
             if (mData.isMe()) {
                 item.msgText.setTextColor(Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG));
-                item.msgText.setText("* " + nick + " " + mData.parsedText());
+                item.msgText.setText("* " + nick + " " + parsedText);
             } else {
                 item.msgText.setTextColor(Scheme.getColor(Scheme.THEME_CHAT_INMSG));
-                item.msgText.setText(nick + mData.parsedText());
+                item.msgText.setText(nick + parsedText);
             }
         } else {
             if (mData.iconIndex != Message.ICON_NONE) {
@@ -133,25 +134,22 @@ public class MessagesAdapter extends BaseAdapter {
             }
 
             item.msgNick.setVisibility(TextView.VISIBLE);
+            item.msgNick.setTextHash(nick);
+            item.msgNick.setText(nick);
             item.msgNick.setTextColor(Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG));
             item.msgNick.setTypeface(Typeface.DEFAULT_BOLD);
             item.msgNick.setTextSize(General.getFontSize());
-            item.msgNick.setTextHash(nick);
-            item.msgNick.setText(nick);
 
             item.msgTime.setVisibility(TextView.VISIBLE);
             item.msgTime.setTextColor(Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG));
-            item.msgTime.setTextSize(General.getFontSize() - 4);
+            item.msgTime.setTextSize(General.getFontSize() / 2);
             item.msgTime.setText(mData.strTime);
 
-            byte color = Scheme.THEME_TEXT;
-            if (incoming && !isSingleUserContact && mData.isHighLight())
-                color = Scheme.THEME_CHAT_HIGHLIGHT_MSG;
-
-            item.msgText.setTextColor(Scheme.getColor(color));
+            item.msgText.setTextHash(parsedText.toString());
+            item.msgText.setText(parsedText);
             item.msgText.setTextSize(General.getFontSize());
-            item.msgText.setTextHash(mData.parsedText().toString());
-            item.msgText.setText(mData.parsedText());
+            item.msgText.setTextColor(Scheme.getColor(mData.getMessColor()));
+            item.msgText.setLinkTextColor(Scheme.getColor(Scheme.THEME_CHAT_HIGHLIGHT_MSG));
         }
         return row;
     }

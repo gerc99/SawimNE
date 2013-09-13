@@ -4,18 +4,21 @@ import android.text.SpannableStringBuilder;
 import android.text.util.Linkify;
 import protocol.Contact;
 import ru.sawim.General;
+import ru.sawim.Scheme;
 import ru.sawim.models.MessagesAdapter;
 import ru.sawim.text.TextFormatter;
 import ru.sawim.view.menu.JuickMenu;
 import sawim.comm.Util;
 
 public final class MessData {
+
     private long time;
     private String text;
     private String nick;
     public String strTime;
     public int iconIndex;
     private short rowData;
+    private final boolean confHighLight;
     private boolean isHighLight;
     private Contact currentContact;
 
@@ -30,6 +33,7 @@ public final class MessData {
     public static final short PRESENCE = 32;
     public static final short MARKED = 64;
 
+
     public MessData(Contact currentContact, long time, String text, String nick, short flags, int iconIndex, boolean highLight) {
         this.currentContact = currentContact;
         isHighLight = highLight;
@@ -41,13 +45,15 @@ public final class MessData {
         boolean today = (General.getCurrentGmtTime() - 24 * 60 * 60 < time);
         strTime = Util.getLocalDateString(time, today);
 
+        confHighLight = (isIncoming() && !currentContact.isSingleUserContact() && isHighLight());
+
         parsedText = TextFormatter.getFormattedText(text);
         if (currentContact.equals(JuickMenu.JUICK) || currentContact.equals(JuickMenu.JUBO))
-            parsedText = textFormatter.getTextWithLinks(Linkify.EMAIL_ADDRESSES | Linkify.WEB_URLS, parsedText, JuickMenu.Mode.juick, MessagesAdapter.textLinkClickListener);
+            parsedText = textFormatter.getTextWithLinks(Linkify.EMAIL_ADDRESSES | Linkify.WEB_URLS, parsedText, Scheme.getColor(getMessColor()), Scheme.getColor(Scheme.THEME_CHAT_HIGHLIGHT_MSG), JuickMenu.Mode.juick, MessagesAdapter.textLinkClickListener);
         else if (currentContact.equals(JuickMenu.PSTO))
-            parsedText = textFormatter.getTextWithLinks(Linkify.EMAIL_ADDRESSES | Linkify.WEB_URLS, parsedText, JuickMenu.Mode.psto, MessagesAdapter.textLinkClickListener);
+            parsedText = textFormatter.getTextWithLinks(Linkify.EMAIL_ADDRESSES | Linkify.WEB_URLS, parsedText, Scheme.getColor(getMessColor()), Scheme.getColor(Scheme.THEME_CHAT_HIGHLIGHT_MSG), JuickMenu.Mode.psto, MessagesAdapter.textLinkClickListener);
         else
-            parsedText = textFormatter.getTextWithLinks(Linkify.EMAIL_ADDRESSES | Linkify.WEB_URLS, parsedText, JuickMenu.Mode.none, MessagesAdapter.textLinkClickListener);
+            parsedText = textFormatter.getTextWithLinks(Linkify.EMAIL_ADDRESSES | Linkify.WEB_URLS, parsedText, Scheme.getColor(getMessColor()), Scheme.getColor(Scheme.THEME_CHAT_HIGHLIGHT_MSG), JuickMenu.Mode.none, MessagesAdapter.textLinkClickListener);
     }
 
     public Contact getCurrentContact() {
@@ -100,5 +106,12 @@ public final class MessData {
 
     public boolean isHighLight() {
         return isHighLight;
+    }
+
+    public byte getMessColor() {
+        byte messColor = Scheme.THEME_TEXT;
+        if (confHighLight)
+            messColor = Scheme.THEME_CHAT_HIGHLIGHT_MSG;
+        return messColor;
     }
 }

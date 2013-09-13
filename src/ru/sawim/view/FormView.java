@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.GradientDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
@@ -109,8 +110,8 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
     }
 
     private void hideKeyboard() {
-        InputMethodManager imm = (InputMethodManager) General.sawimActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+        getActivity().getWindow().setSoftInputMode(
+                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
     }
 
     @Override
@@ -172,9 +173,9 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
                 drawText(c, labelView, descView, convertView);
                 editText.setVisibility(EditText.VISIBLE);
                 editText.setTextColor(Scheme.getInversColor(Scheme.THEME_TEXT));
-                GradientDrawable gd = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP,
-                        new int[] {Scheme.getInversColor(Scheme.THEME_BACKGROUND), Scheme.getColor(Scheme.THEME_BACKGROUND)});
-                editText.setBackgroundDrawable(gd);
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+                    editText.getBackground().setColorFilter(Scheme.getColor(Scheme.THEME_CAP_BACKGROUND), PorterDuff.Mode.MULTIPLY);
+                }
                 editText.setHint(R.string.enter_the);
                 editText.setText(c.text);
                 editText.addTextChangedListener(new TextWatcher() {

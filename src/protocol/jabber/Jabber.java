@@ -658,6 +658,7 @@ public final class Jabber extends Protocol implements FormListener {
             public void onClick(DialogInterface dialog, int which) {
                 c.setActiveResource((String) items.get(which));
                 Roster.getInstance().updateRoster();
+                dialog.dismiss();
             }
         });
         builder.create().show();

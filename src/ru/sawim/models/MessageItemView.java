@@ -51,7 +51,7 @@ public class MessageItemView extends RelativeLayout {
         addView(msgNick, lp);
 
         lp = new RelativeLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-        lp.addRule(BELOW, msgTime.getId());
+        lp.addRule(BELOW, msgNick.getId());
         msgText.setId(4);
         msgText.setScrollContainer(false);
         addView(msgText, lp);

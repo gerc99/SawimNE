@@ -96,11 +96,10 @@ public class SendToView extends Fragment implements AdapterView.OnItemClickListe
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             String type = intent.getType();
             Uri data = intent.getParcelableExtra(Intent.EXTRA_STREAM);
-
+            if (data == null) return;
             if (type.equals("text/plain")) {
                 ChatView newFragment = new ChatView();
                 Bundle args = new Bundle();
-                newFragment.pastText(intent.getStringExtra(Intent.EXTRA_TEXT));
                 c.activate(p);
                 args.putString(ChatView.PROTOCOL_ID, p.getUserId());
                 args.putString(ChatView.CONTACT_ID, c.getUserId());
@@ -109,6 +108,7 @@ public class SendToView extends Fragment implements AdapterView.OnItemClickListe
                 transaction.replace(R.id.fragment_container, newFragment, ChatView.TAG);
                 transaction.addToBackStack(null);
                 transaction.commit();
+                newFragment.pastText(intent.getStringExtra(Intent.EXTRA_TEXT));
             } else {
                 try {
                     InputStream is = getActivity().getContentResolver().openInputStream(data);
