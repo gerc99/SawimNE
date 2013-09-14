@@ -132,7 +132,7 @@ public final class MirandaNotes {
     }
     private void addNote(Note note) {
 		VirtualListItem parser = model.createNewParser(true);
-        parser.addLabel(note.title + "\n" + "*" + note.tags, Scheme.THEME_FORM_EDIT, Scheme.FONT_STYLE_BOLD);
+        parser.addLabel(note.title + "\n" + "*" + note.tags, Scheme.THEME_PARAM_VALUE, Scheme.FONT_STYLE_BOLD);
         parser.addDescription(note.text, Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
         model.addPar(parser);
         screen.updateModel();

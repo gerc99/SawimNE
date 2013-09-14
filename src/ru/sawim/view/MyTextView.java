@@ -12,6 +12,7 @@ import android.content.Context;
 import android.text.style.ClickableSpan;
 import android.text.style.URLSpan;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
@@ -65,12 +66,10 @@ public class MyTextView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        canvas.save();
         mTextPaint.setColor(mCurTextColor);
         mTextPaint.drawableState = getDrawableState();
         if (layout != null)
             layout.draw(canvas);
-        canvas.restore();
     }
 
     @Override
@@ -109,17 +108,24 @@ public class MyTextView extends View {
                 TypedValue.COMPLEX_UNIT_SP, textSize, r.getDisplayMetrics()));
     }
 
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        int specSize = MeasureSpec.getSize(widthMeasureSpec);
+    private void makeLayout(int specSize) {
         if (oldText != mText) {
-            oldText = mText;
             if (maxLines != 0)
                 mText = TextUtils.ellipsize(mText, mTextPaint, specSize * maxLines, TextUtils.TruncateAt.END);
             layout = new StaticLayout(mText, mTextPaint, specSize, Layout.Alignment.ALIGN_NORMAL, 1.0f, 0, false);
-        } else {
-            layout.increaseWidthTo(layout.getWidth());
+            oldText = mText;
         }
+        if (layout == null) {
+            if (maxLines != 0)
+                mText = TextUtils.ellipsize(mText, mTextPaint, specSize * maxLines, TextUtils.TruncateAt.END);
+            layout = new StaticLayout(mText, mTextPaint, specSize, Layout.Alignment.ALIGN_NORMAL, 1.0f, 0, false);
+        }
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        int specSize = MeasureSpec.getSize(widthMeasureSpec);
+        makeLayout(specSize);
         setMeasuredDimension(specSize, layout.getLineTop(layout.getLineCount()));
     }
 

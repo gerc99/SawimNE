@@ -6,7 +6,6 @@ import android.graphics.Typeface;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import protocol.Contact;
 import protocol.Group;
 import protocol.Protocol;
@@ -28,8 +27,8 @@ import sawim.roster.Roster;
  */
 public class RosterItemView extends RelativeLayout {
 
-    public TextView itemName;
-    public TextView itemDescriptionText;
+    public MyTextView itemName;
+    public MyTextView itemDescriptionText;
     public ImageView itemFirstImage;
     public ImageView itemSecondImage;
     public ImageView itemThirdImage;
@@ -43,8 +42,8 @@ public class RosterItemView extends RelativeLayout {
         itemFifthImage = new ImageView(context);
         itemSecondImage = new ImageView(context);
         itemThirdImage = new ImageView(context);
-        itemName = new TextView(context);
-        itemDescriptionText = new TextView(context);
+        itemName = new MyTextView(context);
+        itemDescriptionText = new MyTextView(context);
         itemFourthImage = new ImageView(context);
         build();
     }
@@ -124,7 +123,7 @@ public class RosterItemView extends RelativeLayout {
             itemFirstImage.setImageDrawable(icGroup.getImage());
         }
 
-        itemDescriptionText.setVisibility(TextView.GONE);
+        itemDescriptionText.setVisibility(MyTextView.GONE);
         itemThirdImage.setVisibility(ImageView.GONE);
         itemSecondImage.setVisibility(ImageView.GONE);
         itemFifthImage.setVisibility(ImageView.GONE);
@@ -147,15 +146,14 @@ public class RosterItemView extends RelativeLayout {
             itemName.setText(item.getText());
         else
             itemName.setText(item.getText() + " (" + item.subcontactsS() + ")");
-
         if (General.showStatusLine) {
             String statusMessage = roster.getStatusMessage(item);
             itemDescriptionText.setTextSize(General.getFontSize() - 2);
-            itemDescriptionText.setVisibility(TextView.VISIBLE);
+            itemDescriptionText.setVisibility(MyTextView.VISIBLE);
             itemDescriptionText.setTextColor(Scheme.getColor(Scheme.THEME_CONTACT_STATUS));
             itemDescriptionText.setText(statusMessage);
         } else {
-            itemDescriptionText.setVisibility(TextView.GONE);
+            itemDescriptionText.setVisibility(MyTextView.GONE);
         }
 
         Icon icStatus = item.getLeftIcon(p);

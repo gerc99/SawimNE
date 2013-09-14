@@ -26,9 +26,7 @@ public class MessageItemView extends RelativeLayout {
         msgNick = new MyTextView(context);
         msgTime = new TextView(context);
         msgText = new MyTextView(context);
-    }
 
-    public void build() {
         setAnimationCacheEnabled(false);
         setAlwaysDrawnWithCacheEnabled(false);
         RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
@@ -55,5 +53,11 @@ public class MessageItemView extends RelativeLayout {
         msgText.setId(4);
         msgText.setScrollContainer(false);
         addView(msgText, lp);
+
+        build();
+    }
+
+    private void build() {
+
     }
 }

@@ -11,6 +11,7 @@ import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 import android.text.util.Linkify;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -31,6 +32,7 @@ import sawim.chat.message.Message;
 import ru.sawim.Scheme;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -85,72 +87,79 @@ public class MessagesAdapter extends BaseAdapter {
         return i;
     }
 
-    @Override
-    public View getView(int index, View row, ViewGroup viewGroup) {
-        if (row == null) {
-            row = new MessageItemView(activity);
-            ((MessageItemView) row).build();
-        }
-        final MessageItemView item = ((MessageItemView) row);
-        final MessData mData = items.get(index);
-        SpannableStringBuilder parsedText = mData.parsedText();
-        String nick = mData.getNick();
-        boolean incoming = mData.isIncoming();
+    private HashMap<MessData, MessageItemView> messViewHash = new HashMap<MessData, MessageItemView>();
 
-        ((ViewGroup)row).setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
-        item.msgText.setOnTextLinkClickListener(textLinkClickListener);
+    @Override
+    public View getView(int index, View row_, ViewGroup viewGroup) {
+        final MessData mData = items.get(index);
+        /*if (row == null) {
+            row = new MessageItemView(activity);
+            Log.e("MessagesAdapter", "row == null");
+        }
+        final MessageItemView item = ((MessageItemView) row);*/
+        MessageItemView item = messViewHash.get(mData);
+        if (item == null) {
+            item = new MessageItemView(activity);
+            SpannableStringBuilder parsedText = mData.parsedText();
+            String nick = mData.getNick();
+            boolean incoming = mData.isIncoming();
+
+            item.msgText.setOnTextLinkClickListener(textLinkClickListener);
+            if (mData.isMe() || mData.isPresence()) {
+                item.msgImage.setVisibility(ImageView.GONE);
+                item.msgNick.setVisibility(TextView.GONE);
+                item.msgTime.setVisibility(TextView.GONE);
+                item.msgText.setTextSize(General.getFontSize() - 2);
+                if (mData.isMe()) {
+                    item.msgText.setTextColor(Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG));
+                    item.msgText.setText("* " + nick + " " + parsedText);
+                } else {
+                    item.msgText.setTextColor(Scheme.getColor(Scheme.THEME_CHAT_INMSG));
+                    item.msgText.setText(nick + parsedText);
+                }
+            } else {
+                if (mData.iconIndex != Message.ICON_NONE) {
+                    Icon icon = Message.msgIcons.iconAt(mData.iconIndex);
+                    if (icon == null) {
+                        item.msgImage.setVisibility(ImageView.GONE);
+                    } else {
+                        item.msgImage.setVisibility(ImageView.VISIBLE);
+                        item.msgImage.setImageDrawable(icon.getImage());
+                    }
+                }
+
+                item.msgNick.setVisibility(TextView.VISIBLE);
+                item.msgNick.setText(nick);
+                item.msgNick.setTextColor(Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG));
+                item.msgNick.setTypeface(Typeface.DEFAULT_BOLD);
+                item.msgNick.setTextSize(General.getFontSize());
+
+                item.msgTime.setVisibility(TextView.VISIBLE);
+                item.msgTime.setTextColor(Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG));
+                item.msgTime.setTextSize(General.getFontSize() / 2);
+                item.msgTime.setText(mData.strTime);
+
+                item.msgText.setText(parsedText);
+                item.msgText.setTextSize(General.getFontSize());
+                item.msgText.setTextColor(Scheme.getColor(mData.getMessColor()));
+                item.msgText.setLinkTextColor(0xff00e4ff);
+            }
+            messViewHash.put(mData, item);
+        }
+        ((ViewGroup)item).setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
         item.msgText.setTypeface(Typeface.DEFAULT);
         byte bg;
-        if (mData.isMarked()) {
+        if (mData.isMarked() && isMultiСitation) {
             bg = Scheme.THEME_CHAT_BG_MARKED;
             item.msgText.setTypeface(Typeface.DEFAULT_BOLD);
         } else if (mData.isService())
             bg = Scheme.THEME_CHAT_BG_SYSTEM;
         else if ((index & 1) == 0)
-            bg = incoming ? Scheme.THEME_CHAT_BG_IN : Scheme.THEME_CHAT_BG_OUT;
+            bg = mData.isIncoming() ? Scheme.THEME_CHAT_BG_IN : Scheme.THEME_CHAT_BG_OUT;
         else
-            bg = incoming ? Scheme.THEME_CHAT_BG_IN_ODD : Scheme.THEME_CHAT_BG_OUT_ODD;
-        row.setBackgroundColor(Scheme.getColor(bg));
-        if (mData.isMe() || mData.isPresence()) {
-            item.msgImage.setVisibility(ImageView.GONE);
-            item.msgNick.setVisibility(TextView.GONE);
-            item.msgTime.setVisibility(TextView.GONE);
-            item.msgText.setTextSize(General.getFontSize() - 2);
-            if (mData.isMe()) {
-                item.msgText.setTextColor(Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG));
-                item.msgText.setText("* " + nick + " " + parsedText);
-            } else {
-                item.msgText.setTextColor(Scheme.getColor(Scheme.THEME_CHAT_INMSG));
-                item.msgText.setText(nick + parsedText);
-            }
-        } else {
-            if (mData.iconIndex != Message.ICON_NONE) {
-                Icon icon = Message.msgIcons.iconAt(mData.iconIndex);
-                if (icon == null) {
-                    item.msgImage.setVisibility(ImageView.GONE);
-                } else {
-                    item.msgImage.setVisibility(ImageView.VISIBLE);
-                    item.msgImage.setImageDrawable(icon.getImage());
-                }
-            }
-
-            item.msgNick.setVisibility(TextView.VISIBLE);
-            item.msgNick.setText(nick);
-            item.msgNick.setTextColor(Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG));
-            item.msgNick.setTypeface(Typeface.DEFAULT_BOLD);
-            item.msgNick.setTextSize(General.getFontSize());
-
-            item.msgTime.setVisibility(TextView.VISIBLE);
-            item.msgTime.setTextColor(Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG));
-            item.msgTime.setTextSize(General.getFontSize() / 2);
-            item.msgTime.setText(mData.strTime);
-
-            item.msgText.setText(parsedText);
-            item.msgText.setTextSize(General.getFontSize());
-            item.msgText.setTextColor(Scheme.getColor(mData.getMessColor()));
-            item.msgText.setLinkTextColor(0xff00e4ff);
-        }
-        return row;
+            bg = mData.isIncoming() ? Scheme.THEME_CHAT_BG_IN_ODD : Scheme.THEME_CHAT_BG_OUT_ODD;
+        item.setBackgroundColor(Scheme.getColor(bg));
+        return item;
     }
     public static InternalURLSpan.TextLinkClickListener textLinkClickListener = new InternalURLSpan.TextLinkClickListener() {
         @Override
