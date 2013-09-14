@@ -100,12 +100,10 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
         chatListsView = new ChatListsView(getActivity());
         chatInputBarView = new ChatInputBarView(getActivity());
 
-            chatBarLayout.setBackgroundDrawable(new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP,
-                    new int[] {Scheme.getColor(Scheme.THEME_CAP_BACKGROUND), Scheme.getColor(Scheme.THEME_BACKGROUND)}));
-            //chatInputBarView.setBackgroundDrawable(new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP,
-            //        new int[] {Scheme.getColor(Scheme.THEME_CAP_BACKGROUND), Scheme.getColor(Scheme.THEME_BACKGROUND)}));
+        chatBarLayout.setBackgroundDrawable(new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP,
+                new int[] {Scheme.getColor(Scheme.THEME_CAP_BACKGROUND), Scheme.getColor(Scheme.THEME_BACKGROUND)}));
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-            messageEditor.getBackground().setColorFilter(Scheme.getColor(Scheme.THEME_CAP_BACKGROUND), PorterDuff.Mode.MULTIPLY);
+            messageEditor.getBackground().setColorFilter(Scheme.getColor(Scheme.THEME_BACKGROUND), PorterDuff.Mode.MULTIPLY);
         }
     }
 
@@ -193,6 +191,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
         private void init() {
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             setOrientation(HORIZONTAL);
+            setPadding(5, 4, 4, 4);
             setLayoutParams(layoutParams);
 
             LinearLayout.LayoutParams menuButtonLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
@@ -207,7 +206,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
             messageEditorLP.gravity = Gravity.CENTER | Gravity.LEFT;
             messageEditorLP.weight = (float) 0.87;
             messageEditor.setSingleLine(false);
-            messageEditor.setPadding(20, 20, 20, 20);
+            messageEditor.setPadding(2, 2, 2, 2);
             messageEditor.setMaxLines(4);
             messageEditor.setHorizontallyScrolling(false);
             messageEditor.setInputType(InputType.TYPE_CLASS_TEXT
@@ -257,7 +256,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
             }
         });
 
-        int background = Scheme.getColor(Scheme.THEME_CAP_BACKGROUND);
+        int background = Scheme.getColor(Scheme.THEME_BACKGROUND);
         if (General.isTablet(getActivity())) {
             menuButton.setVisibility(ImageButton.VISIBLE);
             menuButton.setBackgroundColor(background);
@@ -279,7 +278,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
             }
         });
         messageEditor.addTextChangedListener(textWatcher);
-        messageEditor.setTextColor(Scheme.getColor(Scheme.THEME_CAP_TEXT));
+        messageEditor.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
         if (sendByEnter) {
             messageEditor.setImeOptions(EditorInfo.IME_ACTION_SEND);
             messageEditor.setOnEditorActionListener(enterListener);

@@ -52,8 +52,7 @@ public class TextFormatter {
         return detectEmotions(builder);
     }
 
-    public SpannableStringBuilder getTextWithLinks(int mAutoLinkMask, SpannableStringBuilder ssb, int textColor, int linkColor, JuickMenu.Mode mode, InternalURLSpan.TextLinkClickListener onTextLinkClickListener) {
-        ssb.setSpan(new ForegroundColorSpan(textColor), 0, ssb.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+    public SpannableStringBuilder getTextWithLinks(int mAutoLinkMask, SpannableStringBuilder ssb, int linkColor, JuickMenu.Mode mode, InternalURLSpan.TextLinkClickListener onTextLinkClickListener) {
         if (mode != JuickMenu.Mode.none) {
             ArrayList<Hyperlink> msgList = new ArrayList<Hyperlink>();
             if (mode == JuickMenu.Mode.juick)

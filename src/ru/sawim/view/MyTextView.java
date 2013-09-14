@@ -12,14 +12,10 @@ import android.content.Context;
 import android.text.style.ClickableSpan;
 import android.text.style.URLSpan;
 import android.util.AttributeSet;
-import android.util.FloatMath;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 import ru.sawim.text.InternalURLSpan;
-
-import java.util.Hashtable;
 
 /**
  * Created with IntelliJ IDEA.
@@ -37,13 +33,11 @@ public class MyTextView extends View {
     private int maxLines = 0;
     private Layout layout;
     private CharSequence mText = "";
+    private CharSequence oldText = "";
     InternalURLSpan.TextLinkClickListener mListener;
     private ColorStateList mTextColor;
     private ColorStateList mLinkTextColor;
     private int mCurTextColor;
-
-    private static Hashtable<CharSequence, Layout> layoutHash = new Hashtable<CharSequence, Layout>();
-    private String textHash = "";
 
     public MyTextView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -115,20 +109,14 @@ public class MyTextView extends View {
                 TypedValue.COMPLEX_UNIT_SP, textSize, r.getDisplayMetrics()));
     }
 
-    public void setTextHash(String textHash) {
-        this.textHash = textHash;
-    }
-
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int specSize = MeasureSpec.getSize(widthMeasureSpec);
-        layout = layoutHash.get(textHash);
-        if (layout == null) {
-            Log.e("MyTextView", "layout == null");
+        if (oldText != mText) {
+            oldText = mText;
             if (maxLines != 0)
                 mText = TextUtils.ellipsize(mText, mTextPaint, specSize * maxLines, TextUtils.TruncateAt.END);
             layout = new StaticLayout(mText, mTextPaint, specSize, Layout.Alignment.ALIGN_NORMAL, 1.0f, 0, false);
-            layoutHash.put(textHash, layout);
         } else {
             layout.increaseWidthTo(layout.getWidth());
         }

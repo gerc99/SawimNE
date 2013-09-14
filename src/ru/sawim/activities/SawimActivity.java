@@ -39,8 +39,6 @@ import ru.sawim.view.*;
 import sawim.ExternalApi;
 import sawim.Options;
 import sawim.OptionsForm;
-import sawim.chat.Chat;
-import sawim.chat.ChatHistory;
 import sawim.roster.Roster;
 import sawim.forms.ManageContactListForm;
 import sawim.forms.SmsForm;
@@ -70,13 +68,6 @@ public class SawimActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
-        try {
-            getWindow().setFlags(
-                    WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
-                    WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
-        } catch (Throwable e) {
-            // missing API
-        }
         setContentView(R.layout.main);
         General.sawimActivity = this;
         ExternalApi.instance.setActivity(this);

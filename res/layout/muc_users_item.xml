@@ -24,7 +24,7 @@
             android:scrollHorizontally="false"
             android:text="TextView"
             android:textSize="20sp"
-            android:layout_alignBottom="@+id/status_image" android:layout_alignTop="@+id/status_image"
+
             android:layout_toRightOf="@+id/affilation_image"
             android:layout_centerVertical="true" android:gravity="center_vertical"/>
     <ImageView

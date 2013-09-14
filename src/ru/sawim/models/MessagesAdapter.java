@@ -3,6 +3,7 @@ package ru.sawim.models;
 import DrawControls.icons.Icon;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.graphics.Typeface;
 
 import android.support.v4.app.FragmentActivity;
@@ -98,6 +99,7 @@ public class MessagesAdapter extends BaseAdapter {
 
         ((ViewGroup)row).setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
         item.msgText.setOnTextLinkClickListener(textLinkClickListener);
+        item.msgText.setTypeface(Typeface.DEFAULT);
         byte bg;
         if (mData.isMarked()) {
             bg = Scheme.THEME_CHAT_BG_MARKED;
@@ -113,7 +115,6 @@ public class MessagesAdapter extends BaseAdapter {
             item.msgImage.setVisibility(ImageView.GONE);
             item.msgNick.setVisibility(TextView.GONE);
             item.msgTime.setVisibility(TextView.GONE);
-            item.msgText.setTextHash(parsedText.toString());
             item.msgText.setTextSize(General.getFontSize() - 2);
             if (mData.isMe()) {
                 item.msgText.setTextColor(Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG));
@@ -134,7 +135,6 @@ public class MessagesAdapter extends BaseAdapter {
             }
 
             item.msgNick.setVisibility(TextView.VISIBLE);
-            item.msgNick.setTextHash(nick);
             item.msgNick.setText(nick);
             item.msgNick.setTextColor(Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG));
             item.msgNick.setTypeface(Typeface.DEFAULT_BOLD);
@@ -145,11 +145,10 @@ public class MessagesAdapter extends BaseAdapter {
             item.msgTime.setTextSize(General.getFontSize() / 2);
             item.msgTime.setText(mData.strTime);
 
-            item.msgText.setTextHash(parsedText.toString());
             item.msgText.setText(parsedText);
             item.msgText.setTextSize(General.getFontSize());
             item.msgText.setTextColor(Scheme.getColor(mData.getMessColor()));
-            item.msgText.setLinkTextColor(Scheme.getColor(Scheme.THEME_CHAT_HIGHLIGHT_MSG));
+            item.msgText.setLinkTextColor(0xff00e4ff);
         }
         return row;
     }

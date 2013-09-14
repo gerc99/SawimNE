@@ -49,11 +49,11 @@ public final class MessData {
 
         parsedText = TextFormatter.getFormattedText(text);
         if (currentContact.equals(JuickMenu.JUICK) || currentContact.equals(JuickMenu.JUBO))
-            parsedText = textFormatter.getTextWithLinks(Linkify.EMAIL_ADDRESSES | Linkify.WEB_URLS, parsedText, Scheme.getColor(getMessColor()), Scheme.getColor(Scheme.THEME_CHAT_HIGHLIGHT_MSG), JuickMenu.Mode.juick, MessagesAdapter.textLinkClickListener);
+            parsedText = textFormatter.getTextWithLinks(Linkify.EMAIL_ADDRESSES | Linkify.WEB_URLS, parsedText, 0xff00e4ff, JuickMenu.Mode.juick, MessagesAdapter.textLinkClickListener);
         else if (currentContact.equals(JuickMenu.PSTO))
-            parsedText = textFormatter.getTextWithLinks(Linkify.EMAIL_ADDRESSES | Linkify.WEB_URLS, parsedText, Scheme.getColor(getMessColor()), Scheme.getColor(Scheme.THEME_CHAT_HIGHLIGHT_MSG), JuickMenu.Mode.psto, MessagesAdapter.textLinkClickListener);
+            parsedText = textFormatter.getTextWithLinks(Linkify.EMAIL_ADDRESSES | Linkify.WEB_URLS, parsedText, 0xff00e4ff, JuickMenu.Mode.psto, MessagesAdapter.textLinkClickListener);
         else
-            parsedText = textFormatter.getTextWithLinks(Linkify.EMAIL_ADDRESSES | Linkify.WEB_URLS, parsedText, Scheme.getColor(getMessColor()), Scheme.getColor(Scheme.THEME_CHAT_HIGHLIGHT_MSG), JuickMenu.Mode.none, MessagesAdapter.textLinkClickListener);
+            parsedText = textFormatter.getTextWithLinks(Linkify.EMAIL_ADDRESSES | Linkify.WEB_URLS, parsedText, 0xff00e4ff, JuickMenu.Mode.none, MessagesAdapter.textLinkClickListener);
     }
 
     public Contact getCurrentContact() {

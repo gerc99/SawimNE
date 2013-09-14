@@ -125,7 +125,7 @@ public class Scheme {
                     theme[index] = Integer.parseInt(values[keyIndex].substring(2), 16);
                     if (0 == index) {
                         theme[48] = theme[0];
-                        theme[49] = theme[50] = theme[51] = theme[52] = theme[53] = theme[54] = theme[0];
+                        theme[49] = theme[50] = theme[51] = theme[52] = theme[54] = theme[0];
                     } else if (1 == index) {
                         theme[46] = theme[41] = theme[40] = theme[39] = theme[1];
                     } else if (2 == index) {
@@ -138,6 +138,8 @@ public class Scheme {
                         theme[42] = theme[10];
                     } else if (39 == index) {
                         theme[43] = theme[39];
+                    } else if (53 == index) {
+                        theme[53] = getInversColor(theme[0]);
                     }
                 }
             }
