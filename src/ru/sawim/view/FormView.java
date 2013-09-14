@@ -110,8 +110,7 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
     }
 
     private void hideKeyboard() {
-        getActivity().getWindow().setSoftInputMode(
-                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
     }
 
     @Override

@@ -37,7 +37,7 @@ public class RosterItemView extends RelativeLayout {
 
     public RosterItemView(Context context) {
         super(context);
-        setPadding(15, 15, 15, 15);
+        setPadding(20, 20, 20, 20);
         itemFirstImage = new ImageView(context);
         itemFifthImage = new ImageView(context);
         itemSecondImage = new ImageView(context);

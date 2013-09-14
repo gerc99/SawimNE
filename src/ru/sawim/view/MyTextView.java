@@ -177,7 +177,7 @@ public class MyTextView extends View {
             int line = layout.getLineForVertical(y);
             int off = layout.getOffsetForHorizontal(line, x);
 
-            final URLSpan[] link = buffer.getSpans(off, off, URLSpan.class);
+            final InternalURLSpan[] link = buffer.getSpans(off, off, InternalURLSpan.class);
             if (action == MotionEvent.ACTION_CANCEL || action == MotionEvent.ACTION_OUTSIDE) {
                 isSecondTap = true;
             }
@@ -193,7 +193,7 @@ public class MyTextView extends View {
                         public void run() {
                             if (mListener != null && !isSecondTap) {
                                 isLongTap = true;
-                                mListener.onTextLinkClick(MyTextView.this, link[0].getURL());
+                                mListener.onTextLinkClick(MyTextView.this, link[0].clickedSpan, true);
                             }
                         }
                     }, 700L);

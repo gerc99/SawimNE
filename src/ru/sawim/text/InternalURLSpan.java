@@ -11,7 +11,7 @@ import android.view.View;
  * To change this template use File | Settings | File Templates.
  */
 public class InternalURLSpan extends ClickableSpan {
-    private String clickedSpan;
+    public String clickedSpan;
     TextLinkClickListener mListener;
 
     public InternalURLSpan(TextLinkClickListener onTextLinkClickListener, String clickedString) {
@@ -21,10 +21,10 @@ public class InternalURLSpan extends ClickableSpan {
 
     @Override
     public void onClick(View textView) {
-        mListener.onTextLinkClick(textView, clickedSpan);
+        mListener.onTextLinkClick(textView, clickedSpan, false);
     }
 
     public interface TextLinkClickListener {
-        public void onTextLinkClick(View textView, String clickedString);
+        public void onTextLinkClick(View textView, String clickedString, boolean isLongTap);
     }
 }

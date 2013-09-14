@@ -1,14 +1,12 @@
 package ru.sawim.text;
 
 import DrawControls.icons.Icon;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.ImageSpan;
 import android.text.style.StyleSpan;
-import android.text.util.Linkify;
 import ru.sawim.view.menu.JuickMenu;
 import sawim.modules.Emotions;
 
@@ -27,6 +25,7 @@ public class TextFormatter {
 
     private Pattern juickPattern = Pattern.compile("(#[0-9]+(/[0-9]+)?)");
     private Pattern pstoPattern = Pattern.compile("(#[\\w]+(/[0-9]+)?)");
+    private Pattern linkPattern = Pattern.compile("(ht|f)tps?://[a-z0-9\\-\\.]+[a-z]{2,}/?[^\\s\\n]*", Pattern.CASE_INSENSITIVE);
     static Emotions smiles = Emotions.instance;
 
     private static SpannableStringBuilder detectEmotions(SpannableStringBuilder builder) {
@@ -52,30 +51,26 @@ public class TextFormatter {
         return detectEmotions(builder);
     }
 
-    public SpannableStringBuilder getTextWithLinks(int mAutoLinkMask, SpannableStringBuilder ssb, int linkColor, JuickMenu.Mode mode, InternalURLSpan.TextLinkClickListener onTextLinkClickListener) {
-        if (mode != JuickMenu.Mode.none) {
-            ArrayList<Hyperlink> msgList = new ArrayList<Hyperlink>();
-            if (mode == JuickMenu.Mode.juick)
-                addLinks(msgList, ssb, juickPattern, onTextLinkClickListener);
-            else if (mode == JuickMenu.Mode.psto)
-                addLinks(msgList, ssb, pstoPattern, onTextLinkClickListener);
+    public SpannableStringBuilder getTextWithLinks(SpannableStringBuilder ssb, int linkColor, JuickMenu.Mode mode, InternalURLSpan.TextLinkClickListener onTextLinkClickListener) {
+        ArrayList<Hyperlink> msgList = new ArrayList<Hyperlink>();
+        ArrayList<Hyperlink> linkList = new ArrayList<Hyperlink>();
+        if (mode == JuickMenu.Mode.juick)
+            addLinks(msgList, ssb, juickPattern, onTextLinkClickListener);
+        else if (mode == JuickMenu.Mode.psto)
+            addLinks(msgList, ssb, pstoPattern, onTextLinkClickListener);
+        addLinks(linkList, ssb, linkPattern, onTextLinkClickListener);
 
-            for (Hyperlink link : msgList) {
-                ssb.setSpan(new StyleSpan(android.graphics.Typeface.SANS_SERIF.getStyle()), link.start, link.end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                ssb.setSpan(link.span, link.start, link.end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                ssb.setSpan(new ForegroundColorSpan(linkColor), link.start, link.end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            }
+        for (Hyperlink link : msgList) {
+            ssb.setSpan(new StyleSpan(android.graphics.Typeface.SANS_SERIF.getStyle()), link.start, link.end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            ssb.setSpan(link.span, link.start, link.end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            ssb.setSpan(new ForegroundColorSpan(linkColor), link.start, link.end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
-        return getTextWithLinks(mAutoLinkMask, ssb);
-    }
-
-    public SpannableStringBuilder getTextWithLinks(int mAutoLinkMask, SpannableStringBuilder text) {
-        if (mAutoLinkMask != 0) {
-            if (Linkify.addLinks(text, mAutoLinkMask)) {
-                return text;
-            }
+        for (Hyperlink link : linkList) {
+            ssb.setSpan(new StyleSpan(android.graphics.Typeface.SANS_SERIF.getStyle()), link.start, link.end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            ssb.setSpan(link.span, link.start, link.end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            ssb.setSpan(new ForegroundColorSpan(linkColor), link.start, link.end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
-        return text;
+        return ssb;
     }
 
     private final void addLinks(ArrayList<Hyperlink> links, Spannable s, Pattern pattern, InternalURLSpan.TextLinkClickListener onTextLinkClickListener) {

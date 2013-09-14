@@ -1,7 +1,6 @@
 package sawim.chat;
 
 import android.text.SpannableStringBuilder;
-import android.text.util.Linkify;
 import protocol.Contact;
 import ru.sawim.General;
 import ru.sawim.Scheme;
@@ -48,12 +47,12 @@ public final class MessData {
         confHighLight = (isIncoming() && !currentContact.isSingleUserContact() && isHighLight());
 
         parsedText = TextFormatter.getFormattedText(text);
-        if (currentContact.equals(JuickMenu.JUICK) || currentContact.equals(JuickMenu.JUBO))
-            parsedText = textFormatter.getTextWithLinks(Linkify.EMAIL_ADDRESSES | Linkify.WEB_URLS, parsedText, 0xff00e4ff, JuickMenu.Mode.juick, MessagesAdapter.textLinkClickListener);
-        else if (currentContact.equals(JuickMenu.PSTO))
-            parsedText = textFormatter.getTextWithLinks(Linkify.EMAIL_ADDRESSES | Linkify.WEB_URLS, parsedText, 0xff00e4ff, JuickMenu.Mode.psto, MessagesAdapter.textLinkClickListener);
+        if (currentContact.getUserId().equals(JuickMenu.JUICK) || currentContact.getUserId().equals(JuickMenu.JUBO))
+            parsedText = textFormatter.getTextWithLinks(parsedText, 0xff00e4ff, JuickMenu.Mode.juick, MessagesAdapter.textLinkClickListener);
+        else if (currentContact.getUserId().equals(JuickMenu.PSTO))
+            parsedText = textFormatter.getTextWithLinks(parsedText, 0xff00e4ff, JuickMenu.Mode.psto, MessagesAdapter.textLinkClickListener);
         else
-            parsedText = textFormatter.getTextWithLinks(Linkify.EMAIL_ADDRESSES | Linkify.WEB_URLS, parsedText, 0xff00e4ff, JuickMenu.Mode.none, MessagesAdapter.textLinkClickListener);
+            parsedText = textFormatter.getTextWithLinks(parsedText, 0xff00e4ff, JuickMenu.Mode.none, MessagesAdapter.textLinkClickListener);
     }
 
     public Contact getCurrentContact() {
