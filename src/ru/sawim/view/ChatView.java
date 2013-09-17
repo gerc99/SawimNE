@@ -329,6 +329,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
     @Override
     public void onPause() {
         super.onPause();
+        General.message = getText();
         pause(chat);
     }
 
@@ -336,6 +337,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
     public void onResume() {
         super.onResume();
         resume(chat);
+        messageEditor.setText(General.message);
     }
 
     @Override

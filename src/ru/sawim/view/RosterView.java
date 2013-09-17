@@ -125,7 +125,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         horizontalScrollView = new HorizontalScrollView(activity);
-        LinearLayout.LayoutParams protocolBarLayoutLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, General.dipToPixels(getActivity(), 50));
+        LinearLayout.LayoutParams protocolBarLayoutLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, General.dipToPixels(getActivity(), 50));
         protocolBarLayout = new LinearLayout(activity);
         protocolBarLayout.setOrientation(LinearLayout.HORIZONTAL);
         protocolBarLayout.setLayoutParams(protocolBarLayoutLP);
@@ -154,7 +154,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         indicator = new PagerTitleStrip(activity);
         viewPagerLayoutParams = new ViewPager.LayoutParams();
         viewPagerLayoutParams.height = ViewPager.LayoutParams.WRAP_CONTENT;
-        viewPagerLayoutParams.width = ViewPager.LayoutParams.MATCH_PARENT;
+        viewPagerLayoutParams.width = ViewPager.LayoutParams.FILL_PARENT;
         viewPagerLayoutParams.gravity = Gravity.TOP;
         viewPager.addView(indicator, viewPagerLayoutParams);
     }
@@ -164,11 +164,11 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         public RosterViewRoot(Context context) {
             super(context);
 
-            LinearLayout.LayoutParams horizontalScrollViewLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, General.dipToPixels(getActivity(), 50));
+            LinearLayout.LayoutParams horizontalScrollViewLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, General.dipToPixels(getActivity(), 50));
             horizontalScrollViewLP.gravity = Gravity.TOP;
             addViewInLayout(horizontalScrollView, 0, horizontalScrollViewLP, true);
 
-            LinearLayout.LayoutParams ProgressBarLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            LinearLayout.LayoutParams ProgressBarLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             ProgressBarLP.setMargins(30, 0, 30, 1);
             addViewInLayout(progressBar, 1, ProgressBarLP, true);
             addViewInLayout(viewPager, 2, viewPagerLayoutParams, true);
@@ -183,7 +183,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         else
             ((ViewGroup)rosterViewLayout.getParent()).removeView(rosterViewLayout);
         rosterViewLayout.setOrientation(LinearLayout.VERTICAL);
-        rosterViewLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
+        rosterViewLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.FILL_PARENT));
         rosterViewLayout.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
 
         GradientDrawable gd = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP,
@@ -230,21 +230,23 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         SawimApplication.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                while (!updateQueue.isEmpty()) {
-                    Group group = (Group) updateQueue.firstElement();
-                    updateQueue.removeElementAt(0);
-                    roster.updateGroup(group);
-                }
-                if (adaptersPages != null && adaptersPages.size() > 0) {
-                    items.clear();
-                    adaptersPages.get(viewPager.getCurrentItem()).buildFlatItems(items);
-                }
-                if (viewPager.getCurrentItem() == RosterAdapter.ACTIVE_CONTACTS) {
+                if (roster.getCurrPage() != RosterAdapter.ACTIVE_CONTACTS) {
+                    while (!updateQueue.isEmpty()) {
+                        Group group = (Group) updateQueue.firstElement();
+                        updateQueue.removeElementAt(0);
+                        roster.updateGroup(group);
+                    }
+                    if (adaptersPages != null && adaptersPages.size() > 0) {
+                        items.clear();
+                        adaptersPages.get(viewPager.getCurrentItem()).buildFlatItems(items);
+                    }
+                } else {
                     items.clear();
                     ChatHistory.instance.sort();
                     for (int i = 0; i < ChatHistory.instance.historyTable.size(); ++i) {
                         items.add(ChatHistory.instance.contactAt(i));
                     }
+                    adaptersPages.get(RosterAdapter.ACTIVE_CONTACTS).notifyDataSetChanged();
                 }
             }
         });
@@ -294,7 +296,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
                             imageBarButtons.setOnLongClickListener(RosterView.this);
                             protocolIconsHash.put(i, imageBarButtons);
                             imageBarButtons.setId(i);
-                            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+                            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.FILL_PARENT);
                             lp.gravity = Gravity.CENTER;
                             imageBarButtons.setLayoutParams(lp);
                         }
@@ -370,8 +372,8 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         } else if (item.isGroup()) {
             Group group = (Group) item;
             group.setExpandFlag(!group.isExpanded());
+            updateRoster();
         }
-        updateRoster();
     }
 
     @Override

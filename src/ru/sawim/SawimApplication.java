@@ -104,9 +104,6 @@ public class SawimApplication extends Application {
         common = new Common();
         MIDletBridge.setMicroEmulator(common);
         common.setRecordStoreManager(new AndroidRecordStoreManager(getApplicationContext()));
-        if (getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
-            System.setProperty("video.snapshot.encodings", "yes");
-        }
         FileSystem fs = new FileSystem();
         fs.registerImplementation();
         startService();

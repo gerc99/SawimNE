@@ -34,16 +34,17 @@ import java.io.InputStream;
  */
 public class General {
 
-    private static General instance;
     public static final String NAME = SawimApplication.getInstance().getString(R.string.app_name);
     public static final String VERSION = SawimApplication.getInstance().getVersion();
     public static final String PHONE = "Android/" + android.os.Build.MODEL
             + "/" + android.os.Build.VERSION.RELEASE;
 
-    public static SawimActivity sawimActivity;
-    private boolean paused = true;
     public static ImageList affiliationIcons = ImageList.createImageList("/jabber-affiliations.png");
     public static BitmapDrawable usersIcon = ImageList.createImageList("/participants.png").iconAt(0).getImage();
+    private static General instance;
+    public static SawimActivity sawimActivity;
+    public static String message = "";
+    private boolean paused = true;
     private static int fontSize;
     public static boolean hideIconsClient;
     public static boolean showStatusLine;

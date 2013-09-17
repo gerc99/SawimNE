@@ -163,7 +163,7 @@
     <string name="options_signaling">Signaling</string>
     <string name="absence">Absence</string>
     <string name="answerer">Answerer</string>
-    <string name="register_new">Registeration jid</string>
+    <string name="register_new">Registration jid</string>
     <string name="more">More</string>
     <string name="service_discovery">Service discovery</string>
     <string name="manage_contact_list">Manage contact list</string>

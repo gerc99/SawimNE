@@ -32,7 +32,6 @@ public final class MessData {
     public static final short PRESENCE = 32;
     public static final short MARKED = 64;
 
-
     public MessData(Contact currentContact, long time, String text, String nick, short flags, int iconIndex, boolean highLight) {
         this.currentContact = currentContact;
         isHighLight = highLight;

@@ -26,11 +26,13 @@
             android:textSize="20sp"
 
             android:layout_toRightOf="@+id/affilation_image"
-            android:layout_centerVertical="true" android:gravity="center_vertical"/>
+            android:layout_centerVertical="true" android:gravity="center_vertical"
+            android:layout_toLeftOf="@+id/client_image"/>
     <ImageView
             android:id="@+id/client_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical|right"
-            android:layout_alignParentRight="true" android:layout_centerVertical="true"/>
+            android:layout_alignParentRight="true" android:layout_centerVertical="true"
+            />
 </RelativeLayout>

@@ -1,12 +1,11 @@
 package ru.sawim.text;
 
-import DrawControls.icons.Icon;
-import android.graphics.drawable.Drawable;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.ImageSpan;
 import android.text.style.StyleSpan;
+import android.util.Patterns;
 import ru.sawim.view.menu.JuickMenu;
 import sawim.modules.Emotions;
 
@@ -25,7 +24,6 @@ public class TextFormatter {
 
     private Pattern juickPattern = Pattern.compile("(#[0-9]+(/[0-9]+)?)");
     private Pattern pstoPattern = Pattern.compile("(#[\\w]+(/[0-9]+)?)");
-    private Pattern linkPattern = Pattern.compile("(ht|f)tps?://[a-z0-9\\-\\.]+[a-z]{2,}/?[^\\s\\n]*", Pattern.CASE_INSENSITIVE);
     static Emotions smiles = Emotions.instance;
 
     private static SpannableStringBuilder detectEmotions(SpannableStringBuilder builder) {
@@ -35,9 +33,7 @@ public class TextFormatter {
             while (-1 != smileIndex) {
                 if (message.startsWith(smiles.getSmileText(smileIndex), index)) {
                     int length = smiles.getSmileText(smileIndex).length();
-                    Icon icon = smiles.getSmileIcon(smileIndex);
-                    Drawable drawable = icon.getImage();
-                    builder.setSpan(new ImageSpan(drawable), index, index + length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    builder.setSpan(new ImageSpan(smiles.getSmileIcon(smileIndex).getImage()), index, index + length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                     index += length - 1;
                 }
                 smileIndex = smiles.getSmileChars().indexOf(message.charAt(index), smileIndex + 1);
@@ -58,7 +54,7 @@ public class TextFormatter {
             addLinks(msgList, ssb, juickPattern, onTextLinkClickListener);
         else if (mode == JuickMenu.Mode.psto)
             addLinks(msgList, ssb, pstoPattern, onTextLinkClickListener);
-        addLinks(linkList, ssb, linkPattern, onTextLinkClickListener);
+        addLinks(linkList, ssb, Patterns.WEB_URL, onTextLinkClickListener);
 
         for (Hyperlink link : msgList) {
             ssb.setSpan(new StyleSpan(android.graphics.Typeface.SANS_SERIF.getStyle()), link.start, link.end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);

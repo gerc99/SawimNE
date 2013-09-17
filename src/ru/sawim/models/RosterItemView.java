@@ -78,7 +78,7 @@ public class RosterItemView extends RelativeLayout {
         lp.addRule(RIGHT_OF, itemThirdImage.getId());
         lp.addRule(ALIGN_TOP, itemFifthImage.getId());
         lp.addRule(ALIGN_PARENT_TOP);
-        itemName.setLines(1);//itemName.setSingleLine(true);
+        itemName.setLines(1);
         itemName.setPadding(5, 5, 5, 5);
         itemName.setId(4);
         addView(itemName, lp);
@@ -87,7 +87,7 @@ public class RosterItemView extends RelativeLayout {
         lp.alignWithParent = true;
         lp.addRule(RIGHT_OF, itemThirdImage.getId());
         lp.addRule(BELOW, itemName.getId());
-        itemDescriptionText.setLines(1);//itemDescriptionText.setSingleLine(true);
+        itemDescriptionText.setLines(1);
         itemDescriptionText.setPadding(5, 0, 0, 0);
         itemDescriptionText.setId(5);
         addView(itemDescriptionText, lp);
