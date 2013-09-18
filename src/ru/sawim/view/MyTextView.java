@@ -10,9 +10,7 @@ import android.graphics.Typeface;
 import android.text.*;
 import android.content.Context;
 import android.text.style.ClickableSpan;
-import android.text.style.URLSpan;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
@@ -78,9 +76,7 @@ public class MyTextView extends View {
     }
 
     public void setText(CharSequence text) {
-        this.mText = text;
-        requestLayout();
-        invalidate();
+        mText = text;
     }
 
     public void setTextColor(int color) {
@@ -110,10 +106,10 @@ public class MyTextView extends View {
 
     private void makeLayout(int specSize) {
         if (oldText != mText) {
+            oldText = mText;
             if (maxLines != 0)
                 mText = TextUtils.ellipsize(mText, mTextPaint, specSize * maxLines, TextUtils.TruncateAt.END);
             layout = new StaticLayout(mText, mTextPaint, specSize, Layout.Alignment.ALIGN_NORMAL, 1.0f, 0, false);
-            oldText = mText;
         }
         if (layout == null) {
             if (maxLines != 0)

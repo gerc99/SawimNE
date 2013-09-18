@@ -14,7 +14,7 @@ final class Socket {
     private byte[] inputBuffer = new byte[1024];
     private int inputBufferLength = 0;
     public int inputBufferIndex = 0;
-    
+
     private ZInputStream zin;
     private ZOutputStream zout;
     private boolean compressed;

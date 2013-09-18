@@ -329,7 +329,6 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
     @Override
     public void onPause() {
         super.onPause();
-        General.message = getText();
         pause(chat);
     }
 
@@ -337,7 +336,6 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
     public void onResume() {
         super.onResume();
         resume(chat);
-        messageEditor.setText(General.message);
     }
 
     @Override
@@ -356,6 +354,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
             args.putString(ChatView.PROTOCOL_ID, protocol.getUserId());
             args.putString(ChatView.CONTACT_ID, contact.getUserId());
         }
+        chat.message = getText();
 
         View item = chatListView.getChildAt(0);
         addLastPosition(chat.getContact().getUserId(), chatListView.getFirstVisiblePosition(), (item == null) ? 0 : Math.abs(item.getBottom()));
@@ -373,6 +372,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
             chatListView.setSelectionFromTop(lastPosition.position + 1, lastPosition.offset);
         } else chatListView.setSelection(0);
 
+        messageEditor.setText(chat.message);
         chat.setVisibleChat(true);
         ChatHistory.instance.registerChat(chat);
         Roster.getInstance().setOnUpdateChat(this);

@@ -29,6 +29,7 @@ public final class Chat {
     private List<MessData> messData = new ArrayList<MessData>();
     public static final String ADDRESS = ", ";
     private boolean visibleChat;
+    public String message = "";
 
     public Chat(Protocol p, Contact item) {
         contact = item;

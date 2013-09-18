@@ -1,9 +1,7 @@
 package ru.sawim.models;
 
 import android.content.Context;
-import android.text.util.Linkify;
 import android.widget.*;
-import ru.sawim.Scheme;
 import ru.sawim.view.MyTextView;
 
 /**
@@ -53,11 +51,5 @@ public class MessageItemView extends RelativeLayout {
         msgText.setId(4);
         msgText.setScrollContainer(false);
         addView(msgText, lp);
-
-        build();
-    }
-
-    private void build() {
-
     }
 }

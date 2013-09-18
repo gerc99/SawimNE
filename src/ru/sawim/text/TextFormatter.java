@@ -26,8 +26,8 @@ public class TextFormatter {
     private Pattern pstoPattern = Pattern.compile("(#[\\w]+(/[0-9]+)?)");
     static Emotions smiles = Emotions.instance;
 
-    private static SpannableStringBuilder detectEmotions(SpannableStringBuilder builder) {
-        String message = builder.toString();
+    public static SpannableStringBuilder detectEmotions(String message) {
+        SpannableStringBuilder builder = new SpannableStringBuilder(message);
         for (int index = 0; index < message.length(); ++index) {
             int smileIndex = smiles.getSmileChars().indexOf(message.charAt(index));
             while (-1 != smileIndex) {
@@ -42,11 +42,6 @@ public class TextFormatter {
         return builder;
     }
 
-    public static SpannableStringBuilder getFormattedText(CharSequence text) {
-        SpannableStringBuilder builder = new SpannableStringBuilder(text);
-        return detectEmotions(builder);
-    }
-
     public SpannableStringBuilder getTextWithLinks(SpannableStringBuilder ssb, int linkColor, JuickMenu.Mode mode, InternalURLSpan.TextLinkClickListener onTextLinkClickListener) {
         ArrayList<Hyperlink> msgList = new ArrayList<Hyperlink>();
         ArrayList<Hyperlink> linkList = new ArrayList<Hyperlink>();
@@ -57,12 +52,10 @@ public class TextFormatter {
         addLinks(linkList, ssb, Patterns.WEB_URL, onTextLinkClickListener);
 
         for (Hyperlink link : msgList) {
-            ssb.setSpan(new StyleSpan(android.graphics.Typeface.SANS_SERIF.getStyle()), link.start, link.end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             ssb.setSpan(link.span, link.start, link.end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             ssb.setSpan(new ForegroundColorSpan(linkColor), link.start, link.end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
         for (Hyperlink link : linkList) {
-            ssb.setSpan(new StyleSpan(android.graphics.Typeface.SANS_SERIF.getStyle()), link.start, link.end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             ssb.setSpan(link.span, link.start, link.end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             ssb.setSpan(new ForegroundColorSpan(linkColor), link.start, link.end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         }

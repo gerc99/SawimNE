@@ -5,31 +5,24 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.Typeface;
 
 import android.net.Uri;
 import android.provider.Browser;
 import android.support.v4.app.FragmentActivity;
-import android.text.Spannable;
+
 import android.text.SpannableStringBuilder;
-import android.text.style.ForegroundColorSpan;
-import android.text.util.Linkify;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 import protocol.Protocol;
 import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.text.InternalURLSpan;
-import ru.sawim.view.MyTextView;
 import ru.sawim.view.menu.JuickMenu;
 import sawim.Clipboard;
-import ru.sawim.text.TextFormatter;
 import sawim.chat.Chat;
 import sawim.chat.MessData;
 import sawim.chat.message.Message;
@@ -126,11 +119,11 @@ public class MessagesAdapter extends BaseAdapter {
             item.msgTime.setVisibility(TextView.GONE);
             item.msgText.setTextSize(General.getFontSize() - 2);
             if (mData.isMe()) {
-                item.msgText.setTextColor(Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG));
                 item.msgText.setText("* " + nick + " " + parsedText);
+                item.msgText.setTextColor(Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG));
             } else {
-                item.msgText.setTextColor(Scheme.getColor(Scheme.THEME_CHAT_INMSG));
                 item.msgText.setText(nick + parsedText);
+                item.msgText.setTextColor(Scheme.getColor(Scheme.THEME_CHAT_INMSG));
             }
         } else {
             if (mData.iconIndex != Message.ICON_NONE) {

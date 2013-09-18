@@ -3,15 +3,12 @@ package ru.sawim.view;
 import DrawControls.icons.Icon;
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.support.v4.app.FragmentTransaction;
 import ru.sawim.General;
 import ru.sawim.SawimApplication;
-import ru.sawim.activities.SawimActivity;
 import sawim.roster.TreeNode;
-import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -28,16 +25,13 @@ import ru.sawim.R;
 import ru.sawim.Scheme;
 import ru.sawim.models.CustomPagerAdapter;
 import ru.sawim.models.RosterAdapter;
-import sawim.chat.Chat;
 import sawim.chat.ChatHistory;
 import sawim.roster.Roster;
-import sawim.comm.Util;
 import sawim.forms.ManageContactListForm;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Vector;
 
 
 /**
@@ -60,8 +54,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
     private ArrayList<RosterAdapter> adaptersPages = new ArrayList<RosterAdapter>();
     private CustomPagerAdapter pagerAdapter;
     private Roster roster;
-    private Vector updateQueue = new Vector();
-    private List<TreeNode> items = new ArrayList<TreeNode>();
+
     private AdapterView.AdapterContextMenuInfo contextMenuInfo;
     private HashMap<Integer, ImageButton> protocolIconsHash = new HashMap<Integer, ImageButton>();
 
@@ -87,14 +80,13 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         super.onCreate(savedInstanceState);
         final FragmentActivity currentActivity = getActivity();
         roster = Roster.getInstance();
-
         adaptersPages.clear();
         MyListView allListView = new MyListView(currentActivity);
         MyListView onlineListView = new MyListView(currentActivity);
         MyListView activeListView = new MyListView(currentActivity);
-        RosterAdapter allRosterAdapter = new RosterAdapter(getActivity(), roster, items, RosterAdapter.ALL_CONTACTS);
-        RosterAdapter onlineRosterAdapter = new RosterAdapter(getActivity(), roster, items, RosterAdapter.ONLINE_CONTACTS);
-        RosterAdapter activeRosterAdapter = new RosterAdapter(getActivity(), roster, items, RosterAdapter.ACTIVE_CONTACTS);
+        RosterAdapter allRosterAdapter = new RosterAdapter(getActivity(), roster, RosterAdapter.ALL_CONTACTS);
+        RosterAdapter onlineRosterAdapter = new RosterAdapter(getActivity(), roster, RosterAdapter.ONLINE_CONTACTS);
+        RosterAdapter activeRosterAdapter = new RosterAdapter(getActivity(), roster, RosterAdapter.ACTIVE_CONTACTS);
         adaptersPages.add(allRosterAdapter);
         adaptersPages.add(onlineRosterAdapter);
         adaptersPages.add(activeRosterAdapter);
@@ -218,10 +210,15 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
     }
 
     @Override
-    public void putIntoQueue(Group g) {
-        if (-1 == Util.getIndex(updateQueue, g)) {
-            updateQueue.addElement(g);
-        }
+    public void putIntoQueue(final Group g) {
+        SawimApplication.getInstance().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (adaptersPages != null && adaptersPages.size() > 0) {
+                    adaptersPages.get(viewPager.getCurrentItem()).putIntoQueue(g);
+                }
+            }
+        });
     }
 
     @Override
@@ -230,23 +227,8 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         SawimApplication.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (roster.getCurrPage() != RosterAdapter.ACTIVE_CONTACTS) {
-                    while (!updateQueue.isEmpty()) {
-                        Group group = (Group) updateQueue.firstElement();
-                        updateQueue.removeElementAt(0);
-                        roster.updateGroup(group);
-                    }
-                    if (adaptersPages != null && adaptersPages.size() > 0) {
-                        items.clear();
-                        adaptersPages.get(viewPager.getCurrentItem()).buildFlatItems(items);
-                    }
-                } else {
-                    items.clear();
-                    ChatHistory.instance.sort();
-                    for (int i = 0; i < ChatHistory.instance.historyTable.size(); ++i) {
-                        items.add(ChatHistory.instance.contactAt(i));
-                    }
-                    adaptersPages.get(RosterAdapter.ACTIVE_CONTACTS).notifyDataSetChanged();
+                if (adaptersPages != null && adaptersPages.size() > 0) {
+                    adaptersPages.get(viewPager.getCurrentItem()).buildFlatItems();
                 }
             }
         });

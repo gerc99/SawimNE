@@ -642,7 +642,7 @@ public final class IcqNetDefActions {
             }
         }
         
-        DebugLog.println("mood for " + uin + " " + mood + " " + statusText);
+        //DebugLog.println("mood for " + uin + " " + mood + " " + statusText);
         
         IcqContact contact = (IcqContact)getIcq().getItemByUIN(uin);
         if (contact != null) {

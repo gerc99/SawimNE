@@ -1047,7 +1047,8 @@ abstract public class Protocol {
     }
 
     public final void processException(SawimException e) {
-        DebugLog.println("process exception: " + e.getMessage());
+        DebugLog.println("process exception: " + e.getMessage() + " boolean " +
+                Options.getBoolean(Options.OPTION_INSTANT_RECONNECTION));
         getRoster().activateWithMsg(getUserId() + "\n" + e.getMessage());
         if (!SawimApplication.getInstance().isNetworkAvailable() && Options.getBoolean(Options.OPTION_INSTANT_RECONNECTION)) {
             e = new SawimException(123, 0);

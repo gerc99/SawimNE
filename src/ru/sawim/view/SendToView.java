@@ -3,11 +3,11 @@ package ru.sawim.view;
 import DrawControls.icons.Icon;
 import android.content.Intent;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -29,9 +29,7 @@ import sawim.roster.TreeNode;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -45,7 +43,6 @@ public class SendToView extends Fragment implements AdapterView.OnItemClickListe
     public static final String TAG = "SendToView";
     private RosterAdapter allRosterAdapter;
     private Roster roster;
-    private List<TreeNode> items = new ArrayList<TreeNode>();
     private HashMap<Integer, ImageButton> protocolIconHash = new HashMap<Integer, ImageButton>();
     private HorizontalScrollView horizontalScrollView;
     private LinearLayout protocolBarLayout;
@@ -53,9 +50,7 @@ public class SendToView extends Fragment implements AdapterView.OnItemClickListe
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         roster = Roster.getInstance();
-
     }
 
     @Override
@@ -81,7 +76,7 @@ public class SendToView extends Fragment implements AdapterView.OnItemClickListe
         allListView.setDividerHeight(0);
         allListView.setOnItemClickListener(this);
 
-        allRosterAdapter = new RosterAdapter(getActivity(), roster, items, RosterAdapter.ALL_CONTACTS);
+        allRosterAdapter = new RosterAdapter(getActivity(), roster, RosterAdapter.ALL_CONTACTS);
         allListView.setAdapter(allRosterAdapter);
         return allListView;
     }
@@ -142,18 +137,18 @@ public class SendToView extends Fragment implements AdapterView.OnItemClickListe
                     for (int i = 0; i < protCount; ++i) {
                         Protocol protocol = roster.getProtocol(i);
                         ImageButton imageBarButtons = protocolIconHash.get(i);
-                        //if (!protocolIconHash.containsKey(i)) {
-                        imageBarButtons = new ImageButton(getActivity());
-                        imageBarButtons.setOnClickListener(SendToView.this);
-                        imageBarButtons.setId(i);
-                        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-                        lp.gravity = Gravity.CENTER;
-                        imageBarButtons.setLayoutParams(lp);
-                        imageBarButtons.getBackground().setColorFilter(Scheme.getColor(Scheme.THEME_CAP_BACKGROUND), PorterDuff.Mode.MULTIPLY);
-                        //    protocolIconHash.put(i, imageBarButtons);
-                        //}
+                        if (!protocolIconHash.containsKey(i)) {
+                            imageBarButtons = new ImageButton(getActivity());
+                            imageBarButtons.setOnClickListener(SendToView.this);
+                            imageBarButtons.setId(i);
+                            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+                            lp.gravity = Gravity.CENTER;
+                            imageBarButtons.setLayoutParams(lp);
+                            protocolIconHash.put(i, imageBarButtons);
+                        }
+                        imageBarButtons.setBackgroundDrawable(new ColorDrawable(0));
                         if (i == roster.getCurrentItemProtocol())
-                            imageBarButtons.getBackground().setColorFilter(Scheme.getColor(Scheme.THEME_BACKGROUND), PorterDuff.Mode.SCREEN);
+                            imageBarButtons.setBackgroundColor(Scheme.getColor(Scheme.THEME_CAP_BACKGROUND));
                         imageBarButtons.setImageDrawable(protocol.getCurrentStatusIcon().getImage());
                         Icon messageIcon = ChatHistory.instance.getUnreadMessageIcon(protocol);
                         if (null != messageIcon)
@@ -183,9 +178,8 @@ public class SendToView extends Fragment implements AdapterView.OnItemClickListe
         if (roster.getProtocolCount() == 0) return;
         roster.updateOptions();
         updateBarProtocols();
-        items.clear();
         if (allRosterAdapter != null)
-            allRosterAdapter.buildFlatItems(items);
+            allRosterAdapter.buildFlatItems();
     }
 
 }

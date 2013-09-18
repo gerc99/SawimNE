@@ -45,7 +45,7 @@ public final class MessData {
 
         confHighLight = (isIncoming() && !currentContact.isSingleUserContact() && isHighLight());
 
-        parsedText = TextFormatter.getFormattedText(text);
+        parsedText = TextFormatter.detectEmotions(text);
         if (currentContact.getUserId().equals(JuickMenu.JUICK) || currentContact.getUserId().equals(JuickMenu.JUBO))
             parsedText = textFormatter.getTextWithLinks(parsedText, 0xff00e4ff, JuickMenu.Mode.juick, MessagesAdapter.textLinkClickListener);
         else if (currentContact.getUserId().equals(JuickMenu.PSTO))
@@ -71,7 +71,7 @@ public final class MessData {
     }
 
     public SpannableStringBuilder parsedText() {
-         return parsedText;
+        return parsedText;
     }
 
     public boolean isIncoming() {

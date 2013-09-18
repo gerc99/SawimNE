@@ -88,7 +88,7 @@ public class Options {
     public static final int OPTION_SHOW_STATUS_LINE    = 177;
     public static final int OPTION_NOTIFY_IN_AWAY      = 179;
     public static final int OPTION_BLOG_NOTIFY         = 180;
-    public static final int OPTION_INSTANT_RECONNECTION    = 181;
+    public static final int OPTION_INSTANT_RECONNECTION  = 181;
     public static final int OPTION_SIMPLE_INPUT        = 182;
     public static final int OPTION_ONLINE_STATUS       = 192;
 

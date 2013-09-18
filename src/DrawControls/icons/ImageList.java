@@ -2,6 +2,7 @@ package DrawControls.icons;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 
 import android.util.Log;
@@ -109,7 +110,8 @@ public class ImageList {
             for (int x = 0; x < imgWidth; x += width) {
                 Bitmap bitmap = scalingIconForDPI(Bitmap.createBitmap(resImage.getBitmap(), x, y, width, height));
                 BitmapDrawable drawable = new BitmapDrawable(SawimApplication.getInstance().getContext().getResources(), bitmap);
-                drawable.setBounds(0, 0, width, height);
+                drawable.setBounds(0, 0, drawable.getIntrinsicWidth(),
+                        drawable.getIntrinsicHeight());
                 tmpIcons.addElement(new Icon(drawable));
             }
         }
@@ -128,7 +130,7 @@ public class ImageList {
                     break;
                 case 160:
                 case 180:
-                    if (originBitmap.getWidth() > 24 && !General.isTablet(SawimApplication.getInstance().getContext()))
+                    if (originBitmap.getWidth() >= 24 && !General.isTablet(SawimApplication.getInstance().getContext()))
                         originBitmap = Bitmap.createScaledBitmap(originBitmap, 24, 24, true);
                     else
                         return originBitmap;
@@ -136,7 +138,7 @@ public class ImageList {
                 default:
                     return originBitmap;
             }
-            originBitmap.setDensity(0);
+            originBitmap.setDensity(SawimApplication.getInstance().getResources().getDisplayMetrics().densityDpi);
         }
         return originBitmap;
     }

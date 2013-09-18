@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import sawim.Options;
+import sawim.modules.DebugLog;
 import sawim.roster.Roster;
 import protocol.Protocol;
 
@@ -51,6 +52,8 @@ public class NetworkStateReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent networkIntent) {
         try {
+            DebugLog.println("onReceive boolean " +
+                    Options.getBoolean(Options.OPTION_INSTANT_RECONNECTION));
             if (updateNetworkState(context) && Options.getBoolean(Options.OPTION_INSTANT_RECONNECTION)) {
                 resetConnections();
                 if (isNetworkAvailable) {

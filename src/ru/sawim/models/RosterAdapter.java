@@ -2,6 +2,8 @@ package ru.sawim.models;
 
 import android.content.Context;
 import android.widget.*;
+import sawim.chat.ChatHistory;
+import sawim.comm.Util;
 import sawim.roster.TreeNode;
 import android.database.DataSetObserver;
 import android.view.View;
@@ -13,6 +15,7 @@ import sawim.roster.Roster;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 /**
  * Created with IntelliJ IDEA.
@@ -26,15 +29,15 @@ public class RosterAdapter extends BaseAdapter {
     public static final int ALL_CONTACTS = 0;
     public static final int ONLINE_CONTACTS = 1;
     public static final int ACTIVE_CONTACTS = 2;
-    private final Roster roster;
-    private List<TreeNode> items = new ArrayList<TreeNode>();
     private final Context context;
+    private final Roster roster;
     private int type;
+    private List<TreeNode> items = new ArrayList<TreeNode>();
+    private Vector updateQueue = new Vector();
 
-    public RosterAdapter(Context context, Roster vcl, List<TreeNode> items, int type) {
+    public RosterAdapter(Context context, Roster vcl, int type) {
         this.context = context;
         this.roster = vcl;
-        this.items = items;
         this.type = type;
     }
 
@@ -60,13 +63,33 @@ public class RosterAdapter extends BaseAdapter {
         return i;
     }
 
-    public void buildFlatItems(List<TreeNode> items) {
+    public void putIntoQueue(Group g) {
+        if (-1 == Util.getIndex(updateQueue, g)) {
+            updateQueue.addElement(g);
+        }
+    }
+
+    public void buildFlatItems() {
         Protocol p = roster.getCurrentProtocol();
         if (p == null) return;
-        if (roster.useGroups) {
-            roster.rebuildFlatItemsWG(p, items);
+        if (roster.getCurrPage() == RosterAdapter.ACTIVE_CONTACTS) {
+            items.clear();
+            ChatHistory.instance.sort();
+            for (int i = 0; i < ChatHistory.instance.historyTable.size(); ++i) {
+                items.add(ChatHistory.instance.contactAt(i));
+            }
         } else {
-            roster.rebuildFlatItemsWOG(p, items);
+            while (!updateQueue.isEmpty()) {
+                Group group = (Group) updateQueue.firstElement();
+                updateQueue.removeElementAt(0);
+                roster.updateGroup(group);
+            }
+            items.clear();
+            if (roster.useGroups) {
+                roster.rebuildFlatItemsWG(p, items);
+            } else {
+                roster.rebuildFlatItemsWOG(p, items);
+            }
         }
         notifyDataSetChanged();
     }
