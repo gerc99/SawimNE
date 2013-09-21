@@ -38,6 +38,7 @@ public abstract class Message {
     	this.contactId = contactId;
         this.isIncoming = isIncoming;
     }
+
     protected Message(long date, Protocol protocol, Contact contact, boolean isIncoming) {
     	this.newDate = date;
     	this.protocol = protocol;
@@ -48,6 +49,7 @@ public abstract class Message {
     public final void setVisibleIcon(MessData mData) {
         this.mData = mData;
     }
+
     public final void setSendingState(int state) {
         if (!mData.isMe()) {
             mData.iconIndex = state;
@@ -59,7 +61,8 @@ public abstract class Message {
     public final void setName(String name) {
         senderName = name;
     }
-    private String getContactUin() {
+
+    public String getContactUin() {
         return (null == contact) ? contactId : contact.getUserId();
     }
     
@@ -70,6 +73,7 @@ public abstract class Message {
     public final String getRcvrUin() {
         return isIncoming ? protocol.getUserId() : getContactUin();
     }
+
     public boolean isIncoming() {
         return isIncoming;
     }

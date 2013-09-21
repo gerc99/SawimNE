@@ -329,7 +329,7 @@ public class Options {
     private static void setDefaults() {
 		setString (Options.UNAVAILABLE_NESSAGE,            "I'll be back"); 
     //    setString (Options.OPTION_UI_LANGUAGE,        JLocale.getSystemLanguage());
-		setBoolean(Options.OPTION_SHOW_PLATFORM,      false);
+	//	setBoolean(Options.OPTION_SHOW_PLATFORM,      false);
         setBoolean(Options.OPTION_INSTANT_RECONNECTION,   true);
         setInt    (Options.OPTION_CL_SORT_BY,         0);
 		setBoolean(Options.OPTION_TITLE_IN_CONFERENCE,   true);

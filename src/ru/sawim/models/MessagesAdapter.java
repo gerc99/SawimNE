@@ -20,7 +20,7 @@ import android.widget.TextView;
 import protocol.Protocol;
 import ru.sawim.General;
 import ru.sawim.R;
-import ru.sawim.text.InternalURLSpan;
+import ru.sawim.view.MyTextView;
 import ru.sawim.view.menu.JuickMenu;
 import sawim.Clipboard;
 import sawim.chat.Chat;
@@ -45,8 +45,10 @@ public class MessagesAdapter extends BaseAdapter {
     private List<MessData> items = new ArrayList<MessData>();
     private static Protocol currentProtocol;
     private static String currentContact;
+    private HashMap<MessData, MessageItemView> messViewHash = new HashMap<MessData, MessageItemView>();
 
     private boolean isMultiСitation = false;
+    private int position = -1;
 
     public void init(FragmentActivity activity, Chat chat) {
         this.activity = activity;
@@ -69,6 +71,10 @@ public class MessagesAdapter extends BaseAdapter {
         isMultiСitation = multiShot;
     }
 
+    public void setPosition(int position) {
+        this.position = position;
+    }
+
     @Override
     public int getCount() {
         return items.size();
@@ -83,8 +89,6 @@ public class MessagesAdapter extends BaseAdapter {
     public long getItemId(int i) {
         return i;
     }
-
-    private HashMap<MessData, MessageItemView> messViewHash = new HashMap<MessData, MessageItemView>();
 
     @Override
     public View getView(int index, View row, ViewGroup viewGroup) {
@@ -152,12 +156,13 @@ public class MessagesAdapter extends BaseAdapter {
             item.msgText.setTextColor(Scheme.getColor(mData.getMessColor()));
             item.msgText.setLinkTextColor(0xff00e4ff);
         }
+        item.addDivider(activity, position == index, Scheme.getColor(Scheme.THEME_TEXT));
         return item;
     }
 
-    public static InternalURLSpan.TextLinkClickListener textLinkClickListener = new InternalURLSpan.TextLinkClickListener() {
+    private MyTextView.TextLinkClickListener textLinkClickListener = new MyTextView.TextLinkClickListener() {
         @Override
-        public void onTextLinkClick(View textView, final String clickedString, boolean isLongTap) {
+        public void onTextLinkClick(View textView, String clickedString, boolean isLongTap) {
             if (clickedString.length() == 0) return;
             boolean isJuick = clickedString.substring(0, 1).equals("@") || clickedString.substring(0, 1).equals("#");
             if (isJuick) {
@@ -171,15 +176,16 @@ public class MessagesAdapter extends BaseAdapter {
                 final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
                 builder.setCancelable(true);
                 builder.setTitle(R.string.url_menu);
+                final String finalClickedString = clickedString;
                 builder.setItems(items, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         switch (which) {
                             case 0:
-                                Clipboard.setClipBoardText(clickedString);
+                                Clipboard.setClipBoardText(finalClickedString);
                                 break;
                             case 1:
-                                General.openUrl(clickedString);
+                                General.openUrl(finalClickedString);
                                 break;
                         }
                     }
@@ -190,6 +196,8 @@ public class MessagesAdapter extends BaseAdapter {
                     // WindowManager$BadTokenException will be caught and the app would not display
                 }
             } else {
+                if (!clickedString.startsWith("http://") && !clickedString.startsWith("https://"))
+                    clickedString = "http://" + clickedString;
                 Uri uri = Uri.parse(clickedString);
                 Context context = textView.getContext();
                 Intent intent = new Intent(Intent.ACTION_VIEW, uri);

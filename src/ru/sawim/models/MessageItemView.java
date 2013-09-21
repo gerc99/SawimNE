@@ -1,6 +1,7 @@
 package ru.sawim.models;
 
 import android.content.Context;
+import android.view.View;
 import android.widget.*;
 import ru.sawim.view.MyTextView;
 
@@ -51,5 +52,14 @@ public class MessageItemView extends RelativeLayout {
         msgText.setId(4);
         msgText.setScrollContainer(false);
         addView(msgText, lp);
+    }
+
+    public void addDivider(Context context, boolean isAdd, int color) {
+        View v = new View(context);
+        v.setId(5);
+        v.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, 1));
+        v.setBackgroundColor(color);
+        if (getChildAt(4) != null) removeViewAt(4);
+        if (isAdd) addView(v);
     }
 }

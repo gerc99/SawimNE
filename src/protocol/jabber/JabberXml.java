@@ -790,8 +790,8 @@ public final class JabberXml extends ClientConnection {
                     }
                     return;
                 }
-                String platform = Options.getBoolean(Options.OPTION_SHOW_PLATFORM) ? ""
-					: Util.xmlEscape(General.PHONE);
+                String platform = /*Options.getBoolean(Options.OPTION_SHOW_PLATFORM) ? ""
+					: */Util.xmlEscape(General.PHONE);
                 if (IQ_TYPE_GET == iqType) {
                     putPacketIntoQueue("<iq type='result' to='"
                             + Util.xmlEscape(from) + "' id='" + Util.xmlEscape(id) + "'>"
@@ -2226,7 +2226,7 @@ public final class JabberXml extends ClientConnection {
         return "<" + state + " xmlns='http://jabber.org/protocol/chatstates'/>";
     }
     void sendTypingNotify(String to, boolean composing) {
-        String tag = getChatStateTag(composing ? S_COMPOSING : S_PAUSED);
+        String tag = getChatStateTag(composing ? S_COMPOSING : S_ACTIVE/*S_PAUSED*/);
         putPacketIntoQueue("<message to='" + Util.xmlEscape(to)
                 + "' id='0'>" + tag + "</message>");
     }

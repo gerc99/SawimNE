@@ -17,36 +17,20 @@ import ru.sawim.view.TextBoxView;
 
 public final class TrackingForm implements TextBoxView.TextBoxListener {
 
-    public static final int TRACK = 1;
-    public static final int TRACKON = 2;
-    public static final int TRACKOFF = 3;
-    public static final int TRACKONOFF = 4;
-
     private static final int NO = 0;
     private static final int YES = 1;
     private static final int NOTHING = 2;
-    private static final int ONLINE = 0;
-    private static final int OFFLINE = 1;
-    private static final int STATUS = 0;
     private static final int TYPING = 2;
     private static final int MESSAGE = 3;
 
-    private static final ImageList lineList1 = ImageList.createImageList("/track.png");
     public static final Drawable No = SawimApplication.getContext().getResources().getDrawable(android.R.drawable.checkbox_off_background);
     public static final Drawable Yes = SawimApplication.getContext().getResources().getDrawable(android.R.drawable.checkbox_on_background);
     private static final Drawable Nothing = SawimApplication.getContext().getResources().getDrawable(android.R.drawable.radiobutton_off_background);
-    private static final Icon Track = lineList1.iconAt(TRACK);
-    private static final Icon TrackON = lineList1.iconAt(TRACKON);
-    private static final Icon TrackOFF = lineList1.iconAt(TRACKOFF);
-    private static final Icon TrackONOFF = lineList1.iconAt(TRACKONOFF);
+    private static final Drawable Track = SawimApplication.getContext().getResources().getDrawable(android.R.drawable.ic_menu_search);
     private static Vector list = new Vector();
     private final ImageList lineList0 = ImageList.createImageList("/msgs.png");
 	private final Icon Message = lineList0.iconAt(MESSAGE);
     private final Icon Typing = lineList0.iconAt(TYPING);
-    private final ImageList lineList_icq = ImageList.createImageList("/icq-status.png");
-    private final ImageList lineList_mrim = ImageList.createImageList("/mrim-status.png");
-    private final ImageList lineList_jabber = ImageList.createImageList("/jabber-status.png");
-    private final Icon Status = lineList1.iconAt(STATUS);
     private String uin;
 	private VirtualList screen = VirtualList.getInstance();
     private VirtualListModel model = new VirtualListModel();
@@ -64,27 +48,14 @@ public final class TrackingForm implements TextBoxView.TextBoxListener {
             @Override
             public boolean back() {
                 saveList();
-                Tracking.setTrackIcon(TrackingForm.this.uin, TRACK);
                 screen.clearAll();
                 return true;
             }
         });
     }
 
-    public static Icon getTrackIcon() {
+    public static Drawable getTrackIcon() {
         return Track;
-    }
-
-    public static Icon getTrackONIcon() {
-        return TrackON;
-    }
-
-    public static Icon getTrackOFFIcon() {
-        return TrackOFF;
-    }
-
-    public static Icon getTrackONOFFIcon() {
-        return TrackONOFF;
     }
 
     public static Vector getList() {

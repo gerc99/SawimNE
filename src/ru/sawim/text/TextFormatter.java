@@ -4,7 +4,6 @@ import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.ImageSpan;
-import android.text.style.StyleSpan;
 import android.util.Patterns;
 import ru.sawim.view.menu.JuickMenu;
 import sawim.modules.Emotions;
@@ -42,14 +41,14 @@ public class TextFormatter {
         return builder;
     }
 
-    public SpannableStringBuilder getTextWithLinks(SpannableStringBuilder ssb, int linkColor, JuickMenu.Mode mode, InternalURLSpan.TextLinkClickListener onTextLinkClickListener) {
+    public SpannableStringBuilder getTextWithLinks(SpannableStringBuilder ssb, int linkColor, JuickMenu.Mode mode) {
         ArrayList<Hyperlink> msgList = new ArrayList<Hyperlink>();
         ArrayList<Hyperlink> linkList = new ArrayList<Hyperlink>();
         if (mode == JuickMenu.Mode.juick)
-            addLinks(msgList, ssb, juickPattern, onTextLinkClickListener);
+            addLinks(msgList, ssb, juickPattern);
         else if (mode == JuickMenu.Mode.psto)
-            addLinks(msgList, ssb, pstoPattern, onTextLinkClickListener);
-        addLinks(linkList, ssb, Patterns.WEB_URL, onTextLinkClickListener);
+            addLinks(msgList, ssb, pstoPattern);
+        addLinks(linkList, ssb, Patterns.WEB_URL);
 
         for (Hyperlink link : msgList) {
             ssb.setSpan(link.span, link.start, link.end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -62,14 +61,14 @@ public class TextFormatter {
         return ssb;
     }
 
-    private final void addLinks(ArrayList<Hyperlink> links, Spannable s, Pattern pattern, InternalURLSpan.TextLinkClickListener onTextLinkClickListener) {
+    private final void addLinks(ArrayList<Hyperlink> links, Spannable s, Pattern pattern) {
         Matcher m = pattern.matcher(s);
         while (m.find()) {
             int start = m.start();
             int end = m.end();
             Hyperlink spec = new Hyperlink();
             spec.textSpan = s.subSequence(start, end);
-            spec.span = new InternalURLSpan(onTextLinkClickListener, spec.textSpan.toString());
+            spec.span = new InternalURLSpan(spec.textSpan.toString());
             spec.start = start;
             spec.end = end;
             links.add(spec);

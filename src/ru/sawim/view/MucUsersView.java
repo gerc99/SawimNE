@@ -213,7 +213,7 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
         String Nick = "";
         String myNick = jabberServiceContact.getMyName();
         String reason = "";
-        if (rzn.charAt(0) == '!') {
+        if (rzn.length() != 0 && rzn.charAt(0) == '!') {
             rzn = rzn.substring(1);
         } else {
             Nick = (myNick == null) ? myNick : myNick + ": ";

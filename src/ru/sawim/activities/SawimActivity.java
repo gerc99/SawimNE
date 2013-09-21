@@ -57,6 +57,7 @@ import ru.sawim.*;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.lang.reflect.Field;
 
 public class SawimActivity extends FragmentActivity {
 
@@ -66,7 +67,6 @@ public class SawimActivity extends FragmentActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
         setContentView(R.layout.main);
         General.sawimActivity = this;
@@ -214,7 +214,7 @@ public class SawimActivity extends FragmentActivity {
         } else if (formView != null) {
             if (formView.hasBack())
                 back();
-        } else super.onBackPressed();
+        } else moveTaskToBack(true);
     }
 
     @Override

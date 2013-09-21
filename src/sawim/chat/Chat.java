@@ -29,7 +29,11 @@ public final class Chat {
     private List<MessData> messData = new ArrayList<MessData>();
     public static final String ADDRESS = ", ";
     private boolean visibleChat;
+
     public String message = "";
+    public int position;
+    public int offset;
+    public int lastPosition;
 
     public Chat(Protocol p, Contact item) {
         contact = item;
@@ -239,7 +243,7 @@ public final class Chat {
         messData.clear();
     }
 
-    /*public void removeMessages(final int limit) {
+    public void removeMessages(final int limit) {
         if (messData.size() < limit) {
             return;
         }
@@ -258,7 +262,7 @@ public final class Chat {
 
     public void removeMessagesAtCursor(int currPoss) {
         removeMessages(messData.size() - currPoss - 1);
-    }*/
+    }
 
     public boolean empty() {
         return 0 == getMessCount();
@@ -406,7 +410,6 @@ public final class Chat {
     }
 
     private void addMessage(MessData mData) {
-        //removeOldMessages();
         messData.add(mData);
     }
 

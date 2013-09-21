@@ -27,6 +27,7 @@ public class SmilesView extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getDialog().setCanceledOnTouchOutside(true);
         smilesAdapter = new SmilesAdapter(getActivity());
         GridView gv = new GridView(getActivity());
         gv.setNumColumns(5);

@@ -6,6 +6,7 @@ import android.graphics.Typeface;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import protocol.Contact;
 import protocol.Group;
 import protocol.Protocol;
@@ -27,8 +28,8 @@ import sawim.roster.Roster;
  */
 public class RosterItemView extends RelativeLayout {
 
-    public MyTextView itemName;
-    public MyTextView itemDescriptionText;
+    public TextView itemName;
+    public TextView itemDescriptionText;
     public ImageView itemFirstImage;
     public ImageView itemSecondImage;
     public ImageView itemThirdImage;
@@ -42,8 +43,8 @@ public class RosterItemView extends RelativeLayout {
         itemFifthImage = new ImageView(context);
         itemSecondImage = new ImageView(context);
         itemThirdImage = new ImageView(context);
-        itemName = new MyTextView(context);
-        itemDescriptionText = new MyTextView(context);
+        itemName = new TextView(context);
+        itemDescriptionText = new TextView(context);
         itemFourthImage = new ImageView(context);
         build();
     }
@@ -75,6 +76,8 @@ public class RosterItemView extends RelativeLayout {
 
         lp = new RelativeLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
         lp.alignWithParent = true;
+        if (!General.showStatusLine)
+            lp.addRule(CENTER_VERTICAL);
         lp.addRule(RIGHT_OF, itemThirdImage.getId());
         lp.addRule(ALIGN_TOP, itemFifthImage.getId());
         lp.addRule(ALIGN_PARENT_TOP);
@@ -94,6 +97,7 @@ public class RosterItemView extends RelativeLayout {
 
         lp = new RelativeLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
         lp.alignWithParent = true;
+        lp.addRule(CENTER_VERTICAL);
         lp.addRule(ALIGN_PARENT_RIGHT);
         lp.addRule(ALIGN_BOTTOM, itemDescriptionText.getId());
         lp.addRule(ALIGN_TOP, itemName.getId());
@@ -102,6 +106,7 @@ public class RosterItemView extends RelativeLayout {
 
         lp = new RelativeLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
         lp.alignWithParent = true;
+        lp.addRule(CENTER_VERTICAL);
         lp.addRule(LEFT_OF, itemFifthImage.getId());
         lp.addRule(ALIGN_BOTTOM, itemDescriptionText.getId());
         lp.addRule(ALIGN_TOP, itemName.getId());
@@ -210,7 +215,7 @@ public class RosterItemView extends RelativeLayout {
         String id = item.getUserId();
         if (Tracking.isTrackingEvent(id, Tracking.GLOBAL) == Tracking.TRUE) {
             itemFifthImage.setVisibility(ImageView.VISIBLE);
-            itemFifthImage.setImageDrawable(Tracking.getTrackIcon(id).getImage());
+            itemFifthImage.setImageDrawable(Tracking.getTrackIcon(id));
         } else {
             itemFifthImage.setVisibility(ImageView.GONE);
         }

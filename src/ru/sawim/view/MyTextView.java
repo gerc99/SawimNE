@@ -7,10 +7,11 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.os.Handler;
 import android.text.*;
 import android.content.Context;
-import android.text.style.ClickableSpan;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
@@ -26,17 +27,18 @@ import ru.sawim.text.InternalURLSpan;
 
 public class MyTextView extends View {
 
-    private boolean isSecondTap;
-    private boolean isLongTap;
     private TextPaint mTextPaint;
     private int maxLines = 0;
     private Layout layout;
     private CharSequence mText = "";
     private CharSequence oldText = "";
-    InternalURLSpan.TextLinkClickListener mListener;
+    TextLinkClickListener mListener;
+    private int mCurTextColor;
     private ColorStateList mTextColor;
     private ColorStateList mLinkTextColor;
-    private int mCurTextColor;
+    private boolean isSecondTap;
+    private boolean isLongTap;
+    private String link = "";
 
     public MyTextView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -105,24 +107,27 @@ public class MyTextView extends View {
     }
 
     private void makeLayout(int specSize) {
-        if (oldText != mText) {
-            oldText = mText;
-            if (maxLines != 0)
-                mText = TextUtils.ellipsize(mText, mTextPaint, specSize * maxLines, TextUtils.TruncateAt.END);
-            layout = new StaticLayout(mText, mTextPaint, specSize, Layout.Alignment.ALIGN_NORMAL, 1.0f, 0, false);
-        }
-        if (layout == null) {
-            if (maxLines != 0)
-                mText = TextUtils.ellipsize(mText, mTextPaint, specSize * maxLines, TextUtils.TruncateAt.END);
-            layout = new StaticLayout(mText, mTextPaint, specSize, Layout.Alignment.ALIGN_NORMAL, 1.0f, 0, false);
-        }
+        if (maxLines != 0)
+            mText = TextUtils.ellipsize(mText, mTextPaint, specSize * maxLines, TextUtils.TruncateAt.END);
+        layout = new StaticLayout(mText, mTextPaint, specSize, Layout.Alignment.ALIGN_NORMAL, 1.0f, 0, false);
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int specSize = MeasureSpec.getSize(widthMeasureSpec);
         makeLayout(specSize);
+        if (oldText != mText)
+            makeLayout(specSize);
+        if (layout == null)
+            makeLayout(specSize);
         setMeasuredDimension(specSize, layout.getLineTop(layout.getLineCount()));
+    }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        if (w != oldw)
+            makeLayout(w);
     }
 
     private void updateTextColors() {
@@ -158,88 +163,61 @@ public class MyTextView extends View {
         return false;
     }
 
+    private Runnable mLongPressed = new Runnable() {
+        public void run() {
+            if (mListener != null && !isSecondTap) {
+                isLongTap = true;
+                mListener.onTextLinkClick(MyTextView.this, link, true);
+            }
+        }
+    };
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (mText instanceof Spannable) {
             Spannable buffer = (Spannable) mText;
             int action = event.getAction();
-
             int x = (int) event.getX();
             int y = (int) event.getY();
-
             x += getScrollX();
             y += getScrollY();
-
             int line = layout.getLineForVertical(y);
             int off = layout.getOffsetForHorizontal(line, x);
-
-            final InternalURLSpan[] link = buffer.getSpans(off, off, InternalURLSpan.class);
+            final InternalURLSpan[] urlSpans = buffer.getSpans(off, off, InternalURLSpan.class);
             if (action == MotionEvent.ACTION_CANCEL || action == MotionEvent.ACTION_OUTSIDE) {
                 isSecondTap = true;
             }
-
-            if (link.length != 0) {
+            if (urlSpans.length != 0) {
+                link = urlSpans[0].clickedSpan;
                 if (action == MotionEvent.ACTION_DOWN) {
                     isSecondTap = false;
                     isLongTap = false;
                     Selection.setSelection(buffer,
-                            buffer.getSpanStart(link[0]),
-                            buffer.getSpanEnd(link[0]));
-                    postDelayed(new Runnable() {
-                        public void run() {
-                            if (mListener != null && !isSecondTap) {
-                                isLongTap = true;
-                                mListener.onTextLinkClick(MyTextView.this, link[0].clickedSpan, true);
-                            }
-                        }
-                    }, 700L);
+                            buffer.getSpanStart(urlSpans[0]),
+                            buffer.getSpanEnd(urlSpans[0]));
+                    postDelayed(mLongPressed, 700L);
                 }
                 if (action == MotionEvent.ACTION_UP) {
                     if (!isLongTap) {
                         isSecondTap = true;
-                         try {
-                            link[0].onClick(MyTextView.this);
-                         } catch (ActivityNotFoundException e) { }
+                        try {
+                            mListener.onTextLinkClick(MyTextView.this, link, false);
+                        } catch (ActivityNotFoundException e) { }
+                    } else {
+                        removeCallbacks(mLongPressed);
                     }
                 }
                 return true;
             }
-            return action(event, this, buffer);
         }
-        return false;
+        return super.onTouchEvent(event);
     }
 
-    private boolean action(MotionEvent event, View widget, Spannable buffer) {
-        int action = event.getAction();
-        if (action == MotionEvent.ACTION_UP ||
-                action == MotionEvent.ACTION_DOWN) {
-            int x = (int) event.getX();
-            int y = (int) event.getY();
-
-            x += widget.getScrollX();
-            y += widget.getScrollY();
-
-            int line = layout.getLineForVertical(y);
-            int off = layout.getOffsetForHorizontal(line, x);
-
-            ClickableSpan[] link = buffer.getSpans(off, off, ClickableSpan.class);
-            if (link.length != 0) {
-                if (action == MotionEvent.ACTION_UP) {
-                    link[0].onClick(widget);
-                } else if (action == MotionEvent.ACTION_DOWN) {
-                    Selection.setSelection(buffer,
-                            buffer.getSpanStart(link[0]),
-                            buffer.getSpanEnd(link[0]));
-                }
-                return true;
-            } else {
-                Selection.removeSelection(buffer);
-            }
-        }
-        return false;
-    }
-
-    public void setOnTextLinkClickListener(InternalURLSpan.TextLinkClickListener onTextLinkClickListener) {
+    public void setOnTextLinkClickListener(TextLinkClickListener onTextLinkClickListener) {
         this.mListener = onTextLinkClickListener;
+    }
+
+    public interface TextLinkClickListener {
+        public void onTextLinkClick(View textView, String clickedString, boolean isLongTap);
     }
 }

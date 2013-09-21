@@ -1,6 +1,7 @@
 package sawim.modules.tracking;
 
 import DrawControls.icons.Icon;
+import android.graphics.drawable.Drawable;
 import protocol.Contact;
 import protocol.Protocol;
 import protocol.icq.Icq;
@@ -109,7 +110,6 @@ public final class Tracking {
             if (line.status_flag == 0) continue;
 
             Track track = new Track();
-            track.idIcon = TrackingForm.TRACK;
             track.uin = uin;
             track.idEvent = line.id_event;
             track.idAction = line.id_action;
@@ -174,7 +174,6 @@ public final class Tracking {
                 track.idAction = Integer.valueOf(getRMSRecordValue(rms, i + TRACK_PARAM_ACTION_ID)).intValue();
 
                 track.valueAction = getRMSRecordValue(rms, i + TRACK_PARAM_ACTION_VALUE);
-                track.idIcon = TrackingForm.TRACK;
                 addTracking(track);
             }
             rms.closeRecordStore();
@@ -294,37 +293,13 @@ public final class Tracking {
         return TRUE;
     }
 
-    public static Icon getTrackIcon(String uin) {
-        Icon ret = null;
+    public static Drawable getTrackIcon(String uin) {
         for (int i = 0; i < actions.size(); i++) {
             Track track = getTracking(i);
             if (!track.uin.equals(uin)) continue;
-            switch (track.idIcon) {
-                case TrackingForm.TRACK:
-                    ret = TrackingForm.getTrackIcon();
-                    break;
-                case TrackingForm.TRACKON:
-                    ret = TrackingForm.getTrackONIcon();
-                    break;
-                case TrackingForm.TRACKOFF:
-                    ret = TrackingForm.getTrackOFFIcon();
-                    break;
-                case TrackingForm.TRACKONOFF:
-                    ret = TrackingForm.getTrackONOFFIcon();
-                    break;
-            }
-            break;
+            return TrackingForm.getTrackIcon();
         }
-        return ret;
-    }
-
-    public static void setTrackIcon(String uin, int icon_index) {
-        for (int i = 0; i < actions.size(); i++) {
-            Track track = getTracking(i);
-            if (!track.uin.equals(uin)) continue;
-            track.idIcon = icon_index;
-            setTracking(track, i);
-        }
+        return null;
     }
 
     public static void beginTrackAction(Contact item, int event) {
@@ -390,9 +365,6 @@ public final class Tracking {
             case ACTION_VIBRA:
                 vibration();
                 break;
-            case ACTION_ICON:
-                setTrackIcon(item.getUserId(), TrackingForm.TRACKON);
-                break;
             case ACTION_EYE:
                 MagicEye.addAction(item.getProtocol(), item.getUserId(), JLocale.getString("track_action_online"));
                 break;
@@ -423,9 +395,6 @@ public final class Tracking {
                 PlainMessage plainMsg = new PlainMessage(item.getUserId(), protocol, General.getCurrentGmtTime(), notice, true);
                 //plainMsg.setSendingState(Message.ICON_MSG_TRACK);
                 chat.addMyMessage(plainMsg);
-                break;
-            case ACTION_ICON:
-                setTrackIcon(item.getUserId(), TrackingForm.TRACKOFF);
                 break;
             case ACTION_VIBRA:
                 vibration();
@@ -477,9 +446,6 @@ public final class Tracking {
                 //plainMsg.setSendingState(Message.ICON_MSG_TRACK);
                 chat.addMyMessage(plainMsg);
                 break;
-            case ACTION_ICON:
-                setTrackIcon(item.getUserId(), TrackingForm.TRACKONOFF);
-                break;
             case ACTION_VIBRA:
                 vibration();
                 break;
@@ -516,7 +482,6 @@ public final class Tracking {
     }
 
     public static class Track {
-        int idIcon;
         String uin;
         int idEvent;
         int idAction;

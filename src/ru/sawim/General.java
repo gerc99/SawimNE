@@ -197,9 +197,12 @@ public class General {
         return bitmap;
     }
 
-    public static View getDivider(Context context, int color) {
+    public static View getDivider(Context context, boolean vertical, int color) {
         View v = new View(context);
-        v.setLayoutParams(new LinearLayout.LayoutParams(1, LinearLayout.LayoutParams.WRAP_CONTENT));
+        if (vertical)
+            v.setLayoutParams(new LinearLayout.LayoutParams(1, LinearLayout.LayoutParams.WRAP_CONTENT));
+        else
+            v.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, 1));
         v.setBackgroundColor(color);
         return v;
     }

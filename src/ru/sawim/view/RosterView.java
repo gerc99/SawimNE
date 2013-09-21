@@ -178,9 +178,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         rosterViewLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.FILL_PARENT));
         rosterViewLayout.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
 
-        GradientDrawable gd = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP,
-                new int[] {Scheme.getColor(Scheme.THEME_CAP_BACKGROUND),Scheme.getColor(Scheme.THEME_BACKGROUND)});
-        horizontalScrollView.setBackgroundDrawable(gd);
+        horizontalScrollView.setBackgroundColor(Scheme.getColor(Scheme.THEME_CAP_BACKGROUND));
 
         viewPager.setAdapter(pagerAdapter);
         viewPager.setCurrentItem(roster.getCurrPage());
@@ -211,7 +209,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
 
     @Override
     public void putIntoQueue(final Group g) {
-        SawimApplication.getInstance().runOnUiThread(new Runnable() {
+        getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 if (adaptersPages != null && adaptersPages.size() > 0) {
@@ -224,7 +222,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
     @Override
     public void updateRoster() {
         roster.updateOptions();
-        SawimApplication.getInstance().runOnUiThread(new Runnable() {
+        getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 if (adaptersPages != null && adaptersPages.size() > 0) {
@@ -284,14 +282,14 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
                         }
                         imageBarButtons.setBackgroundDrawable(new ColorDrawable(0));
                         if (i == roster.getCurrentItemProtocol())
-                            imageBarButtons.setBackgroundColor(Scheme.getColor(Scheme.THEME_CAP_BACKGROUND));
+                            imageBarButtons.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
                         imageBarButtons.setImageDrawable(protocol.getCurrentStatusIcon().getImage());
                         Icon messageIcon = ChatHistory.instance.getUnreadMessageIcon(protocol);
                         if (null != messageIcon)
                             imageBarButtons.setImageDrawable(messageIcon.getImage());
 
                         protocolBarLayout.addView(imageBarButtons);
-                        protocolBarLayout.addView(General.getDivider(getActivity(), Scheme.getColor(Scheme.THEME_BACKGROUND)));
+                        protocolBarLayout.addView(General.getDivider(getActivity(), true, Scheme.getColor(Scheme.THEME_BACKGROUND)));
                     }
                 }
             }
@@ -303,7 +301,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         super.onResume();
         if (roster == null) return;
         if (roster.getProtocolCount() == 0) return;
-        Roster.getInstance().setCurrentContact(null);
+        roster.setCurrentContact(null);
         roster.setOnUpdateRoster(this);
         update();
     }
@@ -351,6 +349,8 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
             if (viewPager.getCurrentItem() == RosterAdapter.ACTIVE_CONTACTS)
                 p = c.getProtocol();
             openChat(p, c, false);
+            if (General.isTablet(getActivity()))
+                updateRoster();
         } else if (item.isGroup()) {
             Group group = (Group) item;
             group.setExpandFlag(!group.isExpanded());

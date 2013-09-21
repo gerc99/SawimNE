@@ -1,6 +1,3 @@
-
-
-
 package protocol.mrim;
 
 import android.support.v4.app.FragmentActivity;
@@ -13,10 +10,8 @@ import ru.sawim.R;
 
 import java.util.Vector;
 
-
 public final class MrimChatContact extends MrimContact {
 
-    
     public MrimChatContact(String uin, String name) {
         super(uin, name);
         setStatus(StatusInfo.STATUS_ONLINE, null);

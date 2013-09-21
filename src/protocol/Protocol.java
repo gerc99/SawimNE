@@ -1,6 +1,7 @@
 package protocol;
 
 import DrawControls.icons.Icon;
+import android.util.Log;
 import sawim.FileTransfer;
 import ru.sawim.General;
 import sawim.SawimException;
@@ -603,9 +604,6 @@ abstract public class Protocol {
     }
 
     private void beginTyping(Contact item, boolean type) {
-        if (null == item) {
-            return;
-        }
         if (item.isTyping() != type) {
             item.beginTyping(type);
             Chat chat = ChatHistory.instance.getChat(item);

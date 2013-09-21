@@ -4,7 +4,6 @@ import android.text.SpannableStringBuilder;
 import protocol.Contact;
 import ru.sawim.General;
 import ru.sawim.Scheme;
-import ru.sawim.models.MessagesAdapter;
 import ru.sawim.text.TextFormatter;
 import ru.sawim.view.menu.JuickMenu;
 import sawim.comm.Util;
@@ -47,11 +46,11 @@ public final class MessData {
 
         parsedText = TextFormatter.detectEmotions(text);
         if (currentContact.getUserId().equals(JuickMenu.JUICK) || currentContact.getUserId().equals(JuickMenu.JUBO))
-            parsedText = textFormatter.getTextWithLinks(parsedText, 0xff00e4ff, JuickMenu.Mode.juick, MessagesAdapter.textLinkClickListener);
+            parsedText = textFormatter.getTextWithLinks(parsedText, 0xff00e4ff, JuickMenu.Mode.juick);
         else if (currentContact.getUserId().equals(JuickMenu.PSTO))
-            parsedText = textFormatter.getTextWithLinks(parsedText, 0xff00e4ff, JuickMenu.Mode.psto, MessagesAdapter.textLinkClickListener);
+            parsedText = textFormatter.getTextWithLinks(parsedText, 0xff00e4ff, JuickMenu.Mode.psto);
         else
-            parsedText = textFormatter.getTextWithLinks(parsedText, 0xff00e4ff, JuickMenu.Mode.none, MessagesAdapter.textLinkClickListener);
+            parsedText = textFormatter.getTextWithLinks(parsedText, 0xff00e4ff, JuickMenu.Mode.none);
     }
 
     public Contact getCurrentContact() {
