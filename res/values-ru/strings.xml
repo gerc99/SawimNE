@@ -212,4 +212,5 @@
     <string name="hint_multi_citation">Отметьте сообщения и долгим нажатием в поле вводе выберите \"Вставить\"</string>
     <string name="hint_message">сообщение...</string>
     <string name="enter_the">Введите</string>
+    <string name="select_contact">Выберите контакт, чтобы начать чат</string>
 </resources>

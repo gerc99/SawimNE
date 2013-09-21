@@ -600,6 +600,7 @@ abstract public class Protocol {
         if (null != item) {
             beginTyping(item, type);
             getRoster().updateRoster();
+            getRoster().getUpdateChatListener().updateChat(item);
         }
     }
 

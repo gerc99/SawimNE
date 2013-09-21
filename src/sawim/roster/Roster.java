@@ -541,12 +541,13 @@ public final class Roster {
     }
 
     public void updateGroup(Group group) {
-        if (group == null) return;
         if (useGroups) {
             group.updateGroupData();
             group.sort();
         } else {
-            Util.sort(getProtocol(group).getSortedContacts());
+            Protocol p = getProtocol(group);
+            if (p != null)
+                Util.sort(p.getSortedContacts());
         }
     }
 

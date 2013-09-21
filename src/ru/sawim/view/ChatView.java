@@ -117,6 +117,19 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
             addViewInLayout(chatListsView, 1, chatListsView.getLayoutParams());
             addViewInLayout(chatInputBarView, 2, chatInputBarView.getLayoutParams());
         }
+
+        public void showHint() {
+            TextView hint = new TextView(getActivity());
+            hint.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
+            hint.setTextSize(23);
+            hint.setGravity(Gravity.CENTER);
+            hint.setText(R.string.select_contact);
+            addView(hint, 3);
+        }
+
+        public void hideHint() {
+            if (getChildAt(3) != null) removeViewAt(3);
+        }
     }
 
     private class ChatBarView extends LinearLayout {
@@ -322,7 +335,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
         }
         if (General.sawimActivity.findViewById(R.id.fragment_container) == null) {
             if (lastContact == null)
-                chat_viewLayout.setVisibility(LinearLayout.GONE);
+                chat_viewLayout.showHint();
             else
                 openChat(lastProtocol, lastContact);
         }
@@ -381,7 +394,8 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
         //ScrollState lastPosition = getLastPosition(chat.getContact().getUserId());
         if (/*lastPosition != null && */chat.position > 0) {
             chatListView.setSelectionFromTop(chat.position + 2, chat.offset);
-            adapter.setPosition(chat.lastPosition);
+            if (lastContact != contact)
+                adapter.setPosition(chat.lastPosition);
         } else chatListView.setSelection(0);
 
         updateChatIcon();
@@ -432,8 +446,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
     }*/
 
     public void openChat(Protocol p, Contact c) {
-        if (General.sawimActivity.findViewById(R.id.fragment_container) == null)
-            chat_viewLayout.setVisibility(LinearLayout.VISIBLE);
+        chat_viewLayout.hideHint();
         protocol = p;
         contact = c;
         chat = protocol.getChat(contact);
@@ -478,7 +491,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
             adapter = chatState.adapter;
         }
         chatListView.setAdapter(adapter);
-    //    chatListView.setFastScrollEnabled(true);
+        chatListView.setFastScrollEnabled(true);
         chatListView.setStackFromBottom(true);
         chatListView.setTranscriptMode(ListView.TRANSCRIPT_MODE_NORMAL);
         chatListView.setOnCreateContextMenuListener(this);

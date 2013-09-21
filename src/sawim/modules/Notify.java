@@ -50,6 +50,7 @@ public class Notify implements Runnable {
                 return Options.getBoolean(Options.OPTION_BLOG_NOTIFY);
 
             case NOTIFY_MULTIMESSAGE:
+            case NOTIFY_TYPING:
                 return false;
         }
         return true;
