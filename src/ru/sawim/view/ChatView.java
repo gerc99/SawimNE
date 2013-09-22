@@ -6,14 +6,13 @@ import android.app.AlertDialog;
 import android.content.*;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.database.DataSetObserver;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
-import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.*;
@@ -79,7 +78,6 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
     private MessagesAdapter adapter;
     private ChatsSpinnerAdapter chatsSpinnerAdapter;
 
-    //public static Hashtable<String, ScrollState> positionHash = new Hashtable<String, ScrollState>();
     public static Hashtable<String, State> chatHash = new Hashtable<String, State>();
 
     @Override
@@ -333,12 +331,11 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
             Contact contact = protocol.getItemByUIN(args.getString(CONTACT_ID));
             openChat(protocol, contact);
         }
-        if (General.sawimActivity.findViewById(R.id.fragment_container) == null) {
+        if (General.sawimActivity.findViewById(R.id.fragment_container) == null)
             if (lastContact == null)
                 chat_viewLayout.showHint();
             else
                 openChat(lastProtocol, lastContact);
-        }
     }
 
     @Override
@@ -369,13 +366,11 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
             args.putString(ChatView.PROTOCOL_ID, protocol.getUserId());
             args.putString(ChatView.CONTACT_ID, contact.getUserId());
         }
-        chat.message = getText();
-
         View item = chatListView.getChildAt(0);
-        //addLastPosition(chat.getContact().getUserId(), chatListView.getFirstVisiblePosition(), (item == null) ? 0 : Math.abs(item.getBottom()));
         chat.position = chatListView.getFirstVisiblePosition();
         chat.offset = (item == null) ? 0 : Math.abs(item.getBottom());
         chat.lastPosition = chat.getMessData().size();
+        chat.message = getText();
 
         chat.setVisibleChat(false);
         Roster.getInstance().setOnUpdateChat(null);
@@ -384,19 +379,21 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
 
     public void resume(Chat chat) {
         if (chat == null) return;
+
+        if (chat.position > 0) {
+            chatListView.setSelectionFromTop(chat.position + 2, chat.offset);
+            if (chat.lastPosition != chat.getMessData().size())
+                adapter.setPosition(chat.lastPosition);
+        } else {
+            chatListView.setSelection(0);
+        }
+
         messageEditor.setText(chat.message);
         chat.setVisibleChat(true);
         ChatHistory.instance.registerChat(chat);
         Roster.getInstance().setOnUpdateChat(this);
         chat.resetUnreadMessages();
         removeMessages(Options.getInt(Options.OPTION_MAX_MSG_COUNT));
-
-        //ScrollState lastPosition = getLastPosition(chat.getContact().getUserId());
-        if (/*lastPosition != null && */chat.position > 0) {
-            chatListView.setSelectionFromTop(chat.position + 2, chat.offset);
-            if (lastContact != contact)
-                adapter.setPosition(chat.lastPosition);
-        } else chatListView.setSelection(0);
 
         updateChatIcon();
         updateList(contact);
@@ -432,18 +429,6 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
         openChat(current.getProtocol(), current.getContact());
         resume(current);
     }
-
-    /*private void addLastPosition(String jid, int position, int offset) {
-        ScrollState scrollState = new ScrollState();
-        scrollState.position = position;
-        scrollState.offset = offset;
-        positionHash.put(jid, scrollState);
-    }
-
-    private ScrollState getLastPosition(String jid) {
-        if (positionHash.containsKey(jid)) return positionHash.get(jid);
-        else return null;
-    }*/
 
     public void openChat(Protocol p, Contact c) {
         chat_viewLayout.hideHint();
@@ -490,13 +475,13 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
         } else {
             adapter = chatState.adapter;
         }
-        chatListView.setAdapter(adapter);
-        chatListView.setFastScrollEnabled(true);
         chatListView.setStackFromBottom(true);
+        chatListView.setFastScrollEnabled(true);
         chatListView.setTranscriptMode(ListView.TRANSCRIPT_MODE_NORMAL);
         chatListView.setOnCreateContextMenuListener(this);
         chatListView.setOnItemClickListener(new ChatClick());
         chatListView.setFocusable(true);
+        chatListView.setAdapter(adapter);
     }
 
     private void initMucUsers() {
@@ -559,11 +544,6 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
         });
     }
 
-    /*public static class ScrollState {
-        public int position;
-        public int offset;
-    }*/
-
     public static class State {
         public MessagesAdapter adapter;
     }
@@ -590,7 +570,6 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
                     JabberServiceContact jabberServiceContact = ((JabberServiceContact) contact);
                     if (jabberServiceContact.getContact(mData.getNick()) == null && !jabberServiceContact.getName().equals(mData.getNick())) {
                         Toast.makeText(General.sawimActivity, getString(R.string.contact_walked), Toast.LENGTH_LONG).show();
-                        return;
                     }
                 }
                 setText(chat.onMessageSelected(mData));
@@ -891,13 +870,11 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
                     compose = true;
                     protocol.sendTypingNotify(contact, true);
                 }
-                sendButton.setEnabled(true);
             } else {
                 if (compose) {
                     compose = false;
                     protocol.sendTypingNotify(contact, false);
                 }
-                sendButton.setEnabled(false);
             }
         }
     };
