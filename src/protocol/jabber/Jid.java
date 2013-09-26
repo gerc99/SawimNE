@@ -4,6 +4,7 @@
 package protocol.jabber;
 
 import sawim.comm.StringConvertor;
+import sawim.comm.Util;
 
 
 public class Jid {
@@ -67,6 +68,11 @@ public class Jid {
             }
         }
         return false;
+    }
+
+    public static String makeReadableJid(String jid) {
+        jid = Util.replace(jid, "@conference.jabber.ru", "@c.j.ru");
+        return Util.replace(jid, "@conference.", "@c.");
     }
 
     public static boolean isGate(String jid) {

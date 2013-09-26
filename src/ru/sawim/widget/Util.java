@@ -13,8 +13,8 @@ import android.view.View;
 import android.widget.LinearLayout;
 import ru.sawim.General;
 
-import java.io.BufferedInputStream;
-import java.net.URL;
+import java.io.*;
+import java.net.*;
 
 /**
  * Created with IntelliJ IDEA.

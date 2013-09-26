@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import ru.sawim.R;
 import ru.sawim.widget.Util;
 
@@ -31,6 +32,8 @@ public class PictureView extends DialogFragment {
         getDialog().setCanceledOnTouchOutside(true);
         getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
         View v = inflater.inflate(R.layout.picture_view, container, false);
+        TextView textView = (TextView) v.findViewById(R.id.textView);
+        textView.setText(link);
         ProgressBar progressBar = (ProgressBar) v.findViewById(R.id.progressBar);
         ImageView imageView = (ImageView) v.findViewById(R.id.imageView);
         new DownloadImageTask(progressBar, imageView).execute(link);

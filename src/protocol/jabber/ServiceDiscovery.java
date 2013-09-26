@@ -213,8 +213,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
         if (Jid.isConference(serverJid)) {
             return Jid.getResource(jid, jid);
         }
-        jid = Util.replace(jid, "@conference.jabber.ru", "@c.j.ru");
-        return Util.replace(jid, "@conference.", "@c.");
+        return Jid.makeReadableJid(jid);
     }
 
     public void addItem(String name, String jid) {
