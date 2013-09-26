@@ -1,4 +1,4 @@
-package ru.sawim.view;
+package ru.sawim.widget;
 
 import android.content.ActivityNotFoundException;
 import android.content.res.ColorStateList;
@@ -7,11 +7,9 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
-import android.os.Handler;
 import android.text.*;
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
@@ -28,7 +26,6 @@ import ru.sawim.text.InternalURLSpan;
 public class MyTextView extends View {
 
     private TextPaint mTextPaint;
-    private int maxLines = 0;
     private Layout layout;
     private CharSequence mText = "";
     private CharSequence oldText = "";
@@ -61,7 +58,6 @@ public class MyTextView extends View {
         mTextPaint.setTextSize(20);
         mTextPaint.setColor(Color.BLACK);
         mTextPaint.setStyle(Paint.Style.FILL);
-        mTextPaint.setAntiAlias(true);
     }
 
     @Override
@@ -95,10 +91,6 @@ public class MyTextView extends View {
         mTextPaint.setTypeface(typeface);
     }
 
-    public void setLines(int lines) {
-        maxLines = lines;
-    }
-
     public void setTextSize(float textSize) {
         Context c = getContext();
         Resources r = (c == null) ? Resources.getSystem() : c.getResources();
@@ -107,8 +99,6 @@ public class MyTextView extends View {
     }
 
     private void makeLayout(int specSize) {
-        if (maxLines != 0)
-            mText = TextUtils.ellipsize(mText, mTextPaint, specSize * maxLines, TextUtils.TruncateAt.END);
         layout = new StaticLayout(mText, mTextPaint, specSize, Layout.Alignment.ALIGN_NORMAL, 1.0f, 0, false);
     }
 

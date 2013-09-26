@@ -23,9 +23,9 @@ import ru.sawim.models.form.Forms;
 
 public final class Answerer implements FormListener {
     private Vector dictionary = new Vector();
-    private Forms form;
     private VirtualList list;
 	private VirtualListModel model = new VirtualListModel();
+    Forms form;
 
     private int selItem = 0;
     private static final int MENU_EDIT   = 0;
@@ -38,7 +38,6 @@ public final class Answerer implements FormListener {
     private static final int FORM_EDIT_ANSWER = 1;
     
     private Answerer() {
-        form = new Forms("answerer_dictionary", this);
     }
     
     private static final Answerer instance = new Answerer();
@@ -63,6 +62,7 @@ public final class Answerer implements FormListener {
             public void onContextItemSelected(int listItem, int itemMenuId) {
                 switch (itemMenuId) {
                     case MENU_EDIT:
+                        form = new Forms("answerer_dictionary", Answerer.this);
                         selItem = listItem;
                         form.clearForm();
                         form.addTextField(FORM_EDIT_QUESTION, JLocale.getString("answerer_question"), getItemQuestion(listItem));
@@ -94,6 +94,7 @@ public final class Answerer implements FormListener {
             public void onOptionsItemSelected(MenuItem item) {
                 switch (item.getItemId()) {
                     case MENU_ADD:
+                        form = new Forms("answerer_dictionary", Answerer.this);
                         dictionary.addElement(" = ");
                         selItem = dictionary.size() - 1;
                         form.clearForm();

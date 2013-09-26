@@ -10,6 +10,9 @@ public final class Clipboard {
 
     private static void insertQuotingChars(StringBuffer out, String text, char qChars) {
         int size = text.length();
+        int quoteMaxLen = 100;
+        boolean isSubstring = size > quoteMaxLen;
+        if (isSubstring) size = quoteMaxLen;
         boolean wasNewLine = true;
         for (int i = 0; i < size; ++i) {
             char chr = text.charAt(i);
@@ -17,6 +20,7 @@ public final class Clipboard {
             out.append(chr);
             wasNewLine = (chr == '\n');
         }
+        if (isSubstring) out.append("...");
     }
 
     public static String serialize(boolean incoming, String header, String text) {

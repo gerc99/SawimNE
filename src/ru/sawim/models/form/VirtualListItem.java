@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.Spannable;
+import android.text.SpannableStringBuilder;
 import ru.sawim.SawimApplication;
 import ru.sawim.text.TextFormatter;
 
@@ -19,7 +20,7 @@ public class VirtualListItem {
     private Drawable image;
     private String label = null;
     private String descStr = null;
-    private Spannable descSpan = null;
+    private SpannableStringBuilder descSpan = null;
     private byte themeTextLabel = -1;
     private byte themeTextDesc = -1;
     private byte font;
@@ -50,7 +51,7 @@ public class VirtualListItem {
     }
 
     public void addTextWithSmiles(String text, byte themeText, byte font) {
-        descSpan = TextFormatter.detectEmotions(text);
+        TextFormatter.detectEmotions(descSpan, text);
         this.themeTextDesc = themeText;
         this.font = font;
     }

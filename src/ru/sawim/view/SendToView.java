@@ -43,7 +43,6 @@ public class SendToView extends Fragment implements AdapterView.OnItemClickListe
     public static final String TAG = "SendToView";
     private RosterAdapter allRosterAdapter;
     private Roster roster;
-    private HashMap<Integer, ImageButton> protocolIconHash = new HashMap<Integer, ImageButton>();
     private HorizontalScrollView horizontalScrollView;
     private LinearLayout protocolBarLayout;
 
@@ -136,16 +135,12 @@ public class SendToView extends Fragment implements AdapterView.OnItemClickListe
                     protocolBarLayout.removeAllViews();
                     for (int i = 0; i < protCount; ++i) {
                         Protocol protocol = roster.getProtocol(i);
-                        ImageButton imageBarButtons = protocolIconHash.get(i);
-                        if (!protocolIconHash.containsKey(i)) {
-                            imageBarButtons = new ImageButton(getActivity());
-                            imageBarButtons.setOnClickListener(SendToView.this);
-                            imageBarButtons.setId(i);
-                            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-                            lp.gravity = Gravity.CENTER;
-                            imageBarButtons.setLayoutParams(lp);
-                            protocolIconHash.put(i, imageBarButtons);
-                        }
+                        ImageButton imageBarButtons = new ImageButton(getActivity());
+                        imageBarButtons.setOnClickListener(SendToView.this);
+                        imageBarButtons.setId(i);
+                        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+                        lp.gravity = Gravity.CENTER;
+                        imageBarButtons.setLayoutParams(lp);
                         imageBarButtons.setBackgroundDrawable(new ColorDrawable(0));
                         if (i == roster.getCurrentItemProtocol())
                             imageBarButtons.setBackgroundColor(Scheme.getColor(Scheme.THEME_CAP_BACKGROUND));

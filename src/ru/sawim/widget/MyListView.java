@@ -1,4 +1,4 @@
-package ru.sawim.view;
+package ru.sawim.widget;
 
 import android.content.Context;
 import android.util.AttributeSet;

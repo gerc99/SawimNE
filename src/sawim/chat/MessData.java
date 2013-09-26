@@ -5,7 +5,6 @@ import protocol.Contact;
 import ru.sawim.General;
 import ru.sawim.Scheme;
 import ru.sawim.text.TextFormatter;
-import ru.sawim.view.menu.JuickMenu;
 import sawim.comm.Util;
 
 public final class MessData {
@@ -18,10 +17,8 @@ public final class MessData {
     private short rowData;
     private final boolean confHighLight;
     private boolean isHighLight;
-    private Contact currentContact;
 
     private SpannableStringBuilder parsedText;
-    private static final TextFormatter textFormatter = new TextFormatter();
 
     public static final short URLS = 1;
     public static final short INCOMING = 2;
@@ -32,7 +29,6 @@ public final class MessData {
     public static final short MARKED = 64;
 
     public MessData(Contact currentContact, long time, String text, String nick, short flags, int iconIndex, boolean highLight) {
-        this.currentContact = currentContact;
         isHighLight = highLight;
         this.text = text;
         this.nick = nick;
@@ -43,18 +39,7 @@ public final class MessData {
         strTime = Util.getLocalDateString(time, today);
 
         confHighLight = (isIncoming() && !currentContact.isSingleUserContact() && isHighLight());
-
-        parsedText = TextFormatter.detectEmotions(text);
-        if (currentContact.getUserId().equals(JuickMenu.JUICK) || currentContact.getUserId().equals(JuickMenu.JUBO))
-            parsedText = textFormatter.getTextWithLinks(parsedText, 0xff00e4ff, JuickMenu.Mode.juick);
-        else if (currentContact.getUserId().equals(JuickMenu.PSTO))
-            parsedText = textFormatter.getTextWithLinks(parsedText, 0xff00e4ff, JuickMenu.Mode.psto);
-        else
-            parsedText = textFormatter.getTextWithLinks(parsedText, 0xff00e4ff, JuickMenu.Mode.none);
-    }
-
-    public Contact getCurrentContact() {
-        return currentContact;
+        parsedText = TextFormatter.getInstance().parsedText(currentContact, text);
     }
 
     public long getTime() {

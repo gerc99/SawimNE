@@ -161,7 +161,7 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
         profile.setHeader("work_info");
         profile.addParamWithLinks("title",    workCompany);
         profile.addParamWithLinks("depart",   workDepartment);
-        profile.addParamWithLinks("position", workPosition);
+        profile.addParamWithLinks("scrollPosition", workPosition);
         profile.addParamWithLinks("addr",     workAddress);
         profile.addParamWithLinks("city",     workCity);
         profile.addParamWithLinks("state",    workState);
@@ -169,7 +169,7 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
         profile.addParamWithLinks("fax",      workFax);
 
         profile.setHeader("avatar");
-        profile.addAvatar(null, General.avatarBitmap(avatar));
+        profile.addAvatar(null, ru.sawim.widget.Util.avatarBitmap(avatar));
         profileView.updateModel();
     }
     private void addMenu() {

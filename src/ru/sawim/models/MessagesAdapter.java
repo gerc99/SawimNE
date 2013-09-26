@@ -6,11 +6,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
-
 import android.net.Uri;
 import android.provider.Browser;
 import android.support.v4.app.FragmentActivity;
-
 import android.text.SpannableStringBuilder;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,14 +18,14 @@ import android.widget.TextView;
 import protocol.Protocol;
 import ru.sawim.General;
 import ru.sawim.R;
-import ru.sawim.view.MyTextView;
+import ru.sawim.view.PictureView;
+import ru.sawim.widget.MyTextView;
 import ru.sawim.view.menu.JuickMenu;
 import sawim.Clipboard;
 import sawim.chat.Chat;
 import sawim.chat.MessData;
 import sawim.chat.message.Message;
 import ru.sawim.Scheme;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,13 +39,13 @@ import java.util.List;
  */
 public class MessagesAdapter extends BaseAdapter {
 
-    private static FragmentActivity activity;
+    private FragmentActivity activity;
     private List<MessData> items = new ArrayList<MessData>();
-    private static Protocol currentProtocol;
-    private static String currentContact;
+    private Protocol currentProtocol;
+    private String currentContact;
     private HashMap<MessData, MessageItemView> messViewHash = new HashMap<MessData, MessageItemView>();
 
-    private boolean isMultiСitation = false;
+    private boolean isMultiQuote = false;
     private int position = -1;
 
     public void init(FragmentActivity activity, Chat chat) {
@@ -63,12 +61,12 @@ public class MessagesAdapter extends BaseAdapter {
         notifyDataSetChanged();
     }
 
-    public boolean isMultiСitation() {
-        return isMultiСitation;
+    public boolean isMultiQuote() {
+        return isMultiQuote;
     }
 
-    public void setMultiСitation(boolean multiShot) {
-        isMultiСitation = multiShot;
+    public void setMultiQuote(boolean multiShot) {
+        isMultiQuote = multiShot;
     }
 
     public void setPosition(int position) {
@@ -106,7 +104,7 @@ public class MessagesAdapter extends BaseAdapter {
         item.msgText.setOnTextLinkClickListener(textLinkClickListener);
         item.msgText.setTypeface(Typeface.DEFAULT);
         byte bg;
-        if (mData.isMarked() && isMultiСitation) {
+        if (mData.isMarked() && isMultiQuote) {
             bg = Scheme.THEME_CHAT_BG_MARKED;
             item.msgText.setTypeface(Typeface.DEFAULT_BOLD);
         } else if (mData.isService())
@@ -141,10 +139,10 @@ public class MessagesAdapter extends BaseAdapter {
             }
 
             item.msgNick.setVisibility(TextView.VISIBLE);
-            item.msgNick.setText(nick);
             item.msgNick.setTextColor(Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG));
             item.msgNick.setTypeface(Typeface.DEFAULT_BOLD);
             item.msgNick.setTextSize(General.getFontSize());
+            item.msgNick.setText(nick);
 
             item.msgTime.setVisibility(TextView.VISIBLE);
             item.msgTime.setTextColor(Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG));
@@ -156,7 +154,8 @@ public class MessagesAdapter extends BaseAdapter {
             item.msgText.setTextColor(Scheme.getColor(mData.getMessColor()));
             item.msgText.setLinkTextColor(0xff00e4ff);
         }
-        item.addDivider(activity, position == index, Scheme.getColor(Scheme.THEME_TEXT));
+        if (index > 0)
+            item.addDivider(activity, position == index && index != getCount(), Scheme.getColor(Scheme.THEME_TEXT));
         return item;
     }
 
@@ -198,11 +197,21 @@ public class MessagesAdapter extends BaseAdapter {
             } else {
                 if (!clickedString.startsWith("http://") && !clickedString.startsWith("https://"))
                     clickedString = "http://" + clickedString;
-                Uri uri = Uri.parse(clickedString);
-                Context context = textView.getContext();
-                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                intent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
-                context.startActivity(intent);
+                if ((clickedString.endsWith(".jpg"))
+                        || (clickedString.endsWith(".jpeg"))
+                        || (clickedString.endsWith(".png"))
+                        || (clickedString.endsWith(".gif"))
+                        || (clickedString.endsWith(".bmp"))) {
+                    PictureView pictureView = new PictureView();
+                    pictureView.setLink(clickedString);
+                    pictureView.show(activity.getSupportFragmentManager(), PictureView.TAG);
+                } else {
+                    Uri uri = Uri.parse(clickedString);
+                    Context context = textView.getContext();
+                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                    intent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
+                    context.startActivity(intent);
+                }
             }
         }
     };

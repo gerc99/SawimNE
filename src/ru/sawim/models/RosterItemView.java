@@ -6,14 +6,13 @@ import android.graphics.Typeface;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import protocol.Contact;
 import protocol.Group;
 import protocol.Protocol;
 import protocol.XStatusInfo;
 import ru.sawim.General;
 import ru.sawim.Scheme;
-import ru.sawim.view.MyTextView;
+import ru.sawim.widget.LabelView;
 import sawim.chat.ChatHistory;
 import sawim.chat.message.Message;
 import sawim.modules.tracking.Tracking;
@@ -28,8 +27,8 @@ import sawim.roster.Roster;
  */
 public class RosterItemView extends RelativeLayout {
 
-    public TextView itemName;
-    public TextView itemDescriptionText;
+    public LabelView itemName;
+    public LabelView itemDescriptionText;
     public ImageView itemFirstImage;
     public ImageView itemSecondImage;
     public ImageView itemThirdImage;
@@ -38,13 +37,13 @@ public class RosterItemView extends RelativeLayout {
 
     public RosterItemView(Context context) {
         super(context);
-        setPadding(20, 20, 20, 20);
+        setPadding(15, 15, 15, 15);
         itemFirstImage = new ImageView(context);
         itemFifthImage = new ImageView(context);
         itemSecondImage = new ImageView(context);
         itemThirdImage = new ImageView(context);
-        itemName = new TextView(context);
-        itemDescriptionText = new TextView(context);
+        itemName = new LabelView(context);
+        itemDescriptionText = new LabelView(context);
         itemFourthImage = new ImageView(context);
         build();
     }
@@ -81,7 +80,6 @@ public class RosterItemView extends RelativeLayout {
         lp.addRule(RIGHT_OF, itemThirdImage.getId());
         lp.addRule(ALIGN_TOP, itemFifthImage.getId());
         lp.addRule(ALIGN_PARENT_TOP);
-        itemName.setLines(1);
         itemName.setPadding(5, 5, 5, 5);
         itemName.setId(4);
         addView(itemName, lp);
@@ -90,7 +88,6 @@ public class RosterItemView extends RelativeLayout {
         lp.alignWithParent = true;
         lp.addRule(RIGHT_OF, itemThirdImage.getId());
         lp.addRule(BELOW, itemName.getId());
-        itemDescriptionText.setLines(1);
         itemDescriptionText.setPadding(5, 0, 0, 0);
         itemDescriptionText.setId(5);
         addView(itemDescriptionText, lp);
@@ -128,7 +125,7 @@ public class RosterItemView extends RelativeLayout {
             itemFirstImage.setImageDrawable(icGroup.getImage());
         }
 
-        itemDescriptionText.setVisibility(MyTextView.GONE);
+        itemDescriptionText.setVisibility(LabelView.GONE);
         itemThirdImage.setVisibility(ImageView.GONE);
         itemSecondImage.setVisibility(ImageView.GONE);
         itemFifthImage.setVisibility(ImageView.GONE);
@@ -154,11 +151,11 @@ public class RosterItemView extends RelativeLayout {
         if (General.showStatusLine) {
             String statusMessage = roster.getStatusMessage(item);
             itemDescriptionText.setTextSize(General.getFontSize() - 2);
-            itemDescriptionText.setVisibility(MyTextView.VISIBLE);
+            itemDescriptionText.setVisibility(LabelView.VISIBLE);
             itemDescriptionText.setTextColor(Scheme.getColor(Scheme.THEME_CONTACT_STATUS));
             itemDescriptionText.setText(statusMessage);
         } else {
-            itemDescriptionText.setVisibility(MyTextView.GONE);
+            itemDescriptionText.setVisibility(LabelView.GONE);
         }
 
         Icon icStatus = item.getLeftIcon(p);

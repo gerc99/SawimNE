@@ -8,6 +8,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.util.Log;
 import ru.sawim.General;
 import ru.sawim.SawimApplication;
+import ru.sawim.widget.Util;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -125,15 +126,11 @@ public class ImageList {
                 case 120:
                     if (originBitmap.getWidth() > 16)
                         originBitmap = Bitmap.createScaledBitmap(originBitmap, 16, 16, true);
-                    else
-                        return originBitmap;
                     break;
                 case 160:
                 case 180:
-                    if (originBitmap.getWidth() >= 24 && !General.isTablet(SawimApplication.getInstance().getContext()))
+                    if (originBitmap.getWidth() >= 24 && !Util.isTablet(SawimApplication.getInstance().getContext()))
                         originBitmap = Bitmap.createScaledBitmap(originBitmap, 24, 24, true);
-                    else
-                        return originBitmap;
                     break;
                 default:
                     return originBitmap;

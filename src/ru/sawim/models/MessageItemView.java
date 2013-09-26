@@ -3,7 +3,8 @@ package ru.sawim.models;
 import android.content.Context;
 import android.view.View;
 import android.widget.*;
-import ru.sawim.view.MyTextView;
+import ru.sawim.widget.LabelView;
+import ru.sawim.widget.MyTextView;
 
 /**
  * Created with IntelliJ IDEA.
@@ -15,15 +16,16 @@ import ru.sawim.view.MyTextView;
 public class MessageItemView extends RelativeLayout {
 
     public ImageView msgImage;
-    public MyTextView msgNick;
-    public TextView msgTime;
+    public LabelView msgNick;
+    public LabelView msgTime;
     public MyTextView msgText;
 
     public MessageItemView(Context context) {
         super(context);
+        setPadding(5, 0, 5, 0);
         msgImage = new ImageView(context);
-        msgNick = new MyTextView(context);
-        msgTime = new TextView(context);
+        msgNick = new LabelView(context);
+        msgTime = new LabelView(context);
         msgText = new MyTextView(context);
 
         setAnimationCacheEnabled(false);
@@ -43,12 +45,11 @@ public class MessageItemView extends RelativeLayout {
         lp = new RelativeLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
         lp.addRule(LEFT_OF, msgTime.getId());
         lp.addRule(RIGHT_OF, msgImage.getId());
-        msgNick.setLines(1);
         msgNick.setId(2);
         addView(msgNick, lp);
 
         lp = new RelativeLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-        lp.addRule(BELOW, msgNick.getId());
+        lp.addRule(BELOW, msgImage.getId());
         msgText.setId(4);
         msgText.setScrollContainer(false);
         addView(msgText, lp);

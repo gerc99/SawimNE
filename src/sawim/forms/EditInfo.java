@@ -65,7 +65,7 @@ public class EditInfo implements FormListener {
         form.addHeader("work_info");
         form.addTextField(_WorkCompanyItem, "title", userInfo.workCompany);
         form.addTextField(_WorkDepartmentItem, "depart", userInfo.workDepartment);
-        form.addTextField(_WorkPositionItem, "position", userInfo.workPosition);
+        form.addTextField(_WorkPositionItem, "scrollPosition", userInfo.workPosition);
         
         if (isJabber) {
             form.addTextField(_WorkPhoneItem, "phone", userInfo.workPhone);

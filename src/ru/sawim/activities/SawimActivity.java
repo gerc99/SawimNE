@@ -67,9 +67,9 @@ public class SawimActivity extends FragmentActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        General.sawimActivity = this;
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
         setContentView(R.layout.main);
-        General.sawimActivity = this;
         ExternalApi.instance.setActivity(this);
 
         Logger.removeAllAppenders();

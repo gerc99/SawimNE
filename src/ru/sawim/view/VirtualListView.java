@@ -7,13 +7,12 @@ import android.view.*;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import ru.sawim.General;
-import ru.sawim.activities.SawimActivity;
 import ru.sawim.models.form.VirtualListItem;
 import ru.sawim.Scheme;
 import ru.sawim.models.list.VirtualList;
 import ru.sawim.R;
 import ru.sawim.models.VirtualListAdapter;
-import ru.sawim.models.list.VirtualListModel;
+import ru.sawim.widget.MyListView;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -4,10 +4,10 @@ import DrawControls.icons.Icon;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.GradientDrawable;
 import android.support.v4.app.FragmentTransaction;
 import ru.sawim.General;
-import ru.sawim.SawimApplication;
+import ru.sawim.widget.MyListView;
+import ru.sawim.widget.Util;
 import sawim.roster.TreeNode;
 import android.graphics.Rect;
 import android.os.Bundle;
@@ -117,7 +117,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         horizontalScrollView = new HorizontalScrollView(activity);
-        LinearLayout.LayoutParams protocolBarLayoutLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, General.dipToPixels(getActivity(), 50));
+        LinearLayout.LayoutParams protocolBarLayoutLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, Util.dipToPixels(getActivity(), 50));
         protocolBarLayout = new LinearLayout(activity);
         protocolBarLayout.setOrientation(LinearLayout.HORIZONTAL);
         protocolBarLayout.setLayoutParams(protocolBarLayoutLP);
@@ -156,7 +156,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         public RosterViewRoot(Context context) {
             super(context);
 
-            LinearLayout.LayoutParams horizontalScrollViewLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, General.dipToPixels(getActivity(), 50));
+            LinearLayout.LayoutParams horizontalScrollViewLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, Util.dipToPixels(getActivity(), 50));
             horizontalScrollViewLP.gravity = Gravity.TOP;
             addViewInLayout(horizontalScrollView, 0, horizontalScrollViewLP, true);
 
@@ -289,7 +289,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
                             imageBarButtons.setImageDrawable(messageIcon.getImage());
 
                         protocolBarLayout.addView(imageBarButtons);
-                        protocolBarLayout.addView(General.getDivider(getActivity(), true, Scheme.getColor(Scheme.THEME_BACKGROUND)));
+                        protocolBarLayout.addView(Util.getDivider(getActivity(), true, Scheme.getColor(Scheme.THEME_BACKGROUND)));
                     }
                 }
             }
@@ -349,7 +349,8 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
             if (viewPager.getCurrentItem() == RosterAdapter.ACTIVE_CONTACTS)
                 p = c.getProtocol();
             openChat(p, c, false);
-            if (General.isTablet(getActivity()))
+            if (getActivity().getSupportFragmentManager()
+                    .findFragmentById(R.id.chat_fragment) != null)
                 updateRoster();
         } else if (item.isGroup()) {
             Group group = (Group) item;

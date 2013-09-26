@@ -49,7 +49,12 @@ public class SawimApplication extends Application {
         super.onCreate();
         MIDletInit();
         new General().startApp();
-        ChatHistory.instance.loadUnreadMessages();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                ChatHistory.instance.loadUnreadMessages();
+            }
+        }).start();
         updateAppIcon();
         if (Roster.getInstance() != null) {
             Roster.getInstance().autoConnect();

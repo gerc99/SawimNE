@@ -315,7 +315,7 @@ public final class FileTransfer implements FileBrowserListener,
             @Override
             public void run() {
                 try {
-                    name_Desc.addBitmap(General.avatarBitmap(image));
+                    name_Desc.addBitmap(ru.sawim.widget.Util.avatarBitmap(image));
                 } catch (Throwable ignored) {
                 }
             }

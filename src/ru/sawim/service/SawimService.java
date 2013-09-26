@@ -69,7 +69,7 @@ public class SawimService extends Service {
             }
         }
 
-        final Notification notification = new Notification(icon, getText(R.string.app_name), 0);
+        final Notification notification = new Notification(icon, null, 0);
         if (0 < unread) {
             notification.ledARGB = 0xff00ff00;
             notification.ledOnMS = 300;

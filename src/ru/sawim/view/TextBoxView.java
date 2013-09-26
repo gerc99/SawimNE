@@ -60,11 +60,7 @@ public class TextBoxView extends DialogFragment implements View.OnClickListener 
     }
 
     public void setString(String string) {
-        if (string == null) {
-            text = "";
-        } else {
-            text = string;
-        }
+        text = string == null ? "" : string;
     }
 
     public void setTextBoxListener(TextBoxListener textBoxListener) {

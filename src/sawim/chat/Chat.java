@@ -31,9 +31,9 @@ public final class Chat {
     private boolean visibleChat;
 
     public String message = "";
-    public int position;
+    public int scrollPosition;
     public int offset;
-    public int lastPosition;
+    public int dividerPosition;
 
     public Chat(Protocol p, Contact item) {
         contact = item;

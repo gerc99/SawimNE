@@ -20,7 +20,7 @@
               android:layout_height="match_parent"
               android:orientation="vertical"
               android:padding="5dp">
-    <ru.sawim.view.MyListView android:id="@+id/list_view"
+    <ru.sawim.widget.MyListView android:id="@+id/list_view"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
               android:fastScrollEnabled="true"/>
