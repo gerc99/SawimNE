@@ -4,6 +4,7 @@ import android.text.SpannableStringBuilder;
 import protocol.Contact;
 import ru.sawim.General;
 import ru.sawim.Scheme;
+import ru.sawim.models.MessageItemView;
 import ru.sawim.text.TextFormatter;
 import sawim.comm.Util;
 
@@ -19,6 +20,7 @@ public final class MessData {
     private boolean isHighLight;
 
     private SpannableStringBuilder parsedText;
+    public MessageItemView messView;
 
     public static final short URLS = 1;
     public static final short INCOMING = 2;

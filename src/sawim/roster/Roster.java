@@ -470,7 +470,7 @@ public final class Roster {
             drawItems.add(g);
             contacts = g.getContacts();
             int contactsSize = contacts.size();
-            for (int contactIndex = 0; contactIndex < contactsSize; ++contactIndex) {
+            for (int contactIndex = 0; contactIndex < contactsSize; contactIndex++) {
                 c = (Contact) contacts.elementAt(contactIndex);
                 if (all || c.isVisibleInContactList() || (c == selectedItem)) {
                     if (g.isExpanded()) {
@@ -494,7 +494,7 @@ public final class Roster {
         contactCounter = 0;
         onlineContactCounter = 0;
         int contactsSize = contacts.size();
-        for (int contactIndex = 0; contactIndex < contactsSize; ++contactIndex) {
+        for (int contactIndex = 0; contactIndex < contactsSize; contactIndex++) {
             c = (Contact) contacts.elementAt(contactIndex);
             if (all || c.isVisibleInContactList() || (c == selectedItem)) {
                 if (g.isExpanded()) {

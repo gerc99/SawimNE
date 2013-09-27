@@ -126,6 +126,7 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
             }
         }
         profileView.setModel(profile);
+        profileView.updateModel();
     }
     private void updateProfileView(VirtualListModel profile) {
         profile.clear();
@@ -170,7 +171,6 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
 
         profile.setHeader("avatar");
         profile.addAvatar(null, ru.sawim.widget.Util.avatarBitmap(avatar));
-        profileView.updateModel();
     }
     private void addMenu() {
         addContextMenu();
@@ -277,9 +277,9 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
         profile.addParam(protocol.getUserIdName(), uin);
         profileView.updateModel();
         profile.setInfoMessage(JLocale.getString("wait"));
-        profileView.updateModel();
         addContextMenu();
         profileView.setModel(profile);
+        profileView.updateModel();
     }
 
     public boolean isEditable() {

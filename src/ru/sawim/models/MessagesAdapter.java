@@ -26,8 +26,8 @@ import sawim.chat.Chat;
 import sawim.chat.MessData;
 import sawim.chat.message.Message;
 import ru.sawim.Scheme;
+
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -43,7 +43,6 @@ public class MessagesAdapter extends BaseAdapter {
     private List<MessData> items = new ArrayList<MessData>();
     private Protocol currentProtocol;
     private String currentContact;
-    private HashMap<MessData, MessageItemView> messViewHash = new HashMap<MessData, MessageItemView>();
 
     private boolean isMultiQuote = false;
     private int position = -1;
@@ -91,11 +90,10 @@ public class MessagesAdapter extends BaseAdapter {
     @Override
     public View getView(int index, View row, ViewGroup viewGroup) {
         final MessData mData = items.get(index);
-        MessageItemView item = messViewHash.get(mData);
-        if (item == null) {
-            item = new MessageItemView(activity);
-            messViewHash.put(mData, item);
+        if (mData.messView == null) {
+            mData.messView = new MessageItemView(activity);
         }
+        MessageItemView item = mData.messView;
         SpannableStringBuilder parsedText = mData.parsedText();
         String nick = mData.getNick();
         boolean incoming = mData.isIncoming();
@@ -154,8 +152,8 @@ public class MessagesAdapter extends BaseAdapter {
             item.msgText.setTextColor(Scheme.getColor(mData.getMessColor()));
             item.msgText.setLinkTextColor(0xff00e4ff);
         }
-        if (index > 0)
-            item.addDivider(activity, position == index && index != getCount(), Scheme.getColor(Scheme.THEME_TEXT));
+        if (index > 0 && position != getCount())
+            item.addDivider(activity, position == index, Scheme.getColor(Scheme.THEME_TEXT));
         return item;
     }
 
