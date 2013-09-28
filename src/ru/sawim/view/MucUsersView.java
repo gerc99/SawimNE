@@ -11,6 +11,7 @@ import android.widget.ListView;
 import protocol.ContactMenu;
 import protocol.Protocol;
 import protocol.jabber.*;
+import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
@@ -40,7 +41,7 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
     }
 
     public void show(final ChatView chatView, ListView nickList) {
-        final FragmentActivity activity = chatView.getActivity();
+        final FragmentActivity activity = General.sawimActivity;
         usersAdapter.init(activity, (Jabber) protocol, jabberServiceContact);
         nickList.setBackgroundColor(Scheme.getInversColor(Scheme.THEME_BACKGROUND));
         nickList.setAdapter(usersAdapter);

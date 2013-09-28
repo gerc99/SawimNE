@@ -250,7 +250,6 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
                 }
             }
         });
-
     }
 
     private void update() {

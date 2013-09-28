@@ -102,7 +102,7 @@ public class SendToView extends Fragment implements AdapterView.OnItemClickListe
                 transaction.replace(R.id.fragment_container, newFragment, ChatView.TAG);
                 transaction.addToBackStack(null);
                 transaction.commit();
-                newFragment.pastText(intent.getStringExtra(Intent.EXTRA_TEXT));
+                newFragment.insert(intent.getStringExtra(Intent.EXTRA_TEXT));
             } else {
                 try {
                     InputStream is = getActivity().getContentResolver().openInputStream(data);

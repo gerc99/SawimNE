@@ -58,7 +58,7 @@ public class MessageItemView extends RelativeLayout {
         addView(msgText, lp);
     }
 
-    public void addDivider(Context context, boolean isAdd, int color) {
+    public void addDivider(Context context, int color, boolean isAdd) {
         View v = new View(context);
         v.setId(5);
         v.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, 1));

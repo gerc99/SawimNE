@@ -62,6 +62,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
     private static Protocol lastProtocol;
     private static Contact lastContact;
     private boolean sendByEnter;
+    private boolean isTablet;
 
     private ImageButton usersImage;
     private ImageButton chatsImage;
@@ -154,6 +155,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
         }
 
         public void showHint() {
+            hideHint();
             TextView hint = new TextView(getContext());
             hint.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
             hint.setTextSize(23);
@@ -211,7 +213,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
             setLayoutParams(layoutParams);
 
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            if (getContext().getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT && (getContext().getResources().getDisplayMetrics().densityDpi < 200 || android.os.Build.MODEL == "Digma iDx5"))
+            if (!isTablet && (getContext().getResources().getDisplayMetrics().densityDpi < 200 || android.os.Build.MODEL == "Digma iDx5"))
                 lp.weight = 10;
             else
                 lp.weight = 1;
@@ -219,9 +221,9 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
             addViewInLayout(chatListView, 0, lp);
 
             lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            if (getContext().getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT && (getContext().getResources().getDisplayMetrics().densityDpi < 200 || android.os.Build.MODEL == "Digma iDx5"))
+            if (!isTablet && (getContext().getResources().getDisplayMetrics().densityDpi < 200 || android.os.Build.MODEL == "Digma iDx5"))
                 lp.weight = 0;
-            else if (getContext().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)
+            else if (isTablet)
                 lp.weight = 3;
             else
                 lp.weight = (float) 1.5;
@@ -270,9 +272,10 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
             chat_viewLayout = new ChatViewRoot(getActivity());
         else
             ((ViewGroup)chat_viewLayout.getParent()).removeView(chat_viewLayout);
+        isTablet = (General.sawimActivity.findViewById(R.id.fragment_container) == null);
         int background = Scheme.getColor(Scheme.THEME_BACKGROUND);
         chat_viewLayout.setBackgroundColor(background);
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+        if (!isTablet) {
             usersImage.setBackgroundDrawable(new ColorDrawable(0));
             usersImage.setImageDrawable(General.usersIcon);
             usersImage.setOnClickListener(new View.OnClickListener() {
@@ -297,7 +300,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
                 forceGoToChat(ChatHistory.instance.getPreferredItem());
             }
         });
-        if (General.sawimActivity.findViewById(R.id.fragment_container) == null) {
+        if (isTablet) {
             menuButton.setVisibility(ImageButton.VISIBLE);
             menuButton.setBackgroundColor(background);
             menuButton.setOnClickListener(new View.OnClickListener() {
@@ -338,7 +341,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
                 @Override
                 public void onClick(View view) {
                     send();
-                    if (nickList.getVisibility() == View.VISIBLE && General.sawimActivity.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
+                    if (nickList.getVisibility() == View.VISIBLE && !isTablet)
                         nickList.setVisibility(View.GONE);
                 }
             });
@@ -361,16 +364,12 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
         if (args != null) {
             Protocol protocol = Roster.getInstance().getProtocol(args.getString(PROTOCOL_ID));
             Contact contact = protocol.getItemByUIN(args.getString(CONTACT_ID));
-            if (contact == null)
-                openChat(lastProtocol, lastContact);
-            else
-                openChat(protocol, contact);
+            if (contact == null) openChat(lastProtocol, lastContact);
+            else openChat(protocol, contact);
         }
-        if (General.sawimActivity.findViewById(R.id.fragment_container) == null)
-            if (lastContact == null)
-                chat_viewLayout.showHint();
-            else
-                openChat(lastProtocol, lastContact);
+        if (isTablet)
+            if (lastContact == null) chat_viewLayout.showHint();
+            else openChat(lastProtocol, lastContact);
     }
 
     @Override
@@ -430,7 +429,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
         updateList(contact);
     }
 
-    public void removeMessages(final int limit) {
+    private void removeMessages(final int limit) {
         if (chat.getMessData().size() < limit) return;
         if ((0 < limit) && (0 < chat.getMessData().size())) {
             while (limit < chat.getMessData().size()) {
@@ -442,7 +441,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
     }
 
     public boolean hasBack() {
-        if (nickList != null && General.sawimActivity.findViewById(R.id.fragment_container) != null)
+        if (nickList != null && !isTablet)
             if (nickList.getVisibility() == View.VISIBLE) {
                 nickList.setVisibility(View.GONE);
                 return false;
@@ -520,19 +519,13 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
     }
 
     private void initMucUsers() {
-        if (General.sawimActivity.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
-            nickList.setVisibility(View.GONE);
-        else
-            nickList.setVisibility(View.VISIBLE);
+        nickList.setVisibility(isTablet ? View.VISIBLE : View.GONE);
         nickList.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
         if (contact instanceof JabberServiceContact && contact.isConference()) {
             mucUsersView = new MucUsersView();
             mucUsersView.init(protocol, (JabberServiceContact) contact);
             mucUsersView.show(this, nickList);
-            if (General.sawimActivity.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
-                usersImage.setVisibility(View.VISIBLE);
-            else
-                usersImage.setVisibility(View.GONE);
+            usersImage.setVisibility(isTablet ? View.GONE : View.VISIBLE);
         } else {
             usersImage.setVisibility(View.GONE);
             nickList.setVisibility(View.GONE);
@@ -554,7 +547,6 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
         General.sawimActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                adapter.setPosition(chat.dividerPosition);
                 updateChatIcon();
                 updateList(contact);
             }
@@ -596,7 +588,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
                     msg = "*" + mData.getNick() + " " + msg;
                 }
                 if (mData.isMarked()) {
-                    sb.append(Clipboard.serialize(mData.isIncoming(), mData.getNick() + " " + mData.strTime, msg));
+                    sb.append(Clipboard.serialize(false, mData.isIncoming(), mData.getNick() + " " + mData.strTime, msg));
                     sb.append("\n-----\n");
                 }
                 Clipboard.setClipBoardText(0 == sb.length() ? null : sb.toString());
@@ -616,6 +608,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
     }
 
     public void showMenu() {
+        if (chat == null) return;
         final MyMenu menu = new MyMenu(General.sawimActivity);
         boolean accessible = chat.getWritable() && (contact.isSingleUserContact() || contact.isOnline());
         menu.add(getString(adapter.isMultiQuote() ?
@@ -733,7 +726,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
                 if (md.isMe()) {
                     msg = "*" + md.getNick() + " " + msg;
                 }
-                sb.append(Clipboard.serialize(md.isIncoming(), md.getNick() + " " + md.strTime, msg));
+                sb.append(Clipboard.serialize(true, md.isIncoming(), md.getNick() + " " + md.strTime, msg));
                 sb.append("\n-----\n");
                 Clipboard.setClipBoardText(0 == sb.length() ? null : sb.toString());
                 break;
@@ -803,11 +796,12 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
     }
 
     private void send() {
+        if (chat == null) return;
         hideKeyboard(messageEditor);
         chat.sendMessage(getText());
         resetText();
+        adapter.setPosition(-1);
         updateList(contact);
-        //updatePosition();
     }
 
     private boolean canAdd(String what) {
@@ -896,6 +890,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
 
         @Override
         public void afterTextChanged(Editable s) {
+            if (protocol == null) return;
             int length = s.length();
             if (length > 0) {
                 if (!compose) {

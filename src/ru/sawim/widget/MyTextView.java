@@ -105,19 +105,18 @@ public class MyTextView extends View {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int specSize = MeasureSpec.getSize(widthMeasureSpec);
-        makeLayout(specSize);
-        if (oldText != mText)
+        if (oldText != mText) {
+            oldText = mText;
             makeLayout(specSize);
-        if (layout == null)
-            makeLayout(specSize);
+        }
+        if (layout == null) makeLayout(specSize);
         setMeasuredDimension(specSize, layout.getLineTop(layout.getLineCount()));
     }
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        if (w != oldw)
-            makeLayout(w);
+        if (w != oldw) makeLayout(w);
     }
 
     private void updateTextColors() {

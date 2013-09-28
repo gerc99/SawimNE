@@ -8,11 +8,11 @@ import ru.sawim.activities.SawimActivity;
 
 public final class Clipboard {
 
-    private static void insertQuotingChars(StringBuffer out, String text, char qChars) {
+    private static void insertQuotingChars(StringBuffer out, String text, boolean isSubstring, char qChars) {
         int size = text.length();
         int quoteMaxLen = 100;
-        boolean isSubstring = size > quoteMaxLen;
-        if (isSubstring) size = quoteMaxLen;
+        boolean isSubstr = size > quoteMaxLen && isSubstring;
+        if (isSubstr) size = quoteMaxLen;
         boolean wasNewLine = true;
         for (int i = 0; i < size; ++i) {
             char chr = text.charAt(i);
@@ -20,13 +20,13 @@ public final class Clipboard {
             out.append(chr);
             wasNewLine = (chr == '\n');
         }
-        if (isSubstring) out.append("...");
+        if (isSubstr) out.append("...");
     }
 
-    public static String serialize(boolean incoming, String header, String text) {
+    public static String serialize(boolean isSubstring, boolean incoming, String header, String text) {
         StringBuffer sb = new StringBuffer();
         sb.append('[').append(header).append(']').append('\n');
-        insertQuotingChars(sb, text, incoming ? '\u00bb' : '\u00ab');
+        insertQuotingChars(sb, text, isSubstring, incoming ? '\u00bb' : '\u00ab');
         return sb.toString();
     }
 

@@ -9,6 +9,7 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.provider.Browser;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.text.SpannableStringBuilder;
 import android.view.View;
 import android.view.ViewGroup;
@@ -152,8 +153,8 @@ public class MessagesAdapter extends BaseAdapter {
             item.msgText.setTextColor(Scheme.getColor(mData.getMessColor()));
             item.msgText.setLinkTextColor(0xff00e4ff);
         }
-        if (index > 0 && position != getCount())
-            item.addDivider(activity, position == index, Scheme.getColor(Scheme.THEME_TEXT));
+        item.addDivider(activity, Scheme.getColor(Scheme.THEME_TEXT),
+                position == index && index > 0 && position != getCount());
         return item;
     }
 
@@ -202,7 +203,9 @@ public class MessagesAdapter extends BaseAdapter {
                         || (clickedString.endsWith(".bmp"))) {
                     PictureView pictureView = new PictureView();
                     pictureView.setLink(clickedString);
-                    pictureView.show(activity.getSupportFragmentManager(), PictureView.TAG);
+                    FragmentTransaction transaction = activity.getSupportFragmentManager().beginTransaction();
+                    transaction.add(pictureView, PictureView.TAG);
+                    transaction.commitAllowingStateLoss();
                 } else {
                     Uri uri = Uri.parse(clickedString);
                     Context context = textView.getContext();
