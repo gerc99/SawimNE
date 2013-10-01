@@ -798,6 +798,8 @@ abstract public class Protocol {
             getRoster().putIntoQueue(group);
         }
         getRoster().updateRoster(contact);
+        if (getRoster().getUpdateChatListener() != null)
+            getRoster().getUpdateChatListener().updateChat(contact);
     }
 
     private void cl_addContact(Contact contact) {

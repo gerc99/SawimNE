@@ -34,6 +34,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.*;
+import android.widget.Toast;
 import protocol.Contact;
 import ru.sawim.view.*;
 import sawim.ExternalApi;
@@ -57,17 +58,17 @@ import ru.sawim.*;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.lang.reflect.Field;
 
 public class SawimActivity extends FragmentActivity {
 
     public static final String LOG_TAG = "SawimActivity";
     public static String NOTIFY = "ru.sawim.notify";
+    public static boolean returnFromAcc = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        General.sawimActivity = this;
+        General.currentActivity = this;
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
         setContentView(R.layout.main);
         ExternalApi.instance.setActivity(this);
@@ -106,14 +107,13 @@ public class SawimActivity extends FragmentActivity {
                 }
             }
         }));
-
-        if (findViewById(R.id.fragment_container) != null) {
-            if (savedInstanceState != null) return;
-            RosterView rosterView = new RosterView();
-            rosterView.setArguments(getIntent().getExtras());
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container, rosterView, RosterView.TAG).commit();
-        }
+            if (findViewById(R.id.fragment_container) != null) {
+                if (savedInstanceState != null) return;
+                RosterView rosterView = new RosterView();
+                rosterView.setArguments(getIntent().getExtras());
+                getSupportFragmentManager().beginTransaction()
+                        .add(R.id.fragment_container, rosterView, RosterView.TAG).commit();
+            }
         //handleIntent(getIntent());
     }
 
@@ -190,7 +190,30 @@ public class SawimActivity extends FragmentActivity {
     @Override
     public void onResume() {
         super.onResume();
+        General.currentActivity = this;
         General.maximize();
+        Protocol protocol = Roster.getInstance().getCurrentProtocol();
+        FragmentTransaction transaction = General.currentActivity.getSupportFragmentManager().beginTransaction();
+        if (protocol == null) {
+            if (General.currentActivity.getSupportFragmentManager()
+                    .findFragmentById(R.id.chat_fragment) != null)
+                General.currentActivity.setContentView(R.layout.intercalation_layout);
+            StartWindowView newFragment = new StartWindowView();
+            transaction.replace(R.id.fragment_container, newFragment, StartWindowView.TAG);
+            transaction.addToBackStack(null);
+            transaction.commitAllowingStateLoss();
+        } else if (returnFromAcc) {
+            returnFromAcc = false;
+            if (protocol.getContactItems().size() == 0 && !protocol.isConnecting())
+                Toast.makeText(General.currentActivity, R.string.press_menu_for_connect, Toast.LENGTH_LONG).show();
+            if (General.currentActivity.getSupportFragmentManager()
+                    .findFragmentById(R.id.chat_fragment) != null)
+                General.currentActivity.setContentView(R.layout.intercalation_layout);
+            RosterView newFragment = new RosterView();
+            transaction.replace(R.id.fragment_container, newFragment, RosterView.TAG);
+            transaction.addToBackStack(null);
+            transaction.commitAllowingStateLoss();
+        }
         //handleIntent(getIntent());
     }
 
@@ -243,7 +266,7 @@ public class SawimActivity extends FragmentActivity {
     }
 
     private void back() {
-        if (General.sawimActivity.getSupportFragmentManager()
+        if (General.currentActivity.getSupportFragmentManager()
                 .findFragmentById(R.id.chat_fragment) != null)
             recreateActivity();
         else
@@ -286,7 +309,7 @@ public class SawimActivity extends FragmentActivity {
             return true;
         }
 
-        Protocol p = Roster.getInstance().getCurrProtocol();
+        Protocol p = Roster.getInstance().getCurrentProtocol();
         if (p != null) {
             menu.add(Menu.NONE, MENU_CONNECT, Menu.NONE, R.string.connect);
             menu.findItem(MENU_CONNECT).setTitle((p.isConnected() || p.isConnecting()) ? R.string.disconnect : R.string.connect);
@@ -345,7 +368,7 @@ public class SawimActivity extends FragmentActivity {
             virtualListView.onOptionsItemSelect(item);
             return super.onOptionsItemSelected(item);
         }
-        Protocol p = Roster.getInstance().getCurrProtocol();
+        Protocol p = Roster.getInstance().getCurrentProtocol();
         switch (item.getItemId()) {
             case MENU_CONNECT:
                 p.setStatus((p.isConnected() || p.isConnecting())

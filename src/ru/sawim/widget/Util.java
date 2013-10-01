@@ -43,7 +43,7 @@ public class Util {
             is.reset();
             int imageWidth = o.outWidth;
             float s = imageWidth / o.outHeight;
-            int screenWidth = General.sawimActivity == null ? 300 : General.sawimActivity.getWindowManager().getDefaultDisplay().getWidth();
+            int screenWidth = General.currentActivity == null ? 300 : General.currentActivity.getWindowManager().getDefaultDisplay().getWidth();
             if (imageWidth > screenWidth) imageWidth = screenWidth;
             Log.e("ResizeBitmap", "" + o.outHeight);
             bitmap = BitmapFactory.decodeStream(is, null, o);
@@ -59,7 +59,7 @@ public class Util {
     public static Bitmap avatarBitmap(byte[] buffer) {
         if (buffer == null) return null;
         DisplayMetrics metrics = new DisplayMetrics();
-        General.sawimActivity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        General.currentActivity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
         float scaleWidth = metrics.scaledDensity;
         float scaleHeight = metrics.scaledDensity;
 

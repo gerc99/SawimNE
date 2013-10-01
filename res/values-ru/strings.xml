@@ -213,4 +213,6 @@
     <string name="hint_message">сообщение...</string>
     <string name="enter_the">Введите</string>
     <string name="select_contact">Выберите контакт, чтобы начать чат</string>
+    <string name="server">Сервер</string>
+    <string name="hint_registration_domen">это сервер по умолчанию, вы можете зарегистрироваться на другом</string>
 </resources>

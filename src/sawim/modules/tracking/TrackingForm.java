@@ -8,7 +8,6 @@ import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
-import ru.sawim.activities.SawimActivity;
 import ru.sawim.models.form.VirtualListItem;
 import ru.sawim.models.list.VirtualList;
 import ru.sawim.models.list.VirtualListModel;
@@ -289,7 +288,7 @@ public final class TrackingForm implements TextBoxView.TextBoxListener {
 		InputBox.setTextBoxListener(this);
 		InputBox.setCaption(JLocale.getString("mass"));
         InputBox.setString(text);
-        InputBox.show(General.sawimActivity.getSupportFragmentManager(), JLocale.getString("message"));
+        InputBox.show(General.currentActivity.getSupportFragmentManager(), JLocale.getString("message"));
     }
 
     private void changeStatus(int index) {

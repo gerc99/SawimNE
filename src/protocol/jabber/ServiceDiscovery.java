@@ -7,7 +7,6 @@ import android.widget.Toast;
 import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
-import ru.sawim.activities.SawimActivity;
 import ru.sawim.models.form.VirtualListItem;
 import ru.sawim.models.list.VirtualList;
 import java.util.Vector;
@@ -136,13 +135,13 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
                     case COMMAND_SEARCH:
                         searchBox.setString("");
                         searchBox.setTextBoxListener(ServiceDiscovery.this);
-                        searchBox.show(General.sawimActivity.getSupportFragmentManager(), JLocale.getString("service_discovery_search"));
+                        searchBox.show(General.currentActivity.getSupportFragmentManager(), JLocale.getString("service_discovery_search"));
                         break;
 
                     case COMMAND_SET_SERVER:
                         serverBox.setString(serverJid);
                         serverBox.setTextBoxListener(ServiceDiscovery.this);
-                        serverBox.show(General.sawimActivity.getSupportFragmentManager(), JLocale.getString("service_discovery_server"));
+                        serverBox.show(General.currentActivity.getSupportFragmentManager(), JLocale.getString("service_discovery_server"));
                         break;
 
                     case COMMAND_HOME:

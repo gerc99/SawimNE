@@ -69,7 +69,7 @@ public final class AffiliationListConf implements FormListener, TextBoxView.Text
 
                     case COMMAND_SEARCH:
                         searchBox.setTextBoxListener(AffiliationListConf.this);
-                        searchBox.show(General.sawimActivity.getSupportFragmentManager(), "service_discovery_search");
+                        searchBox.show(General.currentActivity.getSupportFragmentManager(), "service_discovery_search");
                         break;
                 }
             }

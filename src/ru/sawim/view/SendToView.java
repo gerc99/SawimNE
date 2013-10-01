@@ -2,7 +2,6 @@ package ru.sawim.view;
 
 import DrawControls.icons.Icon;
 import android.content.Intent;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
@@ -29,7 +28,6 @@ import sawim.roster.TreeNode;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.util.HashMap;
 
 /**
  * Created with IntelliJ IDEA.
@@ -84,7 +82,7 @@ public class SendToView extends Fragment implements AdapterView.OnItemClickListe
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
         TreeNode item = allRosterAdapter.getItem(position);
         if (item.isContact()) {
-            Protocol p = roster.getCurrProtocol();
+            Protocol p = roster.getCurrentProtocol();
             Contact c = ((Contact) item);
             Intent intent = getActivity().getIntent();
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -102,7 +100,8 @@ public class SendToView extends Fragment implements AdapterView.OnItemClickListe
                 transaction.replace(R.id.fragment_container, newFragment, ChatView.TAG);
                 transaction.addToBackStack(null);
                 transaction.commit();
-                newFragment.insert(intent.getStringExtra(Intent.EXTRA_TEXT));
+                if (intent.getStringExtra(Intent.EXTRA_TEXT) != null)
+                    newFragment.insert(intent.getStringExtra(Intent.EXTRA_TEXT));
             } else {
                 try {
                     InputStream is = getActivity().getContentResolver().openInputStream(data);

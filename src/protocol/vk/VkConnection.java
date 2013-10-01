@@ -7,7 +7,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import protocol.Group;
 import protocol.vk.api.VkApp;
-import ru.sawim.activities.SawimActivity;
 
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -21,7 +20,7 @@ import java.util.Vector;
  * @author vladimir
  */
 public class VkConnection implements Runnable {
-    private VkApp api = new VkApp(General.sawimActivity);
+    private VkApp api = new VkApp(General.currentActivity);
     private Vk vk;
     private volatile boolean running = true;
 
@@ -31,7 +30,7 @@ public class VkConnection implements Runnable {
 
     public void login() {
         if (!api.isLogged() || !api.hasAccessToken()) {
-            General.sawimActivity.runOnUiThread(new Runnable() {
+            General.currentActivity.runOnUiThread(new Runnable() {
                 public void run() {
                     api.showLoginDialog(vk.getUserId(), vk.getPassword());
                 }

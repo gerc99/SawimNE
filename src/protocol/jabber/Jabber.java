@@ -236,12 +236,10 @@ public final class Jabber extends Protocol implements FormListener {
             }
             return c;
         }
-
         return new JabberContact(jid, name);
     }
 
     private String getDefaultName() {
-        
         String nick = getProfile().nick;
         if (StringConvertor.isEmpty(nick)) {
             return Jid.getNick(getUserId());
@@ -564,7 +562,7 @@ public final class Jabber extends Protocol implements FormListener {
                         sendMessage(contact, box.getString(), true);
                     }
                 });
-                textbox.show(General.sawimActivity.getSupportFragmentManager(), "title_conf");
+                textbox.show(General.currentActivity.getSupportFragmentManager(), "title_conf");
                 break;
 
             case ContactMenu.CONFERENCE_CONNECT:
@@ -650,7 +648,7 @@ public final class Jabber extends Protocol implements FormListener {
                 selected = i;
             }
         }
-		AlertDialog.Builder builder = new AlertDialog.Builder(General.sawimActivity);
+		AlertDialog.Builder builder = new AlertDialog.Builder(General.currentActivity);
         builder.setCancelable(true);
         builder.setTitle(c.getName());
         builder.setSingleChoiceItems(Util.vectorToArray(items), selected, new DialogInterface.OnClickListener() {

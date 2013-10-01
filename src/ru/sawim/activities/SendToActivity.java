@@ -4,6 +4,7 @@ import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.Window;
+import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.view.SendToView;
 
@@ -16,15 +17,10 @@ import ru.sawim.view.SendToView;
  */
 public class SendToActivity extends FragmentActivity {
 
-    private static SendToActivity instance;
-    public static SendToActivity getInstance() {
-        return instance;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        instance = this;
+        General.currentActivity = this;
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
         setContentView(R.layout.intercalation_layout);

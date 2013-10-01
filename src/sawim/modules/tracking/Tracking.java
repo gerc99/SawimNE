@@ -9,7 +9,6 @@ import protocol.mrim.Mrim;
 import ru.sawim.General;
 import ru.sawim.activities.SawimActivity;
 import sawim.chat.Chat;
-import sawim.chat.message.Message;
 import sawim.chat.message.PlainMessage;
 import sawim.roster.Roster;
 import sawim.modules.MagicEye;
@@ -347,7 +346,7 @@ public final class Tracking {
         Chat chat_ = new Chat(protocol, item);
         switch (action) {
             case ACTION_CHAT:
-                General.sawimActivity.openChat(chat.getProtocol(), chat.getContact(), true);
+                ((SawimActivity)General.currentActivity).openChat(chat.getProtocol(), chat.getContact(), true);
                 break;
             case ACTION_NOTICE:
                 Roster.getInstance().activateWithMsg(JLocale.getString("track_form_title")

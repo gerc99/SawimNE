@@ -127,7 +127,9 @@ public class MessagesAdapter extends BaseAdapter {
                 item.msgText.setTextColor(Scheme.getColor(Scheme.THEME_CHAT_INMSG));
             }
         } else {
-            if (mData.iconIndex != Message.ICON_NONE) {
+            if (mData.iconIndex == Message.ICON_NONE) {
+                item.msgImage.setVisibility(ImageView.GONE);
+            } else {
                 Icon icon = Message.msgIcons.iconAt(mData.iconIndex);
                 if (icon == null) {
                     item.msgImage.setVisibility(ImageView.GONE);
@@ -145,13 +147,13 @@ public class MessagesAdapter extends BaseAdapter {
 
             item.msgTime.setVisibility(TextView.VISIBLE);
             item.msgTime.setTextColor(Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG));
-            item.msgTime.setTextSize(General.getFontSize() / 2);
+            item.msgTime.setTextSize(General.getFontSize() * 2 / 3);
             item.msgTime.setText(mData.strTime);
 
-            item.msgText.setText(parsedText);
             item.msgText.setTextSize(General.getFontSize());
             item.msgText.setTextColor(Scheme.getColor(mData.getMessColor()));
             item.msgText.setLinkTextColor(0xff00e4ff);
+            item.msgText.setText(parsedText);
         }
         item.addDivider(activity, Scheme.getColor(Scheme.THEME_TEXT),
                 position == index && index > 0 && position != getCount());
@@ -201,11 +203,13 @@ public class MessagesAdapter extends BaseAdapter {
                         || (clickedString.endsWith(".png"))
                         || (clickedString.endsWith(".gif"))
                         || (clickedString.endsWith(".bmp"))) {
-                    PictureView pictureView = new PictureView();
-                    pictureView.setLink(clickedString);
-                    FragmentTransaction transaction = activity.getSupportFragmentManager().beginTransaction();
-                    transaction.add(pictureView, PictureView.TAG);
-                    transaction.commitAllowingStateLoss();
+                    if (!activity.isFinishing()) {
+                        PictureView pictureView = new PictureView();
+                        pictureView.setLink(clickedString);
+                        FragmentTransaction transaction = activity.getSupportFragmentManager().beginTransaction();
+                        transaction.add(pictureView, PictureView.TAG);
+                        transaction.commitAllowingStateLoss();
+                    }
                 } else {
                     Uri uri = Uri.parse(clickedString);
                     Context context = textView.getContext();

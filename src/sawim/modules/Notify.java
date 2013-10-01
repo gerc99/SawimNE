@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Vibrator;
 import ru.sawim.General;
 import ru.sawim.SawimApplication;
-import ru.sawim.activities.SawimActivity;
 import ru.sawim.sound.SoundPlayer;
 import sawim.Options;
 import sawim.comm.Util;
@@ -86,7 +85,7 @@ public class Notify implements Runnable {
     }
 
     public boolean vibrate(final int duration) {
-        if (General.sawimActivity == null) return false;
+        if (General.currentActivity == null) return false;
         final Vibrator vibrator = (Vibrator) SawimApplication.getInstance().getSystemService(Context.VIBRATOR_SERVICE);
         if (null == vibrator) {
             return false;

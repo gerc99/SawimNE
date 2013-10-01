@@ -7,7 +7,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 import ru.sawim.General;
-import ru.sawim.activities.SawimActivity;
 import ru.sawim.models.form.VirtualListItem;
 import ru.sawim.Scheme;
 import ru.sawim.models.list.VirtualList;
@@ -154,7 +153,7 @@ public final class HistoryStorageList implements Runnable, FormListener {
                 items[0] = JLocale.getString("currect_contact");
                 items[1] = JLocale.getString("all_contact_except_this");
                 items[2] = JLocale.getString("all_contacts");
-				AlertDialog.Builder builder = new AlertDialog.Builder(General.sawimActivity);
+				AlertDialog.Builder builder = new AlertDialog.Builder(General.currentActivity);
                 builder.setCancelable(true);
                 builder.setTitle(JLocale.getString("history"));
                 builder.setItems(items, new DialogInterface.OnClickListener() {
@@ -192,7 +191,7 @@ public final class HistoryStorageList implements Runnable, FormListener {
                     String sb = JLocale.getString("hist_cur") + ": " + getSize()  + "\n"
                             + JLocale.getString("hist_size") + ": " + (rs.getSize() / 1024) + "\n"
                             + JLocale.getString("hist_avail") + ": " + (rs.getSizeAvailable() / 1024) + "\n";
-                    Toast.makeText(General.sawimActivity, sb, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(General.currentActivity, sb, Toast.LENGTH_SHORT).show();
                 } catch (Exception ignored) {
                 }
                 break;

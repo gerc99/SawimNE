@@ -7,7 +7,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 import ru.sawim.General;
-import ru.sawim.activities.SawimActivity;
 import ru.sawim.models.list.VirtualList;
 import ru.sawim.models.list.VirtualListModel;
 import sawim.*;
@@ -105,7 +104,7 @@ public final class Answerer implements FormListener {
 
                     case MENU_CLEAR:
                         popupAction();
-                        Toast.makeText(General.sawimActivity, "All removed", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(General.currentActivity, "All removed", Toast.LENGTH_SHORT).show();
                         break;
 
                     case MENU_ON_OFF:

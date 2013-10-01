@@ -1,5 +1,8 @@
 package protocol.jabber;
 
+import ru.sawim.General;
+import ru.sawim.R;
+import ru.sawim.SawimApplication;
 import sawim.SawimException;
 import sawim.Options;
 import sawim.comm.StringConvertor;
@@ -31,7 +34,8 @@ public class JabberRegistration implements Runnable, FormListener {
         id = "reg0";
         form = new XForm();
         form.init("registration", this);
-        form.getForm().addTextField(FORM_SERVER, "domain", "");
+        form.getForm().addTextField(FORM_SERVER, "domain", General.DEFAULT_SERVER);
+        form.getForm().addString(General.DEFAULT_SERVER + " - " + SawimApplication.getContext().getString(R.string.hint_registration_domen));
         return form.getForm();
     }
     private String getServer(String domain) {

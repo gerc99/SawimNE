@@ -12,10 +12,12 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
 import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.Scheme;
+import ru.sawim.activities.SawimActivity;
 import ru.sawim.models.form.Forms;
 import ru.sawim.widget.MySpinner;
 
@@ -71,19 +73,15 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
         return v;
     }
 
-    public static void show(FragmentActivity a) {
-        if (a.getSupportFragmentManager()
+    public static void show() {
+        if (General.currentActivity.getSupportFragmentManager()
                 .findFragmentById(R.id.chat_fragment) != null)
-            a.setContentView(R.layout.intercalation_layout);
+            General.currentActivity.setContentView(R.layout.intercalation_layout);
         FormView newFragment = new FormView();
-        FragmentTransaction transaction = a.getSupportFragmentManager().beginTransaction();
+        FragmentTransaction transaction = General.currentActivity.getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment_container, newFragment, FormView.TAG);
         transaction.addToBackStack(null);
         transaction.commitAllowingStateLoss();
-    }
-
-    public static void show() {
-        show(General.sawimActivity);
     }
 
     @Override
@@ -98,16 +96,17 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
 
     @Override
     public void back() {
-        if (General.sawimActivity.getSupportFragmentManager()
+        if (General.currentActivity.getSupportFragmentManager()
                 .findFragmentById(R.id.chat_fragment) != null)
-            General.sawimActivity.recreateActivity();
+            ((SawimActivity)General.currentActivity).recreateActivity();
         else
             getFragmentManager().popBackStack();
         hideKeyboard();
     }
 
     private void hideKeyboard() {
-
+        if (General.currentActivity.getCurrentFocus() != null)
+            ((InputMethodManager)General.currentActivity.getSystemService("input_method")).hideSoftInputFromWindow(General.currentActivity.getCurrentFocus().getWindowToken(), 0);
     }
 
     @Override

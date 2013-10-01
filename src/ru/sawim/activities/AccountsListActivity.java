@@ -24,23 +24,17 @@ import ru.sawim.view.AccountsListView;
 public class AccountsListActivity extends FragmentActivity implements JabberRegistration.OnAddAccount {
     private AccountAuthenticatorResponse mAccountAuthenticatorResponse = null;
     private Bundle mResultBundle = null;
-    private static AccountsListActivity instance;
-
-    public static AccountsListActivity getInstance() {
-        return instance;
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        instance = this;
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
-        if (General.sawimActivity.getSupportFragmentManager()
+        if (General.currentActivity.getSupportFragmentManager()
                 .findFragmentById(R.id.chat_fragment) != null)
             setContentView(R.layout.intercalation_layout);
         else
             setContentView(R.layout.main);
-
+        General.currentActivity = this;
         mResultBundle = savedInstanceState;
         mAccountAuthenticatorResponse =
                 getIntent().getParcelableExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE);
@@ -76,7 +70,7 @@ public class AccountsListActivity extends FragmentActivity implements JabberRegi
             case R.id.menu_registration_jabber:
                 protocol.jabber.JabberRegistration jabberRegistration = new protocol.jabber.JabberRegistration();
                 jabberRegistration.setListener(this);
-                jabberRegistration.init().show(this);
+                jabberRegistration.init().show();
                 return true;
         }
         return super.onOptionsItemSelected(item);

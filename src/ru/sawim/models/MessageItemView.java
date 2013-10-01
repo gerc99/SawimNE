@@ -31,6 +31,7 @@ public class MessageItemView extends RelativeLayout {
         setAnimationCacheEnabled(false);
         setAlwaysDrawnWithCacheEnabled(false);
         RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        lp.alignWithParent = false;
         lp.addRule(ALIGN_PARENT_LEFT);
         lp.addRule(ALIGN_PARENT_TOP);
         msgImage.setId(1);
@@ -49,10 +50,11 @@ public class MessageItemView extends RelativeLayout {
         addView(msgNick, lp);
 
         lp = new RelativeLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-        if (msgImage.getVisibility() == ImageView.GONE)
-            lp.addRule(BELOW, msgImage.getId());
-        else
+        //if (msgImage.getVisibility() == ImageView.GONE)
+        //    lp.addRule(BELOW, msgImage.getId());
+        //else
             lp.addRule(BELOW, msgNick.getId());
+        lp.addRule(ALIGN_PARENT_BOTTOM);
         msgText.setId(4);
         msgText.setScrollContainer(false);
         addView(msgText, lp);

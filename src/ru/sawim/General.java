@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
+import android.support.v4.app.FragmentActivity;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.View;
@@ -38,11 +39,12 @@ public class General {
     public static final String VERSION = SawimApplication.getInstance().getVersion();
     public static final String PHONE = "Android/" + android.os.Build.MODEL
             + "/" + android.os.Build.VERSION.RELEASE;
+    public static final String DEFAULT_SERVER = "jabber.ru";
 
     public static ImageList affiliationIcons = ImageList.createImageList("/jabber-affiliations.png");
     public static BitmapDrawable usersIcon = ImageList.createImageList("/participants.png").iconAt(0).getImage();
     private static General instance;
-    public static SawimActivity sawimActivity;
+    public static FragmentActivity currentActivity;
     public static String message = "";
     private boolean paused = true;
     private static int fontSize;

@@ -2,6 +2,7 @@ package protocol;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.support.v4.app.FragmentActivity;
 import android.view.ContextMenu;
 import android.view.ContextThemeWrapper;
 import android.widget.Toast;
@@ -109,7 +110,7 @@ public class ContactMenu implements TextBoxView.TextBoxListener {
     }
 
     public void doAction(int cmd) {
-        final SawimActivity activity = General.sawimActivity;
+        final FragmentActivity activity = General.currentActivity;
         switch (cmd) {
             case USER_MENU_TRACK:
                 new sawim.modules.tracking.TrackingForm(contact.getUserId()).activate();

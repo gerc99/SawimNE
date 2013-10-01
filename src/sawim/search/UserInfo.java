@@ -7,7 +7,6 @@ import android.view.MenuItem;
 import android.widget.Toast;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
-import ru.sawim.activities.SawimActivity;
 import ru.sawim.models.form.VirtualListItem;
 import sawim.Clipboard;
 import sawim.ExternalApi;
@@ -162,7 +161,7 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
         profile.setHeader("work_info");
         profile.addParamWithLinks("title",    workCompany);
         profile.addParamWithLinks("depart",   workDepartment);
-        profile.addParamWithLinks("scrollPosition", workPosition);
+        profile.addParamWithLinks("position", workPosition);
         profile.addParamWithLinks("addr",     workAddress);
         profile.addParamWithLinks("city",     workCity);
         profile.addParamWithLinks("state",    workState);
@@ -197,7 +196,7 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
                         break;
 
                     case INFO_MENU_TAKE_AVATAR:
-                        ExternalApi.instance.setActivity(General.sawimActivity);
+                        ExternalApi.instance.setActivity(General.currentActivity);
                         ExternalApi.instance.startCamera(UserInfo.this, 640, 480);
                         break;
 

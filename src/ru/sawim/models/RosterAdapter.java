@@ -122,6 +122,7 @@ public class RosterAdapter extends BaseAdapter {
                     ((RosterItemView) convertView).populateFromContact(roster, protocol, (Contact) o);
                 }
             }
+        ((RosterItemView) convertView).repaint();
         return convertView;
     }
 }

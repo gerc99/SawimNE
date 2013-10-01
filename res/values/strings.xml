@@ -214,4 +214,6 @@
     <string name="hint_message">message...</string>
     <string name="enter_the">Enter the</string>
     <string name="select_contact">Select a contact to chat</string>
+    <string name="server">Server</string>
+    <string name="hint_registration_domen">this is the default server, you can register to the other</string>
 </resources>

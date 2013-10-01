@@ -3,7 +3,6 @@ package ru.sawim.models.form;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.support.v4.app.FragmentActivity;
 import ru.sawim.SawimApplication;
 import ru.sawim.view.FormView;
 import sawim.comm.StringConvertor;
@@ -50,10 +49,6 @@ public class Forms {
 
     public void show() {
         FormView.show();
-    }
-
-    public void show(FragmentActivity a) {
-        FormView.show(a);
     }
 
     public void invalidate() {

@@ -40,11 +40,11 @@ public final class Clipboard {
                 try {
                     if (Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
                         android.text.ClipboardManager clipboard = (android.text.ClipboardManager)
-                                General.sawimActivity.getSystemService(SawimActivity.CLIPBOARD_SERVICE);
+                                General.currentActivity.getSystemService(SawimActivity.CLIPBOARD_SERVICE);
                         clipboard.setText(text);
                     } else {
                         ClipboardManager clipboard = (ClipboardManager)
-                                General.sawimActivity.getSystemService(SawimActivity.CLIPBOARD_SERVICE);
+                                General.currentActivity.getSystemService(SawimActivity.CLIPBOARD_SERVICE);
                         clipboard.setPrimaryClip(ClipData.newPlainText("", text));
                     }
                 } catch (Throwable e) {

@@ -5,7 +5,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import protocol.Contact;
 import ru.sawim.General;
-import ru.sawim.activities.SawimActivity;
 import ru.sawim.view.TextBoxView;
 import sawim.Clipboard;
 import sawim.comm.StringConvertor;
@@ -153,7 +152,8 @@ public final class MicroBlog implements TextBoxView.TextBoxListener {
         par.addTextWithSmiles(post, Scheme.THEME_MAGIC_EYE_TEXT, Scheme.FONT_STYLE_PLAIN);
 
         model.addPar(par);
-        list.updateModel();
+        if (list != null)
+            list.updateModel();
         //removeOldRecords();
         return true;
     }
@@ -165,7 +165,7 @@ public final class MicroBlog implements TextBoxView.TextBoxListener {
         replayTo = StringConvertor.notNull(to);
         postEditor = new TextBoxView();
         postEditor.setTextBoxListener(this);
-        postEditor.show(General.sawimActivity.getSupportFragmentManager(), StringConvertor.isEmpty(replayTo) ? "message" : "reply");
+        postEditor.show(General.currentActivity.getSupportFragmentManager(), StringConvertor.isEmpty(replayTo) ? "message" : "reply");
     }
 
     public void textboxAction(TextBoxView box, boolean ok) {

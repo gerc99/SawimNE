@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import ru.sawim.General;
 import ru.sawim.widget.MyListView;
 import ru.sawim.widget.Util;
@@ -57,23 +58,6 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
 
     private AdapterView.AdapterContextMenuInfo contextMenuInfo;
     private HashMap<Integer, ImageButton> protocolIconsHash = new HashMap<Integer, ImageButton>();
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        if (roster == null) {
-            showStartWindow();
-            return;
-        } else {
-            int protocolCount = roster.getProtocolCount();
-            if (protocolCount == 0) {
-                showStartWindow();
-                return;
-            } else if (protocolCount == 1 && roster.getCurrentProtocol().getContactItems().size() == 0 && !roster.getCurrentProtocol().isConnecting()) {
-                Toast.makeText(getActivity(), R.string.press_menu_for_connect, Toast.LENGTH_LONG).show();
-            }
-        }
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -196,17 +180,6 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         return rosterViewLayout;
     }
 
-    private static void showStartWindow() {
-        if (General.sawimActivity.getSupportFragmentManager()
-                .findFragmentById(R.id.chat_fragment) != null)
-            General.sawimActivity.setContentView(R.layout.intercalation_layout);
-        StartWindowView newFragment = new StartWindowView();
-        FragmentTransaction transaction = General.sawimActivity.getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.fragment_container, newFragment, StartWindowView.TAG);
-        transaction.addToBackStack(null);
-        transaction.commitAllowingStateLoss();
-    }
-
     @Override
     public void putIntoQueue(final Group g) {
         getActivity().runOnUiThread(new Runnable() {
@@ -298,7 +271,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
     @Override
     public void onResume() {
         super.onResume();
-        if (roster == null) return;
+        General.currentActivity = getActivity();
         if (roster.getProtocolCount() == 0) return;
         roster.setCurrentContact(null);
         roster.setOnUpdateRoster(this);
@@ -308,7 +281,6 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
     @Override
     public void onPause() {
         super.onPause();
-        if (roster == null) return;
         roster.setOnUpdateRoster(null);
     }
 
@@ -343,7 +315,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
         TreeNode item = adaptersPages.get(viewPager.getCurrentItem()).getItem(position);
         if (item.isContact()) {
-            Protocol p = roster.getCurrProtocol();
+            Protocol p = roster.getCurrentProtocol();
             Contact c = ((Contact) item);
             if (viewPager.getCurrentItem() == RosterAdapter.ACTIVE_CONTACTS)
                 p = c.getProtocol();

@@ -10,6 +10,7 @@ import android.graphics.Typeface;
 import android.text.*;
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
@@ -29,6 +30,8 @@ public class MyTextView extends View {
     private Layout layout;
     private CharSequence mText = "";
     private CharSequence oldText = "";
+    private int oldWidth;
+    private float oldTextSize;
     TextLinkClickListener mListener;
     private int mCurTextColor;
     private ColorStateList mTextColor;
@@ -75,6 +78,7 @@ public class MyTextView extends View {
 
     public void setText(CharSequence text) {
         mText = text;
+        invalidate();
     }
 
     public void setTextColor(int color) {
@@ -105,18 +109,14 @@ public class MyTextView extends View {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int specSize = MeasureSpec.getSize(widthMeasureSpec);
-        if (oldText != mText) {
+        if (oldText != mText || oldWidth != specSize || mTextPaint.getTextSize() != oldTextSize) {
             oldText = mText;
+            oldWidth = specSize;
+            oldTextSize = mTextPaint.getTextSize();
             makeLayout(specSize);
         }
         if (layout == null) makeLayout(specSize);
         setMeasuredDimension(specSize, layout.getLineTop(layout.getLineCount()));
-    }
-
-    @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        super.onSizeChanged(w, h, oldw, oldh);
-        if (w != oldw) makeLayout(w);
     }
 
     private void updateTextColors() {

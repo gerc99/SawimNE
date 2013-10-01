@@ -47,7 +47,7 @@ public final class Profile {
     public static final String[] protocolIds = new String[] {
             "UIN/E-mail",
             "e-mail",
-            "jid",
+            "Login",
             "Login",
             "ID",
     //        "ID",

@@ -207,10 +207,6 @@ public final class Roster {
         return all;
     }
 
-    public Protocol getCurrProtocol() {
-        return getCurrentProtocol();
-    }
-
     public Protocol getProtocol(Contact c) {
         for (int i = 0; i < getProtocolCount(); ++i) {
             if (getProtocol(i).inContactList(c)) {

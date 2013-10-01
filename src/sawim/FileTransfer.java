@@ -6,7 +6,6 @@ import protocol.Contact;
 import protocol.Protocol;
 import protocol.net.TcpSocket;
 import ru.sawim.General;
-import ru.sawim.activities.SawimActivity;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
 import ru.sawim.view.FileProgressView;
@@ -111,7 +110,7 @@ public final class FileTransfer implements FileBrowserListener,
     }
 
     public void startPhotoTransfer() {
-        ExternalApi.instance.setActivity(General.sawimActivity);
+        ExternalApi.instance.setActivity(General.currentActivity);
         ExternalApi.instance.startCamera(this, 1024, 768);
     }
 
@@ -181,7 +180,7 @@ public final class FileTransfer implements FileBrowserListener,
         }
         name_Desc.addSelector(transferMode, "send_via", items, 0);
         name_Desc.addString(JLocale.getString("size") + ": ", String.valueOf(getFileSize() / 1024) + " kb");
-        name_Desc.show(activity);
+        name_Desc.show();
     }
 
     public void formAction(Forms form, boolean apply) {

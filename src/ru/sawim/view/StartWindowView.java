@@ -20,6 +20,7 @@ import protocol.jabber.JabberRegistration;
 import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
+import ru.sawim.activities.SawimActivity;
 import sawim.Options;
 import sawim.comm.StringConvertor;
 import sawim.roster.Roster;
@@ -34,6 +35,12 @@ import sawim.roster.Roster;
 public class StartWindowView extends Fragment {
 
     public static final String TAG = "StartWindowView";
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        SawimActivity.returnFromAcc = true;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -51,7 +58,7 @@ public class StartWindowView extends Fragment {
                         addAccount(num, acc);
                     }
                 });
-                jabberRegistration.init().show(getActivity());
+                jabberRegistration.init().show();
             }
         });
         Button signInJabberButton = (Button) v.findViewById(R.id.sign_in_jabber);
@@ -104,11 +111,11 @@ public class StartWindowView extends Fragment {
     }
 
     private void back() {
-        if (General.sawimActivity.getSupportFragmentManager()
+        if (General.currentActivity.getSupportFragmentManager()
                 .findFragmentById(R.id.chat_fragment) != null)
-            General.sawimActivity.recreateActivity();
+            ((SawimActivity)General.currentActivity).recreateActivity();
         else
-            General.sawimActivity.getSupportFragmentManager().popBackStack();
+            General.currentActivity.getSupportFragmentManager().popBackStack();
     }
 
     class LoginDialog extends DialogFragment {
@@ -123,10 +130,13 @@ public class StartWindowView extends Fragment {
                                  Bundle savedInstanceState) {
             View dialogLogin = inflater.inflate(R.layout.login, container, false);
             final TextView loginText = (TextView) dialogLogin.findViewById(R.id.acc_login_text);
-            final EditText editLogin = (EditText) dialogLogin.findViewById(R.id.Login);
-            final EditText editNick = (EditText) dialogLogin.findViewById(R.id.Nick);
-            final EditText editPass = (EditText) dialogLogin.findViewById(R.id.Password);
+            final EditText editLogin = (EditText) dialogLogin.findViewById(R.id.edit_login);
+            final TextView serverText = (TextView) dialogLogin.findViewById(R.id.acc_server_text);
+            final EditText editServer = (EditText) dialogLogin.findViewById(R.id.edit_server);
+            final EditText editNick = (EditText) dialogLogin.findViewById(R.id.edit_nick);
+            final EditText editPass = (EditText) dialogLogin.findViewById(R.id.edit_password);
             int protocolIndex = 0;
+            final boolean isJabber = type == Profile.PROTOCOL_JABBER;
             for (int i = 0; i < Profile.protocolTypes.length; ++i) {
                 if (type == Profile.protocolTypes[i]) {
                     protocolIndex = i;
@@ -135,6 +145,14 @@ public class StartWindowView extends Fragment {
             }
             loginText.setText(Profile.protocolIds[protocolIndex]);
             getDialog().setTitle(getText(R.string.acc_add));
+            if (isJabber) {
+                serverText.setVisibility(TextView.VISIBLE);
+                editServer.setVisibility(EditText.VISIBLE);
+                editServer.setText(General.DEFAULT_SERVER);
+            } else {
+                serverText.setVisibility(TextView.GONE);
+                editServer.setVisibility(EditText.GONE);
+            }
             if (type == Profile.PROTOCOL_ICQ) {
                 editLogin.setInputType(InputType.TYPE_CLASS_NUMBER);
             } else {
@@ -146,15 +164,21 @@ public class StartWindowView extends Fragment {
 
                 @Override
                 public void onClick(View v) {
-
                     String login = editLogin.getText().toString();
+                    String server = editServer.getText().toString();
                     String password = editPass.getText().toString();
                     String nick = editNick.getText().toString();
                     Profile account = new Profile();
                     if (1 < Profile.protocolTypes.length) {
                         account.protocolType = Profile.protocolTypes[finalProtocolIndex];
                     }
-                    account.userId = login;
+                    if (isJabber) {
+                        if (login.indexOf('@') + 1 > 0) //isServer
+                            account.userId = login;
+                        else
+                            account.userId = login + "@" + server;
+                    } else
+                        account.userId = login;
                     if (StringConvertor.isEmpty(account.userId)) {
                         return;
                     }
