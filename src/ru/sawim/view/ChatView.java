@@ -63,7 +63,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
     private static Protocol lastProtocol;
     private static Contact lastContact;
     private boolean sendByEnter;
-    private boolean isTablet;
+    private static boolean isTablet;
 
     private ImageButton usersImage;
     private ImageButton chatsImage;
@@ -98,6 +98,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
+        isTablet = activity.findViewById(R.id.fragment_container) == null;
         messageEditor = new EditText(activity);
         if (viewsState == null) {
             viewsState = new ViewsState();
@@ -212,7 +213,6 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
             setOrientation(HORIZONTAL);
             layoutParams.weight = 2;
             setLayoutParams(layoutParams);
-
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             if (!isTablet && (getContext().getResources().getDisplayMetrics().densityDpi < 200 || android.os.Build.MODEL == "Digma iDx5"))
                 lp.weight = 10;
@@ -273,7 +273,6 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
             chat_viewLayout = new ChatViewRoot(getActivity());
         else
             ((ViewGroup)chat_viewLayout.getParent()).removeView(chat_viewLayout);
-        isTablet = (General.currentActivity.findViewById(R.id.fragment_container) == null);
         int background = Scheme.getColor(Scheme.THEME_BACKGROUND);
         chat_viewLayout.setBackgroundColor(background);
         if (!isTablet) {
