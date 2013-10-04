@@ -38,11 +38,11 @@ public class TextFormatter {
             public void run() {
                 TextFormatter.detectEmotions(parsedText, text);
                 if (contact.getUserId().equals(JuickMenu.JUICK) || contact.getUserId().equals(JuickMenu.JUBO))
-                    getTextWithLinks(parsedText, 0xff00e4ff, JuickMenu.Mode.juick);
+                    getTextWithLinks(parsedText, 0xff00e4ff, JuickMenu.MODE_JUICK);
                 else if (contact.getUserId().equals(JuickMenu.PSTO))
-                    getTextWithLinks(parsedText, 0xff00e4ff, JuickMenu.Mode.psto);
+                    getTextWithLinks(parsedText, 0xff00e4ff, JuickMenu.MODE_PSTO);
                 else
-                    getTextWithLinks(parsedText, 0xff00e4ff, JuickMenu.Mode.none);
+                    getTextWithLinks(parsedText, 0xff00e4ff, -1);
             }
         }).start();
         return parsedText;
@@ -54,7 +54,9 @@ public class TextFormatter {
             while (-1 != smileIndex) {
                 if (message.startsWith(smiles.getSmileText(smileIndex), index)) {
                     int length = smiles.getSmileText(smileIndex).length();
-                    builder.setSpan(new ImageSpan(smiles.getSmileIcon(smileIndex).getImage()), index, index + length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    builder
+                            .setSpan(new ImageSpan(smiles.getSmileIcon(smileIndex)
+                                    .getImage()), index, index + length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                     index += length - 1;
                 }
                 smileIndex = smiles.getSmileChars().indexOf(message.charAt(index), smileIndex + 1);
@@ -62,12 +64,12 @@ public class TextFormatter {
         }
     }
 
-    private void getTextWithLinks(final SpannableStringBuilder ssb, final int linkColor, final JuickMenu.Mode mode) {
+    public void getTextWithLinks(final SpannableStringBuilder ssb, final int linkColor, final int mode) {
         ArrayList<Hyperlink> msgList = new ArrayList<Hyperlink>();
         ArrayList<Hyperlink> linkList = new ArrayList<Hyperlink>();
-        if (mode == JuickMenu.Mode.juick)
+        if (mode == JuickMenu.MODE_JUICK)
             addLinks(msgList, ssb, juickPattern);
-        else if (mode == JuickMenu.Mode.psto)
+        else if (mode == JuickMenu.MODE_PSTO)
             addLinks(msgList, ssb, pstoPattern);
         addLinks(linkList, ssb, Patterns.WEB_URL);
         for (Hyperlink link : msgList) {

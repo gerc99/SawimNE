@@ -236,7 +236,7 @@ public class RosterItemView extends View {
             setTextSize(General.getFontSize());
             mTextPaint.setTypeface(itemNameFont);
             if (itemDesc != null)
-                canvas.drawText(itemName, textX, getPaddingTop() - getPaddingBottom() - (mAscent - mDescent), mTextPaint);
+                canvas.drawText(itemName, textX, getPaddingTop() + mDescent + getPaddingTop() / 2, mTextPaint);
             else
                 canvas.drawText(itemName, textX, getPaddingTop() - mAscent, mTextPaint);
         }
@@ -244,7 +244,7 @@ public class RosterItemView extends View {
             mTextPaint.setColor(itemDescColor);
             setTextSize(General.getFontSize() - 2);
             mTextPaint.setTypeface(Typeface.DEFAULT);
-            canvas.drawText(itemDesc, textX, getPaddingTop() + getPaddingBottom() - (mAscent + mDescent), mTextPaint);
+            canvas.drawText(itemDesc, textX, getPaddingBottom() - mAscent + getPaddingBottom() / 2, mTextPaint);
         }
         if (itemFourthImage != null)
             canvas.drawBitmap(itemFourthImage.getBitmap(), fourthImageX, fourthImageY, null);

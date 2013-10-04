@@ -195,7 +195,7 @@ public final class Chat {
         if (isBlogBot()) {
             return;
         }
-        if (Options.getBoolean(Options.OPTION_HISTORY)) {
+        //if (Options.getBoolean(Options.OPTION_HISTORY)) {
             if (0 != getMessCount()) {
                 return;
             }
@@ -221,7 +221,7 @@ public final class Chat {
                 addTextToForm(message, contact.isConference() ? rec.from : getFrom(message), Chat.isHighlight(message.getProcessedText(), contact.getMyName()));
             }
             hist.closeHistory();
-        }
+        //}
     }
 
     public HistoryStorage getHistory() {

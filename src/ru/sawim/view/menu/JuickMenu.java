@@ -23,7 +23,8 @@ public class JuickMenu implements DialogInterface.OnClickListener {
     public static final String JUICK = "juick@juick.com";
     public static final String JUBO  = "jubo@nologin.ru";
     public static final String PSTO  = "psto@psto.net";
-    public enum Mode {none, juick, psto};
+    public static final int MODE_JUICK = 0;
+    public static final int MODE_PSTO = 1;
 
     private FragmentActivity activity;
     private Protocol currentProtocol;
