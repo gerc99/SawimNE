@@ -214,7 +214,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
             layoutParams.weight = 2;
             setLayoutParams(layoutParams);
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            if (!isTablet && (getContext().getResources().getDisplayMetrics().densityDpi < 200 || android.os.Build.MODEL == "Digma iDx5"))
+            if (!isTablet && (getContext().getResources().getDisplayMetrics().densityDpi < 200 || android.os.Build.MODEL.equals("Digma iDx5")))
                 lp.weight = 10;
             else
                 lp.weight = 1;
@@ -222,7 +222,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
             addViewInLayout(chatListView, 0, lp);
 
             lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            if (!isTablet && (getContext().getResources().getDisplayMetrics().densityDpi < 200 || android.os.Build.MODEL == "Digma iDx5"))
+            if (!isTablet && (getContext().getResources().getDisplayMetrics().densityDpi < 200 || android.os.Build.MODEL.equals("Digma iDx5")))
                 lp.weight = 0;
             else if (isTablet)
                 lp.weight = 3;
@@ -269,6 +269,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceStateLog) {
+        isTablet = getActivity().findViewById(R.id.fragment_container) == null;
         if (chat_viewLayout == null)
             chat_viewLayout = new ChatViewRoot(getActivity());
         else

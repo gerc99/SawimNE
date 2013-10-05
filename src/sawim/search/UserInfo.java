@@ -132,7 +132,7 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
 
         profile.setHeader("main_info");
         profile.addParam(protocol.getUserIdName(), uin);
-        
+
         profile.addParamImage("user_statuses", getStatusAsIcon());
         
         profile.addParamWithLinks("nick",   nick);

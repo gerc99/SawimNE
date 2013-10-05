@@ -1,6 +1,9 @@
 package protocol.vk;
 
+import android.os.Handler;
+import android.os.Looper;
 import ru.sawim.General;
+import ru.sawim.SawimApplication;
 import sawim.chat.message.PlainMessage;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -20,22 +23,16 @@ import java.util.Vector;
  * @author vladimir
  */
 public class VkConnection implements Runnable {
-    private VkApp api = new VkApp(General.currentActivity);
+    private VkApp api;
     private Vk vk;
     private volatile boolean running = true;
 
     VkConnection(Vk vk) {
         this.vk = vk;
+        api = new VkApp(SawimApplication.getInstance().getApplicationContext());
     }
 
     public void login() {
-        if (!api.isLogged() || !api.hasAccessToken()) {
-            General.currentActivity.runOnUiThread(new Runnable() {
-                public void run() {
-                    api.showLoginDialog(vk.getUserId(), vk.getPassword());
-                }
-            });
-        }
         new Thread(this).start();
     }
 
@@ -93,11 +90,21 @@ public class VkConnection implements Runnable {
 
     @Override
     public void run() {
+        vk.setConnectingProgress(0);
+        if (!api.isLogged() || !api.hasAccessToken()) {
+            //new Handler(Looper.getMainLooper()).post(new Runnable() {
+            //    public void run() {
+                    api.showLoginDialog(vk.getUserId(), vk.getPassword());
+            //    }
+            //});
+        }
+        vk.setConnectingProgress(30);
         while (!api.isLogged() && !api.isError()) {
             sleep(5000);
         }
+        vk.setConnectingProgress(70);
         processContacts();
-
+        vk.setConnectingProgress(100);
         int onlineCheck = INTERVAL_ONLINE_CHECK;
         int messageCheck = INTERVAL_MESSAGE_CHECK;
         while (running) {
@@ -122,7 +129,8 @@ public class VkConnection implements Runnable {
             Vector<VkContact> contacts = to(api.getFriends().getJSONArray("response"));
             Vector<Group> groups = groups();
             vk.setContactList(groups, contacts);
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            sawim.modules.DebugLog.panic("Vk processContacts", e);
         }
     }
     private void processOnlineContacts() {

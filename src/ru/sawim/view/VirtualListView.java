@@ -52,7 +52,7 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.virtual_list, container, false);
-        v.findViewById(R.id.layout).setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
+        v.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
         return v;
     }
 
@@ -113,7 +113,10 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
             @Override
             public void run() {
                 elements.clear();
-                elements.addAll(list.getModel().elements);
+                for (int i = 0; i < list.getModel().elements.size(); ++i) {
+                    elements.add(list.getModel().elements.get(i));
+                }
+                adapter.notifyDataSetInvalidated();
                 adapter.notifyDataSetChanged();
             }
         });

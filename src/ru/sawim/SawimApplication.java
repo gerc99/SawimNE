@@ -55,11 +55,11 @@ public class SawimApplication extends Application {
                 ChatHistory.instance.loadUnreadMessages();
             }
         }).start();
-        updateAppIcon();
         if (Roster.getInstance() != null) {
             Roster.getInstance().autoConnect();
             Thread.yield();
         }
+        updateAppIcon();
     }
 
     private void MIDletInit() {
