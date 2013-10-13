@@ -2,7 +2,6 @@ package ru.sawim.view.menu;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import protocol.Protocol;
@@ -73,10 +72,7 @@ public class JuickMenu implements DialogInterface.OnClickListener {
                     .findFragmentById(R.id.chat_fragment);
             if (chatView == null) {
                 ChatView newFragment = new ChatView();
-                Bundle args = new Bundle();
-                args.putString(ChatView.PROTOCOL_ID, currentProtocol.getUserId());
-                args.putString(ChatView.CONTACT_ID, currentContact);
-                newFragment.setArguments(args);
+                newFragment.initChat(currentProtocol, currentProtocol.getItemByUIN(currentContact));
                 FragmentTransaction transaction = activity.getSupportFragmentManager().beginTransaction();
                 transaction.replace(R.id.fragment_container, newFragment, ChatView.TAG);
                 transaction.addToBackStack(null);
@@ -84,7 +80,6 @@ public class JuickMenu implements DialogInterface.OnClickListener {
             } else {
                 Chat chat = chatView.getCurrentChat();
                 chatView.pause(chat);
-                chatView.resetSpinner();
                 if (currentProtocol != null) {
                     chatView.openChat(currentProtocol, currentProtocol.getItemByUIN("juick@juick.com"));
                     chatView.resume(chatView.getCurrentChat());

@@ -186,9 +186,11 @@ public class AccountsListView extends Fragment {
             if (isEdit) {
                 final Profile account = Options.getAccount(id);
                 getDialog().setTitle(getText(R.string.acc_edit));
-                editLogin.setText(account.userId.substring(0, account.userId.indexOf('@')));
                 if (isJabber) {
+                    editLogin.setText(account.userId.substring(0, account.userId.indexOf('@')));
                     editServer.setText(account.userId.substring(account.userId.indexOf('@') + 1));
+                } else {
+                    editLogin.setText(account.userId);
                 }
                 editPass.setText(account.password);
                 editNick.setText(account.nick);

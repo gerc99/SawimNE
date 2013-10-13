@@ -133,7 +133,6 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
                                                        protocol.addTempContact(c);
                                                    }
                                                    chatView.pause(chatView.getCurrentChat());
-                                                   chatView.resetSpinner();
                                                    chatView.openChat(protocol, c);
                                                    chatView.resume(chatView.getCurrentChat());
                                                    break;

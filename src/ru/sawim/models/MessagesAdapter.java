@@ -99,7 +99,7 @@ public class MessagesAdapter extends BaseAdapter {
         String nick = mData.getNick();
         boolean incoming = mData.isIncoming();
 
-        ((ViewGroup)item).setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
+        item.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
         item.msgText.setOnTextLinkClickListener(textLinkClickListener);
         item.msgText.setTypeface(Typeface.DEFAULT);
         byte bg;

@@ -24,6 +24,10 @@ public final class Roster {
     final static public int SORT_BY_ONLINE = 1;
     final static public int SORT_BY_NAME = 2;
 
+    public static final int ALL_CONTACTS = 0;
+    public static final int ONLINE_CONTACTS = 1;
+    public static final int ACTIVE_CONTACTS = 2;
+
     private static final Roster instance = new Roster();
     private final StatusView statusView = new StatusView();
 
@@ -433,8 +437,8 @@ public final class Roster {
     }
 
     public void updateOptions() {
-        useGroups = Options.getBoolean(Options.OPTION_USER_GROUPS) && getCurrPage() == RosterAdapter.ALL_CONTACTS;
-        hideOffline = /*Options.getBoolean(Options.OPTION_CL_HIDE_OFFLINE)*/getCurrPage() == RosterAdapter.ONLINE_CONTACTS;
+        useGroups = Options.getBoolean(Options.OPTION_USER_GROUPS) && getCurrPage() == ALL_CONTACTS;
+        hideOffline = /*Options.getBoolean(Options.OPTION_CL_HIDE_OFFLINE)*/getCurrPage() == ONLINE_CONTACTS;
     }
 
     public final Protocol getProtocol(Group g) {

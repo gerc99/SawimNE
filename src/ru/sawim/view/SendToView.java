@@ -73,7 +73,7 @@ public class SendToView extends Fragment implements AdapterView.OnItemClickListe
         allListView.setDividerHeight(0);
         allListView.setOnItemClickListener(this);
 
-        allRosterAdapter = new RosterAdapter(getActivity(), roster, RosterAdapter.ALL_CONTACTS);
+        allRosterAdapter = new RosterAdapter(getActivity(), roster, Roster.ALL_CONTACTS);
         allListView.setAdapter(allRosterAdapter);
         return allListView;
     }
@@ -91,11 +91,8 @@ public class SendToView extends Fragment implements AdapterView.OnItemClickListe
             if (data == null) return;
             if (type.equals("text/plain")) {
                 ChatView newFragment = new ChatView();
-                Bundle args = new Bundle();
                 c.activate(p);
-                args.putString(ChatView.PROTOCOL_ID, p.getUserId());
-                args.putString(ChatView.CONTACT_ID, c.getUserId());
-                newFragment.setArguments(args);
+                newFragment.initChat(p, c);
                 FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
                 transaction.replace(R.id.fragment_container, newFragment, ChatView.TAG);
                 transaction.addToBackStack(null);

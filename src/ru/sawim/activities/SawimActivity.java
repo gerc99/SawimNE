@@ -134,10 +134,11 @@ public class SawimActivity extends FragmentActivity {
 
     private ChatView createChatView(Protocol p, Contact c, FragmentManager fragmentManager, boolean addToBackStack, boolean allowingStateLoss) {
         ChatView chatView = new ChatView();
-        Bundle args = new Bundle();
+        /*Bundle args = new Bundle();
         args.putString(ChatView.PROTOCOL_ID, p.getUserId());
         args.putString(ChatView.CONTACT_ID, c.getUserId());
-        chatView.setArguments(args);
+        chatView.setArguments(args);*/
+        chatView.initChat(p, c);
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.replace(R.id.fragment_container, chatView, ChatView.TAG);
         if (addToBackStack)
@@ -168,7 +169,6 @@ public class SawimActivity extends FragmentActivity {
             } else if (chatView.isVisible()) {
                 Log.e(LOG_TAG, "!! RosterView.TAG");
                 chatView.pause(chatView.getCurrentChat());
-                chatView.resetSpinner();
                 if (c != null) {
                     chatView.openChat(p, c);
                     chatView.resume(p.getChat(c));
@@ -178,7 +178,6 @@ public class SawimActivity extends FragmentActivity {
             ChatView chatView = (ChatView) fragmentManager.findFragmentById(R.id.chat_fragment);
             if (chatView != null) {
                 chatView.pause(chatView.getCurrentChat());
-                chatView.resetSpinner();
                 if (c != null) {
                     chatView.openChat(p, c);
                     chatView.resume(chatView.getCurrentChat());

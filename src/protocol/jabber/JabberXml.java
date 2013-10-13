@@ -21,6 +21,7 @@ import protocol.net.ClientConnection;
 import javax.microedition.io.Connector;
 import javax.microedition.io.HttpsConnection;
 import java.io.DataInputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.Vector;
 
 
@@ -239,7 +240,11 @@ public final class JabberXml extends ClientConnection {
     }
 
     private void write(String xml) throws SawimException {
-        write(StringConvertor.stringToByteArrayUtf8(xml));
+        try {
+            write(xml.getBytes("UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            DebugLog.panic("Unsupported write Encoding", e);
+        }
     }
     private void writePacket(String packet) throws SawimException {
         write(packet);

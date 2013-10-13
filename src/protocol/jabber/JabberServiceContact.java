@@ -104,7 +104,7 @@ public class JabberServiceContact extends JabberContact {
     }
 
     public boolean isVisibleInContactList() {
-        if (Roster.getInstance().getCurrPage() != RosterAdapter.ONLINE_CONTACTS
+        if (Roster.getInstance().getCurrPage() != Roster.ONLINE_CONTACTS
         /*!Options.getBoolean(Options.OPTION_CL_HIDE_OFFLINE)*/)
             return true;
         return isConference() || isGate ? super.isVisibleInContactList() : true;

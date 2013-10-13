@@ -26,9 +26,6 @@ import java.util.Vector;
  */
 public class RosterAdapter extends BaseAdapter {
 
-    public static final int ALL_CONTACTS = 0;
-    public static final int ONLINE_CONTACTS = 1;
-    public static final int ACTIVE_CONTACTS = 2;
     private final Context context;
     private final Roster roster;
     private int type;
@@ -72,24 +69,16 @@ public class RosterAdapter extends BaseAdapter {
     public void buildFlatItems() {
         Protocol p = roster.getCurrentProtocol();
         if (p == null) return;
-        if (roster.getCurrPage() == RosterAdapter.ACTIVE_CONTACTS) {
-            items.clear();
-            ChatHistory.instance.sort();
-            for (int i = 0; i < ChatHistory.instance.historyTable.size(); ++i) {
-                items.add(ChatHistory.instance.contactAt(i));
-            }
+        while (!updateQueue.isEmpty()) {
+            Group group = (Group) updateQueue.firstElement();
+            updateQueue.removeElementAt(0);
+            roster.updateGroup(group);
+        }
+        items.clear();
+        if (roster.useGroups) {
+            roster.rebuildFlatItemsWG(p, items);
         } else {
-            while (!updateQueue.isEmpty()) {
-                Group group = (Group) updateQueue.firstElement();
-                updateQueue.removeElementAt(0);
-                roster.updateGroup(group);
-            }
-            items.clear();
-            if (roster.useGroups) {
-                roster.rebuildFlatItemsWG(p, items);
-            } else {
-                roster.rebuildFlatItemsWOG(p, items);
-            }
+            roster.rebuildFlatItemsWOG(p, items);
         }
         notifyDataSetChanged();
     }
@@ -109,12 +98,9 @@ public class RosterAdapter extends BaseAdapter {
         Protocol protocol = roster.getCurrentProtocol();
         TreeNode o = getItem(i);
         if (o != null)
-            if (type != ALL_CONTACTS && o.isContact()) {
-                if (type != ACTIVE_CONTACTS)
+            if (type != Roster.ALL_CONTACTS && o.isContact()) {
+                if (type != Roster.ACTIVE_CONTACTS)
                     ((RosterItemView) convertView).populateFromContact(roster, protocol, (Contact) o);
-                else
-                    if (((Contact) o).hasChat())
-                        ((RosterItemView) convertView).populateFromContact(roster, ((Contact) o).getProtocol(), (Contact) o);
             } else {
                 if (o.isGroup()) {
                     ((RosterItemView) convertView).populateFromGroup((Group) o);

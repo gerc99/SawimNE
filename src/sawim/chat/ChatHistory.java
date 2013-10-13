@@ -37,6 +37,22 @@ public final class ChatHistory {
         });
     }
 
+    public void addLayerToListOfChats(Protocol p, List<Object> items) {
+        boolean hasLayer = false;
+        items.add(p.getUserId());
+        for (int i = 0; i < ChatHistory.instance.historyTable.size(); ++i) {
+            Chat chat = ChatHistory.instance.chatAt(i);
+            if (chat.getProtocol() == p) {
+                items.add(chat);
+                hasLayer = true;
+            }
+        }
+        if (!hasLayer) {
+            items.remove(items.size() - 1);
+            return;
+        }
+    }
+
     public Chat chatAt(int index) {
         if ((index < historyTable.size()) && (index >= 0))
             return historyTable.get(index);

@@ -77,11 +77,6 @@ public final class FileTransfer implements FileBrowserListener,
             fileProgressView.show(a.getSupportFragmentManager(), "file");
     }
 
-    public static boolean isPhotoSupported() {
-        String supports = System.getProperty("video.snapshot.encodings");
-        return !StringConvertor.isEmpty(supports);
-    }
-
     public Contact getReceiver() {
         return cItem;
     }

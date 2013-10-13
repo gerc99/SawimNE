@@ -59,7 +59,7 @@ public class RosterItemView extends View {
     public RosterItemView(Context context) {
         super(context);
         initView();
-        setPadding(10, 20, 10, 20);
+        setPadding(10, 15, 10, 15);
     }
 
     void populateFromGroup(Group g) {
@@ -130,6 +130,12 @@ public class RosterItemView extends View {
             itemFifthImage = (BitmapDrawable) Tracking.getTrackIcon(id);
     }
 
+    public void addLayer(String text) {
+        setNull();
+        itemDescColor = Scheme.getColor(Scheme.THEME_GROUP);
+        itemDesc = text;
+    }
+
     private final void initView() {
         if (mTextPaint == null) {
             mTextPaint = new Paint();
@@ -140,6 +146,7 @@ public class RosterItemView extends View {
     }
 
     private void setNull() {
+        itemName = null;
         itemDesc = null;
         itemFirstImage = null;
         itemSecondImage = null;
@@ -175,7 +182,7 @@ public class RosterItemView extends View {
 
         mAscent = (int) mTextPaint.ascent();
         mDescent = (int) mTextPaint.descent();
-        if (itemDesc != null) {
+        if (itemName != null && itemDesc != null) {
             mAscent *= 2;
             mDescent *= 2;
         }
@@ -192,22 +199,22 @@ public class RosterItemView extends View {
     }
 
     private void measureItem(int width, int height) {
+        firstImageX = getPaddingLeft();
         if (itemFirstImage != null) {
-            firstImageX = getPaddingLeft();
+            secondImageX = itemFirstImage.getBitmap().getWidth() - getPaddingLeft();
             firstImageY = height / 2 - itemFirstImage.getBitmap().getHeight() / 2;
-            secondImageX = itemFirstImage.getBitmap().getWidth() + getPaddingRight() + getPaddingLeft();
-            textX = secondImageX + getPaddingLeft();
+            textX = itemFirstImage.getBitmap().getWidth() + getPaddingLeft();
         }
         if (itemSecondImage != null) {
-            secondImageX += itemSecondImage.getBitmap().getWidth() - getPaddingRight() - getPaddingLeft();
+            secondImageX += itemSecondImage.getBitmap().getWidth() - getPaddingLeft();
             secondImageY = height / 2 - itemSecondImage.getBitmap().getHeight() / 2;
-            textX += itemSecondImage.getBitmap().getWidth() + getPaddingRight() + getPaddingLeft();
+            textX += itemSecondImage.getBitmap().getWidth() + getPaddingLeft();
         }
-        thirdImageX = secondImageX + getPaddingRight();
+        thirdImageX = secondImageX;
         if (itemThirdImage != null) {
-            thirdImageX += itemThirdImage.getBitmap().getWidth() - getPaddingRight() - getPaddingLeft();
+            thirdImageX += itemThirdImage.getBitmap().getWidth() + getPaddingLeft();
             thirdImageY = height / 2 - itemThirdImage.getBitmap().getHeight() / 2;
-            textX += itemThirdImage.getBitmap().getWidth() + getPaddingRight() + getPaddingLeft();
+            textX += itemThirdImage.getBitmap().getWidth() + getPaddingLeft();
         }
 
         fourthImageX = width - getPaddingRight();
@@ -244,7 +251,10 @@ public class RosterItemView extends View {
             mTextPaint.setColor(itemDescColor);
             setTextSize(General.getFontSize() - 2);
             mTextPaint.setTypeface(Typeface.DEFAULT);
-            canvas.drawText(itemDesc, textX, getPaddingBottom() - mAscent + getPaddingBottom() / 2, mTextPaint);
+            if (itemName != null)
+                canvas.drawText(itemDesc, textX, getPaddingBottom() - mAscent + getPaddingBottom() / 2, mTextPaint);
+            else
+                canvas.drawText(itemDesc, textX, getPaddingBottom() - mAscent, mTextPaint);
         }
         if (itemFourthImage != null)
             canvas.drawBitmap(itemFourthImage.getBitmap(), fourthImageX, fourthImageY, null);
