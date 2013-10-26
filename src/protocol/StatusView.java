@@ -2,7 +2,7 @@ package protocol;
 
 import android.view.ContextMenu;
 import android.view.Menu;
-import ru.sawim.models.form.VirtualListItem;
+import ru.sawim.models.list.VirtualListItem;
 import sawim.Clipboard;
 import ru.sawim.models.list.VirtualListModel;
 import DrawControls.icons.Icon;

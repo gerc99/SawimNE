@@ -6,7 +6,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import ru.sawim.General;
 import ru.sawim.Scheme;
-import ru.sawim.models.form.VirtualListItem;
+import ru.sawim.models.list.VirtualListItem;
 import ru.sawim.models.list.VirtualList;
 import ru.sawim.models.list.VirtualListModel;
 import sawim.roster.Roster;

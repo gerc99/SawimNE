@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import ru.sawim.Scheme;
 import sawim.chat.Chat;
 import sawim.chat.ChatHistory;
 import sawim.roster.Roster;
@@ -56,13 +57,16 @@ public class ChatsAdapter extends BaseAdapter {
         if (convertView == null) {
             convertView = new RosterItemView(context);
         }
+        RosterItemView rosterItemView = ((RosterItemView) convertView);
         Object o = getItem(position);
         if (o instanceof String) {
-            ((RosterItemView) convertView).addLayer((String) o);
+            rosterItemView.addLayer((String) o);
+            rosterItemView.setBackgroundColor(Scheme.getInversColor(Scheme.THEME_BACKGROUND));
         }
         if (o instanceof Chat) {
             Chat chat = (Chat) o;
             ((RosterItemView) convertView).populateFromContact(Roster.getInstance(), chat.getProtocol(), chat.getContact());
+            rosterItemView.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
         }
         ((RosterItemView) convertView).repaint();
         return convertView;

@@ -27,6 +27,7 @@ import sawim.chat.Chat;
 import sawim.chat.MessData;
 import sawim.chat.message.Message;
 import ru.sawim.Scheme;
+import sawim.modules.DebugLog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +41,7 @@ import java.util.List;
  */
 public class MessagesAdapter extends BaseAdapter {
 
-    private FragmentActivity activity;
+    private Context context;
     private List<MessData> items = new ArrayList<MessData>();
     private Protocol currentProtocol;
     private String currentContact;
@@ -48,8 +49,8 @@ public class MessagesAdapter extends BaseAdapter {
     private boolean isMultiQuote = false;
     private int position = -1;
 
-    public void init(FragmentActivity activity, Chat chat) {
-        this.activity = activity;
+    public void init(Context context, Chat chat) {
+        this.context = context;
         currentProtocol = chat.getProtocol();
         currentContact = chat.getContact().getUserId();
         refreshList(chat.getMessData());
@@ -92,7 +93,7 @@ public class MessagesAdapter extends BaseAdapter {
     public View getView(int index, View row, ViewGroup viewGroup) {
         final MessData mData = items.get(index);
         if (mData.messView == null) {
-            mData.messView = new MessageItemView(activity);
+            mData.messView = new MessageItemView(context);
         }
         MessageItemView item = mData.messView;
         SpannableStringBuilder parsedText = mData.parsedText();
@@ -155,7 +156,7 @@ public class MessagesAdapter extends BaseAdapter {
             item.msgText.setLinkTextColor(0xff00e4ff);
             item.msgText.setText(parsedText);
         }
-        item.addDivider(activity, Scheme.getColor(Scheme.THEME_TEXT),
+        item.addDivider(context, Scheme.getColor(Scheme.THEME_TEXT),
                 position == index && index > 0 && position != getCount());
         return item;
     }
@@ -166,14 +167,14 @@ public class MessagesAdapter extends BaseAdapter {
             if (clickedString.length() == 0) return;
             boolean isJuick = clickedString.substring(0, 1).equals("@") || clickedString.substring(0, 1).equals("#");
             if (isJuick) {
-                new JuickMenu(activity, currentProtocol, currentContact, clickedString).show();
+                new JuickMenu(((FragmentActivity)textView.getContext()), currentProtocol, currentContact, clickedString).show();
                 return;
             }
             if (isLongTap) {
                 CharSequence[] items = new CharSequence[2];
-                items[0] = activity.getString(R.string.copy);
-                items[1] = activity.getString(R.string.add_contact);
-                final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+                items[0] = textView.getContext().getString(R.string.copy);
+                items[1] = textView.getContext().getString(R.string.add_contact);
+                final AlertDialog.Builder builder = new AlertDialog.Builder(textView.getContext());
                 builder.setCancelable(true);
                 builder.setTitle(R.string.url_menu);
                 final String finalClickedString = clickedString;
@@ -192,8 +193,9 @@ public class MessagesAdapter extends BaseAdapter {
                 });
                 try {
                     builder.create().show();
-                } catch(Exception e){
+                } catch(Exception e) {
                     // WindowManager$BadTokenException will be caught and the app would not display
+                    DebugLog.panic("onTextLinkClick", e);
                 }
             } else {
                 if (!clickedString.startsWith("http://") && !clickedString.startsWith("https://"))
@@ -203,13 +205,11 @@ public class MessagesAdapter extends BaseAdapter {
                         || (clickedString.endsWith(".png"))
                         || (clickedString.endsWith(".gif"))
                         || (clickedString.endsWith(".bmp"))) {
-                    if (!activity.isFinishing()) {
-                        PictureView pictureView = new PictureView();
-                        pictureView.setLink(clickedString);
-                        FragmentTransaction transaction = activity.getSupportFragmentManager().beginTransaction();
-                        transaction.add(pictureView, PictureView.TAG);
-                        transaction.commitAllowingStateLoss();
-                    }
+                    PictureView pictureView = new PictureView();
+                    pictureView.setLink(clickedString);
+                    FragmentTransaction transaction = ((FragmentActivity)textView.getContext()).getSupportFragmentManager().beginTransaction();
+                    transaction.add(pictureView, PictureView.TAG);
+                    transaction.commitAllowingStateLoss();
                 } else {
                     Uri uri = Uri.parse(clickedString);
                     Context context = textView.getContext();

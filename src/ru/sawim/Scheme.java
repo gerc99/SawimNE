@@ -45,23 +45,23 @@ public class Scheme {
     }
 
     private static final int[] baseTheme = {
-            0xFFFFFF,
+            0xE4E4E4,
             0x000000,
-            0xF0F0F0,
+            0xC0C0C0,
             0x000000,
-            0x0000FF,
-            0xFF0000,
-            0x0000FF,
+            0x804040,
+            0x1E2858,
+            0x804040,
             0x000000,
-            0x0000FF,
-            0x404040,
-            0x808080,
-            0x0000FF,
-            0x0000FF,
+            0x804040,
+            0x000000,
+            0x666666,
+            0xA00000,
+            0x1E2858,
             0x000000,
             0x000000,
-            0x800000,
-            0x808080,
+            0xA00000,
+            0x999999,
             0xFFE7BA,
             0xBFEFFF,
             0xEED8AE,
@@ -85,7 +85,7 @@ public class Scheme {
         themeNames  = new String[themes.size() + 1];
         themeColors = new int[themes.size() + 1][];
 
-        themeNames[0]  = "Black on white (default)";
+        themeNames[0]  = "Gray (default)";
         themeColors[0] = baseTheme;
         for (int i = 0; i < themes.size(); ++i) {
             Config config = (Config)themes.elementAt(i);

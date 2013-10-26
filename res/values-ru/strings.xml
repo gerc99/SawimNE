@@ -215,4 +215,5 @@
     <string name="select_contact">Выберите контакт, чтобы начать чат</string>
     <string name="server">Сервер</string>
     <string name="hint_registration_domen">это сервер по умолчанию, вы можете зарегистрироваться на другом</string>
+    <string name="my_conference">Мои конференции</string>
 </resources>

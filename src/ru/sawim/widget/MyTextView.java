@@ -15,6 +15,7 @@ import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 import ru.sawim.text.InternalURLSpan;
+import sawim.modules.DebugLog;
 
 /**
  * Created with IntelliJ IDEA.
@@ -190,7 +191,8 @@ public class MyTextView extends View {
                     if (!isLongTap) {
                         isSecondTap = true;
                         try {
-                            mListener.onTextLinkClick(MyTextView.this, link, false);
+                            if (mListener != null)
+                                mListener.onTextLinkClick(MyTextView.this, link, false);
                         } catch (ActivityNotFoundException e) { }
                     } else {
                         removeCallbacks(mLongPressed);

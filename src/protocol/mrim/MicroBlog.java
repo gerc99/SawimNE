@@ -13,7 +13,7 @@ import ru.sawim.models.list.VirtualListModel;
 import ru.sawim.models.list.VirtualList;
 import ru.sawim.Scheme;
 import java.util.Vector;
-import ru.sawim.models.form.VirtualListItem;
+import ru.sawim.models.list.VirtualListItem;
 import sawim.util.JLocale;
 
 public final class MicroBlog implements TextBoxView.TextBoxListener {

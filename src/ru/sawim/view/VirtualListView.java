@@ -8,7 +8,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import ru.sawim.General;
 import ru.sawim.activities.SawimActivity;
-import ru.sawim.models.form.VirtualListItem;
+import ru.sawim.models.list.VirtualListItem;
 import ru.sawim.Scheme;
 import ru.sawim.models.list.VirtualList;
 import ru.sawim.R;
@@ -68,13 +68,20 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
         lv.setOnItemClickListener(new ListView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                for (int i = 0; i < list.getModel().elements.size(); ++i) {
+                    VirtualListItem item = elements.get(i);
+                    if (item.getGroupListListener() != null) {
+                        item.getGroupListListener().select();
+
+                        return;
+                    }
+                }
                 if (list.getClickListListener() != null)
                     list.getClickListListener().itemSelected(position);
             }
         });
         currentActivity.registerForContextMenu(lv);
         lv.setOnCreateContextMenuListener(this);
-
         update();
     }
 

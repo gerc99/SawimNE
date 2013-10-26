@@ -7,7 +7,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
-import ru.sawim.models.form.VirtualListItem;
+import ru.sawim.models.list.VirtualListItem;
 import sawim.Clipboard;
 import sawim.ExternalApi;
 import ru.sawim.models.list.VirtualListModel;

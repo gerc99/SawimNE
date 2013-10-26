@@ -31,31 +31,6 @@ public class Util {
         return (xlarge || large);
     }
 
-    public static Bitmap decodeAndResizeBitmap(String url) {
-        Bitmap bitmap = null;
-        try {
-            BufferedInputStream is = new BufferedInputStream(new URL(url).openConnection().getInputStream());
-            is.mark(0);
-            BitmapFactory.Options o = new BitmapFactory.Options();
-            o.inJustDecodeBounds = true;
-            BitmapFactory.decodeStream(is, null, o);
-            o.inJustDecodeBounds = false;
-            is.reset();
-            int imageWidth = o.outWidth;
-            float s = imageWidth / o.outHeight;
-            int screenWidth = General.currentActivity == null ? 300 : General.currentActivity.getWindowManager().getDefaultDisplay().getWidth();
-            if (imageWidth > screenWidth) imageWidth = screenWidth;
-            Log.e("ResizeBitmap", "" + o.outHeight);
-            bitmap = BitmapFactory.decodeStream(is, null, o);
-            bitmap = Bitmap.createScaledBitmap(bitmap, imageWidth, (int)(imageWidth / s), true);
-            is.close();
-            bitmap.setDensity(0);
-        } catch (Exception e) {
-            Log.e("ResizeBitmap", "Remote Image Exception", e);
-        }
-        return bitmap;
-    }
-
     public static Bitmap avatarBitmap(byte[] buffer) {
         if (buffer == null) return null;
         DisplayMetrics metrics = new DisplayMetrics();

@@ -1,10 +1,11 @@
-package ru.sawim.models.form;
+package ru.sawim.models.list;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
+import ru.sawim.General;
 import ru.sawim.SawimApplication;
 import ru.sawim.text.TextFormatter;
 
@@ -26,12 +27,21 @@ public class VirtualListItem {
     private byte font;
     private boolean itemSelectable;
     private boolean hasLinks;
+    private OnGroupListListener groupListListener;
+    public boolean opened = false;
 
     public VirtualListItem(boolean itemSelectable) {
         this.itemSelectable = itemSelectable;
     }
 
     public void addLabel(String text, byte themeText, byte font) {
+        label = text;
+        this.themeTextLabel = themeText;
+        this.font = font;
+    }
+
+    public void addLabel(int marginLeft, String text, byte themeText, byte font) {
+        this.marginLeft = marginLeft;
         label = text;
         this.themeTextLabel = themeText;
         this.font = font;
@@ -50,10 +60,20 @@ public class VirtualListItem {
         this.font = font;
     }
 
+    public OnGroupListListener getGroupListListener() {
+        return groupListListener;
+    }
+
+    public void addGroup(int marginLeft, String text, byte themeText, byte font, OnGroupListListener groupListListener) {
+        addImage(General.groupIcons.iconAt(opened ? 1 : 0).getImage());
+        addDescription(marginLeft, text, themeText, font);
+        this.groupListListener = groupListListener;
+    }
+
     public void addTextWithSmiles(String text, byte themeText, byte font) {
         descSpan = new SpannableStringBuilder(text);
         TextFormatter.detectEmotions(descSpan, text);
-        TextFormatter.getInstance().getTextWithLinks(descSpan, 0xff00e4ff, -1);
+        //TextFormatter.getInstance().getTextWithLinks(descSpan, 0xff00e4ff, -1);
         this.themeTextDesc = themeText;
         this.font = font;
     }
@@ -106,12 +126,15 @@ public class VirtualListItem {
         return itemSelectable;
     }
 
-
     public void setHasLinks(boolean hasLinks) {
         this.hasLinks = hasLinks;
     }
 
     public boolean isHasLinks() {
         return hasLinks;
+    }
+
+    public interface OnGroupListListener {
+        void select();
     }
 }

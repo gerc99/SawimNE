@@ -223,6 +223,11 @@ public class SawimActivity extends FragmentActivity {
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        //super.onSaveInstanceState(outState);
+    }
+
+    @Override
     public void onBackPressed() {
         SawimFragment chatView = (SawimFragment) getSupportFragmentManager().findFragmentByTag(ChatView.TAG);
         SawimFragment formView = (SawimFragment) getSupportFragmentManager().findFragmentByTag(FormView.TAG);
@@ -246,8 +251,7 @@ public class SawimActivity extends FragmentActivity {
             if (view != null && view.isVisible()) {
                 view.showMenu();
                 return true;
-            } else
-                super.onKeyUp(key, event);
+            }
         }
         return super.onKeyUp(key, event);
     }
@@ -284,8 +288,7 @@ public class SawimActivity extends FragmentActivity {
     private static final int MENU_SEND_SMS = 4;
     private static final int MENU_SOUND = 5;
     private static final int MENU_OPTIONS = 6;
-    private static final int MENU_ABOUT = 13; //OptionsForm
-    private static final int MENU_QUIT = 14;
+    private static final int MENU_QUIT = 14; //OptionsForm
     private static final int MENU_MORE = 15;
     private static final int MENU_DISCO = 16;
     private static final int MENU_NOTES = 17;
@@ -325,15 +328,17 @@ public class SawimActivity extends FragmentActivity {
                 }
             }
             if (p.isConnected()) {
+                if (p instanceof Jabber) {
+                    if (((Jabber)p).hasS2S()) {
+                        menu.add(Menu.NONE, MENU_DISCO, Menu.NONE, R.string.service_discovery);
+                    }
+                }
                 menu.add(Menu.NONE, MENU_GROUPS, Menu.NONE, R.string.manage_contact_list);
                 if (p instanceof Icq) {
                     menu.add(Menu.NONE, MENU_MYSELF, Menu.NONE, R.string.myself);
                 } else {
                     SubMenu moreMenu = menu.addSubMenu(Menu.NONE, MENU_MORE, Menu.NONE, R.string.more);
                     if (p instanceof Jabber) {
-                        if (((Jabber)p).hasS2S()) {
-                            moreMenu.add(Menu.NONE, MENU_DISCO, Menu.NONE, R.string.service_discovery);
-                        }
                         moreMenu.add(Menu.NONE, MENU_NOTES, Menu.NONE, R.string.notes);
                     }
                     if (p.hasVCardEditor())
@@ -353,8 +358,8 @@ public class SawimActivity extends FragmentActivity {
         optionsMenu.add(Menu.NONE, OptionsForm.OPTIONS_ANTISPAM, Menu.NONE, R.string.antispam);
         optionsMenu.add(Menu.NONE, OptionsForm.OPTIONS_ABSENCE, Menu.NONE, R.string.absence);
         optionsMenu.add(Menu.NONE, OptionsForm.OPTIONS_ANSWERER, Menu.NONE, R.string.answerer);
+        optionsMenu.add(Menu.NONE, OptionsForm.OPTIONS_ABOUT, Menu.NONE, R.string.about_program);
 
-        menu.add(Menu.NONE, MENU_ABOUT, Menu.NONE, R.string.about_program);
         menu.add(Menu.NONE, MENU_DEBUG_LOG, Menu.NONE, R.string.debug);
         menu.add(Menu.NONE, MENU_QUIT, Menu.NONE, R.string.quit);
         return super.onPrepareOptionsMenu(menu);
@@ -426,12 +431,12 @@ public class SawimActivity extends FragmentActivity {
             case OptionsForm.OPTIONS_ANSWERER:
                 new OptionsForm().select(item.getTitle(), OptionsForm.OPTIONS_ANSWERER);
                 break;
+            case OptionsForm.OPTIONS_ABOUT:
+                new AboutProgramView().show(getSupportFragmentManager(), AboutProgramView.TAG);
+                break;
 
             case MENU_DEBUG_LOG:
                 DebugLog.instance.activate();
-                break;
-            case MENU_ABOUT:
-                new AboutProgramView().show(getSupportFragmentManager(), AboutProgramView.TAG);
                 break;
             case MENU_QUIT:
                 General.getInstance().quit();

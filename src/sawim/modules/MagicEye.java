@@ -28,7 +28,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import protocol.*;
 import DrawControls.icons.Icon;
-import ru.sawim.models.form.VirtualListItem;
+import ru.sawim.models.list.VirtualListItem;
 import ru.sawim.General;
 import sawim.Clipboard;
 import sawim.comm.Util;

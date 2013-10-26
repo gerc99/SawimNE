@@ -2,6 +2,7 @@ package protocol;
 
 import DrawControls.icons.Icon;
 import DrawControls.icons.ImageList;
+import ru.sawim.General;
 import sawim.roster.TreeNode;
 import sawim.comm.Util;
 import java.util.Vector;
@@ -15,7 +16,6 @@ public class Group extends TreeNode {
     private String caption = null;
     private int groupId;
     private boolean expanded = false;
-    private static final ImageList groupIcons = ImageList.createImageList("/gricons.png");
 
     public static final int NOT_IN_GROUP = -1;
 
@@ -110,7 +110,7 @@ public class Group extends TreeNode {
 
     @Override
     public Icon getLeftIcon(Protocol p) {
-        return expanded ? groupIcons.iconAt(1) : groupIcons.iconAt(0);
+        return General.groupIcons.iconAt(expanded ? 1 : 0);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package protocol.jabber;
 
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -7,7 +8,7 @@ import android.widget.Toast;
 import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
-import ru.sawim.models.form.VirtualListItem;
+import ru.sawim.models.list.VirtualListItem;
 import ru.sawim.models.list.VirtualList;
 import java.util.Vector;
 import sawim.roster.Roster;
@@ -34,6 +35,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
 
     private VirtualList screen;
     private VirtualListModel model = new VirtualListModel();
+    private static VirtualListItem groupItem;
 
     private static final int COMMAND_ADD = 0;
     private static final int COMMAND_SET = 1;
@@ -50,6 +52,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
         searchBox = new TextBoxView();
         screen.setModel(model);
         screen.setCaption(JLocale.getString("service_discovery"));
+        groupItem = model.createNewParser(true);
         screen.setClickListListener(new VirtualList.OnClickListListener() {
             @Override
             public void itemSelected(int position) {
@@ -222,13 +225,13 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
         String shortJid = makeShortJid(jid);
         String visibleJid = makeReadableJid(shortJid);
         VirtualListItem item = model.createNewParser(true);
-        item.addLabel(visibleJid, Scheme.THEME_TEXT,
+        item.addLabel(20, visibleJid, Scheme.THEME_TEXT,
                 shortView ? Scheme.FONT_STYLE_PLAIN : Scheme.FONT_STYLE_BOLD);
         if (!shortView) {
             if (StringConvertor.isEmpty(name)) {
                 name = shortJid;
             }
-            item.addDescription(name, Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
+            item.addDescription(20, name, Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
         }
 
         model.addPar(item);
@@ -272,7 +275,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
         }
     }
     private void addBuildInList() {
-        addUnique(General.NAME, "jimm-sawim@conference.jabber.ru");
+    //    addUnique(General.NAME, "jimm-sawim@conference.jabber.ru");
         VirtualListItem br = model.createNewParser(false);
         br.addBr();
         model.addPar(br);
@@ -295,20 +298,15 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
         isConferenceList = (-1 == jid.indexOf('@')) && Jid.isConference('@' + jid);
         clear();
         if (0 == jid.length()) {
-            Config conf = new Config().loadLocale("/jabber-services.txt");
-            boolean conferences = true;
-            addBookmarks();
-            for (int i = 0; i < conf.getKeys().length; ++i) {
-                if (conferences && !Jid.isConference(conf.getKeys()[i])) {
-                    conferences = false;
-                    addBuildInList();
+            /*groupItem.addGroup(0, SawimApplication.getContext().getString(R.string.my_conference), Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN, new VirtualListItem.OnGroupListListener() {
+                @Override
+                public void select() {
+                    groupItem.opened = !groupItem.opened;
+                    setServer("");
                 }
-                addUnique(conf.getValues()[i], conf.getKeys()[i]);
-            }
-            if (conferences) {
-                addBuildInList();
-            }
-            screen.updateModel();
+            });
+            model.addPar(groupItem);*/
+            rebuild(groupItem);
             return;
         }
         if (Jid.isConference(serverJid)) {
@@ -320,6 +318,24 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
         model.addPar(wait);
         screen.updateModel();
         jabber.getConnection().requestDiscoItems(serverJid);
+    }
+
+    private void rebuild(VirtualListItem item) {
+        Config conf = new Config().loadLocale("/jabber-services.txt");
+        boolean conferences = true;
+        //if (item.opened)
+        //    addBookmarks();
+        for (int i = 0; i < conf.getKeys().length; ++i) {
+            if (conferences && !Jid.isConference(conf.getKeys()[i])) {
+                conferences = false;
+                addBuildInList();
+            }
+            addUnique(conf.getValues()[i], conf.getKeys()[i]);
+        }
+        if (conferences) {
+            addBuildInList();
+        }
+        screen.updateModel();
     }
 
     void setError(String description) {

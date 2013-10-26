@@ -52,6 +52,10 @@ abstract public class Contact extends TreeNode {
 		return Tracking.FALSE;
 	}
 
+    public byte isPresence() {
+        return Tracking.FALSE;
+    }
+
 	public byte subcontactsS() {
 		return (byte)0;
 	}

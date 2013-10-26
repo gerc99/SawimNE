@@ -340,8 +340,9 @@ public final class XmlNode {
     
     public XmlNode getFirstNode(String name) {
         for (int i = 0; i < children.size(); ++i) {
-            if (unsafeChildAt(i).is(name)) {
-                return unsafeChildAt(i);
+            XmlNode node = unsafeChildAt(i);
+            if (node.is(name)) {
+                return node;
             }
         }
         return null;

@@ -10,6 +10,8 @@ import ru.sawim.General;
 import ru.sawim.models.ChatsAdapter;
 import ru.sawim.widget.MyListView;
 import ru.sawim.widget.Util;
+import sawim.chat.Chat;
+import sawim.modules.DebugLog;
 import sawim.roster.TreeNode;
 import android.graphics.Rect;
 import android.os.Bundle;
@@ -321,8 +323,9 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         if (roster.getCurrPage() == Roster.ACTIVE_CONTACTS) {
             ChatsAdapter chatsAdapter = ((ChatsAdapter)adaptersPages.get(viewPager.getCurrentItem()));
             Object o = chatsAdapter.getItem(position);
-            if (o instanceof Contact) {
-                openChat(((Contact) o).getProtocol(), (Contact) o, false);
+            if (o instanceof Chat) {
+                Chat chat = (Chat) o;
+                openChat(chat.getProtocol(), chat.getContact(), false);
                 if (getActivity().getSupportFragmentManager()
                         .findFragmentById(R.id.chat_fragment) != null)
                     updateRoster();
@@ -350,8 +353,9 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         if (roster.getCurrPage() == Roster.ACTIVE_CONTACTS) {
             ChatsAdapter chatsAdapter = ((ChatsAdapter)adaptersPages.get(viewPager.getCurrentItem()));
             Object o = chatsAdapter.getItem(contextMenuInfo.position);
-            if (o instanceof Contact) {
-                new ContactMenu(((Contact) o).getProtocol(), (Contact) o).getContextMenu(menu);
+            if (o instanceof Chat) {
+                Chat chat = (Chat) o;
+                new ContactMenu(chat.getProtocol(), chat.getContact()).getContextMenu(menu);
                 return;
             }
         } else {
@@ -378,8 +382,10 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         if (roster.getCurrPage() == Roster.ACTIVE_CONTACTS) {
             ChatsAdapter chatsAdapter = ((ChatsAdapter)adaptersPages.get(viewPager.getCurrentItem()));
             Object o = chatsAdapter.getItem(menuInfo.position);
-            if (o instanceof Contact)
-                contactMenuItemSelected((Contact) o, item);
+            if (o instanceof Chat) {
+                Chat chat = (Chat) o;
+                contactMenuItemSelected(chat.getContact(), item);
+            }
         } else {
             TreeNode node = ((RosterAdapter)adaptersPages.get(viewPager.getCurrentItem())).getItem(menuInfo.position);
             if (node == null) return false;

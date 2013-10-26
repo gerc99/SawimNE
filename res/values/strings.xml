@@ -216,4 +216,5 @@
     <string name="select_contact">Select a contact to chat</string>
     <string name="server">Server</string>
     <string name="hint_registration_domen">this is the default server, you can register to the other</string>
+    <string name="my_conference">My conference</string>
 </resources>

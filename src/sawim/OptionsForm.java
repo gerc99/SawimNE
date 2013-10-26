@@ -24,6 +24,7 @@ public class OptionsForm implements FormListener, ControlStateListener {
     public static final int OPTIONS_ANTISPAM   = 10;
     public static final int OPTIONS_ABSENCE    = 11;
     public static final int OPTIONS_ANSWERER   = 12;
+    public static final int OPTIONS_ABOUT      = 13;
 
     private void setChecked(String lngStr, int optValue) {
         form.addCheckBox(optValue, lngStr, Options.getBoolean(optValue));

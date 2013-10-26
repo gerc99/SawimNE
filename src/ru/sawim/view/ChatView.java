@@ -8,6 +8,7 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -179,19 +180,19 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
             linearLayout.addView(imageView);
 
             textView = new LabelView(context);
-            textView.setTextColor(Scheme.getColor(Scheme.THEME_CAP_TEXT));
-            textView.setTextSize(General.getFontSize());
             linearLayout.addView(textView);
 
             addViewInLayout(linearLayout, 0, layoutParams);
         }
 
-        public LabelView getTextView() {
-            return textView;
+        public void updateTextView(String text) {
+            textView.setTextColor(Scheme.getColor(Scheme.THEME_CAP_TEXT));
+            textView.setTextSize(General.getFontSize());
+            textView.setText(text);
         }
 
-        public void updateLabelIcon() {
-            imageView.setImageDrawable(chatsSpinnerAdapter.getImageChat(chat, false));
+        public void updateLabelIcon(Drawable drawable) {
+            imageView.setImageDrawable(drawable);
         }
     }
 
@@ -249,7 +250,6 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
                 lp.weight = 10;
             else
                 lp.weight = 1;
-            lp.bottomMargin = 8;
             addViewInLayout(chatListView, 0, lp);
 
             lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -259,7 +259,6 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
                 lp.weight = 3;
             else
                 lp.weight = (float) 1.5;
-            lp.bottomMargin = 8;
             addViewInLayout(nickList, 1, lp);
         }
     }
@@ -274,7 +273,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
         private void init() {
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             setOrientation(HORIZONTAL);
-            setPadding(5, 4, 4, 4);
+            setPadding(5, 5, 5, 5);
             setLayoutParams(layoutParams);
 
             LinearLayout.LayoutParams menuButtonLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
@@ -288,7 +287,6 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
             LinearLayout.LayoutParams messageEditorLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             messageEditorLP.gravity = Gravity.CENTER | Gravity.LEFT;
             messageEditorLP.weight = (float) 0.87;
-            messageEditor.setPadding(4, 5, 4, 4);
             addViewInLayout(messageEditor, 2, messageEditorLP);
 
             LinearLayout.LayoutParams sendButtonLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
@@ -500,8 +498,8 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
 
     private void initLabel() {
         chatsSpinnerAdapter = new ChatsSpinnerAdapter(getActivity());
-        labelView.updateLabelIcon();
-        labelView.getTextView().setText(contact.getName());
+        labelView.updateLabelIcon(chatsSpinnerAdapter.getImageChat(chat, false));
+        labelView.updateTextView(contact.getName());
         labelView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -512,6 +510,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
                         getDialog().setCanceledOnTouchOutside(true);
                         getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
                         View v = inflater.inflate(R.layout.chats_dialog, container, false);
+                        v.setBackgroundColor(Scheme.getInversColor(Scheme.THEME_CAP_BACKGROUND));
                         MyListView lv = (MyListView) v.findViewById(R.id.listView);
                         lv.setAdapter(chatsSpinnerAdapter);
                         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -591,7 +590,8 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
 
     private void updateList(Contact contact) {
         if (contact == this.contact) {
-            labelView.updateLabelIcon();
+            if (chatsSpinnerAdapter != null)
+                labelView.updateLabelIcon(chatsSpinnerAdapter.getImageChat(chat, false));
             if (adapter != null)
                 adapter.refreshList(chat.getMessData());
         }
@@ -602,6 +602,10 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
         General.currentActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                if (contact.isPresence() == (byte) 1) {
+                    if (adapter != null)
+                        adapter.refreshList(chat.getMessData());
+                }
                 if (mucUsersView != null)
                     mucUsersView.update();
             }

@@ -240,11 +240,13 @@ public final class JabberXml extends ClientConnection {
     }
 
     private void write(String xml) throws SawimException {
+        /*byte[] data = new byte[0];
         try {
-            write(xml.getBytes("UTF-8"));
+            data = xml.getBytes("UTF-8");
         } catch (UnsupportedEncodingException e) {
             DebugLog.panic("Unsupported write Encoding", e);
-        }
+        }*/
+        write(StringConvertor.stringToByteArrayUtf8(xml));
     }
     private void writePacket(String packet) throws SawimException {
         write(packet);
@@ -462,7 +464,11 @@ public final class JabberXml extends ClientConnection {
             parsePresence(x);
 
         } else if (x.is("m" + "essage")) {
-            parseMessage(x);
+            try {
+                parseMessage(x);
+            } catch (Exception e) {
+                DebugLog.panic("parseMessage", e);
+            }
 
         } else if (x.is("stream:error")) {
             setAuthStatus(false);

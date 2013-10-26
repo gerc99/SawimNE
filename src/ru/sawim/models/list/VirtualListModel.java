@@ -4,7 +4,6 @@ import DrawControls.icons.Icon;
 import java.util.ArrayList;
 import java.util.List;
 import android.graphics.Bitmap;
-import ru.sawim.models.form.VirtualListItem;
 import sawim.comm.StringConvertor;
 import ru.sawim.Scheme;
 import sawim.util.JLocale;
@@ -18,7 +17,7 @@ public final class VirtualListModel {
         elements = new ArrayList<VirtualListItem>();
     }
 
-    public final void addPar(final VirtualListItem item) {
+    public final void addPar(VirtualListItem item) {
         elements.add(item);
     }
 
@@ -94,6 +93,7 @@ public final class VirtualListModel {
             addPar(line);
         }
     }
+
     public void addAvatar(String langStr, Bitmap img) {
         if (null != img) {
             addHeader();
@@ -112,7 +112,6 @@ public final class VirtualListModel {
     }
 
     public boolean isItemSelectable(int i) {
-        //if (elements.size() < i) return false;
         return elements.get(i).isItemSelectable();
     }
 }

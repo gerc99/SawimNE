@@ -6,7 +6,7 @@
               android:layout_height="wrap_content"
               android:padding="5dp">
 
-    <TextView
+    <ru.sawim.widget.MyTextView
             android:id="@+id/label"
             android:text="label"
             android:textStyle="bold"
@@ -25,7 +25,7 @@
                 android:id="@+id/imageView"
                 android:layout_gravity="left|center_vertical"/>
 
-        <TextView
+        <ru.sawim.widget.MyTextView
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"
                 android:id="@+id/description"

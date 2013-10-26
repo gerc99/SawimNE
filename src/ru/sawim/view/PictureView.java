@@ -8,6 +8,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -29,46 +33,39 @@ public class PictureView extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        getDialog().setCanceledOnTouchOutside(true);
         getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
         View v = inflater.inflate(R.layout.picture_view, container, false);
         TextView textView = (TextView) v.findViewById(R.id.textView);
         textView.setText(link);
-        ProgressBar progressBar = (ProgressBar) v.findViewById(R.id.progressBar);
-        ImageView imageView = (ImageView) v.findViewById(R.id.imageView);
-        new DownloadImageTask(progressBar, imageView).execute(link);
+        final ProgressBar progressBar = (ProgressBar) v.findViewById(R.id.progressBar);
+
+        WebView webView = (WebView) v.findViewById(R.id.webView);
+        webView.getSettings().setJavaScriptEnabled(true);
+        webView.getSettings().setLoadWithOverviewMode(true);
+        webView.getSettings().setUseWideViewPort(true);
+        webView.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
+        //webView.getSettings().setSupportZoom(true);
+        //webView.getSettings().setBuiltInZoomControls(true);
+        webView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
+        webView.setScrollbarFadingEnabled(true);
+        webView.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public void onProgressChanged(WebView view, int newProgress) {
+                if (newProgress == 100) {
+                    view.setVisibility(ImageView.VISIBLE);
+                    progressBar.setVisibility(ProgressBar.GONE);
+                } else {
+                    view.setVisibility(ImageView.GONE);
+                    progressBar.setVisibility(ProgressBar.VISIBLE);
+                }
+            }
+        });
+        webView.loadUrl(link);
+        webView.setWebViewClient(new WebViewClient());
         return v;
     }
 
     public void setLink(String link) {
         this.link = link;
-    }
-
-    class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
-        ProgressBar progressBar;
-        ImageView bmImage;
-
-        public DownloadImageTask(ProgressBar progressBar, ImageView bmImage) {
-            this.progressBar = progressBar;
-            this.bmImage = bmImage;
-        }
-
-        @Override
-        protected Bitmap doInBackground(String... urls) {
-            return Util.decodeAndResizeBitmap(urls[0]);
-        }
-
-        @Override
-        protected void onProgressUpdate(Void... values) {
-            bmImage.setVisibility(ImageView.GONE);
-            progressBar.setVisibility(ProgressBar.VISIBLE);
-        }
-
-        @Override
-        protected void onPostExecute(Bitmap result) {
-            bmImage.setVisibility(ImageView.VISIBLE);
-            progressBar.setVisibility(ProgressBar.GONE);
-            bmImage.setImageBitmap(result);
-        }
     }
 }

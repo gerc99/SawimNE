@@ -137,7 +137,7 @@ public class JabberServiceContact extends JabberContact {
     }
 
     public void addPresence(Jabber jabber, String nick, String text) {
-        if (isPresence() != (byte) 1)
+        if (isPresence() == Tracking.FALSE)
             return;
         jabber.getChat(this).addPresence(new SystemNotice(jabber,
                 SystemNotice.SYS_NOTICE_PRESENCE, getUserId(), nick, text));
@@ -172,7 +172,7 @@ public class JabberServiceContact extends JabberContact {
         }
         SubContact sc = getExistSubContact(nick);
         if (null != sc) {
-            if (isPresence() == (byte) 1) {
+            if (isPresence() == Tracking.TRUE) {
                 StringBuffer prsnsText = new StringBuffer(0);
                 prsnsText.append(": ").append(jabber.getStatusInfo().getName(sc.status)).append(" ");
                 prsnsText.append(tempRang).append("/").append(tempRole).append(" ").append(role_Xstatus);

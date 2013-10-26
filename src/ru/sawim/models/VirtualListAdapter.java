@@ -1,7 +1,6 @@
 package ru.sawim.models;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,8 +11,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import ru.sawim.General;
 import ru.sawim.R;
-import ru.sawim.models.form.VirtualListItem;
+import ru.sawim.models.list.VirtualListItem;
 import ru.sawim.Scheme;
+import ru.sawim.widget.MyTextView;
 
 import java.util.List;
 
@@ -69,8 +69,8 @@ public class VirtualListAdapter extends BaseAdapter {
             convertView = inf.inflate(R.layout.virtual_list_item, null);
             holder = new ViewHolder();
             holder.descriptionLayout = (LinearLayout) convertView.findViewById(R.id.descriptionLayout);
-            holder.labelView = (TextView) convertView.findViewById(R.id.label);
-            holder.descView = (TextView) holder.descriptionLayout.findViewById(R.id.description);
+            holder.labelView = (MyTextView) convertView.findViewById(R.id.label);
+            holder.descView = (MyTextView) holder.descriptionLayout.findViewById(R.id.description);
             holder.imageView = (ImageView) holder.descriptionLayout.findViewById(R.id.imageView);
             convertView.setTag(holder);
         } else {
@@ -81,16 +81,27 @@ public class VirtualListAdapter extends BaseAdapter {
         holder.labelView.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
         holder.descView.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
         if (element.isHasLinks())
-            holder.descView.setAutoLinkMask(Linkify.ALL);
+            holder.descView.setOnTextLinkClickListener(new MyTextView.TextLinkClickListener() {
+                @Override
+                public void onTextLinkClick(View textView, String clickedString, boolean isLongTap) {
+                    if (clickedString.length() == 0) return;
+
+                }
+            });
 
         holder.labelView.setVisibility(TextView.GONE);
         holder.descView.setVisibility(TextView.GONE);
         holder.imageView.setVisibility(ImageView.GONE);
 
-        ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) holder.descriptionLayout.getLayoutParams();
-        if (layoutParams != null) {
-            layoutParams.setMargins(element.getMarginLeft(), 0, 0, 0);
-            holder.descriptionLayout.setLayoutParams(layoutParams);
+        ViewGroup.MarginLayoutParams labelLayoutParams = (ViewGroup.MarginLayoutParams) holder.labelView.getLayoutParams();
+        ViewGroup.MarginLayoutParams descLayoutParams = (ViewGroup.MarginLayoutParams) holder.descriptionLayout.getLayoutParams();
+        if (labelLayoutParams != null) {
+            labelLayoutParams.setMargins(element.getMarginLeft(), 0, 0, 0);
+            holder.labelView.setLayoutParams(labelLayoutParams);
+        }
+        if (descLayoutParams != null) {
+            descLayoutParams.setMargins(element.getMarginLeft(), 0, 0, 0);
+            holder.descriptionLayout.setLayoutParams(descLayoutParams);
         }
         if (element.getLabel() != null) {
             holder.labelView.setVisibility(TextView.VISIBLE);
@@ -129,9 +140,8 @@ public class VirtualListAdapter extends BaseAdapter {
 
     private static class ViewHolder {
         LinearLayout descriptionLayout;
-        TextView labelView;
-        TextView descView;
+        MyTextView labelView;
+        MyTextView descView;
         ImageView imageView;
-
     }
 }

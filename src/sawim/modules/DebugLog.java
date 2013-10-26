@@ -3,10 +3,11 @@ package sawim.modules;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
-import ru.sawim.models.form.VirtualListItem;
+import ru.sawim.ExceptionHandler;
+import ru.sawim.SawimApplication;
+import ru.sawim.models.list.VirtualListItem;
 import ru.sawim.General;
 import sawim.Clipboard;
-import sawim.comm.MD5;
 import sawim.comm.Util;
 import ru.sawim.Scheme;
 import ru.sawim.models.list.VirtualList;
@@ -85,6 +86,7 @@ public final class DebugLog {
             text += String.format("\n%s.%s() %d", ste.getClassName(), ste.getMethodName(), ste.getLineNumber());
         }
         println(text);
+        ExceptionHandler.reportOnlyHandler(SawimApplication.getInstance().getApplicationContext()).uncaughtException(null, e);
         e.printStackTrace();
     }
 
