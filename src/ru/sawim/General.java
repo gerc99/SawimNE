@@ -43,7 +43,8 @@ public class General {
 
     public static ImageList affiliationIcons = ImageList.createImageList("/jabber-affiliations.png");
     public static BitmapDrawable usersIcon = ImageList.createImageList("/participants.png").iconAt(0).getImage();
-    public static final ImageList groupIcons = ImageList.createImageList("/gricons.png");
+    public static final ImageList groupDownIcon = ImageList.createImageList("/control_down.png");
+    public static final ImageList groupRightIcons = ImageList.createImageList("/control_right.png");
     private static General instance;
     public static FragmentActivity currentActivity;
     public static String message = "";

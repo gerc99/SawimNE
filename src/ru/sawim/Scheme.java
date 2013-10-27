@@ -30,14 +30,6 @@ public class Scheme {
     public static final byte THEME_CHAT_HIGHLIGHT_MSG   = 15;
     public static final byte THEME_CONTACT_STATUS       = 16;
 
-    public static final byte THEME_CHAT_BG_IN           = 17;
-    public static final byte THEME_CHAT_BG_OUT          = 18;
-    public static final byte THEME_CHAT_BG_IN_ODD       = 19;
-    public static final byte THEME_CHAT_BG_OUT_ODD      = 20;
-    public static final byte THEME_CHAT_BG_MARKED       = 21;
-    public static final byte THEME_CHAT_BG_SYSTEM       = 22;
-
-
     public static final byte FONT_STYLE_PLAIN = 0;
     public static final byte FONT_STYLE_BOLD = 1;
 
@@ -47,7 +39,7 @@ public class Scheme {
     private static final int[] baseTheme = {
             0xE4E4E4,
             0x000000,
-            0xC0C0C0,
+            0xb0b0b0,
             0x000000,
             0x804040,
             0x1E2858,
@@ -61,13 +53,7 @@ public class Scheme {
             0x000000,
             0x000000,
             0xA00000,
-            0x999999,
-            0xFFE7BA,
-            0xBFEFFF,
-            0xEED8AE,
-            0xB2DFEE,
-            0xFFA54F,
-            0xF8F8FF};
+            0x999999};
 
     private static int[] currentTheme = new int[baseTheme.length];
     private static int[][] themeColors;
@@ -104,14 +90,10 @@ public class Scheme {
                 int index = Util.strToIntDef(keys[keyIndex], -1);
                 if ((0 <= index) && (index < theme.length)) {
                     theme[index] = Integer.parseInt(values[keyIndex].substring(2), 16);
-                    if (0 == index) {
-                        theme[17] = theme[18] = theme[19] = theme[20] = theme[22] = theme[0];
-                    } else if (1 == index) {
+                    if (1 == index) {
                         theme[15] = theme[14] = theme[1];
                     } else if (9 == index) {
                         theme[16] = theme[9];
-                    } else if (53 == index) {
-                        theme[21] = getInversColor(theme[0]);
                     }
                 }
             }

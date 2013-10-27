@@ -60,6 +60,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
                 if (Jid.isConference(jid)) {
                     Contact c = jabber.createTempContact(jid);
                     jabber.addContact(c);
+                    jabber.getConnection().sendPresence((JabberServiceContact) c);
                     Toast.makeText(SawimApplication.getContext(), R.string.added, Toast.LENGTH_SHORT).show();
                 } else if (Jid.isKnownGate(jid)) {
                     jabber.getConnection().register(jid);

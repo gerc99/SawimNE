@@ -65,7 +65,7 @@ public class VirtualListItem {
     }
 
     public void addGroup(int marginLeft, String text, byte themeText, byte font, OnGroupListListener groupListListener) {
-        addImage(General.groupIcons.iconAt(opened ? 1 : 0).getImage());
+        addImage(opened ? General.groupDownIcon.iconAt(0).getImage() : General.groupRightIcons.iconAt(0).getImage());
         addDescription(marginLeft, text, themeText, font);
         this.groupListListener = groupListListener;
     }

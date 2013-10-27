@@ -538,7 +538,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
         if (chatState == null) {
             chatState = new State();
             adapter = new MessagesAdapter();
-            adapter.init(General.currentActivity, chat);
+            adapter.init(chat);
             chatState.adapter = adapter;
             chatHash.put(contact.getUserId(), chatState);
         } else {

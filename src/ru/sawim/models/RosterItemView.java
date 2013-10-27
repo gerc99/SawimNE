@@ -7,7 +7,6 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import protocol.Contact;
@@ -35,11 +34,15 @@ public class RosterItemView extends View {
     private int itemNameColor;
     private int itemDescColor;
     private Typeface itemNameFont;
+    private static Paint textPaint;
     public BitmapDrawable itemFirstImage = null;
     public BitmapDrawable itemSecondImage = null;
     public BitmapDrawable itemThirdImage = null;
     public BitmapDrawable itemFourthImage = null;
     public BitmapDrawable itemFifthImage = null;
+
+    private int lineOneY;
+    private int lineTwoY;
     private int firstImageX = 0;
     private int firstImageY = 0;
     private int secondImageX = 0;
@@ -52,14 +55,15 @@ public class RosterItemView extends View {
     private int fifthImageY = 0;
     private int textX = 0;
 
-    private static Paint mTextPaint;
-    private int mAscent;
-    private int mDescent;
-
     public RosterItemView(Context context) {
         super(context);
-        initView();
         setPadding(10, 15, 10, 15);
+        if (textPaint == null) {
+            textPaint = new Paint();
+            textPaint.setAntiAlias(true);
+            textPaint.setTextSize(16);
+            textPaint.setColor(Scheme.getColor(Scheme.THEME_TEXT));
+        }
     }
 
     void populateFromGroup(Group g) {
@@ -136,15 +140,6 @@ public class RosterItemView extends View {
         itemDesc = text;
     }
 
-    private final void initView() {
-        if (mTextPaint == null) {
-            mTextPaint = new Paint();
-            mTextPaint.setAntiAlias(true);
-            mTextPaint.setTextSize(16);
-            mTextPaint.setColor(Scheme.getColor(Scheme.THEME_TEXT));
-        }
-    }
-
     private void setNull() {
         itemName = null;
         itemDesc = null;
@@ -163,7 +158,7 @@ public class RosterItemView extends View {
     private void setTextSize(int size) {
         Context c = getContext();
         Resources r = (c == null) ? Resources.getSystem() : c.getResources();
-        mTextPaint.setTextSize(TypedValue.applyDimension(
+        textPaint.setTextSize(TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_SP, size, r.getDisplayMetrics()));
     }
 
@@ -171,7 +166,6 @@ public class RosterItemView extends View {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int width = MeasureSpec.getSize(widthMeasureSpec);
         int height = measureHeight(heightMeasureSpec);
-        measureItem(width, height);
         setMeasuredDimension(width, height);
     }
 
@@ -180,16 +174,16 @@ public class RosterItemView extends View {
         int specMode = MeasureSpec.getMode(measureSpec);
         int specSize = MeasureSpec.getSize(measureSpec);
 
-        mAscent = (int) mTextPaint.ascent();
-        mDescent = (int) mTextPaint.descent();
+        int ascent = (int) textPaint.ascent();
+        int descent = (int) textPaint.descent();
         if (itemName != null && itemDesc != null) {
-            mAscent *= 2;
-            mDescent *= 2;
+            ascent *= 2;
+            descent *= 2;
         }
         if (specMode == MeasureSpec.EXACTLY) {
             result = specSize;
         } else {
-            result = (-mAscent + mDescent) + getPaddingTop()
+            result = (-ascent + descent) + getPaddingTop()
                     + getPaddingBottom();
             if (specMode == MeasureSpec.AT_MOST) {
                 result = Math.min(result, specSize);
@@ -198,34 +192,52 @@ public class RosterItemView extends View {
         return result;
     }
 
-    private void measureItem(int width, int height) {
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right,
+                            int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+        computeCoordinates(right - left, bottom - top);
+    }
+
+    private void computeCoordinates(int viewWidth, int viewHeight) {
+        int leftPadding = getPaddingLeft();
+        int bottomPadding = getPaddingBottom();
+        int topPadding = getPaddingTop();
+
+        textX = leftPadding;
+        lineOneY = topPadding - (int) textPaint.ascent();
+
+        int descent = (int) textPaint.descent();
+        lineTwoY = viewHeight - descent - bottomPadding;
+
+        int y = viewHeight / 2;
         firstImageX = getPaddingLeft();
         if (itemFirstImage != null) {
-            secondImageX = itemFirstImage.getBitmap().getWidth() - getPaddingLeft();
-            firstImageY = height / 2 - itemFirstImage.getBitmap().getHeight() / 2;
-            textX = itemFirstImage.getBitmap().getWidth() + getPaddingLeft();
+            secondImageX = firstImageX + itemFirstImage.getBitmap().getWidth() - getPaddingLeft();
+            firstImageY = y - itemFirstImage.getBitmap().getHeight() / 2;
+            textX = firstImageX + itemFirstImage.getBitmap().getWidth() + getPaddingLeft();
         }
         if (itemSecondImage != null) {
-            secondImageX += itemSecondImage.getBitmap().getWidth() - getPaddingLeft();
-            secondImageY = height / 2 - itemSecondImage.getBitmap().getHeight() / 2;
-            textX += itemSecondImage.getBitmap().getWidth() + getPaddingLeft();
+            secondImageX += getPaddingLeft();
+            secondImageY = y - itemSecondImage.getBitmap().getHeight() / 2;
+            textX = secondImageX + itemSecondImage.getBitmap().getWidth() + getPaddingLeft();
         }
         thirdImageX = secondImageX;
         if (itemThirdImage != null) {
-            thirdImageX += itemThirdImage.getBitmap().getWidth() + getPaddingLeft();
-            thirdImageY = height / 2 - itemThirdImage.getBitmap().getHeight() / 2;
-            textX += itemThirdImage.getBitmap().getWidth() + getPaddingLeft();
+            thirdImageX += getPaddingLeft();
+            thirdImageY = y - itemThirdImage.getBitmap().getHeight() / 2;
+            textX = thirdImageX + itemThirdImage.getBitmap().getWidth() + getPaddingLeft();
         }
 
-        fourthImageX = width - getPaddingRight();
+        fourthImageX = viewWidth - getPaddingRight();
         if (itemFourthImage != null) {
             fourthImageX -= itemFourthImage.getBitmap().getWidth();
-            fourthImageY = height / 2 - itemFourthImage.getBitmap().getHeight() / 2;
+            fourthImageY = y - itemFourthImage.getBitmap().getHeight() / 2;
         }
         fifthImageX = fourthImageX - getPaddingRight();
         if (itemFifthImage != null) {
             fifthImageX -= itemFifthImage.getBitmap().getWidth();
-            fifthImageY = height / 2 - itemFifthImage.getBitmap().getHeight() / 2;
+            fifthImageY = y - itemFifthImage.getBitmap().getHeight() / 2;
         }
     }
 
@@ -239,22 +251,16 @@ public class RosterItemView extends View {
         if (itemThirdImage != null)
             canvas.drawBitmap(itemThirdImage.getBitmap(), thirdImageX, thirdImageY, null);
         if (itemName != null) {
-            mTextPaint.setColor(itemNameColor);
+            textPaint.setColor(itemNameColor);
             setTextSize(General.getFontSize());
-            mTextPaint.setTypeface(itemNameFont);
-            if (itemDesc != null)
-                canvas.drawText(itemName, textX, getPaddingTop() + mDescent + getPaddingTop() / 2, mTextPaint);
-            else
-                canvas.drawText(itemName, textX, getPaddingTop() - mAscent, mTextPaint);
+            textPaint.setTypeface(itemNameFont);
+            canvas.drawText(itemName, textX, lineOneY, textPaint);
         }
         if (itemDesc != null) {
-            mTextPaint.setColor(itemDescColor);
+            textPaint.setColor(itemDescColor);
             setTextSize(General.getFontSize() - 2);
-            mTextPaint.setTypeface(Typeface.DEFAULT);
-            if (itemName != null)
-                canvas.drawText(itemDesc, textX, getPaddingBottom() - mAscent + getPaddingBottom() / 2, mTextPaint);
-            else
-                canvas.drawText(itemDesc, textX, getPaddingBottom() - mAscent, mTextPaint);
+            textPaint.setTypeface(Typeface.DEFAULT);
+            canvas.drawText(itemDesc, textX, lineTwoY, textPaint);
         }
         if (itemFourthImage != null)
             canvas.drawBitmap(itemFourthImage.getBitmap(), fourthImageX, fourthImageY, null);

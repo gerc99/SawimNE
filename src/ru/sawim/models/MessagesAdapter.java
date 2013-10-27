@@ -41,7 +41,6 @@ import java.util.List;
  */
 public class MessagesAdapter extends BaseAdapter {
 
-    private Context context;
     private List<MessData> items = new ArrayList<MessData>();
     private Protocol currentProtocol;
     private String currentContact;
@@ -49,8 +48,7 @@ public class MessagesAdapter extends BaseAdapter {
     private boolean isMultiQuote = false;
     private int position = -1;
 
-    public void init(Context context, Chat chat) {
-        this.context = context;
+    public void init(Chat chat) {
         currentProtocol = chat.getProtocol();
         currentContact = chat.getContact().getUserId();
         refreshList(chat.getMessData());
@@ -92,9 +90,8 @@ public class MessagesAdapter extends BaseAdapter {
     @Override
     public View getView(int index, View row, ViewGroup viewGroup) {
         final MessData mData = items.get(index);
-        if (mData.messView == null) {
-            mData.messView = new MessageItemView(context);
-        }
+        if (mData.messView == null)
+            mData.messView = new MessageItemView(General.currentActivity);
         MessageItemView item = mData.messView;
         SpannableStringBuilder parsedText = mData.parsedText();
         String nick = mData.getNick();
@@ -103,17 +100,8 @@ public class MessagesAdapter extends BaseAdapter {
         item.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
         item.msgText.setOnTextLinkClickListener(textLinkClickListener);
         item.msgText.setTypeface(Typeface.DEFAULT);
-        byte bg;
-        if (mData.isMarked() && isMultiQuote) {
-            bg = Scheme.THEME_CHAT_BG_MARKED;
+        if (mData.isMarked() && isMultiQuote)
             item.msgText.setTypeface(Typeface.DEFAULT_BOLD);
-        } else if (mData.isService())
-            bg = Scheme.THEME_CHAT_BG_SYSTEM;
-        else if ((index & 1) == 0)
-            bg = incoming ? Scheme.THEME_CHAT_BG_IN : Scheme.THEME_CHAT_BG_OUT;
-        else
-            bg = incoming ? Scheme.THEME_CHAT_BG_IN_ODD : Scheme.THEME_CHAT_BG_OUT_ODD;
-        item.setBackgroundColor(Scheme.getColor(bg));
 
         if (mData.isMe() || mData.isPresence()) {
             item.msgImage.setVisibility(ImageView.GONE);
@@ -156,7 +144,7 @@ public class MessagesAdapter extends BaseAdapter {
             item.msgText.setLinkTextColor(0xff00e4ff);
             item.msgText.setText(parsedText);
         }
-        item.addDivider(context, Scheme.getColor(Scheme.THEME_TEXT),
+        item.addDivider(General.currentActivity, Scheme.getColor(Scheme.THEME_TEXT),
                 position == index && index > 0 && position != getCount());
         return item;
     }

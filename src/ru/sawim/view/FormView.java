@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -74,14 +75,19 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
     }
 
     public static void show() {
-        if (General.currentActivity.getSupportFragmentManager()
-                .findFragmentById(R.id.chat_fragment) != null)
-            General.currentActivity.setContentView(R.layout.intercalation_layout);
-        FormView newFragment = new FormView();
-        FragmentTransaction transaction = General.currentActivity.getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.fragment_container, newFragment, FormView.TAG);
-        transaction.addToBackStack(null);
-        transaction.commitAllowingStateLoss();
+        General.currentActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (General.currentActivity.getSupportFragmentManager()
+                        .findFragmentById(R.id.chat_fragment) != null)
+                    General.currentActivity.setContentView(R.layout.intercalation_layout);
+                FormView newFragment = new FormView();
+                FragmentTransaction transaction = General.currentActivity.getSupportFragmentManager().beginTransaction();
+                transaction.replace(R.id.fragment_container, newFragment, FormView.TAG);
+                transaction.addToBackStack(null);
+                transaction.commitAllowingStateLoss();
+            }
+        });
     }
 
     @Override

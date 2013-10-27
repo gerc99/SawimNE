@@ -69,8 +69,8 @@ public class VirtualListAdapter extends BaseAdapter {
             convertView = inf.inflate(R.layout.virtual_list_item, null);
             holder = new ViewHolder();
             holder.descriptionLayout = (LinearLayout) convertView.findViewById(R.id.descriptionLayout);
-            holder.labelView = (MyTextView) convertView.findViewById(R.id.label);
-            holder.descView = (MyTextView) holder.descriptionLayout.findViewById(R.id.description);
+            holder.labelView = (TextView) convertView.findViewById(R.id.label);
+            holder.descView = (TextView) holder.descriptionLayout.findViewById(R.id.description);
             holder.imageView = (ImageView) holder.descriptionLayout.findViewById(R.id.imageView);
             convertView.setTag(holder);
         } else {
@@ -80,14 +80,14 @@ public class VirtualListAdapter extends BaseAdapter {
 
         holder.labelView.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
         holder.descView.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
-        if (element.isHasLinks())
+        /*if (element.isHasLinks())
             holder.descView.setOnTextLinkClickListener(new MyTextView.TextLinkClickListener() {
                 @Override
                 public void onTextLinkClick(View textView, String clickedString, boolean isLongTap) {
                     if (clickedString.length() == 0) return;
 
                 }
-            });
+            }); */
 
         holder.labelView.setVisibility(TextView.GONE);
         holder.descView.setVisibility(TextView.GONE);
@@ -140,8 +140,8 @@ public class VirtualListAdapter extends BaseAdapter {
 
     private static class ViewHolder {
         LinearLayout descriptionLayout;
-        MyTextView labelView;
-        MyTextView descView;
+        TextView labelView;
+        TextView descView;
         ImageView imageView;
     }
 }

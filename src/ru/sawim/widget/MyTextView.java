@@ -205,7 +205,7 @@ public class MyTextView extends View {
     }
 
     public void setOnTextLinkClickListener(TextLinkClickListener onTextLinkClickListener) {
-        this.mListener = onTextLinkClickListener;
+        mListener = onTextLinkClickListener;
     }
 
     public interface TextLinkClickListener {
