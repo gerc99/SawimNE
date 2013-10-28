@@ -1,5 +1,8 @@
 package protocol;
 
+import ru.sawim.General;
+import ru.sawim.R;
+import ru.sawim.SawimApplication;
 import sawim.comm.Util;
 
 
@@ -24,7 +27,7 @@ public final class Profile {
             + "|vk.com (api)"
             + "|Mail.ru Agent"
             + "|Facebook"
-            + "|\u041e\u0434\u043d\u043e\u043a\u043b\u0430\u0441\u0441\u043d\u0438\u043a\u0438"
+            + "|"+ SawimApplication.getContext().getString(R.string.classmates)
     //        + "|VKontakte"
             + "|LiveJournal"
             + "|GTalk"

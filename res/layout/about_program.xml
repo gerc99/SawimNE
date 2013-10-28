@@ -2,8 +2,8 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content">
     <ScrollView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -12,7 +12,7 @@
                 android:orientation="vertical"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:id="@+id/about_linear">
+                android:id="@+id/about_linear" android:paddingLeft="10dp" android:paddingRight="10dp">
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

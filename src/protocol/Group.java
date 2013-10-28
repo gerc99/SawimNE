@@ -87,14 +87,13 @@ public class Group extends TreeNode {
     
     public final void updateGroupData() {
         int onlineCount = 0;
-        int total = contacts.size();
-        for (int i = 0; i < total; ++i) {
+        for (int i = 0; i < contacts.size(); ++i) {
             Contact item = (Contact)contacts.elementAt(i);
             if (item.isOnline()) {
                 onlineCount++;
             }
         }
-        updateGroupData(total, onlineCount);
+        updateGroupData(contacts.size(), onlineCount);
     }
 
     public final void updateGroupData(int total, int onlineCount) {

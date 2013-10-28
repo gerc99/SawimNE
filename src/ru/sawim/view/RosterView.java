@@ -236,7 +236,7 @@ public class RosterView extends Fragment implements View.OnClickListener, ListVi
         });
     }
 
-    private void update() {
+    public void update() {
         updateRoster();
         updateBarProtocols();
         updateProgressBar();

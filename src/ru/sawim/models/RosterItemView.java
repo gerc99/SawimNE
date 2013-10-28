@@ -174,11 +174,11 @@ public class RosterItemView extends View {
         int specMode = MeasureSpec.getMode(measureSpec);
         int specSize = MeasureSpec.getSize(measureSpec);
 
-        int ascent = (int) textPaint.ascent();
-        int descent = (int) textPaint.descent();
-        if (itemName != null && itemDesc != null) {
-            ascent *= 2;
-            descent *= 2;
+        int ascent = (int) textPaint.ascent() * 2;
+        int descent = (int) textPaint.descent() * 2;
+        if (itemName == null && itemDesc != null) {
+            ascent = (int) textPaint.ascent();
+            descent = (int) textPaint.descent();
         }
         if (specMode == MeasureSpec.EXACTLY) {
             result = specSize;
@@ -203,14 +203,17 @@ public class RosterItemView extends View {
         int leftPadding = getPaddingLeft();
         int bottomPadding = getPaddingBottom();
         int topPadding = getPaddingTop();
+        int y = viewHeight / 2;
+        int descent = (int) textPaint.descent();
 
         textX = leftPadding;
-        lineOneY = topPadding - (int) textPaint.ascent();
-
-        int descent = (int) textPaint.descent();
+        if (itemDesc != null) {
+            lineOneY = topPadding - (int) textPaint.ascent();
+        } else {
+            lineOneY = viewHeight - descent - bottomPadding - topPadding;
+        }
         lineTwoY = viewHeight - descent - bottomPadding;
 
-        int y = viewHeight / 2;
         firstImageX = getPaddingLeft();
         if (itemFirstImage != null) {
             secondImageX = firstImageX + itemFirstImage.getBitmap().getWidth() - getPaddingLeft();

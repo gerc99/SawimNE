@@ -205,7 +205,7 @@
     <string name="about_program_desc">SawIM NE (new engine) - Mobile IM-client</string>
     <string name="version">Version</string>
     <string name="author">Author</string>
-    <string name="registration_jid">Registration Jabber ID</string>
+    <string name="registration_jid">Jabber ID registration </string>
     <string name="sign_in_jabber">Sign in Jabber</string>
     <string name="sign_into_other_networks">Sign into other networks</string>
     <string name="include_multi_citation">Include multi citation</string>
@@ -217,4 +217,5 @@
     <string name="server">Server</string>
     <string name="hint_registration_domen">this is the default server, you can register to the other</string>
     <string name="my_conference">My conference</string>
+    <string name="classmates">Classmates</string>
 </resources>

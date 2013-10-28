@@ -306,6 +306,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
         int background = Scheme.getColor(Scheme.THEME_BACKGROUND);
         chat_viewLayout.setBackgroundColor(background);
         if (!isTablet) {
+            chatBarLayout.setVisibilityUsersImage(ImageView.VISIBLE);
             usersImage.setBackgroundDrawable(new ColorDrawable(0));
             usersImage.setImageDrawable(General.usersIcon);
             usersImage.setOnClickListener(new View.OnClickListener() {
@@ -322,12 +323,15 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
                 }
             });
         } else
-            chatBarLayout.setVisibilityChatsImage(View.GONE);
+            chatBarLayout.setVisibilityUsersImage(View.GONE);
         chatsImage.setBackgroundDrawable(new ColorDrawable(0));
         chatsImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 forceGoToChat(ChatHistory.instance.getPreferredItem());
+                RosterView rosterView = (RosterView) ChatView.this.getFragmentManager().findFragmentById(R.id.roster_fragment);
+                if (rosterView != null)
+                    rosterView.update();
             }
         });
         if (isTablet) {
@@ -523,12 +527,16 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
                                     openChat(current.getProtocol(), current.getContact());
                                     resume(current);
                                     dismiss();
+                                    RosterView rosterView = (RosterView) ChatView.this.getFragmentManager().findFragmentById(R.id.roster_fragment);
+                                    if (rosterView != null)
+                                        rosterView.update();
                                 }
                             }
                         });
                         return v;
                     }
                 }.show(getFragmentManager().beginTransaction(), "force go to chat");
+                chatsSpinnerAdapter.refreshList();
             }
         });
     }
