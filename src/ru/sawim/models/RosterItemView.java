@@ -201,43 +201,45 @@ public class RosterItemView extends View {
 
     private void computeCoordinates(int viewWidth, int viewHeight) {
         int leftPadding = getPaddingLeft();
+        int rightPadding = getPaddingRight();
         int bottomPadding = getPaddingBottom();
         int topPadding = getPaddingTop();
         int y = viewHeight / 2;
+        int ascent = (int) textPaint.ascent();
         int descent = (int) textPaint.descent();
 
         textX = leftPadding;
         if (itemDesc != null) {
-            lineOneY = topPadding - (int) textPaint.ascent();
+            lineOneY = topPadding - ascent;
         } else {
-            lineOneY = viewHeight - descent - bottomPadding - topPadding;
+            lineOneY = y + -ascent / 2;
         }
         lineTwoY = viewHeight - descent - bottomPadding;
 
-        firstImageX = getPaddingLeft();
+        firstImageX = leftPadding;
         if (itemFirstImage != null) {
-            secondImageX = firstImageX + itemFirstImage.getBitmap().getWidth() - getPaddingLeft();
+            secondImageX = firstImageX + itemFirstImage.getBitmap().getWidth();
             firstImageY = y - itemFirstImage.getBitmap().getHeight() / 2;
-            textX = firstImageX + itemFirstImage.getBitmap().getWidth() + getPaddingLeft();
+            textX = secondImageX + leftPadding;
         }
         if (itemSecondImage != null) {
-            secondImageX += getPaddingLeft();
+            secondImageX += leftPadding;
             secondImageY = y - itemSecondImage.getBitmap().getHeight() / 2;
-            textX = secondImageX + itemSecondImage.getBitmap().getWidth() + getPaddingLeft();
+            textX += itemSecondImage.getBitmap().getWidth() + leftPadding;
         }
         thirdImageX = secondImageX;
         if (itemThirdImage != null) {
-            thirdImageX += getPaddingLeft();
+            thirdImageX += leftPadding;
             thirdImageY = y - itemThirdImage.getBitmap().getHeight() / 2;
-            textX = thirdImageX + itemThirdImage.getBitmap().getWidth() + getPaddingLeft();
+            textX = thirdImageX + itemThirdImage.getBitmap().getWidth() + leftPadding;
         }
 
-        fourthImageX = viewWidth - getPaddingRight();
+        fourthImageX = viewWidth - rightPadding;
         if (itemFourthImage != null) {
             fourthImageX -= itemFourthImage.getBitmap().getWidth();
             fourthImageY = y - itemFourthImage.getBitmap().getHeight() / 2;
         }
-        fifthImageX = fourthImageX - getPaddingRight();
+        fifthImageX = fourthImageX - rightPadding;
         if (itemFifthImage != null) {
             fifthImageX -= itemFifthImage.getBitmap().getWidth();
             fifthImageY = y - itemFifthImage.getBitmap().getHeight() / 2;

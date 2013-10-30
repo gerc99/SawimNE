@@ -195,7 +195,7 @@ public class MessagesAdapter extends BaseAdapter {
                         || (clickedString.endsWith(".bmp"))) {
                     PictureView pictureView = new PictureView();
                     pictureView.setLink(clickedString);
-                    FragmentTransaction transaction = ((FragmentActivity)textView.getContext()).getSupportFragmentManager().beginTransaction();
+                    FragmentTransaction transaction = General.currentActivity.getSupportFragmentManager().beginTransaction();
                     transaction.add(pictureView, PictureView.TAG);
                     transaction.commitAllowingStateLoss();
                 } else {

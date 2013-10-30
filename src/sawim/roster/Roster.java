@@ -568,7 +568,7 @@ public final class Roster {
     public String getStatusMessage(Contact contact) {
         String message;
         Protocol protocol = getCurrentProtocol();
-        if (protocol == null) return "";
+        if (protocol == null || contact == null) return "";
         if (XStatusInfo.XSTATUS_NONE != contact.getXStatusIndex()) {
             message = contact.getXStatusText();
             if (!StringConvertor.isEmpty(message)) {
