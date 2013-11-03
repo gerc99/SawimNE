@@ -186,6 +186,7 @@ public class OptionsForm implements FormListener, ControlStateListener {
             public boolean back() {
                 save(currentOptionsForm);
                 form.destroy();
+                ((SawimActivity)General.currentActivity).recreateActivity();
                 return true;
             }
         });

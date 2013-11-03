@@ -41,7 +41,7 @@ public class StatusesAdapter extends BaseAdapter {
     public int getCount() {
         if (type == StatusesView.ADAPTER_STATUS)
             return statusInfo.applicableStatuses.length;
-        else return PrivateStatusForm.statusNames(protocol).length;
+        else return PrivateStatusForm.statusIds(protocol).length;
     }
 
     @Override
@@ -106,7 +106,7 @@ public class StatusesAdapter extends BaseAdapter {
                     itemImage.setVisibility(ImageView.GONE);
                 }
             } else {
-                itemStatus.setText(JLocale.getString(PrivateStatusForm.statusNames(protocol)[item]));
+                itemStatus.setText(JLocale.getString(PrivateStatusForm.statusNames()[item]));
                 itemImage.setImageDrawable(PrivateStatusForm.privateStatusIcons.iconAt(item).getImage());
             }
         }

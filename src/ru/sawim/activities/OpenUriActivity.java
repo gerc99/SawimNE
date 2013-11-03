@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.net.Uri;
+import android.support.v7.app.ActionBarActivity;
 import ru.sawim.General;
 import ru.sawim.R;
 import sawim.roster.Roster;
@@ -19,7 +20,7 @@ import protocol.jabber.Jid;
  *
  * @author vladimir
  */
-public class OpenUriActivity extends Activity {
+public class OpenUriActivity extends ActionBarActivity {
 
     public void onStart() {
         super.onStart();

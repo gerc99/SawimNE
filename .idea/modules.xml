@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/SawimNE.iml" filepath="$PROJECT_DIR$/SawimNE.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../libs/platform_frameworks_support-master/v7/appcompat/appcompat.iml" filepath="$PROJECT_DIR$/../../libs/platform_frameworks_support-master/v7/appcompat/appcompat.iml" />
     </modules>
   </component>
 </project>

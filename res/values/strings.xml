@@ -218,4 +218,6 @@
     <string name="hint_registration_domen">this is the default server, you can register to the other</string>
     <string name="my_conference">My conference</string>
     <string name="classmates">Classmates</string>
+    <string name="lift_up">Lift up</string>
+    <string name="put_down">Put down</string>
 </resources>

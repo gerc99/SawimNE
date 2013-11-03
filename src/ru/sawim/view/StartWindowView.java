@@ -39,7 +39,7 @@ public class StartWindowView extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        SawimActivity.returnFromAcc = true;
+        General.returnFromAcc = true;
     }
 
     @Override
@@ -111,11 +111,11 @@ public class StartWindowView extends Fragment {
     }
 
     private void back() {
+        General.currentActivity.getSupportFragmentManager().popBackStack();
         if (General.currentActivity.getSupportFragmentManager()
                 .findFragmentById(R.id.chat_fragment) != null)
-            ((SawimActivity)General.currentActivity).recreateActivity();
-        else
-            General.currentActivity.getSupportFragmentManager().popBackStack();
+            General.currentActivity.getSupportFragmentManager()
+                    .findFragmentById(R.id.chat_fragment).getView().setVisibility(View.VISIBLE);
     }
 
     class LoginDialog extends DialogFragment {

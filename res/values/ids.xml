@@ -4,4 +4,6 @@
     <item type="id" name="menu_edit"/>
     <item type="id" name="menu_delete"/>
     <item name="menu_registration_jabber" type="id"/>
+    <item name="lift_up" type="id"/>
+    <item name="put_down" type="id"/>
 </resources>

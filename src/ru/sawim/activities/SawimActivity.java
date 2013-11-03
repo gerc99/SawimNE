@@ -29,9 +29,10 @@ import android.content.Intent;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.*;
 import android.widget.Toast;
@@ -59,15 +60,16 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
-public class SawimActivity extends FragmentActivity {
+public class SawimActivity extends ActionBarActivity {
 
     public static final String LOG_TAG = "SawimActivity";
     public static String NOTIFY = "ru.sawim.notify";
-    public static boolean returnFromAcc = false;
+    public static ActionBar actionBar;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        actionBar = getSupportActionBar();
         General.currentActivity = this;
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
         setContentView(R.layout.main);
@@ -107,14 +109,23 @@ public class SawimActivity extends FragmentActivity {
                 }
             }
         }));
-            if (findViewById(R.id.fragment_container) != null) {
-                if (savedInstanceState != null) return;
-                RosterView rosterView = new RosterView();
-                rosterView.setArguments(getIntent().getExtras());
-                getSupportFragmentManager().beginTransaction()
-                        .add(R.id.fragment_container, rosterView, RosterView.TAG).commit();
-            }
+        if (findViewById(R.id.fragment_container) != null) {
+            if (savedInstanceState != null) return;
+            RosterView rosterView = new RosterView();
+            rosterView.setArguments(getIntent().getExtras());
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.fragment_container, rosterView, RosterView.TAG).commit();
+        }
         //handleIntent(getIntent());
+    }
+
+    public static void resetBar() {
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setDisplayShowTitleEnabled(true);
+        actionBar.setDisplayUseLogoEnabled(true);
+        actionBar.setDisplayShowHomeEnabled(true);
+        actionBar.setDisplayShowCustomEnabled(false);
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
     }
 
     /*@Override
@@ -192,26 +203,27 @@ public class SawimActivity extends FragmentActivity {
         General.currentActivity = this;
         General.maximize();
         Protocol protocol = Roster.getInstance().getCurrentProtocol();
-        FragmentTransaction transaction = General.currentActivity.getSupportFragmentManager().beginTransaction();
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         if (protocol == null) {
-            if (General.currentActivity.getSupportFragmentManager()
-                    .findFragmentById(R.id.chat_fragment) != null)
-                General.currentActivity.setContentView(R.layout.intercalation_layout);
             StartWindowView newFragment = new StartWindowView();
-            transaction.replace(R.id.fragment_container, newFragment, StartWindowView.TAG);
+            if (getSupportFragmentManager()
+                    .findFragmentById(R.id.chat_fragment) != null) {
+                getSupportFragmentManager().findFragmentById(R.id.chat_fragment).getView().setVisibility(View.GONE);
+                transaction.replace(R.id.roster_fragment, newFragment, StartWindowView.TAG);
+            } else {
+                transaction.replace(R.id.fragment_container, newFragment, StartWindowView.TAG);
+            }
             transaction.addToBackStack(null);
             transaction.commitAllowingStateLoss();
-        } else if (returnFromAcc) {
-            returnFromAcc = false;
+        } else if (General.returnFromAcc) {
+            General.returnFromAcc = false;
             if (protocol.getContactItems().size() == 0 && !protocol.isConnecting())
-                Toast.makeText(General.currentActivity, R.string.press_menu_for_connect, Toast.LENGTH_LONG).show();
-            if (General.currentActivity.getSupportFragmentManager()
-                    .findFragmentById(R.id.chat_fragment) != null)
-                General.currentActivity.setContentView(R.layout.intercalation_layout);
-            RosterView newFragment = new RosterView();
-            transaction.replace(R.id.fragment_container, newFragment, RosterView.TAG);
-            transaction.addToBackStack(null);
-            transaction.commitAllowingStateLoss();
+                Toast.makeText(this, R.string.press_menu_for_connect, Toast.LENGTH_LONG).show();
+            /*RosterView rosterView = (RosterView) getSupportFragmentManager().findFragmentByTag(RosterView.TAG);
+            if (rosterView != null) {
+                rosterView.addProtocolsTabs();
+                rosterView.update();
+            }*/
         }
         //handleIntent(getIntent());
     }
@@ -241,7 +253,7 @@ public class SawimActivity extends FragmentActivity {
         } else if (formView != null) {
             if (formView.hasBack())
                 back();
-        } else moveTaskToBack(true);
+        } else super.onBackPressed();
     }
 
     @Override
@@ -269,11 +281,11 @@ public class SawimActivity extends FragmentActivity {
     }
 
     private void back() {
+        super.onBackPressed();
         if (General.currentActivity.getSupportFragmentManager()
                 .findFragmentById(R.id.chat_fragment) != null)
-            recreateActivity();
-        else
-            super.onBackPressed();
+            General.currentActivity.getSupportFragmentManager()
+                    .findFragmentById(R.id.chat_fragment).getView().setVisibility(View.VISIBLE);
     }
 
     public void recreateActivity() {
@@ -305,8 +317,7 @@ public class SawimActivity extends FragmentActivity {
         SawimFragment formView = (SawimFragment) getSupportFragmentManager().findFragmentByTag(FormView.TAG);
         if (formView != null) {
             return false;
-        }
-        if (virtualListView != null) {
+        } else if (virtualListView != null) {
             virtualListView.onCreateOptionsMenu(menu);
             return true;
         }
@@ -367,6 +378,9 @@ public class SawimActivity extends FragmentActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            back();
+        }
         VirtualListView virtualListView = (VirtualListView) getSupportFragmentManager().findFragmentByTag(VirtualListView.TAG);
         if (virtualListView != null) {
             virtualListView.onOptionsItemSelect(item);

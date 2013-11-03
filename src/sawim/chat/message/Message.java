@@ -51,7 +51,7 @@ public abstract class Message {
     }
 
     public final void setSendingState(int state) {
-        if (!mData.isMe()) {
+        if (mData != null && !mData.isMe()) {
             mData.iconIndex = state;
         }
         if (Roster.getInstance().getUpdateChatListener() != null)

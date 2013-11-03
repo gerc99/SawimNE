@@ -32,6 +32,7 @@ public class Mrim extends Protocol {
     }
 
     private static final byte[] statuses = {
+        StatusInfo.STATUS_OFFLINE,
         StatusInfo.STATUS_CHAT,
         StatusInfo.STATUS_ONLINE,
         StatusInfo.STATUS_AWAY,

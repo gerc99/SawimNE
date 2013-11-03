@@ -104,12 +104,17 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
     }
 
     public static void show() {
-        if (General.currentActivity.getSupportFragmentManager()
-                .findFragmentById(R.id.chat_fragment) != null)
-            General.currentActivity.setContentView(R.layout.intercalation_layout);
         VirtualListView newFragment = new VirtualListView();
         FragmentTransaction transaction = General.currentActivity.getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.fragment_container, newFragment, VirtualListView.TAG);
+        SawimActivity.resetBar();
+        if (General.currentActivity.getSupportFragmentManager()
+                .findFragmentById(R.id.chat_fragment) != null) {
+            General.currentActivity.getSupportFragmentManager()
+                    .findFragmentById(R.id.chat_fragment).getView().setVisibility(View.GONE);
+            transaction.replace(R.id.roster_fragment, newFragment, VirtualListView.TAG);
+        } else {
+            transaction.replace(R.id.fragment_container, newFragment, VirtualListView.TAG);
+        }
         transaction.addToBackStack(null);
         transaction.commit();
     }
@@ -131,11 +136,11 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
 
     @Override
     public void back() {
+        General.currentActivity.getSupportFragmentManager().popBackStack();
         if (General.currentActivity.getSupportFragmentManager()
                 .findFragmentById(R.id.chat_fragment) != null)
-            ((SawimActivity)General.currentActivity).recreateActivity();
-        else
-            General.currentActivity.getSupportFragmentManager().popBackStack();
+            General.currentActivity.getSupportFragmentManager()
+                    .findFragmentById(R.id.chat_fragment).getView().setVisibility(View.VISIBLE);
     }
 
     public boolean hasBack() {

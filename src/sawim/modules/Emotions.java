@@ -23,7 +23,7 @@ public final class Emotions {
 
     private String smileChars;
     private int[] textCorrIndexes;
-    private String[] textCorrWords;
+    public String[] textCorrWords;
     private boolean isAniSmiles = false;
 
     private Emotions() {}

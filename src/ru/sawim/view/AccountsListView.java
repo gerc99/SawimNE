@@ -9,12 +9,11 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.text.InputType;
+import android.util.Log;
 import android.view.*;
 import android.widget.*;
 import protocol.Protocol;
 import ru.sawim.General;
-import ru.sawim.activities.AccountsListActivity;
-import ru.sawim.activities.SawimActivity;
 import sawim.Options;
 import sawim.roster.Roster;
 import sawim.comm.StringConvertor;
@@ -45,18 +44,21 @@ public class AccountsListView extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        SawimActivity.returnFromAcc = true;
+        General.returnFromAcc = true;
         ListView accountsList = (ListView) getActivity().findViewById(R.id.AccountsList);
         accountsListAdapter = new AccountsAdapter(getActivity());
-        getActivity().setTitle(getActivity().getString(R.string.options_account));
+        getActivity().setTitle(getString(R.string.options_account));
         accountsList.setCacheColorHint(0x00000000);
         accountsList.setAdapter(accountsListAdapter);
-        registerForContextMenu(accountsList);
+        accountsList.setOnCreateContextMenuListener(this);
     }
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
         menu.add(Menu.FIRST, R.id.menu_edit, 0, R.string.edit);
+        menu.add(Menu.FIRST, R.id.lift_up, 0, R.string.lift_up);
+        menu.add(Menu.FIRST, R.id.put_down, 0, R.string.put_down);
         menu.add(Menu.FIRST, R.id.menu_delete, 0, R.string.delete);
     }
 
@@ -67,10 +69,33 @@ public class AccountsListView extends Fragment {
         final int accountID = (int) accountsListAdapter.getItemId(info.position);
         final String itemName = account.userId;
         final int protocolType = account.protocolType;
+        int num = info.position;
 
         switch (item.getItemId()) {
             case R.id.menu_edit:
                 new LoginDialog(protocolType, accountID, true).show(getActivity().getSupportFragmentManager(), "login");
+                return true;
+
+            case R.id.lift_up:
+                if ((0 != num) && (num < Options.getAccountCount())) {
+                    Profile up = Options.getAccount(num);
+                    Profile down = Options.getAccount(num - 1);
+                    Options.setAccount(num - 1, up);
+                    Options.setAccount(num, down);
+                    Roster.getInstance().setCurrentProtocol();
+                    update();
+                }
+                return true;
+
+            case R.id.put_down:
+                if (num < Options.getAccountCount() - 1) {
+                    Profile up = Options.getAccount(num);
+                    Profile down = Options.getAccount(num + 1);
+                    Options.setAccount(num, down);
+                    Options.setAccount(num + 1, up);
+                    Roster.getInstance().setCurrentProtocol();
+                    update();
+                }
                 return true;
 
             case R.id.menu_delete:
@@ -98,7 +123,7 @@ public class AccountsListView extends Fragment {
                         .create().show();
                 return true;
         }
-        return false;
+        return super.onContextItemSelected(item);
     }
 
     private void addAccountAuthenticator(String id) {

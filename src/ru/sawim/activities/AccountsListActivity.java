@@ -4,7 +4,9 @@ import android.accounts.AccountAuthenticatorResponse;
 import android.accounts.AccountManager;
 import android.media.AudioManager;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -21,7 +23,7 @@ import ru.sawim.view.AccountsListView;
  * Time: 19:56
  * To change this template use File | Settings | File Templates.
  */
-public class AccountsListActivity extends FragmentActivity implements JabberRegistration.OnAddAccount {
+public class AccountsListActivity extends ActionBarActivity implements JabberRegistration.OnAddAccount {
     private AccountAuthenticatorResponse mAccountAuthenticatorResponse = null;
     private Bundle mResultBundle = null;
 
@@ -34,6 +36,13 @@ public class AccountsListActivity extends FragmentActivity implements JabberRegi
             setContentView(R.layout.intercalation_layout);
         else
             setContentView(R.layout.main);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setDisplayShowTitleEnabled(true);
+        actionBar.setDisplayUseLogoEnabled(true);
+        actionBar.setDisplayShowHomeEnabled(true);
+        actionBar.setDisplayShowCustomEnabled(false);
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         General.currentActivity = this;
         mResultBundle = savedInstanceState;
         mAccountAuthenticatorResponse =
@@ -44,10 +53,11 @@ public class AccountsListActivity extends FragmentActivity implements JabberRegi
 
         if (findViewById(R.id.fragment_container) != null) {
             if (savedInstanceState != null) return;
-            AccountsListView rosterView = new AccountsListView();
-            rosterView.setArguments(getIntent().getExtras());
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container, rosterView, AccountsListView.TAG).commit();
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            AccountsListView accountsListView = new AccountsListView();
+            accountsListView.setArguments(getIntent().getExtras());
+            transaction.add(R.id.fragment_container, accountsListView, AccountsListView.TAG);
+            transaction.commit();
         }
     }
 
@@ -61,6 +71,10 @@ public class AccountsListActivity extends FragmentActivity implements JabberRegi
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+
             case R.id.add:
                 AccountsListView view = (AccountsListView) getSupportFragmentManager().findFragmentByTag(AccountsListView.TAG);
                 if (view == null) return false;

@@ -10,12 +10,10 @@ import android.graphics.Typeface;
 import android.text.*;
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 import ru.sawim.text.InternalURLSpan;
-import sawim.modules.DebugLog;
 
 /**
  * Created with IntelliJ IDEA.
@@ -27,16 +25,16 @@ import sawim.modules.DebugLog;
 
 public class MyTextView extends View {
 
-    private TextPaint mTextPaint;
+    private static TextPaint textPaint;
     private Layout layout;
     private CharSequence mText = "";
     private CharSequence oldText = "";
     private int oldWidth;
     private float oldTextSize;
-    TextLinkClickListener mListener;
-    private int mCurTextColor;
-    private ColorStateList mTextColor;
-    private ColorStateList mLinkTextColor;
+    TextLinkClickListener listener;
+    private int curTextColor;
+    private ColorStateList textColor;
+    private ColorStateList linkTextColor;
     private boolean isSecondTap;
     private boolean isLongTap;
     private String link = "";
@@ -57,17 +55,19 @@ public class MyTextView extends View {
     }
 
     private void initPaint() {
-        mTextPaint = new TextPaint();
-        mTextPaint.setAntiAlias(true);
-        mTextPaint.setTextSize(20);
-        mTextPaint.setColor(Color.BLACK);
-        mTextPaint.setStyle(Paint.Style.FILL);
+        if (textPaint == null) {
+            textPaint = new TextPaint();
+            textPaint.setAntiAlias(true);
+            textPaint.setTextSize(20);
+            textPaint.setColor(Color.BLACK);
+            textPaint.setStyle(Paint.Style.FILL);
+        }
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
-        mTextPaint.setColor(mCurTextColor);
-        mTextPaint.drawableState = getDrawableState();
+        textPaint.setColor(curTextColor);
+        textPaint.drawableState = getDrawableState();
         if (layout != null)
             layout.draw(canvas);
     }
@@ -83,37 +83,37 @@ public class MyTextView extends View {
     }
 
     public void setTextColor(int color) {
-        mTextColor = ColorStateList.valueOf(color);
+        textColor = ColorStateList.valueOf(color);
         updateTextColors();
     }
 
     public final void setLinkTextColor(int color) {
-        mLinkTextColor = ColorStateList.valueOf(color);
+        linkTextColor = ColorStateList.valueOf(color);
         updateTextColors();
     }
 
     public void setTypeface(Typeface typeface) {
-        mTextPaint.setTypeface(typeface);
+        textPaint.setTypeface(typeface);
     }
 
     public void setTextSize(float textSize) {
         Context c = getContext();
         Resources r = (c == null) ? Resources.getSystem() : c.getResources();
-        mTextPaint.setTextSize(TypedValue.applyDimension(
+        textPaint.setTextSize(TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_SP, textSize, r.getDisplayMetrics()));
     }
 
     private void makeLayout(int specSize) {
-        layout = new StaticLayout(mText, mTextPaint, specSize, Layout.Alignment.ALIGN_NORMAL, 1.0f, 0, false);
+        layout = new StaticLayout(mText, textPaint, specSize, Layout.Alignment.ALIGN_NORMAL, 1.0f, 0, false);
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int specSize = MeasureSpec.getSize(widthMeasureSpec);
-        if (oldText != mText || oldWidth != specSize || mTextPaint.getTextSize() != oldTextSize) {
+        if (oldText != mText || oldWidth != specSize || textPaint.getTextSize() != oldTextSize) {
             oldText = mText;
             oldWidth = specSize;
-            oldTextSize = mTextPaint.getTextSize();
+            oldTextSize = textPaint.getTextSize();
             makeLayout(specSize);
         }
         if (layout == null) makeLayout(specSize);
@@ -122,15 +122,15 @@ public class MyTextView extends View {
 
     private void updateTextColors() {
         boolean inval = false;
-        int color = mTextColor.getColorForState(getDrawableState(), 0);
-        if (color != mCurTextColor) {
-            mCurTextColor = color;
+        int color = textColor.getColorForState(getDrawableState(), 0);
+        if (color != curTextColor) {
+            curTextColor = color;
             inval = true;
         }
-        if (mLinkTextColor != null) {
-            color = mLinkTextColor.getColorForState(getDrawableState(), 0);
-            if (color != mTextPaint.linkColor) {
-                mTextPaint.linkColor = color;
+        if (linkTextColor != null) {
+            color = linkTextColor.getColorForState(getDrawableState(), 0);
+            if (color != textPaint.linkColor) {
+                textPaint.linkColor = color;
                 inval = true;
             }
         }
@@ -142,8 +142,8 @@ public class MyTextView extends View {
     @Override
     protected void drawableStateChanged() {
         super.drawableStateChanged();
-        if (mTextColor != null && mTextColor.isStateful()
-                || (mLinkTextColor != null && mLinkTextColor.isStateful())) {
+        if (textColor != null && textColor.isStateful()
+                || (linkTextColor != null && linkTextColor.isStateful())) {
             updateTextColors();
         }
     }
@@ -155,9 +155,9 @@ public class MyTextView extends View {
 
     private Runnable mLongPressed = new Runnable() {
         public void run() {
-            if (mListener != null && !isSecondTap) {
+            if (listener != null && !isSecondTap) {
                 isLongTap = true;
-                mListener.onTextLinkClick(MyTextView.this, link, true);
+                listener.onTextLinkClick(MyTextView.this, link, true);
             }
         }
     };
@@ -191,8 +191,8 @@ public class MyTextView extends View {
                     if (!isLongTap) {
                         isSecondTap = true;
                         try {
-                            if (mListener != null)
-                                mListener.onTextLinkClick(MyTextView.this, link, false);
+                            if (listener != null)
+                                listener.onTextLinkClick(MyTextView.this, link, false);
                         } catch (ActivityNotFoundException e) { }
                     } else {
                         removeCallbacks(mLongPressed);
@@ -205,7 +205,7 @@ public class MyTextView extends View {
     }
 
     public void setOnTextLinkClickListener(TextLinkClickListener onTextLinkClickListener) {
-        mListener = onTextLinkClickListener;
+        listener = onTextLinkClickListener;
     }
 
     public interface TextLinkClickListener {

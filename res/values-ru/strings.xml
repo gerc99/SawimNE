@@ -217,4 +217,6 @@
     <string name="hint_registration_domen">это сервер по умолчанию, вы можете зарегистрироваться на другом</string>
     <string name="my_conference">Мои конференции</string>
     <string name="classmates">Одноклассники</string>
+    <string name="lift_up">Выше</string>
+    <string name="put_down">Ниже</string>
 </resources>

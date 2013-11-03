@@ -29,45 +29,32 @@ public final class PrivateStatusForm {
     public static Icon getIcon(Protocol protocol) {
         return privateStatusIcons.iconAt(protocol.getPrivateStatus());
     }
-    private static final String[] statusIcqNames = {
+    private static final String[] statusNames = {
             "ps_all",
             "ps_visible_list",
             "ps_exclude_invisible",
             "ps_contact_list",
             "ps_none"
     };
-    private static final String[] statusMrimNames = {
-            "ps_visible_list",
-            "ps_exclude_invisible"
-    };
 
-    private static final int[] statusIcqIds = {
+    private static final int[] statusIds = {
         PSTATUS_ALL,
         PSTATUS_VISIBLE_ONLY,
         PSTATUS_NOT_INVISIBLE,
         PSTATUS_CL_ONLY,
         PSTATUS_NONE
     };
-    private static final int[] statusMrimIds = {
-            PSTATUS_VISIBLE_ONLY,
-            PSTATUS_NOT_INVISIBLE
-    };
 
-    public static String[] statusNames(Protocol protocol) {
-        if (protocol instanceof Icq) {
-            return statusIcqNames;
-        }
-        if (protocol instanceof Mrim) {
-            return statusMrimNames;
-        }
-        return null;
+    public static String[] statusNames() {
+        return statusNames;
     }
     public static int[] statusIds(Protocol protocol) {
         if (protocol instanceof Icq) {
-            return statusIcqIds;
+            return statusIds;
         }
         if (protocol instanceof Mrim) {
-            return statusMrimIds;
+            int[] statusIds = {1, 2};
+            return statusIds;
         }
         return null;
     }

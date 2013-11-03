@@ -88,7 +88,7 @@ public class JuickMenu implements DialogInterface.OnClickListener {
         }
         String textToInser = "";
         if (text.startsWith("#")) {
-            String id = null;
+            String id;
             if (text.indexOf("/") > 0) id = text.substring(0, text.indexOf("/"));
             else id = text;
 

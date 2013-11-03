@@ -34,7 +34,7 @@ public class Forms {
     private FormListener formListener;
     private OnBackPressed backPressedListener;
     private ControlStateListener controlListener;
-    public CharSequence caption;
+    private CharSequence caption;
     private static Forms instance;
 
     public void back() {
@@ -70,6 +70,10 @@ public class Forms {
 
     public void setCaption(String caption) {
         this.caption = caption;
+    }
+
+    public CharSequence getCaption() {
+        return caption;
     }
 
     public interface OnUpdateForm {

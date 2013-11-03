@@ -464,11 +464,7 @@ public final class JabberXml extends ClientConnection {
             parsePresence(x);
 
         } else if (x.is("m" + "essage")) {
-            try {
-                parseMessage(x);
-            } catch (Exception e) {
-                DebugLog.panic("parseMessage", e);
-            }
+            parseMessage(x);
 
         } else if (x.is("stream:error")) {
             setAuthStatus(false);

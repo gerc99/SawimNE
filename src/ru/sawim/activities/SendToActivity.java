@@ -3,6 +3,7 @@ package ru.sawim.activities;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Window;
 import ru.sawim.General;
 import ru.sawim.R;
@@ -15,7 +16,7 @@ import ru.sawim.view.SendToView;
  * Time: 18:54
  * To change this template use File | Settings | File Templates.
  */
-public class SendToActivity extends FragmentActivity {
+public class SendToActivity extends ActionBarActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
