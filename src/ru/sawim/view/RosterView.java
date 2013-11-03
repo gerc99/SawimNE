@@ -162,13 +162,13 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
             ((ViewGroup)rosterViewLayout.getParent()).removeView(rosterViewLayout);
         rosterViewLayout.setOrientation(LinearLayout.VERTICAL);
         rosterViewLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.FILL_PARENT));
-        rosterViewLayout.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
+        //rosterViewLayout.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
 
         viewPager.setAdapter(pagerAdapter);
         viewPager.setCurrentItem(roster.getCurrPage());
 
         indicator.setTextColor(Scheme.getColor(Scheme.THEME_GROUP));
-        indicator.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
+        //indicator.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
         return rosterViewLayout;
     }
 
@@ -300,8 +300,12 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         roster.setCurrentContact(null);
         roster.setOnUpdateRoster(this);
         initBar();
-        if (General.returnFromAcc)
+        if (General.returnFromAcc) {
+            General.returnFromAcc = false;
+            if (roster.getCurrentProtocol().getContactItems().size() == 0 && !roster.getCurrentProtocol().isConnecting())
+                Toast.makeText(getActivity(), R.string.press_menu_for_connect, Toast.LENGTH_LONG).show();
             addProtocolsTabs();
+        }
         update();
     }
 

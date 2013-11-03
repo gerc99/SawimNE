@@ -4,6 +4,7 @@ import DrawControls.icons.ImageList;
 import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import sawim.Options;
 import sawim.Updater;
 import sawim.chat.ChatHistory;
@@ -57,10 +58,10 @@ public class General {
         instance.paused = false;
 
         ru.sawim.config.HomeDirectory.init();
-        JLocale.loadLanguageList();
-        Scheme.load();
         Options.loadOptions();
         new ru.sawim.config.Options().load();
+        JLocale.loadLanguageList();
+        Scheme.load();
         JLocale.setCurrUiLanguage(/*Options.getString(Options.OPTION_UI_LANGUAGE)*/JLocale.getSystemLanguage());
         Scheme.setColorScheme(Options.getInt(Options.OPTION_COLOR_SCHEME));
         updateOptions();

@@ -1,4 +1,5 @@
 ﻿[Grey & Black] ;;
+isBlack = true
 0  = 0x000000
 1  = 0xFFFFFF
 2  = 0x4F4F4F
@@ -17,6 +18,7 @@
 15 = 0xFFD700
 16 = 0x999999
 [Blue & Grey] ;; Gerc
+isBlack = false
 0  = 0xAAAAAA
 1  = 0x1D1D1D
 2  = 0x0F8DFF
@@ -35,6 +37,7 @@
 15 = 0x00887D
 16 = 0x373737
 [Black & Grey] ;; Gerc
+isBlack = true
 0  = 0x4A4A4A
 1  = 0xB7B7B7
 2  = 0x353535
@@ -53,6 +56,7 @@
 15 = 0xAEFF17
 16 = 0xDCD385
 [Red & Black] ;; Gerc
+isBlack = true
 0  = 0x363636
 1  = 0xE5E5E5
 2  = 0xB92E00
@@ -71,6 +75,7 @@
 15 = 0xFFCA28
 16 = 0x69B4F1
 [Red & White] ;; Gerc
+isBlack = false
 0  = 0xCCCCCC
 1  = 0x000000
 2  = 0xD90000
@@ -89,6 +94,7 @@
 15 = 0x2222FF
 16 = 0x148AEB
 [Blue] ;;
+isBlack = false
 0  = 0xEAF4FF
 1  = 0x000000
 2  = 0xAAD5FF
@@ -107,6 +113,7 @@
 15 = 0xA00000
 16 = 0x999999
 [Orange] ;; Ale}{(is)
+isBlack = false
 0  = 0xF9F3EF
 1  = 0x000000
 2  = 0xE6A073
@@ -125,6 +132,7 @@
 15 = 0xA00000
 16 = 0x999999
 [Blind] ;; HeLLRaiSeR
+isBlack = true
 0  = 0x241C1C
 1  = 0xC0C0C0
 2  = 0x80397A
@@ -143,6 +151,7 @@
 15 = 0x00FFFF
 16 = 0x7AE0D6
 [pink] ;; fj
+isBlack = false
 0  = 0xF4ADE0
 1  = 0xE00070
 2  = 0xFF00FF

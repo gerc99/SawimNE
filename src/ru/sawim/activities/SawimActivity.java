@@ -68,6 +68,7 @@ public class SawimActivity extends ActionBarActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        setTheme(Scheme.isBlack() ? R.style.Theme_AppCompat : R.style.Theme_AppCompat_Light);
         super.onCreate(savedInstanceState);
         actionBar = getSupportActionBar();
         General.currentActivity = this;
@@ -202,9 +203,8 @@ public class SawimActivity extends ActionBarActivity {
         super.onResume();
         General.currentActivity = this;
         General.maximize();
-        Protocol protocol = Roster.getInstance().getCurrentProtocol();
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        if (protocol == null) {
+        if (Roster.getInstance().getProtocolCount() == 0) {
             StartWindowView newFragment = new StartWindowView();
             if (getSupportFragmentManager()
                     .findFragmentById(R.id.chat_fragment) != null) {
@@ -215,15 +215,10 @@ public class SawimActivity extends ActionBarActivity {
             }
             transaction.addToBackStack(null);
             transaction.commitAllowingStateLoss();
-        } else if (General.returnFromAcc) {
-            General.returnFromAcc = false;
-            if (protocol.getContactItems().size() == 0 && !protocol.isConnecting())
-                Toast.makeText(this, R.string.press_menu_for_connect, Toast.LENGTH_LONG).show();
-            /*RosterView rosterView = (RosterView) getSupportFragmentManager().findFragmentByTag(RosterView.TAG);
-            if (rosterView != null) {
-                rosterView.addProtocolsTabs();
-                rosterView.update();
-            }*/
+        } else {
+            StartWindowView startWindowView = (StartWindowView) getSupportFragmentManager().findFragmentByTag(StartWindowView.TAG);
+            if (startWindowView != null)
+                getSupportFragmentManager().popBackStack();
         }
         //handleIntent(getIntent());
     }

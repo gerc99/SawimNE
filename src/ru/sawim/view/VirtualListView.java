@@ -52,7 +52,7 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.virtual_list, container, false);
-        v.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
+        //v.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
         return v;
     }
 
@@ -64,7 +64,7 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
         adapter = new VirtualListAdapter(currentActivity, elements);
         lv = (MyListView) currentActivity.findViewById(R.id.list_view);
         lv.setAdapter(adapter);
-        lv.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
+        //lv.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
         lv.setOnItemClickListener(new ListView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
