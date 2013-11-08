@@ -2,13 +2,13 @@ package ru.sawim.view;
 
 import DrawControls.icons.Icon;
 import android.content.Intent;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.view.Gravity;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +19,7 @@ import protocol.Protocol;
 import ru.sawim.R;
 import ru.sawim.Scheme;
 import ru.sawim.models.RosterAdapter;
+import ru.sawim.widget.IconTabPageIndicator;
 import sawim.ExternalApi;
 import sawim.FileTransfer;
 import sawim.chat.ChatHistory;
@@ -36,34 +37,25 @@ import java.io.InputStream;
  * Time: 18:58
  * To change this template use File | Settings | File Templates.
  */
-public class SendToView extends Fragment implements AdapterView.OnItemClickListener, View.OnClickListener {
+public class SendToView extends Fragment implements AdapterView.OnItemClickListener {
 
     public static final String TAG = "SendToView";
     private RosterAdapter allRosterAdapter;
     private Roster roster;
-    private HorizontalScrollView horizontalScrollView;
-    private LinearLayout protocolBarLayout;
+    private static ActionBar actionBar;
+    private IconTabPageIndicator horizontalScrollView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        actionBar = ((ActionBarActivity)getActivity()).getSupportActionBar();
         roster = Roster.getInstance();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.roster_view, null);
-        LinearLayout rosterViewLayout = (LinearLayout) v.findViewById(R.id.roster_view);
-        rosterViewLayout.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
-
-        horizontalScrollView = (HorizontalScrollView) rosterViewLayout.findViewById(R.id.horizontalScrollView);
-        GradientDrawable gd = new GradientDrawable(
-                GradientDrawable.Orientation.TOP_BOTTOM,
-                new int[] {Scheme.getColor(Scheme.THEME_CAP_BACKGROUND),Scheme.getColor(Scheme.THEME_BACKGROUND)});
-        gd.setCornerRadius(0f);
-        horizontalScrollView.setBackgroundDrawable(gd);
-        protocolBarLayout = (LinearLayout) horizontalScrollView.findViewById(R.id.protocol_bar);
+        horizontalScrollView = new IconTabPageIndicator(getActivity());
 
         ListView allListView = new ListView(getActivity());
         allListView.setCacheColorHint(0x00000000);
@@ -75,6 +67,9 @@ public class SendToView extends Fragment implements AdapterView.OnItemClickListe
 
         allRosterAdapter = new RosterAdapter(getActivity(), roster, Roster.ALL_CONTACTS);
         allListView.setAdapter(allRosterAdapter);
+
+        if (!Scheme.isSystemBackground())
+            allListView.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
         return allListView;
     }
 
@@ -119,49 +114,51 @@ public class SendToView extends Fragment implements AdapterView.OnItemClickListe
     @Override
     public void onResume() {
         super.onResume();
+        initBar();
         update();
     }
 
+    private void initBar() {
+        boolean isShowTabs = roster.getProtocolCount() > 1;
+        actionBar.setDisplayShowTitleEnabled(!isShowTabs);
+        actionBar.setDisplayShowHomeEnabled(!isShowTabs);
+        actionBar.setDisplayUseLogoEnabled(!isShowTabs);
+        actionBar.setDisplayHomeAsUpEnabled(!isShowTabs);
+        actionBar.setDisplayShowCustomEnabled(isShowTabs);
+        getActivity().setTitle(R.string.app_name);
+        actionBar.setCustomView(horizontalScrollView);
+    }
+
     private void updateBarProtocols() {
-        final int protCount = roster.getProtocolCount();
+        final int protocolCount = roster.getProtocolCount();
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (protCount > 1) {
-                    protocolBarLayout.removeAllViews();
-                    for (int i = 0; i < protCount; ++i) {
+                horizontalScrollView.removeAllTabs();
+                if (protocolCount > 1) {
+                    horizontalScrollView.setOnTabSelectedListener(new IconTabPageIndicator.OnTabSelectedListener() {
+                        @Override
+                        public void onTabSelected(int position) {
+                            roster.setCurrentItemProtocol(position);
+                            update();
+                            Toast toast = Toast.makeText(getActivity(), roster.getProtocol(position).getUserId(), Toast.LENGTH_LONG);
+                            toast.setDuration(100);
+                            toast.show();
+                        }
+                    });
+                    for (int i = 0; i < protocolCount; ++i) {
                         Protocol protocol = roster.getProtocol(i);
-                        ImageButton imageBarButtons = new ImageButton(getActivity());
-                        imageBarButtons.setOnClickListener(SendToView.this);
-                        imageBarButtons.setId(i);
-                        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-                        lp.gravity = Gravity.CENTER;
-                        imageBarButtons.setLayoutParams(lp);
-                        imageBarButtons.setBackgroundDrawable(new ColorDrawable(0));
-                        if (i == roster.getCurrentItemProtocol())
-                            imageBarButtons.setBackgroundColor(Scheme.getColor(Scheme.THEME_CAP_BACKGROUND));
-                        imageBarButtons.setImageDrawable(protocol.getCurrentStatusIcon().getImage());
+                        Drawable icon = protocol.getCurrentStatusIcon().getImage();
                         Icon messageIcon = ChatHistory.instance.getUnreadMessageIcon(protocol);
                         if (null != messageIcon)
-                            imageBarButtons.setImageDrawable(messageIcon.getImage());
-                        protocolBarLayout.addView(imageBarButtons, i);
+                            icon = messageIcon.getImage();
+                        horizontalScrollView.addTab(i, icon);
                     }
-                } else {
-                    horizontalScrollView.setVisibility(LinearLayout.GONE);
-                    protocolBarLayout.setVisibility(LinearLayout.GONE);
+                    horizontalScrollView.setCurrentItem(roster.getCurrentItemProtocol());
                 }
             }
         });
 
-    }
-
-    @Override
-    public void onClick(View view) {
-        Toast toast = Toast.makeText(getActivity(), roster.getProtocol(view.getId()).getUserId(), Toast.LENGTH_LONG);
-        toast.setDuration(5);
-        toast.show();
-        roster.setCurrentItemProtocol(view.getId());
-        update();
     }
 
     private void update() {

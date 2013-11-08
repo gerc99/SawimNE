@@ -55,13 +55,9 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
         super.onActivityCreated(savedInstanceState);
         getActivity().setTitle(Forms.getInstance().getCaption());
         okButton = (Button) getActivity().findViewById(R.id.data_form_ok);
-        okButton.getBackground().setColorFilter(Scheme.getColor(Scheme.THEME_BACKGROUND), PorterDuff.Mode.MULTIPLY);
-        okButton.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
         okButton.setOnClickListener(this);
         buildList(listLayout);
         cancelButton = (Button) getActivity().findViewById(R.id.data_form_cancel);
-        cancelButton.getBackground().setColorFilter(Scheme.getColor(Scheme.THEME_BACKGROUND), PorterDuff.Mode.MULTIPLY);
-        cancelButton.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
         cancelButton.setOnClickListener(this);
     }
 
@@ -70,8 +66,9 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.form, container, false);
         LinearLayout rootLayout = (LinearLayout) v.findViewById(R.id.data_form);
-        rootLayout.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
         listLayout = (LinearLayout) v.findViewById(R.id.data_form_linear);
+        if (!Scheme.isSystemBackground())
+            rootLayout.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
         return v;
     }
 
@@ -169,22 +166,12 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
             seekBar.setVisibility(SeekBar.GONE);
             editText.setVisibility(EditText.GONE);
             setAllTextSize(descView, labelView, textView, checkBox, editText, General.getFontSize());
-            descView.setTextColor(Scheme.getInversColor(Scheme.THEME_TEXT));
-            labelView.setTextColor(Scheme.getInversColor(Scheme.THEME_TEXT));
-            textView.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
-            checkBox.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
-            spinner.getBackground().setColorFilter(Scheme.getColor(Scheme.THEME_BACKGROUND), PorterDuff.Mode.MULTIPLY);
-            seekBar.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
 
             if (Forms.CONTROL_TEXT == c.type) {
                 drawText(c, labelView, descView, convertView);
             } else if (Forms.CONTROL_INPUT == c.type) {
                 drawText(c, labelView, descView, convertView);
                 editText.setVisibility(EditText.VISIBLE);
-                editText.setTextColor(Scheme.getInversColor(Scheme.THEME_TEXT));
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-                    editText.getBackground().setColorFilter(Scheme.getColor(Scheme.THEME_CAP_BACKGROUND), PorterDuff.Mode.MULTIPLY);
-                }
                 editText.setHint(R.string.enter_the);
                 editText.setText(c.text);
                 editText.addTextChangedListener(new TextWatcher() {
@@ -356,7 +343,6 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
             }
             if (string == null) return v;
             headerViewHolder.header.setTextSize(General.getFontSize());
-            headerViewHolder.header.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
             headerViewHolder.header.setText(string);
             return v;
         }
@@ -375,10 +361,8 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
                 dropDownViewHolder = (DropDownViewHolder) v.getTag();
             }
             if (string == null) return v;
-            v.setBackgroundColor(Scheme.getInversColor(Scheme.THEME_BACKGROUND));
 
             dropDownViewHolder.label.setTextSize(General.getFontSize());
-            dropDownViewHolder.label.setTextColor(Scheme.getInversColor(Scheme.THEME_TEXT));
             dropDownViewHolder.label.setText(string);
             return v;
         }

@@ -78,7 +78,7 @@ public class StatusesAdapter extends BaseAdapter {
         if (item == selectedItem) {
             activeItem.setBackgroundColor(Scheme.getInversColor(Scheme.THEME_BACKGROUND));
         } else {
-            activeItem.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
+            activeItem.setBackgroundColor(0);
         }
         return row;
     }

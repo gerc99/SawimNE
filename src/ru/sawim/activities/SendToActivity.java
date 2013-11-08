@@ -7,6 +7,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Window;
 import ru.sawim.General;
 import ru.sawim.R;
+import ru.sawim.Scheme;
 import ru.sawim.view.SendToView;
 
 /**
@@ -20,9 +21,9 @@ public class SendToActivity extends ActionBarActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        setTheme(Scheme.isBlack() ? R.style.BaseTheme : R.style.BaseThemeLight);
         super.onCreate(savedInstanceState);
         General.currentActivity = this;
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
         setContentView(R.layout.intercalation_layout);
 

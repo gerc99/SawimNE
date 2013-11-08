@@ -14,6 +14,7 @@ import protocol.Profile;
 import protocol.jabber.JabberRegistration;
 import ru.sawim.General;
 import ru.sawim.R;
+import ru.sawim.Scheme;
 import ru.sawim.view.AccountsListView;
 
 /**
@@ -29,6 +30,7 @@ public class AccountsListActivity extends ActionBarActivity implements JabberReg
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        setTheme(Scheme.isBlack() ? R.style.BaseTheme : R.style.BaseThemeLight);
         super.onCreate(savedInstanceState);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
         if (General.currentActivity.getSupportFragmentManager()

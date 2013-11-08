@@ -11,6 +11,7 @@ import android.provider.Browser;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.text.SpannableStringBuilder;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -90,8 +91,9 @@ public class MessagesAdapter extends BaseAdapter {
     @Override
     public View getView(int index, View row, ViewGroup viewGroup) {
         final MessData mData = items.get(index);
-        if (mData.messView == null)
+        if (mData.messView == null) {
             mData.messView = new MessageItemView(General.currentActivity);
+        }
         MessageItemView item = mData.messView;
         SpannableStringBuilder parsedText = mData.parsedText();
         String nick = mData.getNick();
@@ -144,8 +146,8 @@ public class MessagesAdapter extends BaseAdapter {
             item.msgText.setLinkTextColor(0xff00e4ff);
             item.msgText.setText(parsedText);
         }
-        item.addDivider(General.currentActivity, Scheme.getColor(Scheme.THEME_TEXT),
-                position == index && index > 0 && position != getCount());
+        item.initDivider(Scheme.getColor(Scheme.THEME_TEXT));
+        item.setShowDivider(position == index && index > 0 && position != getCount());
         return item;
     }
 

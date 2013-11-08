@@ -231,7 +231,7 @@ public final class Chat {
         return history;
     }
 
-    private int getMessCount() {
+    public int getMessCount() {
         return messData.size();
     }
 

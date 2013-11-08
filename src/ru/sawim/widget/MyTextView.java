@@ -25,7 +25,7 @@ import ru.sawim.text.InternalURLSpan;
 
 public class MyTextView extends View {
 
-    private static TextPaint textPaint;
+    private TextPaint textPaint;
     private Layout layout;
     private CharSequence mText = "";
     private CharSequence oldText = "";
@@ -60,7 +60,6 @@ public class MyTextView extends View {
             textPaint.setAntiAlias(true);
             textPaint.setTextSize(20);
             textPaint.setColor(Color.BLACK);
-            textPaint.setStyle(Paint.Style.FILL);
         }
     }
 

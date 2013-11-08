@@ -23,7 +23,7 @@
                  android:name=".SawimApplication">
         <activity android:name=".activities.SawimActivity"
                   android:label="@string/app_name"
-                  android:theme="@style/Theme.AppCompat.Light"
+                  android:theme="@style/BaseTheme"
                   android:windowSoftInputMode="stateAlwaysHidden|adjustResize"
                   android:configChanges="orientation|keyboardHidden|screenSize"
                   android:launchMode="singleTask">
@@ -34,7 +34,7 @@
         </activity>
         <activity android:name=".activities.SendToActivity"
                   android:label="@string/app_name"
-                  android:theme="@style/Theme.AppCompat.Light"
+                  android:theme="@style/BaseTheme"
                   android:windowSoftInputMode="stateAlwaysHidden|adjustResize"
                   android:configChanges="orientation|keyboardHidden|screenSize"
                   android:launchMode="singleTask">
@@ -45,7 +45,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".activities.OpenUriActivity"
-                  android:theme="@style/Theme.AppCompat.Light"
+                  android:theme="@style/BaseTheme"
                   android:label="@string/app_name"
                   android:windowSoftInputMode="stateAlwaysHidden|adjustResize"
                   android:configChanges="orientation|keyboardHidden"
@@ -58,28 +58,18 @@
             </intent-filter>
         </activity>
         <activity android:name=".photo.CameraActivity"
-                  android:theme="@style/Theme.AppCompat.Light"
+                  android:theme="@style/BaseTheme"
                   android:label="@string/app_name"
                   android:windowSoftInputMode="stateAlwaysHidden|adjustResize"
                   android:configChanges="orientation|keyboardHidden"
                   android:launchMode="standard">
         </activity>
         <activity android:name=".activities.AccountsListActivity"
-                  android:theme="@style/Theme.AppCompat.Light"
+                  android:theme="@style/BaseTheme"
                   android:windowSoftInputMode="stateAlwaysHidden"
                   android:configChanges="orientation|keyboardHidden|screenSize"
                   android:launchMode="singleTask"/>
 
         <service android:enabled="true" android:name=".service.SawimService" android:stopWithTask="true"/>
-        <service
-                android:name=".service.AuthenticationService"
-                android:exported="true"
-                android:process=":auth"
-                android:stopWithTask="true">
-            <intent-filter>
-                <action android:name="android.accounts.AccountAuthenticator"/>
-            </intent-filter>
-            <meta-data android:name="android.accounts.AccountAuthenticator" android:resource="@xml/authenticator"/>
-        </service>
     </application>
 </manifest> 

@@ -66,7 +66,7 @@ public class ChatsAdapter extends BaseAdapter {
         if (o instanceof Chat) {
             Chat chat = (Chat) o;
             ((RosterItemView) convertView).populateFromContact(Roster.getInstance(), chat.getProtocol(), chat.getContact());
-            rosterItemView.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
+            rosterItemView.setBackgroundColor(0);
         }
         ((RosterItemView) convertView).repaint();
         return convertView;

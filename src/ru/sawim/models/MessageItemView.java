@@ -1,6 +1,8 @@
 package ru.sawim.models;
 
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.view.View;
 import android.widget.*;
 import ru.sawim.widget.LabelView;
@@ -19,6 +21,8 @@ public class MessageItemView extends RelativeLayout {
     public LabelView msgNick;
     public LabelView msgTime;
     public MyTextView msgText;
+    private static final Paint paintDivider = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private boolean isShowDivider = false;
 
     public MessageItemView(Context context) {
         super(context);
@@ -60,12 +64,18 @@ public class MessageItemView extends RelativeLayout {
         addView(msgText, lp);
     }
 
-    public void addDivider(Context context, int color, boolean isAdd) {
-        View v = new View(context);
-        v.setId(5);
-        v.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, 1));
-        v.setBackgroundColor(color);
-        if (getChildAt(4) != null) removeViewAt(4);
-        if (isAdd) addView(v);
+    public void initDivider(int color) {
+        paintDivider.setColor(color);
+    }
+
+    @Override
+    protected void dispatchDraw(Canvas canvas) {
+        super.dispatchDraw(canvas);
+        if (isShowDivider)
+            canvas.drawLine(getLeft(), getScrollY(), getWidth(), getScrollY(), paintDivider);
+    }
+
+    public void setShowDivider(boolean showDivider) {
+        isShowDivider = showDivider;
     }
 }

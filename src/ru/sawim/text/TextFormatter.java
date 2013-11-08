@@ -9,6 +9,7 @@ import android.text.style.ImageSpan;
 import android.text.style.StyleSpan;
 import android.util.Patterns;
 import protocol.Contact;
+import ru.sawim.SawimApplication;
 import ru.sawim.view.menu.JuickMenu;
 import sawim.modules.Emotions;
 
@@ -28,11 +29,17 @@ public class TextFormatter {
     private Pattern juickPattern = Pattern.compile("(#[0-9]+(/[0-9]+)?)");
     private Pattern pstoPattern = Pattern.compile("(#[\\w]+(/[0-9]+)?)");
     private static final Emotions smiles = Emotions.instance;
-    private static final TextFormatter instance = new TextFormatter();
+    private static TextFormatter instance;
 
     public static TextFormatter getInstance() {
+        if (instance == null)
+            instance = new TextFormatter();
         return instance;
     }
+
+    private static final int linkColor = SawimApplication.getContext().getTheme().obtainStyledAttributes(new int[] {
+            android.R.attr.textColorLink,
+    }).getColor(0, -1);
 
     public SpannableStringBuilder parsedText(final Contact contact, final String text) {
         final SpannableStringBuilder parsedText = new SpannableStringBuilder(text);
@@ -40,11 +47,11 @@ public class TextFormatter {
             @Override
             public void run() {
                 if (contact.getUserId().equals(JuickMenu.JUICK) || contact.getUserId().equals(JuickMenu.JUBO))
-                    getTextWithLinks(parsedText, 0xff00e4ff, JuickMenu.MODE_JUICK);
+                    getTextWithLinks(parsedText, linkColor, JuickMenu.MODE_JUICK);
                 else if (contact.getUserId().equals(JuickMenu.PSTO))
-                    getTextWithLinks(parsedText, 0xff00e4ff, JuickMenu.MODE_PSTO);
+                    getTextWithLinks(parsedText, linkColor, JuickMenu.MODE_PSTO);
                 else
-                    getTextWithLinks(parsedText, 0xff00e4ff, -1);
+                    getTextWithLinks(parsedText, linkColor, -1);
                 detectEmotions(parsedText);
             }
         }).start();

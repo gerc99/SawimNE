@@ -40,9 +40,6 @@ public class MucUsersAdapter extends BaseAdapter {
     private Jabber protocol;
     Context context;
 
-    public MucUsersAdapter() {
-    }
-
     public void init(Context context, Jabber jabber, JabberServiceContact conf) {
         this.context = context;
         protocol = jabber;
@@ -52,7 +49,6 @@ public class MucUsersAdapter extends BaseAdapter {
 
     public void update() {
         items.clear();
-        //Util.sort(conference.subcontacts);
         final int moderators = getContactCount(JabberServiceContact.ROLE_MODERATOR);
         final int participants = getContactCount(JabberServiceContact.ROLE_PARTICIPANT);
         final int visitors = getContactCount(JabberServiceContact.ROLE_VISITOR);

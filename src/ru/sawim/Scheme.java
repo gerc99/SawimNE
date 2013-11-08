@@ -35,6 +35,7 @@ public class Scheme {
     public static final byte FONT_STYLE_BOLD = 1;
 
     private static boolean[] isBlack;
+    private static boolean[] isSystemBackground;
 
     private Scheme() {
     }
@@ -72,14 +73,16 @@ public class Scheme {
         } catch (Exception ignored) {
         }
         isBlack = new boolean[themes.size() + 1];
+        isSystemBackground = new boolean[themes.size() + 1];
         themeNames  = new String[themes.size() + 1];
         themeColors = new int[themes.size() + 1][];
 
-        themeNames[0]  = "Gray (default)";
+        themeNames[0]  = "Light Holo";
         themeColors[0] = baseTheme;
         for (int i = 0; i < themes.size(); ++i) {
             Config config = (Config)themes.elementAt(i);
             isBlack[i + 1] = Boolean.valueOf(config.getValues()[0]);
+            isSystemBackground[i + 1] = Boolean.valueOf(config.getValues()[1]);
             themeNames[i + 1]  = config.getName();
             themeColors[i + 1] = configToTheme(config);
         }
@@ -89,13 +92,17 @@ public class Scheme {
         return isBlack[Options.getInt(Options.OPTION_COLOR_SCHEME)];
     }
 
+    public static boolean isSystemBackground() {
+        return isSystemBackground[Options.getInt(Options.OPTION_COLOR_SCHEME)];
+    }
+
     private static int[] configToTheme(Config config) {
         String[] keys = config.getKeys();
         String[] values = config.getValues();
         int[] theme = new int[baseTheme.length];
         System.arraycopy(baseTheme, 0, theme, 0, theme.length);
         try {
-            for (int keyIndex = 1; keyIndex < keys.length; ++keyIndex) {
+            for (int keyIndex = 2; keyIndex < keys.length; ++keyIndex) {
                 int index = Util.strToIntDef(keys[keyIndex], -1);
                 if ((0 <= index) && (index < theme.length)) {
                     theme[index] = Integer.parseInt(values[keyIndex].substring(2), 16);

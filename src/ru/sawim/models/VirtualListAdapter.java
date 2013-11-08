@@ -133,7 +133,7 @@ public class VirtualListAdapter extends BaseAdapter {
         if (i == selectedItem && selectedItem != -1) {
             activeItem.setBackgroundColor(Scheme.getInversColor(Scheme.THEME_BACKGROUND));
         } else {
-            activeItem.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
+            activeItem.setBackgroundColor(0);
         }
         return convertView;
     }

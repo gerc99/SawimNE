@@ -98,9 +98,13 @@ public class RosterAdapter extends BaseAdapter {
         Protocol protocol = roster.getCurrentProtocol();
         TreeNode o = getItem(i);
         if (o != null)
-            if (type != Roster.ALL_CONTACTS && o.isContact()) {
+            if (type != Roster.ALL_CONTACTS) {
                 if (type != Roster.ACTIVE_CONTACTS)
-                    ((RosterItemView) convertView).populateFromContact(roster, protocol, (Contact) o);
+                    if (o.isGroup()) {
+                        ((RosterItemView) convertView).populateFromGroup((Group) o);
+                    } else if (o.isContact()) {
+                        ((RosterItemView) convertView).populateFromContact(roster, protocol, (Contact) o);
+                    }
             } else {
                 if (o.isGroup()) {
                     ((RosterItemView) convertView).populateFromGroup((Group) o);

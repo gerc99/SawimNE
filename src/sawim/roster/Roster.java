@@ -437,7 +437,7 @@ public final class Roster {
     }
 
     public void updateOptions() {
-        useGroups = Options.getBoolean(Options.OPTION_USER_GROUPS) && getCurrPage() == ALL_CONTACTS;
+        useGroups = Options.getBoolean(Options.OPTION_USER_GROUPS) && getCurrPage() != ACTIVE_CONTACTS;
         hideOffline = /*Options.getBoolean(Options.OPTION_CL_HIDE_OFFLINE)*/getCurrPage() == ONLINE_CONTACTS;
     }
 
