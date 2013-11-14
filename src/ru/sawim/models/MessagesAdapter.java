@@ -8,14 +8,10 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.provider.Browser;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
-import android.text.SpannableStringBuilder;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 import protocol.Protocol;
 import ru.sawim.General;
@@ -23,6 +19,7 @@ import ru.sawim.R;
 import ru.sawim.view.PictureView;
 import ru.sawim.widget.MyTextView;
 import ru.sawim.view.menu.JuickMenu;
+import ru.sawim.widget.chat.MessageItemView;
 import sawim.Clipboard;
 import sawim.chat.Chat;
 import sawim.chat.MessData;
@@ -48,6 +45,7 @@ public class MessagesAdapter extends BaseAdapter {
 
     private boolean isMultiQuote = false;
     private int position = -1;
+
 
     public void init(Chat chat) {
         currentProtocol = chat.getProtocol();
@@ -92,10 +90,10 @@ public class MessagesAdapter extends BaseAdapter {
     public View getView(int index, View row, ViewGroup viewGroup) {
         final MessData mData = items.get(index);
         if (mData.messView == null) {
-            mData.messView = new MessageItemView(General.currentActivity);
+            mData.messView = new MessageItemView(General.currentActivity, !(mData.isMe() || mData.isPresence()));
         }
         MessageItemView item = mData.messView;
-        SpannableStringBuilder parsedText = mData.parsedText();
+        CharSequence parsedText = mData.parsedText();
         String nick = mData.getNick();
         boolean incoming = mData.isIncoming();
 
@@ -106,9 +104,6 @@ public class MessagesAdapter extends BaseAdapter {
             item.msgText.setTypeface(Typeface.DEFAULT_BOLD);
 
         if (mData.isMe() || mData.isPresence()) {
-            item.msgImage.setVisibility(ImageView.GONE);
-            item.msgNick.setVisibility(TextView.GONE);
-            item.msgTime.setVisibility(TextView.GONE);
             item.msgText.setTextSize(General.getFontSize() - 2);
             if (mData.isMe()) {
                 item.msgText.setText("* " + nick + " " + parsedText);
@@ -118,28 +113,18 @@ public class MessagesAdapter extends BaseAdapter {
                 item.msgText.setTextColor(Scheme.getColor(Scheme.THEME_CHAT_INMSG));
             }
         } else {
-            if (mData.iconIndex == Message.ICON_NONE) {
-                item.msgImage.setVisibility(ImageView.GONE);
-            } else {
+            if (mData.iconIndex != Message.ICON_NONE) {
                 Icon icon = Message.msgIcons.iconAt(mData.iconIndex);
-                if (icon == null) {
-                    item.msgImage.setVisibility(ImageView.GONE);
-                } else {
-                    item.msgImage.setVisibility(ImageView.VISIBLE);
-                    item.msgImage.setImageDrawable(icon.getImage());
+                if (icon != null) {
+                    item.titleItemView.setMsgImage(icon.getImage());
                 }
             }
 
-            item.msgNick.setVisibility(TextView.VISIBLE);
-            item.msgNick.setTextColor(Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG));
-            item.msgNick.setTypeface(Typeface.DEFAULT_BOLD);
-            item.msgNick.setTextSize(General.getFontSize());
-            item.msgNick.setText(nick);
+            item.titleItemView.setNick(nick, Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG),
+                    Typeface.DEFAULT_BOLD, General.getFontSize());
 
-            item.msgTime.setVisibility(TextView.VISIBLE);
-            item.msgTime.setTextColor(Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG));
-            item.msgTime.setTextSize(General.getFontSize() * 2 / 3);
-            item.msgTime.setText(mData.strTime);
+            item.titleItemView.setMsgTime(mData.strTime, Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG),
+                    Typeface.DEFAULT, General.getFontSize() * 2 / 3);
 
             item.msgText.setTextSize(General.getFontSize());
             item.msgText.setTextColor(Scheme.getColor(mData.getMessColor()));
@@ -157,14 +142,14 @@ public class MessagesAdapter extends BaseAdapter {
             if (clickedString.length() == 0) return;
             boolean isJuick = clickedString.substring(0, 1).equals("@") || clickedString.substring(0, 1).equals("#");
             if (isJuick) {
-                new JuickMenu(((FragmentActivity)textView.getContext()), currentProtocol, currentContact, clickedString).show();
+                new JuickMenu((General.currentActivity), currentProtocol, currentContact, clickedString).show();
                 return;
             }
             if (isLongTap) {
                 CharSequence[] items = new CharSequence[2];
-                items[0] = textView.getContext().getString(R.string.copy);
-                items[1] = textView.getContext().getString(R.string.add_contact);
-                final AlertDialog.Builder builder = new AlertDialog.Builder(textView.getContext());
+                items[0] = General.currentActivity.getString(R.string.copy);
+                items[1] = General.currentActivity.getString(R.string.add_contact);
+                final AlertDialog.Builder builder = new AlertDialog.Builder(General.currentActivity);
                 builder.setCancelable(true);
                 builder.setTitle(R.string.url_menu);
                 final String finalClickedString = clickedString;
@@ -202,7 +187,7 @@ public class MessagesAdapter extends BaseAdapter {
                     transaction.commitAllowingStateLoss();
                 } else {
                     Uri uri = Uri.parse(clickedString);
-                    Context context = textView.getContext();
+                    Context context = General.currentActivity;
                     Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                     intent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
                     context.startActivity(intent);

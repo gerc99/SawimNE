@@ -11,7 +11,7 @@ public final class StringConvertor {
     private final String[] from;
     private final String[] to;
 
-    private static StringConvertor[] converters = new StringConvertor[0];
+    private static StringConvertor[] converters;
 
     public static final String DETRANSLITERATE = "detrans" + "literate";
     public static final String MRIM2Sawim = "mrim2Sawim";

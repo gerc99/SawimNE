@@ -8,10 +8,10 @@
               android:text="label"
               android:textStyle="bold"
               android:layout_width="wrap_content"
-              android:layout_height="wrap_content"/>
+              android:layout_height="wrap_content" android:padding="4dp"/>
     <LinearLayout android:id="@+id/descriptionLayout"
                   android:layout_width="match_parent"
-                  android:layout_height="match_parent">
+                  android:layout_height="match_parent" android:padding="4dp">
         <ImageView android:layout_width="wrap_content"
                    android:layout_height="wrap_content"
                    android:id="@+id/imageView"

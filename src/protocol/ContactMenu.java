@@ -144,7 +144,7 @@ public class ContactMenu implements TextBoxView.TextBoxListener {
             case USER_MANAGE_CONTACT:
                 final MyMenu menu = new MyMenu(activity);
                 contact.initManageContactMenu(protocol, menu);
-                AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(activity, R.style.AlertDialogCustom));
+                AlertDialog.Builder builder = new AlertDialog.Builder(activity);
                 builder.setCancelable(true);
                 builder.setTitle(SawimApplication.getContext().getString(R.string.manage_contact_list));
                 builder.setAdapter(menu, new DialogInterface.OnClickListener() {

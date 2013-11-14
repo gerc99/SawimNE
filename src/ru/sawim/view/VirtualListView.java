@@ -42,12 +42,6 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        setHasOptionsMenu(true);
-    }
-
-    @Override
     public void onDetach() {
         super.onDetach();
         list.setVirtualListListener(null);
@@ -71,7 +65,6 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
         adapter = new VirtualListAdapter(currentActivity, elements);
         lv = (MyListView) currentActivity.findViewById(R.id.list_view);
         lv.setAdapter(adapter);
-        //lv.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
         lv.setOnItemClickListener(new ListView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
@@ -90,6 +83,7 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
         currentActivity.registerForContextMenu(lv);
         lv.setOnCreateContextMenuListener(this);
         update();
+        getActivity().supportInvalidateOptionsMenu();
     }
 
     @Override
@@ -155,16 +149,14 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
         return list.getClickListListener().back();
     }
 
-    @Override
-    public void onPrepareOptionsMenu(Menu menu) {
+    public void onPrepareOptionsMenu_(Menu menu) {
         menu.clear();
         if (list.getBuildOptionsMenu() != null)
             list.getBuildOptionsMenu().onCreateOptionsMenu(menu);
         super.onPrepareOptionsMenu(menu);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected_(MenuItem item) {
         if (list.getBuildOptionsMenu() != null)
             list.getBuildOptionsMenu().onOptionsItemSelected(item);
         return super.onOptionsItemSelected(item);

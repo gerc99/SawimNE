@@ -1,6 +1,5 @@
-package ru.sawim.models;
+package ru.sawim.widget;
 
-import DrawControls.icons.Icon;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
@@ -9,16 +8,8 @@ import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.util.TypedValue;
 import android.view.View;
-import protocol.Contact;
-import protocol.Group;
-import protocol.Protocol;
-import protocol.XStatusInfo;
 import ru.sawim.General;
 import ru.sawim.Scheme;
-import sawim.chat.ChatHistory;
-import sawim.chat.message.Message;
-import sawim.modules.tracking.Tracking;
-import sawim.roster.Roster;
 
 /**
  * Created with IntelliJ IDEA.
@@ -31,33 +22,34 @@ public class RosterItemView extends View {
 
     public String itemName;
     public String itemDesc;
-    private int itemNameColor;
-    private int itemDescColor;
-    private Typeface itemNameFont;
-    private static Paint textPaint;
+    public int itemNameColor;
+    public int itemDescColor;
+    public Typeface itemNameFont;
+
     public BitmapDrawable itemFirstImage = null;
     public BitmapDrawable itemSecondImage = null;
     public BitmapDrawable itemThirdImage = null;
     public BitmapDrawable itemFourthImage = null;
     public BitmapDrawable itemFifthImage = null;
 
-    private int lineOneY;
-    private int lineTwoY;
-    private int firstImageX = 0;
-    private int firstImageY = 0;
-    private int secondImageX = 0;
-    private int secondImageY = 0;
-    private int thirdImageX = 0;
-    private int thirdImageY = 0;
-    private int fourthImageX = 0;
-    private int fourthImageY = 0;
-    private int fifthImageX = 0;
-    private int fifthImageY = 0;
-    private int textX = 0;
+    private static Paint textPaint;
+    private static Resources resources;
+
+    private int lineOneY, lineTwoY,
+            firstImageX, firstImageY,
+            secondImageX, secondImageY,
+            thirdImageX, thirdImageY,
+            fourthImageX, fourthImageY,
+            fifthImageX, fifthImageY;
+    private int textX;
 
     public RosterItemView(Context context) {
         super(context);
-        setPadding(10, 15, 10, 15);
+        setPadding(15, 15, 15, 15);
+        if (resources == null) {
+            Context c = getContext();
+            resources = (c == null) ? Resources.getSystem() : c.getResources();
+        }
         if (textPaint == null) {
             textPaint = new Paint();
             textPaint.setAntiAlias(true);
@@ -66,81 +58,13 @@ public class RosterItemView extends View {
         }
     }
 
-    void populateFromGroup(Group g) {
-        setNull();
-        itemNameColor = Scheme.getColor(Scheme.THEME_GROUP);
-        itemNameFont = Typeface.DEFAULT;
-        itemName = g.getText();
-
-        Icon icGroup = g.getLeftIcon(null);
-        if (icGroup != null)
-            itemFirstImage = icGroup.getImage();
-
-        Icon messIcon = ChatHistory.instance.getUnreadMessageIcon(g.getContacts());
-        if (!g.isExpanded() && messIcon != null)
-            itemFourthImage = messIcon.getImage();
-    }
-
-    void populateFromContact(Roster roster, Protocol p, Contact item) {
-        setNull();
-        itemNameColor = Scheme.getColor(item.getTextTheme());
-        itemNameFont = item.hasChat() ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT;
-        itemName = (item.subcontactsS() == 0) ?
-                item.getText() : item.getText() + " (" + item.subcontactsS() + ")";
-        if (General.showStatusLine) {
-            String statusMessage = roster.getStatusMessage(item);
-            itemDescColor = Scheme.getColor(Scheme.THEME_CONTACT_STATUS);
-            itemDesc = statusMessage;
-        }
-
-        Icon icStatus = item.getLeftIcon(p);
-        if (icStatus != null)
-            itemFirstImage = icStatus.getImage();
-        if (item.isTyping()) {
-            itemFirstImage = Message.msgIcons.iconAt(Message.ICON_TYPE).getImage();
-        } else {
-            Icon icMess = Message.msgIcons.iconAt(item.getUnreadMessageIcon());
-            if (icMess != null)
-                itemFirstImage = icMess.getImage();
-        }
-
-        if (item.getXStatusIndex() != XStatusInfo.XSTATUS_NONE)
-            itemSecondImage = p.getXStatusInfo().getIcon(item.getXStatusIndex()).getImage();
-
-        if (!item.isTemp()) {
-            Icon icAuth = item.authIcon.iconAt(0);
-            if (item.isAuth()) {
-                int privacyList = -1;
-                if (item.inIgnoreList()) {
-                    privacyList = 0;
-                } else if (item.inInvisibleList()) {
-                    privacyList = 1;
-                } else if (item.inVisibleList()) {
-                    privacyList = 2;
-                }
-                if (privacyList != -1)
-                    itemThirdImage = item.serverListsIcons.iconAt(privacyList).getImage();
-            } else {
-                itemThirdImage = icAuth.getImage();
-            }
-        }
-
-        Icon icClient = (null != p.clientInfo) ? p.clientInfo.getIcon(item.clientIndex) : null;
-        if (icClient != null && !General.hideIconsClient)
-            itemFourthImage = icClient.getImage();
-
-        String id = item.getUserId();
-        if (Tracking.isTrackingEvent(id, Tracking.GLOBAL) == Tracking.TRUE)
-            itemFifthImage = (BitmapDrawable) Tracking.getTrackIcon(id);
-    }
-
     public void addLayer(String text) {
         setNull();
         itemDescColor = Scheme.getColor(Scheme.THEME_GROUP);
         itemDesc = text;
     }
 
-    private void setNull() {
+    public void setNull() {
         itemName = null;
         itemDesc = null;
         itemFirstImage = null;
@@ -156,10 +80,8 @@ public class RosterItemView extends View {
     }
 
     private void setTextSize(int size) {
-        Context c = getContext();
-        Resources r = (c == null) ? Resources.getSystem() : c.getResources();
         textPaint.setTextSize(TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_SP, size, r.getDisplayMetrics()));
+                TypedValue.COMPLEX_UNIT_SP, size, resources.getDisplayMetrics()));
     }
 
     @Override

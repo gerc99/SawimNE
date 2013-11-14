@@ -13,6 +13,7 @@ import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
+import ru.sawim.General;
 import ru.sawim.text.InternalURLSpan;
 
 /**
@@ -26,6 +27,7 @@ import ru.sawim.text.InternalURLSpan;
 public class MyTextView extends View {
 
     private TextPaint textPaint;
+    private static Resources resources;
     private Layout layout;
     private CharSequence mText = "";
     private CharSequence oldText = "";
@@ -33,8 +35,6 @@ public class MyTextView extends View {
     private float oldTextSize;
     TextLinkClickListener listener;
     private int curTextColor;
-    private ColorStateList textColor;
-    private ColorStateList linkTextColor;
     private boolean isSecondTap;
     private boolean isLongTap;
     private String link = "";
@@ -55,18 +55,19 @@ public class MyTextView extends View {
     }
 
     private void initPaint() {
-        if (textPaint == null) {
-            textPaint = new TextPaint();
-            textPaint.setAntiAlias(true);
-            textPaint.setTextSize(20);
-            textPaint.setColor(Color.BLACK);
+        if (resources == null) {
+            Context c = getContext();
+            resources = (c == null) ? Resources.getSystem() : c.getResources();
         }
+        textPaint = new TextPaint();
+        textPaint.setAntiAlias(true);
+        textPaint.setTextSize(General.getFontSize());
+        textPaint.setColor(Color.BLACK);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         textPaint.setColor(curTextColor);
-        textPaint.drawableState = getDrawableState();
         if (layout != null)
             layout.draw(canvas);
     }
@@ -82,13 +83,13 @@ public class MyTextView extends View {
     }
 
     public void setTextColor(int color) {
-        textColor = ColorStateList.valueOf(color);
-        updateTextColors();
+        curTextColor = color;
+        invalidate();
     }
 
     public final void setLinkTextColor(int color) {
-        linkTextColor = ColorStateList.valueOf(color);
-        updateTextColors();
+        textPaint.linkColor = color;
+        invalidate();
     }
 
     public void setTypeface(Typeface typeface) {
@@ -96,14 +97,16 @@ public class MyTextView extends View {
     }
 
     public void setTextSize(float textSize) {
-        Context c = getContext();
-        Resources r = (c == null) ? Resources.getSystem() : c.getResources();
         textPaint.setTextSize(TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_SP, textSize, r.getDisplayMetrics()));
+                TypedValue.COMPLEX_UNIT_SP, textSize, resources.getDisplayMetrics()));
     }
 
     private void makeLayout(int specSize) {
-        layout = new StaticLayout(mText, textPaint, specSize, Layout.Alignment.ALIGN_NORMAL, 1.0f, 0, false);
+        try {
+            layout = new StaticLayout(mText, textPaint, specSize, Layout.Alignment.ALIGN_NORMAL, 1.0F, 0.0F, false);
+        } catch (ArrayIndexOutOfBoundsException e) {
+            layout = new StaticLayout(mText.toString(), textPaint, specSize, Layout.Alignment.ALIGN_NORMAL, 1.0F, 0.0F, false);
+        }
     }
 
     @Override
@@ -117,34 +120,6 @@ public class MyTextView extends View {
         }
         if (layout == null) makeLayout(specSize);
         setMeasuredDimension(specSize, layout.getLineTop(layout.getLineCount()));
-    }
-
-    private void updateTextColors() {
-        boolean inval = false;
-        int color = textColor.getColorForState(getDrawableState(), 0);
-        if (color != curTextColor) {
-            curTextColor = color;
-            inval = true;
-        }
-        if (linkTextColor != null) {
-            color = linkTextColor.getColorForState(getDrawableState(), 0);
-            if (color != textPaint.linkColor) {
-                textPaint.linkColor = color;
-                inval = true;
-            }
-        }
-        if (inval) {
-            invalidate();
-        }
-    }
-
-    @Override
-    protected void drawableStateChanged() {
-        super.drawableStateChanged();
-        if (textColor != null && textColor.isStateful()
-                || (linkTextColor != null && linkTextColor.isStateful())) {
-            updateTextColors();
-        }
     }
 
     @Override

@@ -5,4 +5,7 @@
     <dimen name="small_font_size">16.0sp</dimen>
     <dimen name="medium_font_size">18.0sp</dimen>
     <dimen name="large_font_size">22.0sp</dimen>
+
+    <dimen name="slidingmenu_offset">80dp</dimen>
+    <dimen name="shadow_width">15dp</dimen>
 </resources>

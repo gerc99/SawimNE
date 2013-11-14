@@ -110,6 +110,7 @@ public class Forms {
     public Forms(String caption_, FormListener l) {
         caption = JLocale.getString(caption_);
         formListener = l;
+        instance = null;
 		instance = this;
     }
 

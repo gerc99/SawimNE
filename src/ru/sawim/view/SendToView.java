@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -82,19 +83,20 @@ public class SendToView extends Fragment implements AdapterView.OnItemClickListe
             Intent intent = getActivity().getIntent();
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             String type = intent.getType();
-            Uri data = intent.getParcelableExtra(Intent.EXTRA_STREAM);
-            if (data == null) return;
             if (type.equals("text/plain")) {
+                String sharingText = intent.getStringExtra(Intent.EXTRA_TEXT);
                 ChatView newFragment = new ChatView();
                 c.activate(p);
                 newFragment.initChat(p, c);
+                if (sharingText != null)
+                    newFragment.setSharingText(sharingText);
                 FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
                 transaction.replace(R.id.fragment_container, newFragment, ChatView.TAG);
                 transaction.addToBackStack(null);
                 transaction.commit();
-                if (intent.getStringExtra(Intent.EXTRA_TEXT) != null)
-                    newFragment.insert(intent.getStringExtra(Intent.EXTRA_TEXT));
             } else {
+                Uri data = intent.getParcelableExtra(Intent.EXTRA_STREAM);
+                if (data == null) return;
                 try {
                     InputStream is = getActivity().getContentResolver().openInputStream(data);
                     FileTransfer fileTransfer = new FileTransfer(getActivity(), p, c);

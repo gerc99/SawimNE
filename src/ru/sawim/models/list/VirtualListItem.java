@@ -72,8 +72,7 @@ public class VirtualListItem {
 
     public void addTextWithSmiles(String text, byte themeText, byte font) {
         descSpan = new SpannableStringBuilder(text);
-        TextFormatter.detectEmotions(descSpan);
-        //TextFormatter.getInstance().getTextWithLinks(descSpan, 0xff00e4ff, -1);
+        TextFormatter.getInstance().detectEmotions(text, descSpan);
         this.themeTextDesc = themeText;
         this.font = font;
     }

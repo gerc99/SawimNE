@@ -189,22 +189,16 @@ public final class Chat {
     }
 
     private void fillFromHistory() {
-        if (!hasHistory()) {
-            return;
-        }
-        if (isBlogBot()) {
-            return;
-        }
+        if (isBlogBot()) return;
         //if (Options.getBoolean(Options.OPTION_HISTORY)) {
-            if (0 != getMessCount()) {
-                return;
-            }
+            if (0 != getMessCount()) return;
+
             HistoryStorage hist = getHistory();
+            if (hist == null) return;
+
             hist.openHistory();
             int recCount = hist.getHistorySize();
-            if (0 == recCount) {
-                return;
-            }
+            if (0 == recCount) return;
 
             for (int i = 0; i < recCount; ++i) {
                 CachedRecord rec = hist.getRecord(i);

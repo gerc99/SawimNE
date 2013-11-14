@@ -1,9 +1,18 @@
 package ru.sawim.models;
 
+import DrawControls.icons.Icon;
 import android.content.Context;
+import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.widget.*;
+import protocol.XStatusInfo;
+import ru.sawim.General;
+import ru.sawim.Scheme;
+import ru.sawim.widget.RosterItemView;
 import sawim.chat.ChatHistory;
+import sawim.chat.message.Message;
 import sawim.comm.Util;
+import sawim.modules.tracking.Tracking;
 import sawim.roster.TreeNode;
 import android.database.DataSetObserver;
 import android.view.View;
@@ -90,6 +99,74 @@ public class RosterAdapter extends BaseAdapter {
         }
     }
 
+    void populateFromGroup(RosterItemView rosterItemView, Group g) {
+        rosterItemView.setNull();
+        rosterItemView.itemNameColor = Scheme.getColor(Scheme.THEME_GROUP);
+        rosterItemView.itemNameFont = Typeface.DEFAULT;
+        rosterItemView.itemName = g.getText();
+
+        Icon icGroup = g.getLeftIcon(null);
+        if (icGroup != null)
+            rosterItemView.itemFirstImage = icGroup.getImage();
+
+        Icon messIcon = ChatHistory.instance.getUnreadMessageIcon(g.getContacts());
+        if (!g.isExpanded() && messIcon != null)
+            rosterItemView.itemFourthImage = messIcon.getImage();
+    }
+
+    void populateFromContact(RosterItemView rosterItemView, Roster roster, Protocol p, Contact item) {
+        rosterItemView.setNull();
+        rosterItemView.itemNameColor = Scheme.getColor(item.getTextTheme());
+        rosterItemView.itemNameFont = item.hasChat() ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT;
+        rosterItemView.itemName = (item.subcontactsS() == 0) ?
+                item.getText() : item.getText() + " (" + item.subcontactsS() + ")";
+        if (General.showStatusLine) {
+            String statusMessage = roster.getStatusMessage(item);
+            rosterItemView.itemDescColor = Scheme.getColor(Scheme.THEME_CONTACT_STATUS);
+            rosterItemView.itemDesc = statusMessage;
+        }
+
+        Icon icStatus = item.getLeftIcon(p);
+        if (icStatus != null)
+            rosterItemView.itemFirstImage = icStatus.getImage();
+        if (item.isTyping()) {
+            rosterItemView.itemFirstImage = Message.msgIcons.iconAt(Message.ICON_TYPE).getImage();
+        } else {
+            Icon icMess = Message.msgIcons.iconAt(item.getUnreadMessageIcon());
+            if (icMess != null)
+                rosterItemView.itemFirstImage = icMess.getImage();
+        }
+
+        if (item.getXStatusIndex() != XStatusInfo.XSTATUS_NONE)
+            rosterItemView.itemSecondImage = p.getXStatusInfo().getIcon(item.getXStatusIndex()).getImage();
+
+        if (!item.isTemp()) {
+            Icon icAuth = item.authIcon.iconAt(0);
+            if (item.isAuth()) {
+                int privacyList = -1;
+                if (item.inIgnoreList()) {
+                    privacyList = 0;
+                } else if (item.inInvisibleList()) {
+                    privacyList = 1;
+                } else if (item.inVisibleList()) {
+                    privacyList = 2;
+                }
+                if (privacyList != -1)
+                    rosterItemView.itemThirdImage = item.serverListsIcons.iconAt(privacyList).getImage();
+            } else {
+                rosterItemView.itemThirdImage = icAuth.getImage();
+            }
+        }
+
+        Icon icClient = (null != p.clientInfo) ? p.clientInfo.getIcon(item.clientIndex) : null;
+        if (icClient != null && !General.hideIconsClient)
+            rosterItemView.itemFourthImage = icClient.getImage();
+
+        String id = item.getUserId();
+        if (Tracking.isTrackingEvent(id, Tracking.GLOBAL) == Tracking.TRUE)
+            rosterItemView.itemFifthImage = (BitmapDrawable) Tracking.getTrackIcon(id);
+    }
+
     @Override
     public View getView(int i, View convertView, ViewGroup viewGroup) {
         if (convertView == null) {
@@ -97,19 +174,20 @@ public class RosterAdapter extends BaseAdapter {
         }
         Protocol protocol = roster.getCurrentProtocol();
         TreeNode o = getItem(i);
+        RosterItemView rosterItemView = ((RosterItemView) convertView);
         if (o != null)
             if (type != Roster.ALL_CONTACTS) {
                 if (type != Roster.ACTIVE_CONTACTS)
                     if (o.isGroup()) {
-                        ((RosterItemView) convertView).populateFromGroup((Group) o);
+                        populateFromGroup(rosterItemView, (Group) o);
                     } else if (o.isContact()) {
-                        ((RosterItemView) convertView).populateFromContact(roster, protocol, (Contact) o);
+                        populateFromContact(rosterItemView, roster, protocol, (Contact) o);
                     }
             } else {
                 if (o.isGroup()) {
-                    ((RosterItemView) convertView).populateFromGroup((Group) o);
+                    populateFromGroup(rosterItemView, (Group) o);
                 } else if (o.isContact()) {
-                    ((RosterItemView) convertView).populateFromContact(roster, protocol, (Contact) o);
+                    populateFromContact(rosterItemView, roster, protocol, (Contact) o);
                 }
             }
         ((RosterItemView) convertView).repaint();

@@ -1,12 +1,10 @@
 package ru.sawim.text;
 
-import android.graphics.Color;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.ImageSpan;
-import android.text.style.StyleSpan;
 import android.util.Patterns;
 import protocol.Contact;
 import ru.sawim.SawimApplication;
@@ -28,53 +26,61 @@ public class TextFormatter {
 
     private Pattern juickPattern = Pattern.compile("(#[0-9]+(/[0-9]+)?)");
     private Pattern pstoPattern = Pattern.compile("(#[\\w]+(/[0-9]+)?)");
+    private Pattern smilesPattern;
     private static final Emotions smiles = Emotions.instance;
     private static TextFormatter instance;
 
-    public static TextFormatter getInstance() {
+    public static void init() {
         if (instance == null)
             instance = new TextFormatter();
+    }
+
+    public static TextFormatter getInstance() {
         return instance;
     }
 
-    private static final int linkColor = SawimApplication.getContext().getTheme().obtainStyledAttributes(new int[] {
-            android.R.attr.textColorLink,
-    }).getColor(0, -1);
-
-    public SpannableStringBuilder parsedText(final Contact contact, final String text) {
-        final SpannableStringBuilder parsedText = new SpannableStringBuilder(text);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                if (contact.getUserId().equals(JuickMenu.JUICK) || contact.getUserId().equals(JuickMenu.JUBO))
-                    getTextWithLinks(parsedText, linkColor, JuickMenu.MODE_JUICK);
-                else if (contact.getUserId().equals(JuickMenu.PSTO))
-                    getTextWithLinks(parsedText, linkColor, JuickMenu.MODE_PSTO);
-                else
-                    getTextWithLinks(parsedText, linkColor, -1);
-                detectEmotions(parsedText);
-            }
-        }).start();
-        return parsedText;
+    private TextFormatter() {
+        smilesPattern = compilePattern();
     }
 
-    public static void detectEmotions(SpannableStringBuilder builder) {
-        for (int index = 0; index < builder.length(); index++) {
-            int smileIndex = smiles.getSmileChars().indexOf(builder.charAt(index));
-            while (-1 != smileIndex) {
-                if (builder.toString().startsWith(smiles.getSmileText(smileIndex), index)
-                        && builder.toString().startsWith(" ", index - 1)) {
-                    int length = smiles.getSmileText(smileIndex).length();
-                    if (!isThereLinks(builder, new int[]{index, index + length})) {
-                        ImageSpan imageSpan = new ImageSpan(smiles.getSmileIcon(smileIndex).getImage());
-                        builder.setSpan(new ForegroundColorSpan(Color.BLUE), index, index + length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                        builder.setSpan(imageSpan, index, index + length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    }
-                    index += length - 1;
-                }
-                smileIndex = smiles.getSmileChars().indexOf(builder.charAt(index), smileIndex + 1);
+    private static final int linkColor = SawimApplication.getContext().getTheme()
+            .obtainStyledAttributes(new int[] {
+                    android.R.attr.textColorLink,
+            }).getColor(0, -1);
+
+    public CharSequence parsedText(final Contact contact, final CharSequence text) {
+        SpannableStringBuilder builder = new SpannableStringBuilder(text);
+        if (contact.getUserId().equals(JuickMenu.JUICK) || contact.getUserId().equals(JuickMenu.JUBO))
+            getTextWithLinks(builder, linkColor, JuickMenu.MODE_JUICK);
+        else if (contact.getUserId().equals(JuickMenu.PSTO))
+            getTextWithLinks(builder, linkColor, JuickMenu.MODE_PSTO);
+        else
+            getTextWithLinks(builder, linkColor, -1);
+        detectEmotions(text, builder);
+        return builder;
+    }
+
+    public CharSequence detectEmotions(CharSequence text, SpannableStringBuilder builder) {
+        Matcher matcher = smilesPattern.matcher(text);
+        while (matcher.find()) {
+            if (!isThereLinks(builder, new int[]{matcher.start(), matcher.end()})) {
+                builder.setSpan(new ImageSpan(smiles.getSmileIcon(smiles.buildSmileyToId().get(matcher.group())).getImage()),
+                        matcher.start(), matcher.end(),
+                        Spannable.SPAN_INCLUSIVE_INCLUSIVE);
             }
         }
+        return builder;
+    }
+
+    private Pattern compilePattern() {
+        StringBuilder patternString = new StringBuilder(smiles.getSmileTexts().length * 3);
+        patternString.append('(');
+        for (String s : smiles.getSmileTexts()) {
+            patternString.append(Pattern.quote(s));
+            patternString.append('|');
+        }
+        patternString.replace(patternString.length() - 1, patternString.length(), ")");
+        return Pattern.compile(patternString.toString());
     }
 
     private static boolean isThereLinks(Spannable spannable, int ... positions) {

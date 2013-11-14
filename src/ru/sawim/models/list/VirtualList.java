@@ -6,7 +6,7 @@ import android.view.MenuItem;
 import ru.sawim.view.VirtualListView;
 
 public class VirtualList {
-    protected VirtualListModel model;
+    private VirtualListModel model;
     private String caption;
     private static VirtualList instance;
     private OnVirtualListListener virtualListListener;

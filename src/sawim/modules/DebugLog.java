@@ -86,7 +86,7 @@ public final class DebugLog {
             text += String.format("\n%s.%s() %d", ste.getClassName(), ste.getMethodName(), ste.getLineNumber());
         }
         println(text);
-        //ExceptionHandler.reportOnlyHandler(SawimApplication.getInstance().getApplicationContext()).uncaughtException(null, e);
+        ExceptionHandler.reportOnlyHandler(SawimApplication.getInstance().getApplicationContext()).uncaughtException(null, e);
         e.printStackTrace();
     }
 

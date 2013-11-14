@@ -12,6 +12,7 @@ import protocol.net.TcpSocket;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.Vector;
 
 public final class Emotions {
@@ -21,7 +22,6 @@ public final class Emotions {
     private String[] selEmotionsWord;
     private String[] selEmotionsSmileNames;
 
-    private String smileChars;
     private int[] textCorrIndexes;
     public String[] textCorrWords;
     private boolean isAniSmiles = false;
@@ -225,15 +225,11 @@ public final class Emotions {
         size = textCorr.size();
         textCorrWords   = new String[size];
         textCorrIndexes = new int[size];
-        StringBuffer fisrtChars = new StringBuffer(textCorr.size());
         for (int i = 0; i < size; ++i) {
             Object[] data = (Object[])textCorr.elementAt(i);
             textCorrWords[i]   = (String)data[0];
             textCorrIndexes[i] = ((Integer)data[1]).intValue();
-
-            fisrtChars.append(textCorrWords[i].charAt(0));
         }
-        this.smileChars = fisrtChars.toString();
 
         DebugLog.println("Emotions used (full): "+(mem - Runtime.getRuntime().freeMemory()));
         selEmotions.removeAllElements();
@@ -260,16 +256,20 @@ public final class Emotions {
         return value;
     }
 
-    public String getSmileChars() {
-        return smileChars;
+    public HashMap<String, Integer> buildSmileyToId() {
+        HashMap<String, Integer> smileyToId = new HashMap<String, Integer>(textCorrWords.length);
+        for (int i = 0; i < textCorrWords.length; i++) {
+            smileyToId.put(textCorrWords[i], i);
+        }
+        return smileyToId;
     }
 
     public Icon getSmileIcon(int smileIndex) {
         return images.iconAt(textCorrIndexes[smileIndex]);
     }
 
-    public String getSmileText(int smileIndex) {
-        return textCorrWords[smileIndex];
+    public String[] getSmileTexts() {
+        return textCorrWords;
     }
 
     public String getSmileCode(int smileIndex) {

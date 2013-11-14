@@ -4,6 +4,7 @@ import DrawControls.icons.ImageList;
 import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import sawim.Options;
 import sawim.Updater;
@@ -38,7 +39,7 @@ public class General {
     public static final ImageList groupRightIcons = ImageList.createImageList("/control_right.png");
     private static General instance;
     public static boolean returnFromAcc = false;
-    public static FragmentActivity currentActivity;
+    public static ActionBarActivity currentActivity;
     public static String message = "";
     private boolean paused = true;
     private static int fontSize;

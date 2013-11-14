@@ -1,10 +1,9 @@
 package sawim.chat;
 
-import android.text.SpannableStringBuilder;
 import protocol.Contact;
 import ru.sawim.General;
 import ru.sawim.Scheme;
-import ru.sawim.models.MessageItemView;
+import ru.sawim.widget.chat.MessageItemView;
 import ru.sawim.text.TextFormatter;
 import sawim.comm.Util;
 
@@ -19,7 +18,7 @@ public final class MessData {
     private final boolean confHighLight;
     private boolean isHighLight;
 
-    private SpannableStringBuilder parsedText;
+    private CharSequence parsedText;
     public MessageItemView messView;
 
     public static final short URLS = 1;
@@ -56,7 +55,7 @@ public final class MessData {
         return text;
     }
 
-    public SpannableStringBuilder parsedText() {
+    public CharSequence parsedText() {
         return parsedText;
     }
 

@@ -41,7 +41,6 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
     public void show(final ChatView chatView, ListView nickList) {
         final FragmentActivity activity = General.currentActivity;
         usersAdapter.init(activity, (Jabber) protocol, jabberServiceContact);
-        nickList.setBackgroundColor(Scheme.getInversColor(Scheme.THEME_BACKGROUND));
         nickList.setAdapter(usersAdapter);
         nickList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -50,6 +49,7 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
                 activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        chatView.hasBack();
                         if (o instanceof JabberContact.SubContact) {
                             JabberContact.SubContact c = (JabberContact.SubContact) o;
                             chatView.insert(c.resource + ", ");
@@ -116,7 +116,7 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
                         menu.add(JLocale.getString("to_owner"), ContactMenu.COMMAND_OWNER);
                     }
                 }
-				AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(activity, R.style.AlertDialogCustom));
+				AlertDialog.Builder builder = new AlertDialog.Builder(activity);
                 builder.setCancelable(true);
                 builder.setTitle(jabberServiceContact.getName());
                 builder.setAdapter(menu, new DialogInterface.OnClickListener() {

@@ -11,7 +11,7 @@ public class Scheme {
 
     public static final byte THEME_BACKGROUND           = 0;
     public static final byte THEME_TEXT                 = 1;
-    public static final byte THEME_CAP_BACKGROUND       = 2;
+    public static final byte THEME_MARKED_BACKGROUND    = 2;
     public static final byte THEME_CAP_TEXT             = 3;
     public static final byte THEME_PARAM_VALUE          = 4;
 

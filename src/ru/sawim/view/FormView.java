@@ -59,6 +59,7 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
         buildList(listLayout);
         cancelButton = (Button) getActivity().findViewById(R.id.data_form_cancel);
         cancelButton.setOnClickListener(this);
+        getActivity().supportInvalidateOptionsMenu();
     }
 
     @Override

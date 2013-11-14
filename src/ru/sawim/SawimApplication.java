@@ -14,6 +14,7 @@ import org.microemu.util.AndroidRecordStoreManager;
 import protocol.Profile;
 import ru.sawim.service.SawimService;
 import ru.sawim.service.SawimServiceConnection;
+import ru.sawim.text.TextFormatter;
 import sawim.Options;
 import sawim.chat.ChatHistory;
 import sawim.roster.Roster;
@@ -51,6 +52,7 @@ public class SawimApplication extends Application {
         super.onCreate();
         MIDletInit();
         new General().startApp();
+        TextFormatter.init();
         new Thread(new Runnable() {
             @Override
             public void run() {

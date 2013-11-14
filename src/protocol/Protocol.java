@@ -941,7 +941,7 @@ abstract public class Protocol {
         }
         if (chat.typeNewMessageIcon != chat.getNewMessageIcon() || chat.isVisibleChat()) {
             chat.typeNewMessageIcon = chat.getNewMessageIcon();
-            if (contact != Roster.getInstance().getCurrentContact()) {
+            if (contact != Roster.getInstance().getCurrentContact() || !chat.isVisibleChat()) {
                 SawimApplication.getInstance().updateAppIcon();
             }
             if (getRoster().getUpdateChatListener() != null)

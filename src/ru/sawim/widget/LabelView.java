@@ -6,7 +6,6 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 
@@ -19,12 +18,10 @@ import android.view.View;
  */
 
 public class LabelView extends View {
-    private Paint mTextPaint;
-    private String mText = "";
-    private int mAscent;
-    private boolean isCenter = false;
-    private int textWidth = 1;
-    private int textHeight = 1;
+    private Paint textPaint;
+    private static Resources resources;
+    private String text = "";
+    private int ascent;
 
     public LabelView(Context context) {
         super(context);
@@ -42,11 +39,15 @@ public class LabelView extends View {
     }
 
     private final void initLabelView() {
-        mTextPaint = new Paint();
-        mTextPaint.setAntiAlias(true);
-        mTextPaint.setTextSize(16);
-        mTextPaint.setColor(0xFF000000);
         setPadding(3, 3, 3, 3);
+        if (resources == null) {
+            Context c = getContext();
+            resources = (c == null) ? Resources.getSystem() : c.getResources();
+        }
+        textPaint = new Paint();
+        textPaint.setAntiAlias(true);
+        textPaint.setTextSize(16);
+        textPaint.setColor(0xFF000000);
     }
 
     public void repaint() {
@@ -55,27 +56,21 @@ public class LabelView extends View {
     }
 
     public void setText(String text) {
-        mText = text;
+        this.text = text;
         repaint();
     }
 
     public void setTextSize(int size) {
-        Context c = getContext();
-        Resources r = (c == null) ? Resources.getSystem() : c.getResources();
-        mTextPaint.setTextSize(TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_SP, size, r.getDisplayMetrics()));
+        textPaint.setTextSize(TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_SP, size, resources.getDisplayMetrics()));
     }
 
     public void setTextColor(int color) {
-        mTextPaint.setColor(color);
+        textPaint.setColor(color);
     }
 
     public void setTypeface(Typeface typeface) {
-        mTextPaint.setTypeface(typeface);
-    }
-
-    public void setCenter() {
-        isCenter = true;
+        textPaint.setTypeface(typeface);
     }
 
     @Override
@@ -92,7 +87,7 @@ public class LabelView extends View {
         if (specMode == MeasureSpec.EXACTLY) {
             result = specSize;
         } else {
-            textWidth = (int) mTextPaint.measureText(mText);
+            int textWidth = (int) textPaint.measureText(text);
             result = textWidth + getPaddingLeft()
                     + getPaddingRight();
             if (specMode == MeasureSpec.AT_MOST) {
@@ -107,11 +102,11 @@ public class LabelView extends View {
         int specMode = MeasureSpec.getMode(measureSpec);
         int specSize = MeasureSpec.getSize(measureSpec);
 
-        mAscent = (int) mTextPaint.ascent();
+        ascent = (int) textPaint.ascent();
         if (specMode == MeasureSpec.EXACTLY) {
             result = specSize;
         } else {
-            textHeight = (int) (-mAscent + mTextPaint.descent());
+            int textHeight = (int) (-ascent + textPaint.descent());
             result = textHeight + getPaddingTop()
                     + getPaddingBottom();
             if (specMode == MeasureSpec.AT_MOST) {
@@ -121,18 +116,10 @@ public class LabelView extends View {
         return result;
     }
 
-    public int getTextX() {
-        return isCenter ? (int) (getPaddingLeft() + getMeasuredWidth() / 2 - (mTextPaint.measureText(mText) + mTextPaint.getTextSize()) / 2) : getPaddingLeft();
-    }
-
-    public int getTextY() {
-        return isCenter ? getMeasuredHeight() / 2 + (getPaddingTop() - mAscent) / 2 - getPaddingBottom() : getPaddingTop() - mAscent;
-    }
-
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        if (mText != null)
-            canvas.drawText(mText, getTextX(), getTextY(), mTextPaint);
+        if (text != null)
+            canvas.drawText(text, getPaddingLeft(), getPaddingTop() - ascent, textPaint);
     }
 }

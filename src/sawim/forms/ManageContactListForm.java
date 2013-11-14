@@ -109,7 +109,7 @@ public final class ManageContactListForm implements FormListener, TextBoxView.Te
             menu.add(SawimApplication.getContext().getString(R.string.del_group), DEL_GROUP);
         }
 
-		AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(a, R.style.AlertDialogCustom));
+		AlertDialog.Builder builder = new AlertDialog.Builder(a);
         builder.setCancelable(true);
         builder.setTitle(SawimApplication.getContext().getString(R.string.manage_contact_list));
         builder.setAdapter(menu, new DialogInterface.OnClickListener() {
