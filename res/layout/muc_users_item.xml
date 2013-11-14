@@ -3,12 +3,13 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="10dp" android:paddingBottom="10dp">
+        android:padding="10dp">
     <ImageView
             android:id="@+id/status_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
+            android:padding="5dp"
             android:layout_centerVertical="true"/>
     <ImageView
             android:id="@+id/affilation_image"
@@ -16,6 +17,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_toRightOf="@+id/status_image" android:layout_alignTop="@+id/status_image"
+            android:padding="5dp"
             android:layout_centerVertical="true"/>
     <TextView
             android:id="@+id/item_name"
@@ -24,15 +26,17 @@
             android:scrollHorizontally="false"
             android:text="TextView"
             android:textSize="20sp"
-
+            android:padding="5dp"
             android:layout_toRightOf="@+id/affilation_image"
-            android:layout_centerVertical="true" android:gravity="center_vertical"
+            android:layout_centerVertical="true"
+            android:gravity="center_vertical"
             android:layout_toLeftOf="@+id/client_image"/>
     <ImageView
             android:id="@+id/client_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical|right"
-            android:layout_alignParentRight="true" android:layout_centerVertical="true"
-            />
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:padding="5dp"/>
 </RelativeLayout>

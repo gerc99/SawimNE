@@ -5,7 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.widget.*;
 import ru.sawim.widget.MyTextView;
-import ru.sawim.widget.chat.MessageTitleItemView;
+import ru.sawim.widget.Util;
 
 /**
  * Created with IntelliJ IDEA.
@@ -23,7 +23,8 @@ public class MessageItemView extends LinearLayout {
 
     public MessageItemView(Context context, boolean isAddTitleView) {
         super(context);
-        setPadding(5, 5, 5, 5);
+        int padding = Util.dipToPixels(context, 5);
+        setPadding(padding, padding, padding, padding);
         setOrientation(VERTICAL);
         titleItemView = new MessageTitleItemView(context);
         msgText = new MyTextView(context);

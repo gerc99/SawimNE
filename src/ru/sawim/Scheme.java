@@ -30,6 +30,7 @@ public class Scheme {
     public static final byte THEME_GROUP                = 14;
     public static final byte THEME_CHAT_HIGHLIGHT_MSG   = 15;
     public static final byte THEME_CONTACT_STATUS       = 16;
+    public static final byte THEME_PROTOCOL_BACKGROUND  = 17;
 
     public static final byte FONT_STYLE_PLAIN = 0;
     public static final byte FONT_STYLE_BOLD = 1;
@@ -57,7 +58,8 @@ public class Scheme {
             0x000000,
             0x000000,
             0xA00000,
-            0x999999};
+            0x99,
+            0xAAAAAA};
 
     private static int[] currentTheme = new int[baseTheme.length];
     private static int[][] themeColors;

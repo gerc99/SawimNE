@@ -100,8 +100,11 @@ public class MessagesAdapter extends BaseAdapter {
         item.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
         item.msgText.setOnTextLinkClickListener(textLinkClickListener);
         item.msgText.setTypeface(Typeface.DEFAULT);
-        if (mData.isMarked() && isMultiQuote)
+        item.setBackgroundColor(0);
+        if (mData.isMarked() && isMultiQuote) {
             item.msgText.setTypeface(Typeface.DEFAULT_BOLD);
+            item.setBackgroundColor(Scheme.getColor(Scheme.THEME_MARKED_BACKGROUND));
+        }
 
         if (mData.isMe() || mData.isPresence()) {
             item.msgText.setTextSize(General.getFontSize() - 2);
@@ -133,6 +136,7 @@ public class MessagesAdapter extends BaseAdapter {
         }
         item.initDivider(Scheme.getColor(Scheme.THEME_TEXT));
         item.setShowDivider(position == index && index > 0 && position != getCount());
+        item.titleItemView.repaint();
         return item;
     }
 

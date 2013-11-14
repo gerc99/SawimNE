@@ -92,23 +92,7 @@ public class StartWindowView extends Fragment {
         return v;
     }
 
-    private void addAccountAuthenticator(String id) {
-        Account account = new Account(id, SawimApplication.getContext().getString(R.string.app_name));
-        AccountManager am = AccountManager.get(getActivity());
-        boolean accountCreated = am.addAccountExplicitly(account, null, null);
-        Bundle extras = getActivity().getIntent().getExtras();
-        if (extras != null && accountCreated) {
-            AccountAuthenticatorResponse response = extras.getParcelable(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE);
-            Bundle result = new Bundle();
-            result.putString(AccountManager.KEY_ACCOUNT_NAME, id);
-            result.putString(AccountManager.KEY_ACCOUNT_TYPE, SawimApplication.getContext().getString(R.string.app_name));
-            if (response != null)
-                response.onResult(result);
-        }
-    }
-
     public void addAccount(int num, Profile acc) {
-        addAccountAuthenticator(acc.userId);
         Options.setAccount(num, acc);
         Roster.getInstance().setCurrentProtocol();
     }

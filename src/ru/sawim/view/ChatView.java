@@ -31,6 +31,7 @@ import ru.sawim.R;
 import ru.sawim.models.ChatsSpinnerAdapter;
 import ru.sawim.models.MessagesAdapter;
 import ru.sawim.widget.MyListView;
+import ru.sawim.widget.Util;
 import ru.sawim.widget.chat.ChatBarView;
 import ru.sawim.widget.chat.ChatInputBarView;
 import ru.sawim.widget.chat.ChatListsView;
@@ -160,7 +161,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
             nickList = new MyListView(getActivity());
         if (!isTablet) {
             drawerLayout = new DrawerLayout(getActivity());
-            DrawerLayout.LayoutParams nickListLP = new DrawerLayout.LayoutParams(240, DrawerLayout.LayoutParams.MATCH_PARENT);
+            DrawerLayout.LayoutParams nickListLP = new DrawerLayout.LayoutParams(Util.dipToPixels(getActivity(), 240), DrawerLayout.LayoutParams.MATCH_PARENT);
             DrawerLayout.LayoutParams drawerLayoutLP = new DrawerLayout.LayoutParams(DrawerLayout.LayoutParams.MATCH_PARENT, DrawerLayout.LayoutParams.MATCH_PARENT);
             drawerLayout.setDrawerShadow(R.drawable.drawer_shadow, Gravity.START);
             drawerLayout.setScrimColor(Scheme.isBlack() ? 0x55FFFFFF : 0x99000000);

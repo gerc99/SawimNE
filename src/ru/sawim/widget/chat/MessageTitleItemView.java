@@ -9,7 +9,9 @@ import android.graphics.drawable.BitmapDrawable;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
+import ru.sawim.General;
 import ru.sawim.Scheme;
+import ru.sawim.widget.Util;
 
 /**
  * Created with IntelliJ IDEA.
@@ -39,7 +41,8 @@ public class MessageTitleItemView extends View {
 
     public MessageTitleItemView(Context context) {
         super(context);
-        setPadding(5, 0, 5, 0);
+        int padding = Util.dipToPixels(context, 5);
+        setPadding(padding, padding, padding, padding);
         if (resources == null) {
             Context c = getContext();
             resources = (c == null) ? Resources.getSystem() : c.getResources();
@@ -47,7 +50,7 @@ public class MessageTitleItemView extends View {
         if (textPaint == null) {
             textPaint = new Paint();
             textPaint.setAntiAlias(true);
-            textPaint.setTextSize(16);
+            textPaint.setTextSize(General.getFontSize());
             textPaint.setColor(Scheme.getColor(Scheme.THEME_TEXT));
         }
     }
@@ -91,14 +94,15 @@ public class MessageTitleItemView extends View {
     }
 
     private void computeCoordinates(int viewWidth, int viewHeight) {
-        nickX = msgImage == null ? getPaddingLeft() : msgImage.getBitmap().getWidth() + getPaddingLeft() + getPaddingRight();
+        int y = viewHeight / 2;
+        nickX = msgImage == null ? getPaddingLeft() : msgImage.getBitmap().getWidth() + getPaddingRight();
         if (msgTimeText != null) {
             msgTimeWidth = (int) textPaint.measureText(msgTimeText);
             msgTimeX = viewWidth - msgTimeWidth - getPaddingRight();
         } else {
             msgTimeX = viewWidth - getPaddingRight();
         }
-        textY = viewHeight / 2 + -ascent / 2;
+        textY = y + -ascent / 2;
     }
 
     public void setMsgImage(BitmapDrawable msgImage) {
@@ -119,11 +123,16 @@ public class MessageTitleItemView extends View {
         this.msgTimeSize = msgTimeSize;
     }
 
+    public void repaint() {
+        requestLayout();
+        invalidate();
+    }
+
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         if (msgImage != null)
-            canvas.drawBitmap(msgImage.getBitmap(), getPaddingLeft(), getPaddingTop(), null);
+            canvas.drawBitmap(msgImage.getBitmap(), 0, 0, null);
         if (nickText != null) {
             textPaint.setColor(nickColor);
             setTextSize(nickSize);

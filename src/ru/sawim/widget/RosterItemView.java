@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import ru.sawim.General;
@@ -45,7 +46,8 @@ public class RosterItemView extends View {
 
     public RosterItemView(Context context) {
         super(context);
-        setPadding(15, 15, 15, 15);
+        int padding = Util.dipToPixels(context, 15);
+        setPadding(padding, padding, padding, padding);
         if (resources == null) {
             Context c = getContext();
             resources = (c == null) ? Resources.getSystem() : c.getResources();
@@ -53,7 +55,7 @@ public class RosterItemView extends View {
         if (textPaint == null) {
             textPaint = new Paint();
             textPaint.setAntiAlias(true);
-            textPaint.setTextSize(16);
+            textPaint.setTextSize(General.getFontSize());
             textPaint.setColor(Scheme.getColor(Scheme.THEME_TEXT));
         }
     }
@@ -96,17 +98,22 @@ public class RosterItemView extends View {
         int specMode = MeasureSpec.getMode(measureSpec);
         int specSize = MeasureSpec.getSize(measureSpec);
 
-        int ascent = (int) textPaint.ascent() * 2;
-        int descent = (int) textPaint.descent() * 2;
-        if (itemName == null && itemDesc != null) {
-            ascent = (int) textPaint.ascent();
-            descent = (int) textPaint.descent();
+        int ascent = (int) textPaint.ascent();
+        int descent = (int) textPaint.descent();
+        int bottomPadding = getPaddingBottom();
+        int topPadding = getPaddingTop();
+        if (itemName != null && itemDesc != null) {
+            ascent *= 2;
+            descent *= 2;
+        } else if (itemName == null && itemDesc != null) {
+            topPadding = 0;
+            bottomPadding = 0;
         }
         if (specMode == MeasureSpec.EXACTLY) {
             result = specSize;
         } else {
-            result = (-ascent + descent) + getPaddingTop()
-                    + getPaddingBottom();
+            result = (-ascent + descent) + topPadding
+                    + bottomPadding;
             if (specMode == MeasureSpec.AT_MOST) {
                 result = Math.min(result, specSize);
             }
@@ -129,14 +136,17 @@ public class RosterItemView extends View {
         int y = viewHeight / 2;
         int ascent = (int) textPaint.ascent();
         int descent = (int) textPaint.descent();
-
         textX = leftPadding;
         if (itemDesc != null) {
             lineOneY = topPadding - ascent;
         } else {
-            lineOneY = y + -ascent / 2;
+            lineOneY = y + -ascent / 2 - descent;
         }
-        lineTwoY = viewHeight - descent - bottomPadding;
+        if (itemName != null && itemDesc != null) {
+            lineTwoY = viewHeight - descent - bottomPadding;
+        } else {
+            lineTwoY = y + -ascent / 2 - descent;
+        }
 
         firstImageX = leftPadding;
         if (itemFirstImage != null) {

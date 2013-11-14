@@ -124,7 +124,7 @@ public class ChatsAdapter extends BaseAdapter {
         Object o = getItem(position);
         if (o instanceof String) {
             rosterItemView.addLayer((String) o);
-            rosterItemView.setBackgroundColor(Scheme.getInversColor(Scheme.THEME_BACKGROUND));
+            rosterItemView.setBackgroundColor(Scheme.getColor(Scheme.THEME_PROTOCOL_BACKGROUND));
         }
         if (o instanceof Chat) {
             Chat chat = (Chat) o;
