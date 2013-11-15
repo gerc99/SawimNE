@@ -100,7 +100,7 @@ public final class MicroBlog implements TextBoxView.TextBoxListener {
                         break;
 
                     case MENU_COPY:
-                        Clipboard.setClipBoardText(model.elements.get(listItem).getLabel() + "\n" + model.elements.get(listItem).getDescSpan().toString());
+                        Clipboard.setClipBoardText(model.elements.get(listItem).getLabel() + "\n" + model.elements.get(listItem).getDescStr());
                         break;
 
                     /*case MENU_USER_MENU:
@@ -149,7 +149,7 @@ public final class MicroBlog implements TextBoxView.TextBoxListener {
             label = " (reply)";
         }
         par.addLabel(label + " " + date + ":", Scheme.THEME_MAGIC_EYE_NUMBER, Scheme.FONT_STYLE_PLAIN);
-        par.addTextWithSmiles(post, Scheme.THEME_MAGIC_EYE_TEXT, Scheme.FONT_STYLE_PLAIN);
+        par.addDescription(post, Scheme.THEME_MAGIC_EYE_TEXT, Scheme.FONT_STYLE_PLAIN);
 
         model.addPar(par);
         if (list != null)

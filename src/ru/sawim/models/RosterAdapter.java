@@ -8,7 +8,7 @@ import android.widget.*;
 import protocol.XStatusInfo;
 import ru.sawim.General;
 import ru.sawim.Scheme;
-import ru.sawim.widget.RosterItemView;
+import ru.sawim.widget.roster.RosterItemView;
 import sawim.chat.ChatHistory;
 import sawim.chat.message.Message;
 import sawim.comm.Util;

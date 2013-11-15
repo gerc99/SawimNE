@@ -8,6 +8,7 @@ import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
+import ru.sawim.General;
 
 /**
  * Created with IntelliJ IDEA.
@@ -19,7 +20,6 @@ import android.view.View;
 
 public class LabelView extends View {
     private Paint textPaint;
-    private static Resources resources;
     private String text = "";
     private int ascent;
 
@@ -40,10 +40,6 @@ public class LabelView extends View {
 
     private final void initLabelView() {
         setPadding(3, 3, 3, 3);
-        if (resources == null) {
-            Context c = getContext();
-            resources = (c == null) ? Resources.getSystem() : c.getResources();
-        }
         textPaint = new Paint();
         textPaint.setAntiAlias(true);
         textPaint.setTextSize(16);
@@ -62,7 +58,7 @@ public class LabelView extends View {
 
     public void setTextSize(int size) {
         textPaint.setTextSize(TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_SP, size, resources.getDisplayMetrics()));
+                TypedValue.COMPLEX_UNIT_SP, size, General.getResources(getContext()).getDisplayMetrics()));
     }
 
     public void setTextColor(int color) {

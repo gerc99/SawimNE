@@ -50,12 +50,12 @@ public class TextFormatter {
 
     public CharSequence parsedText(final Contact contact, final CharSequence text) {
         SpannableStringBuilder builder = new SpannableStringBuilder(text);
-        if (contact.getUserId().equals(JuickMenu.JUICK) || contact.getUserId().equals(JuickMenu.JUBO))
-            getTextWithLinks(builder, linkColor, JuickMenu.MODE_JUICK);
-        else if (contact.getUserId().equals(JuickMenu.PSTO))
-            getTextWithLinks(builder, linkColor, JuickMenu.MODE_PSTO);
-        else
-            getTextWithLinks(builder, linkColor, -1);
+        if (contact != null)
+            if (contact.getUserId().equals(JuickMenu.JUICK) || contact.getUserId().equals(JuickMenu.JUBO))
+                getTextWithLinks(builder, linkColor, JuickMenu.MODE_JUICK);
+            else if (contact.getUserId().equals(JuickMenu.PSTO))
+                getTextWithLinks(builder, linkColor, JuickMenu.MODE_PSTO);
+        getTextWithLinks(builder, linkColor, -1);
         detectEmotions(text, builder);
         return builder;
     }

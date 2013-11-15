@@ -542,7 +542,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
         General.currentActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (contact.isPresence() == (byte) 1)
+                if (contact != null && contact.isPresence() == (byte) 1)
                     if (adapter != null)
                         adapter.refreshList(chat.getMessData());
                 if (mucUsersView != null)

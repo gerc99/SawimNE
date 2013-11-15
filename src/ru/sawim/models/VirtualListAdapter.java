@@ -2,6 +2,7 @@ package ru.sawim.models;
 
 import android.content.Context;
 import android.text.util.Linkify;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.models.list.VirtualListItem;
 import ru.sawim.Scheme;
+import ru.sawim.text.TextLinkClickListener;
 import ru.sawim.widget.MyTextView;
 
 import java.util.List;
@@ -70,24 +72,18 @@ public class VirtualListAdapter extends BaseAdapter {
             holder = new ViewHolder();
             holder.descriptionLayout = (LinearLayout) convertView.findViewById(R.id.descriptionLayout);
             holder.labelView = (TextView) convertView.findViewById(R.id.label);
-            holder.descView = (TextView) holder.descriptionLayout.findViewById(R.id.description);
+            holder.descView = (MyTextView) holder.descriptionLayout.findViewById(R.id.description);
             holder.imageView = (ImageView) holder.descriptionLayout.findViewById(R.id.imageView);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
         if (element == null) return convertView;
+        ((ViewGroup)convertView).setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
 
         holder.labelView.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
         holder.descView.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
-        /*if (element.isHasLinks())
-            holder.descView.setOnTextLinkClickListener(new MyTextView.TextLinkClickListener() {
-                @Override
-                public void onTextLinkClick(View textView, String clickedString, boolean isLongTap) {
-                    if (clickedString.length() == 0) return;
-
-                }
-            }); */
+        holder.descView.setOnTextLinkClickListener(new TextLinkClickListener(null, ""));
 
         holder.labelView.setVisibility(TextView.GONE);
         holder.descView.setVisibility(TextView.GONE);
@@ -118,12 +114,6 @@ public class VirtualListAdapter extends BaseAdapter {
             }
             holder.descView.setTextSize(General.getFontSize());
             holder.descView.setText(element.getDescStr());
-        } else {
-            if (element.getDescSpan() != null) {
-                holder.descView.setVisibility(TextView.VISIBLE);
-                holder.descView.setTextSize(General.getFontSize());
-                holder.descView.setText(element.getDescSpan());
-            }
         }
         if (element.getImage() != null) {
             holder.imageView.setVisibility(ImageView.VISIBLE);
@@ -141,7 +131,7 @@ public class VirtualListAdapter extends BaseAdapter {
     private static class ViewHolder {
         LinearLayout descriptionLayout;
         TextView labelView;
-        TextView descView;
+        MyTextView descView;
         ImageView imageView;
     }
 }

@@ -14,6 +14,7 @@ import android.util.Log;
 import ru.sawim.SawimApplication;
 import ru.sawim.activities.AccountsListActivity;
 import ru.sawim.widget.IconTabPageIndicator;
+import ru.sawim.widget.roster.RosterViewRoot;
 import sawim.Options;
 import sawim.OptionsForm;
 import sawim.forms.ManageContactListForm;
@@ -72,9 +73,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     private RosterViewRoot rosterViewLayout;
     private ProgressBar progressBar;
     private ViewPager viewPager;
-    private ViewPager.LayoutParams viewPagerLayoutParams;
-    private PagerTitleStrip indicator;
-    private ArrayList<BaseAdapter> adaptersPages = new ArrayList<BaseAdapter>();
+    private ArrayList<BaseAdapter> adaptersPages;
     private CustomPagerAdapter pagerAdapter;
     private Roster roster;
     private AdapterView.AdapterContextMenuInfo contextMenuInfo;
@@ -84,7 +83,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         super.onCreate(savedInstanceState);
         final FragmentActivity activity = getActivity();
         roster = Roster.getInstance();
-        adaptersPages.clear();
+        adaptersPages = new ArrayList<BaseAdapter>();
         MyListView allListView = new MyListView(activity);
         MyListView onlineListView = new MyListView(activity);
         MyListView activeListView = new MyListView(activity);
@@ -129,6 +128,9 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
 
         progressBar = new ProgressBar(activity, null, android.R.attr.progressBarStyleHorizontal);
         progressBar.setMax(100);
+        LinearLayout.LayoutParams ProgressBarLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        ProgressBarLP.setMargins(30, 0, 30, 1);
+        progressBar.setLayoutParams(ProgressBarLP);
 
         viewPager = new ViewPager(activity);
         viewPager.setAnimationCacheEnabled(false);
@@ -147,24 +149,13 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
             public void onPageScrollStateChanged(int state) {
             }
         });
-        indicator = new PagerTitleStrip(activity);
-        viewPagerLayoutParams = new ViewPager.LayoutParams();
+        PagerTitleStrip indicator = new PagerTitleStrip(activity);
+        ViewPager.LayoutParams viewPagerLayoutParams = new ViewPager.LayoutParams();
         viewPagerLayoutParams.height = ViewPager.LayoutParams.WRAP_CONTENT;
         viewPagerLayoutParams.width = ViewPager.LayoutParams.FILL_PARENT;
         viewPagerLayoutParams.gravity = Gravity.TOP;
+        viewPager.setLayoutParams(viewPagerLayoutParams);
         viewPager.addView(indicator, viewPagerLayoutParams);
-    }
-
-    private class RosterViewRoot extends LinearLayout {
-
-        public RosterViewRoot(Context context) {
-            super(context);
-
-            LinearLayout.LayoutParams ProgressBarLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            ProgressBarLP.setMargins(30, 0, 30, 1);
-            addViewInLayout(progressBar, 0, ProgressBarLP, true);
-            addViewInLayout(viewPager, 1, viewPagerLayoutParams, true);
-        }
     }
 
     @Override
@@ -172,17 +163,27 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
                              Bundle savedInstanceState) {
         isTablet = getActivity().findViewById(R.id.fragment_container) == null;
         if (rosterViewLayout == null)
-            rosterViewLayout = new RosterViewRoot(getActivity());
+            rosterViewLayout = new RosterViewRoot(getActivity(), progressBar, viewPager);
         else
             ((ViewGroup)rosterViewLayout.getParent()).removeView(rosterViewLayout);
-        rosterViewLayout.setOrientation(LinearLayout.VERTICAL);
-        rosterViewLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.FILL_PARENT));
-        if (!Scheme.isSystemBackground())
-            rosterViewLayout.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
 
         viewPager.setAdapter(pagerAdapter);
         viewPager.setCurrentItem(roster.getCurrPage());
         return rosterViewLayout;
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        barLinearLayout = null;
+        horizontalScrollView = null;
+        rosterViewLayout = null;
+        progressBar = null;
+        viewPager = null;
+        adaptersPages = null;
+        pagerAdapter = null;
+        roster = null;
+        contextMenuInfo = null;
     }
 
     @Override

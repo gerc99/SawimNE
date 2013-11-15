@@ -19,14 +19,12 @@ import ru.sawim.text.TextFormatter;
 public class VirtualListItem {
     private int marginLeft = 0;
     private Drawable image;
-    private String label = null;
-    private String descStr = null;
-    private SpannableStringBuilder descSpan = null;
+    private CharSequence label = null;
+    private CharSequence descStr = null;
     private byte themeTextLabel = -1;
     private byte themeTextDesc = -1;
     private byte font;
     private boolean itemSelectable;
-    private boolean hasLinks;
     private OnGroupListListener groupListListener;
     public boolean opened = false;
 
@@ -34,26 +32,26 @@ public class VirtualListItem {
         this.itemSelectable = itemSelectable;
     }
 
-    public void addLabel(String text, byte themeText, byte font) {
+    public void addLabel(CharSequence text, byte themeText, byte font) {
         label = text;
         this.themeTextLabel = themeText;
         this.font = font;
     }
 
-    public void addLabel(int marginLeft, String text, byte themeText, byte font) {
+    public void addLabel(int marginLeft, CharSequence text, byte themeText, byte font) {
         this.marginLeft = marginLeft;
         label = text;
         this.themeTextLabel = themeText;
         this.font = font;
     }
 
-    public void addDescription(String text, byte themeText, byte font) {
+    public void addDescription(CharSequence text, byte themeText, byte font) {
         descStr = text;
         this.themeTextDesc = themeText;
         this.font = font;
     }
 
-    public void addDescription(int marginLeft, String text, byte themeText, byte font) {
+    public void addDescription(int marginLeft, CharSequence text, byte themeText, byte font) {
         this.marginLeft = marginLeft;
         descStr = text;
         this.themeTextDesc = themeText;
@@ -64,29 +62,18 @@ public class VirtualListItem {
         return groupListListener;
     }
 
-    public void addGroup(int marginLeft, String text, byte themeText, byte font, OnGroupListListener groupListListener) {
+    public void addGroup(int marginLeft, CharSequence text, byte themeText, byte font, OnGroupListListener groupListListener) {
         addImage(opened ? General.groupDownIcon.iconAt(0).getImage() : General.groupRightIcons.iconAt(0).getImage());
         addDescription(marginLeft, text, themeText, font);
         this.groupListListener = groupListListener;
     }
 
-    public void addTextWithSmiles(String text, byte themeText, byte font) {
-        descSpan = new SpannableStringBuilder(text);
-        TextFormatter.getInstance().detectEmotions(text, descSpan);
-        this.themeTextDesc = themeText;
-        this.font = font;
-    }
-
-    public String getLabel() {
+    public CharSequence getLabel() {
         return label;
     }
 
-    public String getDescStr() {
-        return descStr;
-    }
-
-    public Spannable getDescSpan() {
-        return descSpan;
+    public CharSequence getDescStr() {
+        return TextFormatter.getInstance().parsedText(null, descStr);
     }
 
     public byte getThemeTextLabel() {
@@ -123,14 +110,6 @@ public class VirtualListItem {
 
     public boolean isItemSelectable() {
         return itemSelectable;
-    }
-
-    public void setHasLinks(boolean hasLinks) {
-        this.hasLinks = hasLinks;
-    }
-
-    public boolean isHasLinks() {
-        return hasLinks;
     }
 
     public interface OnGroupListListener {

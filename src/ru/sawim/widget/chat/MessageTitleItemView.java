@@ -35,20 +35,15 @@ public class MessageTitleItemView extends View {
     private float msgTimeX;
     private int msgTimeWidth;
     private int textY;
-    private int ascent;
+    private int descent;
     private static Paint textPaint;
-    private static Resources resources;
 
     public MessageTitleItemView(Context context) {
         super(context);
         int padding = Util.dipToPixels(context, 5);
         setPadding(padding, padding, padding, padding);
-        if (resources == null) {
-            Context c = getContext();
-            resources = (c == null) ? Resources.getSystem() : c.getResources();
-        }
         if (textPaint == null) {
-            textPaint = new Paint();
+            textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
             textPaint.setAntiAlias(true);
             textPaint.setTextSize(General.getFontSize());
             textPaint.setColor(Scheme.getColor(Scheme.THEME_TEXT));
@@ -57,7 +52,7 @@ public class MessageTitleItemView extends View {
 
     private void setTextSize(int size) {
         textPaint.setTextSize(TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_SP, size, resources.getDisplayMetrics()));
+                TypedValue.COMPLEX_UNIT_SP, size, General.getResources(getContext()).getDisplayMetrics()));
     }
 
     @Override
@@ -71,8 +66,8 @@ public class MessageTitleItemView extends View {
         int result = 0;
         int specMode = MeasureSpec.getMode(measureSpec);
         int specSize = MeasureSpec.getSize(measureSpec);
-        ascent = (int) textPaint.ascent();
-        int descent = (int) textPaint.descent();
+        int ascent = (int) textPaint.ascent();
+        descent = (int) textPaint.descent();
         if (specMode == MeasureSpec.EXACTLY) {
             result = specSize;
         } else {
@@ -102,25 +97,25 @@ public class MessageTitleItemView extends View {
         } else {
             msgTimeX = viewWidth - getPaddingRight();
         }
-        textY = y + -ascent / 2;
+        textY = y + descent;
     }
 
     public void setMsgImage(BitmapDrawable msgImage) {
         this.msgImage = msgImage;
     }
 
-    public void setNick(String nickText, int nickColor, Typeface nickTypeface, int nickSize) {
-        this.nickText = nickText;
+    public void setNick(int nickColor, int nickSize, Typeface nickTypeface, String nickText) {
         this.nickColor = nickColor;
-        this.nickTypeface = nickTypeface;
         this.nickSize = nickSize;
+        this.nickTypeface = nickTypeface;
+        this.nickText = nickText;
     }
 
-    public void setMsgTime(String msgTimeText, int msgTimeColor, Typeface msgTimeTypeface, int msgTimeSize) {
-        this.msgTimeText = msgTimeText;
+    public void setMsgTime(int msgTimeColor, int msgTimeSize, Typeface msgTimeTypeface, String msgTimeText) {
         this.msgTimeColor = msgTimeColor;
-        this.msgTimeTypeface = msgTimeTypeface;
         this.msgTimeSize = msgTimeSize;
+        this.msgTimeTypeface = msgTimeTypeface;
+        this.msgTimeText = msgTimeText;
     }
 
     public void repaint() {

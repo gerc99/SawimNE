@@ -58,7 +58,7 @@ public class Scheme {
             0x000000,
             0x000000,
             0xA00000,
-            0x99,
+            0x777777,
             0xAAAAAA};
 
     private static int[] currentTheme = new int[baseTheme.length];

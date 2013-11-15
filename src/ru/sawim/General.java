@@ -2,6 +2,7 @@ package ru.sawim;
 
 import DrawControls.icons.ImageList;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.drawable.BitmapDrawable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.ActionBarActivity;
@@ -40,6 +41,7 @@ public class General {
     private static General instance;
     public static boolean returnFromAcc = false;
     public static ActionBarActivity currentActivity;
+    private static Resources resources;
     public static String message = "";
     private boolean paused = true;
     private static int fontSize;
@@ -163,5 +165,12 @@ public class General {
 
     public static int getFontSize() {
         return fontSize;
+    }
+
+    public static Resources getResources(Context c) {
+        if (resources == null) {
+            resources = (c == null) ? Resources.getSystem() : c.getResources();
+        }
+        return resources;
     }
 }

@@ -16,6 +16,7 @@ import android.widget.TextView;
 import protocol.Protocol;
 import ru.sawim.General;
 import ru.sawim.R;
+import ru.sawim.text.TextLinkClickListener;
 import ru.sawim.view.PictureView;
 import ru.sawim.widget.MyTextView;
 import ru.sawim.view.menu.JuickMenu;
@@ -89,16 +90,15 @@ public class MessagesAdapter extends BaseAdapter {
     @Override
     public View getView(int index, View row, ViewGroup viewGroup) {
         final MessData mData = items.get(index);
-        if (mData.messView == null) {
+        if (mData.messView == null)
             mData.messView = new MessageItemView(General.currentActivity, !(mData.isMe() || mData.isPresence()));
-        }
         MessageItemView item = mData.messView;
         CharSequence parsedText = mData.parsedText();
         String nick = mData.getNick();
         boolean incoming = mData.isIncoming();
 
         item.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
-        item.msgText.setOnTextLinkClickListener(textLinkClickListener);
+        item.msgText.setOnTextLinkClickListener(new TextLinkClickListener(currentProtocol, currentContact));
         item.msgText.setTypeface(Typeface.DEFAULT);
         item.setBackgroundColor(0);
         if (mData.isMarked() && isMultiQuote) {
@@ -123,11 +123,11 @@ public class MessagesAdapter extends BaseAdapter {
                 }
             }
 
-            item.titleItemView.setNick(nick, Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG),
-                    Typeface.DEFAULT_BOLD, General.getFontSize());
+            item.titleItemView.setNick(Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG),
+                    General.getFontSize(), Typeface.DEFAULT_BOLD, nick);
 
-            item.titleItemView.setMsgTime(mData.strTime, Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG),
-                    Typeface.DEFAULT, General.getFontSize() * 2 / 3);
+            item.titleItemView.setMsgTime(Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG),
+                    General.getFontSize() * 2 / 3, Typeface.DEFAULT, mData.strTime);
 
             item.msgText.setTextSize(General.getFontSize());
             item.msgText.setTextColor(Scheme.getColor(mData.getMessColor()));
@@ -139,64 +139,4 @@ public class MessagesAdapter extends BaseAdapter {
         item.titleItemView.repaint();
         return item;
     }
-
-    private MyTextView.TextLinkClickListener textLinkClickListener = new MyTextView.TextLinkClickListener() {
-        @Override
-        public void onTextLinkClick(View textView, String clickedString, boolean isLongTap) {
-            if (clickedString.length() == 0) return;
-            boolean isJuick = clickedString.substring(0, 1).equals("@") || clickedString.substring(0, 1).equals("#");
-            if (isJuick) {
-                new JuickMenu((General.currentActivity), currentProtocol, currentContact, clickedString).show();
-                return;
-            }
-            if (isLongTap) {
-                CharSequence[] items = new CharSequence[2];
-                items[0] = General.currentActivity.getString(R.string.copy);
-                items[1] = General.currentActivity.getString(R.string.add_contact);
-                final AlertDialog.Builder builder = new AlertDialog.Builder(General.currentActivity);
-                builder.setCancelable(true);
-                builder.setTitle(R.string.url_menu);
-                final String finalClickedString = clickedString;
-                builder.setItems(items, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        switch (which) {
-                            case 0:
-                                Clipboard.setClipBoardText(finalClickedString);
-                                break;
-                            case 1:
-                                General.openUrl(finalClickedString);
-                                break;
-                        }
-                    }
-                });
-                try {
-                    builder.create().show();
-                } catch(Exception e) {
-                    // WindowManager$BadTokenException will be caught and the app would not display
-                    DebugLog.panic("onTextLinkClick", e);
-                }
-            } else {
-                if (!clickedString.startsWith("http://") && !clickedString.startsWith("https://"))
-                    clickedString = "http://" + clickedString;
-                if ((clickedString.endsWith(".jpg"))
-                        || (clickedString.endsWith(".jpeg"))
-                        || (clickedString.endsWith(".png"))
-                        || (clickedString.endsWith(".gif"))
-                        || (clickedString.endsWith(".bmp"))) {
-                    PictureView pictureView = new PictureView();
-                    pictureView.setLink(clickedString);
-                    FragmentTransaction transaction = General.currentActivity.getSupportFragmentManager().beginTransaction();
-                    transaction.add(pictureView, PictureView.TAG);
-                    transaction.commitAllowingStateLoss();
-                } else {
-                    Uri uri = Uri.parse(clickedString);
-                    Context context = General.currentActivity;
-                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                    intent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
-                    context.startActivity(intent);
-                }
-            }
-        }
-    };
 }

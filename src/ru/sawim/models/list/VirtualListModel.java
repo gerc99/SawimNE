@@ -62,18 +62,9 @@ public final class VirtualListModel {
     }
 
     public void addParam(String langStr, String str) {
-        addParam(langStr, str, false);
-    }
-
-    public void addParamWithLinks(String langStr, String str) {
-        addParam(langStr, str, true);
-    }
-
-    private void addParam(String langStr, String str, boolean hasLinks) {
         if (!StringConvertor.isEmpty(str)) {
             addHeader();
             VirtualListItem line = createNewParser(true);
-            line.setHasLinks(hasLinks);
             line.addLabel(JLocale.getString(langStr) + ": ",
                     Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
             line.addDescription(str, Scheme.THEME_PARAM_VALUE, Scheme.FONT_STYLE_PLAIN);

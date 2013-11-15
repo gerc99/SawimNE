@@ -3,19 +3,17 @@ package sawim.modules;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
-import ru.sawim.ExceptionHandler;
-import ru.sawim.SawimApplication;
+import ru.sawim.*;
 import ru.sawim.models.list.VirtualListItem;
-import ru.sawim.General;
 import sawim.Clipboard;
 import sawim.comm.Util;
-import ru.sawim.Scheme;
 import ru.sawim.models.list.VirtualList;
 import ru.sawim.models.list.VirtualListModel;
 import sawim.util.JLocale;
 
 import java.util.List;
 import java.util.TimeZone;
+import java.util.Vector;
 
 public final class DebugLog {
     public static final DebugLog instance = new DebugLog();
@@ -110,7 +108,7 @@ public final class DebugLog {
     public static void startTests() {
         //println("1329958015 " + Util.createGmtTime(2012, 02, 23, 4, 46, 55));
 
-        println("TimeZone info");
+        /*println("TimeZone info");
         java.util.TimeZone tz = java.util.TimeZone.getDefault();
         println("TimeZone offset: " + tz.getRawOffset());
         println("Daylight: " + tz.useDaylightTime());
@@ -118,37 +116,11 @@ public final class DebugLog {
 
         int time = TimeZone.getDefault().getRawOffset() / (1000 * 60 * 60);
         int t2 = TimeZone.getDefault().getDSTSavings() / (1000 * 60 * 60);
-        println("GMT " + (t2 + time));
-
-        /*MD5 md5 = new MD5();
-        md5.init();
-        md5.updateASCII("\u0422\u0435\u0441\u0442");
-        md5.finish();
-        assert0("md5 (ru): failed", !md5.getDigestHex().equals("16497fa0c8e13ce8fab874d959db91b9"));
-
-        md5 = new MD5();
-        md5.init();
-        md5.updateASCII("Test");
-        md5.finish();
-        assert0("md5 (en): failed", !md5.getDigestHex().equals("0cbc6611f5540bd0809a388dc95a615b"));
-
-        assert0("bs64decode (0): failed", MD5.decodeBase64(" eg=="), "z");
-        assert0("bs64decode (1): failed", MD5.decodeBase64("eg=="), "z");
-        assert0("bs64decode (2): failed", MD5.decodeBase64("eno="), "zz");
-        assert0("bs64decode (3): failed", MD5.decodeBase64("enp6"), "zzz");
-        assert0("bs64decode (4): failed", MD5.decodeBase64(" eg==\n"), "z");
-        assert0("bs64decode (5): failed", MD5.decodeBase64("eg==\n"), "z");
-        assert0("bs64decode (6): failed", MD5.decodeBase64("eno=\n"), "zz");
-        assert0("bs64decode (7): failed", MD5.decodeBase64("enp6\n"), "zzz");
-        assert0("bs64 (1): failed", MD5.toBase64(new byte[]{'z'}), "eg==");
-        assert0("bs64 (2): failed", MD5.toBase64(new byte[]{'z', 'z'}), "eno=");
-        assert0("bs64 (3): failed", MD5.toBase64(new byte[]{'z', 'z', 'z'}), "enp6");
-
-        assert0("replace (1): failed", Util.replace("text2text23", "2", "3"), "text3text33");
-        assert0("replace (2): failed", Util.replace("text22text2223", "22", "3"), "text3text323");
-        assert0("replace (3): failed", Util.replace("text22text22", "22", "3"), "text3text3");
-        assert0("replace (4): failed", Util.replace("text3text33", "22", "3"), "text3text33");*/
-
+        println("GMT " + (t2 + time)); */
+        Vector<String> leaks = LeaksManager.getThis().checkLeaks();
+        for (int i = 0; i < leaks.size(); ++i) {
+            println("leak: " + leaks.get(i));
+        }
     }
 
     public static void dump(String comment, byte[] data) {
@@ -206,6 +178,7 @@ public final class DebugLog {
                 switch (item.getItemId()) {
                     case MENU_CLEAN:
                         model.clear();
+                        startTests();
                         list.updateModel();
                         break;
                 }

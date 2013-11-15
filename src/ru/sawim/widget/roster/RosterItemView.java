@@ -1,4 +1,4 @@
-package ru.sawim.widget;
+package ru.sawim.widget.roster;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -11,6 +11,7 @@ import android.util.TypedValue;
 import android.view.View;
 import ru.sawim.General;
 import ru.sawim.Scheme;
+import ru.sawim.widget.Util;
 
 /**
  * Created with IntelliJ IDEA.
@@ -34,7 +35,6 @@ public class RosterItemView extends View {
     public BitmapDrawable itemFifthImage = null;
 
     private static Paint textPaint;
-    private static Resources resources;
 
     private int lineOneY, lineTwoY,
             firstImageX, firstImageY,
@@ -48,10 +48,6 @@ public class RosterItemView extends View {
         super(context);
         int padding = Util.dipToPixels(context, 15);
         setPadding(padding, padding, padding, padding);
-        if (resources == null) {
-            Context c = getContext();
-            resources = (c == null) ? Resources.getSystem() : c.getResources();
-        }
         if (textPaint == null) {
             textPaint = new Paint();
             textPaint.setAntiAlias(true);
@@ -83,7 +79,7 @@ public class RosterItemView extends View {
 
     private void setTextSize(int size) {
         textPaint.setTextSize(TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_SP, size, resources.getDisplayMetrics()));
+                TypedValue.COMPLEX_UNIT_SP, size, General.getResources(getContext()).getDisplayMetrics()));
     }
 
     @Override
@@ -140,12 +136,12 @@ public class RosterItemView extends View {
         if (itemDesc != null) {
             lineOneY = topPadding - ascent;
         } else {
-            lineOneY = y + -ascent / 2 - descent;
+            lineOneY = viewHeight - descent - bottomPadding;
         }
         if (itemName != null && itemDesc != null) {
             lineTwoY = viewHeight - descent - bottomPadding;
         } else {
-            lineTwoY = y + -ascent / 2 - descent;
+            lineTwoY = y + descent;
         }
 
         firstImageX = leftPadding;
@@ -166,14 +162,14 @@ public class RosterItemView extends View {
             textX = thirdImageX + itemThirdImage.getBitmap().getWidth() + leftPadding;
         }
 
-        fourthImageX = viewWidth - rightPadding;
+        fourthImageX = viewWidth;
         if (itemFourthImage != null) {
-            fourthImageX -= itemFourthImage.getBitmap().getWidth();
+            fourthImageX = viewWidth - itemFourthImage.getBitmap().getWidth() - rightPadding;
             fourthImageY = y - itemFourthImage.getBitmap().getHeight() / 2;
         }
-        fifthImageX = fourthImageX - rightPadding;
+        fifthImageX = fourthImageX;
         if (itemFifthImage != null) {
-            fifthImageX -= itemFifthImage.getBitmap().getWidth();
+            fifthImageX = fourthImageX - itemFifthImage.getBitmap().getWidth() - rightPadding;
             fifthImageY = y - itemFifthImage.getBitmap().getHeight() / 2;
         }
     }

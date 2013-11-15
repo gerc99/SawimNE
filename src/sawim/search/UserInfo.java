@@ -135,38 +135,38 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
 
         profile.addParamImage("user_statuses", getStatusAsIcon());
         
-        profile.addParamWithLinks("nick",   nick);
-        profile.addParamWithLinks("name", getName());
+        profile.addParam("nick",   nick);
+        profile.addParam("name", getName());
         profile.addParam("gender", getGenderAsString());
         if (0 < age) {
             profile.addParam("age", Integer.toString(age));
         }
-        profile.addParamWithLinks("email",  email);
+        profile.addParam("email",  email);
         if (auth) {
             profile.addParam("auth", JLocale.getString("yes"));
         }
         profile.addParam("birth_day",  birthDay);
-        profile.addParamWithLinks("cell_phone", cellPhone);
-        profile.addParamWithLinks("home_page",  homePage);
-        profile.addParamWithLinks("interests",  interests);
-        profile.addParamWithLinks("notes",      about);
+        profile.addParam("cell_phone", cellPhone);
+        profile.addParam("home_page",  homePage);
+        profile.addParam("interests",  interests);
+        profile.addParam("notes",      about);
 
         profile.setHeader("home_info");
-        profile.addParamWithLinks("addr",  homeAddress);
-        profile.addParamWithLinks("city",  homeCity);
-        profile.addParamWithLinks("state", homeState);
-        profile.addParamWithLinks("phone", homePhones);
-        profile.addParamWithLinks("fax",   homeFax);
+        profile.addParam("addr",  homeAddress);
+        profile.addParam("city",  homeCity);
+        profile.addParam("state", homeState);
+        profile.addParam("phone", homePhones);
+        profile.addParam("fax",   homeFax);
 
         profile.setHeader("work_info");
-        profile.addParamWithLinks("title",    workCompany);
-        profile.addParamWithLinks("depart",   workDepartment);
-        profile.addParamWithLinks("position", workPosition);
-        profile.addParamWithLinks("addr",     workAddress);
-        profile.addParamWithLinks("city",     workCity);
-        profile.addParamWithLinks("state",    workState);
-        profile.addParamWithLinks("phone",    workPhone);
-        profile.addParamWithLinks("fax",      workFax);
+        profile.addParam("title",    workCompany);
+        profile.addParam("depart",   workDepartment);
+        profile.addParam("position", workPosition);
+        profile.addParam("addr",     workAddress);
+        profile.addParam("city",     workCity);
+        profile.addParam("state",    workState);
+        profile.addParam("phone",    workPhone);
+        profile.addParam("fax",      workFax);
 
         profile.setHeader("avatar");
         profile.addAvatar(null, ru.sawim.widget.Util.avatarBitmap(avatar));

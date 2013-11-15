@@ -298,7 +298,7 @@ public final class HistoryStorageList implements Runnable, FormListener {
             VirtualListItem parser = listMessages.createNewParser(false);
             String from = history.getContact().isConference() ? record.from + " " : "";
             parser.addLabel(from + record.date + ":", Scheme.THEME_TEXT, Scheme.FONT_STYLE_BOLD);
-            parser.addTextWithSmiles(record.text, (record.type == 0) ? Scheme.THEME_CHAT_INMSG
+            parser.addDescription(record.text, (record.type == 0) ? Scheme.THEME_CHAT_INMSG
                     : Scheme.THEME_CHAT_OUTMSG, Scheme.FONT_STYLE_PLAIN);
             listMessages.addPar(parser);
             allMsg.setModel(listMessages);

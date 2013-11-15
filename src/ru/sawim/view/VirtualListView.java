@@ -72,7 +72,6 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
                     VirtualListItem item = elements.get(i);
                     if (item.getGroupListListener() != null) {
                         item.getGroupListListener().select();
-
                         return;
                     }
                 }
