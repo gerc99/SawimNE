@@ -262,7 +262,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
             barLinearLayout.setLayoutParams(layoutParams);
             barLinearLayout.addView(horizontalScrollView);
             chatView.removeTitleBar();
-            barLinearLayout.addView(chatView.chatBarLayout);
+            barLinearLayout.addView(chatView.getTitleBar());
             General.currentActivity.getSupportActionBar().setCustomView(barLinearLayout);
         } else
             General.currentActivity.getSupportActionBar().setCustomView(horizontalScrollView);
