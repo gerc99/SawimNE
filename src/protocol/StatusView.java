@@ -1,18 +1,19 @@
 package protocol;
 
+import DrawControls.icons.Icon;
 import android.view.ContextMenu;
 import android.view.Menu;
-import ru.sawim.models.list.VirtualListItem;
-import sawim.Clipboard;
-import ru.sawim.models.list.VirtualListModel;
-import DrawControls.icons.Icon;
+import protocol.jabber.JabberServiceContact;
 import ru.sawim.General;
-import sawim.comm.StringConvertor;
-import sawim.comm.Util;
 import ru.sawim.Scheme;
 import ru.sawim.models.list.VirtualList;
-import protocol.jabber.*;
+import ru.sawim.models.list.VirtualListItem;
+import ru.sawim.models.list.VirtualListModel;
+import sawim.Clipboard;
+import sawim.comm.StringConvertor;
+import sawim.comm.Util;
 import sawim.util.JLocale;
+
 import java.util.List;
 
 public final class StatusView {
@@ -23,7 +24,7 @@ public final class StatusView {
     private VirtualListModel model;
     private VirtualList list;
 
-    public static final int INFO_MENU_COPY     = 1;
+    public static final int INFO_MENU_COPY = 1;
     public static final int INFO_MENU_COPY_ALL = 2;
 
     public StatusView() {
@@ -34,10 +35,11 @@ public final class StatusView {
                 && (null != protocol.clientInfo)) {
             addPlain(protocol.clientInfo.getIcon(contact.clientIndex),
                     (protocol.clientInfo.getName(contact.clientIndex)
-                    + " " + contact.version).trim());
+                            + " " + contact.version).trim());
         }
         addPlain(null, clientVersion);
     }
+
     public void setClientVersion(String version) {
         clientVersion = version;
     }
@@ -73,6 +75,7 @@ public final class StatusView {
             list.updateModel();
         }
     }
+
     public void addStatusText(String text) {
         if (!StringConvertor.isEmpty(text)) {
             VirtualListItem line = model.createNewParser(true);
@@ -81,23 +84,24 @@ public final class StatusView {
             list.updateModel();
         }
     }
+
     public void addInfo(String key, String value) {
         model.addParam(key, value);
         list.updateModel();
     }
-    
+
     public void addContactStatus() {
         byte status = contact.getStatusIndex();
         StatusInfo info = protocol.getStatusInfo();
         addStatus(info.getIcon(status), info.getName(status));
     }
-    
+
     public void addXStatus() {
         XStatusInfo info = protocol.getXStatusInfo();
         int x = contact.getXStatusIndex();
         addStatus(info.getIcon(x), info.getName(x));
     }
-    
+
     public void addStatus(Icon icon, String name) {
         addPlain(icon, name);
     }
@@ -137,11 +141,13 @@ public final class StatusView {
         protocol = p;
         clientVersion = null;
     }
+
     public void initUI() {
         model.clear();
         list.setCaption(contact.getName());
         addInfo(protocol.getUserIdName(), contact.getUserId());
     }
+
     public Contact getContact() {
         return contact;
     }

@@ -7,9 +7,7 @@ import protocol.*;
 import protocol.icq.Icq;
 import protocol.jabber.Jabber;
 import protocol.mrim.Mrim;
-import ru.sawim.General;
 import ru.sawim.SawimApplication;
-import ru.sawim.models.RosterAdapter;
 import sawim.FileTransfer;
 import sawim.Options;
 import sawim.comm.StringConvertor;
@@ -142,7 +140,7 @@ public final class Roster {
             case Profile.PROTOCOL_FACEBOOK:
             case Profile.PROTOCOL_LJ:
             case Profile.PROTOCOL_YANDEX:
-    //        case Profile.PROTOCOL_VK:
+                //        case Profile.PROTOCOL_VK:
             case Profile.PROTOCOL_QIP:
             case Profile.PROTOCOL_ODNOKLASSNIKI:
                 return Profile.PROTOCOL_JABBER;
@@ -345,6 +343,7 @@ public final class Roster {
     public final void needRosterSave() {
         contactListSaveDelay = 60 * 4 /* * 250 = 60 sec */;
     }
+
     public final void timerAction() {
         AutoAbsence.instance.updateTime();
         /*if (0 < contactListSaveDelay) {
@@ -599,7 +598,9 @@ public final class Roster {
 
     public interface OnUpdateChat {
         void updateChat(Contact contact);
+
         void updateMucList();
+
         void pastText(String s);
     }
 

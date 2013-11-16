@@ -1,6 +1,5 @@
 package protocol.vk.api;
 
-import sawim.modules.DebugLog;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
@@ -14,6 +13,7 @@ import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
+import sawim.modules.DebugLog;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -63,6 +63,7 @@ public class WebClient {
             return null;
         }
     }
+
     private String request(HashMap<String, String> request) throws IOException {
         String url = request.get("@action");
         String method = request.get("@method").toUpperCase();
@@ -87,6 +88,7 @@ public class WebClient {
         }
         throw new IOException("method do not supported");
     }
+
     private void done(String url) {
         if (url.contains("access_token")) {
             listener.onComplete(url);

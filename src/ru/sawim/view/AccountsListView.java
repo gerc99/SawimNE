@@ -1,7 +1,5 @@
 package ru.sawim.view;
 
-import android.accounts.Account;
-import android.accounts.AccountAuthenticatorResponse;
 import android.accounts.AccountManager;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -9,18 +7,17 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.text.InputType;
-import android.util.Log;
 import android.view.*;
 import android.widget.*;
-import protocol.Protocol;
-import ru.sawim.General;
-import sawim.Options;
-import sawim.roster.Roster;
-import sawim.comm.StringConvertor;
 import protocol.Profile;
+import protocol.Protocol;
 import protocol.StatusInfo;
+import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.models.AccountsAdapter;
+import sawim.Options;
+import sawim.comm.StringConvertor;
+import sawim.roster.Roster;
 
 /**
  * Created with IntelliJ IDEA.
@@ -99,7 +96,7 @@ public class AccountsListView extends Fragment {
                 return true;
 
             case R.id.menu_delete:
-				AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 builder.setCancelable(true);
                 builder.setMessage(getString(R.string.acc_delete_confirm) + " " + itemName + "?")
                         .setCancelable(false)
@@ -126,23 +123,7 @@ public class AccountsListView extends Fragment {
         return super.onContextItemSelected(item);
     }
 
-    private void addAccountAuthenticator(String id) {
-        Account account = new Account(id, getString(R.string.app_name));
-        AccountManager am = AccountManager.get(getActivity());
-        boolean accountCreated = am.addAccountExplicitly(account, null, null);
-        Bundle extras = getActivity().getIntent().getExtras();
-        if (extras != null && accountCreated) {
-            AccountAuthenticatorResponse response = extras.getParcelable(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE);
-            Bundle result = new Bundle();
-            result.putString(AccountManager.KEY_ACCOUNT_NAME, id);
-            result.putString(AccountManager.KEY_ACCOUNT_TYPE, getString(R.string.app_name));
-            if (response != null)
-                response.onResult(result);
-        }
-    }
-
     public void addAccount(int num, Profile acc) {
-        addAccountAuthenticator(acc.userId);
         Options.setAccount(num, acc);
         Roster.getInstance().setCurrentProtocol();
         update();
@@ -158,7 +139,7 @@ public class AccountsListView extends Fragment {
     }
 
     public void addAccount() {
-		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setCancelable(true);
         builder.setTitle(R.string.acc_sel_protocol);
         builder.setItems(Profile.protocolNames, new DialogInterface.OnClickListener() {
@@ -171,7 +152,7 @@ public class AccountsListView extends Fragment {
         builder.create().show();
     }
 
-     class LoginDialog extends DialogFragment {
+    class LoginDialog extends DialogFragment {
         private int type;
         public int id;
         private boolean isEdit;
@@ -275,5 +256,5 @@ public class AccountsListView extends Fragment {
             });
             return dialogLogin;
         }
-     }
+    }
 }

@@ -8,13 +8,12 @@ import protocol.Protocol;
 import protocol.StatusInfo;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
-import ru.sawim.models.RosterAdapter;
 import ru.sawim.view.menu.MyMenu;
 import sawim.Options;
 import sawim.chat.message.SystemNotice;
-import sawim.roster.Roster;
 import sawim.comm.StringConvertor;
 import sawim.modules.tracking.Tracking;
+import sawim.roster.Roster;
 import sawim.util.JLocale;
 
 import java.util.Vector;
@@ -74,7 +73,9 @@ public class JabberServiceContact extends JabberContact {
                 return 3;
         }
         return 0;
-    };
+    }
+
+    ;
 
     public boolean isAutoJoin() {
         return autojoin;

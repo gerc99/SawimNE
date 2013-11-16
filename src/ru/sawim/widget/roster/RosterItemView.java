@@ -1,12 +1,10 @@
 package ru.sawim.widget.roster;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import ru.sawim.General;
@@ -102,8 +100,8 @@ public class RosterItemView extends View {
             ascent *= 2;
             descent *= 2;
         } else if (itemName == null && itemDesc != null) {
-            topPadding = 0;
-            bottomPadding = 0;
+            topPadding /= 3;
+            bottomPadding /= 3;
         }
         if (specMode == MeasureSpec.EXACTLY) {
             result = specSize;

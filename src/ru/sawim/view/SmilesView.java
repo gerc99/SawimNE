@@ -1,6 +1,5 @@
 package ru.sawim.view;
 
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
@@ -9,8 +8,8 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import sawim.modules.Emotions;
 import ru.sawim.models.SmilesAdapter;
+import sawim.modules.Emotions;
 import sawim.roster.Roster;
 
 /**

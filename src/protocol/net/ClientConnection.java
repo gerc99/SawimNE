@@ -1,10 +1,10 @@
 package protocol.net;
 
+import protocol.Protocol;
 import ru.sawim.General;
 import sawim.SawimException;
 import sawim.chat.message.PlainMessage;
 import sawim.modules.DebugLog;
-import protocol.Protocol;
 
 import java.util.Vector;
 
@@ -25,9 +25,11 @@ public abstract class ClientConnection implements Runnable {
         keepAliveInterv = Math.min(keepAliveInterv, interval);
         nextPingTime = General.getCurrentGmtTime() + keepAliveInterv;
     }
+
     protected final long getPingInterval() {
         return keepAliveInterv;
     }
+
     protected final void usePong() {
         usePong = true;
         updateTimeout();
@@ -38,9 +40,11 @@ public abstract class ClientConnection implements Runnable {
         keepAliveInterv = PING_INTERVAL;
         nextPingTime = General.getCurrentGmtTime() + keepAliveInterv;
     }
+
     public final void start() {
         new Thread(this).start();
     }
+
     public final void run() {
         initPingValues();
         SawimException exception = null;
@@ -81,7 +85,7 @@ public abstract class ClientConnection implements Runnable {
         }
         connect = false;
     }
-    
+
     private String getId() {
         Protocol p = getProtocol();
         if (null != p) {
@@ -89,7 +93,7 @@ public abstract class ClientConnection implements Runnable {
         }
         return "" + this;
     }
-    
+
     private void sleep(long ms) {
         try {
             Thread.sleep(ms);
@@ -111,9 +115,11 @@ public abstract class ClientConnection implements Runnable {
             nextPingTime = now + keepAliveInterv;
         }
     }
+
     protected final void updateTimeout() {
         pongTime = General.getCurrentGmtTime();
     }
+
     public final boolean isConnected() {
         return connect;
     }
@@ -122,10 +128,11 @@ public abstract class ClientConnection implements Runnable {
         messages.addElement(msg);
         markMessageSended(-1, -1);
     }
+
     public final boolean isMessageExist(long msgId) {
         if (-1 < msgId) {
             for (int i = 0; i < messages.size(); ++i) {
-                PlainMessage m = (PlainMessage)messages.elementAt(i);
+                PlainMessage m = (PlainMessage) messages.elementAt(i);
                 if (m.getMessageId() == msgId) {
                     return true;
                 }
@@ -133,10 +140,11 @@ public abstract class ClientConnection implements Runnable {
         }
         return false;
     }
+
     public final void markMessageSended(long msgId, int status) {
         PlainMessage msg = null;
         for (int i = 0; i < messages.size(); ++i) {
-            PlainMessage m = (PlainMessage)messages.elementAt(i);
+            PlainMessage m = (PlainMessage) messages.elementAt(i);
             if (m.getMessageId() == msgId) {
                 msg = m;
                 break;
@@ -150,7 +158,7 @@ public abstract class ClientConnection implements Runnable {
         }
         long date = General.getCurrentGmtTime() - 5 * 60;
         for (int i = messages.size() - 1; i >= 0; --i) {
-            PlainMessage m = (PlainMessage)messages.elementAt(i);
+            PlainMessage m = (PlainMessage) messages.elementAt(i);
             if (date > m.getNewDate()) {
                 messages.removeElement(m);
             }
@@ -159,10 +167,16 @@ public abstract class ClientConnection implements Runnable {
 
     protected void pingForPong() throws SawimException {
     }
+
     public abstract void disconnect();
+
     protected abstract Protocol getProtocol();
+
     protected abstract void closeSocket();
+
     protected abstract void connect() throws SawimException;
+
     protected abstract void ping() throws SawimException;
+
     protected abstract boolean processPacket() throws SawimException;
 }

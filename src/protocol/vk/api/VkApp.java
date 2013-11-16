@@ -47,6 +47,7 @@ public class VkApp {
             }
         });
     }
+
     public boolean isLogged() {
         return !"".equals(_vkSess.getAccessToken()[0]);
     }
@@ -63,6 +64,7 @@ public class VkApp {
     public JSONObject getFriends() {
         return request(uri("friends.get", "fields=first_name,last_name,nickname"));
     }
+
     public JSONObject getOnlineFriends() {
         return request(uri("friends.getOnline", ""));
     }
@@ -70,12 +72,15 @@ public class VkApp {
     public void getDialogs() {
         request(uri("messages.getDialogs", ""));
     }
+
     public void sendMessage(String uid, String message) {
         request(uri("messages.send", "uid=" + escape(uid) + "&message=" + escape(message)));
     }
+
     public JSONObject getMessages() {
         return request(uri("messages.get", "filters=1"));
     }
+
     public void markAsRead(Collection<Integer> ids) {
         StringBuilder sb = new StringBuilder();
         for (Integer id : ids) {
@@ -106,6 +111,7 @@ public class VkApp {
             return null;
         }
     }
+
     private String uri(String method, String args) {
         String[] params = _vkSess.getAccessToken();
         String accessToken = params[0];
@@ -165,6 +171,7 @@ public class VkApp {
 
         return false;
     }
+
     public String escape(String value) {
         try {
             return URLEncoder.encode(value, "utf-8");

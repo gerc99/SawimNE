@@ -5,14 +5,17 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.*;
-import ru.sawim.Scheme;
-import sawim.forms.PrivateStatusForm;
-import sawim.util.JLocale;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import protocol.Protocol;
 import protocol.StatusInfo;
 import ru.sawim.R;
+import ru.sawim.Scheme;
 import ru.sawim.view.StatusesView;
+import sawim.forms.PrivateStatusForm;
+import sawim.util.JLocale;
 
 /**
  * Created with IntelliJ IDEA.

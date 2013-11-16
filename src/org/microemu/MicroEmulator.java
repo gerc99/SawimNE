@@ -29,5 +29,5 @@ package org.microemu;
 
 public interface MicroEmulator {
 
-	RecordStoreManager getRecordStoreManager();
+    RecordStoreManager getRecordStoreManager();
 }

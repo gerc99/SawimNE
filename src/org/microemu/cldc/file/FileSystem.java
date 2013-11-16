@@ -30,26 +30,25 @@ import org.microemu.microedition.ImplFactory;
 
 /**
  * @author vlads
- * 
- * config2.xml example
- * 
- * <pre>
- *  &lt;extensions&gt;
- *  &lt;extension&gt;
- *  &lt;className&gt;org.microemu.cldc.file.FileSystem&lt;/className&gt;
- *  &lt;properties&gt;
- *  &lt;property NAME=&quot;fsRoot&quot; VALUE=&quot;C:&quot;/&gt;
- *  &lt;/properties&gt;
- *  &lt;/extension&gt;
- *  &lt;/extensions&gt;
- * </pre>
- * 
+ *         <p/>
+ *         config2.xml example
+ *         <p/>
+ *         <pre>
+ *                  &lt;extensions&gt;
+ *                  &lt;extension&gt;
+ *                  &lt;className&gt;org.microemu.cldc.file.FileSystem&lt;/className&gt;
+ *                  &lt;properties&gt;
+ *                  &lt;property NAME=&quot;fsRoot&quot; VALUE=&quot;C:&quot;/&gt;
+ *                  &lt;/properties&gt;
+ *                  &lt;/extension&gt;
+ *                  &lt;/extensions&gt;
+ *                 </pre>
  */
 
 public class FileSystem {
     public static final String PROTOCOL = "file://";
 
-	private FileSystemConnectorImpl impl;
+    private FileSystemConnectorImpl impl;
 
     public void registerImplementation() {
         this.impl = new FileSystemConnectorImpl();
@@ -57,8 +56,8 @@ public class FileSystem {
         ImplFactory.register(FileSystemRegistryDelegate.class, new FileSystemRegistryImpl());
     }
 
-	protected static void unregisterImplementation(FileSystemConnectorImpl impl) {
-		ImplFactory.unregistedGCF("file", impl);
-		ImplFactory.unregister(FileSystemRegistryDelegate.class, FileSystemRegistryImpl.class);
-	}
+    protected static void unregisterImplementation(FileSystemConnectorImpl impl) {
+        ImplFactory.unregistedGCF("file", impl);
+        ImplFactory.unregister(FileSystemRegistryDelegate.class, FileSystemRegistryImpl.class);
+    }
 }

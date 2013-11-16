@@ -1,13 +1,11 @@
 package protocol.mrim;
 
 import DrawControls.icons.Icon;
-import android.support.v4.app.FragmentActivity;
 import android.view.ContextMenu;
 import android.view.Menu;
 import protocol.Contact;
 import protocol.ContactMenu;
 import protocol.Protocol;
-import ru.sawim.activities.SawimActivity;
 import sawim.util.JLocale;
 
 public class MrimPhoneContact extends MrimContact {
@@ -35,6 +33,7 @@ public class MrimPhoneContact extends MrimContact {
             new ContactMenu(p, this).doAction(USER_MENU_SEND_SMS);
         }
     }
+
     protected void initContextMenu(Protocol protocol, ContextMenu menu) {
         menu.add(Menu.FIRST, USER_MENU_SEND_SMS, 2, JLocale.getString("send_sms"));
         menu.add(Menu.FIRST, ContactMenu.USER_MENU_USER_INFO, 2, JLocale.getString("info"));

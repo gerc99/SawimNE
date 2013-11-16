@@ -1,19 +1,18 @@
 
 
 
-
 package protocol.mrim;
 
 import DrawControls.icons.ImageList;
+import protocol.XStatusInfo;
 import sawim.comm.Config;
 import sawim.comm.StringConvertor;
-import protocol.XStatusInfo;
 
 
 public class MrimXStatusInfo {
     private final String[] statusCodes;
     private final XStatusInfo info;
-    
+
     public MrimXStatusInfo() {
         Config config = new Config().loadLocale("/mrim-xstatus.txt");
         statusCodes = config.getKeys();
@@ -21,10 +20,11 @@ public class MrimXStatusInfo {
         String[] statusStrings = config.getValues();
         info = new XStatusInfo(xstatusIcons, statusStrings);
     }
+
     public XStatusInfo getInfo() {
         return info;
     }
-    
+
     public String getNativeXStatus(byte statusIndex) {
         if (0 <= statusIndex && statusIndex < statusCodes.length) {
             return statusCodes[statusIndex];

@@ -1,8 +1,8 @@
 package ru.sawim.config;
 
+import protocol.net.TcpSocket;
 import sawim.SawimException;
 import sawim.comm.StringConvertor;
-import protocol.net.TcpSocket;
 
 import java.io.InputStream;
 import java.io.OutputStream;

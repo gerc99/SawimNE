@@ -1,20 +1,20 @@
 
 
 
-
 package protocol.mrim;
 
 import DrawControls.icons.ImageList;
+import protocol.ClientInfo;
 import sawim.comm.Config;
 import sawim.comm.StringConvertor;
 import sawim.modules.DebugLog;
-import protocol.ClientInfo;
 
 
 public final class MrimClient {
     private static final ImageList clientIcons = ImageList.createImageList("/mrim-clients.png");
     private static final String[] clientIds;
     private static final String[] clientNames;
+
     static {
         Config cfg = new Config().load("/mrim-clients.txt");
         clientIds = cfg.getKeys();
@@ -25,7 +25,7 @@ public final class MrimClient {
         return new ClientInfo(clientIcons, clientNames);
     }
 
-    
+
     private MrimClient() {
     }
 
@@ -39,6 +39,7 @@ public final class MrimClient {
         }
         return str.substring(valueIndex, endIndex);
     }
+
     static public void createClient(MrimContact contact, String caps) {
         if (StringConvertor.isEmpty(caps)) {
             contact.setClient(ClientInfo.CLI_NONE, null);
@@ -59,9 +60,9 @@ public final class MrimClient {
             }
         }
         if (ClientInfo.CLI_NONE == clientIndex) {
-            
+
             DebugLog.println("Unknown client: " + caps);
-            
+
             contact.setClient(ClientInfo.CLI_NONE, null);
             return;
         }

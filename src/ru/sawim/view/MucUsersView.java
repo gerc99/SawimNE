@@ -3,7 +3,6 @@ package ru.sawim.view;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.support.v4.app.FragmentActivity;
-import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -12,7 +11,6 @@ import protocol.Protocol;
 import protocol.jabber.*;
 import ru.sawim.General;
 import ru.sawim.R;
-import ru.sawim.Scheme;
 import ru.sawim.models.MucUsersAdapter;
 import ru.sawim.view.menu.MyMenu;
 import sawim.util.JLocale;
@@ -116,89 +114,89 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
                         menu.add(JLocale.getString("to_owner"), ContactMenu.COMMAND_OWNER);
                     }
                 }
-				AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+                AlertDialog.Builder builder = new AlertDialog.Builder(activity);
                 builder.setCancelable(true);
                 builder.setTitle(jabberServiceContact.getName());
                 builder.setAdapter(menu, new DialogInterface.OnClickListener() {
-                                       @Override
-                                       public void onClick(DialogInterface dialog, int which) {
-                                           currMucNik = nick;
-                                           chatView.hasBack();
-                                           switch (menu.getItem(which).idItem) {
-                                               case ContactMenu.COMMAND_PRIVATE:
-                                                   String jid = Jid.realJidToSawimJid(jabberServiceContact.getUserId() + "/" + nick);
-                                                   JabberServiceContact c = (JabberServiceContact) protocol.getItemByUIN(jid);
-                                                   if (null == c) {
-                                                       c = (JabberServiceContact) protocol.createTempContact(jid);
-                                                       protocol.addTempContact(c);
-                                                   }
-                                                   chatView.pause(chatView.getCurrentChat());
-                                                   chatView.openChat(protocol, c);
-                                                   chatView.resume(chatView.getCurrentChat());
-                                                   break;
-                                               case ContactMenu.COMMAND_INFO:
-                                                   protocol.showUserInfo(jabberServiceContact.getPrivateContact(nick));
-                                                   break;
-                                               case ContactMenu.COMMAND_STATUS:
-                                                   protocol.showStatus(jabberServiceContact.getPrivateContact(nick));
-                                                   break;
-                                               case ContactMenu.GATE_COMMANDS:
-                                                   JabberContact.SubContact subContact = jabberServiceContact.getExistSubContact(nick);
-                                                   AdHoc adhoc = new AdHoc((Jabber) protocol, jabberServiceContact);
-                                                   adhoc.setResource(subContact.resource);
-                                                   adhoc.show();
-                                                   break;
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        currMucNik = nick;
+                        chatView.hasBack();
+                        switch (menu.getItem(which).idItem) {
+                            case ContactMenu.COMMAND_PRIVATE:
+                                String jid = Jid.realJidToSawimJid(jabberServiceContact.getUserId() + "/" + nick);
+                                JabberServiceContact c = (JabberServiceContact) protocol.getItemByUIN(jid);
+                                if (null == c) {
+                                    c = (JabberServiceContact) protocol.createTempContact(jid);
+                                    protocol.addTempContact(c);
+                                }
+                                chatView.pause(chatView.getCurrentChat());
+                                chatView.openChat(protocol, c);
+                                chatView.resume(chatView.getCurrentChat());
+                                break;
+                            case ContactMenu.COMMAND_INFO:
+                                protocol.showUserInfo(jabberServiceContact.getPrivateContact(nick));
+                                break;
+                            case ContactMenu.COMMAND_STATUS:
+                                protocol.showStatus(jabberServiceContact.getPrivateContact(nick));
+                                break;
+                            case ContactMenu.GATE_COMMANDS:
+                                JabberContact.SubContact subContact = jabberServiceContact.getExistSubContact(nick);
+                                AdHoc adhoc = new AdHoc((Jabber) protocol, jabberServiceContact);
+                                adhoc.setResource(subContact.resource);
+                                adhoc.show();
+                                break;
 
-                                               case ContactMenu.COMMAND_KICK:
-                                                   kikTextbox = new TextBoxView();
-                                                   kikTextbox.setTextBoxListener(MucUsersView.this);
-                                                   kikTextbox.setString("");
-                                                   kikTextbox.show(activity.getSupportFragmentManager(), "message");
-                                                   break;
+                            case ContactMenu.COMMAND_KICK:
+                                kikTextbox = new TextBoxView();
+                                kikTextbox.setTextBoxListener(MucUsersView.this);
+                                kikTextbox.setString("");
+                                kikTextbox.show(activity.getSupportFragmentManager(), "message");
+                                break;
 
-                                               case ContactMenu.COMMAND_BAN:
-                                                   banTextbox = new TextBoxView();
-                                                   banTextbox.setTextBoxListener(MucUsersView.this);
-                                                   banTextbox.setString("");
-                                                   banTextbox.show(activity.getSupportFragmentManager(), "message");
-                                                   break;
+                            case ContactMenu.COMMAND_BAN:
+                                banTextbox = new TextBoxView();
+                                banTextbox.setTextBoxListener(MucUsersView.this);
+                                banTextbox.setString("");
+                                banTextbox.show(activity.getSupportFragmentManager(), "message");
+                                break;
 
-                                               case ContactMenu.COMMAND_DEVOICE:
-                                                   usersAdapter.setMucRole(nick, "v" + "isitor");
-                                                   chatView.updateMucList();
-                                                   break;
+                            case ContactMenu.COMMAND_DEVOICE:
+                                usersAdapter.setMucRole(nick, "v" + "isitor");
+                                chatView.updateMucList();
+                                break;
 
-                                               case ContactMenu.COMMAND_VOICE:
-                                                   usersAdapter.setMucRole(nick, "partic" + "ipant");
-                                                   chatView.updateMucList();
-                                                   break;
-                                               case ContactMenu.COMMAND_MEMBER:
-                                                   usersAdapter.setMucAffiliation(nick, "m" + "ember");
-                                                   chatView.updateMucList();
-                                                   break;
+                            case ContactMenu.COMMAND_VOICE:
+                                usersAdapter.setMucRole(nick, "partic" + "ipant");
+                                chatView.updateMucList();
+                                break;
+                            case ContactMenu.COMMAND_MEMBER:
+                                usersAdapter.setMucAffiliation(nick, "m" + "ember");
+                                chatView.updateMucList();
+                                break;
 
-                                               case ContactMenu.COMMAND_MODER:
-                                                   usersAdapter.setMucRole(nick, "m" + "oderator");
-                                                   chatView.updateMucList();
-                                                   break;
+                            case ContactMenu.COMMAND_MODER:
+                                usersAdapter.setMucRole(nick, "m" + "oderator");
+                                chatView.updateMucList();
+                                break;
 
-                                               case ContactMenu.COMMAND_ADMIN:
-                                                   usersAdapter.setMucAffiliation(nick, "a" + "dmin");
-                                                   chatView.updateMucList();
-                                                   break;
+                            case ContactMenu.COMMAND_ADMIN:
+                                usersAdapter.setMucAffiliation(nick, "a" + "dmin");
+                                chatView.updateMucList();
+                                break;
 
-                                               case ContactMenu.COMMAND_OWNER:
-                                                   usersAdapter.setMucAffiliation(nick, "o" + "wner");
-                                                   chatView.updateMucList();
-                                                   break;
+                            case ContactMenu.COMMAND_OWNER:
+                                usersAdapter.setMucAffiliation(nick, "o" + "wner");
+                                chatView.updateMucList();
+                                break;
 
-                                               case ContactMenu.COMMAND_NONE:
-                                                   usersAdapter.setMucAffiliation(nick, "n" + "o" + "ne");
-                                                   chatView.updateMucList();
-                                                   break;
-                                           }
-                                       }
-                                   }
+                            case ContactMenu.COMMAND_NONE:
+                                usersAdapter.setMucAffiliation(nick, "n" + "o" + "ne");
+                                chatView.updateMucList();
+                                break;
+                        }
+                    }
+                }
                 );
                 builder.create().show();
                 return false;

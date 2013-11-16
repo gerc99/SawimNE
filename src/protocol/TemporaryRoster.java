@@ -1,8 +1,8 @@
 package protocol;
 
-import sawim.Options;
 import protocol.jabber.JabberServiceContact;
 import protocol.mrim.MrimPhoneContact;
+
 import java.util.Vector;
 
 
@@ -36,7 +36,7 @@ public class TemporaryRoster {
 
     private Group getGroup(Vector list, String name) {
         for (int j = list.size() - 1; 0 <= j; --j) {
-            Group g = (Group)list.elementAt(j);
+            Group g = (Group) list.elementAt(j);
             if (name.equals(g.getName())) {
                 return g;
             }
@@ -75,7 +75,7 @@ public class TemporaryRoster {
         }
         return g;
     }
-    
+
     public final Vector mergeContacts() {
         Vector newContacts = contacts;
         boolean sync = /*Options.getBoolean(Options.OPTION_SAVE_TEMP_CONTACT)*/true;
@@ -106,7 +106,7 @@ public class TemporaryRoster {
         }
         return newContacts;
     }
-    
+
     public void addGroup(Group g) {
         groups.addElement(g);
     }
@@ -123,7 +123,7 @@ public class TemporaryRoster {
     public Group getGroupById(int groupId) {
         Group group;
         for (int i = oldGroups.size() - 1; 0 <= i; --i) {
-            group = (Group)oldGroups.elementAt(i);
+            group = (Group) oldGroups.elementAt(i);
             if (group.getId() == groupId) {
                 return group;
             }

@@ -36,10 +36,10 @@ public class Image {
     }
 
     public int getWidth() {
-        return bitmap == null? 0: bitmap.getWidth();
+        return bitmap == null ? 0 : bitmap.getWidth();
     }
 
     public int getHeight() {
-        return bitmap == null? 0: bitmap.getHeight();
+        return bitmap == null ? 0 : bitmap.getHeight();
     }
 }

@@ -1,7 +1,7 @@
 package sawim;
 
-import sawim.roster.Roster;
 import sawim.modules.DebugLog;
+import sawim.roster.Roster;
 
 import java.util.Timer;
 import java.util.TimerTask;

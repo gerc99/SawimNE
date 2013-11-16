@@ -23,17 +23,21 @@ public class FormParser {
         sb.append(html.substring(endComment));
         return sb.toString();
     }
+
     private String getForm(String html) {
         int start = html.indexOf("<form");
         return html.substring(start, html.indexOf("</form>", start));
     }
+
     private int startTag(String form, String tag, int start) {
         return form.indexOf("<" + tag, start);
     }
+
     private String getAttribute(String form, String tag, String attr, int start) {
         start = startTag(form, tag, start);
         return getAttribute(form, attr, start);
     }
+
     private String getAttribute(String form, String attr, int start) {
         int from = form.indexOf(attr, start);
         if (-1 == from) return "";

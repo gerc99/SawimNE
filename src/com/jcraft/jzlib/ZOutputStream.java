@@ -1,12 +1,11 @@
 
 
 
-
 package com.jcraft.jzlib;
 
 
-import sawim.SawimException;
 import protocol.net.TcpSocket;
+import sawim.SawimException;
 
 public final class ZOutputStream {
 
@@ -22,10 +21,12 @@ public final class ZOutputStream {
         this.out = out;
         deflateInit(level, Deflate.MAX_WBITS, false);
     }
+
     private int deflateInit(int level, int bits, boolean nowrap) {
         deflate = new Deflate(buffers);
         return deflate.deflateInit(level, nowrap ? -bits : bits);
     }
+
     private int deflate(int flush) {
         return deflate.deflate(flush);
     }
@@ -50,11 +51,11 @@ public final class ZOutputStream {
                 throw new SawimException(120, 11);
             }
             out.write(buf, 0, bufsize - buffer.avail_out);
-        } while (buffer.avail_in>0 || buffer.avail_out==0);
+        } while (buffer.avail_in > 0 || buffer.avail_out == 0);
     }
 
     public int getFlushMode() {
-        return(flush);
+        return (flush);
     }
 
     public void setFlushMode(int flush) {
@@ -78,6 +79,7 @@ public final class ZOutputStream {
         } while ((0 < buffer.avail_in) || (0 == buffer.avail_out));
         flush();
     }
+
     public void close() {
         try {
             finish();

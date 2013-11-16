@@ -1,10 +1,9 @@
 package ru.sawim.activities;
 
+import android.content.res.Configuration;
 import android.media.AudioManager;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.ActionBarActivity;
-import android.view.Window;
 import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.Scheme;
@@ -35,6 +34,19 @@ public class SendToActivity extends ActionBarActivity {
             rosterView.setArguments(getIntent().getExtras());
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.fragment_container, rosterView, SendToView.TAG).commit();
+        }
+    }
+
+    int oldOrientation;
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (oldOrientation != newConfig.orientation) {
+            oldOrientation = newConfig.orientation;
+            if (General.getInstance().getConfigurationChanged() != null) {
+                General.getInstance().getConfigurationChanged().onConfigurationChanged();
+            }
         }
     }
 }

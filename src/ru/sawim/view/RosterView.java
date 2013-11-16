@@ -2,57 +2,36 @@ package ru.sawim.view;
 
 import DrawControls.icons.Icon;
 import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
-import android.os.Build;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
-import ru.sawim.SawimApplication;
-import ru.sawim.activities.AccountsListActivity;
-import ru.sawim.widget.IconTabPageIndicator;
-import ru.sawim.widget.roster.RosterViewRoot;
-import sawim.Options;
-import sawim.OptionsForm;
-import sawim.forms.ManageContactListForm;
-import sawim.forms.SmsForm;
-import sawim.modules.DebugLog;
-import sawim.modules.MagicEye;
-import sawim.modules.Notify;
-import protocol.StatusInfo;
-import protocol.icq.Icq;
-import protocol.jabber.Jabber;
-import protocol.mrim.Mrim;
-import ru.sawim.General;
-import ru.sawim.activities.SawimActivity;
-import ru.sawim.models.ChatsAdapter;
-import ru.sawim.widget.MyListView;
-import sawim.chat.Chat;
-import sawim.roster.TreeNode;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.PagerTitleStrip;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBarActivity;
 import android.view.*;
 import android.widget.*;
 import protocol.Contact;
 import protocol.ContactMenu;
 import protocol.Group;
 import protocol.Protocol;
+import ru.sawim.General;
 import ru.sawim.R;
-import ru.sawim.Scheme;
+import ru.sawim.models.ChatsAdapter;
 import ru.sawim.models.CustomPagerAdapter;
 import ru.sawim.models.RosterAdapter;
+import ru.sawim.widget.IconTabPageIndicator;
+import ru.sawim.widget.MyListView;
+import ru.sawim.widget.roster.RosterViewRoot;
+import sawim.chat.Chat;
 import sawim.chat.ChatHistory;
+import sawim.forms.ManageContactListForm;
 import sawim.roster.Roster;
+import sawim.roster.TreeNode;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 
@@ -165,7 +144,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         if (rosterViewLayout == null)
             rosterViewLayout = new RosterViewRoot(getActivity(), progressBar, viewPager);
         else
-            ((ViewGroup)rosterViewLayout.getParent()).removeView(rosterViewLayout);
+            ((ViewGroup) rosterViewLayout.getParent()).removeView(rosterViewLayout);
 
         viewPager.setAdapter(pagerAdapter);
         viewPager.setCurrentItem(roster.getCurrPage());
@@ -193,7 +172,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
             public void run() {
                 if (adaptersPages != null && adaptersPages.size() > 0) {
                     if (roster.getCurrPage() != Roster.ACTIVE_CONTACTS) {
-                        ((RosterAdapter)adaptersPages.get(roster.getCurrPage())).putIntoQueue(g);
+                        ((RosterAdapter) adaptersPages.get(roster.getCurrPage())).putIntoQueue(g);
                     }
                 }
             }
@@ -208,9 +187,9 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
             public void run() {
                 if (adaptersPages != null && adaptersPages.size() > 0) {
                     if (roster.getCurrPage() == Roster.ACTIVE_CONTACTS) {
-                        ((ChatsAdapter)adaptersPages.get(roster.getCurrPage())).refreshList();
+                        ((ChatsAdapter) adaptersPages.get(roster.getCurrPage())).refreshList();
                     } else {
-                        ((RosterAdapter)adaptersPages.get(roster.getCurrPage())).buildFlatItems();
+                        ((RosterAdapter) adaptersPages.get(roster.getCurrPage())).buildFlatItems();
                     }
                 }
             }
@@ -253,7 +232,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         getActivity().setTitle(R.string.app_name);
         if (isTablet) {
             ChatView chatView = (ChatView) getActivity().getSupportFragmentManager()
-                .findFragmentById(R.id.chat_fragment);
+                    .findFragmentById(R.id.chat_fragment);
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
             LinearLayout.LayoutParams horizontalScrollViewLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
             horizontalScrollViewLP.weight = 2;
@@ -367,7 +346,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
         if (roster.getCurrPage() == Roster.ACTIVE_CONTACTS) {
-            ChatsAdapter chatsAdapter = ((ChatsAdapter)adaptersPages.get(roster.getCurrPage()));
+            ChatsAdapter chatsAdapter = ((ChatsAdapter) adaptersPages.get(roster.getCurrPage()));
             Object o = chatsAdapter.getItem(position);
             if (o instanceof Chat) {
                 Chat chat = (Chat) o;
@@ -377,7 +356,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
                     update();
             }
         } else {
-            TreeNode item = ((RosterAdapter)adaptersPages.get(roster.getCurrPage())).getItem(position);
+            TreeNode item = ((RosterAdapter) adaptersPages.get(roster.getCurrPage())).getItem(position);
             if (item.isContact()) {
                 openChat(roster.getCurrentProtocol(), ((Contact) item), false);
                 if (getActivity().getSupportFragmentManager()
@@ -397,7 +376,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         super.onCreateContextMenu(menu, v, menuInfo);
         contextMenuInfo = (AdapterView.AdapterContextMenuInfo) menuInfo;
         if (roster.getCurrPage() == Roster.ACTIVE_CONTACTS) {
-            ChatsAdapter chatsAdapter = ((ChatsAdapter)adaptersPages.get(roster.getCurrPage()));
+            ChatsAdapter chatsAdapter = ((ChatsAdapter) adaptersPages.get(roster.getCurrPage()));
             Object o = chatsAdapter.getItem(contextMenuInfo.position);
             if (o instanceof Chat) {
                 Chat chat = (Chat) o;
@@ -405,7 +384,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
                 return;
             }
         } else {
-            TreeNode node = ((RosterAdapter)((ListView) v).getAdapter()).getItem(contextMenuInfo.position);
+            TreeNode node = ((RosterAdapter) ((ListView) v).getAdapter()).getItem(contextMenuInfo.position);
             Protocol p = roster.getCurrentProtocol();
             if (node.isContact()) {
                 new ContactMenu(p, (Contact) node).getContextMenu(menu);
@@ -426,14 +405,14 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         if (menuInfo == null)
             menuInfo = contextMenuInfo;
         if (roster.getCurrPage() == Roster.ACTIVE_CONTACTS) {
-            ChatsAdapter chatsAdapter = ((ChatsAdapter)adaptersPages.get(roster.getCurrPage()));
+            ChatsAdapter chatsAdapter = ((ChatsAdapter) adaptersPages.get(roster.getCurrPage()));
             Object o = chatsAdapter.getItem(menuInfo.position);
             if (o instanceof Chat) {
                 Chat chat = (Chat) o;
                 contactMenuItemSelected(chat.getContact(), item);
             }
         } else {
-            TreeNode node = ((RosterAdapter)adaptersPages.get(roster.getCurrPage())).getItem(menuInfo.position);
+            TreeNode node = ((RosterAdapter) adaptersPages.get(roster.getCurrPage())).getItem(menuInfo.position);
             if (node == null) return false;
             if (node.isContact()) {
                 contactMenuItemSelected((Contact) node, item);

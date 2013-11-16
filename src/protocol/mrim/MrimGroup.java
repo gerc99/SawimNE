@@ -16,12 +16,15 @@ public class MrimGroup extends Group {
         setFlags(flags);
         setMode(MODE_FULL_ACCESS);
     }
+
     public int getFlags() {
         return flags;
     }
+
     public final void setFlags(int f) {
         flags = f;
     }
+
     public final void setGroupId(int groupId) {
         int mode = MODE_FULL_ACCESS;
         if (OTHER_GROUP == groupId) {
@@ -36,7 +39,7 @@ public class MrimGroup extends Group {
         setMode(mode);
         super.setGroupId(groupId);
     }
-    
+
 }
 
 

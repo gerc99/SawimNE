@@ -3,8 +3,7 @@ package ru.sawim.models.list;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.text.Spannable;
-import android.text.SpannableStringBuilder;
+import android.view.View;
 import ru.sawim.General;
 import ru.sawim.SawimApplication;
 import ru.sawim.text.TextFormatter;
@@ -27,6 +26,7 @@ public class VirtualListItem {
     private boolean itemSelectable;
     private OnGroupListListener groupListListener;
     public boolean opened = false;
+    public View itemView;
 
     public VirtualListItem(boolean itemSelectable) {
         this.itemSelectable = itemSelectable;
@@ -73,6 +73,7 @@ public class VirtualListItem {
     }
 
     public CharSequence getDescStr() {
+        if (descStr == null) return null;
         return TextFormatter.getInstance().parsedText(null, descStr);
     }
 

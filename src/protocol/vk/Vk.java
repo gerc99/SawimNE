@@ -1,13 +1,13 @@
 package protocol.vk;
 
 import DrawControls.icons.ImageList;
-import sawim.chat.message.PlainMessage;
-import sawim.search.Search;
-import sawim.search.UserInfo;
 import protocol.Contact;
 import protocol.Group;
 import protocol.Protocol;
 import protocol.StatusInfo;
+import sawim.chat.message.PlainMessage;
+import sawim.search.Search;
+import sawim.search.UserInfo;
 
 /**
  * Created with IntelliJ IDEA.
@@ -18,6 +18,7 @@ import protocol.StatusInfo;
  */
 public class Vk extends Protocol {
     private VkConnection connection = null;
+
     @Override
     public String getUserIdName() {
         return "Id";
@@ -33,6 +34,7 @@ public class Vk extends Protocol {
         final int[] statusIconIndex = {1, 0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 1};
         info = new StatusInfo(icons, statusIconIndex, statuses);
     }
+
     private ImageList createStatusIcons() {
         ImageList icons = ImageList.createImageList("/vk-status.png");
         if (0 < icons.size()) {

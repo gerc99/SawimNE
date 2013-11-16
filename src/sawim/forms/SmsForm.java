@@ -1,16 +1,19 @@
 package sawim.forms;
 
-import java.util.Vector;
-import protocol.mrim.*;
 import protocol.Protocol;
+import protocol.mrim.Mrim;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
 import sawim.roster.Roster;
 import sawim.util.JLocale;
 
+import java.util.Vector;
+
 public class SmsForm implements FormListener {
 
-    /** Creates a new instance of SmsForm */
+    /**
+     * Creates a new instance of SmsForm
+     */
     public SmsForm(Protocol protocol, String phones) {
         this.phones = phones;
 
@@ -18,7 +21,7 @@ public class SmsForm implements FormListener {
         if (null == protocol) {
             protos = Roster.getInstance().getProtocols();
         } else {
-            protos = new Protocol[] {protocol};
+            protos = new Protocol[]{protocol};
         }
 
         protocols = new Vector();
@@ -34,6 +37,7 @@ public class SmsForm implements FormListener {
             agents = agents.substring(1);
         }
     }
+
     private String phones;
     private Forms form;
     private String agents;
@@ -66,16 +70,18 @@ public class SmsForm implements FormListener {
 
     private void sendSms(Protocol p, String phone, String text) {
         if (p instanceof Mrim) {
-            ((Mrim)p).sendSms(phone, text);
+            ((Mrim) p).sendSms(phone, text);
             return;
         }
     }
+
     private String getPhone() {
         if (null != phones) {
             return form.getSelectorString(PHONE);
         }
         return form.getTextFieldValue(PHONE);
     }
+
     public void formAction(Forms form, boolean apply) {
         if (apply) {
             final String text = form.getTextFieldValue(TEXT);

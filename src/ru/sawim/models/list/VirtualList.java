@@ -20,8 +20,8 @@ public class VirtualList {
 
     public static VirtualList getInstance() {
         if (instance == null) {
-            synchronized (VirtualList.class){
-                if (instance == null){
+            synchronized (VirtualList.class) {
+                if (instance == null) {
                     instance = new VirtualList();
                 }
             }
@@ -63,6 +63,7 @@ public class VirtualList {
 
     public interface OnClickListListener {
         void itemSelected(int position);
+
         boolean back();
     }
 
@@ -76,8 +77,11 @@ public class VirtualList {
 
     public interface OnVirtualListListener {
         void update();
+
         void back();
+
         int getCurrItem();
+
         void setCurrentItemIndex(int index, boolean isSelected);
     }
 
@@ -104,6 +108,7 @@ public class VirtualList {
 
     public interface OnBuildOptionsMenu {
         void onCreateOptionsMenu(Menu menu);
+
         void onOptionsItemSelected(MenuItem item);
     }
 
@@ -117,6 +122,7 @@ public class VirtualList {
 
     public interface OnBuildContextMenu {
         void onCreateContextMenu(ContextMenu menu, int listItem);
+
         void onContextItemSelected(int listItem, int itemMenuId);
     }
 

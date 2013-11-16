@@ -1,7 +1,6 @@
 
 
 
-
 package sawim.modules.photo;
 
 

@@ -3,11 +3,11 @@ package protocol.jabber;
 
 import DrawControls.icons.ImageList;
 import android.graphics.Bitmap;
+import ru.sawim.models.form.FormListener;
+import ru.sawim.models.form.Forms;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
 import sawim.util.JLocale;
-import ru.sawim.models.form.FormListener;
-import ru.sawim.models.form.Forms;
 
 import java.util.Vector;
 
@@ -31,38 +31,45 @@ final class XForm {
     public boolean isWaiting() {
         return waitingForm;
     }
+
     public int getSize() {
         return fields.size();
     }
+
     public void back() {
         form.back();
     }
+
     public void clearForm() {
         form.clearForm();
     }
+
     public Forms getForm() {
         return form;
     }
+
     public void setWainting() {
         waitingForm = true;
         form.clearForm();
         form.addString(JLocale.getString("wait"));
     }
+
     public void setErrorMessage(String error) {
         form.clearForm();
         form.addString(error);
-    //    form.restore();
+        //    form.restore();
     }
 
     public String getField(String name) {
         for (int i = 0; i < fields.size(); ++i) {
-            String field = (String)fields.elementAt(i);
+            String field = (String) fields.elementAt(i);
             if (name.equals(field)) {
                 return form.getTextFieldValue(i);
             }
         }
         return null;
     }
+
     public void loadXFromXml(XmlNode xml, XmlNode baseXml) {
         waitingForm = false;
         clearForm();
@@ -91,6 +98,7 @@ final class XForm {
             addField(item, item.getAttribute("ty" + "pe"));
         }
     }
+
     public void loadFromXml(XmlNode xml, XmlNode baseXml) {
         waitingForm = false;
         clearForm();
@@ -120,11 +128,12 @@ final class XForm {
             }
         }
     }
+
     public String getXmlForm() {
         for (int i = 0; i < fields.size(); ++i) {
-            String itemType = (String)types.elementAt(i);
+            String itemType = (String) types.elementAt(i);
             if (S_LIST_SINGLE.equals(itemType)) {
-                String[] list = Util.explode((String)values.elementAt(i), '|');
+                String[] list = Util.explode((String) values.elementAt(i), '|');
                 values.setElementAt(list[form.getSelectorValue(i)], i);
             } else if (itemType.startsWith("jid-")) {
                 values.setElementAt(form.getTextFieldValue(i), i);
@@ -139,21 +148,21 @@ final class XForm {
         StringBuffer sb = new StringBuffer();
         if (!isXData) {
             for (int i = 0; i < fields.size(); ++i) {
-                sb.append("<").append((String)fields.elementAt(i)).append(">");
-                sb.append(Util.xmlEscape((String)values.elementAt(i)));
-                sb.append("</").append((String)fields.elementAt(i)).append(">");
+                sb.append("<").append((String) fields.elementAt(i)).append(">");
+                sb.append(Util.xmlEscape((String) values.elementAt(i)));
+                sb.append("</").append((String) fields.elementAt(i)).append(">");
             }
             return sb.toString();
         }
         sb.append("<x xmlns='jabber:x:data' type='submit'>");
         for (int i = 0; i < fields.size(); ++i) {
-            String itemType = (String)types.elementAt(i);
-            String value = (String)values.elementAt(i);
+            String itemType = (String) types.elementAt(i);
+            String value = (String) values.elementAt(i);
 
             sb.append("<field type='");
             sb.append(Util.xmlEscape(itemType));
             sb.append("' var='");
-            sb.append(Util.xmlEscape((String)fields.elementAt(i)));
+            sb.append(Util.xmlEscape((String) fields.elementAt(i)));
             sb.append("'><value>");
 
             if (S_JID_MULTI.equals(itemType) || S_TEXT_MULTI.equals(itemType)) {
@@ -227,9 +236,11 @@ final class XForm {
             addField(name, type, label, value);
         }
     }
+
     private void addInfo(String title, String instructions) {
         form.addString(title, instructions);
     }
+
     private void addField(String name, String type, String label, String value) {
         int num = fields.size();
         name = StringConvertor.notNull(name);
@@ -262,7 +273,7 @@ final class XForm {
             form.addTextField(num, label, value);
 
         } else if ("".equals(type)) {
-    	    form.addTextField(num, label, value);
+            form.addTextField(num, label, value);
         }
     }
 

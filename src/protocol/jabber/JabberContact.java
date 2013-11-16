@@ -3,6 +3,7 @@ package protocol.jabber;
 import android.view.ContextMenu;
 import android.view.Menu;
 import protocol.*;
+import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.view.menu.MyMenu;
 import sawim.Options;
@@ -10,12 +11,12 @@ import sawim.comm.Config;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
 import sawim.util.JLocale;
-import ru.sawim.R;
+
 import java.util.Vector;
 
 
 public class JabberContact extends Contact {
-    
+
     public JabberContact(String jid, String name) {
         this.userId = jid;
         this.setName((null == name) ? jid : name);
@@ -39,21 +40,23 @@ public class JabberContact extends Contact {
             }
         }
     }
+
     protected void initContextMenu(Protocol protocol, ContextMenu contactMenu) {
         addChatItems(contactMenu);
 
-		if (!isOnline() && isAuth() && !isTemp()) {
+        if (!isOnline() && isAuth() && !isTemp()) {
             contactMenu.add(Menu.NONE, ContactMenu.USER_MENU_SEEN, Menu.NONE, R.string.contact_seen);
-		}
-		if (isOnline() && isAuth()) {
+        }
+        if (isOnline() && isAuth()) {
             contactMenu.add(Menu.NONE, ContactMenu.USER_INVITE, Menu.NONE, R.string.invite);
-		}
+        }
         contactMenu.add(Menu.NONE, ContactMenu.USER_MENU_ANNOTATION, Menu.NONE, R.string.notes);
         if (0 < subcontacts.size()) {
             contactMenu.add(Menu.NONE, ContactMenu.USER_MENU_CONNECTIONS, Menu.NONE, R.string.list_of_connections);
         }
         addGeneralItems(protocol, contactMenu);
     }
+
     protected void initManageContactMenu(Protocol protocol, MyMenu menu) {
         if (protocol.isConnected()) {
             if (isOnline()) {
@@ -83,7 +86,7 @@ public class JabberContact extends Contact {
             }
         }
     }
-    
+
     String getReciverJid() {
         if (this instanceof JabberServiceContact) {
         } else if (!StringConvertor.isEmpty(currentResource)) {
@@ -124,29 +127,30 @@ public class JabberContact extends Contact {
             return false;
         }
 
-        JabberXml jabberXml = ((Jabber)protocol).getConnection();
+        JabberXml jabberXml = ((Jabber) protocol).getConnection();
 
         String jid = Jid.SawimJidToRealJid(getUserId());
         String fullJid = jid;
         if (isConference()) {
-            String nick = ((JabberServiceContact)this).getMyName();
+            String nick = ((JabberServiceContact) this).getMyName();
             fullJid = Jid.SawimJidToRealJid(getUserId() + '/' + nick);
         }
 
-    	xml = Util.replace(xml, "${sawim.caps}", jabberXml.getCaps());
+        xml = Util.replace(xml, "${sawim.caps}", jabberXml.getCaps());
         xml = Util.replace(xml, "${c.jid}", Util.xmlEscape(jid));
         xml = Util.replace(xml, "${c.fulljid}", Util.xmlEscape(fullJid));
-    	xml = Util.replace(xml, "${param.full}", Util.xmlEscape(param));
+        xml = Util.replace(xml, "${param.full}", Util.xmlEscape(param));
         xml = Util.replace(xml, "${param.res}", Util.xmlEscape(resource));
         xml = Util.replace(xml, "${param.msg}", Util.xmlEscape(newMessage));
         xml = Util.replace(xml, "${param.res.realjid}",
-    		Util.xmlEscape(getSubContactRealJid(resource)));
+                Util.xmlEscape(getSubContactRealJid(resource)));
         xml = Util.replace(xml, "${param.full.realjid}",
-    		Util.xmlEscape(getSubContactRealJid(param)));
+                Util.xmlEscape(getSubContactRealJid(param)));
 
         jabberXml.requestRawXml(xml);
         return true;
     }
+
     private String getSubContactRealJid(String resource) {
         SubContact c = getExistSubContact(resource);
         return StringConvertor.notNull((null == c) ? null : c.realJid);
@@ -156,17 +160,19 @@ public class JabberContact extends Contact {
         public String resource;
         public String statusText;
         public String realJid;
-        
+
         public short client = ClientInfo.CLI_NONE;
-        
+
         public byte status;
         public byte priority;
-		public byte priorityA;
+        public byte priorityA;
     }
+
     public Vector subcontacts = new Vector();
+
     private void removeSubContact(String resource) {
         for (int i = subcontacts.size() - 1; i >= 0; --i) {
-            SubContact c = (SubContact)subcontacts.elementAt(i);
+            SubContact c = (SubContact) subcontacts.elementAt(i);
             if (c.resource.equals(resource)) {
                 c.status = StatusInfo.STATUS_OFFLINE;
                 c.statusText = null;
@@ -175,15 +181,17 @@ public class JabberContact extends Contact {
             }
         }
     }
+
     public SubContact getExistSubContact(String resource) {
         for (int i = subcontacts.size() - 1; i >= 0; --i) {
-            SubContact c = (SubContact)subcontacts.elementAt(i);
+            SubContact c = (SubContact) subcontacts.elementAt(i);
             if (c.resource.equals(resource)) {
                 return c;
             }
         }
         return null;
     }
+
     protected SubContact getSubContact(String resource) {
         SubContact c = getExistSubContact(resource);
         if (null != c) {
@@ -195,12 +203,14 @@ public class JabberContact extends Contact {
         subcontacts.addElement(c);
         return c;
     }
+
     void setRealJid(String resource, String realJid) {
         SubContact c = getExistSubContact(resource);
         if (null != c) {
             c.realJid = realJid;
         }
     }
+
     SubContact getCurrentSubContact() {
         if ((0 == subcontacts.size()) || isConference()) {
             return null;
@@ -210,27 +220,28 @@ public class JabberContact extends Contact {
             return currentContact;
         }
         try {
-            currentContact = (SubContact)subcontacts.elementAt(0);
+            currentContact = (SubContact) subcontacts.elementAt(0);
             byte maxPriority = currentContact.priority;
             for (int i = 1; i < subcontacts.size(); ++i) {
-                SubContact contact = (SubContact)subcontacts.elementAt(i);
+                SubContact contact = (SubContact) subcontacts.elementAt(i);
                 if (maxPriority < contact.priority) {
                     maxPriority = contact.priority;
                     currentContact = contact;
                 }
             }
         } catch (Exception e) {
-            
+
         }
         return currentContact;
     }
 
-	public byte subcontactsS() {
-	    if (!isConference() && 1 < subcontacts.size()) {
-	        return (byte)subcontacts.size();
-		}
-		return (byte)0;
-	}
+    public byte subcontactsS() {
+        if (!isConference() && 1 < subcontacts.size()) {
+            return (byte) subcontacts.size();
+        }
+        return (byte) 0;
+    }
+
     public void __setStatus(String resource, int priority, int priorityA, byte index, String statusText) {
         if (StatusInfo.STATUS_OFFLINE == index) {
             resource = StringConvertor.notNull(resource);
@@ -244,12 +255,13 @@ public class JabberContact extends Contact {
 
         } else {
             SubContact c = getSubContact(resource);
-            c.priority = (byte)priority;
-			c.priorityA = (byte)priorityA;
+            c.priority = (byte) priority;
+            c.priorityA = (byte) priorityA;
             c.status = index;
             c.statusText = statusText;
         }
     }
+
     void updateMainStatus(Jabber jabber) {
         if (isSingleUserContact()) {
             SubContact c = getCurrentSubContact();
@@ -282,6 +294,7 @@ public class JabberContact extends Contact {
         subcontacts.removeAllElements();
         super.setOfflineStatus();
     }
+
     public void setActiveResource(String resource) {
         SubContact c = getExistSubContact(resource);
         currentResource = (null == c) ? null : c.resource;
@@ -298,6 +311,7 @@ public class JabberContact extends Contact {
     public boolean isSingleUserContact() {
         return true;
     }
+
     public boolean hasHistory() {
         return !isTemp();
     }

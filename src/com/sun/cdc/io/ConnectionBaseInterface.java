@@ -9,6 +9,6 @@ import javax.microedition.io.Connection;
 
 public interface ConnectionBaseInterface {
 
-	Connection openPrim(String name, int mode, boolean timeouts);
+    Connection openPrim(String name, int mode, boolean timeouts);
 
 }

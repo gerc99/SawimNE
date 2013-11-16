@@ -3,23 +3,23 @@
 
 package protocol.icq.action;
 
-import sawim.SawimException;
-import sawim.comm.ArrayReader;
-import sawim.comm.StringConvertor;
-import sawim.comm.Util;
-import sawim.modules.DebugLog;
 import protocol.Contact;
 import protocol.Group;
 import protocol.icq.Icq;
 import protocol.icq.IcqContact;
 import protocol.icq.packet.Packet;
 import protocol.icq.packet.SnacPacket;
+import sawim.SawimException;
+import sawim.comm.ArrayReader;
+import sawim.comm.StringConvertor;
+import sawim.comm.Util;
+import sawim.modules.DebugLog;
 
 import java.util.Vector;
 
 public class UpdateContactListAction extends IcqAction {
 
-    
+
     private static final int STATE_ERROR = -1;
     private static final int STATE_RENAME = 1;
     private static final int STATE_COMPLETED = 3;
@@ -29,29 +29,27 @@ public class UpdateContactListAction extends IcqAction {
     private static final int STATE_ADD = 18;
     private static final int STATE_DELETE_CONTACT = 7;
     private static final int STATE_DELETE_GROUP = 9;
-    private static final int STATE_ADD_GROUP     = 11;
-    private static final int STATE_COMMIT     = 13;
+    private static final int STATE_ADD_GROUP = 11;
+    private static final int STATE_COMMIT = 13;
 
-    
-    public static final int ACTION_ADD    = 1;
-    public static final int ACTION_DEL    = 2;
+
+    public static final int ACTION_ADD = 1;
+    public static final int ACTION_DEL = 2;
     public static final int ACTION_RENAME = 3;
-    public static final int ACTION_MOVE   = 4;
-    private static final int ACTION_ADD_REQ_AUTH  = 5;
+    public static final int ACTION_MOVE = 4;
+    private static final int ACTION_ADD_REQ_AUTH = 5;
     public static final int ACTION_MOVE_REQ_AUTH = 6;
     private static final int ACTION_MOVE_FROM_NIL = 7;
 
-    
-    public static final int TIMEOUT = 10; 
 
-    
+    public static final int TIMEOUT = 10;
 
-    
+
     private Contact contact;
     private int contactFromId;
     private int contactToId;
 
-    
+
     private Group gItem;
     private Group newGItem;
 
@@ -60,23 +58,23 @@ public class UpdateContactListAction extends IcqAction {
 
     private int errorCode;
 
-    
+
     public UpdateContactListAction(Icq icq, Contact cItem, int _action) {
         this.action = _action;
         this.contact = cItem;
-        this.contactFromId = ((IcqContact)cItem).getContactId();
+        this.contactFromId = ((IcqContact) cItem).getContactId();
         this.gItem = icq.getGroup(cItem);
     }
-    
+
     public UpdateContactListAction(Group cItem, int _action) {
         this.action = _action;
         this.contact = null;
         this.gItem = cItem;
     }
-    
+
     public UpdateContactListAction(Contact cItem, Group oldGroup, Group newGroup) {
         this.contact = cItem;
-        this.contactFromId = ((IcqContact)cItem).getContactId();
+        this.contactFromId = ((IcqContact) cItem).getContactId();
         this.gItem = oldGroup;
         this.newGItem = newGroup;
         action = ACTION_MOVE;
@@ -99,6 +97,7 @@ public class UpdateContactListAction extends IcqAction {
         }
         sendSsiPacket(SnacPacket.CLI_ROSTERADD_COMMAND, buf);
     }
+
     private void sendSsiPacket(int cmd, byte[] buf) throws SawimException {
         sendPacket(new SnacPacket(SnacPacket.SSI_FAMILY,
                 cmd, getConnection().getNextCounter(), buf));
@@ -108,25 +107,25 @@ public class UpdateContactListAction extends IcqAction {
         byte[] buf = null;
 
         if (ACTION_RENAME != action) {
-            
+
             transactionStart();
         }
 
         switch (action) {
-            
+
             case ACTION_RENAME:
                 buf = (null != contact) ? packContact(contact, contactFromId, contact.getGroupId(), false) : packGroup(gItem);
                 sendSsiPacket(SnacPacket.CLI_ROSTERUPDATE_COMMAND, buf);
                 state = STATE_RENAME;
                 break;
 
-                
+
             case ACTION_ADD:
             case ACTION_ADD_REQ_AUTH:
                 addItem();
                 break;
 
-                
+
             case ACTION_MOVE_FROM_NIL:
             case ACTION_DEL:
                 if (null != contact) {
@@ -140,7 +139,7 @@ public class UpdateContactListAction extends IcqAction {
                 sendSsiPacket(SnacPacket.CLI_ROSTERDELETE_COMMAND, buf);
                 break;
 
-                
+
             case ACTION_MOVE:
                 sendSsiPacket(SnacPacket.CLI_ROSTERUPDATE_COMMAND,
                         packContact(contact, contactFromId, gItem.getId(), false));
@@ -152,7 +151,7 @@ public class UpdateContactListAction extends IcqAction {
     }
 
     private boolean processPaket(Packet packet) throws SawimException {
-        
+
         SnacPacket snacPacket = null;
         if (packet instanceof SnacPacket) {
             snacPacket = (SnacPacket) packet;
@@ -174,14 +173,24 @@ public class UpdateContactListAction extends IcqAction {
             return false;
         }
 
-        
+
         int retCode = snacPacket.getReader().getWordBE();
         switch (retCode) {
-            case 0x002: errorCode = 154; break;
-            case 0x003: errorCode = 155; break;
-            case 0x00A: errorCode = 156; break;
-            case 0x00C: errorCode = 157; break;
-            case 0x00D: errorCode = 158; break;
+            case 0x002:
+                errorCode = 154;
+                break;
+            case 0x003:
+                errorCode = 155;
+                break;
+            case 0x00A:
+                errorCode = 156;
+                break;
+            case 0x00C:
+                errorCode = 157;
+                break;
+            case 0x00D:
+                errorCode = 158;
+                break;
         }
         if ((0x00A == retCode) && (ACTION_MOVE_FROM_NIL == action)) {
             errorCode = 0;
@@ -197,12 +206,12 @@ public class UpdateContactListAction extends IcqAction {
             return true;
         }
         if (0 != errorCode) {
-            
+
             DebugLog.println("updateRoster action = " + action
                     + " state = " + state
                     + " ret code = " + retCode);
-            
-            
+
+
             getIcq().showException(new SawimException(errorCode, 0));
             state = STATE_ERROR;
             return true;
@@ -222,7 +231,7 @@ public class UpdateContactListAction extends IcqAction {
             case STATE_ADD:
                 if (0 == retCode) {
                     sendGroup(gItem);
-                    ((IcqContact)contact).setContactId(contactToId);
+                    ((IcqContact) contact).setContactId(contactToId);
                     contact.setBooleanValue(IcqContact.CONTACT_NO_AUTH, action == ACTION_ADD_REQ_AUTH);
                     this.state = STATE_COMPLETED;
                 }
@@ -238,7 +247,7 @@ public class UpdateContactListAction extends IcqAction {
                 this.state = STATE_COMPLETED;
                 break;
 
-                
+
             case STATE_MOVE1:
                 sendSsiPacket(SnacPacket.CLI_ROSTERDELETE_COMMAND,
                         packContact(contact, contactFromId, gItem.getId(), false));
@@ -254,7 +263,7 @@ public class UpdateContactListAction extends IcqAction {
                 break;
 
             case STATE_MOVE3:
-                ((IcqContact)contact).setContactId(contactToId);
+                ((IcqContact) contact).setContactId(contactToId);
                 sendGroup(newGItem);
                 this.state = STATE_COMMIT;
                 break;
@@ -296,7 +305,7 @@ public class UpdateContactListAction extends IcqAction {
         sendSsiPacket(SnacPacket.CLI_ROSTERUPDATE_COMMAND, packGroup(group));
     }
 
-    
+
     public boolean forward(Packet packet) throws SawimException {
         boolean result = processPaket(packet);
 
@@ -329,32 +338,26 @@ public class UpdateContactListAction extends IcqAction {
         stream.writeLenAndUtf8String(cItem.getUserId());
         stream.writeWordBE(groupId);
         stream.writeWordBE(contactId);
-        stream.writeWordBE(0); 
+        stream.writeWordBE(0);
 
-        
+
         Util addData = new Util();
 
-        
+
         if ((ACTION_DEL != action) && (ACTION_MOVE_FROM_NIL != action)) {
             addData.writeWordBE(0x0131);
             addData.writeLenAndUtf8String(cItem.getName());
         }
 
-        
-        
-        
-        
 
-        
         if (auth) {
             addData.writeTLV(0x0066, null);
         }
 
-        
+
         stream.writeWordBE(addData.size());
         stream.writeByteArray(addData.toByteArray());
 
-        
 
         return stream.toByteArray();
     }
@@ -363,22 +366,22 @@ public class UpdateContactListAction extends IcqAction {
         Util stream = new Util();
 
         stream.writeLenAndUtf8String(gItem.getName());
-        stream.writeWordBE(gItem.getId()); 
-        stream.writeWordBE(0); 
-        stream.writeWordBE(1); 
+        stream.writeWordBE(gItem.getId());
+        stream.writeWordBE(0);
+        stream.writeWordBE(1);
 
-        
+
         Vector items = gItem.getContacts();
         int size = items.size();
         if (size != 0) {
-            
+
             stream.writeWordBE(size * 2 + 4);
 
-            
+
             stream.writeWordBE(0x00c8);
             stream.writeWordBE(size * 2);
             for (int i = 0; i < size; ++i) {
-                IcqContact item = (IcqContact)items.elementAt(i);
+                IcqContact item = (IcqContact) items.elementAt(i);
                 stream.writeWordBE(item.getContactId());
             }
         } else {
@@ -394,15 +397,15 @@ public class UpdateContactListAction extends IcqAction {
         Vector gItems = getIcq().getGroupItems();
         int size = gItems.size();
         stream.writeLenAndUtf8String("");
-        stream.writeWordBE(0); 
-        stream.writeWordBE(0); 
+        stream.writeWordBE(0);
+        stream.writeWordBE(0);
         stream.writeWordBE(1);
         stream.writeWordBE(size * 2 + 4);
         stream.writeWordBE(0xc8);
         stream.writeWordBE(size * 2);
 
         for (int i = 0; i < size; ++i) {
-            stream.writeWordBE(((Group)gItems.elementAt(i)).getId());
+            stream.writeWordBE(((Group) gItems.elementAt(i)).getId());
         }
 
         return stream.toByteArray();

@@ -3,42 +3,45 @@ package sawim.search;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
-import ru.sawim.models.list.VirtualList;
-import ru.sawim.models.list.VirtualListModel;
-import java.util.Vector;
-
-import sawim.roster.*;
-import sawim.comm.*;
-import sawim.util.*;
-import protocol.*;
-import protocol.icq.*;
-import protocol.mrim.*;
+import protocol.Contact;
+import protocol.Group;
+import protocol.Protocol;
+import protocol.icq.Icq;
+import protocol.mrim.Mrim;
 import ru.sawim.R;
 import ru.sawim.models.form.ControlStateListener;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
+import ru.sawim.models.list.VirtualList;
+import ru.sawim.models.list.VirtualListModel;
+import sawim.comm.StringConvertor;
+import sawim.comm.Util;
+import sawim.roster.Roster;
+import sawim.util.JLocale;
+
+import java.util.Vector;
 
 public final class Search implements FormListener, ControlStateListener {
-    final public static int UIN         = 0;
-    final public static int NICK        = 1;
-    final public static int FIRST_NAME  = 2;
-    final public static int LAST_NAME   = 3;
-    final public static int EMAIL       = 4;
-    final public static int CITY        = 5;
-    final public static int GENDER      = 6;
+    final public static int UIN = 0;
+    final public static int NICK = 1;
+    final public static int FIRST_NAME = 2;
+    final public static int LAST_NAME = 3;
+    final public static int EMAIL = 4;
+    final public static int CITY = 5;
+    final public static int GENDER = 6;
     final public static int ONLY_ONLINE = 7;
-    final public static int AGE         = 8;
-    final public static int LAST_INDEX  = 9;
+    final public static int AGE = 8;
+    final public static int LAST_INDEX = 9;
 
     private static final int USERID = 1000;
     private static final int GROUP = 1001;
     private static final int PROFILE = 1002;
     private static final int REQ_AUTH = 1020;
 
-    private static final int MENU_ADD     = 0;
+    private static final int MENU_ADD = 0;
     private static final int MENU_MESSAGE = 1;
-    private static final int MENU_NEXT    = 2;
-    private static final int MENU_PREV    = 3;
+    private static final int MENU_NEXT = 2;
+    private static final int MENU_PREV = 3;
 
     private Forms searchForm;
     private VirtualList screen;
@@ -73,6 +76,7 @@ public final class Search implements FormListener, ControlStateListener {
         preferredNick = null;
 
     }
+
     public void controlStateChanged(int id) {
         if (PROFILE == id) {
             String userid = searchForm.getTextFieldValue(USERID);
@@ -88,17 +92,20 @@ public final class Search implements FormListener, ControlStateListener {
             }
         }
     }
+
     public void show() {
         type = TYPE_FULL;
         createSearchForm(false);
         searchForm.show();
     }
+
     public void show(String uin, boolean isConference) {
         type = TYPE_LITE;
         setSearchParam(Search.UIN, uin);
         createSearchForm(isConference);
         searchForm.show();
     }
+
     private void showResults() {
         results.removeAllElements();
         searchId = Util.uniqueValue();
@@ -106,14 +113,16 @@ public final class Search implements FormListener, ControlStateListener {
         showWaitScreen();
         protocol.searchUsers(this);
     }
+
     public final void putToGroup(Group group) {
         this.group = group;
     }
+
     private Vector getGroups() {
         Vector all = protocol.getGroupItems();
         Vector groups = new Vector();
         for (int i = 0; i < all.size(); ++i) {
-            Group g = (Group)all.elementAt(i);
+            Group g = (Group) all.elementAt(i);
             if (g.hasMode(Group.MODE_NEW_CONTACTS)) {
                 groups.addElement(g);
             }
@@ -128,6 +137,7 @@ public final class Search implements FormListener, ControlStateListener {
     private UserInfo getCurrentResult() {
         return (UserInfo) results.elementAt(currentResultIndex);
     }
+
     private int getResultCount() {
         return results.size();
     }
@@ -139,9 +149,11 @@ public final class Search implements FormListener, ControlStateListener {
     public String getSearchParam(int param) {
         return searchParams[param];
     }
+
     public void setSearchParam(int param, String value) {
         searchParams[param] = StringConvertor.isEmpty(value) ? null : value;
     }
+
     public String[] getSearchParams() {
         return searchParams;
     }
@@ -152,6 +164,7 @@ public final class Search implements FormListener, ControlStateListener {
         }
         waitResults = false;
     }
+
     public void canceled() {
         if (waitResults) {
             searchId = -1;
@@ -163,6 +176,7 @@ public final class Search implements FormListener, ControlStateListener {
         String userid = StringConvertor.notNull(getSearchParam(UIN));
         searchForm.addTextField(USERID, protocol.getUserIdName(), userid);
     }
+
     private void createSearchForm(boolean isConference) {
         screen = VirtualList.getInstance();
         searchForm = new Forms((TYPE_LITE == type) ? "add_user" : "search_user", this);
@@ -185,11 +199,11 @@ public final class Search implements FormListener, ControlStateListener {
                 searchForm.addSelector(GROUP, "group", list, def);
             }
             boolean request_auth = !isConference;
-            
+
             if (protocol instanceof Mrim) {
                 request_auth = false;
             }
-            
+
             if (request_auth) {
                 searchForm.addCheckBox(REQ_AUTH, "requauth", true);
             }
@@ -204,7 +218,7 @@ public final class Search implements FormListener, ControlStateListener {
         searchForm.addTextField(Search.FIRST_NAME, "lastname", "");
         searchForm.addTextField(Search.CITY, "city", "");
         searchForm.addSelector(Search.GENDER, "gender", "female_male" + "|" + "female" + "|" + "male", 0);
-        
+
         if (icqFields) {
             searchForm.addTextField(Search.EMAIL, "email", "");
         }
@@ -223,6 +237,7 @@ public final class Search implements FormListener, ControlStateListener {
         screen.setModel(model);
         screen.show();
     }
+
     private void drawResultScreen() {
         int resultCount = getResultCount();
 
@@ -309,18 +324,18 @@ public final class Search implements FormListener, ControlStateListener {
             if (TYPE_FULL == type) {
                 currentResultIndex = 0;
                 setSearchParam(Search.UIN, searchForm.getTextFieldValue(USERID).trim());
-                setSearchParam(Search.NICK,        searchForm.getTextFieldValue(Search.NICK));
-                setSearchParam(Search.FIRST_NAME,  searchForm.getTextFieldValue(Search.FIRST_NAME));
-                setSearchParam(Search.LAST_NAME,   searchForm.getTextFieldValue(Search.FIRST_NAME));
-                setSearchParam(Search.CITY,        searchForm.getTextFieldValue(Search.CITY));
-                setSearchParam(Search.GENDER,      Integer.toString(searchForm.getSelectorValue(Search.GENDER)));
+                setSearchParam(Search.NICK, searchForm.getTextFieldValue(Search.NICK));
+                setSearchParam(Search.FIRST_NAME, searchForm.getTextFieldValue(Search.FIRST_NAME));
+                setSearchParam(Search.LAST_NAME, searchForm.getTextFieldValue(Search.FIRST_NAME));
+                setSearchParam(Search.CITY, searchForm.getTextFieldValue(Search.CITY));
+                setSearchParam(Search.GENDER, Integer.toString(searchForm.getSelectorValue(Search.GENDER)));
                 setSearchParam(Search.ONLY_ONLINE, searchForm.getCheckBoxValue(Search.ONLY_ONLINE) ? "1" : "0");
-                setSearchParam(Search.AGE,         ages[searchForm.getSelectorValue(Search.AGE)]);
-                
+                setSearchParam(Search.AGE, ages[searchForm.getSelectorValue(Search.AGE)]);
+
                 if (icqFields) {
                     setSearchParam(Search.EMAIL, searchForm.getTextFieldValue(Search.EMAIL));
                 }
-                
+
                 showResults();
 
             } else if (TYPE_LITE == type) {
@@ -329,11 +344,11 @@ public final class Search implements FormListener, ControlStateListener {
                 if (StringConvertor.isEmpty(userid)) {
                     return;
                 }
-                
+
                 if ((null != jabberGate) && !userid.endsWith(jabberGate)) {
                     userid = userid.replace('@', '%') + '@' + jabberGate;
                 }
-                
+
 
                 Contact contact = protocol.createTempContact(userid);
                 if (null != contact) {
@@ -362,13 +377,14 @@ public final class Search implements FormListener, ControlStateListener {
             form.back();
         }
     }
+
     private Contact createContact(UserInfo resultData) {
         String uin = StringConvertor.toLowerCase(resultData.uin.trim());
-        
+
         if ((null != jabberGate) && !uin.endsWith(jabberGate)) {
             uin = uin.replace('@', '%') + '@' + jabberGate;
         }
-        
+
         Contact contact = protocol.getItemByUIN(uin);
         if (null == contact) {
             contact = protocol.createTempContact(uin);

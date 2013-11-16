@@ -1,14 +1,14 @@
 package sawim.chat;
 
 import DrawControls.icons.Icon;
-import sawim.chat.message.Message;
-import sawim.chat.message.PlainMessage;
-import sawim.comm.Util;
-import sawim.roster.Roster;
-import sawim.comm.StringConvertor;
-import sawim.io.Storage;
 import protocol.Contact;
 import protocol.Protocol;
+import sawim.chat.message.Message;
+import sawim.chat.message.PlainMessage;
+import sawim.comm.StringConvertor;
+import sawim.comm.Util;
+import sawim.io.Storage;
+import sawim.roster.Roster;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -92,12 +92,12 @@ public final class ChatHistory {
         return count;
     }
 
-	public int getOtherMessageCount() {
-	    int count = 0;
+    public int getOtherMessageCount() {
+        int count = 0;
         for (int i = getTotal() - 1; 0 <= i; --i) {
             count += chatAt(i).getOtherMessageCount();
-		}
-		return count;
+        }
+        return count;
     }
 
     private int getMoreImportant(int v1, int v2) {
@@ -140,12 +140,12 @@ public final class ChatHistory {
         int icon = -1;
         Contact c;
         for (int i = contacts.size() - 1; 0 <= i; --i) {
-            c = (Contact)contacts.elementAt(i);
+            c = (Contact) contacts.elementAt(i);
             icon = getMoreImportant(icon, c.getUnreadMessageIcon());
         }
         return Message.msgIcons.iconAt(icon);
     }
-    
+
     public void registerChat(Chat item) {
         if (!contains(historyTable, item.getContact().getUserId())) {
             historyTable.add(item);
@@ -207,7 +207,7 @@ public final class ChatHistory {
         //if (chat.isHuman() && !chat.getContact().isTemp()) {
         //    chat.removeReadMessages();
         //} else {
-            unregisterChat(chat);
+        unregisterChat(chat);
         //}
     }
 
@@ -219,7 +219,7 @@ public final class ChatHistory {
         }
         //setCurrentItemIndex(getCurrItem());
         if (0 < getSize()) {
-        //    restore();
+            //    restore();
 
         } else {
             Roster.getInstance().updateRoster();
@@ -427,7 +427,7 @@ public final class ChatHistory {
             s.open(true);
             for (int i = getTotal() - 1; 0 <= i; --i) {
                 Chat chat = chatAt(i);
-                
+
                 int count = chat.getUnreadMessageCount();
                 for (int j = 0; j < count; ++j) {
                     MessData message = chat.getUnreadMessage(j);
@@ -445,6 +445,7 @@ public final class ChatHistory {
         }
         s.close();
     }
+
     public void loadUnreadMessages() {
         Storage s = new Storage("unread");
         try {

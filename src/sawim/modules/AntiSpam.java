@@ -2,17 +2,16 @@
 
 package sawim.modules;
 
+import protocol.Contact;
+import protocol.Protocol;
 import sawim.Options;
 import sawim.chat.message.Message;
 import sawim.chat.message.PlainMessage;
 import sawim.chat.message.SystemNotice;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
-import protocol.Contact;
-import protocol.Protocol;
 
 import java.util.Vector;
-
 
 
 public class AntiSpam {
@@ -20,9 +19,10 @@ public class AntiSpam {
 
     private Vector validUins = new Vector();
     private Vector uncheckedUins = new Vector();
+
     private AntiSpam() {
     }
-    
+
     private void sendHelloMessage(Protocol protocol, Contact contact) {
         validUins.addElement(contact.getUserId());
         uncheckedUins.removeElement(contact.getUserId());
@@ -50,14 +50,16 @@ public class AntiSpam {
         }
         return false;
     }
+
     private void denyAuth(Protocol protocol, Message message) {
         if (message instanceof SystemNotice) {
-    	    SystemNotice notice = (SystemNotice)message;
-    	    if (SystemNotice.SYS_NOTICE_AUTHREQ == notice.getSysnoteType()) {
+            SystemNotice notice = (SystemNotice) message;
+            if (SystemNotice.SYS_NOTICE_AUTHREQ == notice.getSysnoteType()) {
                 protocol.autoDenyAuth(message.getSndrUin());
-    	    }
+            }
         }
     }
+
     private boolean containsKeywords(String msg) {
         String opt = Options.getString(Options.OPTION_ANTISPAM_KEYWORDS);
         if (0 == opt.length()) return false;
@@ -73,6 +75,7 @@ public class AntiSpam {
         }
         return false;
     }
+
     public boolean isSpamMessage(Protocol protocol, Message message) {
         if (!Options.getBoolean(Options.OPTION_ANTISPAM_ENABLE)) {
             return false;
@@ -87,11 +90,11 @@ public class AntiSpam {
         }
 
         String msg = message.getText();
-        
+
         if (msg.length() < 256) {
-    	    //MagicEye.addAction(protocol, uin, "antispam", msg);
+            //MagicEye.addAction(protocol, uin, "antispam", msg);
         }
-        
+
         if (message.isOffline()) {
             return true;
         }
@@ -107,7 +110,7 @@ public class AntiSpam {
         sendQuestion(protocol, contact);
         return true;
     }
-    
+
     public static boolean isSpam(Protocol protocol, Message message) {
         if (antiSpam.containsKeywords(message.getText())) {
             antiSpam.denyAuth(protocol, message);

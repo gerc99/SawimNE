@@ -30,37 +30,34 @@ import java.util.Comparator;
 import java.util.Vector;
 
 
-public class RecordEnumerationImpl implements RecordEnumeration
-{
-	private RecordStoreImpl recordStoreImpl;
-	private RecordFilter filter;
-	private RecordComparator comparator;
-	private boolean keepUpdated;
+public class RecordEnumerationImpl implements RecordEnumeration {
+    private RecordStoreImpl recordStoreImpl;
+    private RecordFilter filter;
+    private RecordComparator comparator;
+    private boolean keepUpdated;
 
-	private Vector enumerationRecords = new Vector();
-	private int currentRecord;    
-    
-	private RecordListener recordListener = new RecordListener() 
-    {
+    private Vector enumerationRecords = new Vector();
+    private int currentRecord;
 
-		public void recordAdded(RecordStore recordStore, int recordId) {
-			rebuild();
-		}
+    private RecordListener recordListener = new RecordListener() {
 
-		public void recordChanged(RecordStore recordStore, int recordId) {
-			rebuild();
-		}
+        public void recordAdded(RecordStore recordStore, int recordId) {
+            rebuild();
+        }
 
-		public void recordDeleted(RecordStore recordStore, int recordId) {
-			rebuild();
-		}
-		
+        public void recordChanged(RecordStore recordStore, int recordId) {
+            rebuild();
+        }
+
+        public void recordDeleted(RecordStore recordStore, int recordId) {
+            rebuild();
+        }
+
     };
 
 
-    public RecordEnumerationImpl(RecordStoreImpl recordStoreImpl, RecordFilter filter, RecordComparator comparator, boolean keepUpdated)
-    {
-    	this.recordStoreImpl = recordStoreImpl;
+    public RecordEnumerationImpl(RecordStoreImpl recordStoreImpl, RecordFilter filter, RecordComparator comparator, boolean keepUpdated) {
+        this.recordStoreImpl = recordStoreImpl;
         this.filter = filter;
         this.comparator = comparator;
         this.keepUpdated = keepUpdated;
@@ -68,20 +65,18 @@ public class RecordEnumerationImpl implements RecordEnumeration
         rebuild();
 
         if (keepUpdated) {
-        	recordStoreImpl.addRecordListener(recordListener);
+            recordStoreImpl.addRecordListener(recordListener);
         }
     }
 
 
-    public int numRecords()
-    {
+    public int numRecords() {
         return enumerationRecords.size();
     }
 
 
-    public byte[] nextRecord() 
-    		throws InvalidRecordIDException, RecordStoreNotOpenException, RecordStoreException
-    {
+    public byte[] nextRecord()
+            throws InvalidRecordIDException, RecordStoreNotOpenException, RecordStoreException {
         if (!recordStoreImpl.isOpen()) {
             throw new RecordStoreNotOpenException();
         }
@@ -97,9 +92,8 @@ public class RecordEnumerationImpl implements RecordEnumeration
     }
 
 
-    public int nextRecordId() 
-    		throws InvalidRecordIDException
-    {
+    public int nextRecordId()
+            throws InvalidRecordIDException {
         if (currentRecord >= numRecords()) {
             throw new InvalidRecordIDException();
         }
@@ -111,9 +105,8 @@ public class RecordEnumerationImpl implements RecordEnumeration
     }
 
 
-    public byte[] previousRecord() 
-    		throws InvalidRecordIDException, RecordStoreNotOpenException, RecordStoreException
-    {
+    public byte[] previousRecord()
+            throws InvalidRecordIDException, RecordStoreNotOpenException, RecordStoreException {
         if (!recordStoreImpl.isOpen()) {
             throw new RecordStoreNotOpenException();
         }
@@ -122,15 +115,14 @@ public class RecordEnumerationImpl implements RecordEnumeration
         }
 
         currentRecord--;
-        byte[] result = ((EnumerationRecord) enumerationRecords .elementAt(currentRecord)).value;
+        byte[] result = ((EnumerationRecord) enumerationRecords.elementAt(currentRecord)).value;
 
         return result;
     }
 
 
-    public int previousRecordId() 
-    		throws InvalidRecordIDException
-    {
+    public int previousRecordId()
+            throws InvalidRecordIDException {
         if (currentRecord < 0) {
             throw new InvalidRecordIDException();
         }
@@ -142,8 +134,7 @@ public class RecordEnumerationImpl implements RecordEnumeration
     }
 
 
-    public boolean hasNextElement()
-    {
+    public boolean hasNextElement() {
         if (currentRecord == numRecords()) {
             return false;
         } else {
@@ -152,8 +143,7 @@ public class RecordEnumerationImpl implements RecordEnumeration
     }
 
 
-    public boolean hasPreviousElement()
-    {
+    public boolean hasPreviousElement() {
         if (currentRecord == 0) {
             return false;
         } else {
@@ -162,103 +152,96 @@ public class RecordEnumerationImpl implements RecordEnumeration
     }
 
 
-    public void reset()
-    {
+    public void reset() {
         currentRecord = 0;
     }
 
 
-    public void rebuild()
-    {
+    public void rebuild() {
         enumerationRecords.removeAllElements();
 
         //
         // filter
         //
         synchronized (recordStoreImpl) {
-			try {
-				int recordId = 1;
-				int i = 0;
-				while (i < recordStoreImpl.getNumRecords()) {
-					try {
-			            byte[] data = recordStoreImpl.getRecord(recordId);
-			            i++;
-			            if (filter != null && !filter.matches(data)) {
-			            	recordId++;
-			                continue;
-			            }
-			            enumerationRecords.add(new EnumerationRecord(recordId, data));
-					} catch (InvalidRecordIDException e) {
-					}
-					recordId++;
-		        }
-			} catch (RecordStoreException e) {
-				e.printStackTrace();
-			}
+            try {
+                int recordId = 1;
+                int i = 0;
+                while (i < recordStoreImpl.getNumRecords()) {
+                    try {
+                        byte[] data = recordStoreImpl.getRecord(recordId);
+                        i++;
+                        if (filter != null && !filter.matches(data)) {
+                            recordId++;
+                            continue;
+                        }
+                        enumerationRecords.add(new EnumerationRecord(recordId, data));
+                    } catch (InvalidRecordIDException e) {
+                    }
+                    recordId++;
+                }
+            } catch (RecordStoreException e) {
+                e.printStackTrace();
+            }
         }
 
         // 
         // sort
         //
-		if (comparator != null) {
-			Collections.sort(enumerationRecords, new Comparator() {
+        if (comparator != null) {
+            Collections.sort(enumerationRecords, new Comparator() {
 
-				public int compare(Object lhs, Object rhs) {
+                public int compare(Object lhs, Object rhs) {
 
-					int compare = comparator.compare(((EnumerationRecord) lhs).value,
-					                                 ((EnumerationRecord) rhs).value);
-					if (compare == RecordComparator.EQUIVALENT)
-						return 0;
-					else if (compare == RecordComparator.FOLLOWS)
-						return 1;
-					else
-						return -1;
+                    int compare = comparator.compare(((EnumerationRecord) lhs).value,
+                            ((EnumerationRecord) rhs).value);
+                    if (compare == RecordComparator.EQUIVALENT)
+                        return 0;
+                    else if (compare == RecordComparator.FOLLOWS)
+                        return 1;
+                    else
+                        return -1;
 
-				}
+                }
 
-			});
-		}
+            });
+        }
     }
 
 
-    public void keepUpdated(boolean keepUpdated)
-    {
+    public void keepUpdated(boolean keepUpdated) {
         if (keepUpdated) {
             if (!this.keepUpdated) {
                 rebuild();
                 recordStoreImpl.addRecordListener(recordListener);
             }
         } else {
-        	recordStoreImpl.removeRecordListener(recordListener);
+            recordStoreImpl.removeRecordListener(recordListener);
         }
 
         this.keepUpdated = keepUpdated;
     }
 
 
-    public boolean isKeptUpdated()
-    {
+    public boolean isKeptUpdated() {
         return keepUpdated;
     }
 
 
-    public void destroy()
-    {
+    public void destroy() {
     }
 
 
-    class EnumerationRecord
-    {
+    class EnumerationRecord {
         int recordId;
 
         byte[] value;
 
-        
-        EnumerationRecord(int recordId, byte[] value)
-        {
+
+        EnumerationRecord(int recordId, byte[] value) {
             this.recordId = recordId;
             this.value = value;
         }
-    }    
+    }
 
 }

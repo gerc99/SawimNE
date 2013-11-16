@@ -1,12 +1,12 @@
 package protocol.jabber;
 
-import sawim.roster.Roster;
-import sawim.comm.StringConvertor;
-import sawim.comm.Util;
-import sawim.util.JLocale;
 import ru.sawim.models.form.ControlStateListener;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
+import sawim.comm.StringConvertor;
+import sawim.comm.Util;
+import sawim.roster.Roster;
+import sawim.util.JLocale;
 
 public final class AdHoc implements FormListener, ControlStateListener {
     private JabberContact contact;
@@ -31,10 +31,11 @@ public final class AdHoc implements FormListener, ControlStateListener {
         return jid;
     }
 
-	private String resourceConf;
-	public void setResource(String res) {
-	    resourceConf = res;
-	}
+    private String resourceConf;
+
+    public void setResource(String res) {
+        resourceConf = res;
+    }
 
     public void show() {
         commandsListForm = new Forms(JLocale.getString("adhoc"), this);
@@ -84,12 +85,12 @@ public final class AdHoc implements FormListener, ControlStateListener {
             jid = contact.getUserId();
 
         } else if (1 < contact.subcontacts.size()) {
-		    if (!Jid.isConference(contact.getUserId())) {
+            if (!Jid.isConference(contact.getUserId())) {
                 String resource = commandsListForm.getSelectorString(FORM_RESOURCE);
                 jid = contact.getUserId() + "/" + resource;
-			} else {
-			    jid = contact.getUserId() + "/" + resourceConf;
-			}
+            } else {
+                jid = contact.getUserId() + "/" + resourceConf;
+            }
 
         } else if (1 == contact.subcontacts.size()) {
             JabberContact.SubContact sub = (JabberContact.SubContact) contact.subcontacts.elementAt(0);
@@ -120,6 +121,7 @@ public final class AdHoc implements FormListener, ControlStateListener {
     private int commandIndex;
     private String commandSessionId;
     private String commandId;
+
     public void formAction(Forms form, boolean apply) {
         if (!apply) {
             form.back();
@@ -129,31 +131,34 @@ public final class AdHoc implements FormListener, ControlStateListener {
             if (0 != nodes.length) {
                 commandIndex = form.getSelectorValue(FORM_COMMAND);
                 protocol.getConnection().requestCommand(this, nodes[commandIndex]);
-			} else {
+            } else {
                 requestCommandsForCurrentResource();
                 updateForm(false);
-			}
+            }
         } else {
             execForm();
             Roster.getInstance().activate(contact);
         }
         form.backForm();
     }
+
     private void execForm() {
         String xml = "<iq type='set' to='" + Util.xmlEscape(jid) + "' id='"
                 + Util.xmlEscape(commandId)
                 + "'><command xmlns='http://jabber.org/protocol/commands'"
                 + " node='" + nodes[commandIndex] + "'"
-                + (null != commandSessionId ? " sessionid='" + commandSessionId + "'": "")
+                + (null != commandSessionId ? " sessionid='" + commandSessionId + "'" : "")
                 + ">"
                 + commandForm.getXmlForm()
                 + "</command></iq>";
         protocol.getConnection().requestRawXml(xml);
     }
+
     private String getCurrentNode() {
         return ((0 <= commandIndex) && (commandIndex < nodes.length))
                 ? nodes[commandIndex] : "";
     }
+
     void loadCommandXml(XmlNode iqXml, String id) {
         XmlNode commandXml = iqXml.getFirstNode("c" + "ommand");
         if (null == commandXml) {
@@ -193,7 +198,7 @@ public final class AdHoc implements FormListener, ControlStateListener {
     public void controlStateChanged(int id) {
         if (FORM_RESOURCE == id) {
             //requestCommandsForCurrentResource();
-           // updateForm(false);
+            // updateForm(false);
         }
     }
 }

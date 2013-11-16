@@ -5,16 +5,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 import protocol.Contact;
 import ru.sawim.General;
+import ru.sawim.Scheme;
+import ru.sawim.models.list.VirtualList;
+import ru.sawim.models.list.VirtualListItem;
+import ru.sawim.models.list.VirtualListModel;
 import ru.sawim.view.TextBoxView;
 import sawim.Clipboard;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
-import ru.sawim.models.list.VirtualListModel;
-import ru.sawim.models.list.VirtualList;
-import ru.sawim.Scheme;
-import java.util.Vector;
-import ru.sawim.models.list.VirtualListItem;
 import sawim.util.JLocale;
+
+import java.util.Vector;
 
 public final class MicroBlog implements TextBoxView.TextBoxListener {
     private VirtualListModel model = new VirtualListModel();
@@ -23,10 +24,10 @@ public final class MicroBlog implements TextBoxView.TextBoxListener {
     private Mrim mrim;
     private VirtualList list;
 
-    private static final int MENU_WRITE     = 0;
-    private static final int MENU_REPLY     = 1;
-    private static final int MENU_COPY      = 2;
-    private static final int MENU_CLEAN     = 3;
+    private static final int MENU_WRITE = 0;
+    private static final int MENU_REPLY = 1;
+    private static final int MENU_COPY = 2;
+    private static final int MENU_CLEAN = 3;
     private static final int MENU_USER_MENU = 4;
 
     public MicroBlog(Mrim mrim) {
@@ -94,7 +95,7 @@ public final class MicroBlog implements TextBoxView.TextBoxListener {
                         String to = "";
                         int cur = listItem;
                         if (cur < ids.size()) {
-                            to = (String)ids.elementAt(cur);
+                            to = (String) ids.elementAt(cur);
                         }
                         write(to);
                         break;
@@ -127,7 +128,7 @@ public final class MicroBlog implements TextBoxView.TextBoxListener {
     }
 
     public boolean addPost(String from, String nick, String post, String postid,
-            boolean reply, long gmtTime) {
+                           boolean reply, long gmtTime) {
         if (StringConvertor.isEmpty(post) || ids.contains(postid)) {
             return false;
         }

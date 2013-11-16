@@ -29,40 +29,40 @@ import org.microemu.util.RecordStoreImpl;
 import javax.microedition.rms.*;
 
 public interface RecordStoreManager {
-	
-	String getName();
 
-	void deleteRecordStore(String recordStoreName) 
-			throws RecordStoreNotFoundException, RecordStoreException;
+    String getName();
 
-	RecordStore openRecordStore(String recordStoreName, boolean createIfNecessary) 
-			throws RecordStoreException;
+    void deleteRecordStore(String recordStoreName)
+            throws RecordStoreNotFoundException, RecordStoreException;
 
-	String[] listRecordStores();
-	
-	void loadRecord(RecordStoreImpl recordStoreImpl, int recordId) 
-			throws RecordStoreNotOpenException, InvalidRecordIDException, RecordStoreException;
+    RecordStore openRecordStore(String recordStoreName, boolean createIfNecessary)
+            throws RecordStoreException;
 
-	void deleteRecord(RecordStoreImpl recordStoreImpl, int recordId) 
-			throws RecordStoreNotOpenException, RecordStoreException;
+    String[] listRecordStores();
 
-	void saveRecord(RecordStoreImpl recordStoreImpl, int recordId) 
-			throws RecordStoreNotOpenException, RecordStoreException;
+    void loadRecord(RecordStoreImpl recordStoreImpl, int recordId)
+            throws RecordStoreNotOpenException, InvalidRecordIDException, RecordStoreException;
 
-	int getSizeAvailable(RecordStoreImpl recordStoreImpl);
+    void deleteRecord(RecordStoreImpl recordStoreImpl, int recordId)
+            throws RecordStoreNotOpenException, RecordStoreException;
 
-	/**
-	 * Initialize RMS Manager before starting MIDlet 
-	 */
-	void init(MicroEmulator emulator);
+    void saveRecord(RecordStoreImpl recordStoreImpl, int recordId)
+            throws RecordStoreNotOpenException, RecordStoreException;
 
-	/**
-	 * Delete all record stores.
-	 */
-	void deleteStores();
+    int getSizeAvailable(RecordStoreImpl recordStoreImpl);
 
-	void setRecordListener(ExtendedRecordListener recordListener);
-	
-	void fireRecordStoreListener(int type, String recordStoreName);
+    /**
+     * Initialize RMS Manager before starting MIDlet
+     */
+    void init(MicroEmulator emulator);
+
+    /**
+     * Delete all record stores.
+     */
+    void deleteStores();
+
+    void setRecordListener(ExtendedRecordListener recordListener);
+
+    void fireRecordStoreListener(int type, String recordStoreName);
 
 }

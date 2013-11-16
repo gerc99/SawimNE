@@ -10,15 +10,16 @@ import java.util.Vector;
 
 
 public final class Storage {
-    public static final int SLOT_VERSION  = 1;
-    public static final int SLOT_OPTIONS  = 2;
+    public static final int SLOT_VERSION = 1;
+    public static final int SLOT_OPTIONS = 2;
 
     private RecordStore rs = null;
     private String name;
-    
+
     public Storage(String name) {
         this.name = Storage.getStorageName(name);
     }
+
     public static String[] getList() {
         String[] recordStores = RecordStore.listRecordStores();
         if (null == recordStores) {
@@ -26,6 +27,7 @@ public final class Storage {
         }
         return recordStores;
     }
+
     public boolean exist() {
         String[] recordStores = Storage.getList();
         for (int i = 0; i < recordStores.length; ++i) {
@@ -39,20 +41,24 @@ public final class Storage {
     public static String getStorageName(String name) {
         return (32 < name.length()) ? name.substring(0, 32) : name;
     }
+
     public void delete() {
         try {
             RecordStore.deleteRecordStore(name);
         } catch (Exception ignored) {
         }
     }
+
     public boolean isOppened() {
         return null != rs;
     }
+
     public void open(boolean create) throws IOException, RecordStoreException {
         if (null == rs) {
             rs = RecordStore.openRecordStore(name, create);
         }
     }
+
     public byte[] getRecord(int recordNum) {
         if (null == rs) {
             return null;
@@ -63,6 +69,7 @@ public final class Storage {
         }
         return null;
     }
+
     public void close() {
         try {
             rs.closeRecordStore();
@@ -70,8 +77,9 @@ public final class Storage {
         }
         rs = null;
     }
+
     public void initRecords(int count) throws RecordStoreException {
-        
+
         if (rs.getNumRecords() < count) {
             if ((1 < count) && (0 == rs.getNumRecords())) {
                 byte[] version = StringConvertor.stringToByteArrayUtf8(General.VERSION);
@@ -82,25 +90,31 @@ public final class Storage {
             }
         }
     }
+
     public void addRecord(byte[] data) throws RecordStoreException {
         rs.addRecord(data, 0, data.length);
     }
+
     public void setRecord(int num, byte[] data) throws RecordStoreException {
         rs.setRecord(num, data, 0, data.length);
     }
+
     public void deleteRecord(int num) {
         try {
             rs.deleteRecord(num);
         } catch (Exception ignored) {
         }
     }
+
     private void putRecord(int num, byte[] data) throws RecordStoreException {
         initRecords(num);
         setRecord(num, data);
     }
+
     public int getNumRecords() throws RecordStoreException {
         return rs.getNumRecords();
     }
+
     public RecordStore getRS() {
         return rs;
     }
@@ -110,7 +124,7 @@ public final class Storage {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             DataOutputStream dos = new DataOutputStream(baos);
             for (int i = 0; i < strings.size(); ++i) {
-                dos.writeUTF(StringConvertor.notNull((String)strings.elementAt(i)));
+                dos.writeUTF(StringConvertor.notNull((String) strings.elementAt(i)));
                 addRecord(baos.toByteArray());
                 baos.reset();
             }
@@ -118,6 +132,7 @@ public final class Storage {
         } catch (Exception ignored) {
         }
     }
+
     public Vector loadListOfString() {
         Vector strings = new Vector();
         try {
@@ -155,6 +170,7 @@ public final class Storage {
         } catch (Exception ignored) {
         }
     }
+
     public void saveXStatuses(String[] titles, String[] descs) {
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -167,6 +183,7 @@ public final class Storage {
         } catch (Exception ignored) {
         }
     }
+
     public void loadXStatuses(String[] titles, String[] descs) {
         try {
             byte[] buf = getRecord(1);
@@ -174,7 +191,7 @@ public final class Storage {
             DataInputStream dis = new DataInputStream(bais);
             for (int i = 0; i < titles.length; ++i) {
                 titles[i] = StringConvertor.notNull(dis.readUTF());
-                descs[i]  = StringConvertor.notNull(dis.readUTF());
+                descs[i] = StringConvertor.notNull(dis.readUTF());
             }
         } catch (Exception ignored) {
         }

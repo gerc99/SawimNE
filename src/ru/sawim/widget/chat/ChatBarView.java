@@ -18,7 +18,7 @@ import ru.sawim.widget.LabelView;
  * Time: 19:33
  * To change this template use File | Settings | File Templates.
  */
-public  class ChatBarView extends IcsLinearLayout {
+public class ChatBarView extends IcsLinearLayout {
 
     ImageView imageView;
     LabelView textView;

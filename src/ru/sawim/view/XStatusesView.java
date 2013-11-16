@@ -10,15 +10,15 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import sawim.roster.Roster;
-import sawim.comm.StringConvertor;
-import sawim.io.Storage;
 import protocol.Protocol;
 import protocol.icq.Icq;
 import protocol.jabber.Jabber;
 import protocol.mrim.Mrim;
 import ru.sawim.R;
 import ru.sawim.models.XStatusesAdapter;
+import sawim.comm.StringConvertor;
+import sawim.io.Storage;
+import sawim.roster.Roster;
 
 /**
  * Created with IntelliJ IDEA.
@@ -30,7 +30,7 @@ import ru.sawim.models.XStatusesAdapter;
 public class XStatusesView extends DialogFragment {
     private XStatusesAdapter statusesAdapter;
     protected String[] xst_titles = new String[100];
-    protected String[] xst_descs  = new String[100];
+    protected String[] xst_descs = new String[100];
     private Protocol protocol;
 
     public XStatusesView() {
@@ -109,7 +109,7 @@ public class XStatusesView extends DialogFragment {
     private final void setXStatus(int xstatus, String title, String desc) {
         if (0 <= xstatus) {
             xst_titles[xstatus] = StringConvertor.notNull(title);
-            xst_descs[xstatus]  = StringConvertor.notNull(desc);
+            xst_descs[xstatus] = StringConvertor.notNull(desc);
             try {
                 Storage storage = new Storage(getProtocolId() + "-xstatus");
                 storage.open(true);

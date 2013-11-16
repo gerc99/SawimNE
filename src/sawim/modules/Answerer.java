@@ -1,51 +1,53 @@
 package sawim.modules;
 
-import java.util.Vector;
-
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
+import protocol.Contact;
+import protocol.Protocol;
+import protocol.jabber.JabberContact;
 import ru.sawim.General;
-import ru.sawim.models.list.VirtualList;
-import ru.sawim.models.list.VirtualListModel;
-import sawim.*;
-import sawim.chat.message.Message;
-import sawim.comm.*;
-import sawim.io.Storage;
-import sawim.util.*;
-
-import protocol.*;
-import protocol.jabber.*;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
+import ru.sawim.models.list.VirtualList;
+import ru.sawim.models.list.VirtualListModel;
+import sawim.Options;
+import sawim.chat.message.Message;
+import sawim.comm.StringConvertor;
+import sawim.comm.Util;
+import sawim.io.Storage;
+import sawim.util.JLocale;
+
+import java.util.Vector;
 
 public final class Answerer implements FormListener {
     private Vector dictionary = new Vector();
     private VirtualList list;
-	private VirtualListModel model = new VirtualListModel();
+    private VirtualListModel model = new VirtualListModel();
     Forms form;
 
     private int selItem = 0;
-    private static final int MENU_EDIT   = 0;
-    private static final int MENU_ADD    = 1;
-    private static final int MENU_CLEAR  = 2;
+    private static final int MENU_EDIT = 0;
+    private static final int MENU_ADD = 1;
+    private static final int MENU_CLEAR = 2;
     private static final int MENU_DELETE = 3;
     private static final int MENU_ON_OFF = 4;
-    
+
     private static final int FORM_EDIT_QUESTION = 0;
     private static final int FORM_EDIT_ANSWER = 1;
-    
+
     private Answerer() {
     }
-    
+
     private static final Answerer instance = new Answerer();
+
     public static Answerer getInstance() {
         return instance;
     }
 
     public void activate() {
-	    list = VirtualList.getInstance();
+        list = VirtualList.getInstance();
         list.setCaption(JLocale.getString("answerer"));
         refreshList();
         list.setOnBuildContextMenu(new VirtualList.OnBuildContextMenu() {
@@ -119,15 +121,15 @@ public final class Answerer implements FormListener {
     }
 
     private void refreshList() {
-		model.clear();
+        model.clear();
         int count = dictionary.size();
         for (int i = 0; i < count; ++i) {
-            model.addItem((String)dictionary.elementAt(i), false);
+            model.addItem((String) dictionary.elementAt(i), false);
         }
         list.setModel(model);
         list.updateModel();
     }
-    
+
     public void load() {
         Storage storage = new Storage("module-answerer");
         try {
@@ -138,11 +140,11 @@ public final class Answerer implements FormListener {
             DebugLog.panic("answerer dictionary load", e);
         }
         storage.close();
-        DebugLog.println("answerer load: " + dictionary.size() + " items" );
+        DebugLog.println("answerer load: " + dictionary.size() + " items");
         if (0 == dictionary.size()) {
             dictionary.addElement("Hello=Hi. :-)");
             dictionary.addElement("Hi=H1 :-).");
-            save(); 
+            save();
         }
     }
 
@@ -160,55 +162,56 @@ public final class Answerer implements FormListener {
         }
         storage.close();
     }
-    
+
     public void checkMessage(Protocol protocol, Contact contact, Message message) {
-	    String getMyName = contact.getMyName();
-		String msg = message.getText();
-		String msgOfConf = "";
-		if (getMyName != null && sawim.chat.Chat.isHighlight(msg, getMyName)) {
-		    msgOfConf = msg.substring(getMyName.length() + 2);
-		}
+        String getMyName = contact.getMyName();
+        String msg = message.getText();
+        String msgOfConf = "";
+        if (getMyName != null && sawim.chat.Chat.isHighlight(msg, getMyName)) {
+            msgOfConf = msg.substring(getMyName.length() + 2);
+        }
         for (int i = 0; i < dictionary.size(); ++i) {
-		    String getItemQuestion = getItemQuestion(i);
-			String getItemAnswer = getItemAnswer(i);
-			
-			if (contact.isConference()) {
-			    if (StringConvertor.stringEquals(msgOfConf, getItemQuestion)) {
-                    JabberContact toContact = (JabberContact)contact;
-			        protocol.sendMessage(toContact, message.getName() + sawim.chat.Chat.ADDRESS + getItemAnswer, true);
-			    }
-		    } else {
-			    if (StringConvertor.stringEquals(msg, getItemQuestion)) {
-				    protocol.sendMessage(contact, getItemAnswer, true);
-			    }
-			}
-		}
+            String getItemQuestion = getItemQuestion(i);
+            String getItemAnswer = getItemAnswer(i);
+
+            if (contact.isConference()) {
+                if (StringConvertor.stringEquals(msgOfConf, getItemQuestion)) {
+                    JabberContact toContact = (JabberContact) contact;
+                    protocol.sendMessage(toContact, message.getName() + sawim.chat.Chat.ADDRESS + getItemAnswer, true);
+                }
+            } else {
+                if (StringConvertor.stringEquals(msg, getItemQuestion)) {
+                    protocol.sendMessage(contact, getItemAnswer, true);
+                }
+            }
+        }
     }
 
     private String getItemQuestion(int index) {
-        return Util.explode((String)dictionary.elementAt(index), '=')[0];
-    }
-    private String getItemAnswer(int index) {
-        return Util.explode((String)dictionary.elementAt(index), '=')[1];
+        return Util.explode((String) dictionary.elementAt(index), '=')[0];
     }
 
-	public void popupAction() {
+    private String getItemAnswer(int index) {
+        return Util.explode((String) dictionary.elementAt(index), '=')[1];
+    }
+
+    public void popupAction() {
         dictionary.removeAllElements();
         save();
         list.back();
     }
 
     public void formAction(Forms gform, boolean apply) {
-		if (form == gform) {
+        if (form == gform) {
             if (apply) {
-                String item = form.getTextFieldValue(FORM_EDIT_QUESTION) +  "=" + form.getTextFieldValue(FORM_EDIT_ANSWER);      
+                String item = form.getTextFieldValue(FORM_EDIT_QUESTION) + "=" + form.getTextFieldValue(FORM_EDIT_ANSWER);
                 dictionary.setElementAt(item, selItem);
-				save();
-			    form.back();
+                save();
+                form.back();
                 list.updateModel();
             } else {
                 form.back();
             }
-		}
+        }
     }
 }

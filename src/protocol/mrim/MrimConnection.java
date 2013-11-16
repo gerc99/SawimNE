@@ -1,26 +1,27 @@
 package protocol.mrim;
 
-import ru.sawim.General;
-import sawim.SawimException;
-import sawim.Options;
-import sawim.chat.Chat;
-import sawim.chat.message.PlainMessage;
-import sawim.chat.message.SystemNotice;
-import sawim.roster.Roster;
-import sawim.comm.StringConvertor;
-import sawim.comm.Util;
-import sawim.modules.DebugLog;
-import sawim.modules.MagicEye;
-import sawim.modules.Notify;
-import sawim.search.Search;
-import sawim.search.UserInfo;
-import sawim.util.JLocale;
 import protocol.Contact;
 import protocol.Protocol;
 import protocol.StatusInfo;
 import protocol.TemporaryRoster;
 import protocol.net.ClientConnection;
 import protocol.net.TcpSocket;
+import ru.sawim.General;
+import sawim.Options;
+import sawim.SawimException;
+import sawim.chat.Chat;
+import sawim.chat.message.PlainMessage;
+import sawim.chat.message.SystemNotice;
+import sawim.comm.StringConvertor;
+import sawim.comm.Util;
+import sawim.modules.DebugLog;
+import sawim.modules.MagicEye;
+import sawim.modules.Notify;
+import sawim.roster.Roster;
+import sawim.search.Search;
+import sawim.search.UserInfo;
+import sawim.util.JLocale;
+
 import java.util.Vector;
 
 public final class MrimConnection extends ClientConnection {
@@ -39,14 +40,14 @@ public final class MrimConnection extends ClientConnection {
     private MrimContact lastContact = null;
     private MrimGroup lastGroup = null;
 
-    private static final int MULTICHAT_MESSAGE     =  0;
-    private static final int MULTICHAT_GET_MEMBERS =  1;
-    private static final int MULTICHAT_MEMBERS     =  2;
-    private static final int MULTICHAT_ADD_MEMBERS =  3;
-    private static final int MULTICHAT_ATTACHED    =  4;
-    private static final int MULTICHAT_DETACHED    =  5;
-    private static final int MULTICHAT_DESTROYED   =  6;
-    private static final int MULTICHAT_INVITE      =  7;
+    private static final int MULTICHAT_MESSAGE = 0;
+    private static final int MULTICHAT_GET_MEMBERS = 1;
+    private static final int MULTICHAT_MEMBERS = 2;
+    private static final int MULTICHAT_ADD_MEMBERS = 3;
+    private static final int MULTICHAT_ATTACHED = 4;
+    private static final int MULTICHAT_DETACHED = 5;
+    private static final int MULTICHAT_DESTROYED = 6;
+    private static final int MULTICHAT_INVITE = 7;
 
     private static final int CONTACT_OPER_SUCCESS = 0x0000;
     private static final int GET_CONTACTS_OK = 0x0000;
@@ -60,12 +61,12 @@ public final class MrimConnection extends ClientConnection {
     public static final int CONTACT_FLAG_GROUP = 0x00000002;
     public static final int STATUS_FLAG_INVISIBLE = 0x80000000;
 
-    public static final int STATUS_OFFLINE        = 0x00000000;
-    public static final int STATUS_ONLINE         = 0x00000001;
-    public static final int STATUS_AWAY           = 0x00000002;
+    public static final int STATUS_OFFLINE = 0x00000000;
+    public static final int STATUS_ONLINE = 0x00000001;
+    public static final int STATUS_AWAY = 0x00000002;
     public static final int STATUS_UNDETERMINATED = 0x00000003;
-    public static final int STATUS_CHAT           = 0x00000004;
-    public static final int STATUS_INVISIBLE      = STATUS_FLAG_INVISIBLE | STATUS_ONLINE;
+    public static final int STATUS_CHAT = 0x00000004;
+    public static final int STATUS_INVISIBLE = STATUS_FLAG_INVISIBLE | STATUS_ONLINE;
 
     public MrimConnection(Mrim protocol) {
         this.mrim = protocol;
@@ -91,9 +92,9 @@ public final class MrimConnection extends ClientConnection {
             throw new SawimException(120, 10);
         }
         StringBuffer buffer = new StringBuffer();
-        for(int i = 0; i < size; ++i) {
-            char ch = (char)server[i];
-            if(('0' <= ch && ch <= '9') || (ch == '.') || (ch == ':')) {
+        for (int i = 0; i < size; ++i) {
+            char ch = (char) server[i];
+            if (('0' <= ch && ch <= '9') || (ch == '.') || (ch == ':')) {
                 buffer.append(ch);
             }
         }
@@ -103,6 +104,7 @@ public final class MrimConnection extends ClientConnection {
     private int nextSeq() {
         return ++seqCounter;
     }
+
     private void sendPacket(MrimPacket packet) throws SawimException {
         if (0 == packet.getSeq()) {
             packet.setSeq(nextSeq());
@@ -111,12 +113,13 @@ public final class MrimConnection extends ClientConnection {
         socket.write(outpacket);
         socket.flush();
     }
+
     private MrimPacket getPacket() throws SawimException {
         byte[] header = new byte[4 * 7 + 16];
         socket.readFully(header);
-        int seq = (int)Util.getDWordLE(header, 8);
-        int cmd = (int)Util.getDWordLE(header, 12);
-        int dataSize = (int)Util.getDWordLE(header, 16);
+        int seq = (int) Util.getDWordLE(header, 8);
+        int cmd = (int) Util.getDWordLE(header, 12);
+        int dataSize = (int) Util.getDWordLE(header, 16);
         byte[] data = new byte[dataSize];
         if (0 < dataSize) {
             socket.readFully(data);
@@ -127,36 +130,36 @@ public final class MrimConnection extends ClientConnection {
     protected void connect() throws SawimException {
         setProgress(0);
         DebugLog.println("go");
-        
+
         String server = getServer();
-        
+
         DebugLog.println("server " + server);
-        
+
         setProgress(20);
         socket = new TcpSocket();
         socket.connectTo("socket://" + server);
 
         DebugLog.println("send hello");
-        
+
         MrimBuffer hi = new MrimBuffer();
         hi.putDWord(getPingInterval());
         sendPacket(new MrimPacket(MrimPacket.MRIM_CS_HELLO, hi));
         setProgress(40);
 
         MrimPacket packetKeepAlive = getPacket();
-        int ping = Math.min((int)packetKeepAlive.getData().getDWord(), 120);
+        int ping = Math.min((int) packetKeepAlive.getData().getDWord(), 120);
         setPingInterval(ping);
-        
+
         DebugLog.println("recv hello " + getPingInterval());
-        
+
         sendPacket(MrimPacket.getLoginPacket(mrim));
         setProgress(60);
 
         MrimPacket loginResult = getPacket();
         if (MrimPacket.MRIM_CS_LOGIN_ACK != loginResult.getCommand()) {
-            
+
             DebugLog.println("mrim login resone " + loginResult.getData().getString());
-            
+
             mrim.setPassword(null);
             throw new SawimException(111, 0);
         }
@@ -164,8 +167,10 @@ public final class MrimConnection extends ClientConnection {
 
         connect = true;
     }
+
     private int secondCounter = 0;
     private int outTypingCounter = 0;
+
     protected boolean processPacket() throws SawimException {
         MrimPacket toPacket = getPacketFromQueue();
         if (null != toPacket) {
@@ -179,10 +184,10 @@ public final class MrimConnection extends ClientConnection {
             } catch (SawimException e) {
                 throw e;
             } catch (Exception e) {
-                
+
                 DebugLog.panic("mrim: processPacket", e);
                 DebugLog.dump("mrim cmd " + packet.getCommand(), packet.toByteArray());
-                
+
             }
             return true;
         }
@@ -192,7 +197,7 @@ public final class MrimConnection extends ClientConnection {
             inTypingTask(General.getCurrentGmtTime());
             if (null != typingTo) {
                 outTypingCounter++;
-                if (9  == outTypingCounter) {
+                if (9 == outTypingCounter) {
                     outTypingTask();
                     outTypingCounter = 0;
                 }
@@ -207,6 +212,7 @@ public final class MrimConnection extends ClientConnection {
             packets.addElement(packet);
         }
     }
+
     private MrimPacket getPacketFromQueue() {
         synchronized (packets) {
             if (packets.isEmpty()) {
@@ -259,7 +265,7 @@ public final class MrimConnection extends ClientConnection {
                 if (General.isPaused()) {
                     General.maximize();
                 }
-                
+
                 Roster.getInstance().activateWithMsg(from + " (SMS):\n" + msg);
             }
             MagicEye.addAction(mrim, fromEmail, "SMS", msg);
@@ -271,9 +277,9 @@ public final class MrimConnection extends ClientConnection {
                     from, msg));
 
         } else if ((MrimPacket.MESSAGE_FLAG_NOTIFY & flags) == 0) {
-    	    if ((MrimPacket.MESSAGE_FLAG_ALARM & flags) != 0) {
+            if ((MrimPacket.MESSAGE_FLAG_ALARM & flags) != 0) {
                 msg = PlainMessage.CMD_WAKEUP;
-    	    }
+            }
             mrim.addMessage(new PlainMessage(from, mrim,
                     (null == date) ? General.getCurrentGmtTime() : Util.createGmtDate(date),
                     msg, offline));
@@ -286,14 +292,15 @@ public final class MrimConnection extends ClientConnection {
         out.putDWord(MULTICHAT_GET_MEMBERS);
         putPacketIntoQueue(new MrimPacket(MrimPacket.MRIM_CS_MESSAGE, out));
     }
+
     private void addMultiChatMessage(MrimBuffer packetData, long flags, String msg, String from) {
         long len = packetData.getDWord();
-        int type = (int)packetData.getDWord(); 
+        int type = (int) packetData.getDWord();
         String chatName = packetData.getUcs2String();
 
-        MrimChatContact chat = (MrimChatContact)mrim.getItemByUIN(from);
+        MrimChatContact chat = (MrimChatContact) mrim.getItemByUIN(from);
         if (null == chat) {
-            chat = (MrimChatContact)mrim.createTempContact(from);
+            chat = (MrimChatContact) mrim.createTempContact(from);
             mrim.addTempContact(chat);
         }
         chat.setName(chatName);
@@ -318,7 +325,7 @@ public final class MrimConnection extends ClientConnection {
 
             case MULTICHAT_MEMBERS:
                 packetData.getDWord();
-                int count = (int)packetData.getDWord();
+                int count = (int) packetData.getDWord();
                 Vector inChat = new Vector();
                 for (; 0 < count; --count) {
                     inChat.addElement(packetData.getString());
@@ -328,9 +335,9 @@ public final class MrimConnection extends ClientConnection {
 
             case MULTICHAT_INVITE:
                 email = packetData.getString();
-                
+
                 sawim.modules.DebugLog.println("invite from " + email);
-                
+
                 return;
             case MULTICHAT_ATTACHED:
                 email = packetData.getString();
@@ -341,23 +348,24 @@ public final class MrimConnection extends ClientConnection {
                 chat.getMembers().removeElement(email);
                 return;
         }
-        
+
         sawim.modules.DebugLog.dump("type " + type, packetData.toByteArray());
-        
+
     }
 
     private void inTypingTask(long now) {
         for (int i = 0; i < typingTasks.length; ++i) {
             if ((null != typingTasks[i]) && (typingTasks[i].time <= now)) {
-                
+
                 mrim.beginTyping(typingTasks[i].email, false);
-                
+
                 typingTasks[i] = null;
             }
         }
     }
+
     private void outTypingTask() {
-        
+
         String to = typingTo;
         if (null != to) {
             int flags = MrimPacket.MESSAGE_FLAG_NORECV | MrimPacket.MESSAGE_FLAG_NOTIFY;
@@ -365,10 +373,11 @@ public final class MrimConnection extends ClientConnection {
             packet.setSeq(nextSeq());
             putPacketIntoQueue(packet);
         }
-        
+
     }
+
     private void beginTyping(MrimContact c, boolean flag) {
-        
+
         if (Options.getInt(Options.OPTION_TYPING_MODE) == 0) {
             return;
         }
@@ -376,16 +385,16 @@ public final class MrimConnection extends ClientConnection {
         inTypingTask(now);
         for (int i = 0; i < typingTasks.length; ++i) {
             if (null == typingTasks[i]) {
-                typingTasks[i] = new TypingTask(c.getUserId(), now + 11 );
+                typingTasks[i] = new TypingTask(c.getUserId(), now + 11);
                 mrim.beginTyping(c.getUserId(), true);
                 return;
             }
         }
-        
+
     }
 
     private void processPacket(MrimPacket fromPacket) throws SawimException {
-        int cmd = (int)fromPacket.getCommand();
+        int cmd = (int) fromPacket.getCommand();
         MrimBuffer packetData = fromPacket.getData();
 
         if (MrimPacket.MRIM_CS_MESSAGE_ACK == cmd) {
@@ -399,16 +408,15 @@ public final class MrimConnection extends ClientConnection {
             } else {
                 msg = packetData.getUcs2String();
             }
-            
-            
-            
+
+
             if (from.endsWith("@chat.agent")) {
                 packetData.getString();
                 addMultiChatMessage(packetData, flags, msg, from);
                 return;
             }
 
-            MrimContact c = (MrimContact)mrim.getItemByUIN(from);
+            MrimContact c = (MrimContact) mrim.getItemByUIN(from);
             if (null != c) {
                 beginTyping(c, (MrimPacket.MESSAGE_FLAG_NOTIFY & flags) != 0);
             }
@@ -435,9 +443,9 @@ public final class MrimConnection extends ClientConnection {
 
         } else if (MrimPacket.MRIM_CS_MESSAGE_STATUS == cmd) {
             long status = packetData.getDWord();
-            
+
             DebugLog.println("message status " + status);
-            
+
             setMessageSended(fromPacket.getSeq(), status);
 
         } else if (MrimPacket.MRIM_CS_AUTHORIZE_ACK == cmd) {
@@ -445,10 +453,10 @@ public final class MrimConnection extends ClientConnection {
             mrim.setAuthResult(uin, true);
 
         } else if (MrimPacket.MRIM_CS_LOGOUT == cmd) {
-            int resone = (int)packetData.getDWord();
-            
+            int resone = (int) packetData.getDWord();
+
             DebugLog.println("disconnect reason " + resone);
-            
+
             throw new SawimException(110, resone);
 
         } else if (MrimPacket.MRIM_CS_USER_STATUS == cmd) {
@@ -457,16 +465,16 @@ public final class MrimConnection extends ClientConnection {
             String title = packetData.getUcs2String();
             String desc = packetData.getUcs2String();
             String user = packetData.getString();
-            int clientCaps = (int)packetData.getDWord();
+            int clientCaps = (int) packetData.getDWord();
             String client = packetData.getString();
-            MrimContact contact = (MrimContact)mrim.getItemByUIN(user);
+            MrimContact contact = (MrimContact) mrim.getItemByUIN(user);
             if ((null != contact) && !(contact instanceof MrimPhoneContact)) {
                 final int oldStatusIndex = contact.getStatusIndex();
 
                 mrim.setContactStatus(contact, MrimConnection.getStatusIndexBy(status, xstatus), null);
                 final int newStatusIndex = contact.getStatusIndex();
                 contact.setMood(xstatus, title, desc);
-                
+
                 if (StatusInfo.STATUS_OFFLINE != newStatusIndex) {
                     contact.setClient(client);
                 }
@@ -484,7 +492,7 @@ public final class MrimConnection extends ClientConnection {
         } else if (MrimPacket.MRIM_CS_ANKETA_INFO == cmd) {
             long searchStatus = packetData.getDWord();
             if (MrimPacket.MRIM_ANKETA_INFO_STATUS_OK == searchStatus) {
-                int fieldNum = (int)packetData.getDWord();
+                int fieldNum = (int) packetData.getDWord();
                 long maxResults = packetData.getDWord();
                 long serverTime = packetData.getDWord();
                 String[] fieldNames = new String[fieldNum];
@@ -493,8 +501,8 @@ public final class MrimConnection extends ClientConnection {
                 }
                 while (!packetData.isEOF()) {
                     UserInfo userInfo = (null == singleUserInfo)
-                        ? new UserInfo(mrim, "")
-                        : singleUserInfo;
+                            ? new UserInfo(mrim, "")
+                            : singleUserInfo;
                     setUserInfo(userInfo, fieldNames, packetData);
                     if (null != search) {
                         search.addResult(userInfo);
@@ -528,11 +536,11 @@ public final class MrimConnection extends ClientConnection {
             }
         } else if (MrimPacket.MRIM_CS_ADD_CONTACT_ACK == cmd) {
             final long result = packetData.getDWord();
-            
+
             DebugLog.println("add result " + result);
-            
+
             if (CONTACT_OPER_SUCCESS == result) {
-                int id = (int)packetData.getDWord();
+                int id = (int) packetData.getDWord();
                 if (0 <= id) {
                     if (null != lastGroup) {
                         lastGroup.setGroupId(id);
@@ -574,7 +582,7 @@ public final class MrimConnection extends ClientConnection {
             }
 
         } else {
-            
+
             if (MrimPacket.MRIM_CS_NEW_EMAIL == cmd) {
                 packetData.getDWord();
                 String from = packetData.getUcs2String();
@@ -584,14 +592,15 @@ public final class MrimConnection extends ClientConnection {
             } else if (0x1015 == cmd) {
                 DebugLog.println("enviroment");
                 while (!packetData.isEOF()) {
-                    DebugLog.println("mrim: " + packetData.getString() + "="+packetData.getUcs2String());
+                    DebugLog.println("mrim: " + packetData.getString() + "=" + packetData.getUcs2String());
                 }
             } else {
-                DebugLog.println("mrim cmd 0x" + Integer.toHexString((int)cmd));
+                DebugLog.println("mrim cmd 0x" + Integer.toHexString((int) cmd));
             }
-            
+
         }
     }
+
     private static final int MRIM_BLOG_STATUS_UPDATE = 0x00000001;
     private static final int MRIM_BLOG_STATUS_MUSIC = 0x00000002;
     private static final int MRIM_BLOG_STATUS_REPLY = 0x00000004;
@@ -643,6 +652,7 @@ public final class MrimConnection extends ClientConnection {
         int end = header.indexOf('\n', pos);
         return header.substring(pos + key.length() + 1, end).trim();
     }
+
     private String[] explodeMail(String mail) {
         int delemiter = mail.indexOf("\n\n");
         String[] m = new String[2];
@@ -650,6 +660,7 @@ public final class MrimConnection extends ClientConnection {
         m[1] = mail.substring(delemiter + 2);
         return m;
     }
+
     private String getMailMessage(String[] mail) {
         String body = mail[1];
         if (-1 != getMailValue(mail[0], "Content-Type").indexOf("multipart/")) {
@@ -667,6 +678,7 @@ public final class MrimConnection extends ClientConnection {
         }
         return body;
     }
+
     protected void closeSocket() {
         socket.close();
     }
@@ -688,15 +700,15 @@ public final class MrimConnection extends ClientConnection {
         TemporaryRoster roster = new TemporaryRoster(mrim);
         mrim.setContactListStub();
 
-        int groupCount = (int)packetData.getDWord();
+        int groupCount = (int) packetData.getDWord();
         String groupMask = packetData.getString();
         String contactMask = packetData.getString();
-        
+
         DebugLog.println("group mask " + groupMask);
         DebugLog.println("contact mask " + contactMask);
-        
+
         for (int groupId = 0; groupId < groupCount; ++groupId) {
-            int flags = (int)packetData.getDWord();
+            int flags = (int) packetData.getDWord();
             String name = packetData.getUcs2String();
             packetData.skipFormattedRecord(groupMask, 2);
             if ((CONTACT_FLAG_REMOVED & flags) != 0) continue;
@@ -712,23 +724,23 @@ public final class MrimConnection extends ClientConnection {
         }
         boolean hasPhones = false;
         for (int cotactId = FIRST_CONTACT_ID; !packetData.isEOF(); ++cotactId) {
-            int flags       = (int)packetData.getDWord();
-            int groupId     = (int)packetData.getDWord();
-            String userid   = packetData.getString();
-            String name     = packetData.getUcs2String();
-            int serverFlags = (int)packetData.getDWord();
-            int status      = (int)packetData.getDWord();
-            String phone    = packetData.getString();
+            int flags = (int) packetData.getDWord();
+            int groupId = (int) packetData.getDWord();
+            String userid = packetData.getString();
+            String name = packetData.getUcs2String();
+            int serverFlags = (int) packetData.getDWord();
+            int status = (int) packetData.getDWord();
+            String phone = packetData.getString();
 
             String xstatus = packetData.getString();
-            String title   = packetData.getUcs2String();
-            String desc    = packetData.getUcs2String();
-            long unkVal    = packetData.getDWord();
-            String client  = packetData.getString();
+            String title = packetData.getUcs2String();
+            String desc = packetData.getUcs2String();
+            long unkVal = packetData.getDWord();
+            String client = packetData.getString();
 
 
             String id = packetData.getQWordAsString();
-            long time = packetData.getDWord(); 
+            long time = packetData.getDWord();
             String blogPost = packetData.getUcs2String();
 
             packetData.skipFormattedRecord(contactMask, 7 + 5 + 4);
@@ -741,7 +753,7 @@ public final class MrimConnection extends ClientConnection {
                 groupId = MrimGroup.PHONE_CONTACTS_GROUP;
 
             } else {
-                contact = (MrimContact)roster.makeContact(userid);
+                contact = (MrimContact) roster.makeContact(userid);
             }
             contact.init(cotactId, name, phone, groupId, serverFlags, flags);
             mrim.setContactStatus(contact, MrimConnection.getStatusIndexBy(status, xstatus), null);
@@ -751,14 +763,14 @@ public final class MrimConnection extends ClientConnection {
             mrim.getMicroBlog().addPost(userid, name, blogPost, id, false, time);
 
             contact.setClient(client);
-            
+
             roster.addContact(contact);
             if ((contact instanceof MrimChatContact) && contact.isOnline()) {
                 putMultiChatGetMembers(contact.getUserId());
             }
         }
         if (hasPhones) {
-            MrimGroup phoneGroup = (MrimGroup)roster.makeGroup(JLocale.getString("phone_contacts"));
+            MrimGroup phoneGroup = (MrimGroup) roster.makeGroup(JLocale.getString("phone_contacts"));
             phoneGroup.setName(JLocale.getString("phone_contacts"));
             phoneGroup.setFlags(0);
             phoneGroup.setGroupId(MrimGroup.PHONE_CONTACTS_GROUP);
@@ -800,6 +812,7 @@ public final class MrimConnection extends ClientConnection {
             addMessage(message);
         }
     }
+
     void sendTypingNotify(String to, boolean isTyping) {
         if (isTyping) {
             typingTo = to;
@@ -809,6 +822,7 @@ public final class MrimConnection extends ClientConnection {
             typingTo = null;
         }
     }
+
     void requestAuth(String to, String myUin) {
         MrimBuffer data = new MrimBuffer();
         data.putDWord(2);
@@ -817,6 +831,7 @@ public final class MrimConnection extends ClientConnection {
         putPacketIntoQueue(MrimPacket.getMessagePacket(to, Util.base64encode(data.toByteArray()),
                 MrimPacket.MESSAGE_FLAG_AUTHORIZE + MrimPacket.MESSAGE_FLAG_NORECV));
     }
+
     void sendSms(String to, String msg) {
         String phone = (to.charAt(0) == '+') ? to
                 : ('+' + ((to.charAt(0) == '8') ? '7' + to.substring(1) : to));
@@ -839,29 +854,34 @@ public final class MrimConnection extends ClientConnection {
                 contact.getGroupId(),
                 contact.getUserId(), contact.getName(), contact.getPhones(), ""));
     }
+
     void removeContact(MrimContact contact) {
         int flags = contact.getFlags() | CONTACT_FLAG_REMOVED;
         putPacketIntoQueue(MrimPacket.getModifyContactPacket(
                 contact.getContactId(), flags, 0,
                 contact.getUserId(), contact.getName(), contact.getPhones()));
     }
+
     void removeGroup(MrimGroup group) {
         int flags = CONTACT_FLAG_GROUP | CONTACT_FLAG_REMOVED;
         putPacketIntoQueue(MrimPacket.getModifyContactPacket(
                 group.getId(), flags, 0,
                 group.getName(), group.getName(), ""));
     }
+
     void updateContact(MrimContact contact) {
         putPacketIntoQueue(MrimPacket.getModifyContactPacket(
                 contact.getContactId(), contact.getFlags(), contact.getGroupId(),
                 contact.getUserId(), contact.getName(), contact.getPhones()));
     }
+
     void renameGroup(MrimGroup group) {
         int flags = group.getFlags() | CONTACT_FLAG_GROUP;
         putPacketIntoQueue(MrimPacket.getModifyContactPacket(
                 group.getId(), flags, 0,
                 group.getName(), group.getName(), ""));
     }
+
     void setStatus() {
         putPacketIntoQueue(MrimPacket.getSetStatusPacket(mrim));
     }
@@ -869,6 +889,7 @@ public final class MrimConnection extends ClientConnection {
     void grandAuth(String uin) {
         putPacketIntoQueue(MrimPacket.getAutorizePacket(uin));
     }
+
     public void postToMicroBlog(String text, String reply) {
         MrimBuffer out = new MrimBuffer();
         if (StringConvertor.isEmpty(reply)) {
@@ -913,10 +934,10 @@ public final class MrimConnection extends ClientConnection {
             -1,
             -1,
             -1,
-            STATUS_AWAY, 
+            STATUS_AWAY,
             -1,
             STATUS_INVISIBLE
-            -1};
+                    - 1};
     private static final String[] xstatusCodes = {
             "",
             "",
@@ -931,6 +952,7 @@ public final class MrimConnection extends ClientConnection {
             "sta" + "tus_dnd",
             "",
             ""};
+
     private static byte getStatusIndexBy(long status, String xstatus) {
         for (byte i = 0; i < xstatusCodes.length; ++i) {
             if (StringConvertor.isEmpty(xstatusCodes[i])) {
@@ -950,6 +972,7 @@ public final class MrimConnection extends ClientConnection {
         }
         return StatusInfo.STATUS_ONLINE;
     }
+
     static String getNativeXStatus(byte statusIndex) {
         return xstatusCodes[statusIndex];
     }

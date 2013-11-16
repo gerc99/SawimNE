@@ -1,9 +1,9 @@
 package sawim.history;
 
 
+import protocol.Contact;
 import ru.sawim.General;
 import sawim.SawimException;
-import sawim.roster.Roster;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
 import sawim.modules.Notify;
@@ -11,8 +11,8 @@ import sawim.modules.fs.FileBrowser;
 import sawim.modules.fs.FileBrowserListener;
 import sawim.modules.fs.FileSystem;
 import sawim.modules.fs.JSR75FileSystem;
+import sawim.roster.Roster;
 import sawim.util.JLocale;
-import protocol.Contact;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -59,6 +59,7 @@ class HistoryExport implements Runnable, FileBrowserListener {
         directory = dir;
         new Thread(this).start();
     }
+
     private void setProgress(int messageNum) {
         currentMessage = messageNum;
         //screen.invalidate();
@@ -67,9 +68,9 @@ class HistoryExport implements Runnable, FileBrowserListener {
     public void run() {
         try {
             exportContact(exportHistory);
-            
+
             Notify.getSound().playSoundNotification(Notify.NOTIFY_MESSAGE);
-            
+
             //screen.exportDone();
         } catch (Exception ex) {
             SawimException e = new SawimException(191, 5);
@@ -83,12 +84,13 @@ class HistoryExport implements Runnable, FileBrowserListener {
     private void write(OutputStream os, String val) throws IOException {
         os.write(StringConvertor.stringToByteArrayUtf8(val));
     }
+
     private void exportUinToStream(HistoryStorage storage, OutputStream os) throws IOException {
         messageCount = storage.getHistorySize();
         if (0 == messageCount) {
             return;
         }
-        os.write(new byte[] { (byte) 0xef, (byte) 0xbb, (byte) 0xbf });
+        os.write(new byte[]{(byte) 0xef, (byte) 0xbb, (byte) 0xbf});
 
         Contact c = storage.getContact();
         String userId = c.getUserId();
@@ -137,6 +139,7 @@ class HistoryExport implements Runnable, FileBrowserListener {
         }
         return null;
     }
+
     private void exportContact(HistoryStorage storage) throws Exception {
 
         storage.openHistory();

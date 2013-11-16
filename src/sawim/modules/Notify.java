@@ -93,13 +93,13 @@ public class Notify implements Runnable {
         //SawimApplication.getSawimActivity().runOnUiThread(new Runnable() {
         //    @Override
         //    public void run() {
-                if (600 < duration) {
-                    vibrator.vibrate(pattern, -1);
-                } else if (0 < duration) {
-                    vibrator.vibrate(duration);
-                } else {
-                    vibrator.cancel();
-                }
+        if (600 < duration) {
+            vibrator.vibrate(pattern, -1);
+        } else if (0 < duration) {
+            vibrator.vibrate(duration);
+        } else {
+            vibrator.cancel();
+        }
         //    }
         //});
         return true;

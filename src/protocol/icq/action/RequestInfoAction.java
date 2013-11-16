@@ -1,36 +1,34 @@
 
 
 
-
 package protocol.icq.action;
 
 
+import protocol.icq.IcqContact;
+import protocol.icq.packet.FromIcqSrvPacket;
+import protocol.icq.packet.Packet;
+import protocol.icq.packet.ToIcqSrvPacket;
 import sawim.SawimException;
 import sawim.comm.ArrayReader;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
 import sawim.modules.DebugLog;
 import sawim.search.UserInfo;
-import protocol.icq.IcqContact;
-import protocol.icq.packet.FromIcqSrvPacket;
-import protocol.icq.packet.Packet;
-import protocol.icq.packet.ToIcqSrvPacket;
 
 public class RequestInfoAction extends IcqAction {
 
-    
-    private static final int TIMEOUT = 10; 
 
-    
+    private static final int TIMEOUT = 10;
+
 
     private UserInfo strData;
 
-    
+
     private int packetCounter;
     private IcqContact contact;
     private boolean done = false;
 
-    
+
     public RequestInfoAction(UserInfo data, IcqContact item) {
         super();
         packetCounter = 0;
@@ -38,14 +36,15 @@ public class RequestInfoAction extends IcqAction {
         strData = data;
         strData.uin = contact.getUserId();
     }
+
     public UserInfo getUserInfo() {
         return strData;
     }
 
-    
+
     public void init() throws SawimException {
 
-        
+
         Util stream = new Util();
         try {
             stream.writeWordLE(ToIcqSrvPacket.CLI_META_REQMOREINFO_TYPE);
@@ -55,9 +54,10 @@ public class RequestInfoAction extends IcqAction {
             requestNew();
         }
 
-        
+
         active();
     }
+
     private void requestNew() throws SawimException {
         Util stream = new Util();
         byte[] uin = strData.uin.getBytes();
@@ -85,63 +85,60 @@ public class RequestInfoAction extends IcqAction {
             return "";
         }
         byte[] buffer = stream.getArray(len);
-        
+
         return StringConvertor.byteArrayToWinString(buffer, 0, buffer.length).trim();
     }
 
 
-    
     public boolean forward(Packet packet) throws SawimException {
         boolean consumed = false;
 
-        
+
         if (packet instanceof FromIcqSrvPacket) {
             FromIcqSrvPacket fromIcqSrvPacket = (FromIcqSrvPacket) packet;
 
-            
+
             if (fromIcqSrvPacket.getSubcommand() != FromIcqSrvPacket.SRV_META_SUBCMD) {
                 return false;
             }
 
-            
+
             ArrayReader stream = fromIcqSrvPacket.getReader();
 
-            
+
             try {
 
                 int type = stream.getWordLE();
-                stream.getByte(); 
+                stream.getByte();
                 if (FromIcqSrvPacket.SRV_META_FULL_INFO == type) {
-                    stream.skip(5*2 + 21);
+                    stream.skip(5 * 2 + 21);
                     processFillInfo(stream);
                     return true;
                 }
                 switch (type) {
-                case FromIcqSrvPacket.SRV_META_GENERAL_TYPE: 
-                    {
-                        strData.nick        = readAsciiz(stream); 
-                        strData.firstName   = readAsciiz(stream);
-                        strData.lastName    = readAsciiz(stream);
-                        strData.email       = readAsciiz(stream); 
-                        strData.homeCity    = readAsciiz(stream); 
-                        strData.homeState   = readAsciiz(stream); 
-                        strData.homePhones  = readAsciiz(stream); 
-                        strData.homeFax     = readAsciiz(stream); 
-                        strData.homeAddress = readAsciiz(stream); 
-                        strData.cellPhone   = readAsciiz(stream); 
+                    case FromIcqSrvPacket.SRV_META_GENERAL_TYPE: {
+                        strData.nick = readAsciiz(stream);
+                        strData.firstName = readAsciiz(stream);
+                        strData.lastName = readAsciiz(stream);
+                        strData.email = readAsciiz(stream);
+                        strData.homeCity = readAsciiz(stream);
+                        strData.homeState = readAsciiz(stream);
+                        strData.homePhones = readAsciiz(stream);
+                        strData.homeFax = readAsciiz(stream);
+                        strData.homeAddress = readAsciiz(stream);
+                        strData.cellPhone = readAsciiz(stream);
                         packetCounter++;
                         consumed = true;
                         break;
                     }
 
-                case 0x00DC: 
-                    {
+                    case 0x00DC: {
                         strData.age = stream.getWordLE();
-                        strData.gender = (byte)stream.getByte();
+                        strData.gender = (byte) stream.getByte();
                         strData.homePage = readAsciiz(stream);
                         int year = stream.getWordLE();
-                        int mon  = stream.getByte();
-                        int day  = stream.getByte();
+                        int mon = stream.getByte();
+                        int day = stream.getByte();
                         strData.birthDay = (year != 0)
                                 ? (day + "." + (mon < 10 ? "0" : "") + mon + "." + year)
                                 : null;
@@ -150,34 +147,31 @@ public class RequestInfoAction extends IcqAction {
                         break;
                     }
 
-                case 0x00D2: 
-                    {
-                        strData.workCity    = readAsciiz(stream);
-                        strData.workState   = readAsciiz(stream);
-                        strData.workPhone   = readAsciiz(stream);
-                        strData.workFax     = readAsciiz(stream);
+                    case 0x00D2: {
+                        strData.workCity = readAsciiz(stream);
+                        strData.workState = readAsciiz(stream);
+                        strData.workPhone = readAsciiz(stream);
+                        strData.workFax = readAsciiz(stream);
                         strData.workAddress = readAsciiz(stream);
 
-                        readAsciiz(stream);                          
-                        stream.getWordLE();                      
-                        strData.workCompany    = readAsciiz(stream); 
-                        strData.workDepartment = readAsciiz(stream); 
-                        strData.workPosition   = readAsciiz(stream); 
+                        readAsciiz(stream);
+                        stream.getWordLE();
+                        strData.workCompany = readAsciiz(stream);
+                        strData.workDepartment = readAsciiz(stream);
+                        strData.workPosition = readAsciiz(stream);
                         packetCounter++;
                         consumed = true;
                         break;
                     }
 
-                case 0x00E6: 
-                    {
-                        strData.about = readAsciiz(stream); 
+                    case 0x00E6: {
+                        strData.about = readAsciiz(stream);
                         packetCounter++;
                         consumed = true;
                         break;
                     }
 
-                case 0x00F0: 
-                    {
+                    case 0x00F0: {
                         StringBuffer sb = new StringBuffer();
                         int counter = stream.getByte();
                         for (int i = 0; i < counter; ++i) {
@@ -195,21 +189,22 @@ public class RequestInfoAction extends IcqAction {
                 }
 
             } catch (Exception e) {
-                
+
                 DebugLog.panic("Request Info action", e);
-                
+
             }
             if (packetCounter >= 5) {
                 requestNew();
             }
 
-            
+
             strData.setOptimalName();
             strData.updateProfileView();
         }
 
         return consumed;
     }
+
     private void processFillInfo(ArrayReader stream) {
         done = true;
         int len = stream.getWordBE();
@@ -236,8 +231,9 @@ public class RequestInfoAction extends IcqAction {
         strData.setOptimalName();
         strData.updateProfileView();
 
-        
+
     }
+
     private String getTvlData(int type, int subtype, ArrayReader stream, int offset, int len) {
         byte[] data = stream.getTlvData(type, offset, len);
         if (null == data) return null;
@@ -248,18 +244,18 @@ public class RequestInfoAction extends IcqAction {
         if (null == data) return null;
         return str(data);
     }
+
     private String str(byte[] data) {
         if (null == data) return null;
         return StringConvertor.utf8beByteArrayToString(data, 0, data.length).trim();
     }
 
-    
+
     public boolean isCompleted() {
         return done;
     }
 
 
-    
     public boolean isError() {
         return isNotActive(TIMEOUT);
     }

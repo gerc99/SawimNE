@@ -7,17 +7,18 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 import ru.sawim.General;
-import ru.sawim.models.list.VirtualListItem;
 import ru.sawim.Scheme;
-import ru.sawim.models.list.VirtualList;
-import ru.sawim.models.list.VirtualListModel;
-import java.util.*;
-import javax.microedition.rms.*;
-import sawim.*;
-import sawim.util.JLocale;
-import sawim.comm.*;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
+import ru.sawim.models.list.VirtualList;
+import ru.sawim.models.list.VirtualListItem;
+import ru.sawim.models.list.VirtualListModel;
+import sawim.Clipboard;
+import sawim.comm.StringConvertor;
+import sawim.util.JLocale;
+
+import javax.microedition.rms.RecordStore;
+import java.util.Hashtable;
 
 
 public final class HistoryStorageList implements Runnable, FormListener {
@@ -106,7 +107,7 @@ public final class HistoryStorageList implements Runnable, FormListener {
 
     private CachedRecord getCachedRecord(int num) {
         Integer key = new Integer(num);
-        CachedRecord cachedRec = (CachedRecord)cachedRecords.get(key);
+        CachedRecord cachedRec = (CachedRecord) cachedRecords.get(key);
         if (null == cachedRec) {
             //trimCache();
             cachedRec = history.getRecord(num);
@@ -122,7 +123,7 @@ public final class HistoryStorageList implements Runnable, FormListener {
             cachedRecords.clear();
         }
     }
-    
+
     private void clearCache() {
         cachedRecords.clear();
         General.gc();
@@ -153,7 +154,7 @@ public final class HistoryStorageList implements Runnable, FormListener {
                 items[0] = JLocale.getString("currect_contact");
                 items[1] = JLocale.getString("all_contact_except_this");
                 items[2] = JLocale.getString("all_contacts");
-				AlertDialog.Builder builder = new AlertDialog.Builder(General.currentActivity);
+                AlertDialog.Builder builder = new AlertDialog.Builder(General.currentActivity);
                 builder.setCancelable(true);
                 builder.setTitle(JLocale.getString("history"));
                 builder.setItems(items, new DialogInterface.OnClickListener() {
@@ -188,7 +189,7 @@ public final class HistoryStorageList implements Runnable, FormListener {
             case MENU_INFO:
                 RecordStore rs = history.getRS();
                 try {
-                    String sb = JLocale.getString("hist_cur") + ": " + getSize()  + "\n"
+                    String sb = JLocale.getString("hist_cur") + ": " + getSize() + "\n"
                             + JLocale.getString("hist_size") + ": " + (rs.getSize() / 1024) + "\n"
                             + JLocale.getString("hist_avail") + ": " + (rs.getSizeAvailable() / 1024) + "\n";
                     Toast.makeText(General.currentActivity, sb, Toast.LENGTH_SHORT).show();
@@ -212,14 +213,14 @@ public final class HistoryStorageList implements Runnable, FormListener {
         moveInList(direction);
     }
 
-    private static final int MENU_FIND       = 1;
-    private static final int MENU_CLEAR      = 2;
-    private static final int MENU_COPY_TEXT  = 3;
-    private static final int MENU_INFO       = 4;
-    private static final int MENU_EXPORT     = 5;
+    private static final int MENU_FIND = 1;
+    private static final int MENU_CLEAR = 2;
+    private static final int MENU_COPY_TEXT = 3;
+    private static final int MENU_INFO = 4;
+    private static final int MENU_EXPORT = 5;
     private static final int MENU_EXPORT_ALL = 6;
 
-    
+
     private void moveInList(int offset) {
         allMsg.setCurrentItemIndex(allMsg.getCurrItem() + offset, true);
     }
@@ -227,7 +228,7 @@ public final class HistoryStorageList implements Runnable, FormListener {
     public void run() {
         Thread it = Thread.currentThread();
         searching = it;
-        
+
         String text = frmFind.getTextFieldValue(tfldFind);
         int textIndex = find(text, allMsg.getCurrItem(),
                 frmFind.getCheckBoxValue(find_case_sensitiv),

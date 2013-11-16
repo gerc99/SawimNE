@@ -10,7 +10,6 @@ import ru.sawim.photo.CameraActivity;
 import sawim.modules.DebugLog;
 import sawim.modules.photo.PhotoListener;
 
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 public class ExternalApi {

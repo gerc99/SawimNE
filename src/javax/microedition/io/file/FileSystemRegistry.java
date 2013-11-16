@@ -33,25 +33,25 @@ import java.util.Enumeration;
 
 public class FileSystemRegistry {
 
-	private static FileSystemRegistryDelegate impl;
+    private static FileSystemRegistryDelegate impl;
 
-	static {
-		impl = (FileSystemRegistryDelegate) ImplFactory.getImplementation(FileSystemRegistry.class, FileSystemRegistryDelegate.class);
-	}
+    static {
+        impl = (FileSystemRegistryDelegate) ImplFactory.getImplementation(FileSystemRegistry.class, FileSystemRegistryDelegate.class);
+    }
 
-	private FileSystemRegistry() {
-	}
+    private FileSystemRegistry() {
+    }
 
-	public static boolean addFileSystemListener(FileSystemListener listener) {
-		return impl.addFileSystemListener(listener);
-	}
+    public static boolean addFileSystemListener(FileSystemListener listener) {
+        return impl.addFileSystemListener(listener);
+    }
 
-	public static boolean removeFileSystemListener(FileSystemListener listener) {
-		return impl.removeFileSystemListener(listener);
-	}
+    public static boolean removeFileSystemListener(FileSystemListener listener) {
+        return impl.removeFileSystemListener(listener);
+    }
 
-	public static Enumeration listRoots() {
-		return impl.listRoots();
-	}
+    public static Enumeration listRoots() {
+        return impl.listRoots();
+    }
 
 }

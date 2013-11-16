@@ -33,36 +33,36 @@ import javax.microedition.io.OutputConnection;
 import java.io.*;
 
 /**
- * @author vlads 
- * 
- * Default Connector
+ * @author vlads
+ *         <p/>
+ *         Default Connector
  */
 public abstract class ConnectorAdapter implements ConnectorDelegate {
 
-	public abstract Connection open(String name, int mode, boolean timeouts) throws IOException;
+    public abstract Connection open(String name, int mode, boolean timeouts) throws IOException;
 
-	public Connection open(String name) throws IOException {
-		return open(name, Connector.READ_WRITE, false);
-	}
+    public Connection open(String name) throws IOException {
+        return open(name, Connector.READ_WRITE, false);
+    }
 
-	public Connection open(String name, int mode) throws IOException {
-		return open(name, mode, false);
-	}
+    public Connection open(String name, int mode) throws IOException {
+        return open(name, mode, false);
+    }
 
-	public DataInputStream openDataInputStream(String name) throws IOException {
-		return ((InputConnection) open(name)).openDataInputStream();
-	}
+    public DataInputStream openDataInputStream(String name) throws IOException {
+        return ((InputConnection) open(name)).openDataInputStream();
+    }
 
-	public DataOutputStream openDataOutputStream(String name) throws IOException {
-		return ((OutputConnection) open(name)).openDataOutputStream();
-	}
+    public DataOutputStream openDataOutputStream(String name) throws IOException {
+        return ((OutputConnection) open(name)).openDataOutputStream();
+    }
 
-	public InputStream openInputStream(String name) throws IOException {
-		return ((InputConnection) open(name)).openInputStream();
-	}
+    public InputStream openInputStream(String name) throws IOException {
+        return ((InputConnection) open(name)).openInputStream();
+    }
 
-	public OutputStream openOutputStream(String name) throws IOException {
-		return ((OutputConnection) open(name)).openOutputStream();
-	}
+    public OutputStream openOutputStream(String name) throws IOException {
+        return ((OutputConnection) open(name)).openOutputStream();
+    }
 
 }

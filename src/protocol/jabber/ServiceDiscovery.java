@@ -1,23 +1,24 @@
 package protocol.jabber;
 
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
+import protocol.Contact;
 import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
-import ru.sawim.models.list.VirtualListItem;
-import ru.sawim.models.list.VirtualList;
-import java.util.Vector;
-import sawim.roster.Roster;
-import ru.sawim.models.list.VirtualListModel;
-import sawim.util.JLocale;
-import sawim.comm.*;
 import ru.sawim.Scheme;
-import protocol.*;
+import ru.sawim.models.list.VirtualList;
+import ru.sawim.models.list.VirtualListItem;
+import ru.sawim.models.list.VirtualListModel;
 import ru.sawim.view.TextBoxView;
+import sawim.comm.Config;
+import sawim.comm.StringConvertor;
+import sawim.roster.Roster;
+import sawim.util.JLocale;
+
+import java.util.Vector;
 
 
 public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
@@ -158,7 +159,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
 
     private String getJid(int num) {
         if (num < jids.size()) {
-            String rawJid = (String)jids.elementAt(num);
+            String rawJid = (String) jids.elementAt(num);
             if (rawJid.endsWith("@")) {
                 return rawJid + serverJid;
             }
@@ -166,6 +167,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
         }
         return "";
     }
+
     private int getJidIndex(int textIndex) {
         if (!model.isItemSelectable(textIndex)) return -1;
         int index = -1;
@@ -174,6 +176,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
         }
         return index;
     }
+
     private String getCurrentJid(int currItem) {
         int currentIndex = getJidIndex(currItem);
         return (-1 == currentIndex) ? "" : getJid(currentIndex);
@@ -189,11 +192,13 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
             }
         }
     }
+
     private void clear() {
         model.clear();
         jids.removeAllElements();
         addServer(false);
     }
+
     public void setTotalCount(int count) {
         model.clear();
         jids.removeAllElements();
@@ -209,6 +214,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
         }
         return jid;
     }
+
     private String makeReadableJid(String jid) {
         if (isConferenceList) {
             return jid;
@@ -238,7 +244,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
         model.addPar(item);
         jids.addElement(shortJid);
         //if (0 == (jids.size() % 50)) {
-            screen.updateModel();
+        screen.updateModel();
         //}
     }
 
@@ -248,6 +254,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
         }
         screen.show();
     }
+
     public void update() {
         screen.updateModel();
     }
@@ -262,7 +269,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
         Vector all = jabber.getContactItems();
         boolean notEmpty = false;
         for (int i = 0; i < all.size(); ++i) {
-            JabberContact contact = (JabberContact)all.elementAt(i);
+            JabberContact contact = (JabberContact) all.elementAt(i);
             if (contact.isConference()) {
                 addUnique(contact.getName(), contact.getUserId());
                 notEmpty = true;
@@ -275,8 +282,9 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
             screen.updateModel();
         }
     }
+
     private void addBuildInList() {
-    //    addUnique(General.NAME, "jimm-sawim@conference.jabber.ru");
+        //    addUnique(General.NAME, "jimm-sawim@conference.jabber.ru");
         VirtualListItem br = model.createNewParser(false);
         br.addBr();
         model.addPar(br);
@@ -361,6 +369,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
         }
         screen.setCurrentItemIndex(index, true);
     }
+
     public void textboxAction(TextBoxView box, boolean ok) {
         if (!ok) {
             return;
@@ -375,7 +384,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
             }
             int currentIndex = getJidIndex(screen.getCurrItem()) + 1;
             for (int i = currentIndex; i < jids.size(); ++i) {
-                String jid = (String)jids.elementAt(i);
+                String jid = (String) jids.elementAt(i);
                 if (-1 != jid.indexOf(text)) {
                     setCurrTextIndex(i);
                     break;

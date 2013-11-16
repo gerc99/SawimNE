@@ -1,9 +1,9 @@
 package ru.sawim;
 
+import android.text.TextUtils;
+
 import java.lang.ref.WeakReference;
 import java.util.Vector;
-
-import android.text.TextUtils;
 
 
 public class LeaksManager {
@@ -49,8 +49,7 @@ public class LeaksManager {
             if (obj != null) {
                 String className = obj.getClass().getSimpleName();
                 addUniqueClassName(names, TextUtils.isEmpty(className) ? "Unknown class name" : className);
-            }
-            else {
+            } else {
                 mRefs.remove(i);
             }
         }

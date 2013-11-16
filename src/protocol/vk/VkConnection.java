@@ -1,15 +1,12 @@
 package protocol.vk;
 
-import android.os.Handler;
-import android.os.Looper;
-import ru.sawim.General;
-import ru.sawim.SawimApplication;
-import sawim.chat.message.PlainMessage;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import protocol.Group;
 import protocol.vk.api.VkApp;
+import ru.sawim.SawimApplication;
+import sawim.chat.message.PlainMessage;
 
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -63,6 +60,7 @@ public class VkConnection implements Runnable {
     public boolean isConnected() {
         return running && api.isLogged() && !api.isError();
     }
+
     private Vector<VkContact> to(JSONArray list) throws JSONException {
         Vector<VkContact> cl = new Vector<VkContact>();
         for (int i = 0; i < list.length(); ++i) {
@@ -80,6 +78,7 @@ public class VkConnection implements Runnable {
         }
         return cl;
     }
+
     private Vector<Group> groups() {
         Vector<Group> groups = new Vector<Group>();
         Group g = vk.createGroup("General");
@@ -94,7 +93,7 @@ public class VkConnection implements Runnable {
         if (!api.isLogged() || !api.hasAccessToken()) {
             //new Handler(Looper.getMainLooper()).post(new Runnable() {
             //    public void run() {
-                    api.showLoginDialog(vk.getUserId(), vk.getPassword());
+            api.showLoginDialog(vk.getUserId(), vk.getPassword());
             //    }
             //});
         }
@@ -133,6 +132,7 @@ public class VkConnection implements Runnable {
             sawim.modules.DebugLog.panic("Vk processContacts", e);
         }
     }
+
     private void processOnlineContacts() {
         try {
             JSONArray ids = api.getOnlineFriends().getJSONArray("response");
@@ -155,6 +155,7 @@ public class VkConnection implements Runnable {
         } catch (Exception ignored) {
         }
     }
+
     private void processMessages() {
         try {
             JSONArray msgs = api.getMessages().getJSONArray("response");

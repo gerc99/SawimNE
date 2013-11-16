@@ -21,7 +21,7 @@ public final class TcpSocket {
 
     public void connectTo(String url) throws SawimException {
         try {
-            sc = (StreamConnection)Connector.open(url, Connector.READ_WRITE);
+            sc = (StreamConnection) Connector.open(url, Connector.READ_WRITE);
             os = sc.openOutputStream();
             is = sc.openInputStream();
         } catch (ConnectionNotFoundException e) {
@@ -36,9 +36,10 @@ public final class TcpSocket {
             throw new SawimException(120, 10);
         }
     }
+
     public void connectForReadingTo(String url) throws SawimException {
         try {
-            sc = (StreamConnection)Connector.open(url, Connector.READ);
+            sc = (StreamConnection) Connector.open(url, Connector.READ);
             is = sc.openInputStream();
         } catch (ConnectionNotFoundException e) {
             throw new SawimException(121, 0);
@@ -60,6 +61,7 @@ public final class TcpSocket {
             throw new SawimException(120, 4);
         }
     }
+
     public void waitData() throws SawimException {
         while (0 == available()) {
             try {
@@ -68,6 +70,7 @@ public final class TcpSocket {
             }
         }
     }
+
     public int read(byte[] data, int offset, int length) throws SawimException {
         try {
             length = Math.min(length, is.available());
@@ -105,9 +108,11 @@ public final class TcpSocket {
             throw new SawimException(120, 1);
         }
     }
+
     public final void write(byte[] data) throws SawimException {
         write(data, 0, data.length);
     }
+
     public void write(byte[] data, int offset, int length) throws SawimException {
         try {
             os.write(data, offset, length);
@@ -116,6 +121,7 @@ public final class TcpSocket {
             throw new SawimException(120, 2);
         }
     }
+
     public void flush() throws SawimException {
         try {
             os.flush();
@@ -137,18 +143,21 @@ public final class TcpSocket {
         close(os);
         close(sc);
     }
+
     public static void close(Connection c) {
         try {
             c.close();
         } catch (Exception ignored) {
         }
     }
+
     public static void close(InputStream c) {
         try {
             c.close();
         } catch (Exception ignored) {
         }
     }
+
     public static void close(OutputStream c) {
         try {
             c.close();

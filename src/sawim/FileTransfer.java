@@ -10,7 +10,6 @@ import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
 import ru.sawim.view.FileProgressView;
 import sawim.chat.Chat;
-import sawim.roster.Roster;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
 import sawim.modules.DebugLog;
@@ -19,6 +18,7 @@ import sawim.modules.fs.FileBrowserListener;
 import sawim.modules.fs.FileSystem;
 import sawim.modules.fs.JSR75FileSystem;
 import sawim.modules.photo.PhotoListener;
+import sawim.roster.Roster;
 import sawim.util.JLocale;
 
 import javax.microedition.io.Connector;
@@ -111,7 +111,7 @@ public final class FileTransfer implements FileBrowserListener,
 
     public void onFileSelect(InputStream in, String fileName) {
         //try {
-            setFileName(fileName);
+        setFileName(fileName);
         int fileSize = 0;
         try {
             fileSize = in.available();
@@ -119,7 +119,7 @@ public final class FileTransfer implements FileBrowserListener,
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
         setData(in, fileSize);
-            askForNameDesc();
+        askForNameDesc();
         /*} catch (Exception e) {
             closeFile();
             handleException(new SawimException(191, 6));

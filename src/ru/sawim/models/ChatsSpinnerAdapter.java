@@ -7,7 +7,8 @@ import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.*;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.Scheme;
@@ -47,7 +48,7 @@ public class ChatsSpinnerAdapter extends BaseAdapter {
                 ChatHistory.instance.addLayerToListOfChats(Roster.getInstance().getProtocol(i), items);
             }
         else
-           items.addAll(ChatHistory.instance.historyTable);
+            items.addAll(ChatHistory.instance.historyTable);
         notifyDataSetChanged();
     }
 
@@ -85,7 +86,7 @@ public class ChatsSpinnerAdapter extends BaseAdapter {
             viewHolder.label.setTypeface(Typeface.SANS_SERIF);
             viewHolder.label.setTextSize(General.getFontSize() - 2);
             viewHolder.label.setTextColor(Scheme.getInversColor(Scheme.THEME_CAP_TEXT));
-            viewHolder.label.setText((String)object);
+            viewHolder.label.setText((String) object);
         }
         if (object instanceof Chat) {
             final Chat chat = (Chat) object;

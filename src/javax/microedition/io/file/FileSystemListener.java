@@ -28,10 +28,10 @@ package javax.microedition.io.file;
 
 public interface FileSystemListener {
 
-	public static final int ROOT_ADDED = 0;
+    public static final int ROOT_ADDED = 0;
 
-	public static final int ROOT_REMOVED = 1;
+    public static final int ROOT_REMOVED = 1;
 
-	public abstract void rootChanged(int i, String s);
+    public abstract void rootChanged(int i, String s);
 
 }

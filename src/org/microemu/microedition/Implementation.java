@@ -28,11 +28,10 @@ package org.microemu.microedition;
 
 /**
  * This a flag to indicate that class is Implementation.
- * 
- * @author vlads
  *
+ * @author vlads
  */
 public interface Implementation {
 
-	
+
 }

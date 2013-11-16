@@ -3,17 +3,14 @@ package ru.sawim.models;
 import DrawControls.icons.AniIcon;
 import DrawControls.icons.Icon;
 import android.content.Context;
-
 import android.graphics.drawable.AnimationDrawable;
-import android.graphics.drawable.BitmapDrawable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import sawim.modules.Emotions;
 import ru.sawim.R;
+import sawim.modules.Emotions;
 
 /**
  * Created with IntelliJ IDEA.

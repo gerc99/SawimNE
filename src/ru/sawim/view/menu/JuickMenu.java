@@ -20,8 +20,8 @@ import sawim.roster.Roster;
 public class JuickMenu implements DialogInterface.OnClickListener {
 
     public static final String JUICK = "juick@juick.com";
-    public static final String JUBO  = "jubo@nologin.ru";
-    public static final String PSTO  = "psto@psto.net";
+    public static final String JUBO = "jubo@nologin.ru";
+    public static final String PSTO = "psto@psto.net";
     public static final int MODE_JUICK = 0;
     public static final int MODE_PSTO = 1;
 
@@ -61,7 +61,7 @@ public class JuickMenu implements DialogInterface.OnClickListener {
         builder.setItems(items, this);
         try {
             builder.create().show();
-        } catch(Exception e){
+        } catch (Exception e) {
             // WindowManager$BadTokenException will be caught and the app would not display
         }
     }
@@ -92,12 +92,12 @@ public class JuickMenu implements DialogInterface.OnClickListener {
             if (text.indexOf("/") > 0) id = text.substring(0, text.indexOf("/"));
             else id = text;
 
-            switch(which) {
+            switch (which) {
                 case 0:
                     textToInser = text;
                     break;
                 case 1:
-                    textToInser =  id + "+";
+                    textToInser = id + "+";
                     break;
                 case 2:
                     textToInser = "! " + id;
@@ -115,7 +115,7 @@ public class JuickMenu implements DialogInterface.OnClickListener {
                     break;
             }
         } else if (text.startsWith("@")) {
-            switch(which) {
+            switch (which) {
                 case 0:
                     textToInser = text;
                     break;

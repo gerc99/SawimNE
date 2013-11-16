@@ -1,8 +1,8 @@
 package sawim.comm;
 
-import sawim.roster.TreeNode;
 import ru.sawim.General;
 import sawim.Options;
+import sawim.roster.TreeNode;
 import sawim.util.JLocale;
 
 import java.io.ByteArrayOutputStream;
@@ -11,17 +11,21 @@ import java.util.*;
 
 public class Util {
     private ByteArrayOutputStream stream = new ByteArrayOutputStream();
+
     public Util() {
     }
+
     public byte[] toByteArray() {
         return stream.toByteArray();
     }
+
     public int size() {
         return stream.size();
     }
+
     public void reset() {
         try {
-    	    stream.reset();
+            stream.reset();
         } catch (Exception ignored) {
         }
     }
@@ -31,6 +35,7 @@ public class Util {
             writeByte(0);
         }
     }
+
     public void writeWordBE(int value) {
         try {
             stream.write(((value & 0xFF00) >> 8) & 0xFF);
@@ -38,6 +43,7 @@ public class Util {
         } catch (Exception ignored) {
         }
     }
+
     public void writeWordLE(int value) {
         try {
             stream.write(value & 0xFF);
@@ -62,19 +68,20 @@ public class Util {
 
     public void writeDWordBE(long longValue) {
         try {
-            int value = (int)longValue;
+            int value = (int) longValue;
             stream.write(((value & 0xFF000000) >> 24) & 0xFF);
             stream.write(((value & 0x00FF0000) >> 16) & 0xFF);
-            stream.write(((value & 0x0000FF00) >> 8)  & 0xFF);
-            stream.write(  value & 0x000000FF);
+            stream.write(((value & 0x0000FF00) >> 8) & 0xFF);
+            stream.write(value & 0x000000FF);
         } catch (Exception ignored) {
         }
     }
+
     public void writeDWordLE(long longValue) {
         try {
-            int value = (int)longValue;
-            stream.write(  value & 0x000000FF);
-            stream.write(((value & 0x0000FF00) >> 8)  & 0xFF);
+            int value = (int) longValue;
+            stream.write(value & 0x000000FF);
+            stream.write(((value & 0x0000FF00) >> 8) & 0xFF);
             stream.write(((value & 0x00FF0000) >> 16) & 0xFF);
             stream.write(((value & 0xFF000000) >> 24) & 0xFF);
         } catch (Exception ignored) {
@@ -96,6 +103,7 @@ public class Util {
         } catch (Exception ignored) {
         }
     }
+
     public void writeLenAndUtf8String(String value) {
         byte[] raw = StringConvertor.stringToByteArrayUtf8(value);
         writeWordBE(raw.length);
@@ -104,6 +112,7 @@ public class Util {
         } catch (Exception ignored) {
         }
     }
+
     public void writeUtf8String(String value) {
         byte[] raw = StringConvertor.stringToByteArrayUtf8(value);
         try {
@@ -111,6 +120,7 @@ public class Util {
         } catch (Exception ignored) {
         }
     }
+
     public void writeProfileAsciizTLV(int type, String value) {
         value = StringConvertor.notNull(value);
 
@@ -121,6 +131,7 @@ public class Util {
         writeByteArray(raw);
         writeByte(0);
     }
+
     public void writeTlvECombo(int type, String value, int code) {
         value = StringConvertor.notNull(value);
         writeWordLE(type);
@@ -134,6 +145,7 @@ public class Util {
         } catch (Exception ignored) {
         }
     }
+
     public void writeTLV(int type, byte[] data) {
         writeWordBE(type);
         int length = (null == data) ? 0 : data.length;
@@ -145,29 +157,32 @@ public class Util {
             }
         }
     }
+
     public void writeTLVWord(int type, int wordValue) {
         writeWordBE(type);
         writeWordBE(2);
         writeWordBE(wordValue);
     }
+
     public void writeTLVDWord(int type, long wordValue) {
         writeWordBE(type);
         writeWordBE(4);
         writeDWordBE(wordValue);
     }
+
     public void writeTLVByte(int type, int wordValue) {
         writeWordBE(type);
         writeWordBE(1);
         writeByte(wordValue);
     }
 
-    
-    private static final byte[] PASSENC_KEY = {(byte)0xF3, (byte)0x26, (byte)0x81, (byte)0xC4,
-                                              (byte)0x39, (byte)0x86, (byte)0xDB, (byte)0x92,
-                                              (byte)0x71, (byte)0xA3, (byte)0xB9, (byte)0xE6,
-                                              (byte)0x53, (byte)0x7A, (byte)0x95, (byte)0x7C};
 
-    
+    private static final byte[] PASSENC_KEY = {(byte) 0xF3, (byte) 0x26, (byte) 0x81, (byte) 0xC4,
+            (byte) 0x39, (byte) 0x86, (byte) 0xDB, (byte) 0x92,
+            (byte) 0x71, (byte) 0xA3, (byte) 0xB9, (byte) 0xE6,
+            (byte) 0x53, (byte) 0x7A, (byte) 0x95, (byte) 0x7C};
+
+
     public static int getByte(byte[] buf, int off) {
         return ((int) buf[off]) & 0x000000FF;
     }
@@ -180,56 +195,57 @@ public class Util {
         int val = (((int) buf[off])) & 0x000000FF;
         return val | (((int) buf[++off]) << 8) & 0x0000FF00;
     }
+
     public static int getWordBE(byte[] buf, int off) {
         int val = (((int) buf[off]) << 8) & 0x0000FF00;
         return val | (((int) buf[++off])) & 0x000000FF;
     }
 
     public static void putWordLE(byte[] buf, int off, int val) {
-        buf[off]   = (byte) ((val)      & 0x000000FF);
+        buf[off] = (byte) ((val) & 0x000000FF);
         buf[++off] = (byte) ((val >> 8) & 0x000000FF);
     }
 
     public static void putWordBE(byte[] buf, int off, int val) {
-        buf[off]   = (byte) ((val >> 8) & 0x000000FF);
-        buf[++off] = (byte) ((val)      & 0x000000FF);
+        buf[off] = (byte) ((val >> 8) & 0x000000FF);
+        buf[++off] = (byte) ((val) & 0x000000FF);
     }
 
     public static long getDWordLE(byte[] buf, int off) {
         long val;
-        
-        val  = (((long) buf[off]))         & 0x000000FF;
-        val |= (((long) buf[++off]) << 8)  & 0x0000FF00;
+
+        val = (((long) buf[off])) & 0x000000FF;
+        val |= (((long) buf[++off]) << 8) & 0x0000FF00;
         val |= (((long) buf[++off]) << 16) & 0x00FF0000;
         val |= (((long) buf[++off]) << 24) & 0xFF000000;
         return val;
     }
-    
+
     public static long getDWordBE(byte[] buf, int off) {
         long val;
-        val  = (((long) buf[off]) << 24)   & 0xFF000000;
+        val = (((long) buf[off]) << 24) & 0xFF000000;
         val |= (((long) buf[++off]) << 16) & 0x00FF0000;
-        val |= (((long) buf[++off]) << 8)  & 0x0000FF00;
-        val |= (((long) buf[++off]))       & 0x000000FF;
+        val |= (((long) buf[++off]) << 8) & 0x0000FF00;
+        val |= (((long) buf[++off])) & 0x000000FF;
         return val;
     }
 
     public static void putDWordLE(byte[] buf, int off, long val) {
-        
-        buf[off]   = (byte) ((val)       & 0x00000000000000FF);
-        buf[++off] = (byte) ((val >> 8)  & 0x00000000000000FF);
+
+        buf[off] = (byte) ((val) & 0x00000000000000FF);
+        buf[++off] = (byte) ((val >> 8) & 0x00000000000000FF);
         buf[++off] = (byte) ((val >> 16) & 0x00000000000000FF);
         buf[++off] = (byte) ((val >> 24) & 0x00000000000000FF);
     }
-    
+
     public static void putDWordBE(byte[] buf, int off, long val) {
-        buf[off]   = (byte) ((val >> 24) & 0x00000000000000FF);
+        buf[off] = (byte) ((val >> 24) & 0x00000000000000FF);
         buf[++off] = (byte) ((val >> 16) & 0x00000000000000FF);
-        buf[++off] = (byte) ((val >> 8)  & 0x00000000000000FF);
-        buf[++off] = (byte) ((val)       & 0x00000000000000FF);
+        buf[++off] = (byte) ((val >> 8) & 0x00000000000000FF);
+        buf[++off] = (byte) ((val) & 0x00000000000000FF);
     }
 
-    
+
     public static byte[] decipherPassword(byte[] buf) {
         byte[] ret = new byte[buf.length];
         for (int i = 0; i < buf.length; ++i) {
@@ -246,30 +262,32 @@ public class Util {
     }
 
     private static Random rand = new Random(System.currentTimeMillis());
+
     public static int nextRandInt() {
         return Math.abs(Math.max(Integer.MIN_VALUE + 1, rand.nextInt()));
     }
 
     private final static int TIME_SECOND = 0;
     private final static int TIME_MINUTE = 1;
-    private final static int TIME_HOUR   = 2;
-    private final static int TIME_DAY    = 3;
-    private final static int TIME_MON    = 4;
-    private final static int TIME_YEAR   = 5;
+    private final static int TIME_HOUR = 2;
+    private final static int TIME_DAY = 3;
+    private final static int TIME_MON = 4;
+    private final static int TIME_YEAR = 5;
 
     final private static byte[] dayCounts = {
-        31,28,31,30,31,30,31,31,30,31,30,31
+            31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
     };
 
     private final static int[] calFields = {
-            Calendar.YEAR,         Calendar.MONTH,     Calendar.DAY_OF_MONTH,
-            Calendar.HOUR_OF_DAY,  Calendar.MINUTE,    Calendar.SECOND};
+            Calendar.YEAR, Calendar.MONTH, Calendar.DAY_OF_MONTH,
+            Calendar.HOUR_OF_DAY, Calendar.MINUTE, Calendar.SECOND};
 
-    private final static int[] ofsFieldsA = { 0, 4, 6, 9, 12, 15 } ; 
-    private final static int[] ofsFieldsB = { 0, 5, 8, 11, 14, 17 } ;
+    private final static int[] ofsFieldsA = {0, 4, 6, 9, 12, 15};
+    private final static int[] ofsFieldsB = {0, 5, 8, 11, 14, 17};
     private final static String[] months = {"Jan", "Feb", "Mar", "Apr",
-                        "May", "Jun", "Jul", "Aug",
-                        "Sep", "Oct", "Nov", "Dec"};
+            "May", "Jun", "Jul", "Aug",
+            "Sep", "Oct", "Nov", "Dec"};
+
     public static long createGmtDate(String sdate) {
         Calendar c = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
         try {
@@ -277,7 +295,7 @@ public class Util {
             int[] ofs = sdate.endsWith("Z") ? ofsFieldsB : ofsFieldsA;
             long result;
             if (Character.isDigit(sdate.charAt(0))) {
-                int fieldLength = 4;    
+                int fieldLength = 4;
                 for (int i = 0; i < calFields.length; ++i) {
                     int begIndex = ofs[i];
                     int field = strToIntDef(sdate.substring(begIndex, begIndex + fieldLength), 0);
@@ -301,8 +319,8 @@ public class Util {
                 }
                 c.set(Calendar.DAY_OF_MONTH, strToIntDef(rfcDate[1], 0));
                 c.set(Calendar.HOUR_OF_DAY, strToIntDef(rfcDate[4].substring(0, 2), 0));
-                c.set(Calendar.MINUTE,      strToIntDef(rfcDate[4].substring(3, 5), 0));
-                c.set(Calendar.SECOND,      strToIntDef(rfcDate[4].substring(6), 0));
+                c.set(Calendar.MINUTE, strToIntDef(rfcDate[4].substring(3, 5), 0));
+                c.set(Calendar.SECOND, strToIntDef(rfcDate[4].substring(6), 0));
 
                 long delta = strToIntDef(rfcDate[5].substring(1, 3), 0) * 60 * 60
                         + strToIntDef(rfcDate[5].substring(3, 5), 0) * 60;
@@ -316,6 +334,7 @@ public class Util {
         }
         return 0;
     }
+
     public static long createLocalDate(String date) {
         try {
             date = date.replace('.', ' ').replace(':', ' ');
@@ -325,14 +344,14 @@ public class Util {
             c.set(Calendar.MONTH, Util.strToIntDef(values[1], 0) - 1);
             c.set(Calendar.DAY_OF_MONTH, Util.strToIntDef(values[0], 0));
             c.set(Calendar.HOUR_OF_DAY, Util.strToIntDef(values[3], 0));
-            c.set(Calendar.MINUTE,      Util.strToIntDef(values[4], 0));
-            c.set(Calendar.SECOND,      0);
+            c.set(Calendar.MINUTE, Util.strToIntDef(values[4], 0));
+            c.set(Calendar.SECOND, 0);
             return localTimeToGmtTime(c.getTime().getTime() / 1000);
         } catch (Exception ignored) {
             return 0;
         }
     }
-    
+
     public static long createCurrentLocalTime() {
         return gmtTimeToLocalTime(General.getCurrentGmtTime());
     }
@@ -351,17 +370,18 @@ public class Util {
         StringBuffer sb = new StringBuffer(16);
         if (!onlyTime) {
             sb.append(Util.makeTwo(localDate[TIME_DAY]))
-              .append('.')
-              .append(Util.makeTwo(localDate[TIME_MON]))
-              .append('.')
-              .append(localDate[TIME_YEAR])
-              .append(' ');
+                    .append('.')
+                    .append(Util.makeTwo(localDate[TIME_MON]))
+                    .append('.')
+                    .append(localDate[TIME_YEAR])
+                    .append(' ');
         }
         sb.append(Util.makeTwo(localDate[TIME_HOUR]))
-          .append(':')
-          .append(Util.makeTwo(localDate[TIME_MINUTE]));
+                .append(':')
+                .append(Util.makeTwo(localDate[TIME_MINUTE]));
         return sb.toString();
     }
+
     public static String getDate(String format, long anyDate) {
         if (0 == anyDate) return "error";
         int[] localDate = createDate(anyDate);
@@ -378,30 +398,31 @@ public class Util {
     public static String getUtcDateString(long gmtTime) {
         return getDate("%Y-%m-%dT%H:%M:%SZ", gmtTime);
     }
-	public static String xep0082UtcTime(long date) {
+
+    public static String xep0082UtcTime(long date) {
         int[] loclaDate = createDate(date);
-        
+
         StringBuffer sb = new StringBuffer();
-        
-        sb.append(loclaDate[TIME_YEAR]) ;
-        
-        sb.append(Util.makeTwo(loclaDate[TIME_MON])) ;
-        
+
+        sb.append(loclaDate[TIME_YEAR]);
+
+        sb.append(Util.makeTwo(loclaDate[TIME_MON]));
+
         sb.append(Util.makeTwo(loclaDate[TIME_DAY]))
-          .append('T');
-        
+                .append('T');
+
         sb.append(Util.makeTwo(loclaDate[TIME_HOUR]))
-          .append(':')
-          .append(Util.makeTwo(loclaDate[TIME_MINUTE]))
-          .append(':')
-          .append(Util.makeTwo(loclaDate[TIME_SECOND]));
-        
-       
+                .append(':')
+                .append(Util.makeTwo(loclaDate[TIME_MINUTE]))
+                .append(':')
+                .append(Util.makeTwo(loclaDate[TIME_SECOND]));
+
+
         return sb.toString();
     }
-    
+
     public static long createGmtTime(int year, int mon, int day,
-            int hour, int min, int sec) {
+                                     int hour, int min, int sec) {
         try {
             Calendar c = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
             c.set(Calendar.YEAR, year);
@@ -422,21 +443,21 @@ public class Util {
 
         sec = (int) (value % 60);
 
-        min = (int) ((value / 60) % 60); 
+        min = (int) ((value / 60) % 60);
         value -= 60 * min;
 
-        hour = (int) ((value / 3600) % 24); 
+        hour = (int) ((value / 3600) % 24);
         value -= 3600 * hour;
 
         total_days = (int) (value / (3600 * 24));
 
         year = 1970;
-        for (;;) {
+        for (; ; ) {
             last_days = total_days - ((year % 4 == 0) && (year != 2000) ? 366 : 365);
             if (last_days <= 0) break;
             total_days = last_days;
             year++;
-        } 
+        }
 
         int febrDays = ((year % 4 == 0) && (year != 2000)) ? 29 : 28;
 
@@ -446,95 +467,98 @@ public class Util {
             if (last_days <= 0) break;
             mon++;
             total_days = last_days;
-        } 
+        }
 
-        day = total_days; 
+        day = total_days;
 
-        return new int[] { sec, min, hour, day, mon, year };
+        return new int[]{sec, min, hour, day, mon, year};
     }
 
     public static long gmtTimeToLocalTime(long gmtTime) {
         return gmtTime + Options.getInt(Options.OPTION_GMT_OFFSET) * 3600L;
     }
+
     public static long localTimeToGmtTime(long localTime) {
         return localTime - Options.getInt(Options.OPTION_GMT_OFFSET) * 3600L;
     }
 
     public static String longitudeToString(long seconds) {
-        int days = (int)(seconds / 86400);
+        int days = (int) (seconds / 86400);
         seconds %= 86400;
-        int hours = (int)(seconds / 3600);
+        int hours = (int) (seconds / 3600);
         seconds %= 3600;
-        int minutes = (int)(seconds / 60);
+        int minutes = (int) (seconds / 60);
 
         StringBuffer buf = new StringBuffer();
         if (days != 0) {
-            buf.append(days).append(' ').append( JLocale.getString("days") ).append(' ');
+            buf.append(days).append(' ').append(JLocale.getString("days")).append(' ');
         }
         if (hours != 0) {
-            buf.append(hours).append(' ').append( JLocale.getString("hours") ).append(' ');
+            buf.append(hours).append(' ').append(JLocale.getString("hours")).append(' ');
         }
         if (minutes != 0) {
-            buf.append(minutes).append(' ').append( JLocale.getString("minutes") );
+            buf.append(minutes).append(' ').append(JLocale.getString("minutes"));
         }
 
         return buf.toString();
     }
-	public static String secDiffToDate(int seconds){
-        String result ="";
-        int d = 0,h = 0,m = 0,s = 0;
-        if (seconds>86400){
-            d=(seconds/86400);
-            seconds=seconds-(d*86400);
+
+    public static String secDiffToDate(int seconds) {
+        String result = "";
+        int d = 0, h = 0, m = 0, s = 0;
+        if (seconds > 86400) {
+            d = (seconds / 86400);
+            seconds = seconds - (d * 86400);
         }
-        if (seconds>3600){
-            h=(seconds/3600);
-            seconds=seconds-(h*3600);
+        if (seconds > 3600) {
+            h = (seconds / 3600);
+            seconds = seconds - (h * 3600);
         }
-        if (seconds>60){
-            m=(seconds/60);
-            seconds=seconds-(m*60);
+        if (seconds > 60) {
+            m = (seconds / 60);
+            seconds = seconds - (m * 60);
         }
-        s=seconds;
-        
-        if (d>0) {
-            result+= d + " " + goodWordForm (d,3);
+        s = seconds;
+
+        if (d > 0) {
+            result += d + " " + goodWordForm(d, 3);
         }
-        if (h>0) {
-            if (d>0) result+=", ";
-            result+= h + " " + goodWordForm (h, 2);
+        if (h > 0) {
+            if (d > 0) result += ", ";
+            result += h + " " + goodWordForm(h, 2);
         }
-        if (m>0) {
-            if ((d>0) || (h>0)) result+=", ";
-            result+= m + " " + goodWordForm (m, 1);
+        if (m > 0) {
+            if ((d > 0) || (h > 0)) result += ", ";
+            result += m + " " + goodWordForm(m, 1);
         }
-        if (s>0) {
-            if ((d>0) || (h>0) || (m>0))  result+=", ";
-            result+= s + " " + goodWordForm (s, 0);
+        if (s > 0) {
+            if ((d > 0) || (h > 0) || (m > 0)) result += ", ";
+            result += s + " " + goodWordForm(s, 0);
         }
-        if (result.equals("") && s==0)
-            result=s + " " + goodWordForm (s, 0);
+        if (result.equals("") && s == 0)
+            result = s + " " + goodWordForm(s, 0);
         return result;
     }
-	public static String goodWordForm(int d, int field) {
-        String [] suf = {
-            
-			"sec", "minutes", "hours", "days"
+
+    public static String goodWordForm(int d, int field) {
+        String[] suf = {
+
+                "sec", "minutes", "hours", "days"
         };
-        
+
         return JLocale.getString(suf[field]);
     }
-    
+
     public static int uniqueValue() {
-        int time = (int)(General.getCurrentGmtTime() & 0x7FFF);
+        int time = (int) (General.getCurrentGmtTime() & 0x7FFF);
         return (time << 16) | (rand.nextInt() & 0xFFFF);
     }
-    
+
     private static final int URL_CHAR_PROTOCOL = 0;
-    private static final int URL_CHAR_PREV    = 1;
-    private static final int URL_CHAR_OTHER   = 2;
-    private static final int URL_CHAR_DIGIT   = 3;
-    private static final int URL_CHAR_NONE    = 4;
+    private static final int URL_CHAR_PREV = 1;
+    private static final int URL_CHAR_OTHER = 2;
+    private static final int URL_CHAR_DIGIT = 3;
+    private static final int URL_CHAR_NONE = 4;
 
     private static boolean isURLChar(char chr, int mode) {
         if (mode == URL_CHAR_PROTOCOL) {
@@ -547,7 +571,7 @@ public class Util {
                     || ((chr >= 'a') && (chr <= 'z'))
                     || ((chr >= '0') && (chr <= '9'))
                     || ('@' == chr) || ('-' == chr)
-                    || ('_' == chr)|| ('%' == chr);
+                    || ('_' == chr) || ('%' == chr);
         }
         if (URL_CHAR_DIGIT == mode) return Character.isDigit(chr);
         if (URL_CHAR_NONE == mode) return (' ' == chr) || ('\n' == chr);
@@ -605,7 +629,7 @@ public class Util {
                 if (nonDigit) {
                     if (-1 == url.indexOf('/')) {
                         if (-1 == url.indexOf('@')) return;
-                        
+
                     } else {
                         url = "http:\57\57" + url;
                     }
@@ -638,7 +662,7 @@ public class Util {
         int findIndex = 0;
         int beginIdx;
         int endIdx;
-        for (;;) {
+        for (; ; ) {
             if (findIndex >= size) break;
             int ptIndex = msg.indexOf(ch, findIndex);
             if (ptIndex == -1) break;
@@ -652,7 +676,7 @@ public class Util {
             findIndex = endIdx;
             if (endIdx - ptIndex < 2) continue;
 
-            if  (URL_CHAR_NONE != before) {
+            if (URL_CHAR_NONE != before) {
                 for (beginIdx = ptIndex - 1; beginIdx >= 0; --beginIdx) {
                     if (!isURLChar(msg.charAt(beginIdx), before)) {
                         break;
@@ -737,7 +761,7 @@ public class Util {
         int start = 0;
         int pos = 0;
         StringBuffer sb = new StringBuffer();
-        for (;;) {
+        for (; ; ) {
             pos = text.indexOf(from, pos);
             if (-1 == pos) break;
             sb.append(text.substring(start, pos)).append(to);
@@ -771,7 +795,7 @@ public class Util {
         }
         return result.toString();
     }
-    
+
     static public String[] explode(String text, char separator) {
         if (StringConvertor.isEmpty(text)) {
             return new String[0];
@@ -804,6 +828,7 @@ public class Util {
     }
 
     private static final String base64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+
     private static int base64GetNextChar(String str, int index) {
         if (-1 == index) return -2;
         char ch = str.charAt(index);
@@ -812,6 +837,7 @@ public class Util {
         }
         return base64.indexOf(ch);
     }
+
     private static int base64GetNextIndex(String str, int index) {
         for (; index < str.length(); ++index) {
             char ch = str.charAt(index);
@@ -830,7 +856,7 @@ public class Util {
         if (null == str) str = "";
         Util out = new Util();
         for (int strIndex = 0; strIndex < str.length(); ++strIndex) {
-    	    strIndex = base64GetNextIndex(str, strIndex);
+            strIndex = base64GetNextIndex(str, strIndex);
             if (-1 == strIndex) break;
             int ch1 = base64GetNextChar(str, strIndex);
             if (-1 == ch1) break;
@@ -839,23 +865,24 @@ public class Util {
             if (-1 == strIndex) break;
             int ch2 = base64GetNextChar(str, strIndex);
             if (-1 == ch2) break;
-            out.writeByte((byte)(0xFF & ((ch1 << 2) | (ch2 >>> 4))));
+            out.writeByte((byte) (0xFF & ((ch1 << 2) | (ch2 >>> 4))));
 
             strIndex = base64GetNextIndex(str, strIndex + 1);
             if (-1 == strIndex) break;
             int ch3 = base64GetNextChar(str, strIndex);
             if (-1 == ch3) break;
-            out.writeByte((byte)(0xFF & ((ch2 << 4) | (ch3 >>> 2))));
+            out.writeByte((byte) (0xFF & ((ch2 << 4) | (ch3 >>> 2))));
 
             strIndex = base64GetNextIndex(str, strIndex + 1);
             if (-1 == strIndex) break;
             int ch4 = base64GetNextChar(str, strIndex);
             if (-1 == ch4) break;
-            out.writeByte((byte)(0xFF & ((ch3 << 6) | (ch4))));
+            out.writeByte((byte) (0xFF & ((ch3 << 6) | (ch4))));
         }
         return out.toByteArray();
     }
-    public static String base64encode( final byte[] data ) {
+
+    public static String base64encode(final byte[] data) {
         char[] out = new char[((data.length + 2) / 3) * 4];
         for (int i = 0, index = 0; i < data.length; i += 3, index += 4) {
             boolean quad = false;
@@ -872,19 +899,20 @@ public class Util {
                 val |= (0xFF & data[i + 2]);
                 quad = true;
             }
-            out[index+3] = base64.charAt(quad ? (val & 0x3F) : 64);
+            out[index + 3] = base64.charAt(quad ? (val & 0x3F) : 64);
             val >>= 6;
-            out[index+2] = base64.charAt(trip ? (val & 0x3F) : 64);
+            out[index + 2] = base64.charAt(trip ? (val & 0x3F) : 64);
             val >>= 6;
-            out[index+1] = base64.charAt(val & 0x3F);
+            out[index + 1] = base64.charAt(val & 0x3F);
             val >>= 6;
-            out[index+0] = base64.charAt(val & 0x3F);
+            out[index + 0] = base64.charAt(val & 0x3F);
         }
         return new String(out);
     }
 
     private static final String[] escapedChars = {"&quot;", "&apos;", "&gt;", "&lt;", "&amp;"};
     private static final String[] unescapedChars = {"\"", "'", ">", "<", "&"};
+
     public static String xmlEscape(String text) {
         text = StringConvertor.notNull(text);
         return Util.replace(text, unescapedChars, escapedChars, "\"'><&");
@@ -902,9 +930,10 @@ public class Util {
         v.copyInto(result);
         return result;
     }
+
     public static String[] vectorToArray_(Vector v) {
         String[] stringArray = new String[v.size()];
-        for (int i=0; i < v.size(); i++) {
+        for (int i = 0; i < v.size(); i++) {
             stringArray[i] = v.get(i).toString();
         }
         return stringArray;
@@ -928,10 +957,10 @@ public class Util {
 
     public static void sort(Vector subnodes) {
         for (int i = 1; i < subnodes.size(); ++i) {
-            TreeNode currNode = (TreeNode)subnodes.elementAt(i);
+            TreeNode currNode = (TreeNode) subnodes.elementAt(i);
             int j = i - 1;
             for (; j >= 0; --j) {
-                TreeNode itemJ = (TreeNode)subnodes.elementAt(j);
+                TreeNode itemJ = (TreeNode) subnodes.elementAt(j);
                 if (compareNodes(itemJ, currNode) <= 0) {
                     break;
                 }
@@ -942,13 +971,14 @@ public class Util {
             }
         }
     }
-    
+
     private static void putCh(StringBuffer sb, int ch) {
         String s = Integer.toHexString(ch);
         sb.append("%");
         if (1 == s.length()) sb.append('0');
         sb.append(s);
     }
+
     public static String urlEscape(String param) {
         StringBuffer sb = new StringBuffer();
         for (int i = 0; i < param.length(); ++i) {
@@ -975,7 +1005,7 @@ public class Util {
         }
         return sb.toString();
     }
-    
+
     public static int getIndex(List v, Object o) {
         int size = v.size();
         for (int i = 0; i < size; ++i) {

@@ -1,18 +1,18 @@
 package protocol.icq;
 
-import sawim.SawimException;
-import sawim.comm.Util;
 import protocol.Protocol;
 import protocol.icq.action.IcqAction;
 import protocol.icq.packet.*;
 import protocol.net.ClientConnection;
 import protocol.net.TcpSocket;
+import sawim.SawimException;
+import sawim.comm.Util;
 
 
 public final class IcqNetWorking extends ClientConnection {
 
     private byte[] flapHeader = new byte[6];
-    private int nextIcqSequence; 
+    private int nextIcqSequence;
     private TcpSocket socket;
     private Icq icq;
     private IcqNetState queue;
@@ -20,7 +20,7 @@ public final class IcqNetWorking extends ClientConnection {
 
     private int flapSEQ = Util.nextRandInt() % 0x8000;
     private byte[] pingPacket = null;
-    
+
     private int counter = 0;
 
     private static final int CHANNEL_CONNECT = 0x01;
@@ -98,7 +98,7 @@ public final class IcqNetWorking extends ClientConnection {
     private void readPacket(TcpSocket socket) throws SawimException {
         socket.readFully(flapHeader);
 
-        
+
         if (0x2A != flapHeader[0]) {
             throw new SawimException(124, 0);
         }
@@ -109,7 +109,7 @@ public final class IcqNetWorking extends ClientConnection {
         Packet packet = parse(Util.getByte(flapHeader, 1), flapData);
         flapData = null;
         if (null != packet) {
-            
+
             int flapSequence = Util.getWordBE(flapHeader, 2);
             queue.processPacket(packet);
         }
@@ -125,7 +125,7 @@ public final class IcqNetWorking extends ClientConnection {
         pingPacket = new byte[6];
         Util.putByte(pingPacket, 0, 0x2a);
         Util.putByte(pingPacket, 1, CHANNEL_PING);
-        Util.putWordBE(pingPacket, 2, 0 );
+        Util.putWordBE(pingPacket, 2, 0);
         Util.putWordBE(pingPacket, 4, 0);
     }
 

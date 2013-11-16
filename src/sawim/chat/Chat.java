@@ -1,22 +1,22 @@
 package sawim.chat;
 
-import ru.sawim.General;
-import sawim.Options;
-import sawim.chat.message.Message;
-import sawim.chat.message.PlainMessage;
-import sawim.chat.message.SystemNotice;
-import sawim.roster.Roster;
-import sawim.comm.StringConvertor;
-import sawim.comm.Util;
-import sawim.history.CachedRecord;
-import sawim.history.HistoryStorage;
 import protocol.Contact;
 import protocol.Protocol;
 import protocol.jabber.Jabber;
 import protocol.jabber.JabberContact;
 import protocol.jabber.JabberServiceContact;
 import protocol.jabber.Jid;
+import ru.sawim.General;
+import sawim.Options;
+import sawim.chat.message.Message;
+import sawim.chat.message.PlainMessage;
+import sawim.chat.message.SystemNotice;
+import sawim.comm.StringConvertor;
+import sawim.comm.Util;
+import sawim.history.CachedRecord;
+import sawim.history.HistoryStorage;
 import sawim.modules.MagicEye;
+import sawim.roster.Roster;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -89,7 +89,7 @@ public final class Chat {
 
     private int getIcon(Message message, boolean incoming, boolean isHighlight) {
         if (message instanceof SystemNotice) {
-            int type = ((SystemNotice)message).getSysnoteType();
+            int type = ((SystemNotice) message).getSysnoteType();
             if (SystemNotice.SYS_NOTICE_MESSAGE == type) {
                 return Message.ICON_NONE;
             }
@@ -191,30 +191,30 @@ public final class Chat {
     private void fillFromHistory() {
         if (isBlogBot()) return;
         //if (Options.getBoolean(Options.OPTION_HISTORY)) {
-            if (0 != getMessCount()) return;
+        if (0 != getMessCount()) return;
 
-            HistoryStorage hist = getHistory();
-            if (hist == null) return;
+        HistoryStorage hist = getHistory();
+        if (hist == null) return;
 
-            hist.openHistory();
-            int recCount = hist.getHistorySize();
-            if (0 == recCount) return;
+        hist.openHistory();
+        int recCount = hist.getHistorySize();
+        if (0 == recCount) return;
 
-            for (int i = 0; i < recCount; ++i) {
-                CachedRecord rec = hist.getRecord(i);
-                if (null == rec) {
-                    continue;
-                }
-                long date = Util.createLocalDate(rec.date);
-                PlainMessage message;
-                if (rec.isIncoming()) {
-                    message = new PlainMessage(rec.from, protocol, date, rec.text, true);
-                } else {
-                    message = new PlainMessage(protocol, contact, date, rec.text);
-                }
-                addTextToForm(message, contact.isConference() ? rec.from : getFrom(message), Chat.isHighlight(message.getProcessedText(), contact.getMyName()));
+        for (int i = 0; i < recCount; ++i) {
+            CachedRecord rec = hist.getRecord(i);
+            if (null == rec) {
+                continue;
             }
-            hist.closeHistory();
+            long date = Util.createLocalDate(rec.date);
+            PlainMessage message;
+            if (rec.isIncoming()) {
+                message = new PlainMessage(rec.from, protocol, date, rec.text, true);
+            } else {
+                message = new PlainMessage(protocol, contact, date, rec.text);
+            }
+            addTextToForm(message, contact.isConference() ? rec.from : getFrom(message), Chat.isHighlight(message.getProcessedText(), contact.getMyName()));
+        }
+        hist.closeHistory();
         //}
     }
 
@@ -303,13 +303,16 @@ public final class Chat {
         return messageCounter + sysNoticeCounter + authRequestCounter
                 + otherMessageCounter;
     }
+
     public int getPersonalUnreadMessageCount() {
         return messageCounter + sysNoticeCounter + authRequestCounter;
     }
+
     public int getOtherMessageCount() {
         return sysNoticeCounter + authRequestCounter
                 + otherMessageCounter;
     }
+
     public int getAuthRequestCounter() {
         return authRequestCounter;
     }
@@ -330,6 +333,7 @@ public final class Chat {
     private short inc(short val) {
         return (short) ((val < Short.MAX_VALUE) ? (val + 1) : val);
     }
+
     private byte inc(byte val) {
         return (byte) ((val < Byte.MAX_VALUE) ? (val + 1) : val);
     }
@@ -353,9 +357,9 @@ public final class Chat {
     private boolean isHistory() {
         boolean useHist = Options.getBoolean(Options.OPTION_HISTORY);
         if (contact instanceof JabberServiceContact) {
-            return useHist && contact.isHistory() == (byte)1;
+            return useHist && contact.isHistory() == (byte) 1;
         }
-        return useHist || contact.isHistory() == (byte)1;
+        return useHist || contact.isHistory() == (byte) 1;
     }
 
     private String getFrom(Message message) {

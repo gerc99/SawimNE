@@ -28,15 +28,15 @@ package javax.microedition.io.file;
 
 public class ConnectionClosedException extends RuntimeException {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	/*
-	 * TODO Add cause for location where it been closed.
-	 */
-	public ConnectionClosedException() {
-	}
+    /*
+     * TODO Add cause for location where it been closed.
+     */
+    public ConnectionClosedException() {
+    }
 
-	public ConnectionClosedException(String detailMessage) {
-		super(detailMessage);
-	}
+    public ConnectionClosedException(String detailMessage) {
+        super(detailMessage);
+    }
 }

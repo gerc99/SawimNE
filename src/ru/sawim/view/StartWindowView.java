@@ -1,8 +1,5 @@
 package ru.sawim.view;
 
-import android.accounts.Account;
-import android.accounts.AccountAuthenticatorResponse;
-import android.accounts.AccountManager;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -15,17 +12,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import protocol.Profile;
-import protocol.Protocol;
 import protocol.jabber.JabberRegistration;
 import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.activities.AccountsListActivity;
-import ru.sawim.activities.SawimActivity;
 import sawim.Options;
 import sawim.OptionsForm;
 import sawim.comm.StringConvertor;
-import sawim.modules.DebugLog;
 import sawim.roster.Roster;
 
 /**

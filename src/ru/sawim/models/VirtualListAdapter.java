@@ -1,8 +1,6 @@
 package ru.sawim.models;
 
 import android.content.Context;
-import android.text.util.Linkify;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,11 +10,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import ru.sawim.General;
 import ru.sawim.R;
-import ru.sawim.models.list.VirtualListItem;
 import ru.sawim.Scheme;
+import ru.sawim.models.list.VirtualListItem;
 import ru.sawim.text.TextLinkClickListener;
 import ru.sawim.widget.MyTextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -29,12 +28,19 @@ import java.util.List;
 public class VirtualListAdapter extends BaseAdapter {
 
     private Context baseContext;
-    private List<VirtualListItem> items;
+    private LayoutInflater inf;
+    private List<VirtualListItem> items = new ArrayList<VirtualListItem>();
     private int selectedItem = -1;
 
-    public VirtualListAdapter(Context context, List<VirtualListItem> items) {
+    public VirtualListAdapter(Context context) {
         this.baseContext = context;
-        this.items = items;
+        inf = LayoutInflater.from(baseContext);
+    }
+
+    public void refreshList(List<VirtualListItem> list) {
+        items.clear();
+        items.addAll(list);
+        notifyDataSetChanged();
     }
 
     @Override
@@ -67,7 +73,6 @@ public class VirtualListAdapter extends BaseAdapter {
         ViewHolder holder;
         VirtualListItem element = getItem(i);
         if (convertView == null) {
-            LayoutInflater inf = LayoutInflater.from(baseContext);
             convertView = inf.inflate(R.layout.virtual_list_item, null);
             holder = new ViewHolder();
             holder.descriptionLayout = (LinearLayout) convertView.findViewById(R.id.descriptionLayout);
@@ -79,7 +84,7 @@ public class VirtualListAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
         if (element == null) return convertView;
-        ((ViewGroup)convertView).setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
+        ((ViewGroup) convertView).setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
 
         holder.labelView.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
         holder.descView.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
@@ -114,6 +119,7 @@ public class VirtualListAdapter extends BaseAdapter {
             }
             holder.descView.setTextSize(General.getFontSize());
             holder.descView.setText(element.getDescStr());
+            holder.descView.repaint();
         }
         if (element.getImage() != null) {
             holder.imageView.setVisibility(ImageView.VISIBLE);
@@ -128,7 +134,7 @@ public class VirtualListAdapter extends BaseAdapter {
         return convertView;
     }
 
-    private static class ViewHolder {
+    private class ViewHolder {
         LinearLayout descriptionLayout;
         TextView labelView;
         MyTextView descView;

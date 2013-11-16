@@ -26,8 +26,7 @@ public class IconTabPageIndicator extends HorizontalScrollView {
         /**
          * Callback when the selected tab has been reselected.
          *
-         * @param position
-         *            Position of the current center item.
+         * @param position Position of the current center item.
          */
         void onTabReselected(int position);
     }
@@ -36,8 +35,7 @@ public class IconTabPageIndicator extends HorizontalScrollView {
         /**
          * Callback when the selected tab has been reselected.
          *
-         * @param position
-         *            Position of the current center item.
+         * @param position Position of the current center item.
          */
         void onTabSelected(int position);
     }
@@ -166,7 +164,7 @@ public class IconTabPageIndicator extends HorizontalScrollView {
     }
 
     public void updateTabIcon(int i, Drawable icon) {
-        ((IconTabView)mTabLayout.getChildAt(i)).setImageDrawable(icon);
+        ((IconTabView) mTabLayout.getChildAt(i)).setImageDrawable(icon);
     }
 
     public void setCurrentItem(int item) {

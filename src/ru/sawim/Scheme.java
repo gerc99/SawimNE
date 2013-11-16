@@ -1,36 +1,36 @@
 package ru.sawim;
 
-import android.util.Log;
 import sawim.Options;
 import sawim.comm.Config;
 import sawim.comm.Util;
+
 import java.util.Vector;
 
 
 public class Scheme {
 
-    public static final byte THEME_BACKGROUND           = 0;
-    public static final byte THEME_TEXT                 = 1;
-    public static final byte THEME_MARKED_BACKGROUND    = 2;
-    public static final byte THEME_CAP_TEXT             = 3;
-    public static final byte THEME_PARAM_VALUE          = 4;
+    public static final byte THEME_BACKGROUND = 0;
+    public static final byte THEME_TEXT = 1;
+    public static final byte THEME_MARKED_BACKGROUND = 2;
+    public static final byte THEME_CAP_TEXT = 3;
+    public static final byte THEME_PARAM_VALUE = 4;
 
-    public static final byte THEME_CHAT_INMSG           = 5;
-    public static final byte THEME_CHAT_OUTMSG          = 6;
+    public static final byte THEME_CHAT_INMSG = 5;
+    public static final byte THEME_CHAT_OUTMSG = 6;
 
-    public static final byte THEME_CONTACT_ONLINE       = 7;
-    public static final byte THEME_CONTACT_WITH_CHAT    = 8;
-    public static final byte THEME_CONTACT_OFFLINE      = 9;
-    public static final byte THEME_CONTACT_TEMP         = 10;
+    public static final byte THEME_CONTACT_ONLINE = 7;
+    public static final byte THEME_CONTACT_WITH_CHAT = 8;
+    public static final byte THEME_CONTACT_OFFLINE = 9;
+    public static final byte THEME_CONTACT_TEMP = 10;
 
-    public static final byte THEME_MAGIC_EYE_NUMBER     = 11;
-    public static final byte THEME_MAGIC_EYE_USER       = 12;
-    public static final byte THEME_MAGIC_EYE_TEXT       = 13;
+    public static final byte THEME_MAGIC_EYE_NUMBER = 11;
+    public static final byte THEME_MAGIC_EYE_USER = 12;
+    public static final byte THEME_MAGIC_EYE_TEXT = 13;
 
-    public static final byte THEME_GROUP                = 14;
-    public static final byte THEME_CHAT_HIGHLIGHT_MSG   = 15;
-    public static final byte THEME_CONTACT_STATUS       = 16;
-    public static final byte THEME_PROTOCOL_BACKGROUND  = 17;
+    public static final byte THEME_GROUP = 14;
+    public static final byte THEME_CHAT_HIGHLIGHT_MSG = 15;
+    public static final byte THEME_CONTACT_STATUS = 16;
+    public static final byte THEME_PROTOCOL_BACKGROUND = 17;
 
     public static final byte FONT_STYLE_PLAIN = 0;
     public static final byte FONT_STYLE_BOLD = 1;
@@ -64,6 +64,7 @@ public class Scheme {
     private static int[] currentTheme = new int[baseTheme.length];
     private static int[][] themeColors;
     private static String[] themeNames;
+    private static int oldTheme;
 
     public static void load() {
         setColorScheme(baseTheme);
@@ -76,16 +77,16 @@ public class Scheme {
         }
         isBlack = new boolean[themes.size() + 1];
         isSystemBackground = new boolean[themes.size() + 1];
-        themeNames  = new String[themes.size() + 1];
+        themeNames = new String[themes.size() + 1];
         themeColors = new int[themes.size() + 1][];
 
-        themeNames[0]  = "Light Holo";
+        themeNames[0] = "Light Holo";
         themeColors[0] = baseTheme;
         for (int i = 0; i < themes.size(); ++i) {
-            Config config = (Config)themes.elementAt(i);
+            Config config = (Config) themes.elementAt(i);
             isBlack[i + 1] = Boolean.valueOf(config.getValues()[0]);
             isSystemBackground[i + 1] = Boolean.valueOf(config.getValues()[1]);
-            themeNames[i + 1]  = config.getName();
+            themeNames[i + 1] = config.getName();
             themeColors[i + 1] = configToTheme(config);
         }
     }
@@ -123,7 +124,7 @@ public class Scheme {
     public static int[] getScheme() {
         return currentTheme;
     }
-    
+
     public static String[] getSchemeNames() {
         return themeNames;
     }
@@ -135,16 +136,21 @@ public class Scheme {
         Options.setInt(Options.OPTION_COLOR_SCHEME, schemeNum);
         setColorScheme(themeColors[schemeNum]);
     }
+
     private static void setColorScheme(int[] scheme) {
-        System.arraycopy(scheme, 0, currentTheme, 0 , currentTheme.length);
+        System.arraycopy(scheme, 0, currentTheme, 0, currentTheme.length);
+    }
+
+    public static boolean isChangeTheme(int newTheme) {
+        if (oldTheme != newTheme) {
+            oldTheme = newTheme;
+            return true;
+        }
+        return false;
     }
 
     public static int getColor(byte color) {
         return 0xff000000 | getScheme()[color];
-    }
-
-    public static int getColorWithAlpha(int color) {
-        return 0x33000000 | getScheme()[color];
     }
 
     public static int getInversColor(int c) {

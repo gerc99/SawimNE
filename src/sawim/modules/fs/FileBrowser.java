@@ -9,13 +9,12 @@ import sawim.comm.Util;
 import java.util.Vector;
 
 
-
 public final class FileBrowser implements Runnable {
     private final ImageList fsIcons = ImageList.createImageList("/fs.png");
-    private static final int TYPE_FILE        = 1;
-    private static final int TYPE_DIR         = 0;
-    private static final int TYPE_PARENT_DIR  = 0;
-    private static final int TYPE_DISK        = 0;
+    private static final int TYPE_FILE = 1;
+    private static final int TYPE_DIR = 0;
+    private static final int TYPE_PARENT_DIR = 0;
+    private static final int TYPE_DISK = 0;
 
     private FileBrowserListener listener;
     private boolean needToSelectDirectory;
@@ -65,6 +64,7 @@ public final class FileBrowser implements Runnable {
         }
         return new FileNode(file.substring(0, i + 1), file.substring(i + 1));
     }
+
     public void run() {
         selectFirst = false;
         try {
@@ -74,7 +74,7 @@ public final class FileBrowser implements Runnable {
 
             Vector files = new Vector();
             for (int i = 0; i < newRoot.size(); ++i) {
-                FileNode file = (FileNode)newRoot.elementAt(i);
+                FileNode file = (FileNode) newRoot.elementAt(i);
                 if (!FileSystem.PARENT_DIRECTORY.equals(file.getText())) {
                     files.addElement(file);
                 }
@@ -118,7 +118,7 @@ public final class FileBrowser implements Runnable {
         String fullpath = file.getFullName();
         //if (selectFirst && (0 == getCurrItem())) {
         //    listener.onDirectorySelect(fullpath);
-         //   return;
+        //   return;
         //}
 
         if (file.isDir()) {
@@ -132,6 +132,7 @@ public final class FileBrowser implements Runnable {
             }
         }
     }
+
     protected void doSawimAction(int keyCode) {
         switch (keyCode) {
             /*case NativeCanvas.Sawim_SELECT:
@@ -149,6 +150,7 @@ public final class FileBrowser implements Runnable {
                 return;*/
         }
     }
+
     protected boolean hasMenu() {
         return false;
     }

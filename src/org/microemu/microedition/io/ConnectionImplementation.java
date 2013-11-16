@@ -30,14 +30,12 @@ import javax.microedition.io.Connection;
 import java.io.IOException;
 
 /**
- * 
  * This proper name for original <code>ClosedConnection</code> interface.
- * 
- * @author vlads
  *
+ * @author vlads
  */
 public interface ConnectionImplementation {
-	
-	public Connection openConnection(String name, int mode, boolean timeouts) throws IOException;
-	
+
+    public Connection openConnection(String name, int mode, boolean timeouts) throws IOException;
+
 }

@@ -2,11 +2,11 @@
 
 package protocol.icq.action;
 
-import ru.sawim.General;
-import sawim.SawimException;
 import protocol.icq.Icq;
 import protocol.icq.IcqNetWorking;
 import protocol.icq.packet.Packet;
+import ru.sawim.General;
+import sawim.SawimException;
 
 public abstract class IcqAction {
     private IcqNetWorking connection;
@@ -15,14 +15,15 @@ public abstract class IcqAction {
     protected final void active() {
         lastActivity = General.getCurrentGmtTime();
     }
+
     protected final boolean isNotActive(long timeout) {
         return lastActivity + timeout < General.getCurrentGmtTime();
     }
 
-    
+
     public abstract boolean isCompleted();
 
-    
+
     public abstract boolean isError();
 
     public final void setConnection(IcqNetWorking connection) {
@@ -43,7 +44,7 @@ public abstract class IcqAction {
     }
 
     public abstract void init() throws SawimException;
-    
+
 
     public abstract boolean forward(Packet packet) throws SawimException;
 }

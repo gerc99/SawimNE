@@ -1,26 +1,28 @@
 
 
 
-
 package protocol.jabber;
 
 import DrawControls.icons.ImageList;
-import sawim.comm.Config;
 import protocol.ClientInfo;
+import sawim.comm.Config;
 
 
 public final class JabberClient {
     private static final ImageList clientIcons = ImageList.createImageList("/jabber-clients.png");
     private static final String[] clientCaps;
     private static final String[] clientNames;
+
     static {
         Config cfg = new Config().load("/jabber-clients.txt");
         clientCaps = cfg.getKeys();
         clientNames = cfg.getValues();
     }
+
     public static ClientInfo get() {
         return new ClientInfo(clientIcons, clientNames);
     }
+
     public static final byte CLIENT_NONE = -1;
 
     public static short createClient(String caps) {

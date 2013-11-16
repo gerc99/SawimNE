@@ -14,7 +14,7 @@ public final class PrivateStatusForm {
     private Protocol protocol;
 
     public static final ImageList privateStatusIcons = ImageList.createImageList("/privatestatuses.png");
-    
+
     public static final int PSTATUS_ALL = 0;
     public static final int PSTATUS_VISIBLE_ONLY = 1;
     public static final int PSTATUS_NOT_INVISIBLE = 2;
@@ -25,10 +25,11 @@ public final class PrivateStatusForm {
     public PrivateStatusForm(Protocol protocol) {
         this.protocol = protocol;
     }
-        
+
     public static Icon getIcon(Protocol protocol) {
         return privateStatusIcons.iconAt(protocol.getPrivateStatus());
     }
+
     private static final String[] statusNames = {
             "ps_all",
             "ps_visible_list",
@@ -38,16 +39,17 @@ public final class PrivateStatusForm {
     };
 
     private static final int[] statusIds = {
-        PSTATUS_ALL,
-        PSTATUS_VISIBLE_ONLY,
-        PSTATUS_NOT_INVISIBLE,
-        PSTATUS_CL_ONLY,
-        PSTATUS_NONE
+            PSTATUS_ALL,
+            PSTATUS_VISIBLE_ONLY,
+            PSTATUS_NOT_INVISIBLE,
+            PSTATUS_CL_ONLY,
+            PSTATUS_NONE
     };
 
     public static String[] statusNames() {
         return statusNames;
     }
+
     public static int[] statusIds(Protocol protocol) {
         if (protocol instanceof Icq) {
             return statusIds;

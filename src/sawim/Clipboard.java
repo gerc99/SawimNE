@@ -37,19 +37,19 @@ public final class Clipboard {
     public static void putToClipboard(final String text) {
         //SawimApplication.getSawimActivity().runOnUiThread(new Runnable() {
         //    public void run() {
-                try {
-                    if (Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
-                        android.text.ClipboardManager clipboard = (android.text.ClipboardManager)
-                                General.currentActivity.getSystemService(SawimActivity.CLIPBOARD_SERVICE);
-                        clipboard.setText(text);
-                    } else {
-                        ClipboardManager clipboard = (ClipboardManager)
-                                General.currentActivity.getSystemService(SawimActivity.CLIPBOARD_SERVICE);
-                        clipboard.setPrimaryClip(ClipData.newPlainText("", text));
-                    }
-                } catch (Throwable e) {
-                    sawim.modules.DebugLog.panic("set clipboard", e);
-                }
+        try {
+            if (Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
+                android.text.ClipboardManager clipboard = (android.text.ClipboardManager)
+                        General.currentActivity.getSystemService(SawimActivity.CLIPBOARD_SERVICE);
+                clipboard.setText(text);
+            } else {
+                ClipboardManager clipboard = (ClipboardManager)
+                        General.currentActivity.getSystemService(SawimActivity.CLIPBOARD_SERVICE);
+                clipboard.setPrimaryClip(ClipData.newPlainText("", text));
+            }
+        } catch (Throwable e) {
+            sawim.modules.DebugLog.panic("set clipboard", e);
+        }
         //    }
         //});
     }

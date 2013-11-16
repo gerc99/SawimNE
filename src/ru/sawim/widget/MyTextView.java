@@ -1,12 +1,11 @@
 package ru.sawim.widget;
 
 import android.content.ActivityNotFoundException;
-import android.content.res.Resources;
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.text.*;
-import android.content.Context;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.MotionEvent;
@@ -25,10 +24,9 @@ import ru.sawim.text.InternalURLSpan;
 public class MyTextView extends View {
 
     private TextPaint textPaint;
-    private Layout layout;
+    public Layout layout;
     private CharSequence text;
     TextLinkClickListener listener;
-    private int curTextColor;
     private boolean isSecondTap;
     private boolean isLongTap;
 
@@ -47,7 +45,7 @@ public class MyTextView extends View {
         initPaint();
     }
 
-    private void initPaint() {
+    public void initPaint() {
         textPaint = new TextPaint();
         textPaint.setAntiAlias(true);
         textPaint.setTextSize(General.getFontSize());
@@ -56,29 +54,25 @@ public class MyTextView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        textPaint.setColor(curTextColor);
         if (layout != null)
             layout.draw(canvas);
     }
 
-    @Override
-    public void requestLayout() {
-        //super.requestLayout();
-    }
-
     public void setText(CharSequence text) {
         this.text = text;
+    }
+
+    public void repaint() {
         invalidate();
+        requestLayout();
     }
 
     public void setTextColor(int color) {
-        curTextColor = color;
-        invalidate();
+        textPaint.setColor(color);
     }
 
-    public final void setLinkTextColor(int color) {
+    public void setLinkTextColor(int color) {
         textPaint.linkColor = color;
-        invalidate();
     }
 
     public void setTypeface(Typeface typeface) {
@@ -90,7 +84,7 @@ public class MyTextView extends View {
                 TypedValue.COMPLEX_UNIT_SP, textSize, General.getResources(getContext()).getDisplayMetrics()));
     }
 
-    private void makeLayout(int specSize) {
+    public void makeLayout(int specSize) {
         if (text == null) return;
         try {
             layout = new StaticLayout(text, textPaint, specSize, Layout.Alignment.ALIGN_NORMAL, 1.0F, 0.0F, false);
@@ -102,7 +96,7 @@ public class MyTextView extends View {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int specSize = MeasureSpec.getSize(widthMeasureSpec);
-        if (layout == null) makeLayout(specSize);
+        makeLayout(specSize);
         setMeasuredDimension(specSize, layout.getLineTop(layout.getLineCount()));
     }
 
@@ -151,7 +145,8 @@ public class MyTextView extends View {
                         try {
                             if (listener != null)
                                 listener.onTextLinkClick(MyTextView.this, link, false);
-                        } catch (ActivityNotFoundException e) { }
+                        } catch (ActivityNotFoundException e) {
+                        }
                     } else {
                         removeCallbacks(longPressed);
                     }

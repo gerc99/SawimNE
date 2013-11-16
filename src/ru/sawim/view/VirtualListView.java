@@ -7,16 +7,13 @@ import android.view.*;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import ru.sawim.General;
-import ru.sawim.activities.SawimActivity;
-import ru.sawim.models.list.VirtualListItem;
-import ru.sawim.Scheme;
-import ru.sawim.models.list.VirtualList;
 import ru.sawim.R;
+import ru.sawim.Scheme;
+import ru.sawim.activities.SawimActivity;
 import ru.sawim.models.VirtualListAdapter;
+import ru.sawim.models.list.VirtualList;
+import ru.sawim.models.list.VirtualListItem;
 import ru.sawim.widget.MyListView;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -25,27 +22,25 @@ import java.util.List;
  * Time: 13:22
  * To change this template use File | Settings | File Templates.
  */
-public class VirtualListView extends SawimFragment implements VirtualList.OnVirtualListListener{
+public class VirtualListView extends SawimFragment implements VirtualList.OnVirtualListListener {
 
     public static final String TAG = "VirtualListView";
     private VirtualListAdapter adapter;
     private VirtualList list = VirtualList.getInstance();
     private MyListView lv;
     private AdapterView.AdapterContextMenuInfo contextMenuInfo;
-    public List<VirtualListItem> elements;
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         list.setVirtualListListener(this);
-        elements = new ArrayList<VirtualListItem>();
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
         list.setVirtualListListener(null);
-        elements.clear();
+        adapter = null;
     }
 
     @Override
@@ -62,14 +57,14 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
         super.onActivityCreated(savedInstanceState);
         Activity currentActivity = getActivity();
         currentActivity.setTitle(list.getCaption());
-        adapter = new VirtualListAdapter(currentActivity, elements);
+        adapter = new VirtualListAdapter(currentActivity);
         lv = (MyListView) currentActivity.findViewById(R.id.list_view);
         lv.setAdapter(adapter);
         lv.setOnItemClickListener(new ListView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 for (int i = 0; i < list.getModel().elements.size(); ++i) {
-                    VirtualListItem item = elements.get(i);
+                    VirtualListItem item = adapter.getItem(i);
                     if (item.getGroupListListener() != null) {
                         item.getGroupListListener().select();
                         return;
@@ -124,12 +119,8 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
         General.currentActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                elements.clear();
-                for (int i = 0; i < list.getModel().elements.size(); ++i) {
-                    elements.add(list.getModel().elements.get(i));
-                }
+                adapter.refreshList(list.getModel().elements);
                 adapter.notifyDataSetInvalidated();
-                adapter.notifyDataSetChanged();
             }
         });
     }
@@ -169,12 +160,12 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
     @Override
     public void setCurrentItemIndex(final int i, final boolean isSelected) {
         General.currentActivity.runOnUiThread(new Runnable() {
-             @Override
-             public void run() {
-                 if (isSelected)
+            @Override
+            public void run() {
+                if (isSelected)
                     adapter.setSelectedItem(i);
-                 lv.setSelection(i);
-             }
-         });
+                lv.setSelection(i);
+            }
+        });
     }
 }

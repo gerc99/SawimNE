@@ -2,12 +2,11 @@ package ru.sawim.view;
 
 import DrawControls.icons.Icon;
 import android.app.Activity;
-import android.content.*;
+import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.PorterDuff;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -16,8 +15,6 @@ import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
-import android.util.AttributeSet;
-import android.util.Log;
 import android.view.*;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -25,9 +22,13 @@ import android.widget.*;
 import protocol.Contact;
 import protocol.ContactMenu;
 import protocol.Protocol;
-import protocol.jabber.*;
+import protocol.jabber.Jabber;
+import protocol.jabber.JabberServiceContact;
+import protocol.jabber.Jid;
+import protocol.jabber.MirandaNotes;
 import ru.sawim.General;
 import ru.sawim.R;
+import ru.sawim.Scheme;
 import ru.sawim.models.ChatsSpinnerAdapter;
 import ru.sawim.models.MessagesAdapter;
 import ru.sawim.widget.MyListView;
@@ -41,7 +42,6 @@ import sawim.Options;
 import sawim.chat.Chat;
 import sawim.chat.ChatHistory;
 import sawim.chat.MessData;
-import ru.sawim.Scheme;
 import sawim.roster.Roster;
 import sawim.util.JLocale;
 
@@ -114,11 +114,20 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
             messageEditor.getBackground().setColorFilter(Scheme.getColor(Scheme.THEME_BACKGROUND), PorterDuff.Mode.MULTIPLY);
         }
+
+        General.getInstance().setConfigurationChanged(new General.OnConfigurationChanged() {
+            @Override
+            public void onConfigurationChanged() {
+                if (chat == null) return;
+                if (adapter != null)
+                    adapter.repaintList(chat.getMessData());
+            }
+        });
     }
 
     public void removeTitleBar() {
         if (viewsState.chatBarLayout != null && viewsState.chatBarLayout.getParent() != null)
-            ((ViewGroup)viewsState.chatBarLayout.getParent()).removeView(viewsState.chatBarLayout);
+            ((ViewGroup) viewsState.chatBarLayout.getParent()).removeView(viewsState.chatBarLayout);
     }
 
     public ChatBarView getTitleBar() {
@@ -150,7 +159,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
             nickListLP.gravity = Gravity.START;
             drawerLayout.setLayoutParams(drawerLayoutLP);
 
-            TypedArray a = getActivity().getTheme().obtainStyledAttributes(new int[] {android.R.attr.windowBackground});
+            TypedArray a = getActivity().getTheme().obtainStyledAttributes(new int[]{android.R.attr.windowBackground});
             int background = a.getResourceId(0, 0);
             a.recycle();
             nickList.setBackgroundResource(background);
@@ -161,7 +170,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
         if (chat_viewLayout == null)
             chat_viewLayout = new ChatViewRoot(getActivity(), isTablet, chatListsView, chatInputBarView);
         else
-            ((ViewGroup)chat_viewLayout.getParent()).removeView(chat_viewLayout);
+            ((ViewGroup) chat_viewLayout.getParent()).removeView(chat_viewLayout);
         if (!isTablet) {
             drawerLayout.addView(chat_viewLayout);
             drawerLayout.addView(nickList);
@@ -268,6 +277,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
         viewsState.menuButton.setOnClickListener(null);
         viewsState.usersImage.setOnClickListener(null);
         viewsState.smileButton.setOnClickListener(null);
+        General.getInstance().setConfigurationChanged(null);
         messageEditor.addTextChangedListener(null);
         chatListView.setOnCreateContextMenuListener(null);
         chatListView.setOnItemClickListener(null);
@@ -350,7 +360,8 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
         updateChatIcon();
         updateList(contact);
 
-        if (!isTablet) drawerLayout.setDrawerLockMode(contact.isConference() ? DrawerLayout.LOCK_MODE_UNLOCKED: DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        if (!isTablet)
+            drawerLayout.setDrawerLockMode(contact.isConference() ? DrawerLayout.LOCK_MODE_UNLOCKED : DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
     }
 
     public void setSharingText(String sharingText) {
@@ -405,6 +416,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
     }
 
     DialogFragment chatDialogFragment;
+
     private void initLabel() {
         chatsSpinnerAdapter = new ChatsSpinnerAdapter(getActivity());
         viewsState.chatBarLayout.updateLabelIcon(chatsSpinnerAdapter.getImageChat(chat, false));
@@ -413,7 +425,6 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
             @Override
             public void onClick(View v) {
                 chatDialogFragment = new DialogFragment() {
-
                     @Override
                     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                              Bundle savedInstanceState) {
@@ -464,9 +475,8 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
     private void initMucUsers() {
         if (isTablet)
             nickList.setVisibility(View.VISIBLE);
-        else
-            if (drawerLayout.isDrawerOpen(nickList))
-                drawerLayout.closeDrawer(nickList);
+        else if (drawerLayout.isDrawerOpen(nickList))
+            drawerLayout.closeDrawer(nickList);
 
         if (contact instanceof JabberServiceContact && contact.isConference()) {
             mucUsersView = new MucUsersView();
@@ -708,7 +718,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
                 break;
 
             case ContactMenu.ACTION_TO_NOTES:
-                MirandaNotes notes = ((Jabber)protocol).getMirandaNotes();
+                MirandaNotes notes = ((Jabber) protocol).getMirandaNotes();
                 notes.showIt();
                 MirandaNotes.Note note = notes.addEmptyNote();
                 note.tags = md.getNick() + " " + md.strTime;
@@ -807,7 +817,6 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
     }
 
     public void insert(String text) {
-        Log.e(TAG, text+" "+messageEditor);
         int start = messageEditor.getSelectionStart();
         int end = messageEditor.getSelectionEnd();
         messageEditor.getText().replace(Math.min(start, end), Math.max(start, end),

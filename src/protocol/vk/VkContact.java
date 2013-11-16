@@ -1,6 +1,5 @@
 package protocol.vk;
 
-import android.support.v4.app.FragmentActivity;
 import protocol.Contact;
 import protocol.Protocol;
 import protocol.StatusInfo;
@@ -15,13 +14,16 @@ import ru.sawim.view.menu.MyMenu;
  */
 public class VkContact extends Contact {
     private int uid;
+
     VkContact(int uid) {
         this.uid = uid;
         this.userId = "" + uid;
     }
+
     int getUid() {
         return uid;
     }
+
     @Override
     protected void initManageContactMenu(Protocol protocol, MyMenu menu) {
     }

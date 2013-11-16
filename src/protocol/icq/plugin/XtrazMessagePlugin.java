@@ -1,14 +1,14 @@
 package protocol.icq.plugin;
 
+import protocol.icq.IcqContact;
+import protocol.icq.IcqNetDefActions;
+import protocol.icq.IcqStatusInfo;
+import protocol.icq.packet.SnacPacket;
 import ru.sawim.General;
 import sawim.comm.ArrayReader;
 import sawim.comm.GUID;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
-import protocol.icq.IcqContact;
-import protocol.icq.IcqNetDefActions;
-import protocol.icq.IcqStatusInfo;
-import protocol.icq.packet.SnacPacket;
 
 
 public class XtrazMessagePlugin {
@@ -18,7 +18,7 @@ public class XtrazMessagePlugin {
     private IcqContact rcvr;
     private String msg;
     private static final String NAME = "Script Plug-in: Remote Notification Arrive";
-    public static final GUID XTRAZ_GUID = new GUID(new byte[]{(byte)0x3b, (byte)0x60, (byte)0xb3, (byte)0xef, (byte)0xd8, (byte)0x2a, (byte)0x6c, (byte)0x45, (byte)0xa4, (byte)0xe0, (byte)0x9c, (byte)0x5a, (byte)0x5e, (byte)0x67, (byte)0xe8, (byte)0x65});
+    public static final GUID XTRAZ_GUID = new GUID(new byte[]{(byte) 0x3b, (byte) 0x60, (byte) 0xb3, (byte) 0xef, (byte) 0xd8, (byte) 0x2a, (byte) 0x6c, (byte) 0x45, (byte) 0xa4, (byte) 0xe0, (byte) 0x9c, (byte) 0x5a, (byte) 0x5e, (byte) 0x67, (byte) 0xe8, (byte) 0x65});
     public static final int MGTYPE_SCRIPT_NOTIFY = 0x0008;
 
     public void setCookie(ArrayReader reader) {
@@ -55,18 +55,19 @@ public class XtrazMessagePlugin {
                     initReqMsg());
         }
     }
+
     private byte[] initAckMsg() {
-        
+
         byte[] uinRaw = StringConvertor.stringToByteArray(rcvr.getUserId());
 
         Util buffer = new Util();
 
-        buffer.writeDWordBE(cookie1); 
-        buffer.writeDWordBE(cookie2); 
-        buffer.writeWordBE(0x0002); 
-        buffer.writeByte(uinRaw.length); 
+        buffer.writeDWordBE(cookie1);
+        buffer.writeDWordBE(cookie2);
+        buffer.writeWordBE(0x0002);
+        buffer.writeByte(uinRaw.length);
         buffer.writeByteArray(uinRaw);
-        buffer.writeWordBE(0x0003); 
+        buffer.writeWordBE(0x0003);
         buffer.writeByteArray(makeTlv1127());
 
         return buffer.toByteArray();
@@ -86,19 +87,20 @@ public class XtrazMessagePlugin {
         tlv5.writeTLV(0x2711, makeTlv1127());
         return tlv5.toByteArray();
     }
+
     private byte[] initReqMsg() {
         byte[] uinRaw = StringConvertor.stringToByteArray(rcvr.getUserId());
 
         Util buffer = new Util();
 
-        buffer.writeDWordBE(time); 
-        buffer.writeDWordBE(0x00000000); 
-        buffer.writeWordBE(0x0002); 
-        buffer.writeByte(uinRaw.length); 
+        buffer.writeDWordBE(time);
+        buffer.writeDWordBE(0x00000000);
+        buffer.writeWordBE(0x0002);
+        buffer.writeByte(uinRaw.length);
         buffer.writeByteArray(uinRaw);
 
         buffer.writeTLV(0x0005, makeTlv5());
-        buffer.writeTLV(0x0003, null); 
+        buffer.writeTLV(0x0003, null);
         return buffer.toByteArray();
     }
 
@@ -106,11 +108,11 @@ public class XtrazMessagePlugin {
         byte[] textRaw = new byte[0];
         byte[] pluginData = pluginData();
         Util tlv1127 = new Util();
-        
+
         tlv1127.writeWordLE(0x001B);
-        
+
         tlv1127.writeWordLE(0x0008);
-        
+
         tlv1127.writeDWordBE(0x00000000);
         tlv1127.writeDWordBE(0x00000000);
         tlv1127.writeDWordBE(0x00000000);
@@ -118,12 +120,12 @@ public class XtrazMessagePlugin {
 
         tlv1127.writeWordLE(0x0000);
         tlv1127.writeByte(0x03);
-        
+
         tlv1127.writeDWordBE(0x00000000);
 
         int SEQ1 = 0xffff - 1;
         tlv1127.writeWordLE(SEQ1);
-        tlv1127.writeWordLE(0x000E); 
+        tlv1127.writeWordLE(0x000E);
         tlv1127.writeWordLE(SEQ1);
 
         tlv1127.writeDWordLE(0x00000000);
@@ -151,7 +153,7 @@ public class XtrazMessagePlugin {
         int command = MGTYPE_SCRIPT_NOTIFY;
         int flag2 = 0x00000000;
 
-        int headerLen = 16 + 2 +  4 + subType.length  + 4 + 4 + 4 + 2 + 1;
+        int headerLen = 16 + 2 + 4 + subType.length + 4 + 4 + 4 + 2 + 1;
         Util buffer = new Util();
 
         buffer.writeWordLE(headerLen);

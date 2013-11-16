@@ -30,9 +30,7 @@
 package org.microemu;
 
 /**
- * 
  * Enables access to MIDlet and MIDletAccess by threadLocal
- *
  */
 public class MIDletBridge {
 

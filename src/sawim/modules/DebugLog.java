@@ -1,18 +1,18 @@
 package sawim.modules;
 
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import ru.sawim.*;
+import ru.sawim.models.list.VirtualList;
 import ru.sawim.models.list.VirtualListItem;
+import ru.sawim.models.list.VirtualListModel;
 import sawim.Clipboard;
 import sawim.comm.Util;
-import ru.sawim.models.list.VirtualList;
-import ru.sawim.models.list.VirtualListModel;
 import sawim.util.JLocale;
 
 import java.util.List;
-import java.util.TimeZone;
 import java.util.Vector;
 
 public final class DebugLog {
@@ -120,6 +120,7 @@ public final class DebugLog {
         Vector<String> leaks = LeaksManager.getThis().checkLeaks();
         for (int i = 0; i < leaks.size(); ++i) {
             println("leak: " + leaks.get(i));
+            Log.e("DebugLog", "leak: " + leaks.get(i));
         }
     }
 

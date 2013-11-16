@@ -29,76 +29,76 @@ import java.io.*;
 /**
  * General IO stream manipulation utilities.
  * Some functions are based on org.apache.commons.io
- * 
- * <p>
+ * <p/>
+ * <p/>
  * This class provides static utility methods for input/output operations.
  * <ul>
  * <li>closeQuietly - these methods close a stream ignoring nulls and exceptions
  * </ul>
- * <p>
+ * <p/>
  */
 
 public class IOUtils {
 
-	/**
-	 * Solution for JVM bug 
-	 *  http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6351751
-	 */
-	public static String getCanonicalFileURL(File file) {
-		String path = file.getAbsoluteFile().getPath();
-		if (File.separatorChar != '/') {
-			path = path.replace(File.separatorChar, '/');
-		}
-		// Not network path
-		if (!path.startsWith("//")) {
-			if (path.startsWith("/")) {
-				path = "//" + path;
-			} else {
-				path = "///" + path;
-			}
-		}
-		return "file:" + path;
-	}
-	
-	public static String getCanonicalFileClassLoaderURL(File file) {
-		String url = getCanonicalFileURL(file);
-		if ((file.isDirectory()) && (!url.endsWith("/"))) {
-			url += "/";
-		}
-		return url;
-	}
-	
-	public static void copyFile(File src, File dst) throws IOException {
-		FileInputStream fis = null;
-		try {
-			fis = new FileInputStream(src);
-			copyToFile(fis, dst);
-		} finally {
-			closeQuietly(fis); 
-		}
-	}
-	
-	public static void copyToFile(InputStream is, File dst) throws IOException {
-		FileOutputStream fos = null;
-		try {
-			fos = new FileOutputStream(dst);
-			byte[] buf = new byte[1024]; 
-			int i = 0;
-			while ((i = is.read(buf)) != -1) { 
-				fos.write(buf, 0, i);
-			}
-		} finally {
-			closeQuietly(fos);	
-		}
-	}
-	
+    /**
+     * Solution for JVM bug
+     * http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6351751
+     */
+    public static String getCanonicalFileURL(File file) {
+        String path = file.getAbsoluteFile().getPath();
+        if (File.separatorChar != '/') {
+            path = path.replace(File.separatorChar, '/');
+        }
+        // Not network path
+        if (!path.startsWith("//")) {
+            if (path.startsWith("/")) {
+                path = "//" + path;
+            } else {
+                path = "///" + path;
+            }
+        }
+        return "file:" + path;
+    }
+
+    public static String getCanonicalFileClassLoaderURL(File file) {
+        String url = getCanonicalFileURL(file);
+        if ((file.isDirectory()) && (!url.endsWith("/"))) {
+            url += "/";
+        }
+        return url;
+    }
+
+    public static void copyFile(File src, File dst) throws IOException {
+        FileInputStream fis = null;
+        try {
+            fis = new FileInputStream(src);
+            copyToFile(fis, dst);
+        } finally {
+            closeQuietly(fis);
+        }
+    }
+
+    public static void copyToFile(InputStream is, File dst) throws IOException {
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(dst);
+            byte[] buf = new byte[1024];
+            int i = 0;
+            while ((i = is.read(buf)) != -1) {
+                fos.write(buf, 0, i);
+            }
+        } finally {
+            closeQuietly(fos);
+        }
+    }
+
     /**
      * Unconditionally close an <code>InputStream</code>.
-     * <p>
+     * <p/>
      * Equivalent to {@link InputStream#close()}, except any exceptions will be ignored.
      * This is typically used in finally blocks.
      *
-     * @param input  the InputStream to close, may be null or already closed
+     * @param input the InputStream to close, may be null or already closed
      */
     public static void closeQuietly(InputStream input) {
         try {
@@ -109,14 +109,14 @@ public class IOUtils {
             // ignore
         }
     }
-    
+
     /**
      * Unconditionally close an <code>OutputStream</code>.
-     * <p>
+     * <p/>
      * Equivalent to {@link OutputStream#close()}, except any exceptions will be ignored.
      * This is typically used in finally blocks.
      *
-     * @param output  the OutputStream to close, may be null or already closed
+     * @param output the OutputStream to close, may be null or already closed
      */
     public static void closeQuietly(OutputStream output) {
         try {
@@ -127,14 +127,14 @@ public class IOUtils {
             // ignore
         }
     }
-    
+
     /**
      * Unconditionally close a <code>Writer</code>.
-     * <p>
+     * <p/>
      * Equivalent to {@link Writer#close()}, except any exceptions will be ignored.
      * This is typically used in finally blocks.
      *
-     * @param output  the Writer to close, may be null or already closed
+     * @param output the Writer to close, may be null or already closed
      */
     public static void closeQuietly(Writer output) {
         try {

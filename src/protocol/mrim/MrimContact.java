@@ -3,12 +3,12 @@ package protocol.mrim;
 import android.view.ContextMenu;
 import android.view.Menu;
 import protocol.*;
+import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.view.menu.MyMenu;
 import sawim.Options;
 import sawim.comm.StringConvertor;
 import sawim.modules.DebugLog;
-import ru.sawim.R;
 
 public class MrimContact extends Contact {
     private int contactId;
@@ -19,8 +19,8 @@ public class MrimContact extends Contact {
     public static final int USER_MENU_SEND_SMS = 1;
 
     public static final int CONTACT_FLAG_INVISIBLE = 0x04;
-    public static final int CONTACT_FLAG_VISIBLE   = 0x08;
-    public static final int CONTACT_FLAG_IGNORE    = 0x10;
+    public static final int CONTACT_FLAG_VISIBLE = 0x08;
+    public static final int CONTACT_FLAG_IGNORE = 0x10;
 
     public void init(int contactId, String name, String phone, int groupId, int serverFlags, int flags) {
         setContactId(contactId);
@@ -32,13 +32,14 @@ public class MrimContact extends Contact {
         setTempFlag(false);
         setOfflineStatus();
     }
+
     final void setFlags(int flags) {
         this.flags = flags;
         setBooleanValue(SL_VISIBLE, (flags & CONTACT_FLAG_VISIBLE) != 0);
         setBooleanValue(SL_INVISIBLE, (flags & CONTACT_FLAG_INVISIBLE) != 0);
         setBooleanValue(SL_IGNORE, (flags & CONTACT_FLAG_IGNORE) != 0);
     }
-    
+
     public MrimContact(String uin, String name) {
         this.userId = uin;
         contactId = -1;
@@ -47,9 +48,11 @@ public class MrimContact extends Contact {
         this.setName(name);
         setOfflineStatus();
     }
+
     void setContactId(int id) {
         contactId = id;
     }
+
     int getContactId() {
         return contactId;
     }
@@ -68,6 +71,7 @@ public class MrimContact extends Contact {
             model.add(Menu.FIRST, ContactMenu.USER_MENU_WAKE, 2, R.string.wake);
         }
     }
+
     protected void initContextMenu(Protocol protocol, ContextMenu contactMenu) {
         addChatItems(contactMenu);
         if (!StringConvertor.isEmpty(phones)) {
@@ -75,6 +79,7 @@ public class MrimContact extends Contact {
         }
         addGeneralItems(protocol, contactMenu);
     }
+
     protected void initManageContactMenu(Protocol protocol, MyMenu menu) {
         if (protocol.isConnected()) {
             initPrivacyMenu(menu);
@@ -111,6 +116,7 @@ public class MrimContact extends Contact {
     String getPhones() {
         return phones;
     }
+
     void setPhones(String listOfPhones) {
         phones = listOfPhones;
     }

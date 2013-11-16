@@ -9,11 +9,12 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.*;
+import android.widget.AdapterView;
+import android.widget.ListView;
+import android.widget.Toast;
 import protocol.Contact;
 import protocol.Group;
 import protocol.Protocol;
@@ -49,7 +50,7 @@ public class SendToView extends Fragment implements AdapterView.OnItemClickListe
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        actionBar = ((ActionBarActivity)getActivity()).getSupportActionBar();
+        actionBar = ((ActionBarActivity) getActivity()).getSupportActionBar();
         roster = Roster.getInstance();
     }
 

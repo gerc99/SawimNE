@@ -28,12 +28,10 @@ import javax.microedition.io.Connection;
 import java.io.IOException;
 
 /**
- * 
  * @deprecated use <code>ConnectionImplementation</code> or <code>ConnectorAdapter</code> and <code>ImplFactory</code> to registed GCF protocol .
- *
  */
 public interface ClosedConnection {
 
-	Connection open(String name) throws IOException;
+    Connection open(String name) throws IOException;
 
 }

@@ -26,7 +26,6 @@
  */
 package org.microemu.cldc.file;
 
-import org.microemu.log.Logger;
 import org.microemu.microedition.ImplementationUnloadable;
 import org.microemu.microedition.io.ConnectorAdapter;
 
@@ -41,55 +40,54 @@ import java.util.Vector;
 
 /**
  * @author vlads
- * 
  */
 public class FileSystemConnectorImpl extends ConnectorAdapter implements ImplementationUnloadable {
-	/* The context to be used when acessing filesystem */
-	private AccessControlContext acc;
+    /* The context to be used when acessing filesystem */
+    private AccessControlContext acc;
 
-	private List openConnection = new Vector();
+    private List openConnection = new Vector();
 
-	FileSystemConnectorImpl() {
-		acc = AccessController.getContext();
-	}
+    FileSystemConnectorImpl() {
+        acc = AccessController.getContext();
+    }
 
-	public Connection open(final String name, int mode, boolean timeouts) throws IOException {
-		// file://<host>/<path>
-		if (!name.startsWith(FileSystem.PROTOCOL)) {
-			throw new IOException("Invalid Protocol " + name);
-		}
+    public Connection open(final String name, int mode, boolean timeouts) throws IOException {
+        // file://<host>/<path>
+        if (!name.startsWith(FileSystem.PROTOCOL)) {
+            throw new IOException("Invalid Protocol " + name);
+        }
         final String path = name.substring(FileSystem.PROTOCOL.length());
-		Connection con = (Connection) doPrivilegedIO(new PrivilegedExceptionAction() {
-			public Object run() throws IOException {
-				return new FileSystemFileConnection(path, FileSystemConnectorImpl.this);
-			}
-		}, acc);
-		openConnection.add(con);
-		return con;
-	}
+        Connection con = (Connection) doPrivilegedIO(new PrivilegedExceptionAction() {
+            public Object run() throws IOException {
+                return new FileSystemFileConnection(path, FileSystemConnectorImpl.this);
+            }
+        }, acc);
+        openConnection.add(con);
+        return con;
+    }
 
-	static <T> T doPrivilegedIO(PrivilegedExceptionAction<T> action, AccessControlContext context) throws IOException {
-		try {
-			return AccessController.doPrivileged(action, context);
-		} catch (PrivilegedActionException e) {
-			if (e.getCause() instanceof IOException) {
-				throw (IOException) e.getCause();
-			}
-			throw new IOException(e.toString());
-		}
-	}
+    static <T> T doPrivilegedIO(PrivilegedExceptionAction<T> action, AccessControlContext context) throws IOException {
+        try {
+            return AccessController.doPrivileged(action, context);
+        } catch (PrivilegedActionException e) {
+            if (e.getCause() instanceof IOException) {
+                throw (IOException) e.getCause();
+            }
+            throw new IOException(e.toString());
+        }
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.microemu.microedition.ImplementationUnloadable#unregisterImplementation()
-	 */
-	public void unregisterImplementation() {
-		FileSystem.unregisterImplementation(this);
-	}
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.microemu.microedition.ImplementationUnloadable#unregisterImplementation()
+     */
+    public void unregisterImplementation() {
+        FileSystem.unregisterImplementation(this);
+    }
 
-	void notifyClosed(FileSystemFileConnection con) {
-		openConnection.remove(con);
-	}
+    void notifyClosed(FileSystemFileConnection con) {
+        openConnection.remove(con);
+    }
 
 }

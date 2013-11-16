@@ -14,8 +14,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import ru.sawim.General;
 import ru.sawim.R;
-import sawim.roster.Roster;
 import sawim.comm.Util;
+import sawim.roster.Roster;
 
 /**
  * Created with IntelliJ IDEA.

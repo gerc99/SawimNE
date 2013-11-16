@@ -1,17 +1,16 @@
 package ru.sawim.activities;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.app.ActionBarActivity;
-import ru.sawim.General;
-import ru.sawim.R;
-import sawim.roster.Roster;
 import protocol.Contact;
 import protocol.Protocol;
 import protocol.jabber.Jabber;
 import protocol.jabber.Jid;
+import ru.sawim.General;
+import ru.sawim.R;
+import sawim.roster.Roster;
 
 /**
  * Created with IntelliJ IDEA.
@@ -89,7 +88,7 @@ public class OpenUriActivity extends ActionBarActivity {
     }
 
     private void alert() {
-		AlertDialog.Builder alertDialog = new AlertDialog.Builder(General.currentActivity);
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(General.currentActivity);
         alertDialog.setCancelable(true);
         alertDialog.setTitle(getText(R.string.app_name));
         alertDialog.setMessage(getText(R.string.xmppAccountDontFound));

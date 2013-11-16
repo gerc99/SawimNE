@@ -3,8 +3,8 @@ package sawim.chat;
 import protocol.Contact;
 import ru.sawim.General;
 import ru.sawim.Scheme;
-import ru.sawim.widget.chat.MessageItemView;
 import ru.sawim.text.TextFormatter;
+import ru.sawim.widget.chat.MessageItemView;
 import sawim.comm.Util;
 
 public final class MessData {

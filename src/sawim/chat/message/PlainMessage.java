@@ -1,10 +1,10 @@
 
 package sawim.chat.message;
 
-import sawim.comm.StringConvertor;
-import sawim.util.JLocale;
 import protocol.Contact;
 import protocol.Protocol;
+import sawim.comm.StringConvertor;
+import sawim.util.JLocale;
 
 public class PlainMessage extends Message {
 
@@ -17,7 +17,7 @@ public class PlainMessage extends Message {
 
     public static final int MESSAGE_LIMIT = 1024;
 
-    
+
     public PlainMessage(String contactUin, Protocol protocol, long date, String text, boolean offline) {
         super(date, protocol, contactUin, true);
         if ('\n' == text.charAt(0)) {
@@ -26,7 +26,7 @@ public class PlainMessage extends Message {
         this.text = text;
         this.offline = offline;
     }
-    
+
     public PlainMessage(Protocol protocol, Contact rcvr, long date, String text) {
         super(date, protocol, rcvr, false);
         this.text = StringConvertor.notNull(text);
@@ -36,7 +36,7 @@ public class PlainMessage extends Message {
     public boolean isOffline() {
         return offline;
     }
-    
+
     public String getText() {
         return text;
     }

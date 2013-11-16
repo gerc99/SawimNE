@@ -1,32 +1,34 @@
 package protocol.jabber;
 
-import java.util.List;
-import java.util.Vector;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
-import ru.sawim.models.list.VirtualListItem;
-import ru.sawim.models.list.VirtualList;
-import ru.sawim.models.list.VirtualListModel;
-import sawim.Clipboard;
-import sawim.comm.*;
 import ru.sawim.Scheme;
-import sawim.util.JLocale;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
+import ru.sawim.models.list.VirtualList;
+import ru.sawim.models.list.VirtualListItem;
+import ru.sawim.models.list.VirtualListModel;
+import sawim.Clipboard;
+import sawim.comm.StringConvertor;
+import sawim.comm.Util;
+import sawim.util.JLocale;
+
+import java.util.List;
+import java.util.Vector;
 
 
 public final class MirandaNotes {
-    private static final int COMMAND_ADD    = 0;
-    private static final int COMMAND_EDIT   = 1;
-    private static final int COMMAND_DEL    = 2;
-    private static final int MENU_COPY      = 3;
-    private static final int MENU_COPY_ALL  = 4;
+    private static final int COMMAND_ADD = 0;
+    private static final int COMMAND_EDIT = 1;
+    private static final int COMMAND_DEL = 2;
+    private static final int MENU_COPY = 3;
+    private static final int MENU_COPY_ALL = 4;
 
     private Jabber jabber;
     private Vector notes = new Vector();
-	
-	private VirtualList screen;
+
+    private VirtualList screen;
     private VirtualListModel model;
 
     void init(Jabber protocol) {
@@ -64,7 +66,7 @@ public final class MirandaNotes {
             public void onContextItemSelected(int listItem, int itemMenuId) {
                 switch (itemMenuId) {
                     case COMMAND_EDIT: {
-                        Note note = (Note)notes.elementAt(listItem);
+                        Note note = (Note) notes.elementAt(listItem);
                         new NoteEditor(note).showIt();
                         break;
                     }
@@ -106,10 +108,11 @@ public final class MirandaNotes {
             }
         });
     }
-	
+
     public void clear() {
         model.clear();
-	}
+    }
+
     public void showIt() {
         clear();
         notes.removeAllElements();
@@ -130,8 +133,9 @@ public final class MirandaNotes {
         notes.addElement(note);
         addNote(note);
     }
+
     private void addNote(Note note) {
-		VirtualListItem parser = model.createNewParser(true);
+        VirtualListItem parser = model.createNewParser(true);
         parser.addLabel(note.title + "\n" + "*" + note.tags, Scheme.THEME_PARAM_VALUE, Scheme.FONT_STYLE_BOLD);
         parser.addDescription(note.text, Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
         model.addPar(parser);
@@ -142,7 +146,7 @@ public final class MirandaNotes {
         StringBuffer storage = new StringBuffer();
         int size = notes.size();
         for (int i = 0; i < size; ++i) {
-            Note note = (Note)notes.elementAt(i);
+            Note note = (Note) notes.elementAt(i);
             storage.append("<note tags='").append(Util.xmlEscape(note.tags)).append("'>");
             storage.append("<title>").append(Util.xmlEscape(note.title)).append("</title>");
             storage.append("<text>").append(Util.xmlEscape(note.text)).append("</text>");
@@ -156,7 +160,7 @@ public final class MirandaNotes {
         clear();
         int size = notes.size();
         for (int i = 0; i < size; ++i) {
-            addNote((Note)notes.elementAt(i));
+            addNote((Note) notes.elementAt(i));
         }
         screen.setCurrentItemIndex(index, false);
     }
@@ -166,9 +170,11 @@ public final class MirandaNotes {
         notes.addElement(note);
         return note;
     }
+
     private void removeNote(int currItem) {
         notes.removeElementAt(currItem);
     }
+
     private void selectNote(Note note) {
         screen.setCurrentItemIndex(notes.indexOf(note), false);
     }
@@ -220,7 +226,7 @@ public final class MirandaNotes {
 
                 refresh();
                 selectNote(note);
-				jabber.getConnection().saveMirandaNotes(getNotesStorage());
+                jabber.getConnection().saveMirandaNotes(getNotesStorage());
                 form.back();
             }
         }

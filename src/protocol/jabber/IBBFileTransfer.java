@@ -7,7 +7,6 @@ import sawim.FileTransfer;
 import sawim.comm.Util;
 
 
-
 public class IBBFileTransfer {
     private String to;
     private String sid;
@@ -23,7 +22,7 @@ public class IBBFileTransfer {
         this.fileName = name;
         this.fileDesc = desc;
         this.ft = ft;
-        JabberContact c = (JabberContact)ft.getReceiver();
+        JabberContact c = (JabberContact) ft.getReceiver();
         this.to = c.getUserId();
         if (!(c instanceof JabberServiceContact)) {
             String resource = c.getCurrentSubContact().resource;
@@ -31,12 +30,15 @@ public class IBBFileTransfer {
         }
         this.sid = Util.xmlEscape("Sawim" + Util.uniqueValue());
     }
+
     public void setProgress(int percent) {
         ft.setProgress(percent);
     }
+
     public boolean isCanceled() {
         return ft.isCanceled();
     }
+
     public void destroy() {
         ft.destroy();
         ft = null;
@@ -62,6 +64,7 @@ public class IBBFileTransfer {
             return null;
         }
     }
+
     public String nextBlock() {
         byte[] data = readNextBlock();
         if (null == data) {
@@ -74,9 +77,11 @@ public class IBBFileTransfer {
         blockIndex++;
         return xml;
     }
+
     public int getPercent() {
         return 10 + (blockIndex * blockSize * 90 / ft.getFileSize());
     }
+
     public String close() {
         return "<iq id='Sawimibb_close' to='" + Util.xmlEscape(to)
                 + "' type='set'><close xmlns='http://jabber.org/protocol/ibb' sid='"
@@ -84,7 +89,7 @@ public class IBBFileTransfer {
     }
 
     public String getRequest() {
-        return"<iq type='set' id='Sawimibb_si' to='"
+        return "<iq type='set' id='Sawimibb_si' to='"
                 + Util.xmlEscape(to) + "'><si xmlns='http://jabber.org/protocol/si' id='"
                 + sid + "' "
                 + "mime-type='application/octet-stream' "

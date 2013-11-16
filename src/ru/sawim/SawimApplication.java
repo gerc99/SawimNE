@@ -11,11 +11,9 @@ import org.microemu.MIDletBridge;
 import org.microemu.app.Common;
 import org.microemu.cldc.file.FileSystem;
 import org.microemu.util.AndroidRecordStoreManager;
-import protocol.Profile;
 import ru.sawim.service.SawimService;
 import ru.sawim.service.SawimServiceConnection;
 import ru.sawim.text.TextFormatter;
-import sawim.Options;
 import sawim.chat.ChatHistory;
 import sawim.roster.Roster;
 

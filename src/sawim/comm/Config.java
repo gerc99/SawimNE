@@ -28,6 +28,7 @@ public final class Config {
         }
         return res;
     }
+
     private String loadLocateResource(String path) {
         String lang = JLocale.getCurrUiLanguage();
         int index = path.lastIndexOf('.');
@@ -35,7 +36,7 @@ public final class Config {
             index = path.length();
         }
         String localPath = path.substring(0, index)
-        + "." + lang + path.substring(index);
+                + "." + lang + path.substring(index);
         String config = Config.loadResource(localPath).trim();
         if (0 == config.length()) {
             return Config.loadResource(path).trim();
@@ -47,6 +48,7 @@ public final class Config {
         parseConfig(Config.loadResource(path), 0);
         return this;
     }
+
     public Config loadLocale(String path) {
         parseConfig(loadLocateResource(path), 0);
         return this;
@@ -55,7 +57,7 @@ public final class Config {
     private char getChar(String content, int index) {
         return (index < content.length()) ? content.charAt(index) : '\n';
     }
-    
+
     private int parseComment(String content, int index) {
         if (';' != getChar(content, index + 1)) {
             System.out.println("Warning! Comment is written in bad style at " + name + ":" + index);
@@ -66,6 +68,7 @@ public final class Config {
         }
         return index;
     }
+
     private int parseName(String content, int index) {
         int beginPos = index;
         for (; index <= content.length(); ++index) {
@@ -88,11 +91,12 @@ public final class Config {
         }
         return index;
     }
+
     private int parseConfig(String content, int index) {
-        final int PARSER_LINE    = 1;
-        final int PARSER_FROM    = 2;
+        final int PARSER_LINE = 1;
+        final int PARSER_FROM = 2;
         final int PARSER_FROM_ESCAPE = 3;
-        final int PARSER_TO      = 4;
+        final int PARSER_TO = 4;
         final int PARSER_COMMENT = 5;
 
         Vector _keys = new Vector();
@@ -158,7 +162,7 @@ public final class Config {
         this.values = vectorToArray(_values);
         return index;
     }
-        
+
     public static void parseIniConfig(String content, Vector configs) {
         try {
             Config currentConfig = new Config();
@@ -176,7 +180,7 @@ public final class Config {
             }
         } catch (Exception e) {
         }
-    }    
+    }
 
     private String unescape(String str) {
         str = str.trim();
@@ -197,21 +201,21 @@ public final class Config {
         }
         return buffer.toString();
     }
-    
+
     public static String getConfigValue(String key, String path) {
         if (StringConvertor.isEmpty(key)) {
             return null;
         }
-        final int PARSER_LINE    = 0;
-        final int PARSER_NAME    = 1;
-        final int PARSER_FROM    = 2;
-        final int PARSER_TO      = 3;
+        final int PARSER_LINE = 0;
+        final int PARSER_NAME = 1;
+        final int PARSER_FROM = 2;
+        final int PARSER_TO = 3;
         final int PARSER_COMMENT = 6;
         int state = PARSER_LINE;
         int beginPos = 0;
         String name = null;
         String currentKey = null;
-        
+
         String content = loadResource(path);
         final int contentLenght = content.length();
         for (int i = 0; i <= contentLenght; ++i) {
@@ -227,7 +231,7 @@ public final class Config {
                         state = PARSER_FROM;
                     }
                     break;
-                    
+
                 case PARSER_FROM:
                     if ('=' == ch) {
                         currentKey = content.substring(beginPos, i).trim();
@@ -236,16 +240,16 @@ public final class Config {
                             state = PARSER_TO;
                         } else {
                             state = PARSER_COMMENT;
-                        }    
+                        }
                     }
                     break;
-                    
+
                 case PARSER_TO:
                     if (('\n' == ch) || ('\r' == ch)) {
                         return content.substring(beginPos, i).trim();
                     }
                     break;
-                    
+
                 case PARSER_COMMENT:
                     if (('\n' == ch) || ('\r' == ch)) {
                         state = PARSER_LINE;
@@ -264,6 +268,7 @@ public final class Config {
 
     public Config() {
     }
+
     public Config(String content) {
         parseConfig(StringConvertor.notNull(content), 0);
     }
@@ -271,12 +276,15 @@ public final class Config {
     public final String getName() {
         return name;
     }
+
     public final String[] getKeys() {
         return keys;
     }
+
     public final String[] getValues() {
         return values;
     }
+
     private boolean isEmpty() {
         return (null == keys) || (0 == keys.length);
     }

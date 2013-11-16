@@ -36,27 +36,27 @@ import java.io.PrintStream;
 
 public class AndroidLoggerAppender implements LoggerAppender {
 
-	public static String formatLocation(StackTraceElement ste) {
-		if (ste == null) {
-			return "";
-		}
-		// Make Line# clickable in eclipse
-		return ste.getClassName() + "." + ste.getMethodName() + "(" + ste.getFileName() + ":" + ste.getLineNumber()
-				+ ")";
-	}
+    public static String formatLocation(StackTraceElement ste) {
+        if (ste == null) {
+            return "";
+        }
+        // Make Line# clickable in eclipse
+        return ste.getClassName() + "." + ste.getMethodName() + "(" + ste.getFileName() + ":" + ste.getLineNumber()
+                + ")";
+    }
 
-	public void append(LoggingEvent event) {
-    	String data = "";
-    	if (event.hasData()) {
-    		data = " [" + event.getFormatedData() + "]";
-    	}
-		Log.v(SawimActivity.LOG_TAG, event.getMessage() + data +  "\n\t  " + formatLocation(event.getLocation()));
-    	if (event.getThrowable() != null) {
-    		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    		event.getThrowable().printStackTrace(new PrintStream(baos));
-    		Log.v(SawimActivity.LOG_TAG, baos.toString());
-    	}
+    public void append(LoggingEvent event) {
+        String data = "";
+        if (event.hasData()) {
+            data = " [" + event.getFormatedData() + "]";
+        }
+        Log.v(SawimActivity.LOG_TAG, event.getMessage() + data + "\n\t  " + formatLocation(event.getLocation()));
+        if (event.getThrowable() != null) {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            event.getThrowable().printStackTrace(new PrintStream(baos));
+            Log.v(SawimActivity.LOG_TAG, baos.toString());
+        }
 
-	}
+    }
 
 }

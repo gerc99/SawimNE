@@ -1,6 +1,7 @@
 package DrawControls.icons;
 
 import ru.sawim.General;
+
 import java.io.InputStream;
 
 
@@ -12,7 +13,7 @@ public class AniImageList extends ImageList {
     public AniImageList() {
     }
 
-    public Icon iconAt(int index) { 
+    public Icon iconAt(int index) {
         if (index < size() && index >= 0) {
             return icons[index];
         }

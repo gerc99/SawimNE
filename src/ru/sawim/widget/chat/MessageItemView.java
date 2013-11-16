@@ -3,8 +3,7 @@ package ru.sawim.widget.chat;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.widget.*;
-import ru.sawim.widget.MyTextView;
+import android.widget.LinearLayout;
 import ru.sawim.widget.Util;
 
 /**
@@ -17,7 +16,7 @@ import ru.sawim.widget.Util;
 public class MessageItemView extends LinearLayout {
 
     public MessageTitleItemView titleItemView;
-    public MyTextView msgText;
+    public MessageTextView msgText;
     private static final Paint paintDivider = new Paint(Paint.ANTI_ALIAS_FLAG);
     private boolean isShowDivider = false;
 
@@ -27,7 +26,7 @@ public class MessageItemView extends LinearLayout {
         setPadding(padding, padding, padding, padding);
         setOrientation(VERTICAL);
         titleItemView = new MessageTitleItemView(context);
-        msgText = new MyTextView(context);
+        msgText = new MessageTextView(context);
 
         if (isAddTitleView)
             addViewInLayout(titleItemView, 0, new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));

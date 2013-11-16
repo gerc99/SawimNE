@@ -2,18 +2,17 @@ package protocol;
 
 import DrawControls.icons.Icon;
 import DrawControls.icons.ImageList;
-import ru.sawim.SawimApplication;
-import ru.sawim.view.menu.MyMenu;
-import sawim.roster.TreeNode;
 import android.view.ContextMenu;
 import android.view.Menu;
 import ru.sawim.General;
+import ru.sawim.R;
+import ru.sawim.Scheme;
+import ru.sawim.view.menu.MyMenu;
 import sawim.chat.Chat;
-import sawim.roster.Roster;
 import sawim.comm.StringConvertor;
 import sawim.modules.tracking.Tracking;
-import ru.sawim.Scheme;
-import ru.sawim.R;
+import sawim.roster.Roster;
+import sawim.roster.TreeNode;
 import sawim.util.JLocale;
 
 
@@ -41,28 +40,28 @@ abstract public class Contact extends TreeNode {
         chaingingStatusTime = time;
     }
 
-	public String annotations = null;
+    public String annotations = null;
 
-	public byte isHistory() {
-	    if (Tracking.isTracking(getUserId(), Tracking.GLOBAL) == Tracking.TRUE) {
-      		if (Tracking.beginTrackActionItem(this, Tracking.ACTION_HISTORY) == Tracking.TRUE) {
-			    return Tracking.TRUE;
-			}
-		}
-		return Tracking.FALSE;
-	}
+    public byte isHistory() {
+        if (Tracking.isTracking(getUserId(), Tracking.GLOBAL) == Tracking.TRUE) {
+            if (Tracking.beginTrackActionItem(this, Tracking.ACTION_HISTORY) == Tracking.TRUE) {
+                return Tracking.TRUE;
+            }
+        }
+        return Tracking.FALSE;
+    }
 
     public byte isPresence() {
         return Tracking.FALSE;
     }
 
-	public byte subcontactsS() {
-		return (byte)0;
-	}
+    public byte subcontactsS() {
+        return (byte) 0;
+    }
 
-	public boolean isConference() {
-	    return false;
-	}
+    public boolean isConference() {
+        return false;
+    }
 
     public final String getUserId() {
         return userId;
@@ -74,7 +73,7 @@ abstract public class Contact extends TreeNode {
 
     public void setName(String newName) {
         if (!StringConvertor.isEmpty(newName)) {
-    	    name = newName;
+            name = newName;
         }
     }
 
@@ -115,7 +114,7 @@ abstract public class Contact extends TreeNode {
     public final String getXStatusText() {
         return xstatusText;
     }
-    
+
     public void setClient(short clientNum, String ver) {
         clientIndex = clientNum;
         version = StringConvertor.notNull(ver);
@@ -124,14 +123,14 @@ abstract public class Contact extends TreeNode {
     public void setOfflineStatus() {
         if (isOnline()) {
             setTimeOfChaingingStatus(General.getCurrentGmtTime());
-			
-			String id = getUserId();
-			if (Tracking.isTrackingEvent(id, Tracking.GLOBAL) == Tracking.TRUE) {
-				if (Tracking.isTracking(id, Tracking.EVENT_EXIT) == Tracking.TRUE) {
+
+            String id = getUserId();
+            if (Tracking.isTrackingEvent(id, Tracking.GLOBAL) == Tracking.TRUE) {
+                if (Tracking.isTracking(id, Tracking.EVENT_EXIT) == Tracking.TRUE) {
                     Tracking.beginTrackAction(this, Tracking.EVENT_EXIT);
-			    }
+                }
             } else if (Tracking.isTracking(id, Tracking.EVENT_EXIT) == Tracking.FALSE) {
-			}
+            }
         }
         setStatus(StatusInfo.STATUS_OFFLINE, null);
         setXStatus(XStatusInfo.XSTATUS_NONE, null);
@@ -158,15 +157,15 @@ abstract public class Contact extends TreeNode {
         Roster.getInstance().setCurrentContact(this);
     }
 
-    public static final byte CONTACT_NO_AUTH       = 1 << 1; 
-    private static final byte CONTACT_IS_TEMP      = 1 << 3; 
-    
-    public static final byte SL_VISIBLE            = 1 << 4; 
-    public static final byte SL_INVISIBLE          = 1 << 5; 
-    public static final byte SL_IGNORE             = 1 << 6; 
+    public static final byte CONTACT_NO_AUTH = 1 << 1;
+    private static final byte CONTACT_IS_TEMP = 1 << 3;
 
-    private static final int TYPING                = 1 << 8; 
-    private static final int HAS_CHAT              = 1 << 9; 
+    public static final byte SL_VISIBLE = 1 << 4;
+    public static final byte SL_INVISIBLE = 1 << 5;
+    public static final byte SL_IGNORE = 1 << 6;
+
+    private static final int TYPING = 1 << 8;
+    private static final int HAS_CHAT = 1 << 9;
 
     public final void setBooleanValue(byte key, boolean value) {
         if (value) {
@@ -222,24 +221,27 @@ abstract public class Contact extends TreeNode {
         }
         booleanValues = (booleanValues & ~0x00FF0000) | ((icon + 1) << 16);
     }
-    
+
     public final boolean inVisibleList() {
         return (booleanValues & SL_VISIBLE) != 0;
     }
+
     public final boolean inInvisibleList() {
         return (booleanValues & SL_INVISIBLE) != 0;
     }
+
     public final boolean inIgnoreList() {
         return (booleanValues & SL_IGNORE) != 0;
     }
+
     protected final void initPrivacyMenu(MyMenu menu) {
         if (!isTemp()) {
             String visibleList = inVisibleList()
                     ? "rem_visible_list" : "add_visible_list";
             String invisibleList = inInvisibleList()
-                    ? "rem_invisible_list": "add_invisible_list";
+                    ? "rem_invisible_list" : "add_invisible_list";
             String ignoreList = inIgnoreList()
-                    ? "rem_ignore_list": "add_ignore_list";
+                    ? "rem_ignore_list" : "add_ignore_list";
 
             menu.add(JLocale.getString(visibleList), ContactMenu.USER_MENU_PS_VISIBLE);
             menu.add(JLocale.getString(invisibleList), ContactMenu.USER_MENU_PS_INVISIBLE);
@@ -254,6 +256,7 @@ abstract public class Contact extends TreeNode {
     public boolean isSingleUserContact() {
         return true;
     }
+
     public boolean hasHistory() {
         return !isTemp() && isSingleUserContact();
     }
@@ -279,12 +282,12 @@ abstract public class Contact extends TreeNode {
         return name;
     }
 
-     @Override
-     protected byte getType() {
-         return TreeNode.CONTACT;
-     }
+    @Override
+    protected byte getType() {
+        return TreeNode.CONTACT;
+    }
 
-     public final int getNodeWeight() {
+    public final int getNodeWeight() {
         if (/*Options.getBoolean(Options.OPTION_SORT_UP_WITH_MSG)
                 && */hasUnreadMessage()) {
             return 5;
@@ -296,9 +299,9 @@ abstract public class Contact extends TreeNode {
             return 20;
         }
         if (isOnline()) {
-			if (hasChat()) {
-				return 10;
-			}
+            if (hasChat()) {
+                return 10;
+            }
             switch (General.sortType) {
                 case Roster.SORT_BY_STATUS:
                     return 20 + StatusInfo.getWidth(getStatusIndex());
@@ -338,7 +341,7 @@ abstract public class Contact extends TreeNode {
         }
         if (!isTemp() && !isConference()) {
             menu.add(Menu.NONE, ContactMenu.USER_MENU_TRACK, Menu.NONE, R.string.extra_settings);
-		}
+        }
         if (isSingleUserContact() || isOnline()) {
             /*if (sawim.modules.fs.FileSystem.isSupported()) {
                 menu.add(Menu.FIRST, USER_MENU_FILE_TRANS, 2, R.string.ft_name);
@@ -349,6 +352,7 @@ abstract public class Contact extends TreeNode {
             addChatMenuItems(menu);
         }
     }
+
     protected final void addGeneralItems(Protocol protocol, ContextMenu menu) {
         menu.add(Menu.NONE, ContactMenu.USER_MENU_USER_INFO, Menu.NONE, R.string.user_info);
         menu.add(Menu.NONE, ContactMenu.USER_MANAGE_CONTACT, Menu.NONE, R.string.manage);

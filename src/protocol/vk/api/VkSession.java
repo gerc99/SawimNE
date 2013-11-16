@@ -2,7 +2,6 @@ package protocol.vk.api;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 import sawim.comm.Util;
 
 public class VkSession {

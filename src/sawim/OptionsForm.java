@@ -4,27 +4,26 @@ import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
-import sawim.roster.Roster;
-import sawim.comm.*;
-import sawim.modules.*;
-import sawim.util.*;
 import ru.sawim.activities.SawimActivity;
 import ru.sawim.models.form.ControlStateListener;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
+import sawim.comm.Util;
+import sawim.modules.Answerer;
+import sawim.modules.Notify;
 
 public class OptionsForm implements FormListener, ControlStateListener {
 
     private Forms form;
     private int currentOptionsForm;
 
-    public static final int OPTIONS_ACCOUNT    = 7;
-    public static final int OPTIONS_INTERFACE  = 8;
-    public static final int OPTIONS_SIGNALING  = 9;
-    public static final int OPTIONS_ANTISPAM   = 10;
-    public static final int OPTIONS_ABSENCE    = 11;
-    public static final int OPTIONS_ANSWERER   = 12;
-    public static final int OPTIONS_ABOUT      = 13;
+    public static final int OPTIONS_ACCOUNT = 7;
+    public static final int OPTIONS_INTERFACE = 8;
+    public static final int OPTIONS_SIGNALING = 9;
+    public static final int OPTIONS_ANTISPAM = 10;
+    public static final int OPTIONS_ABSENCE = 11;
+    public static final int OPTIONS_ANSWERER = 12;
+    public static final int OPTIONS_ABOUT = 13;
 
     private void setChecked(String lngStr, int optValue) {
         form.addCheckBox(optValue, lngStr, Options.getBoolean(optValue));
@@ -132,11 +131,11 @@ public class OptionsForm implements FormListener, ControlStateListener {
                 saveOptionBoolean(Options.OPTION_HIDE_ICONS_CLIENTS);
                 //saveOptionSelector(Options.OPTION_USER_ACCOUNTS);
                 //saveOptionBoolean(Options.OPTION_CL_HIDE_OFFLINE);
-        //        saveOptionBoolean(Options.OPTION_SAVE_TEMP_CONTACT);
+                //        saveOptionBoolean(Options.OPTION_SAVE_TEMP_CONTACT);
                 //saveOptionBoolean(Options.OPTION_SORT_UP_WITH_MSG);
                 saveOptionBoolean(Options.OPTION_SHOW_STATUS_LINE);
                 saveOptionSelector(Options.OPTION_CL_SORT_BY);
-        //        saveOptionBoolean(Options.OPTION_SHOW_PLATFORM);
+                //        saveOptionBoolean(Options.OPTION_SHOW_PLATFORM);
                 saveOptionBoolean(Options.OPTION_HISTORY);
                 saveOptionInt(Options.OPTION_MAX_MSG_COUNT);
                 saveOptionBoolean(Options.OPTION_TITLE_IN_CONFERENCE);
@@ -171,7 +170,7 @@ public class OptionsForm implements FormListener, ControlStateListener {
         Options.safeSave();
         General.updateOptions();
     }
-    
+
     public void formAction(Forms form, boolean apply) {
         if (apply)
             save(currentOptionsForm);
@@ -186,7 +185,8 @@ public class OptionsForm implements FormListener, ControlStateListener {
             public boolean back() {
                 save(currentOptionsForm);
                 form.destroy();
-                ((SawimActivity)General.currentActivity).recreateActivity();
+                if (Scheme.isChangeTheme(Options.getInt(Options.OPTION_COLOR_SCHEME)))
+                    ((SawimActivity) General.currentActivity).recreateActivity();
                 return true;
             }
         });
@@ -212,26 +212,26 @@ public class OptionsForm implements FormListener, ControlStateListener {
                 form.addString("contact_list", null);
                 setChecked("show_user_groups", Options.OPTION_USER_GROUPS);
                 setChecked_(SawimApplication.getContext().getString(R.string.hide_icons_clients), Options.OPTION_HIDE_ICONS_CLIENTS);
-                
+
                 //createSelector("show_user_accounts",
                 //        "no" + "|" + "by_groups" + "|" + "by_windows", Options.OPTION_USER_ACCOUNTS);
-                
+
                 //setChecked("hide_offline", Options.OPTION_CL_HIDE_OFFLINE);
-        //        setChecked("save_temp_contacts", Options.OPTION_SAVE_TEMP_CONTACT);
+                //        setChecked("save_temp_contacts", Options.OPTION_SAVE_TEMP_CONTACT);
                 setChecked("show_status_line", Options.OPTION_SHOW_STATUS_LINE);
-            //    setChecked("contacts_with_msg_at_top", Options.OPTION_SORT_UP_WITH_MSG);
+                //    setChecked("contacts_with_msg_at_top", Options.OPTION_SORT_UP_WITH_MSG);
 
                 createSelector("sort_by",
                         "sort_by_status" + "|" + "sort_by_online" + "|" + "sort_by_name",
                         Options.OPTION_CL_SORT_BY);
 
                 form.addString("chat", null);
-		//		setChecked("show_platform", Options.OPTION_SHOW_PLATFORM);
+                //		setChecked("show_platform", Options.OPTION_SHOW_PLATFORM);
                 setChecked("use_history", Options.OPTION_HISTORY);
                 loadOptionInt(Options.OPTION_MAX_MSG_COUNT, "max_message_count", "10|50|100|250|500|1000");
 
-				setChecked("title_in_conference",  Options.OPTION_TITLE_IN_CONFERENCE);
-				loadOptionString(Options.UNAVAILABLE_NESSAGE, "post_outputs");
+                setChecked("title_in_conference", Options.OPTION_TITLE_IN_CONFERENCE);
+                loadOptionString(Options.UNAVAILABLE_NESSAGE, "post_outputs");
                 setChecked("use_simple_input", Options.OPTION_SIMPLE_INPUT);
                 setChecked(SawimApplication.getContext().getString(R.string.instant_reconnection), Options.OPTION_INSTANT_RECONNECTION);
                 break;
@@ -247,7 +247,7 @@ public class OptionsForm implements FormListener, ControlStateListener {
                         "onl_notification");
                 setChecked("alarm", Options.OPTION_ALARM);
                 setChecked("blog_notify", Options.OPTION_BLOG_NOTIFY);
-                
+
                 createSelector("typing_notify",
                         "no" + "|" + "typing_incoming" + "|" + "typing_both",
                         Options.OPTION_TYPING_MODE);
@@ -270,9 +270,9 @@ public class OptionsForm implements FormListener, ControlStateListener {
                 form.addSelector(Options.OPTION_AA_TIME, "after_time", "off" + "|5 |10 |15 ", Options.getInt(Options.OPTION_AA_TIME) / 5);
                 break;
 
-      		case OPTIONS_ANSWERER:
-				Answerer.getInstance().activate();
-				return;
+            case OPTIONS_ANSWERER:
+                Answerer.getInstance().activate();
+                return;
         }
         form.setControlStateListener(this);
         form.show();

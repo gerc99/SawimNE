@@ -20,7 +20,7 @@
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *  See the LGPL or the AL for the specific language governing permissions and
  *  limitations.
- *  
+ *
  *  @version $Id: Connection.java 1605 2008-02-25 21:07:14Z barteo $
  */
 package javax.microedition.io;
@@ -30,6 +30,6 @@ import java.io.IOException;
 
 public interface Connection {
 
-	void close() throws IOException;
+    void close() throws IOException;
 
 }

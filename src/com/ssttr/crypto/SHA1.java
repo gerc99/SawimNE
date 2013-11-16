@@ -17,19 +17,11 @@ public final class SHA1 extends MessageDigest {
         digestValid = false;
     }
 
-    
+
     private int block[] = new int[16];
     private int blockIndex;
 
-    
 
-
-    
-    
-    
-
-
-    
     final int rol(int value, int bits) {
         int q = (value << bits) | (value >>> (32 - bits));
         return q;
@@ -77,21 +69,18 @@ public final class SHA1 extends MessageDigest {
     }
 
 
-    
-
     int dd[] = new int[5];
 
-    
 
     void transform() {
 
-        
+
         dd[0] = state[0];
         dd[1] = state[1];
         dd[2] = state[2];
         dd[3] = state[3];
         dd[4] = state[4];
-        
+
         R0(dd, 0, 1, 2, 3, 4, 0);
         R0(dd, 4, 0, 1, 2, 3, 1);
         R0(dd, 3, 4, 0, 1, 2, 2);
@@ -172,7 +161,7 @@ public final class SHA1 extends MessageDigest {
         R4(dd, 3, 4, 0, 1, 2, 77);
         R4(dd, 2, 3, 4, 0, 1, 78);
         R4(dd, 1, 2, 3, 4, 0, 79);
-        
+
         state[0] += dd[0];
         state[1] += dd[1];
         state[2] += dd[2];
@@ -181,9 +170,8 @@ public final class SHA1 extends MessageDigest {
     }
 
 
-    
     public void init() {
-        
+
         state[0] = 0x67452301;
         state[1] = 0xEFCDAB89;
         state[2] = 0x98BADCFE;
@@ -195,7 +183,7 @@ public final class SHA1 extends MessageDigest {
         blockIndex = 0;
     }
 
-    
+
     public synchronized void update(byte b) {
         int mask = (8 * (blockIndex & 3));
 
@@ -209,14 +197,12 @@ public final class SHA1 extends MessageDigest {
         }
     }
 
-    
+
     public synchronized void update(byte input[]) {
         update(input, 0, input.length);
     }
 
-    
 
-    
     public void finish() {
         byte bits[] = new byte[8];
         int i;
@@ -228,7 +214,7 @@ public final class SHA1 extends MessageDigest {
         update((byte) 128);
         while (blockIndex != 56)
             update((byte) 0);
-        
+
         update(bits);
         for (i = 0; i < 20; i++) {
             digestBits[i] = (byte)
@@ -237,7 +223,7 @@ public final class SHA1 extends MessageDigest {
         digestValid = true;
     }
 
-    
+
     public String getAlg() {
         return "sha-1";
     }

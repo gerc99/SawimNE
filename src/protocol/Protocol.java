@@ -1,17 +1,18 @@
 package protocol;
 
 import DrawControls.icons.Icon;
-import android.util.Log;
-import sawim.FileTransfer;
+import protocol.jabber.JabberContact;
 import ru.sawim.General;
-import sawim.SawimException;
+import ru.sawim.R;
+import ru.sawim.SawimApplication;
+import sawim.FileTransfer;
 import sawim.Options;
+import sawim.SawimException;
 import sawim.chat.Chat;
 import sawim.chat.ChatHistory;
 import sawim.chat.message.Message;
 import sawim.chat.message.PlainMessage;
 import sawim.chat.message.SystemNotice;
-import sawim.roster.Roster;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
 import sawim.io.Storage;
@@ -20,12 +21,10 @@ import sawim.modules.AntiSpam;
 import sawim.modules.DebugLog;
 import sawim.modules.Notify;
 import sawim.modules.tracking.Tracking;
+import sawim.roster.Roster;
 import sawim.search.Search;
 import sawim.search.UserInfo;
 import sawim.util.JLocale;
-import protocol.jabber.JabberContact;
-import ru.sawim.SawimApplication;
-import ru.sawim.R;
 
 import javax.microedition.rms.RecordStore;
 import java.io.*;
@@ -123,8 +122,8 @@ abstract public class Protocol {
                 return "@livejournal.com";
             case Profile.PROTOCOL_YANDEX:
                 return "@ya.ru";
-    //        case Profile.PROTOCOL_VK:
-    //            return "@vk.com";
+            //        case Profile.PROTOCOL_VK:
+            //            return "@vk.com";
             case Profile.PROTOCOL_QIP:
                 return "@qip.ru";
             case Profile.PROTOCOL_ODNOKLASSNIKI:
@@ -443,10 +442,14 @@ abstract public class Protocol {
     }
 
     protected void s_removeContact(Contact contact) {
-    };
+    }
+
+    ;
 
     protected void s_removedContact(Contact contact) {
-    };
+    }
+
+    ;
 
     public final void removeContact(Contact contact) {
         if (contact.isTemp()) {
@@ -487,7 +490,9 @@ abstract public class Protocol {
     }
 
     protected void s_addContact(Contact contact) {
-    };
+    }
+
+    ;
 
     protected void s_addedContact(Contact contact) {
     }

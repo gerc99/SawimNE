@@ -16,10 +16,12 @@ public abstract class TreeNode {
     }
 
     protected abstract byte getType();
+
     public abstract String getText();
+
     public abstract int getNodeWeight();
 
     public Icon getLeftIcon(Protocol p) {
-       return null;
+        return null;
     }
 }

@@ -3,9 +3,7 @@ package protocol.jabber;
 import sawim.SawimException;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
-import sawim.modules.DebugLog;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
@@ -27,26 +25,32 @@ public final class XmlNode {
     private static final String S_BINVAL = "BINVAL";
     public static final String S_XMLNS = "x" + "mlns";
 
-    private XmlNode() {}
+    private XmlNode() {
+    }
+
     private XmlNode(String name) {
         this.name = name;
     }
 
     private XmlNode unsafeChildAt(int index) {
-        return (XmlNode)children.elementAt(index);
+        return (XmlNode) children.elementAt(index);
     }
+
     public XmlNode childAt(int index) {
         if (children.size() <= index) {
             return null;
         }
-        return (XmlNode)children.elementAt(index);
+        return (XmlNode) children.elementAt(index);
     }
+
     public int childrenCount() {
         return children.size();
     }
+
     public String getAttribute(String key) {
-        return (String)attribs.get(key);
+        return (String) attribs.get(key);
     }
+
     private void putAttribute(String key, String value) {
         if (S_JID.equals(key)) {
             key = S_JID;
@@ -55,12 +59,13 @@ public final class XmlNode {
         }
         attribs.put(key, value);
     }
+
     public String getXmlns() {
         String xmlns = getAttribute("xmlns");
         if (null == xmlns) {
             Enumeration e = attribs.keys();
             while (e.hasMoreElements()) {
-                String key = (String)e.nextElement();
+                String key = (String) e.nextElement();
                 if (key.startsWith("xmlns:")) {
                     return getAttribute(key);
                 }
@@ -68,6 +73,7 @@ public final class XmlNode {
         }
         return xmlns;
     }
+
     public String getId() {
         return getAttribute(S_ID);
     }
@@ -101,12 +107,13 @@ public final class XmlNode {
         }
         return MAX_VALUE_SIZE;
     }
+
     private String readCdata(Socket socket) throws SawimException {
         StringBuffer out = new StringBuffer();
         char ch = socket.readChar();
         int maxSize = getMaxDataSize(name);
         int size = 0;
-        for (int state = 0; state < 3;) {
+        for (int state = 0; state < 3; ) {
             ch = socket.readChar();
             if (size == maxSize) {
                 out.append(ch);
@@ -137,7 +144,7 @@ public final class XmlNode {
         char ch = socket.readChar();
         while (';' != ch) {
             if (0 < limit) {
-                buffer.append((char)ch);
+                buffer.append((char) ch);
                 limit--;
             }
             ch = socket.readChar();
@@ -165,7 +172,7 @@ public final class XmlNode {
                     buffer.deleteCharAt(0);
                     radix = 16;
                 }
-                out.append((char)Integer.parseInt(buffer.toString(), radix));
+                out.append((char) Integer.parseInt(buffer.toString(), radix));
             } catch (Exception e) {
                 out.append('?');
             }
@@ -175,6 +182,7 @@ public final class XmlNode {
             out.append(';');
         }
     }
+
     private String readString(Socket socket, char endCh, int limit) throws SawimException {
         char ch = socket.readChar();
         if (endCh == ch) {
@@ -212,7 +220,7 @@ public final class XmlNode {
         }
         StringBuffer tagName = new StringBuffer();
         while (' ' != ch && '>' != ch) {
-            tagName.append((char)ch);
+            tagName.append((char) ch);
             ch = socket.readChar();
             if ('/' == ch) {
                 setName(tagName.toString());
@@ -237,12 +245,12 @@ public final class XmlNode {
             }
             StringBuffer attrName = new StringBuffer();
             while ('=' != ch) {
-                attrName.append((char)ch);
+                attrName.append((char) ch);
                 ch = socket.readChar();
             }
 
             char startValueCh = socket.readChar(); // '"' or '\''
-            String attribValue = readString(socket, startValueCh, 2*1024);
+            String attribValue = readString(socket, startValueCh, 2 * 1024);
             if (0 < attrName.length()) {
                 if (null == attribValue) {
                     attribValue = "";
@@ -254,10 +262,10 @@ public final class XmlNode {
         if ("stream:stream".equals(name)) {
             return true;
         }
-        
+
         value = readString(socket, '<', getMaxDataSize(name));
 
-        
+
         while (true) {
             ch = socket.readChar();
             if ('!' == ch) {
@@ -291,7 +299,7 @@ public final class XmlNode {
             ch = socket.readChar();
         }
 
-        ch = socket.readChar(); 
+        ch = socket.readChar();
 
         ch = socket.readChar();
         while ('<' != ch) {
@@ -306,6 +314,7 @@ public final class XmlNode {
         children.removeElementAt(0);
         return node;
     }
+
     public final void removeNode(String name) {
         for (int i = 0; i < children.size(); ++i) {
             if (unsafeChildAt(i).is(name)) {
@@ -332,12 +341,13 @@ public final class XmlNode {
         }
         return null;
     }
+
     public String getFirstNodeValueRecursive(String name) {
         XmlNode node = getFirstNodeRecursive(name);
         return (null == node) ? null : node.value;
     }
 
-    
+
     public XmlNode getFirstNode(String name) {
         for (int i = 0; i < children.size(); ++i) {
             XmlNode node = unsafeChildAt(i);
@@ -367,10 +377,12 @@ public final class XmlNode {
         XmlNode node = getFirstNode(name);
         return (null == node) ? null : node.value;
     }
+
     public String getFirstNodeValue(String parentNodeName, String nodeName) {
         XmlNode parentNode = getFirstNode(parentNodeName);
         return (null == parentNode) ? null : parentNode.getFirstNodeValue(nodeName);
     }
+
     public String getFirstNodeValue(String tag, String[] cond, String subtag) {
         for (int i = 0; i < childrenCount(); ++i) {
             XmlNode node = unsafeChildAt(i);
@@ -380,6 +392,7 @@ public final class XmlNode {
         }
         return null;
     }
+
     public String getFirstNodeValue(String tag, String[] subtags, String subtag, boolean isDefault) {
         String result = getFirstNodeValue(tag, subtags, subtag);
         if (null != result) {
@@ -402,12 +415,12 @@ public final class XmlNode {
         return (null == node) ? null : node.getAttribute(key);
     }
 
-    
+
     public boolean contains(String name) {
         return null != getFirstNode(name);
     }
 
-    
+
     private String _toString(StringBuffer sb, String spaces) {
         sb.append(spaces).append("<").append(name);
         if (0 != attribs.size()) {
@@ -434,12 +447,13 @@ public final class XmlNode {
         }
         return sb.toString();
     }
+
     public String toString() {
         StringBuffer sb = new StringBuffer();
         _toString(sb, "");
         return sb.toString();
     }
-    
+
 
     public String popValue() {
         String result = value;
@@ -453,6 +467,7 @@ public final class XmlNode {
         }
         return Util.base64decode(popValue());
     }
+
     public byte[] getBinValue() {
         if (null == value) {
             return null;
@@ -503,6 +518,7 @@ public final class XmlNode {
         }
         node.setValue(subtag, value);
     }
+
     public void removeBadVCardTags(String tag) {
         for (int i = childrenCount() - 1; 0 <= i; --i) {
             XmlNode node = unsafeChildAt(i);
@@ -523,6 +539,7 @@ public final class XmlNode {
         }
         return true;
     }
+
     public void cleanXmlTree() {
         for (int i = childrenCount() - 1; i >= 0; --i) {
             if (unsafeChildAt(i).isEmptySubNodes()) {
@@ -536,8 +553,8 @@ public final class XmlNode {
         if (0 != attribs.size()) {
             Enumeration e = attribs.keys();
             while (e.hasMoreElements()) {
-                String k = (String)e.nextElement();
-                String v = (String)attribs.get(k);
+                String k = (String) e.nextElement();
+                String v = (String) attribs.get(k);
                 sb.append(' ').append(Util.xmlEscape(k)).append("='")
                         .append(Util.xmlEscape(v)).append("'");
             }
@@ -559,11 +576,12 @@ public final class XmlNode {
 
         sb.append("</").append(name).append(">");
     }
+
     public static XmlNode getEmptyVCard() {
         XmlNode vCard = new XmlNode("vCard");
         vCard.putAttribute(S_XMLNS, "vcard-temp");
-        vCard.putAttribute("v"+"ersion", "2.0");
-        vCard.putAttribute("prodid", "-/"+"/HandGen/"+"/NONSGML vGen v1.0/"+"/EN");
+        vCard.putAttribute("v" + "ersion", "2.0");
+        vCard.putAttribute("prodid", "-/" + "/HandGen/" + "/NONSGML vGen v1.0/" + "/EN");
         return vCard;
     }
 }

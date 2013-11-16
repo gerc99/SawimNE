@@ -27,7 +27,7 @@ public class Jid {
         String jid = getBareJid(realJid);
         return (null == resource) ? jid : (jid + '/' + resource);
     }
-    
+
     public static String SawimJidToRealJid(String SawimJid) {
         if (isIrcConference(SawimJid) && (-1 != SawimJid.indexOf('/', SawimJid.indexOf('@')))) {
             String bareJid = getBareJid(SawimJid);
@@ -38,11 +38,12 @@ public class Jid {
         }
         return SawimJid;
     }
-    
+
     public static String getDomain(String jid) {
         jid = getBareJid(jid);
         return jid.substring(jid.indexOf('@') + 1);
     }
+
     public static String getResource(String fullJid, String defResource) {
         int resourceStart = fullJid.indexOf('/') + 1;
         if (0 < resourceStart) {
@@ -50,12 +51,14 @@ public class Jid {
         }
         return defResource;
     }
+
     private static boolean isConferenceDomain(String jid, int start) {
         return jid.startsWith("conference.", start)
                 || jid.startsWith("conf.", start)
                 || jid.startsWith("muc.", start)
                 || jid.startsWith("irc.", start);
     }
+
     public static boolean isConference(String jid) {
         int index = jid.indexOf('@');
         if (-1 < index) {
@@ -78,6 +81,7 @@ public class Jid {
     public static boolean isGate(String jid) {
         return (-1 == jid.indexOf('@')) && (0 < jid.length());
     }
+
     public static boolean isPyIcqGate(String jid) {
         if (!isGate(jid)) {
             return false;
@@ -89,12 +93,15 @@ public class Jid {
         }
         return false;
     }
+
     public static boolean isMrim(String jid) {
         return (-1 != jid.indexOf("@mrim."));
     }
+
     public static boolean isIrcConference(String jid) {
         return (-1 != jid.indexOf("@irc."));
     }
+
     public static boolean isKnownGate(String jid) {
         if (Jid.isGate(jid)) {
             for (int i = 0; i < transports.length; ++i) {
@@ -105,7 +112,7 @@ public class Jid {
         }
         return false;
     }
-    
+
     public static String getBareJid(String fullJid) {
         int resourceStart = fullJid.indexOf('/');
         if (-1 != resourceStart) {
@@ -113,9 +120,11 @@ public class Jid {
         }
         return StringConvertor.toLowerCase(fullJid);
     }
+
     public static String getNick(String jid) {
         return jid.substring(0, jid.indexOf('@'));
     }
+
     public static String getNormalJid(String jid) {
         String bare = getBareJid(jid);
         if (-1 == jid.indexOf('/')) {

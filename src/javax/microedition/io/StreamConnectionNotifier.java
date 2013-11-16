@@ -20,7 +20,7 @@
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *  See the LGPL or the AL for the specific language governing permissions and
  *  limitations.
- *  
+ *
  *  @version $Id: StreamConnectionNotifier.java 1605 2008-02-25 21:07:14Z barteo $  
  */
 
@@ -30,6 +30,6 @@ import java.io.IOException;
 
 public interface StreamConnectionNotifier extends Connection {
 
-	StreamConnection acceptAndOpen() throws IOException;
+    StreamConnection acceptAndOpen() throws IOException;
 
 }

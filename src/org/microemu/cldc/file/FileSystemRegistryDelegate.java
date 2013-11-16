@@ -31,10 +31,10 @@ import java.util.Enumeration;
 
 public interface FileSystemRegistryDelegate {
 
-	public boolean addFileSystemListener(FileSystemListener listener);
+    public boolean addFileSystemListener(FileSystemListener listener);
 
     public boolean removeFileSystemListener(FileSystemListener listener);
 
     public Enumeration listRoots();
-   
+
 }

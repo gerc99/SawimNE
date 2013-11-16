@@ -1,9 +1,9 @@
 package sawim.history;
 
-import sawim.roster.Roster;
+import protocol.Contact;
 import sawim.comm.Util;
 import sawim.io.Storage;
-import protocol.Contact;
+import sawim.roster.Roster;
 
 import javax.microedition.rms.RecordStore;
 import java.io.ByteArrayInputStream;
@@ -28,6 +28,7 @@ public class HistoryStorage {
         storageName = getRSName();
         //androidStorage = new AndroidHistoryStorage(this);
     }
+
     public Contact getContact() {
         return contact;
     }
@@ -52,9 +53,11 @@ public class HistoryStorage {
         }
         return true;
     }
+
     public void openHistory() {
         openHistory(false);
     }
+
     public void closeHistory() {
         if (null != historyStore) {
             historyStore.close();
@@ -66,9 +69,9 @@ public class HistoryStorage {
     synchronized void closeHistoryView() {
         closeHistory();
     }
-    
+
     public synchronized void addText(String text, boolean incoming,
-            String from, long gmtTime) {
+                                     String from, long gmtTime) {
         boolean isOpened = openHistory(true);
         if (!isOpened) {
             return;
@@ -98,6 +101,7 @@ public class HistoryStorage {
     private String getRSName() {
         return Storage.getStorageName(PREFIX + getUniqueUserId());
     }
+
     String getUniqueUserId() {
         return uniqueUserId;
     }
@@ -150,7 +154,7 @@ public class HistoryStorage {
     private void removeRMS(String rms) {
         new Storage(rms).delete();
     }
-    
+
     public void clearAll(boolean except) {
         closeHistory();
         String exceptRMS = (except ? storageName : null);

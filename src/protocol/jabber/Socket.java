@@ -3,9 +3,9 @@ package protocol.jabber;
 import com.jcraft.jzlib.JZlib;
 import com.jcraft.jzlib.ZInputStream;
 import com.jcraft.jzlib.ZOutputStream;
+import protocol.net.TcpSocket;
 import sawim.SawimException;
 import sawim.modules.DebugLog;
-import protocol.net.TcpSocket;
 
 
 final class Socket {
@@ -21,7 +21,7 @@ final class Socket {
 
     public Socket() {
     }
-    
+
     public void activateStreamCompression() {
         zin = new ZInputStream(socket);
         zout = new ZOutputStream(socket, JZlib.Z_DEFAULT_COMPRESSION);
@@ -33,7 +33,7 @@ final class Socket {
     public boolean isConnected() {
         return connected;
     }
-    
+
     public void connectTo(String url) throws SawimException {
         System.out.println("url: " + url);
         socket.connectTo(url);
@@ -48,7 +48,7 @@ final class Socket {
             }
             return bRead;
         }
-        
+
         int length = Math.min(data.length, socket.available());
         if (0 == length) {
             return 0;
@@ -69,6 +69,7 @@ final class Socket {
         socket.write(data, 0, data.length);
         socket.flush();
     }
+
     public void close() {
         connected = false;
         try {
@@ -87,7 +88,7 @@ final class Socket {
         } catch (Exception ex) {
         }
     }
-    
+
     private byte readByte() throws SawimException {
         if (inputBufferIndex >= inputBufferLength) {
             inputBufferIndex = 0;
@@ -99,6 +100,7 @@ final class Socket {
         }
         return inputBuffer[inputBufferIndex++];
     }
+
     public int available() throws SawimException {
         if (inputBufferIndex < inputBufferLength) {
             return (inputBufferLength - inputBufferIndex);
@@ -110,16 +112,16 @@ final class Socket {
         try {
             byte bt = readByte();
             if (0 <= bt) {
-                return (char)bt;
+                return (char) bt;
             }
             if ((bt & 0xE0) == 0xC0) {
                 byte bt2 = readByte();
-                return (char)(((bt & 0x3F) << 6) | (bt2 & 0x3F));
+                return (char) (((bt & 0x3F) << 6) | (bt2 & 0x3F));
 
             } else if ((bt & 0xF0) == 0xE0) {
                 byte bt2 = readByte();
                 byte bt3 = readByte();
-                return (char)(((bt & 0x1F) << 12) | ((bt2 & 0x3F) << 6) | (bt3 & 0x3F));
+                return (char) (((bt & 0x1F) << 12) | ((bt2 & 0x3F) << 6) | (bt3 & 0x3F));
 
             } else {
                 int seqLen = 0;
@@ -132,14 +134,14 @@ final class Socket {
                 return '?';
             }
         } catch (SawimException e) {
-            
+
             DebugLog.panic("readChar je ", e);
-            
+
             throw e;
         } catch (Exception e) {
-            
+
             DebugLog.panic("readChar e ", e);
-            
+
             throw new SawimException(120, 7);
         }
     }

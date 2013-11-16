@@ -4,8 +4,8 @@
 package com.jcraft.jzlib;
 
 
-import sawim.SawimException;
 import protocol.net.TcpSocket;
+import sawim.SawimException;
 
 public final class ZInputStream {
     private TcpSocket in;
@@ -42,12 +42,16 @@ public final class ZInputStream {
         buffer.avail_out = len;
         do {
             if ((0 == buffer.avail_in) && !nomoreinput) {
-                
+
                 buffer.next_in_index = 0;
 
                 int avail = in.available();
                 while (0 == avail) {
-                    try { Thread.sleep(70); } catch (Exception e) {};
+                    try {
+                        Thread.sleep(70);
+                    } catch (Exception e) {
+                    }
+                    ;
                     avail = in.available();
                 }
                 buffer.avail_in = in.read(buf, 0, Math.min(avail, buf.length));
@@ -79,7 +83,7 @@ public final class ZInputStream {
         return len - buffer.avail_out;
     }
 
-    
+
     public int available() throws SawimException {
         return (0 < in.available()) ? bufsize : 0;
     }

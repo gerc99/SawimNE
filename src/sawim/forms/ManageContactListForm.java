@@ -3,35 +3,34 @@ package sawim.forms;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.support.v4.app.FragmentActivity;
-import android.view.*;
-import ru.sawim.SawimApplication;
-import ru.sawim.view.menu.MyMenu;
-import sawim.roster.Roster;
-import sawim.comm.StringConvertor;
-import sawim.comm.Util;
-import sawim.search.Search;
-import sawim.util.JLocale;
 import protocol.Contact;
 import protocol.Group;
 import protocol.Protocol;
 import ru.sawim.R;
+import ru.sawim.SawimApplication;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
 import ru.sawim.view.TextBoxView;
+import ru.sawim.view.menu.MyMenu;
+import sawim.comm.StringConvertor;
+import sawim.comm.Util;
+import sawim.roster.Roster;
+import sawim.search.Search;
+import sawim.util.JLocale;
 
 import java.util.ArrayList;
 import java.util.Vector;
 
 
 public final class ManageContactListForm implements FormListener, TextBoxView.TextBoxListener {
-    private static final int ADD_USER       = 0;
+    private static final int ADD_USER = 0;
     private static final int ADD_CONFERENCE = 1;
-    private static final int SEARCH_USER    = 2;
-    private static final int ADD_GROUP      = 3;
-    private static final int RENAME_GROUP   = 4;
-    private static final int DEL_GROUP      = 5;
+    private static final int SEARCH_USER = 2;
+    private static final int ADD_GROUP = 3;
+    private static final int RENAME_GROUP = 4;
+    private static final int DEL_GROUP = 5;
 
-    private static final int GROUP    = 25;
+    private static final int GROUP = 25;
     private static final int GROUP_NEW_NAME = 26;
 
     private Protocol protocol;
@@ -42,29 +41,33 @@ public final class ManageContactListForm implements FormListener, TextBoxView.Te
     private int action;
 
     public ManageContactListForm(Protocol protocol) {
-        this(protocol, (Group)null);
+        this(protocol, (Group) null);
     }
+
     public ManageContactListForm(Protocol protocol, Group group) {
         this.protocol = protocol;
         this.group = group;
     }
+
     public ManageContactListForm(Protocol protocol, Contact contact) {
         this.protocol = protocol;
         this.contact = contact;
     }
+
     public void showContactRename(FragmentActivity a) {
         renameContactTextbox = new TextBoxView();
         renameContactTextbox.setString(contact.getName());
         renameContactTextbox.setTextBoxListener(this);
         renameContactTextbox.show(a.getSupportFragmentManager(), "rename");
     }
+
     public void showContactMove(FragmentActivity a) {
         Vector groups = protocol.getGroupItems();
         Group myGroup = protocol.getGroup(contact);
         Vector items = new Vector();
         final ArrayList<Integer> itemsId = new ArrayList<Integer>();
         for (int i = 0; i < groups.size(); ++i) {
-            Group g = (Group)groups.elementAt(i);
+            Group g = (Group) groups.elementAt(i);
             if ((myGroup != g) && g.hasMode(Group.MODE_NEW_CONTACTS)) {
                 items.add(g.getName());
                 itemsId.add(g.getId());
@@ -109,7 +112,7 @@ public final class ManageContactListForm implements FormListener, TextBoxView.Te
             menu.add(SawimApplication.getContext().getString(R.string.del_group), DEL_GROUP);
         }
 
-		AlertDialog.Builder builder = new AlertDialog.Builder(a);
+        AlertDialog.Builder builder = new AlertDialog.Builder(a);
         builder.setCancelable(true);
         builder.setTitle(SawimApplication.getContext().getString(R.string.manage_contact_list));
         builder.setAdapter(menu, new DialogInterface.OnClickListener() {
@@ -171,7 +174,7 @@ public final class ManageContactListForm implements FormListener, TextBoxView.Te
         Vector all = protocol.getGroupItems();
         Vector groups = new Vector();
         for (int i = 0; i < all.size(); ++i) {
-            Group g = (Group)all.elementAt(i);
+            Group g = (Group) all.elementAt(i);
             if (g.hasMode(mode)) {
                 if ((Group.MODE_REMOVABLE == mode) && !g.isEmpty()) continue;
                 groups.addElement(g);
@@ -179,6 +182,7 @@ public final class ManageContactListForm implements FormListener, TextBoxView.Te
         }
         return groups;
     }
+
     private void addGroup(Forms form, Vector groups) {
         if (!groups.isEmpty()) {
             String[] list = new String[groups.size()];
@@ -195,7 +199,7 @@ public final class ManageContactListForm implements FormListener, TextBoxView.Te
             form.addString(JLocale.getString("no_groups_available"));
         }
     }
-    
+
     private void showTextBox(FragmentActivity a, String caption, String text) {
         groupName = new TextBoxView();
         groupName.setCaption(JLocale.getString(caption));
@@ -219,7 +223,7 @@ public final class ManageContactListForm implements FormListener, TextBoxView.Te
         if (groupName != box) {
             return;
         }
-        
+
         String groupName_ = groupName.getString();
         boolean isExist = null != protocol.getGroup(groupName_);
         if (0 == groupName_.length()) {

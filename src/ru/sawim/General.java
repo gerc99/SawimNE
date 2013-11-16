@@ -4,16 +4,14 @@ import DrawControls.icons.ImageList;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.BitmapDrawable;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import sawim.Options;
 import sawim.Updater;
 import sawim.chat.ChatHistory;
-import sawim.roster.Roster;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
 import sawim.modules.*;
+import sawim.roster.Roster;
 import sawim.search.Search;
 import sawim.util.JLocale;
 
@@ -172,5 +170,19 @@ public class General {
             resources = (c == null) ? Resources.getSystem() : c.getResources();
         }
         return resources;
+    }
+
+    private OnConfigurationChanged configurationChanged;
+
+    public OnConfigurationChanged getConfigurationChanged() {
+        return configurationChanged;
+    }
+
+    public void setConfigurationChanged(OnConfigurationChanged configurationChanged) {
+        this.configurationChanged = configurationChanged;
+    }
+
+    public interface OnConfigurationChanged {
+        public void onConfigurationChanged();
     }
 }

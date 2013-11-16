@@ -1,32 +1,18 @@
 package ru.sawim.models;
 
 import DrawControls.icons.Icon;
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Typeface;
-import android.net.Uri;
-import android.provider.Browser;
-import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.TextView;
 import protocol.Protocol;
 import ru.sawim.General;
-import ru.sawim.R;
+import ru.sawim.Scheme;
 import ru.sawim.text.TextLinkClickListener;
-import ru.sawim.view.PictureView;
-import ru.sawim.widget.MyTextView;
-import ru.sawim.view.menu.JuickMenu;
 import ru.sawim.widget.chat.MessageItemView;
-import sawim.Clipboard;
 import sawim.chat.Chat;
 import sawim.chat.MessData;
 import sawim.chat.message.Message;
-import ru.sawim.Scheme;
-import sawim.modules.DebugLog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +33,6 @@ public class MessagesAdapter extends BaseAdapter {
     private boolean isMultiQuote = false;
     private int position = -1;
 
-
     public void init(Chat chat) {
         currentProtocol = chat.getProtocol();
         currentContact = chat.getContact().getUserId();
@@ -57,6 +42,15 @@ public class MessagesAdapter extends BaseAdapter {
     public void refreshList(List<MessData> list) {
         items.clear();
         items.addAll(list);
+        notifyDataSetChanged();
+    }
+
+    public void repaintList(List<MessData> list) {
+        items.clear();
+        items.addAll(list);
+        for (int i = 0; i < list.size(); ++i) {
+            list.get(i).messView = null;
+        }
         notifyDataSetChanged();
     }
 
@@ -92,6 +86,7 @@ public class MessagesAdapter extends BaseAdapter {
         final MessData mData = items.get(index);
         if (mData.messView == null)
             mData.messView = new MessageItemView(General.currentActivity, !(mData.isMe() || mData.isPresence()));
+
         MessageItemView item = mData.messView;
         CharSequence parsedText = mData.parsedText();
         String nick = mData.getNick();
@@ -134,6 +129,7 @@ public class MessagesAdapter extends BaseAdapter {
             item.msgText.setLinkTextColor(0xff00e4ff);
             item.msgText.setText(parsedText);
         }
+        item.msgText.repaint();
         item.initDivider(Scheme.getColor(Scheme.THEME_TEXT));
         item.setShowDivider(position == index && index > 0 && position != getCount());
         item.titleItemView.repaint();

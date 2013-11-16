@@ -20,7 +20,7 @@
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *  See the LGPL or the AL for the specific language governing permissions and
  *  limitations.
- *  
+ *
  *  @version $Id: InputConnection.java 1605 2008-02-25 21:07:14Z barteo $  
  */
 
@@ -32,8 +32,8 @@ import java.io.InputStream;
 
 public interface InputConnection extends Connection {
 
-	InputStream openInputStream() throws IOException;
+    InputStream openInputStream() throws IOException;
 
-	DataInputStream openDataInputStream() throws IOException;
+    DataInputStream openDataInputStream() throws IOException;
 
 }

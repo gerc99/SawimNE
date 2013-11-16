@@ -1,12 +1,13 @@
 package ru.sawim.models.list;
 
 import DrawControls.icons.Icon;
+import android.graphics.Bitmap;
+import ru.sawim.Scheme;
+import sawim.comm.StringConvertor;
+import sawim.util.JLocale;
+
 import java.util.ArrayList;
 import java.util.List;
-import android.graphics.Bitmap;
-import sawim.comm.StringConvertor;
-import ru.sawim.Scheme;
-import sawim.util.JLocale;
 
 
 public final class VirtualListModel {
@@ -33,14 +34,14 @@ public final class VirtualListModel {
     public final VirtualListItem createNewParser(boolean itemSelectable) {
         return new VirtualListItem(itemSelectable);
     }
-    
+
     public final void addItem(String text, boolean active) {
-        byte type = active ?  Scheme.FONT_STYLE_BOLD :  Scheme.FONT_STYLE_PLAIN;
+        byte type = active ? Scheme.FONT_STYLE_BOLD : Scheme.FONT_STYLE_PLAIN;
         VirtualListItem item = createNewParser(true);
         item.addDescription(text, Scheme.THEME_TEXT, type);
         addPar(item);
     }
-    
+
     public final void setHeader(String header) {
         this.header = header;
     }

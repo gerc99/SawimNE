@@ -26,20 +26,26 @@
 package ru.sawim.activities;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
-import android.view.*;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.SubMenu;
+import android.view.View;
+import org.microemu.log.Logger;
+import org.microemu.util.AndroidLoggerAppender;
 import protocol.Contact;
+import protocol.Protocol;
 import protocol.StatusInfo;
 import protocol.icq.Icq;
 import protocol.jabber.Jabber;
 import protocol.mrim.Mrim;
+import ru.sawim.*;
 import ru.sawim.view.*;
 import sawim.ExternalApi;
 import sawim.Options;
@@ -52,10 +58,6 @@ import sawim.modules.DebugLog;
 import sawim.modules.MagicEye;
 import sawim.modules.Notify;
 import sawim.roster.Roster;
-import org.microemu.util.AndroidLoggerAppender;
-import org.microemu.log.Logger;
-import protocol.Protocol;
-import ru.sawim.*;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -111,7 +113,7 @@ public class SawimActivity extends ActionBarActivity {
                 }
             }
         }));
-        DebugLog.panic("onCreate " + savedInstanceState + " " + findViewById(R.id.fragment_container));
+
         if (findViewById(R.id.fragment_container) != null) {
             if (savedInstanceState != null) return;
             RosterView rosterView = new RosterView();
@@ -261,6 +263,19 @@ public class SawimActivity extends ActionBarActivity {
         startActivity(new Intent(this, SawimActivity.class));
     }
 
+    int oldOrientation;
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (oldOrientation != newConfig.orientation) {
+            oldOrientation = newConfig.orientation;
+            if (General.getInstance().getConfigurationChanged() != null) {
+                General.getInstance().getConfigurationChanged().onConfigurationChanged();
+            }
+        }
+    }
+
     private static final int MENU_CONNECT = 0;
     private static final int MENU_STATUS = 1;
     private static final int MENU_XSTATUS = 2;
@@ -316,7 +331,7 @@ public class SawimActivity extends ActionBarActivity {
             }
             if (p.isConnected()) {
                 if (p instanceof Jabber) {
-                    if (((Jabber)p).hasS2S()) {
+                    if (((Jabber) p).hasS2S()) {
                         menu.add(Menu.NONE, MENU_DISCO, Menu.NONE, R.string.service_discovery);
                     }
                 }
@@ -395,10 +410,10 @@ public class SawimActivity extends ActionBarActivity {
                 MagicEye.instance.activate();
                 break;
             case MENU_DISCO:
-                ((Jabber)p).getServiceDiscovery().showIt();
+                ((Jabber) p).getServiceDiscovery().showIt();
                 break;
             case MENU_NOTES:
-                ((Jabber)p).getMirandaNotes().showIt();
+                ((Jabber) p).getMirandaNotes().showIt();
                 break;
             case MENU_GROUPS:
                 new ManageContactListForm(p).showMenu(General.currentActivity);
@@ -407,7 +422,7 @@ public class SawimActivity extends ActionBarActivity {
                 p.showUserInfo(p.createTempContact(p.getUserId(), p.getNick()));
                 break;
             case MENU_MICROBLOG:
-                ((Mrim)p).getMicroBlog().activate();
+                ((Mrim) p).getMicroBlog().activate();
                 break;
 
             case OptionsForm.OPTIONS_ACCOUNT:

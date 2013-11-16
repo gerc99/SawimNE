@@ -5,21 +5,21 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.util.Log;
 import android.widget.Toast;
+import protocol.*;
 import ru.sawim.General;
+import ru.sawim.R;
+import ru.sawim.SawimApplication;
+import ru.sawim.models.form.FormListener;
+import ru.sawim.models.form.Forms;
 import ru.sawim.view.TextBoxView;
 import sawim.FileTransfer;
 import sawim.chat.message.PlainMessage;
-import sawim.roster.Roster;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
+import sawim.roster.Roster;
 import sawim.search.Search;
 import sawim.search.UserInfo;
 import sawim.util.JLocale;
-import protocol.*;
-import ru.sawim.SawimApplication;
-import ru.sawim.R;
-import ru.sawim.models.form.FormListener;
-import ru.sawim.models.form.Forms;
 
 import java.util.Vector;
 
@@ -30,8 +30,8 @@ public final class Jabber extends Protocol implements FormListener {
     private Vector rejoinList = new Vector();
     private String resource;
     private ServiceDiscovery disco = null;
-	private AffiliationListConf alistc = null;
-	private MirandaNotes notes = null;
+    private AffiliationListConf alistc = null;
+    private MirandaNotes notes = null;
     public static final JabberXStatus xStatus = new JabberXStatus();
     private final Vector bots = new Vector();
 
@@ -74,9 +74,9 @@ public final class Jabber extends Protocol implements FormListener {
             case Profile.PROTOCOL_YANDEX:
                 file = "ya";
                 break;
-    //        case Profile.PROTOCOL_VK:
-    //            file = "vk";
-    //            break;
+            //        case Profile.PROTOCOL_VK:
+            //            file = "vk";
+            //            break;
             case Profile.PROTOCOL_QIP:
                 file = "qip";
                 break;
@@ -88,7 +88,7 @@ public final class Jabber extends Protocol implements FormListener {
         if (0 < icons.size()) {
             return icons;
         }
-        
+
         return ImageList.createImageList("/jabber-status.png");
     }
 
@@ -137,7 +137,7 @@ public final class Jabber extends Protocol implements FormListener {
     public boolean hasS2S() {
         switch (getProfile().protocolType) {
             case Profile.PROTOCOL_FACEBOOK:
-    //        case Profile.PROTOCOL_VK:
+                //        case Profile.PROTOCOL_VK:
             case Profile.PROTOCOL_ODNOKLASSNIKI:
                 return false;
         }
@@ -147,7 +147,7 @@ public final class Jabber extends Protocol implements FormListener {
     public boolean hasVCardEditor() {
         switch (getProfile().protocolType) {
             case Profile.PROTOCOL_FACEBOOK:
-    //        case Profile.PROTOCOL_VK:
+                //        case Profile.PROTOCOL_VK:
             case Profile.PROTOCOL_LJ:
             case Profile.PROTOCOL_ODNOKLASSNIKI:
                 return false;
@@ -183,6 +183,7 @@ public final class Jabber extends Protocol implements FormListener {
             }
         }
     }
+
     public static final String GENERAL_GROUP = SawimApplication.getContext().getString(R.string.group_general);
     public static final String GATE_GROUP = SawimApplication.getContext().getString(R.string.group_transports);
     public static final String CONFERENCE_GROUP = SawimApplication.getContext().getString(R.string.group_conferences);
@@ -202,7 +203,7 @@ public final class Jabber extends Protocol implements FormListener {
         return group;
     }
 
-    
+
     public final Group getOrCreateGroup(String groupName) {
         if (StringConvertor.isEmpty(groupName)) {
             return null;
@@ -227,7 +228,7 @@ public final class Jabber extends Protocol implements FormListener {
                 c.setGroup(getOrCreateGroup(c.getDefaultGroupName()));
                 c.setMyName(getDefaultName());
 
-            } else if (isConference ) {
+            } else if (isConference) {
                 JabberServiceContact conf = (JabberServiceContact) getItemByUIN(Jid.getBareJid(jid));
                 if (null != conf) {
                     c.setPrivateContactStatus(conf);
@@ -259,6 +260,7 @@ public final class Jabber extends Protocol implements FormListener {
         }
         cont.finished();
     }
+
     public final static int PRIORITY = 50;
 
     protected void s_updateOnlineStatus() {
@@ -346,8 +348,9 @@ public final class Jabber extends Protocol implements FormListener {
                 || domain.startsWith("yandex.");
         return nonPdd ? "xmpp.yandex.ru" : "domain-xmpp.ya.ru";
     }
+
     String getDefaultServer(String domain) {
-        
+
         switch (getProfile().protocolType) {
             case Profile.PROTOCOL_GTALK:
                 return "talk.google.com";
@@ -357,14 +360,14 @@ public final class Jabber extends Protocol implements FormListener {
                 return "livejournal.com";
             case Profile.PROTOCOL_YANDEX:
                 return getYandexDomain(domain);
-    //        case Profile.PROTOCOL_VK:
-    //            return "vkmessenger.com";
+            //        case Profile.PROTOCOL_VK:
+            //            return "vkmessenger.com";
             case Profile.PROTOCOL_QIP:
                 return "webim.qip.ru";
             case Profile.PROTOCOL_ODNOKLASSNIKI:
                 return "xmpp.odnoklassniki.ru";
         }
-        
+
         if ("jabber.ru".equals(domain)) {
             return domain;
         }
@@ -418,7 +421,8 @@ public final class Jabber extends Protocol implements FormListener {
         disco.init(this);
         return disco;
     }
-	public AffiliationListConf getAffiliationListConf() {
+
+    public AffiliationListConf getAffiliationListConf() {
         if (null == alistc) {
             alistc = new AffiliationListConf();
         }
@@ -426,7 +430,7 @@ public final class Jabber extends Protocol implements FormListener {
         return alistc;
     }
 
-	public MirandaNotes getMirandaNotes() {
+    public MirandaNotes getMirandaNotes() {
         if (null == notes) {
             notes = new MirandaNotes();
         }
@@ -437,7 +441,7 @@ public final class Jabber extends Protocol implements FormListener {
     public String getUserIdName() {
         return "JID";
     }
-    
+
     public void sendFile(FileTransfer transfer, String filename, String description) {
         getConnection().setIBB(new IBBFileTransfer(filename, description, transfer));
     }
@@ -553,7 +557,7 @@ public final class Jabber extends Protocol implements FormListener {
                     sd.showIt();
                 }
                 break;
-			case ContactMenu.COMMAND_TITLE:
+            case ContactMenu.COMMAND_TITLE:
                 TextBoxView textbox = new TextBoxView();
                 textbox.setString("/title " + c.getStatusText());
                 textbox.setTextBoxListener(new TextBoxView.TextBoxListener() {
@@ -576,30 +580,30 @@ public final class Jabber extends Protocol implements FormListener {
             case ContactMenu.CONFERENCE_OWNER_OPTIONS:
                 connection.requestOwnerForm(c.getUserId());
                 break;
-			case ContactMenu.CONFERENCE_OWNERS:
-			    AffiliationListConf alc = getAffiliationListConf();
+            case ContactMenu.CONFERENCE_OWNERS:
+                AffiliationListConf alc = getAffiliationListConf();
                 alc.setServer(c.getUserId(), c.getMyName());
                 getConnection().requestAffiliationListConf(c.getUserId(), "ow" + "ner");
                 alc.showIt();
-				break;
-			case ContactMenu.CONFERENCE_ADMINS:
-			    AffiliationListConf al = getAffiliationListConf();
+                break;
+            case ContactMenu.CONFERENCE_ADMINS:
+                AffiliationListConf al = getAffiliationListConf();
                 al.setServer(c.getUserId(), c.getMyName());
                 getConnection().requestAffiliationListConf(c.getUserId(), "ad" + "min");
                 al.showIt();
-				break;
-			case ContactMenu.CONFERENCE_MEMBERS:
-			    AffiliationListConf affiliationListConf = getAffiliationListConf();
+                break;
+            case ContactMenu.CONFERENCE_MEMBERS:
+                AffiliationListConf affiliationListConf = getAffiliationListConf();
                 affiliationListConf.setServer(c.getUserId(), c.getMyName());
                 getConnection().requestAffiliationListConf(c.getUserId(), "mem" + "ber");
                 affiliationListConf.showIt();
-				break;
-			case ContactMenu.CONFERENCE_INBAN:
-			    AffiliationListConf aff = getAffiliationListConf();
+                break;
+            case ContactMenu.CONFERENCE_INBAN:
+                AffiliationListConf aff = getAffiliationListConf();
                 aff.setServer(c.getUserId(), c.getMyName());
                 getConnection().requestAffiliationListConf(c.getUserId(), "ou" + "tcast");
                 aff.showIt();
-				break;
+                break;
 
             case ContactMenu.CONFERENCE_DISCONNECT:
                 leave((JabberServiceContact) c);
@@ -614,15 +618,16 @@ public final class Jabber extends Protocol implements FormListener {
             case ContactMenu.USER_MENU_CONNECTIONS:
                 showListOfSubcontacts(contact);
                 break;
-			case ContactMenu.USER_INVITE:
-			    try {
-	                showInviteForm(c.getUserId() + '/' + ((JabberContact)c).getCurrentSubContact().resource);
-		        } catch (Exception e) { }
+            case ContactMenu.USER_INVITE:
+                try {
+                    showInviteForm(c.getUserId() + '/' + ((JabberContact) c).getCurrentSubContact().resource);
+                } catch (Exception e) {
+                }
                 break;
 
-			case ContactMenu.USER_MENU_SEEN:
+            case ContactMenu.USER_MENU_SEEN:
                 getConnection().showContactSeen(c.getUserId());
-				Roster.getInstance().updateRoster();
+                Roster.getInstance().updateRoster();
                 break;
 
             case ContactMenu.USER_MENU_ADHOC:
@@ -648,7 +653,7 @@ public final class Jabber extends Protocol implements FormListener {
                 selected = i;
             }
         }
-		AlertDialog.Builder builder = new AlertDialog.Builder(General.currentActivity);
+        AlertDialog.Builder builder = new AlertDialog.Builder(General.currentActivity);
         builder.setCancelable(true);
         builder.setTitle(c.getName());
         builder.setSingleChoiceItems(Util.vectorToArray(items), selected, new DialogInterface.OnClickListener() {
@@ -700,7 +705,7 @@ public final class Jabber extends Protocol implements FormListener {
             return;
         }
         String statusMessage = contact.getStatusText();
-        
+
         String xstatusMessage = "";
         if (XStatusInfo.XSTATUS_NONE != contact.getXStatusIndex()) {
             xstatusMessage = contact.getXStatusText();
@@ -751,10 +756,11 @@ public final class Jabber extends Protocol implements FormListener {
         }
         return jid.replace('%', '@');
     }
-	public void saveAnnotations(String xml) {
-	    getConnection().requestRawXml(xml);
-	}
-    
+
+    public void saveAnnotations(String xml) {
+        getConnection().requestRawXml(xml);
+    }
+
     private static Forms enterData = null;
     private static JabberServiceContact enterConf = null;
     private static final int NICK = 0;
@@ -763,30 +769,32 @@ public final class Jabber extends Protocol implements FormListener {
     private static final int OLD_GATE = 3;
 
 
-	private static Forms enterDataInvite = null;
-	private static final int JID_MESS_TO = 7;
-	private static final int JID_INVITE_TO = 8;
-	private static final int REASON_INVITE = 9;
-    public String onlineConference(Vector v) {
-		String list[] = new String[v.size()];
-		String items = "";
-        for (int i = 1; i < v.size(); ++i) {
-			JabberContact c = (JabberContact)v.elementAt(i);
-		    if (c.isConference() && c.isOnline()) {
-			    list[i] = c.getUserId();
-		        items += "|" + list[i];
-			}
-        }
-		return items.substring(1);
-	}
+    private static Forms enterDataInvite = null;
+    private static final int JID_MESS_TO = 7;
+    private static final int JID_INVITE_TO = 8;
+    private static final int REASON_INVITE = 9;
 
-	final void showInviteForm(String jid) {
-	    enterDataInvite = new Forms("invite", this);
-	    enterDataInvite.addSelector(JID_MESS_TO, "conference", onlineConference(getContactItems()), 1); 
-		enterDataInvite.addTextField(JID_INVITE_TO, "jid", jid);
+    public String onlineConference(Vector v) {
+        String list[] = new String[v.size()];
+        String items = "";
+        for (int i = 1; i < v.size(); ++i) {
+            JabberContact c = (JabberContact) v.elementAt(i);
+            if (c.isConference() && c.isOnline()) {
+                list[i] = c.getUserId();
+                items += "|" + list[i];
+            }
+        }
+        return items.substring(1);
+    }
+
+    final void showInviteForm(String jid) {
+        enterDataInvite = new Forms("invite", this);
+        enterDataInvite.addSelector(JID_MESS_TO, "conference", onlineConference(getContactItems()), 1);
+        enterDataInvite.addTextField(JID_INVITE_TO, "jid", jid);
         enterDataInvite.addTextField(REASON_INVITE, "reason", "");
         enterDataInvite.show();
-	}
+    }
+
     void showOptionsForm(JabberServiceContact c) {
         enterConf = c;
         enterData = new Forms("conference", this);
@@ -830,15 +838,15 @@ public final class Jabber extends Protocol implements FormListener {
             enterData = null;
             enterConf = null;
         }
-		if (enterDataInvite == form) {
+        if (enterDataInvite == form) {
             if (apply) {
-				String[] onlineConferenceI = Util.explode(onlineConference(getContactItems()), '|');
-				getConnection().sendInvite(onlineConferenceI[enterDataInvite.getSelectorValue(JID_MESS_TO)], enterDataInvite.getTextFieldValue(JID_INVITE_TO), enterDataInvite.getTextFieldValue(REASON_INVITE));
-				//Roster.getSawimActivity().updateRoster();
+                String[] onlineConferenceI = Util.explode(onlineConference(getContactItems()), '|');
+                getConnection().sendInvite(onlineConferenceI[enterDataInvite.getSelectorValue(JID_MESS_TO)], enterDataInvite.getTextFieldValue(JID_INVITE_TO), enterDataInvite.getTextFieldValue(REASON_INVITE));
+                //Roster.getSawimActivity().updateRoster();
                 Toast.makeText(SawimApplication.getContext(), R.string.invitation_sent, Toast.LENGTH_LONG).show();
-			}
+            }
             enterDataInvite.back();
-			enterDataInvite = null;
+            enterDataInvite = null;
         }
     }
 }

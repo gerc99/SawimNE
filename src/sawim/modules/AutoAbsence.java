@@ -1,13 +1,13 @@
 package sawim.modules;
 
-import ru.sawim.SawimApplication;
-import ru.sawim.General;
-import sawim.Options;
-import sawim.roster.Roster;
 import protocol.Profile;
 import protocol.Protocol;
 import protocol.StatusInfo;
 import protocol.XStatusInfo;
+import ru.sawim.General;
+import ru.sawim.SawimApplication;
+import sawim.Options;
+import sawim.roster.Roster;
 
 public final class AutoAbsence {
     public static final AutoAbsence instance = new AutoAbsence();
@@ -42,13 +42,13 @@ public final class AutoAbsence {
                 pr.xstatusIndex = p.getProfile().xstatusIndex;
                 pr.xstatusTitle = p.getProfile().xstatusTitle;
                 pr.xstatusDescription = p.getProfile().xstatusDescription;
-                
+
                 if (protos[i] instanceof protocol.mrim.Mrim) {
                     p.getProfile().xstatusIndex = XStatusInfo.XSTATUS_NONE;
                     p.getProfile().xstatusTitle = "";
                     p.getProfile().xstatusDescription = "";
                 }
-                
+
                 p.setOnlineStatus(StatusInfo.STATUS_AWAY, pr.statusMessage);
             } else {
                 protos[i] = null;
@@ -56,12 +56,14 @@ public final class AutoAbsence {
         }
         absence = true;
     }
+
     private boolean isSupported(Protocol p) {
         if ((null == p) || !p.isConnected() || p.getStatusInfo().isAway(p.getProfile().statusIndex)) {
             return false;
         }
         return true;
     }
+
     private void doRestore() {
         if (!absence || (null == protos) || time == 0) {
             return;
@@ -70,7 +72,7 @@ public final class AutoAbsence {
         for (int i = 0; i < protos.length; ++i) {
             if (null != protos[i]) {
                 Profile pr = profiles[i];
-                
+
                 if (protos[i] instanceof protocol.mrim.Mrim) {
                     Profile p = protos[i].getProfile();
                     p.xstatusIndex = pr.xstatusIndex;
@@ -99,12 +101,14 @@ public final class AutoAbsence {
             }
         }
     }
+
     public final void away() {
         if (0 < time && !use) {
             use = false;
             doAway();
         }
     }
+
     public final void online() {
         if (0 < time && !use) {
             use = true;

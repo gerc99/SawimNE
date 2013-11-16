@@ -1,6 +1,5 @@
 package protocol.mrim;
 
-import android.support.v4.app.FragmentActivity;
 import android.view.ContextMenu;
 import android.view.Menu;
 import protocol.ContactMenu;
@@ -18,18 +17,23 @@ public final class MrimChatContact extends MrimContact {
     }
 
     private Vector members = new Vector();
+
     void setMembers(Vector inChat) {
         members = inChat;
     }
+
     Vector getMembers() {
         return members;
     }
+
     public boolean hasHistory() {
         return false;
     }
+
     public boolean isSingleUserContact() {
         return false;
     }
+
     protected void initContextMenu(Protocol protocol, ContextMenu contactMenu) {
         if (isTemp()) {
             contactMenu.add(Menu.FIRST, ContactMenu.USER_MENU_ADD_USER, 2, R.string.connect);

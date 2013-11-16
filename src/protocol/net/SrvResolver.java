@@ -11,35 +11,44 @@ import java.io.IOException;
 public final class SrvResolver {
     private String server;
     private TcpSocket socket = new TcpSocket();
-    
-    
+
+
     public SrvResolver() {
         server = "8.8.8.8";
     }
 
     private byte[] packet(String[] domain) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        out.write(0x12); out.write(0x10); 
-        out.write(1); out.write(0); 
-        out.write(0); out.write(1); 
-        out.write(0); out.write(0); 
-        out.write(0); out.write(0); 
-        out.write(0); out.write(0); 
+        out.write(0x12);
+        out.write(0x10);
+        out.write(1);
+        out.write(0);
+        out.write(0);
+        out.write(1);
+        out.write(0);
+        out.write(0);
+        out.write(0);
+        out.write(0);
+        out.write(0);
+        out.write(0);
         for (int i = 0; i < domain.length; ++i) {
             byte[] l = domain[i].getBytes();
             out.write(l.length);
             out.write(l);
         }
         out.write(0);
-        out.write(0);out.write(33); 
-        out.write(0);out.write(1); 
+        out.write(0);
+        out.write(33);
+        out.write(0);
+        out.write(1);
         return out.toByteArray();
     }
+
     private String read(byte[] data) throws IOException {
         ByteArrayInputStream bais = new ByteArrayInputStream(data);
         DataInputStream in = new DataInputStream(bais);
-        short id = in.readShort(); 
-        short flags = in.readShort(); 
+        short id = in.readShort();
+        short flags = in.readShort();
         int questions = in.readShort();
         int answers = in.readShort();
         in.readShort();
@@ -56,21 +65,21 @@ public final class SrvResolver {
             in.readShort();
         }
         for (int i = 0; i < answers; ++i) {
-            in.readUnsignedShort(); 
-            in.readUnsignedShort(); 
-            in.readUnsignedShort(); 
-            in.readInt(); 
-            int rdlength = in.readUnsignedShort(); 
-            
             in.readUnsignedShort();
             in.readUnsignedShort();
-            int port = in.readUnsignedShort(); 
+            in.readUnsignedShort();
+            in.readInt();
+            int rdlength = in.readUnsignedShort();
+
+            in.readUnsignedShort();
+            in.readUnsignedShort();
+            int port = in.readUnsignedShort();
             StringBuffer result = new StringBuffer();
             while (true) {
                 int length = in.readUnsignedByte();
                 if (0 == length) break;
                 for (int j = 0; j < length; ++j) {
-                    result.append((char)in.readUnsignedByte());
+                    result.append((char) in.readUnsignedByte());
                 }
                 result.append('.');
             }
@@ -85,9 +94,11 @@ public final class SrvResolver {
     public String getXmpp(String domain) {
         return get("_xmpp-client._tcp." + domain);
     }
+
     public String get(String domain) {
         return get(Util.explode(domain, '.'));
     }
+
     private String get(String[] domain) {
         try {
             return sendTcp(packet(domain));
@@ -104,7 +115,7 @@ public final class SrvResolver {
             Util.putWordBE(packet, 0, message.length);
             socket.write(packet);
             socket.flush();
-            
+
             byte[] header = new byte[2];
             socket.readFully(header);
             byte[] data = new byte[Util.getWordBE(header, 0)];
@@ -114,6 +125,7 @@ public final class SrvResolver {
         }
         return null;
     }
+
     public void close() {
         socket.close();
     }

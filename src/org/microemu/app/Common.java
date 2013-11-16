@@ -25,7 +25,9 @@
  */
 package org.microemu.app;
 
-import org.microemu.*;
+import org.microemu.MIDletBridge;
+import org.microemu.MicroEmulator;
+import org.microemu.RecordStoreManager;
 import org.microemu.microedition.ImplFactory;
 import org.microemu.microedition.io.ConnectorImpl;
 

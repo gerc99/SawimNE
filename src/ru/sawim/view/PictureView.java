@@ -1,7 +1,5 @@
 package ru.sawim.view;
 
-import android.graphics.Bitmap;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
@@ -16,7 +14,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import ru.sawim.R;
-import ru.sawim.widget.Util;
 
 /**
  * Created with IntelliJ IDEA.

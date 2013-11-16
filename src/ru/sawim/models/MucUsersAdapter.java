@@ -10,14 +10,14 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import protocol.jabber.Jabber;
+import protocol.jabber.JabberContact;
+import protocol.jabber.JabberServiceContact;
 import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.Scheme;
 import sawim.Options;
 import sawim.util.JLocale;
-import protocol.jabber.Jabber;
-import protocol.jabber.JabberContact;
-import protocol.jabber.JabberServiceContact;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -149,7 +149,7 @@ public class MucUsersAdapter extends BaseAdapter {
 
     public String getCurrentSubContact(Object o) {
         if (o instanceof JabberContact.SubContact) {
-            JabberContact.SubContact c = (JabberContact.SubContact)o;
+            JabberContact.SubContact c = (JabberContact.SubContact) o;
             return c.resource;
         }
         return null;

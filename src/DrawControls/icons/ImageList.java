@@ -2,10 +2,7 @@ package DrawControls.icons;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
-
-import android.util.Log;
 import ru.sawim.General;
 import ru.sawim.SawimApplication;
 import ru.sawim.widget.Util;
@@ -53,7 +50,7 @@ public class ImageList {
         files.put(resName, icons);
         return icons;
     }
-    
+
     public void load(String resName, int count) throws IOException {
         Image resImage = loadImage(resName);
         if (null == resImage) {
@@ -69,7 +66,7 @@ public class ImageList {
         for (int y = 0; y < imgHeight; y += height) {
             for (int x = 0; x < imgWidth; x += width) {
                 Bitmap bitmap = Bitmap.createScaledBitmap(
-                        Bitmap.createBitmap(resImage.getBitmap(), x, y, width, height), width*size, height*size, true);
+                        Bitmap.createBitmap(resImage.getBitmap(), x, y, width, height), width * size, height * size, true);
                 bitmap.setDensity(0);
                 BitmapDrawable drawable = new BitmapDrawable(SawimApplication.getInstance().getContext().getResources(), bitmap);
                 drawable.setBounds(0, 0, (int) (drawable.getIntrinsicWidth() * 0.5), (int) (drawable.getIntrinsicHeight() * 0.5));

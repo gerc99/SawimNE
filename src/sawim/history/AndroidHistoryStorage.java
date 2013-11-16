@@ -1,9 +1,9 @@
 package sawim.history;
 
-import sawim.roster.Roster;
+import ru.sawim.config.HomeDirectory;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
-import ru.sawim.config.HomeDirectory;
+import sawim.roster.Roster;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -27,7 +27,7 @@ public class AndroidHistoryStorage {
     }
 
     public void addText(String text, boolean incoming,
-                                     String from, long gmtTime) {
+                        String from, long gmtTime) {
         sawim.modules.fs.JSR75FileSystem fs = getFile();
         try {
             boolean exist = fs.exists();
@@ -52,6 +52,7 @@ public class AndroidHistoryStorage {
     public int getHistorySize() {
         return 5;
     }
+
     public CachedRecord getRecord(int recNo) {
         return getLastRecord(getHistorySize() - recNo - 1);
     }
@@ -111,6 +112,7 @@ public class AndroidHistoryStorage {
             in.close();
         }
     }
+
     private byte[] trim(byte[] array, int size) {
         byte[] out = new byte[size];
         System.arraycopy(array, 0, out, 0, size);
@@ -147,9 +149,10 @@ public class AndroidHistoryStorage {
         Matcher matcher = headerPattern.matcher(str.substring(headerStart - 1, headerEnd + 2));
         if (matcher.matches()) {
             char first = str.charAt(headerEnd + 2);
-            return ('«' != first) && ( '»' != first);
+            return ('«' != first) && ('»' != first);
         }
         return false;
     }
+
     private static final Pattern headerPattern = Pattern.compile("\n\\[[^\n]+ \\d{2}\\.\\d{2}\\.\\d{4} \\d{2}:\\d{2}\\]\n");
 }

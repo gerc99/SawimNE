@@ -3,14 +3,15 @@
 
 package protocol.icq.action;
 
-import sawim.SawimException;
 import protocol.icq.packet.Packet;
+import sawim.SawimException;
 
 
 public class OtherAction extends IcqAction {
 
-    
+
     private Packet packet;
+
     public OtherAction(Packet sp) {
         packet = sp;
     }

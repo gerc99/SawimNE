@@ -5,24 +5,21 @@ package com.ssttr.crypto;
 import sawim.comm.Util;
 
 
-
-
-
 public abstract class MessageDigest {
 
-    
+
     public byte digestBits[];
 
-    
+
     public boolean digestValid;
 
-    
+
     public abstract void init();
 
-    
+
     public abstract void update(byte aValue);
 
-    
+
     public synchronized void update(short aValue) {
         byte b1, b2;
 
@@ -32,7 +29,7 @@ public abstract class MessageDigest {
         update(b2);
     }
 
-    
+
     public synchronized void update(int aValue) {
         byte b;
 
@@ -42,7 +39,7 @@ public abstract class MessageDigest {
         }
     }
 
-    
+
     public synchronized void update(long aValue) {
         byte b;
 
@@ -52,19 +49,19 @@ public abstract class MessageDigest {
         }
     }
 
-    
+
     public synchronized void update(byte input[], int offset, int len) {
         for (int i = 0; i < len; i++) {
             update(input[i + offset]);
         }
     }
 
-    
+
     public synchronized void update(byte input[]) {
         update(input, 0, input.length);
     }
 
-    
+
     public void update(String input) {
         int i, len;
         short x;
@@ -76,7 +73,7 @@ public abstract class MessageDigest {
         }
     }
 
-    
+
     public void updateASCII(String input) {
         int i, len;
         byte x;
@@ -88,11 +85,9 @@ public abstract class MessageDigest {
         }
     }
 
-    
+
     public abstract void finish();
 
-
-    
 
     public byte[] getDigestBits() {
         return (digestValid) ? digestBits : null;
@@ -103,7 +98,7 @@ public abstract class MessageDigest {
         StringBuffer out = new StringBuffer();
         int len = digestBits.length;
         for (int i = 0; i < len; i++) {
-            String hex = Integer.toHexString(((int)digestBits[i]) & 0xFF);
+            String hex = Integer.toHexString(((int) digestBits[i]) & 0xFF);
             if (1 == hex.length()) out.append(0);
             out.append(hex);
         }
@@ -114,10 +109,8 @@ public abstract class MessageDigest {
         return Util.base64encode(digestBits);
     }
 
-    
-    public abstract String getAlg();
 
-    
+    public abstract String getAlg();
 
 
 }

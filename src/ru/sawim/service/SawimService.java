@@ -12,9 +12,9 @@ import android.os.Messenger;
 import android.util.Log;
 import ru.sawim.R;
 import ru.sawim.Tray;
+import ru.sawim.activities.SawimActivity;
 import sawim.chat.ChatHistory;
 import sawim.roster.Roster;
-import ru.sawim.activities.SawimActivity;
 
 public class SawimService extends Service {
     public static final String ACTION_FOREGROUND = "FOREGROUND";

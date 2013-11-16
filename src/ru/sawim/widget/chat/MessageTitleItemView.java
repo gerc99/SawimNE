@@ -1,12 +1,10 @@
 package ru.sawim.widget.chat;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import ru.sawim.General;
@@ -35,7 +33,6 @@ public class MessageTitleItemView extends View {
     private float msgTimeX;
     private int msgTimeWidth;
     private int textY;
-    private int descent;
     private static Paint textPaint;
 
     public MessageTitleItemView(Context context) {
@@ -67,7 +64,7 @@ public class MessageTitleItemView extends View {
         int specMode = MeasureSpec.getMode(measureSpec);
         int specSize = MeasureSpec.getSize(measureSpec);
         int ascent = (int) textPaint.ascent();
-        descent = (int) textPaint.descent();
+        int descent = (int) textPaint.descent();
         if (specMode == MeasureSpec.EXACTLY) {
             result = specSize;
         } else {
@@ -97,7 +94,7 @@ public class MessageTitleItemView extends View {
         } else {
             msgTimeX = viewWidth - getPaddingRight();
         }
-        textY = y + descent;
+        textY = (int) (textPaint.getTextSize()) + getPaddingTop();
     }
 
     public void setMsgImage(BitmapDrawable msgImage) {

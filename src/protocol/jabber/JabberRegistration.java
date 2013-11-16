@@ -1,15 +1,15 @@
 package protocol.jabber;
 
+import protocol.Profile;
 import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
-import sawim.SawimException;
-import sawim.Options;
-import sawim.comm.StringConvertor;
-import sawim.comm.Util;
-import protocol.Profile;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
+import sawim.Options;
+import sawim.SawimException;
+import sawim.comm.StringConvertor;
+import sawim.comm.Util;
 
 
 public class JabberRegistration implements Runnable, FormListener {
@@ -38,12 +38,14 @@ public class JabberRegistration implements Runnable, FormListener {
         form.getForm().addString(General.DEFAULT_SERVER + " - " + SawimApplication.getContext().getString(R.string.hint_registration_domen));
         return form.getForm();
     }
+
     private String getServer(String domain) {
         protocol.net.SrvResolver r = new protocol.net.SrvResolver();
         String server = r.getXmpp(domain);
         r.close();
         return StringConvertor.isEmpty(server) ? (domain + ":5222") : server;
     }
+
     private OnAddAccount listener;
 
     public void setListener(OnAddAccount listener) {
@@ -51,7 +53,7 @@ public class JabberRegistration implements Runnable, FormListener {
     }
 
     public interface OnAddAccount {
-          void addAccount(int num, Profile acc);
+        void addAccount(int num, Profile acc);
     }
 
     public void run() {
@@ -106,6 +108,7 @@ public class JabberRegistration implements Runnable, FormListener {
     private void register(String form) {
         xml = form;
     }
+
     private void cancel() {
         xml = "";
     }
@@ -125,6 +128,7 @@ public class JabberRegistration implements Runnable, FormListener {
             form.back();
         }
     }
+
     private String getRegisterXml() {
         return "<iq type='set' to='" + Util.xmlEscape(domain) + "' id='"
                 + Util.xmlEscape(id)
@@ -132,6 +136,7 @@ public class JabberRegistration implements Runnable, FormListener {
                 + form.getXmlForm()
                 + "</query></iq>";
     }
+
     private void doAction() {
         switch (type) {
             case TYPE_NEW_ACCOUNT_DOMAIN:

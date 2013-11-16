@@ -11,13 +11,13 @@ import sawim.search.Search;
 
 
 final class MrimPacket {
-    public static final int MRIM_CS_HELLO     = 0x1001;
+    public static final int MRIM_CS_HELLO = 0x1001;
     public static final int MRIM_CS_HELLO_ACK = 0x1002;
     public static final int MRIM_CS_LOGIN_ACK = 0x1004;
     public static final int MRIM_CS_LOGIN_REJ = 0x1005;
-    public static final int MRIM_CS_PING      = 0x1006;
-    public static final int MRIM_CS_LOGIN2    = 0x1038;
-    public static final int MRIM_CS_MESSAGE   = 0x1008;
+    public static final int MRIM_CS_PING = 0x1006;
+    public static final int MRIM_CS_LOGIN2 = 0x1038;
+    public static final int MRIM_CS_MESSAGE = 0x1008;
     public static final int MRIM_CS_MESSAGE_ACK = 0x1009;
     public static final int MRIM_CS_MESSAGE_RECV = 0x1011;
     public static final int MRIM_CS_MESSAGE_STATUS = 0x1012;
@@ -35,7 +35,7 @@ final class MrimPacket {
     public static final int MRIM_CS_AUTHORIZE = 0x1020;
     public static final int MRIM_CS_AUTHORIZE_ACK = 0x1021;
     public static final int MRIM_CS_CHANGE_STATUS = 0x1022;
-    public static final int MRIM_CS_SMS  = 0x1039;
+    public static final int MRIM_CS_SMS = 0x1039;
     public static final int MRIM_CS_CONTACT_LIST2 = 0x1037;
     public static final int MRIM_CS_NEW_EMAIL = 0x1048;
     public static final int MRIM_MICROBLOG_RECORD = 0x1063;
@@ -59,19 +59,21 @@ final class MrimPacket {
     private static final long ip = 0x7F000001;
     private static final long port = 666;
 
-    
+
     public MrimPacket(int cmd) {
         this.cmd = cmd;
         this.data = new MrimBuffer();
     }
-    
+
     public MrimPacket(int cmd, MrimBuffer data) {
         this.cmd = cmd;
         this.data = data;
     }
+
     void setSeq(int s) {
         seq = s;
     }
+
     public int getSeq() {
         return seq;
     }
@@ -81,6 +83,7 @@ final class MrimPacket {
         this.seq = seq;
         this.data = new MrimBuffer((null == data) ? new byte[0] : data);
     }
+
     public MrimBuffer getData() {
         return data;
     }
@@ -100,13 +103,13 @@ final class MrimPacket {
         if (body.length > 0) {
             System.arraycopy(body, 0, packet, 4 * 7 + 16, body.length);
         }
-        putDWord(packet,  0, 0xDEADBEEF); 
-        putDWord(packet,  4, 0x00010016);
-        putDWord(packet,  8, seq); 
-        putDWord(packet, 12, cmd); 
-        putDWord(packet, 16, body.length); 
-        putDWord(packet, 20, ip); 
-        putDWord(packet, 24, port); 
+        putDWord(packet, 0, 0xDEADBEEF);
+        putDWord(packet, 4, 0x00010016);
+        putDWord(packet, 8, seq);
+        putDWord(packet, 12, cmd);
+        putDWord(packet, 16, body.length);
+        putDWord(packet, 20, ip);
+        putDWord(packet, 24, port);
         return packet;
     }
 
@@ -119,7 +122,7 @@ final class MrimPacket {
     public static MrimPacket getLoginPacket(Mrim mrim) {
         MrimBuffer out = new MrimBuffer();
         out.putString(mrim.getUserId());
-        
+
         MD5 hash = new MD5();
         hash.init();
         hash.updateASCII(mrim.getPassword());
@@ -138,6 +141,7 @@ final class MrimPacket {
         out.putString("sawim");
         return new MrimPacket(MrimPacket.MRIM_CS_LOGIN2, out);
     }
+
     public static MrimBuffer getMessageBuffer(String to, String msg, int flags) {
         MrimBuffer out = new MrimBuffer();
         out.putDWord(flags);
@@ -146,10 +150,12 @@ final class MrimPacket {
         out.putString("");
         return out;
     }
+
     public static MrimPacket getMessagePacket(String to, String msg, int flags) {
         MrimBuffer out = getMessageBuffer(to, msg, flags);
         return new MrimPacket(MrimPacket.MRIM_CS_MESSAGE, out);
     }
+
     public static MrimPacket getMessageRecvPacket(String from, long msgId) {
         MrimBuffer out = new MrimBuffer();
         out.putString(from);
@@ -162,11 +168,13 @@ final class MrimPacket {
         out.putBytes(msg);
         return new MrimPacket(MrimPacket.MRIM_CS_DELETE_OFFLINE_MESSAGE, out);
     }
+
     static MrimPacket getAutorizePacket(String uin) {
         MrimBuffer out = new MrimBuffer();
         out.putString(uin);
         return new MrimPacket(MrimPacket.MRIM_CS_AUTHORIZE, out);
     }
+
     static MrimPacket getAddContactPacket(int flags, int groupId, String uin, String name, String phone, String request) {
         MrimBuffer out = new MrimBuffer();
         out.putContact(flags, groupId, uin, name, phone);
@@ -174,6 +182,7 @@ final class MrimPacket {
         out.putString("");
         return new MrimPacket(MrimPacket.MRIM_CS_ADD_CONTACT, out);
     }
+
     static MrimPacket getModifyContactPacket(int id, int flags, int groupId, String uin, String name, String phone) {
         MrimBuffer out = new MrimBuffer();
         out.putDWord(id);
@@ -203,6 +212,7 @@ final class MrimPacket {
     static String getSityId(String sity) {
         return Config.getConfigValue(sity, "/cities.txt");
     }
+
     static MrimPacket getUserSearchRequestPacket(String[] userInfo) {
         MrimBuffer out = new MrimBuffer();
         if (!StringConvertor.isEmpty(userInfo[Search.UIN])) {

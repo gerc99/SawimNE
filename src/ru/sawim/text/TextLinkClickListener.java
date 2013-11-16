@@ -65,7 +65,7 @@ public class TextLinkClickListener implements MyTextView.TextLinkClickListener {
             });
             try {
                 builder.create().show();
-            } catch(Exception e) {
+            } catch (Exception e) {
                 // WindowManager$BadTokenException will be caught and the app would not display
                 DebugLog.panic("onTextLinkClick", e);
             }

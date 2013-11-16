@@ -13,9 +13,9 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Environment;
 
-import java.io.IOException;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -91,8 +91,8 @@ public final class ExceptionHandler implements Thread.UncaughtExceptionHandler {
                     .append("\n\n\n")
                     .append(formatter.format(dumpDate)).append("\n")
                     .append(String.format("Version: %s (%d)\n", versionName, versionCode));
-                    if (thread != null)
-                        reportBuilder.append(thread.toString()).append("\n");
+            if (thread != null)
+                reportBuilder.append(thread.toString()).append("\n");
             processThrowable(exception, reportBuilder);
             writeException(reportBuilder.toString());
         }

@@ -2,14 +2,10 @@ package ru.sawim.view;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.PorterDuff;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -118,7 +114,7 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
 
     private void hideKeyboard() {
         if (General.currentActivity.getCurrentFocus() != null)
-            ((InputMethodManager)General.currentActivity.getSystemService("input_method")).hideSoftInputFromWindow(General.currentActivity.getCurrentFocus().getWindowToken(), 0);
+            ((InputMethodManager) General.currentActivity.getSystemService("input_method")).hideSoftInputFromWindow(General.currentActivity.getCurrentFocus().getWindowToken(), 0);
     }
 
     @Override
@@ -177,9 +173,11 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
                 editText.setText(c.text);
                 editText.addTextChangedListener(new TextWatcher() {
 
-                    public void afterTextChanged(Editable s) { }
+                    public void afterTextChanged(Editable s) {
+                    }
 
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                    }
 
                     public void onTextChanged(CharSequence s, int start, int before, int count) {
                         c.text = s.toString();
@@ -230,10 +228,12 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
                     }
 
                     @Override
-                    public void onStartTrackingTouch(SeekBar seekBar) { }
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+                    }
 
                     @Override
-                    public void onStopTrackingTouch(SeekBar seekBar) { }
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+                    }
                 });
                 convertView.addView(seekBar);
             } else if (Forms.CONTROL_GAUGE_FONT == c.type) {
@@ -252,10 +252,12 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
                     }
 
                     @Override
-                    public void onStartTrackingTouch(SeekBar seekBar) { }
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+                    }
 
                     @Override
-                    public void onStopTrackingTouch(SeekBar seekBar) { }
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+                    }
                 });
                 convertView.addView(descView);
                 convertView.addView(seekBar);

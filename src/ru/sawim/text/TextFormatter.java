@@ -44,7 +44,7 @@ public class TextFormatter {
     }
 
     private static final int linkColor = SawimApplication.getContext().getTheme()
-            .obtainStyledAttributes(new int[] {
+            .obtainStyledAttributes(new int[]{
                     android.R.attr.textColorLink,
             }).getColor(0, -1);
 
@@ -83,7 +83,7 @@ public class TextFormatter {
         return Pattern.compile(patternString.toString());
     }
 
-    private static boolean isThereLinks(Spannable spannable, int ... positions) {
+    private static boolean isThereLinks(Spannable spannable, int... positions) {
         InternalURLSpan[] spans = spannable.getSpans(0, spannable.length(), InternalURLSpan.class);
         for (int i = 0; i < spans.length; ++i) {
             ClickableSpan span = spans[i];
@@ -109,6 +109,7 @@ public class TextFormatter {
         else if (mode == JuickMenu.MODE_PSTO)
             addLinks(msgList, ssb, pstoPattern);
         addLinks(linkList, ssb, Patterns.WEB_URL);
+        addLinks(linkList, ssb, Patterns.EMAIL_ADDRESS);
         for (Hyperlink link : msgList) {
             ssb.setSpan(link.span, link.start, link.end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             ssb.setSpan(new ForegroundColorSpan(linkColor), link.start, link.end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);

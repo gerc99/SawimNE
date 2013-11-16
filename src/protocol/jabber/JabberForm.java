@@ -1,9 +1,9 @@
 package protocol.jabber;
 
-import sawim.roster.Roster;
-import sawim.comm.Util;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
+import sawim.comm.Util;
+import sawim.roster.Roster;
 
 final class JabberForm implements FormListener {
     private XForm form;
@@ -27,30 +27,39 @@ final class JabberForm implements FormListener {
 
     private String typeToTitle(byte type) {
         switch (type) {
-            case TYPE_CAPTCHA: return "captcha";
-            case TYPE_REGISTER: return "registration";
-            case TYPE_OWNER: return "options";
+            case TYPE_CAPTCHA:
+                return "captcha";
+            case TYPE_REGISTER:
+                return "registration";
+            case TYPE_OWNER:
+                return "options";
         }
         return null;
     }
+
     private String newId() {
         return "forms" + Util.uniqueValue();
     }
+
     private String getJid() {
         return jid;
     }
+
     public boolean isWaiting() {
         return form.isWaiting();
     }
+
     public void loadFromXml(XmlNode xml, XmlNode baseXml) {
         id = newId();
         form.loadFromXml(xml, baseXml);
     }
+
     public void show() {
         form.init(typeToTitle(type), this);
         form.setWainting();
         form.getForm().show();
     }
+
     public void showCaptcha(XmlNode baseNode) {
         form.init(typeToTitle(type), this);
         final String S_CAPTCHA = "c" + "aptcha";
@@ -89,6 +98,7 @@ final class JabberForm implements FormListener {
                 + form.getXmlForm()
                 + "</captcha></iq>";
     }
+
     private String getRegisterXml() {
         return "<iq type='set' to='" + Util.xmlEscape(jid) + "' id='"
                 + Util.xmlEscape(id)
@@ -96,6 +106,7 @@ final class JabberForm implements FormListener {
                 + form.getXmlForm()
                 + "</query></iq>";
     }
+
     private String getOwnerXml() {
         return "<iq type='set' to='" + Util.xmlEscape(jid) + "' id='"
                 + Util.xmlEscape(id)

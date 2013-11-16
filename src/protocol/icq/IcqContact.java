@@ -17,10 +17,11 @@ public class IcqContact extends Contact {
     public static final int USER_MENU_REMOVE_ME = 8;
 
     public int getContactId() {
-        return ((int)contactId) & 0xFFFF;
+        return ((int) contactId) & 0xFFFF;
     }
+
     public void setContactId(int id) {
-        contactId = (short)id;
+        contactId = (short) id;
     }
 
     public Icon getHappyIcon() {
@@ -34,18 +35,18 @@ public class IcqContact extends Contact {
         setBooleanValue(Contact.CONTACT_NO_AUTH, noAuth);
         setTempFlag(false);
         setOfflineStatus();
-        
+
         setBooleanValue(Contact.SL_IGNORE, false);
         setBooleanValue(Contact.SL_VISIBLE, false);
         setBooleanValue(Contact.SL_INVISIBLE, false);
-        
+
     }
 
     public IcqContact(String uin) {
         this.userId = uin;
         setOfflineStatus();
     }
-    
+
     public final void setOfflineStatus() {
         super.setOfflineStatus();
         happyFlag = false;
@@ -60,11 +61,11 @@ public class IcqContact extends Contact {
         boolean temp = isTemp();
         boolean inList = protocol.inContactList(this);
         if (connected) {
-            
+
             initPrivacyMenu(menu);
-            
+
             if (temp) {
-				menu.add(SawimApplication.getContext().getString(R.string.add_user), ContactMenu.USER_MENU_ADD_USER);
+                menu.add(SawimApplication.getContext().getString(R.string.add_user), ContactMenu.USER_MENU_ADD_USER);
             } else {
                 if (protocol.getGroupItems().size() > 1) {
                     menu.add(SawimApplication.getContext().getString(R.string.move_to_group), ContactMenu.USER_MENU_MOVE);

@@ -1,8 +1,8 @@
 
 package sawim.modules.fs;
 
-import sawim.SawimException;
 import protocol.net.TcpSocket;
+import sawim.SawimException;
 
 import javax.microedition.io.Connector;
 import javax.microedition.io.file.FileConnection;
@@ -76,13 +76,14 @@ public class JSR75FileSystem {
                 fc.close();
             }
         } catch (IOException e) {
-            
+
         }
     }
 
     public boolean exists() {
         return (null != fileConnection) && fileConnection.exists();
     }
+
     public OutputStream openOutputStream() throws Exception {
         if (fileConnection.exists()) {
             fileConnection.delete();
@@ -90,17 +91,18 @@ public class JSR75FileSystem {
         fileConnection.create();
         return fileConnection.openOutputStream();
     }
-    
+
     public OutputStream openForAppendOutputStream() throws Exception {
         if (!fileConnection.exists()) {
             fileConnection.create();
         }
         return fileConnection.openOutputStream(true);
     }
+
     public String getAbsolutePath() throws Exception {
         return fileConnection.getAbsolutePath();
     }
-    
+
 
     public InputStream openInputStream() throws Exception {
         return fileConnection.openInputStream();
@@ -130,7 +132,7 @@ public class JSR75FileSystem {
         try {
             openFile(path);
             in = openInputStream();
-            int fileSize = (int)fileSize();
+            int fileSize = (int) fileSize();
             content = new byte[fileSize];
             int bReadSum = 0;
             do {

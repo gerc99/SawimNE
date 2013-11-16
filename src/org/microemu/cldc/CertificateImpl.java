@@ -28,43 +28,43 @@ import javax.microedition.pki.Certificate;
 import java.security.cert.X509Certificate;
 
 public class CertificateImpl implements Certificate {
-	
-	private X509Certificate cert;
 
-	public CertificateImpl(X509Certificate cert) {
-		this.cert = cert;
-	}
+    private X509Certificate cert;
 
-	public String getIssuer() {
-		return cert.getIssuerDN().getName();
-	}
+    public CertificateImpl(X509Certificate cert) {
+        this.cert = cert;
+    }
 
-	public long getNotAfter() {
-		return cert.getNotAfter().getTime();
-	}
+    public String getIssuer() {
+        return cert.getIssuerDN().getName();
+    }
 
-	public long getNotBefore() {
-		return cert.getNotBefore().getTime();
-	}
+    public long getNotAfter() {
+        return cert.getNotAfter().getTime();
+    }
 
-	public String getSerialNumber() {
-		return cert.getSerialNumber().toString();
-	}
+    public long getNotBefore() {
+        return cert.getNotBefore().getTime();
+    }
 
-	public String getSigAlgName() {
-		return cert.getSigAlgName();
-	}
+    public String getSerialNumber() {
+        return cert.getSerialNumber().toString();
+    }
 
-	public String getSubject() {
-		return cert.getSubjectDN().getName();
-	}
+    public String getSigAlgName() {
+        return cert.getSigAlgName();
+    }
 
-	public String getType() {
-		return cert.getType();
-	}
+    public String getSubject() {
+        return cert.getSubjectDN().getName();
+    }
 
-	public String getVersion() {
-		return Integer.toString(cert.getVersion());
-	}
+    public String getType() {
+        return cert.getType();
+    }
+
+    public String getVersion() {
+        return Integer.toString(cert.getVersion());
+    }
 
 }

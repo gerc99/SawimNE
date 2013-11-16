@@ -1,9 +1,9 @@
 package sawim.chat.message;
 
 import DrawControls.icons.ImageList;
-import sawim.chat.MessData;
 import protocol.Contact;
 import protocol.Protocol;
+import sawim.chat.MessData;
 import sawim.roster.Roster;
 
 public abstract class Message {
@@ -17,7 +17,7 @@ public abstract class Message {
     public static final int ICON_OUT_MSG = 5;
     public static final int ICON_OUT_MSG_FROM_SERVER = 6;
     public static final int ICON_OUT_MSG_FROM_CLIENT = 7;
-	public static final int ICON_MSG_TRACK = 8;
+    public static final int ICON_MSG_TRACK = 8;
 
     public static final int NOTIFY_OFF = -1;
     public static final int NOTIFY_NONE = ICON_OUT_MSG;
@@ -33,16 +33,16 @@ public abstract class Message {
     private long newDate;
 
     protected Message(long date, Protocol protocol, String contactId, boolean isIncoming) {
-    	this.newDate = date;
-    	this.protocol = protocol;
-    	this.contactId = contactId;
+        this.newDate = date;
+        this.protocol = protocol;
+        this.contactId = contactId;
         this.isIncoming = isIncoming;
     }
 
     protected Message(long date, Protocol protocol, Contact contact, boolean isIncoming) {
-    	this.newDate = date;
-    	this.protocol = protocol;
-    	this.contact = contact;
+        this.newDate = date;
+        this.protocol = protocol;
+        this.contact = contact;
         this.isIncoming = isIncoming;
     }
 
@@ -65,11 +65,11 @@ public abstract class Message {
     public String getContactUin() {
         return (null == contact) ? contactId : contact.getUserId();
     }
-    
+
     public final String getSndrUin() {
         return isIncoming ? getContactUin() : protocol.getUserId();
     }
-    
+
     public final String getRcvrUin() {
         return isIncoming ? protocol.getUserId() : getContactUin();
     }
@@ -83,11 +83,11 @@ public abstract class Message {
     }
 
     public boolean isOffline() {
-    	return false;
+        return false;
     }
 
     public final long getNewDate() {
-    	return newDate;
+        return newDate;
     }
 
     public String getName() {

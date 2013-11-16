@@ -7,14 +7,10 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.LinearLayout;
 import ru.sawim.General;
-
-import java.io.*;
-import java.net.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -42,9 +38,9 @@ public class Util {
         matrix.postScale(scaleWidth, scaleHeight);
         Bitmap bitmap = BitmapFactory.decodeByteArray(buffer, 0, buffer.length);
         int width = bitmap.getWidth();
-        if (width > metrics.widthPixels)  {
-            double k = (double)width/(double)metrics.widthPixels;
-            int h = (int) (bitmap.getWidth()/k);
+        if (width > metrics.widthPixels) {
+            double k = (double) width / (double) metrics.widthPixels;
+            int h = (int) (bitmap.getWidth() / k);
             bitmap = Bitmap.createBitmap(bitmap, 0, 0, metrics.widthPixels, h, matrix, true);
             bitmap.setDensity(metrics.densityDpi);
         } else {

@@ -1,12 +1,5 @@
 package protocol.icq.action;
 
-import sawim.SawimException;
-import sawim.Options;
-import sawim.comm.ArrayReader;
-import sawim.comm.MD5;
-import sawim.comm.StringConvertor;
-import sawim.comm.Util;
-import sawim.modules.DebugLog;
 import protocol.Contact;
 import protocol.Group;
 import protocol.TemporaryRoster;
@@ -14,6 +7,14 @@ import protocol.icq.Icq;
 import protocol.icq.IcqContact;
 import protocol.icq.PrivacyItem;
 import protocol.icq.packet.*;
+import sawim.Options;
+import sawim.SawimException;
+import sawim.comm.ArrayReader;
+import sawim.comm.MD5;
+import sawim.comm.StringConvertor;
+import sawim.comm.Util;
+import sawim.modules.DebugLog;
+
 import java.util.Vector;
 
 public class ConnectAction extends IcqAction {
@@ -32,51 +33,51 @@ public class ConnectAction extends IcqAction {
     public static final int STATE_CLI_REQOFFLINEMSGS_SENT = 10;
     public static final int STATE_CLI_ACKOFFLINEMSGS_SENT = 11;
     private static final short[] FAMILIES_AND_VER_LIST = {
-        0x0022, 0x0001,
-        0x0001, 0x0004,
-        0x0013, 0x0004,
-        0x0002, 0x0001,
-        0x0025, 0x0001,
-        0x0003, 0x0001,
-        0x0015, 0x0001,
-        0x0004, 0x0001,
-        0x0006, 0x0001,
-        0x0009, 0x0001,
-        0x000a, 0x0001,
-        0x000b, 0x0001};
-    
+            0x0022, 0x0001,
+            0x0001, 0x0004,
+            0x0013, 0x0004,
+            0x0002, 0x0001,
+            0x0025, 0x0001,
+            0x0003, 0x0001,
+            0x0015, 0x0001,
+            0x0004, 0x0001,
+            0x0006, 0x0001,
+            0x0009, 0x0001,
+            0x000a, 0x0001,
+            0x000b, 0x0001};
+
     private Vector ignoreList = new Vector();
     private Vector invisibleList = new Vector();
     private Vector visibleList = new Vector();
-    
+
     private int timestamp;
     private int count;
     private TemporaryRoster roster;
-    
+
     private static final byte[] CLI_READY_DATA = {
-        
-        (byte) 0x00, (byte) 0x22, (byte) 0x00, (byte) 0x01, (byte) 0x01, (byte) 0x10, (byte) 0x17, (byte) 0xf2,
-        (byte) 0x00, (byte) 0x01, (byte) 0x00, (byte) 0x04, (byte) 0x01, (byte) 0x10, (byte) 0x17, (byte) 0xf2,
-        (byte) 0x00, (byte) 0x13, (byte) 0x00, (byte) 0x04, (byte) 0x01, (byte) 0x10, (byte) 0x17, (byte) 0xf2,
-        (byte) 0x00, (byte) 0x02, (byte) 0x00, (byte) 0x01, (byte) 0x01, (byte) 0x10, (byte) 0x17, (byte) 0xf2,
-        (byte) 0x00, (byte) 0x25, (byte) 0x00, (byte) 0x01, (byte) 0x01, (byte) 0x10, (byte) 0x17, (byte) 0xf2,
-        (byte) 0x00, (byte) 0x03, (byte) 0x00, (byte) 0x01, (byte) 0x01, (byte) 0x10, (byte) 0x17, (byte) 0xf2,
-        (byte) 0x00, (byte) 0x15, (byte) 0x00, (byte) 0x01, (byte) 0x01, (byte) 0x10, (byte) 0x17, (byte) 0xf2,
-        (byte) 0x00, (byte) 0x04, (byte) 0x00, (byte) 0x01, (byte) 0x01, (byte) 0x10, (byte) 0x17, (byte) 0xf2,
-        (byte) 0x00, (byte) 0x06, (byte) 0x00, (byte) 0x01, (byte) 0x01, (byte) 0x10, (byte) 0x17, (byte) 0xf2,
-        (byte) 0x00, (byte) 0x09, (byte) 0x00, (byte) 0x01, (byte) 0x01, (byte) 0x10, (byte) 0x17, (byte) 0xf2,
-        (byte) 0x00, (byte) 0x0a, (byte) 0x00, (byte) 0x01, (byte) 0x01, (byte) 0x10, (byte) 0x17, (byte) 0xf2,
-        (byte) 0x00, (byte) 0x0b, (byte) 0x00, (byte) 0x01, (byte) 0x01, (byte) 0x10, (byte) 0x17, (byte) 0xf2
+
+            (byte) 0x00, (byte) 0x22, (byte) 0x00, (byte) 0x01, (byte) 0x01, (byte) 0x10, (byte) 0x17, (byte) 0xf2,
+            (byte) 0x00, (byte) 0x01, (byte) 0x00, (byte) 0x04, (byte) 0x01, (byte) 0x10, (byte) 0x17, (byte) 0xf2,
+            (byte) 0x00, (byte) 0x13, (byte) 0x00, (byte) 0x04, (byte) 0x01, (byte) 0x10, (byte) 0x17, (byte) 0xf2,
+            (byte) 0x00, (byte) 0x02, (byte) 0x00, (byte) 0x01, (byte) 0x01, (byte) 0x10, (byte) 0x17, (byte) 0xf2,
+            (byte) 0x00, (byte) 0x25, (byte) 0x00, (byte) 0x01, (byte) 0x01, (byte) 0x10, (byte) 0x17, (byte) 0xf2,
+            (byte) 0x00, (byte) 0x03, (byte) 0x00, (byte) 0x01, (byte) 0x01, (byte) 0x10, (byte) 0x17, (byte) 0xf2,
+            (byte) 0x00, (byte) 0x15, (byte) 0x00, (byte) 0x01, (byte) 0x01, (byte) 0x10, (byte) 0x17, (byte) 0xf2,
+            (byte) 0x00, (byte) 0x04, (byte) 0x00, (byte) 0x01, (byte) 0x01, (byte) 0x10, (byte) 0x17, (byte) 0xf2,
+            (byte) 0x00, (byte) 0x06, (byte) 0x00, (byte) 0x01, (byte) 0x01, (byte) 0x10, (byte) 0x17, (byte) 0xf2,
+            (byte) 0x00, (byte) 0x09, (byte) 0x00, (byte) 0x01, (byte) 0x01, (byte) 0x10, (byte) 0x17, (byte) 0xf2,
+            (byte) 0x00, (byte) 0x0a, (byte) 0x00, (byte) 0x01, (byte) 0x01, (byte) 0x10, (byte) 0x17, (byte) 0xf2,
+            (byte) 0x00, (byte) 0x0b, (byte) 0x00, (byte) 0x01, (byte) 0x01, (byte) 0x10, (byte) 0x17, (byte) 0xf2
     };
-    
-    private static final int TIMEOUT = 20; 
+
+    private static final int TIMEOUT = 20;
     private static final byte[] AIM_MD5_STRING = new byte[]{'A', 'O', 'L', ' ', 'I', 'n', 's', 't', 'a', 'n', 't', ' ',
-        'M', 'e', 's', 's', 'e', 'n', 'g', 'e', 'r', ' ', '(', 'S', 'M', ')'};
-    
-    
+            'M', 'e', 's', 's', 'e', 'n', 'g', 'e', 'r', ' ', '(', 'S', 'M', ')'};
+
+
     private String uin;
     private String password;
-    
+
     private int state;
     private volatile boolean active;
     private String server;
@@ -85,7 +86,7 @@ public class ConnectAction extends IcqAction {
     private String getServerHostAndPort() {
         return "login.icq.com:5190";
     }
-    
+
     private boolean md5login;
 
     public ConnectAction(Icq icq) {
@@ -123,7 +124,7 @@ public class ConnectAction extends IcqAction {
         try {
             boolean consumed = false;
             if (ConnectAction.STATE_INIT_DONE == this.state) {
-                
+
                 if (packet instanceof ConnectPacket) {
                     ConnectPacket connectPacket = (ConnectPacket) packet;
                     if (ConnectPacket.SRV_CLI_HELLO == connectPacket.getType()) {
@@ -173,10 +174,10 @@ public class ConnectAction extends IcqAction {
                         sendPacket(new SnacPacket(0x0017, 0x0002, -1, stream.toByteArray()));
                         state = STATE_CLI_IDENT_SENT;
                     } else {
-                        
+
                         DebugLog.println("connect: family = 0x" + Integer.toHexString(snacPacket.getFamily())
                                 + " command = 0x" + Integer.toHexString(snacPacket.getCommand()));
-                        
+
                         throw new SawimException(100, 0);
                     }
                 }
@@ -215,7 +216,7 @@ public class ConnectAction extends IcqAction {
                 } else {
                     if (packet instanceof DisconnectPacket) {
                         DisconnectPacket disconnectPacket = (DisconnectPacket) packet;
-                        
+
                         if (DisconnectPacket.TYPE_SRV_COOKIE == disconnectPacket.getType()) {
                             getIcq().setRealUin(disconnectPacket.getUin());
                             this.uin = getIcq().getUserId();
@@ -232,26 +233,26 @@ public class ConnectAction extends IcqAction {
                 if (-1 != errcode) {
                     int toThrow = 100;
                     switch (errcode) {
-                        
+
                         case 0x0001:
                             toThrow = 110;
                             break;
-                        
+
                         case 0x0004:
                         case 0x0005:
                             toThrow = 111;
                             break;
-                        
+
                         case 0x0007:
                         case 0x0008:
                             toThrow = 112;
                             break;
-                        
+
                         case 0x0015:
                         case 0x0016:
                             toThrow = 113;
                             break;
-                        
+
                         case 0x0018:
                         case 0x001d:
                             toThrow = 114;
@@ -364,11 +365,11 @@ public class ConnectAction extends IcqAction {
     private void sendStatusData() throws SawimException {
         byte pstatus = getIcq().getIcqPrivateStatus();
         sendPacket(getIcq().getPrivateStatusPacket(pstatus));
-        
+
         int x = getIcq().getProfile().xstatusIndex;
         String title = getIcq().getProfile().xstatusTitle;
         String desc = getIcq().getProfile().xstatusDescription;
-        
+
         title = StringConvertor.notNull(title);
         desc = StringConvertor.notNull(desc);
         String text = (title + " " + desc).trim();
@@ -436,7 +437,7 @@ public class ConnectAction extends IcqAction {
 
                 } else if (0x0001 == type) {
                     marker.skip(len);
-                    
+
                     if (0x0000 != groupId) {
                         Group grp = roster.getGroupById(groupId);
                         if (null == grp) {
@@ -514,11 +515,11 @@ public class ConnectAction extends IcqAction {
 
         Util icbm = new Util();
         icbm.writeWordBE(0x0000);
-        icbm.writeDWordBE(flags); 
-        icbm.writeWordBE(8000); 
+        icbm.writeDWordBE(flags);
+        icbm.writeWordBE(8000);
         icbm.writeWordBE(0x03E7);
         icbm.writeWordBE(0x03E7);
-        icbm.writeWordBE(0x0000); 
+        icbm.writeWordBE(0x0000);
         icbm.writeWordBE(0x0000);
 
         return new SnacPacket(SnacPacket.CLI_ICBM_FAMILY, SnacPacket.CLI_SETICBM_COMMAND, icbm.toByteArray());

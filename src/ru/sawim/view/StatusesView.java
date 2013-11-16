@@ -7,10 +7,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import sawim.Options;
 import protocol.Protocol;
 import ru.sawim.R;
 import ru.sawim.models.StatusesAdapter;
+import sawim.Options;
 
 public class StatusesView extends DialogFragment {
     private StatusesAdapter statusesAdapter;
@@ -44,7 +44,7 @@ public class StatusesView extends DialogFragment {
                     int currItem = protocol.getStatusInfo().applicableStatuses[i];
                     protocol.setStatus(currItem, null);
                 } else {
-                    protocol.setPrivateStatus((byte)i);
+                    protocol.setPrivateStatus((byte) i);
                     Options.setInt(Options.OPTION_PRIVATE_STATUS, i);
                     Options.safeSave();
                 }

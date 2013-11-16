@@ -10,7 +10,6 @@
 package ru.sawim.models.form;
 
 /**
- *
  * @author Vladimir Kryukov
  */
 public interface ControlStateListener {

@@ -1,13 +1,13 @@
 package sawim;
 
-import sawim.roster.Roster;
+import protocol.Profile;
+import protocol.StatusInfo;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
 import sawim.forms.PrivateStatusForm;
 import sawim.io.Storage;
 import sawim.modules.DebugLog;
-import protocol.Profile;
-import protocol.StatusInfo;
+import sawim.roster.Roster;
 
 import java.io.*;
 import java.util.TimeZone;
@@ -15,19 +15,19 @@ import java.util.Vector;
 
 /**
  * Current record store format:
- *
+ * <p/>
  * Record #1: VERSION               (UTF8)
  * Record #2: OPTION KEY            (BYTE)
- *            OPTION VALUE          (Type depends on key)
- *            OPTION KEY            (BYTE)
- *            OPTION VALUE          (Type depends on key)
- *            OPTION KEY            (BYTE)
- *            OPTION VALUE          (Type depends on key)
- *            ...
- *
+ * OPTION VALUE          (Type depends on key)
+ * OPTION KEY            (BYTE)
+ * OPTION VALUE          (Type depends on key)
+ * OPTION KEY            (BYTE)
+ * OPTION VALUE          (Type depends on key)
+ * ...
+ * <p/>
  * Option key            Option value
- *   0 -  63 (00XXXXXX)  UTF8
- *  64 - 127 (01XXXXXX)  INTEGER
+ * 0 -  63 (00XXXXXX)  UTF8
+ * 64 - 127 (01XXXXXX)  INTEGER
  * 128 - 191 (10XXXXXX)  BOOLEAN
  * 192 - 224 (110XXXXX)  LONG
  * 225 - 255 (111XXXXX)  SHORT, BYTE-ARRAY (scrambled String)
@@ -35,67 +35,67 @@ import java.util.Vector;
 
 public class Options {
     ////////////////////// UTF8
-    static final int OPTION_UIN1                       =   0;
-    public static final int UNAVAILABLE_NESSAGE  =  1;
-    public static final int OPTION_UI_LANGUAGE         =   3;
-    public static final int OPTION_STATUS_MESSAGE      =   7;
-    static final int OPTION_UIN2                       =  14;
-    static final int OPTION_UIN3                       =  15;
-    static final int OPTION_NICK1                      =  21;
-    static final int OPTION_NICK2                      =  22;
-    static final int OPTION_NICK3                      =  23;
-    public static final int OPTION_ANTISPAM_MSG        =  24;
-    public static final int OPTION_ANTISPAM_HELLO      =  25;
-    public static final int OPTION_ANTISPAM_ANSWER     =  26;
-    public static final int OPTION_ANTISPAM_KEYWORDS   =  29;
+    static final int OPTION_UIN1 = 0;
+    public static final int UNAVAILABLE_NESSAGE = 1;
+    public static final int OPTION_UI_LANGUAGE = 3;
+    public static final int OPTION_STATUS_MESSAGE = 7;
+    static final int OPTION_UIN2 = 14;
+    static final int OPTION_UIN3 = 15;
+    static final int OPTION_NICK1 = 21;
+    static final int OPTION_NICK2 = 22;
+    static final int OPTION_NICK3 = 23;
+    public static final int OPTION_ANTISPAM_MSG = 24;
+    public static final int OPTION_ANTISPAM_HELLO = 25;
+    public static final int OPTION_ANTISPAM_ANSWER = 26;
+    public static final int OPTION_ANTISPAM_KEYWORDS = 29;
 
     ////////////////////// INTEGER
-    public static final int OPTION_CL_SORT_BY          =  65;
-    public static final int OPTION_MESS_NOTIF_MODE     =  66;
-    public static final int OPTION_NOTIFY_VOLUME      =  67;
-    public static final int OPTION_ONLINE_NOTIF_MODE   =  68;
-    public static final int OPTION_VIBRATOR            =  75;
-    public static final int OPTION_COLOR_SCHEME        =  73;
-    public static final int OPTION_VISIBILITY_ID       =  85;
-    static final int OPTIONS_CURR_ACCOUNT              =  86;
-    public static final int OPTION_GMT_OFFSET           =  87;
-    public static final int OPTION_TYPING_MODE         =  88;
-    public static final int OPTION_LOCAL_OFFSET         =  90;
-    public static final int OPTION_CHAT_PRESENSEFONT_SCHEME         = 92;
-    public static final int OPTION_PRIVATE_STATUS      =  93;
-    public static final int OPTION_MAX_MSG_COUNT       =  94;
-    public static final int OPTION_AA_TIME            = 106;
-    public static final int OPTION_FONT_SCHEME         = 107;
-    public static final int OPTION_MIN_ITEM_SIZE       = 110;
+    public static final int OPTION_CL_SORT_BY = 65;
+    public static final int OPTION_MESS_NOTIF_MODE = 66;
+    public static final int OPTION_NOTIFY_VOLUME = 67;
+    public static final int OPTION_ONLINE_NOTIF_MODE = 68;
+    public static final int OPTION_VIBRATOR = 75;
+    public static final int OPTION_COLOR_SCHEME = 73;
+    public static final int OPTION_VISIBILITY_ID = 85;
+    static final int OPTIONS_CURR_ACCOUNT = 86;
+    public static final int OPTION_GMT_OFFSET = 87;
+    public static final int OPTION_TYPING_MODE = 88;
+    public static final int OPTION_LOCAL_OFFSET = 90;
+    public static final int OPTION_CHAT_PRESENSEFONT_SCHEME = 92;
+    public static final int OPTION_PRIVATE_STATUS = 93;
+    public static final int OPTION_MAX_MSG_COUNT = 94;
+    public static final int OPTION_AA_TIME = 106;
+    public static final int OPTION_FONT_SCHEME = 107;
+    public static final int OPTION_MIN_ITEM_SIZE = 110;
 
     ////////////////////// BOOLEAN
-    public static final int OPTION_ANSWERER            =  128;
-    public static final int OPTION_SHOW_PLATFORM       = 129;
-    public static final int OPTION_CL_HIDE_OFFLINE     = 130;
-    public static final int OPTION_USER_GROUPS         = 136;
-    public static final int OPTION_HISTORY             = 137;
+    public static final int OPTION_ANSWERER = 128;
+    public static final int OPTION_SHOW_PLATFORM = 129;
+    public static final int OPTION_CL_HIDE_OFFLINE = 130;
+    public static final int OPTION_USER_GROUPS = 136;
+    public static final int OPTION_HISTORY = 137;
     public static final int OPTION_TITLE_IN_CONFERENCE = 140;
-    public static final int OPTION_CLASSIC_CHAT        = 143;
-    public static final int OPTION_SAVE_TEMP_CONTACT   = 147;
-    public static final int OPTION_SILENT_MODE         = 150;
-    public static final int OPTION_BRING_UP            = 151;
-    public static final int OPTION_ANTISPAM_ENABLE     = 158;
-    public static final int OPTION_HIDE_ICONS_CLIENTS      = 160;
-    public static final int OPTION_SHOW_SOFTBAR        = 167;
-    public static final int OPTION_TF_FLAGS            = 169;
-    public static final int OPTION_SORT_UP_WITH_MSG    = 171;
-    public static final int OPTION_ALARM               = 176;
-    public static final int OPTION_SHOW_STATUS_LINE    = 177;
-    public static final int OPTION_NOTIFY_IN_AWAY      = 179;
-    public static final int OPTION_BLOG_NOTIFY         = 180;
-    public static final int OPTION_INSTANT_RECONNECTION  = 181;
-    public static final int OPTION_SIMPLE_INPUT        = 182;
-    public static final int OPTION_ONLINE_STATUS       = 192;
+    public static final int OPTION_CLASSIC_CHAT = 143;
+    public static final int OPTION_SAVE_TEMP_CONTACT = 147;
+    public static final int OPTION_SILENT_MODE = 150;
+    public static final int OPTION_BRING_UP = 151;
+    public static final int OPTION_ANTISPAM_ENABLE = 158;
+    public static final int OPTION_HIDE_ICONS_CLIENTS = 160;
+    public static final int OPTION_SHOW_SOFTBAR = 167;
+    public static final int OPTION_TF_FLAGS = 169;
+    public static final int OPTION_SORT_UP_WITH_MSG = 171;
+    public static final int OPTION_ALARM = 176;
+    public static final int OPTION_SHOW_STATUS_LINE = 177;
+    public static final int OPTION_NOTIFY_IN_AWAY = 179;
+    public static final int OPTION_BLOG_NOTIFY = 180;
+    public static final int OPTION_INSTANT_RECONNECTION = 181;
+    public static final int OPTION_SIMPLE_INPUT = 182;
+    public static final int OPTION_ONLINE_STATUS = 192;
 
     ////////////////////// SHORT, BYTE-ARRAY (scrambled String)
-    static final int OPTION_PASSWORD1                  = 228;
-    static final int OPTION_PASSWORD2                  = 229;
-    static final int OPTION_PASSWORD3                  = 230;
+    static final int OPTION_PASSWORD1 = 228;
+    static final int OPTION_PASSWORD2 = 229;
+    static final int OPTION_PASSWORD3 = 230;
 
     private static final Vector listOfProfiles = new Vector();
 
@@ -114,12 +114,12 @@ public class Options {
             if (listOfProfiles.size() <= num) {
                 return new Profile();
             }
-            return (Profile)listOfProfiles.elementAt(num);
+            return (Profile) listOfProfiles.elementAt(num);
         }
     }
 
     public static String getId(int id) {
-        Profile p = (Profile)listOfProfiles.elementAt(id);
+        Profile p = (Profile) listOfProfiles.elementAt(id);
         return p.userId;
     }
 
@@ -157,7 +157,7 @@ public class Options {
             try {
                 s.open(false);
                 for (; num < listOfProfiles.size(); ++num) {
-                    Profile p = (Profile)listOfProfiles.elementAt(num);
+                    Profile p = (Profile) listOfProfiles.elementAt(num);
                     s.setRecord(num + 1, writeAccount(p));
                 }
                 for (; num < s.getNumRecords(); ++num) {
@@ -198,7 +198,7 @@ public class Options {
                 listOfProfiles.removeAllElements();
                 s.open(false);
                 int accountCount = s.getNumRecords();
-                for (int i = 0 ; i < accountCount; ++i) {
+                for (int i = 0; i < accountCount; ++i) {
                     byte[] data = s.getRecord(i + 1);
                     if ((null == data) || (0 == data.length)) {
                         break;
@@ -233,9 +233,9 @@ public class Options {
                 s.addRecord(hash);
             }
         } catch (Exception e) {
-            
+
             DebugLog.panic("save account #" + num, e);
-            
+
         }
         s.close();
     }
@@ -296,7 +296,7 @@ public class Options {
                 p.isActive = dis.readBoolean();
             }
             if (0 < dis.available()) {
-                if (!dis.readBoolean()) { 
+                if (!dis.readBoolean()) {
                     p.statusIndex = StatusInfo.STATUS_OFFLINE;
                 }
             }
@@ -311,61 +311,62 @@ public class Options {
     }
 
     private static Object[] options = new Object[256];
+
     public static void loadOptions() {
         try {
             setDefaults();
             initAccounts();
             load();
-        
+
         } catch (Exception e) {
             setDefaults();
         }
     }
 
     private static void initAccounts() {
-        setInt    (Options.OPTIONS_CURR_ACCOUNT,      0);
+        setInt(Options.OPTIONS_CURR_ACCOUNT, 0);
     }
-    
-    private static void setDefaults() {
-		setString (Options.UNAVAILABLE_NESSAGE,            "I'll be back"); 
-    //    setString (Options.OPTION_UI_LANGUAGE,        JLocale.getSystemLanguage());
-	//	setBoolean(Options.OPTION_SHOW_PLATFORM,      false);
-        setBoolean(Options.OPTION_INSTANT_RECONNECTION,   true);
-        setInt    (Options.OPTION_CL_SORT_BY,         0);
-		setBoolean(Options.OPTION_TITLE_IN_CONFERENCE,   true);
-        setBoolean(Options.OPTION_CL_HIDE_OFFLINE,    false);
-        setBoolean(Options.OPTION_HIDE_ICONS_CLIENTS,    false);
-        setBoolean(Options.OPTION_SHOW_SOFTBAR,       true);
-        setInt    (Options.OPTION_MESS_NOTIF_MODE,    0);
-        setInt    (Options.OPTION_ONLINE_NOTIF_MODE,  0);
-        setInt(Options.OPTION_TYPING_MODE, 0);
-        setBoolean(Options.OPTION_BLOG_NOTIFY,        true);
-        setBoolean(Options.OPTION_NOTIFY_IN_AWAY, true);
-        setInt    (Options.OPTION_NOTIFY_VOLUME,     100);
-        setBoolean(Options.OPTION_TF_FLAGS,           false);
-        setInt    (Options.OPTION_MAX_MSG_COUNT,      100);
-        setInt    (Options.OPTION_VIBRATOR,           1);
-        setString (Options.OPTION_ANTISPAM_KEYWORDS,           "http sms www @conf");
-        setLong   (Options.OPTION_ONLINE_STATUS,      StatusInfo.STATUS_ONLINE);
-        setInt    (Options.OPTION_PRIVATE_STATUS,     PrivateStatusForm.PSTATUS_NOT_INVISIBLE);
-		setBoolean(Options.OPTION_ANSWERER,           false);
-        setBoolean(Options.OPTION_USER_GROUPS,        true);
-        setBoolean(Options.OPTION_HISTORY,            false);
-        setInt    (Options.OPTION_COLOR_SCHEME,       1);
-        setInt    (Options.OPTION_FONT_SCHEME,        16);
-		setInt    (Options.OPTION_CHAT_PRESENSEFONT_SCHEME, 0);
-        int minItemSize = 15;
-        setInt    (Options.OPTION_MIN_ITEM_SIZE,      minItemSize);
-        setBoolean(Options.OPTION_SHOW_STATUS_LINE,   false);
-        setInt    (Options.OPTION_VISIBILITY_ID,      0);
 
-        setBoolean(Options.OPTION_SILENT_MODE,        false);
-        setBoolean(Options.OPTION_CLASSIC_CHAT,       false);
-        setBoolean(Options.OPTION_BRING_UP,           false);
+    private static void setDefaults() {
+        setString(Options.UNAVAILABLE_NESSAGE, "I'll be back");
+        //    setString (Options.OPTION_UI_LANGUAGE,        JLocale.getSystemLanguage());
+        //	setBoolean(Options.OPTION_SHOW_PLATFORM,      false);
+        setBoolean(Options.OPTION_INSTANT_RECONNECTION, true);
+        setInt(Options.OPTION_CL_SORT_BY, 0);
+        setBoolean(Options.OPTION_TITLE_IN_CONFERENCE, true);
+        setBoolean(Options.OPTION_CL_HIDE_OFFLINE, false);
+        setBoolean(Options.OPTION_HIDE_ICONS_CLIENTS, false);
+        setBoolean(Options.OPTION_SHOW_SOFTBAR, true);
+        setInt(Options.OPTION_MESS_NOTIF_MODE, 0);
+        setInt(Options.OPTION_ONLINE_NOTIF_MODE, 0);
+        setInt(Options.OPTION_TYPING_MODE, 0);
+        setBoolean(Options.OPTION_BLOG_NOTIFY, true);
+        setBoolean(Options.OPTION_NOTIFY_IN_AWAY, true);
+        setInt(Options.OPTION_NOTIFY_VOLUME, 100);
+        setBoolean(Options.OPTION_TF_FLAGS, false);
+        setInt(Options.OPTION_MAX_MSG_COUNT, 100);
+        setInt(Options.OPTION_VIBRATOR, 1);
+        setString(Options.OPTION_ANTISPAM_KEYWORDS, "http sms www @conf");
+        setLong(Options.OPTION_ONLINE_STATUS, StatusInfo.STATUS_ONLINE);
+        setInt(Options.OPTION_PRIVATE_STATUS, PrivateStatusForm.PSTATUS_NOT_INVISIBLE);
+        setBoolean(Options.OPTION_ANSWERER, false);
+        setBoolean(Options.OPTION_USER_GROUPS, true);
+        setBoolean(Options.OPTION_HISTORY, false);
+        setInt(Options.OPTION_COLOR_SCHEME, 1);
+        setInt(Options.OPTION_FONT_SCHEME, 16);
+        setInt(Options.OPTION_CHAT_PRESENSEFONT_SCHEME, 0);
+        int minItemSize = 15;
+        setInt(Options.OPTION_MIN_ITEM_SIZE, minItemSize);
+        setBoolean(Options.OPTION_SHOW_STATUS_LINE, false);
+        setInt(Options.OPTION_VISIBILITY_ID, 0);
+
+        setBoolean(Options.OPTION_SILENT_MODE, false);
+        setBoolean(Options.OPTION_CLASSIC_CHAT, false);
+        setBoolean(Options.OPTION_BRING_UP, false);
         int time = TimeZone.getDefault().getDSTSavings() / (1000 * 60 * 60)
                 + TimeZone.getDefault().getRawOffset() / (1000 * 60 * 60);
-        setInt    (Options.OPTION_GMT_OFFSET,        time);
-        setInt    (Options.OPTION_LOCAL_OFFSET,      0);
+        setInt(Options.OPTION_GMT_OFFSET, time);
+        setInt(Options.OPTION_LOCAL_OFFSET, 0);
         setBoolean(OPTION_ALARM, true);
     }
 
@@ -378,15 +379,15 @@ public class Options {
         DataInputStream dis = new DataInputStream(bais);
         while (dis.available() > 0) {
             int optionKey = dis.readUnsignedByte();
-            if (optionKey < 64) {  
+            if (optionKey < 64) {
                 setString(optionKey, dis.readUTF());
-            } else if (optionKey < 128) {  
+            } else if (optionKey < 128) {
                 setInt(optionKey, dis.readInt());
-            } else if (optionKey < 192) {  
+            } else if (optionKey < 192) {
                 setBoolean(optionKey, dis.readBoolean());
-            } else if (optionKey < 224) {  
+            } else if (optionKey < 224) {
                 setLong(optionKey, dis.readLong());
-            } else {  
+            } else {
                 byte[] optionValue = new byte[dis.readUnsignedShort()];
                 dis.readFully(optionValue);
                 optionValue = Util.decipherPassword(optionValue);
@@ -404,16 +405,16 @@ public class Options {
                 continue;
             }
             dos.writeByte(key);
-            if (key < 64) {  
-                dos.writeUTF((String)options[key]);
-            } else if (key < 128) {  
-                dos.writeInt(((Integer)options[key]).intValue());
-            } else if (key < 192) {  
-                dos.writeBoolean(((Boolean)options[key]).booleanValue());
-            } else if (key < 224) {  
-                dos.writeLong(((Long)options[key]).longValue());
-            } else if (key < 256) {  
-                String str = (String)options[key];
+            if (key < 64) {
+                dos.writeUTF((String) options[key]);
+            } else if (key < 128) {
+                dos.writeInt(((Integer) options[key]).intValue());
+            } else if (key < 192) {
+                dos.writeBoolean(((Boolean) options[key]).booleanValue());
+            } else if (key < 224) {
+                dos.writeLong(((Long) options[key]).longValue());
+            } else if (key < 256) {
+                String str = (String) options[key];
                 byte[] optionValue = StringConvertor.stringToByteArrayUtf8(str);
                 optionValue = Util.decipherPassword(optionValue);
                 dos.writeShort(optionValue.length);
@@ -439,9 +440,9 @@ public class Options {
         }
         DebugLog.profilerStep("safeSave", profiler);
     }
-    
+
     public static String getString(int key) {
-        String value = (String)options[key];
+        String value = (String) options[key];
         return (null == value) ? "" : value;
     }
 
@@ -463,6 +464,7 @@ public class Options {
     public static void setString(int key, String value) {
         options[key] = value;
     }
+
     public static void setInt(int key, int value) {
         options[key] = new Integer(value);
     }

@@ -34,19 +34,19 @@ import java.security.NoSuchAlgorithmException;
 
 public class Connection extends org.microemu.cldc.http.Connection implements HttpsConnection {
 
-	private SSLContext sslContext;
+    private SSLContext sslContext;
 
-	public Connection() {
-	    try {
-			sslContext = SSLContext.getInstance("TLS");
-		} catch (NoSuchAlgorithmException ex) {
-			Logger.error(ex);
-		}	
-	}
+    public Connection() {
+        try {
+            sslContext = SSLContext.getInstance("TLS");
+        } catch (NoSuchAlgorithmException ex) {
+            Logger.error(ex);
+        }
+    }
 
-	public String getProtocol() {
-		return "https";
-	}
+    public String getProtocol() {
+        return "https";
+    }
 
 
     @Override
@@ -57,17 +57,17 @@ public class Connection extends org.microemu.cldc.http.Connection implements Htt
     /**
      * Returns the network port number of the URL for this HttpsConnection
      *
-     * @return  the network port number of the URL for this HttpsConnection. The default HTTPS port number (443) is returned if there was no port number in the string passed to Connector.open.
+     * @return the network port number of the URL for this HttpsConnection. The default HTTPS port number (443) is returned if there was no port number in the string passed to Connector.open.
      */
-	public int getPort() {
-		if (cn == null) {
-			return -1;
-		}
-		int port = cn.getURL().getPort();
-		if (port == -1) {
-			return 443;
-		}
-		return port;
-	}
+    public int getPort() {
+        if (cn == null) {
+            return -1;
+        }
+        int port = cn.getURL().getPort();
+        if (port == -1) {
+            return 443;
+        }
+        return port;
+    }
 
 }

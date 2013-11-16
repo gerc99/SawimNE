@@ -1,6 +1,5 @@
 package protocol;
 
-import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import sawim.comm.Util;
@@ -27,34 +26,34 @@ public final class Profile {
             + "|vk.com (api)"
             + "|Mail.ru Agent"
             + "|Facebook"
-            + "|"+ SawimApplication.getContext().getString(R.string.classmates)
-    //        + "|VKontakte"
+            + "|" + SawimApplication.getContext().getString(R.string.classmates)
+            //        + "|VKontakte"
             + "|LiveJournal"
             + "|GTalk"
             + "|Ya.Online"
             + "|QIP"
     ).substring(1), '|');
-    public static final byte[] protocolTypes = new byte[] {
+    public static final byte[] protocolTypes = new byte[]{
             PROTOCOL_ICQ,
             PROTOCOL_JABBER,
             PROTOCOL_VK_API,
             PROTOCOL_MRIM,
             PROTOCOL_FACEBOOK,
             PROTOCOL_ODNOKLASSNIKI,
-    //        PROTOCOL_VK,
+            //        PROTOCOL_VK,
             PROTOCOL_LJ,
             PROTOCOL_GTALK,
             PROTOCOL_YANDEX,
             PROTOCOL_QIP,
     };
-    public static final String[] protocolIds = new String[] {
+    public static final String[] protocolIds = new String[]{
             "UIN/E-mail",
             "Login",
             "E-mail/phone",
             "e-mail",
             "Login",
             "ID",
-    //        "ID",
+            //        "ID",
             "Login",
             "Login",
             "Login",

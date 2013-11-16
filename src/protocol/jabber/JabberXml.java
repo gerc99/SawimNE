@@ -1,27 +1,25 @@
 package protocol.jabber;
 
-import android.util.Log;
+import protocol.*;
+import protocol.net.ClientConnection;
 import ru.sawim.General;
-import sawim.SawimException;
 import sawim.Options;
+import sawim.SawimException;
 import sawim.chat.message.PlainMessage;
 import sawim.chat.message.SystemNotice;
-import sawim.roster.Roster;
 import sawim.comm.Config;
 import sawim.comm.MD5;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
 import sawim.modules.DebugLog;
 import sawim.modules.MagicEye;
+import sawim.roster.Roster;
 import sawim.search.UserInfo;
 import sawim.util.JLocale;
-import protocol.*;
-import protocol.net.ClientConnection;
 
 import javax.microedition.io.Connector;
 import javax.microedition.io.HttpsConnection;
 import java.io.DataInputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.Vector;
 
 
@@ -49,19 +47,19 @@ public final class JabberXml extends ClientConnection {
     private UserInfo singleUserInfo;
     private String autoSubscribeDomain;
     private JabberForm jabberForm;
-    
+
     private IBBFileTransfer ibb;
-    
+
     private ServiceDiscovery serviceDiscovery = null;
     private AdHoc adhoc;
-	private AffiliationListConf affListConf = null;
-	private MirandaNotes notes = null;
+    private AffiliationListConf affListConf = null;
+    private MirandaNotes notes = null;
 
     private SASL_ScramSha1 scramSHA1;
 
     private static final String[] statusCodes = {
             "u" + "navailable",
-            "", 
+            "",
             "a" + "way",
             "c" + "h" + "a" + "t",
             "",
@@ -101,14 +99,14 @@ public final class JabberXml extends ClientConnection {
     private static final String S_SUBJECT = "subje" + "ct";
     private static final String S_BODY = "b" + "ody";
     private static final String S_URL = "u" + "r" + "l";
-    private static final String S_DESC = "d" + "es"+ "c";
+    private static final String S_DESC = "d" + "es" + "c";
     private static final String S_COMPOSING = "c" + "omposing";
     private static final String S_ACTIVE = "ac" + "tive";
     private static final String S_PAUSED = "p" + "aused";
     private static final String S_CHAT = "c" + "hat";
     private static final String S_GROUPCHAT = "groupc" + "hat";
     private static final String S_HEADLINE = "h" + "eadline";
-    
+
     private static final String GET_ROSTER_XML = "<iq type='get' id='roster'>"
             + "<query xmlns='jabber:iq:roster'/>"
             + "</iq>";
@@ -127,6 +125,7 @@ public final class JabberXml extends ClientConnection {
         }
         return StatusInfo.STATUS_ONLINE;
     }
+
     private String getNativeStatus(byte statusIndex) {
         return statusCodes[statusIndex];
     }
@@ -151,15 +150,16 @@ public final class JabberXml extends ClientConnection {
         fullJid_ = jabber.getUserId() + '/' + resource;
         domain_ = Jid.getDomain(fullJid_);
     }
+
     private void setProgress(int percent) {
         getJabber().setConnectingProgress(percent);
     }
-    
+
     private void setStreamCompression() throws SawimException {
         setProgress(20);
         socket.activateStreamCompression();
         write(getOpenStreamXml(domain_));
-        readXmlNode(true); 
+        readXmlNode(true);
         parseAuth(readXmlNode(true));
     }
 
@@ -184,6 +184,7 @@ public final class JabberXml extends ClientConnection {
     protected final void ping() throws SawimException {
         write(pingPacket);
     }
+
     protected final void pingForPong() throws SawimException {
         write(forPongPacket);
     }
@@ -193,15 +194,17 @@ public final class JabberXml extends ClientConnection {
             packets.addElement(packet);
         }
     }
+
     private boolean hasOutPackets() {
         synchronized (packets) {
             return !packets.isEmpty();
         }
     }
+
     private void sendPacket() throws SawimException {
         String packet = null;
         synchronized (packets) {
-            packet = (String)packets.elementAt(0);
+            packet = (String) packets.elementAt(0);
             packets.removeElementAt(0);
         }
         writePacket(packet);
@@ -234,7 +237,7 @@ public final class JabberXml extends ClientConnection {
     protected Protocol getProtocol() {
         return protocol;
     }
-    
+
     private boolean hasInPackets() throws SawimException {
         return (0 < socket.available());
     }
@@ -248,9 +251,11 @@ public final class JabberXml extends ClientConnection {
         }*/
         write(StringConvertor.stringToByteArrayUtf8(xml));
     }
+
     private void writePacket(String packet) throws SawimException {
         write(packet);
     }
+
     private XmlNode readXmlNode(boolean notEmpty) throws SawimException {
         while (hasInPackets() || notEmpty) {
             XmlNode x = XmlNode.parse(socket);
@@ -274,12 +279,13 @@ public final class JabberXml extends ClientConnection {
             }
         }
     }
+
     XmlNode newAccountConnect(String domain, String server) throws SawimException {
         domain = Util.xmlEscape(domain);
         connectTo(server);
         write(getOpenStreamXml(domain));
-        readXmlNode(true); 
-        XmlNode features = readXmlNode(true); 
+        readXmlNode(true);
+        XmlNode features = readXmlNode(true);
         if (!features.contains("regis" + "ter")) {
             return null;
         }
@@ -287,6 +293,7 @@ public final class JabberXml extends ClientConnection {
                 + "' id='1'><query xmlns='jabber:iq:register'/></iq>");
         return readXmlNode(true);
     }
+
     XmlNode newAccountRegister(String xml) throws SawimException {
         write(xml);
         XmlNode x = readXmlNode(true);
@@ -299,8 +306,8 @@ public final class JabberXml extends ClientConnection {
 
         String[] url = Util.explode(server, ':');
         String[] socketUrl = new String[3];
-        final String S_SOCKET = "s"+"ocket";
-        final String S_SSL = "ss"+"l";
+        final String S_SOCKET = "s" + "ocket";
+        final String S_SSL = "ss" + "l";
         final String S_5222 = "5222";
         if (3 == url.length) {
             socketUrl[0] = url[0];
@@ -345,7 +352,7 @@ public final class JabberXml extends ClientConnection {
         write(getOpenStreamXml(domain_));
         setProgress(10);
 
-        readXmlNode(true); 
+        readXmlNode(true);
         resolver.close();
         parseAuth(readXmlNode(true));
         while (!authorized_) {
@@ -354,10 +361,11 @@ public final class JabberXml extends ClientConnection {
 
         setProgress(30);
         write(GET_ROSTER_XML);
-		setProgress(50);
+        setProgress(50);
         usePong();
-		setProgress(60);
+        setProgress(60);
     }
+
     private void processInPacket() throws SawimException {
         XmlNode x = null;
         try {
@@ -384,16 +392,17 @@ public final class JabberXml extends ClientConnection {
             loginParse(x);
         }
     }
+
     private void nonSaslLogin() throws SawimException {
         String user = Jid.getNick(protocol.getUserId());
         sendRequest(
                 "<iq type='set' to='" + domain_ + "' id='login'>"
-                + "<query xmlns='jabber:iq:auth'>"
-                + "<username>" + Util.xmlEscape(user) + "</username>"
-                + "<password>" + Util.xmlEscape(protocol.getPassword()) + "</password>"
-                + "<resource>"+ Util.xmlEscape(resource) + "</resource>"
-                + "</query>"
-                + "</iq>");
+                        + "<query xmlns='jabber:iq:auth'>"
+                        + "<username>" + Util.xmlEscape(user) + "</username>"
+                        + "<password>" + Util.xmlEscape(protocol.getPassword()) + "</password>"
+                        + "<resource>" + Util.xmlEscape(resource) + "</resource>"
+                        + "</query>"
+                        + "</iq>");
         XmlNode answer = readXmlNode(true);
         setAuthStatus(S_RESULT.equals(answer.getAttribute(S_TYPE)));
     }
@@ -424,7 +433,7 @@ public final class JabberXml extends ClientConnection {
             }
             DebugLog.systemPrintln("[INFO-JABBER] Auth success");
             DebugLog.systemPrintln("auth " + authorized_);
-            
+
             sendRequest(getOpenStreamXml(domain_));
             return;
 
@@ -455,7 +464,7 @@ public final class JabberXml extends ClientConnection {
         }
         parse(x);
     }
-    
+
     private void parse(XmlNode x) throws SawimException {
         if (x.is("iq")) {
             parseIq(x);
@@ -468,16 +477,17 @@ public final class JabberXml extends ClientConnection {
 
         } else if (x.is("stream:error")) {
             setAuthStatus(false);
-            
+
             XmlNode err = (null == x.childAt(0)) ? x : x.childAt(0);
             DebugLog.systemPrintln("[INFO-JABBER] Stream error!: " + err.name + "," + err.value);
-            
+
         }
     }
 
     private String generateId(String key) {
         return key + Util.uniqueValue();
     }
+
     private String generateId() {
         return "sawim" + Util.uniqueValue();
     }
@@ -499,6 +509,7 @@ public final class JabberXml extends ClientConnection {
         }
         return IQ_TYPE_ERROR;
     }
+
     private void parseIqError(XmlNode iqNode, String from) throws SawimException {
         XmlNode errorNode = iqNode.getFirstNode(S_ERROR);
         iqNode.removeNode(S_ERROR);
@@ -511,7 +522,7 @@ public final class JabberXml extends ClientConnection {
                     "Code=" + errorNode.getAttribute(S_CODE) + " " +
                     "Value=" + getError(errorNode));*/
         }
-        
+
 
         XmlNode query = iqNode.childAt(0);
         if (null == query) {
@@ -526,7 +537,7 @@ public final class JabberXml extends ClientConnection {
                 jabberForm = null;
 
             } else if ("jabber:iq:roster".equals(query.name)) {
-                
+
             } else if ("http://jabber.org/protocol/disco#items".equals(xmlns)) {
                 ServiceDiscovery disco = serviceDiscovery;
                 if (null != disco) {
@@ -551,6 +562,7 @@ public final class JabberXml extends ClientConnection {
                 + "</error>"
                 + "</iq>");
     }
+
     private boolean isMy(String from) {
         if (StringConvertor.isEmpty(from)) return true;
         if (getJabber().getUserId().equals(Jid.getBareJid(from))) return true;
@@ -569,7 +581,7 @@ public final class JabberXml extends ClientConnection {
             jabberForm = null;
         }
     }
-    
+
     private void parseIq(XmlNode iq) throws SawimException {
         String from = StringConvertor.notNull(iq.getAttribute(S_FROM));
         byte iqType = getIqType(iq);
@@ -622,7 +634,7 @@ public final class JabberXml extends ClientConnection {
                         contact.setBooleanValue(Contact.CONTACT_NO_AUTH, isNoAutorized(subscription));
                         roster.addContact(contact);
                     }
-					setProgress(70);
+                    setProgress(70);
                     if (!isConnected()) {
                         return;
                     }
@@ -638,7 +650,7 @@ public final class JabberXml extends ClientConnection {
                     if ((null != xcode) && !xcode.startsWith(JabberXStatus.XSTATUS_START)) {
                         setXStatus();
                     }
-					setProgress(90);
+                    setProgress(90);
                     getBookmarks();
                     putPacketIntoQueue("<iq type='get' id='getnotes'><query xmlns='jabber:iq:private'><storage xmlns='storage:rosternotes'/></query></iq>");
                     setProgress(100);
@@ -679,8 +691,8 @@ public final class JabberXml extends ClientConnection {
                 if (IQ_TYPE_GET == iqType) {
                     StringBuffer sb = new StringBuffer();
                     sb.append("<iq type='result' to='")
-                    .append(Util.xmlEscape(from))
-                    .append("' id='").append(Util.xmlEscape(id)).append("'>");
+                            .append(Util.xmlEscape(from))
+                            .append("' id='").append(Util.xmlEscape(id)).append("'>");
                     sb.append("<query xmlns='http://jabber.org/protocol/disco#info'>");
                     sb.append(featureList);
                     sb.append("</query></iq>");
@@ -718,22 +730,22 @@ public final class JabberXml extends ClientConnection {
                     commands.addItems(iqQuery);
                 }
                 return;
-			} else if ("http://jabber.org/protocol/muc#admin".equals(xmlns)) {
+            } else if ("http://jabber.org/protocol/muc#admin".equals(xmlns)) {
                 if (IQ_TYPE_GET == iqType) {
                     sendIqError(S_QUERY, xmlns, from, id);
                     return;
                 }
-				AffiliationListConf uslist = affListConf;
+                AffiliationListConf uslist = affListConf;
                 if (null == uslist) {
                     return;
                 }
                 uslist.setTotalCount();
                 while (0 < iqQuery.childrenCount()) {
                     XmlNode item = iqQuery.popChildNode();
-					String jid = item.getAttribute(XmlNode.S_JID);
-					String affiliation = item.getAttribute(XmlNode.S_AFFILIATION);
-					String reasone = item.getFirstNodeValue("r" + "eason");
-					uslist.setAffiliation(affiliation);
+                    String jid = item.getAttribute(XmlNode.S_JID);
+                    String affiliation = item.getAttribute(XmlNode.S_AFFILIATION);
+                    String reasone = item.getFirstNodeValue("r" + "eason");
+                    uslist.setAffiliation(affiliation);
                     uslist.addItem(reasone, jid);
                 }
                 return;
@@ -755,26 +767,26 @@ public final class JabberXml extends ClientConnection {
                 XmlNode storage = iqQuery.getFirstNode("sto" + "rage", "storage:bookmarks");
                 if (null != storage) {
                     loadBookmarks(storage);
-				} else if (null == storage) {
+                } else if (null == storage) {
                     storage = iqQuery.getFirstNode("sto" + "rage", "http://miranda-im.org/storage#notes");
                     if (null != storage) {
                         loadMirandaNotes(storage);
                     }
-				}
-				if (IQ_TYPE_RESULT == iqType && ("ge"+"tnotes").equals(id)) {
-				    storage = iqQuery.getFirstNode("sto" + "rage", "sto" + "rag" + "e:rosternotes");
-			        if (null != storage) {
-					    while (0 < storage.childrenCount()) {
+                }
+                if (IQ_TYPE_RESULT == iqType && ("ge" + "tnotes").equals(id)) {
+                    storage = iqQuery.getFirstNode("sto" + "rage", "sto" + "rag" + "e:rosternotes");
+                    if (null != storage) {
+                        while (0 < storage.childrenCount()) {
                             XmlNode item = storage.popChildNode();
-						    String jid = item.getAttribute(XmlNode.S_JID);
-						    String note = item.value;
-					        Contact contact = jabber.getItemByUIN(jid);
-							if (contact != null) { 
-					            contact.annotations = note;
-							}
-					    }
-				    }
-				}
+                            String jid = item.getAttribute(XmlNode.S_JID);
+                            String note = item.value;
+                            Contact contact = jabber.getItemByUIN(jid);
+                            if (contact != null) {
+                                contact.annotations = note;
+                            }
+                        }
+                    }
+                }
                 return;
             } else if ("jabber:iq:version".equals(xmlns)) {
                 if (IQ_TYPE_RESULT == iqType) {
@@ -785,12 +797,12 @@ public final class JabberXml extends ClientConnection {
                     ver = Util.notUrls(ver);
                     os = Util.notUrls(os);
                     String jid = Jid.isConference(from) ? from : Jid.getBareJid(from);
-                    
+
                     DebugLog.println("ver " + jid + " " + name + " " + ver + " in " + os);
-                    
+
                     StatusView sv = Roster.getInstance().getStatusView();
                     Contact c = sv.getContact();
-                    
+
                     if ((null != c) && c.getUserId().equals(jid)) {
                         sv.setClientVersion(name + " " + ver + " " + os);
                         getJabber().updateStatusView(sv, c);
@@ -798,7 +810,7 @@ public final class JabberXml extends ClientConnection {
                     return;
                 }
                 String platform = /*Options.getBoolean(Options.OPTION_SHOW_PLATFORM) ? ""
-					: */Util.xmlEscape(General.PHONE);
+                    : */Util.xmlEscape(General.PHONE);
                 if (IQ_TYPE_GET == iqType) {
                     putPacketIntoQueue("<iq type='result' to='"
                             + Util.xmlEscape(from) + "' id='" + Util.xmlEscape(id) + "'>"
@@ -809,7 +821,7 @@ public final class JabberXml extends ClientConnection {
                             + "</version><os>"
                             + platform
                             + "</os></query></iq>");
-                    
+
                     String jid = Jid.isConference(from) ? from : Jid.getBareJid(from);
                     MagicEye.addAction(jabber, jid, "get_version");
                 }
@@ -819,7 +831,7 @@ public final class JabberXml extends ClientConnection {
                 if (IQ_TYPE_GET == iqType) {
                     String jid = Jid.isConference(from) ? from : Jid.getBareJid(from);
                     MagicEye.addAction(jabber, jid, "last_activity_request");
-                    
+
                     long time = General.getCurrentGmtTime() - jabber.getLastStatusChangeTime();
                     putPacketIntoQueue("<iq type='result' to='" + Util.xmlEscape(from)
                             + "' id='" + Util.xmlEscape(id) + "'>"
@@ -827,11 +839,11 @@ public final class JabberXml extends ClientConnection {
                             + time
                             + "'/></iq>");
                 }
-				if (IQ_TYPE_RESULT == iqType) {
-				    String time = iqQuery.getAttribute("se" + "conds");
-					time = Util.secDiffToDate(Integer.parseInt(time));
-					getJabber().addMessage(new SystemNotice(getJabber(), (byte)-1, Jid.getBareJid(from), time));
-				}
+                if (IQ_TYPE_RESULT == iqType) {
+                    String time = iqQuery.getAttribute("se" + "conds");
+                    time = Util.secDiffToDate(Integer.parseInt(time));
+                    getJabber().addMessage(new SystemNotice(getJabber(), (byte) -1, Jid.getBareJid(from), time));
+                }
                 return;
 
             } else if ("http://jabber.org/protocol/muc#owner".equals(xmlns)) {
@@ -849,7 +861,7 @@ public final class JabberXml extends ClientConnection {
             }
             String jid = Jid.isConference(from) ? from : Jid.getBareJid(from);
             MagicEye.addAction(jabber, jid, "get_time");
-            
+
             int gmtOffset = Options.getInt(Options.OPTION_GMT_OFFSET);
             putPacketIntoQueue("<iq type='result' to='" + Util.xmlEscape(from)
                     + "' id='" + Util.xmlEscape(id) + "'>"
@@ -880,8 +892,8 @@ public final class JabberXml extends ClientConnection {
             String xmlns = iqQuery.getXmlns();
             if ("http://jabber.org/protocol/rosterx".equals(xmlns)) {
                 if (Jid.isGate(from)) {
-            	    Contact c = getJabber().getItemByUIN(from);
-            	    if ((null != c) && !c.isTemp() && c.isAuth()) {
+                    Contact c = getJabber().getItemByUIN(from);
+                    if ((null != c) && !c.isTemp() && c.isAuth()) {
                         putPacketIntoQueue("<iq type='result' to='"
                                 + Util.xmlEscape(from) + "' id='" + Util.xmlEscape(id) + "' />");
                         parseRosterExchange(iqQuery, '@' + from);
@@ -909,12 +921,13 @@ public final class JabberXml extends ClientConnection {
             String tags = item.getAttribute("ta" + "gs");
             String title = item.getFirstNodeValue("ti" + "tle");
             String text = item.getFirstNodeValue("te" + "xt");
-			if (title == null) title = "";
-			if (tags == null) tags = "";
-			if (text == null) text = "";
+            if (title == null) title = "";
+            if (tags == null) tags = "";
+            if (text == null) text = "";
             _notes.addNote(title, tags, text);
         }
     }
+
     void saveMirandaNotes(String storage) {
         StringBuffer xml = new StringBuffer();
         xml.append("<iq type='set'><query xmlns='jabber:iq:private'>");
@@ -923,7 +936,8 @@ public final class JabberXml extends ClientConnection {
         xml.append("</storage></query></iq>");
         putPacketIntoQueue(xml.toString());
     }
-	public void requestMirandaNotes() {
+
+    public void requestMirandaNotes() {
         notes = getJabber().getMirandaNotes();
         String xml = "<iq type='get'>"
                 + "<query xmlns='jabber:iq:private'>"
@@ -977,7 +991,7 @@ public final class JabberXml extends ClientConnection {
         if (Jid.isConference(from)) {
             Contact c = getJabber().getItemByUIN(Jid.getBareJid(from));
             if (c instanceof JabberServiceContact) {
-                JabberContact.SubContact sc = ((JabberServiceContact)c).getExistSubContact(Jid.getResource(from, null));
+                JabberContact.SubContact sc = ((JabberServiceContact) c).getExistSubContact(Jid.getResource(from, null));
                 if ((null != sc) && (null != sc.realJid)) {
                     userInfo.uin = sc.realJid;
                 }
@@ -1057,7 +1071,7 @@ public final class JabberXml extends ClientConnection {
             boolean autojoin = isTrue(item.getAttribute("au" + "tojoin"));
             String password = item.getAttribute("passwor" + "d");
 
-            JabberServiceContact conference = (JabberServiceContact)jabber.createTempContact(jid, name);
+            JabberServiceContact conference = (JabberServiceContact) jabber.createTempContact(jid, name);
             conference.setMyName(nick);
             conference.setTempFlag(false);
             conference.setBooleanValue(Contact.CONTACT_NO_AUTH, false);
@@ -1076,7 +1090,7 @@ public final class JabberXml extends ClientConnection {
         jabber.rejoin();
     }
 
-    
+
     private void parsePresence(XmlNode x) {
         final String fromFull = x.getAttribute(S_FROM);
         final String from = Jid.getBareJid(fromFull);
@@ -1094,7 +1108,7 @@ public final class JabberXml extends ClientConnection {
 
             boolean showError = Jid.isGate(from);
             if (Jid.isConference(from)) {
-                JabberServiceContact conf = (JabberServiceContact)getJabber().getItemByUIN(from);
+                JabberServiceContact conf = (JabberServiceContact) getJabber().getItemByUIN(from);
                 if (null != conf) {
                     int code = Util.strToIntDef(errorNode.getAttribute(S_CODE), -1);
                     conf.nickError(getJabber(), fromRes, code, getError(errorNode));
@@ -1144,10 +1158,10 @@ public final class JabberXml extends ClientConnection {
             type = "";
         }
 
-        JabberContact contact = (JabberContact)getJabber().getItemByUIN(from);
+        JabberContact contact = (JabberContact) getJabber().getItemByUIN(from);
         if (null == contact) {
             String fullJid = Jid.realJidToSawimJid(fromFull);
-            contact = (JabberContact)getJabber().getItemByUIN(fullJid);
+            contact = (JabberContact) getJabber().getItemByUIN(fullJid);
             if (null == contact) {
                 return;
             }
@@ -1157,37 +1171,37 @@ public final class JabberXml extends ClientConnection {
         String statusString = x.getFirstNodeValue(S_STATUS);
         if (Jid.isConference(from)) {
             XmlNode xMuc = x.getXNode("http://jabber.org/protocol/muc#user");
-			int code = 0;
+            int code = 0;
             if (null != xMuc) {
                 code = Util.strToIntDef(xMuc.getFirstNodeAttribute(S_STATUS, S_CODE), 0);
             }
             XmlNode item = (null == xMuc) ? null : xMuc.getFirstNode(S_ITEM);
-            JabberServiceContact conf = (JabberServiceContact)contact;
+            JabberServiceContact conf = (JabberServiceContact) contact;
             String reasone = null;
-			String rangVoice = "";
-			String roleVoice = "";
+            String rangVoice = "";
+            String roleVoice = "";
             priority = 0;
-			int priorityA = 0;
+            int priorityA = 0;
 
             if (null != item) {
                 String affiliation = item.getAttribute(XmlNode.S_AFFILIATION);
                 if (("m" + "ember").equals(affiliation)) {
-					priorityA = JabberServiceContact.AFFILIATION_MEMBER;
-					rangVoice = JLocale.getString("member");
+                    priorityA = JabberServiceContact.AFFILIATION_MEMBER;
+                    rangVoice = JLocale.getString("member");
                 } else if (("o" + "wner").equals(affiliation)) {
-					priorityA = JabberServiceContact.AFFILIATION_OWNER;
-					rangVoice = JLocale.getString("owner");
+                    priorityA = JabberServiceContact.AFFILIATION_OWNER;
+                    rangVoice = JLocale.getString("owner");
                 } else if (("a" + "dmin").equals(affiliation)) {
-					priorityA = JabberServiceContact.AFFILIATION_ADMIN;
-					rangVoice = JLocale.getString("admin");
+                    priorityA = JabberServiceContact.AFFILIATION_ADMIN;
+                    rangVoice = JLocale.getString("admin");
                 } else {
                     priorityA = JabberServiceContact.AFFILIATION_NONE;
-					rangVoice = JLocale.getString("none");
+                    rangVoice = JLocale.getString("none");
                 }
                 String role = item.getAttribute(XmlNode.S_ROLE);
                 if (("m" + "oderator").equals(role)) {
                     priority = JabberServiceContact.ROLE_MODERATOR;
-					roleVoice = JLocale.getString("moderator");
+                    roleVoice = JLocale.getString("moderator");
                 } else if (("p" + "articipant").equals(role)) {
                     priority = JabberServiceContact.ROLE_PARTICIPANT;
                     roleVoice = JLocale.getString("participant");
@@ -1197,29 +1211,29 @@ public final class JabberXml extends ClientConnection {
                     roleVoice = JLocale.getString("reason");
                 } else {
                     priority = JabberServiceContact.ROLE_VISITOR;
-					roleVoice = JLocale.getString("visitor");
+                    roleVoice = JLocale.getString("visitor");
                 }
             }
             getJabber().setConfContactStatus(conf, fromRes,
                     nativeStatus2StatusIndex(type), statusString, priority, priorityA);
             if (null != item) {
                 String newNick = item.getAttribute(XmlNode.S_NICK);
-				String realJid = item.getAttribute(XmlNode.S_JID);
+                String realJid = item.getAttribute(XmlNode.S_JID);
                 if (null != newNick) {
                     getJabber().setConfContactStatus(conf, newNick,
                             nativeStatus2StatusIndex(""), "", priority, priorityA);
                     conf.nickChainged(getJabber(), fromRes, newNick);
                 } else {
-				    StringBuffer s = new StringBuffer(0);
-				    if (statusString != null) {
+                    StringBuffer s = new StringBuffer(0);
+                    if (statusString != null) {
                         s.append('(').append(statusString).append(") ");
                     }
-				    s.append(StringConvertor.notNull(reasone));
-					if (null != realJid) {
-					    s.append(Jid.getBareJid(realJid)).append(" ");
-					}
-					conf.nickOnline(getJabber(), fromRes, rangVoice, roleVoice, s.toString());
-					s = null;
+                    s.append(StringConvertor.notNull(reasone));
+                    if (null != realJid) {
+                        s.append(Jid.getBareJid(realJid)).append(" ");
+                    }
+                    conf.nickOnline(getJabber(), fromRes, rangVoice, roleVoice, s.toString());
+                    s = null;
                 }
                 if (null != realJid) {
                     conf.setRealJid(fromRes, Jid.getBareJid(realJid));
@@ -1256,7 +1270,7 @@ public final class JabberXml extends ClientConnection {
                     contact.setXStatus(id, xtext);
                 }
                 if (Jid.isPyIcqGate(from)) {
-                    setXStatusToIcqTransport((JabberServiceContact)contact);
+                    setXStatusToIcqTransport((JabberServiceContact) contact);
                 }
             }
             getJabber().setContactStatus(contact, fromRes, nativeStatus2StatusIndex(type), statusString, priority);
@@ -1270,10 +1284,12 @@ public final class JabberXml extends ClientConnection {
             getJabber().ui_changeContactStatus(contact);
         }
     }
+
     private String getNickFromNode(XmlNode x) {
         String name = x.getFirstNodeValueRecursive("n" + "ickname");
         return (null == name) ? x.getFirstNodeValue(S_NICK) : name;
     }
+
     private void autoRenameContact(Contact contact, XmlNode x) {
         if (null == contact) {
             return;
@@ -1286,6 +1302,7 @@ public final class JabberXml extends ClientConnection {
             getJabber().renameContact(contact, name);
         }
     }
+
     private void autoMoveContact(Contact contact, XmlNode presence) {
         if (null == contact) {
             return;
@@ -1318,7 +1335,7 @@ public final class JabberXml extends ClientConnection {
         if (null == eventNode) {
             return;
         }
-        JabberContact contact = (JabberContact)getJabber().getItemByUIN(Jid.getBareJid(fullJid));
+        JabberContact contact = (JabberContact) getJabber().getItemByUIN(Jid.getBareJid(fullJid));
         if (null == contact) {
             return;
         }
@@ -1381,7 +1398,7 @@ public final class JabberXml extends ClientConnection {
             getJabber().beginTyping(from, messageEvent.contains(S_COMPOSING));
         }
     }
-    
+
     private void parseChatState(XmlNode message, String from) {
         if (0 < Options.getInt(Options.OPTION_TYPING_MODE)) {
             if (message.contains(S_ACTIVE)
@@ -1394,7 +1411,7 @@ public final class JabberXml extends ClientConnection {
             }
         }
     }
-    
+
     private String getDate(XmlNode message) {
         XmlNode offline = message.getXNode("jabber:x:delay");
         if (null == offline) {
@@ -1405,20 +1422,20 @@ public final class JabberXml extends ClientConnection {
 
     private void prepareFirstPrivateMessage(String jid) {
         final JabberServiceContact conf =
-                (JabberServiceContact)getJabber().getItemByUIN(Jid.getBareJid(jid));
-        if (null == conf) { 
+                (JabberServiceContact) getJabber().getItemByUIN(Jid.getBareJid(jid));
+        if (null == conf) {
             return;
         }
 
         JabberContact.SubContact sub = conf.getExistSubContact(Jid.getResource(jid, ""));
-        if (null == sub) { 
+        if (null == sub) {
             return;
         }
         if (JabberServiceContact.ROLE_MODERATOR == sub.priority) {
             getJabber().addTempContact(getJabber().createTempContact(jid));
         }
     }
-    
+
     private void parseMessage(XmlNode msg) {
         msg.removeNode("h" + "tml");
 
@@ -1480,7 +1497,7 @@ public final class JabberXml extends ClientConnection {
                 subject = null;
             }
         }
-        
+
         if (isConference ? !isGroupchat : true) {
             parseChatState(msg, from);
         }
@@ -1501,13 +1518,13 @@ public final class JabberXml extends ClientConnection {
             }
             return;
         }
-        
+
         if ((null != subject) && (-1 == text.indexOf(subject))) {
             text = subject + "\n\n" + text;
         }
         text = StringConvertor.trim(text);
 
-        final JabberContact c = (JabberContact)getJabber().getItemByUIN(from);
+        final JabberContact c = (JabberContact) getJabber().getItemByUIN(from);
 
         if (msg.contains(S_ERROR)) {
             final String errorText = getError(msg.getFirstNode(S_ERROR));
@@ -1539,28 +1556,28 @@ public final class JabberXml extends ClientConnection {
 
             if (!isGroupchat && msg.contains("reques" + "t") && (null != msg.getId())) {
                 putPacketIntoQueue("<message to='" + Util.xmlEscape(fullJid)
-                    + "' id='" + Util.xmlEscape(msg.getId())
-                    + "'><received xmlns='urn:xmpp:receipts' id='"
-                    + Util.xmlEscape(msg.getId()) + "'/></message>");
+                        + "' id='" + Util.xmlEscape(msg.getId())
+                        + "'><received xmlns='urn:xmpp:receipts' id='"
+                        + Util.xmlEscape(msg.getId()) + "'/></message>");
             }
 
             if (c instanceof JabberServiceContact) {
                 isConference = c.isConference();
-				XmlNode xMuc = msg.getXNode("http://jabber.org/protocol/muc#user");
-				if (null != xMuc) {
-					int code = Util.strToIntDef(xMuc.getFirstNodeAttribute(S_STATUS, S_CODE), 0);
-					if (code == 100) {
-						boolean prevWarning = ((JabberServiceContact)c).warning;
-						((JabberServiceContact)c).warning = true;
-						if (prevWarning == ((JabberServiceContact)c).warning) {
-							prevWarning = true;
-							return;
-						}
-					}
-				}
+                XmlNode xMuc = msg.getXNode("http://jabber.org/protocol/muc#user");
+                if (null != xMuc) {
+                    int code = Util.strToIntDef(xMuc.getFirstNodeAttribute(S_STATUS, S_CODE), 0);
+                    if (code == 100) {
+                        boolean prevWarning = ((JabberServiceContact) c).warning;
+                        ((JabberServiceContact) c).warning = true;
+                        if (prevWarning == ((JabberServiceContact) c).warning) {
+                            prevWarning = true;
+                            return;
+                        }
+                    }
+                }
                 if ((null != subject) && isConference && isGroupchat) {
                     String prevSubject = StringConvertor.notNull(c.getStatusText());
-                    ((JabberServiceContact)c).setSubject(subject);
+                    ((JabberServiceContact) c).setSubject(subject);
                     getJabber().ui_changeContactStatus(c);
                     if (prevSubject.equals(subject)) {
                         prevSubject = null;
@@ -1595,7 +1612,7 @@ public final class JabberXml extends ClientConnection {
 
         } else {
             if (isConference) {
-                final JabberServiceContact conf = (JabberServiceContact)c;
+                final JabberServiceContact conf = (JabberServiceContact) c;
 
                 if (isGroupchat && (null != fromRes)) {
                     if (isOnlineMessage && fromRes.equals(conf.getMyName())) {
@@ -1618,6 +1635,7 @@ public final class JabberXml extends ClientConnection {
 
         getJabber().addMessage(message, S_HEADLINE.equals(type));
     }
+
     private void parseBlogMessage(String to, XmlNode msg, String text, String botNick) {
         text = StringConvertor.notNull(text);
         String userNick = getNickFromNode(msg);
@@ -1680,7 +1698,7 @@ public final class JabberXml extends ClientConnection {
         }
         return false;
     }
-    
+
     private void parseStreamFeatures(XmlNode x) throws SawimException {
         XmlNode x2 = null;
         if (0 == x.childrenCount()) {
@@ -1693,43 +1711,43 @@ public final class JabberXml extends ClientConnection {
             sendRequest("<compress xmlns='http://jabber.org/protocol/compress'><method>zlib</method></compress>");
             return;
         }
-        
+
         x2 = x.getFirstNode("mechanisms");
         if ((null != x2) && x2.contains("mechanism")) {
 
             String auth = "<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' ";
 
             String googleToken = null;
-            
+
             if (isMechanism(x2, "X-GOOGLE-TOKEN")) {
-                
+
                 DebugLog.systemPrintln("[INFO-JABBER] Using X-GOOGLE-TOKEN");
-                
+
                 isGTalk_ = true;
                 googleToken = getGoogleToken(getJabber().getUserId(), getJabber().getPassword());
                 if (null == googleToken) {
                     throw new SawimException(111, 1);
                 }
             }
-            
+
             if (isMechanism(x2, "DIGEST-MD5")) {
-                
+
                 DebugLog.systemPrintln("[INFO-JABBER] Using DIGEST-MD5");
-                
+
                 auth += "mechanism='DIGEST-MD5'/>";
 
             } else if (isMechanism(x2, "SCRAM-SHA-1")) {
                 auth += "mechanism='SCRAM-SHA-1'>";
                 scramSHA1 = new SASL_ScramSha1();
-                auth +=Util.xmlEscape(scramSHA1.init(protocol.getUserId(), protocol.getPassword()));
+                auth += Util.xmlEscape(scramSHA1.init(protocol.getUserId(), protocol.getPassword()));
                 auth += "</auth>";
 
             } else if (null != googleToken) {
                 auth += "mechanism='X-GOOGLE-TOKEN'>" + googleToken + "</auth>";
             } else if (isMechanism(x2, "PLAIN")) {
-                
+
                 DebugLog.systemPrintln("[INFO-JABBER] Using PLAIN");
-                
+
                 auth += "mechanism='PLAIN'>";
                 Util data = new Util();
                 data.writeUtf8String(getJabber().getUserId());
@@ -1750,7 +1768,7 @@ public final class JabberXml extends ClientConnection {
             sendRequest(auth);
             return;
         }
-        
+
         if (x.contains("bind")) {
             DebugLog.systemPrintln("[INFO-JABBER] Send bind request");
             sendRequest("<iq type='set' id='bind'>"
@@ -1760,24 +1778,24 @@ public final class JabberXml extends ClientConnection {
                     + "</iq>");
             return;
         }
-        x2 = x.getFirstNode("a"+"uth", "http://jabber.org/features/iq-auth");
+        x2 = x.getFirstNode("a" + "uth", "http://jabber.org/features/iq-auth");
         if (null != x2) {
             nonSaslLogin();
             return;
         }
     }
-    
+
     private void parseChallenge(XmlNode x) throws SawimException {
-        
+
         DebugLog.systemPrintln("[INFO-JABBER] Received challenge");
-        
+
         String resp = "<response xmlns='urn:ietf:params:xml:ns:xmpp-sasl'";
         String challenge = MD5.decodeBase64(x.value);
 
         if (null != scramSHA1) {
             resp += ">" + scramSHA1.response(challenge) + "</response>";
 
-        } else { 
+        } else {
             int nonceIndex = challenge.indexOf("nonce=");
             if (nonceIndex >= 0) {
                 nonceIndex += 7;
@@ -1802,7 +1820,7 @@ public final class JabberXml extends ClientConnection {
     }
 
     private String responseMd5Digest(String user, String pass,
-            String realm, String digestUri, String nonce, String cnonce) {
+                                     String realm, String digestUri, String nonce, String cnonce) {
         MD5 hUserRealmPass = new MD5();
         hUserRealmPass.init();
         hUserRealmPass.updateASCII(user);
@@ -1839,18 +1857,18 @@ public final class JabberXml extends ClientConnection {
         hResp.finish();
 
         String quote = "\"";
-    //    if (Profile.PROTOCOL_VK == getJabber().getProfile().protocolType) {
-    //        quote = "";
-    //    }
+        //    if (Profile.PROTOCOL_VK == getJabber().getProfile().protocolType) {
+        //        quote = "";
+        //    }
         return MD5.toBase64(StringConvertor.stringToByteArrayUtf8(
                 new StringBuffer()
-                .append("username=\"").append(user)
-                .append("\",realm=\"").append(realm)
-                .append("\",nonce=\"").append(nonce)
-                .append("\",cnonce=\"").append(cnonce)
-                .append("\",nc=00000001,digest-uri=\"").append(digestUri)
-                .append("\",qop=auth,response=").append(quote).append(hResp.getDigestHex())
-                .append(quote).append(",charset=utf-8").toString()));
+                        .append("username=\"").append(user)
+                        .append("\",realm=\"").append(realm)
+                        .append("\",nonce=\"").append(nonce)
+                        .append("\",cnonce=\"").append(cnonce)
+                        .append("\",nc=00000001,digest-uri=\"").append(digestUri)
+                        .append("\",qop=auth,response=").append(quote).append(hResp.getDigestHex())
+                        .append(quote).append(",charset=utf-8").toString()));
     }
 
 
@@ -1887,9 +1905,9 @@ public final class JabberXml extends ClientConnection {
                 c = (HttpsConnection) Connector
                         .open("https://www.google.com:443/accounts/IssueAuthToken?" + first);
 
-                
+
                 DebugLog.systemPrintln("[INFO-JABBER] Next www.google.com connection");
-                
+
                 dis = c.openDataInputStream();
                 str = readLine(dis);
 
@@ -1910,7 +1928,7 @@ public final class JabberXml extends ClientConnection {
         return null;
     }
 
-    
+
     private String readLine(DataInputStream dis) {
         StringBuffer s = new StringBuffer();
         try {
@@ -1918,7 +1936,7 @@ public final class JabberXml extends ClientConnection {
                 if (ch == '\n') {
                     return s.toString();
                 }
-                s.append((char)ch);
+                s.append((char) ch);
             }
         } catch (Exception e) {
         }
@@ -1929,7 +1947,7 @@ public final class JabberXml extends ClientConnection {
         String privateJid = Jid.realJidToSawimJid(conf.getUserId() + '/' + resource);
         Contact privateContact = getJabber().getItemByUIN(privateJid);
         if (null != privateContact) {
-            ((JabberServiceContact)privateContact).setPrivateContactStatus(conf);
+            ((JabberServiceContact) privateContact).setPrivateContactStatus(conf);
             getJabber().ui_changeContactStatus(privateContact);
         }
     }
@@ -1941,7 +1959,7 @@ public final class JabberXml extends ClientConnection {
         xml.append("<iq type='set' id='").append(generateId())
                 .append("'><query xmlns='jabber:iq:roster'>");
         for (int i = 0; i < contacts.size(); ++i) {
-            JabberContact contact = (JabberContact)contacts.elementAt(i);
+            JabberContact contact = (JabberContact) contacts.elementAt(i);
             if (Jid.isConference(contact.getUserId())) {
                 continue;
             }
@@ -1964,9 +1982,10 @@ public final class JabberXml extends ClientConnection {
             putPacketIntoQueue(xml.toString());
         }
     }
+
     private void parseRosterExchange(XmlNode x, String domain) {
         StringBuffer xml = new StringBuffer();
-        Jabber j = (Jabber)protocol;
+        Jabber j = (Jabber) protocol;
         Vector subscribes = new Vector();
         for (int i = 0; i < x.childrenCount(); ++i) {
             XmlNode item = x.childAt(i);
@@ -1977,12 +1996,12 @@ public final class JabberXml extends ClientConnection {
             boolean isDelete = item.getAttribute("a" + "ction").equals("d" + "elete");
             boolean isModify = item.getAttribute("a" + "ction").equals("m" + "odify");
 
-            JabberContact contact = (JabberContact)j.getItemByUIN(jid);
+            JabberContact contact = (JabberContact) j.getItemByUIN(jid);
             if (null == contact) {
                 if (isModify || isDelete) {
                     continue;
                 }
-                contact = (JabberContact)j.createTempContact(jid);
+                contact = (JabberContact) j.createTempContact(jid);
                 contact.setBooleanValue(Contact.CONTACT_NO_AUTH, true);
             }
             String group = item.getFirstNodeValue(S_GROUP);
@@ -2025,7 +2044,7 @@ public final class JabberXml extends ClientConnection {
             xml = new StringBuffer();
             for (int i = 0; i < subscribes.size(); ++i) {
                 xml.append("<presence type='subscribe' to='")
-                        .append(Util.xmlEscape(((Contact)subscribes.elementAt(i)).getUserId()))
+                        .append(Util.xmlEscape(((Contact) subscribes.elementAt(i)).getUserId()))
                         .append("'/>");
             }
             if (0 < xml.length()) {
@@ -2040,13 +2059,13 @@ public final class JabberXml extends ClientConnection {
         Vector contacts = getJabber().getContactItems();
         xml.append("<storage xmlns='storage:bookmarks'>");
         for (int i = 0; i < contacts.size(); ++i) {
-            JabberContact contact = (JabberContact)contacts.elementAt(i);
+            JabberContact contact = (JabberContact) contacts.elementAt(i);
             if (!contact.isConference() || contact.isTemp()) {
                 continue;
             }
             contact.setBooleanValue(Contact.CONTACT_NO_AUTH, false);
 
-            JabberServiceContact conf = (JabberServiceContact)contact;
+            JabberServiceContact conf = (JabberServiceContact) contact;
             xml.append("<conference autojoin='");
             xml.append(conf.isAutoJoin() ? S_TRUE : S_FALSE);
             xml.append("' name='");
@@ -2064,6 +2083,7 @@ public final class JabberXml extends ClientConnection {
         xml.append("</storage>");
         return xml.toString();
     }
+
     public void saveConferences() {
         StringBuffer xml = new StringBuffer();
 
@@ -2072,7 +2092,7 @@ public final class JabberXml extends ClientConnection {
         xml.append(storage);
         xml.append("</query></iq>");
 
-        
+
         if (xep0048) {
             xml.append("<iq type='set'>");
             xml.append("<pubsub xmlns='http://jabber.org/protocol/pubsub'>");
@@ -2083,6 +2103,7 @@ public final class JabberXml extends ClientConnection {
 
         putPacketIntoQueue(xml.toString());
     }
+
     public void removeGateContacts(String gate) {
         if (StringConvertor.isEmpty(gate)) {
             return;
@@ -2092,9 +2113,9 @@ public final class JabberXml extends ClientConnection {
         StringBuffer xml = new StringBuffer();
 
         xml.append("<iq type='set' id='").append(generateId())
-            .append("'><query xmlns='jabber:iq:roster'>");
+                .append("'><query xmlns='jabber:iq:roster'>");
         for (int i = 0; i < contacts.size(); ++i) {
-            JabberContact contact = (JabberContact)contacts.elementAt(i);
+            JabberContact contact = (JabberContact) contacts.elementAt(i);
             if (!contact.getUserId().endsWith(gate)) {
                 continue;
             }
@@ -2135,6 +2156,7 @@ public final class JabberXml extends ClientConnection {
                 + "</item>"
                 + "</query></iq>");
     }
+
     public void removeContact(String jid) {
         if (Jid.isConference(jid) && !isGTalk_) {
             saveConferences();
@@ -2147,7 +2169,7 @@ public final class JabberXml extends ClientConnection {
 
     public void getBookmarks() {
         putPacketIntoQueue("<iq type='get' id='0'><query xmlns='jabber:iq:private'><storage xmlns='storage:bookmarks'/></query></iq>");
-        
+
         if (xep0048) {
             putPacketIntoQueue("<iq type='get' id='1'><pubsub xmlns='http://jabber.org/protocol/pubsub'><items node='storage:bookmarks'/></pubsub></iq>");
         }
@@ -2159,7 +2181,7 @@ public final class JabberXml extends ClientConnection {
                 + "xmlns:stream='http:/" + "/etherx.jabber.org/streams' "
                 + "version='1.0' "
                 + "to='" + server + "'"
-                + " xml:lang='" + sawim.util.JLocale.getLanguageCode()+ "'>";
+                + " xml:lang='" + sawim.util.JLocale.getLanguageCode() + "'>";
     }
 
     private void getVCard(String jid) {
@@ -2208,10 +2230,10 @@ public final class JabberXml extends ClientConnection {
         sendMessage(to, msg, type, false, generateId());
     }
 
-    
+
     void sendMessage(PlainMessage message) {
         String to = message.getRcvrUin();
-        JabberContact toContact = (JabberContact)protocol.getItemByUIN(to);
+        JabberContact toContact = (JabberContact) protocol.getItemByUIN(to);
         if (null != toContact) {
             to = toContact.getReciverJid();
         }
@@ -2229,9 +2251,11 @@ public final class JabberXml extends ClientConnection {
             addMessage(message);
         }
     }
+
     private String getChatStateTag(String state) {
         return "<" + state + " xmlns='http://jabber.org/protocol/chatstates'/>";
     }
+
     void sendTypingNotify(String to, boolean composing) {
         String tag = getChatStateTag(composing ? S_COMPOSING : S_ACTIVE/*S_PAUSED*/);
         putPacketIntoQueue("<message to='" + Util.xmlEscape(to)
@@ -2250,9 +2274,9 @@ public final class JabberXml extends ClientConnection {
                 xNode += "<password>" + Util.xmlEscape(password) + "</password>";
             }
             long time = conf.hasChat() ? getJabber().getChat(conf).getLastMessageTime() : 0;
-			
+
             if (0 != time) xNode += "<history maxstanzas='20' seconds='" + (General.getCurrentGmtTime() - time) + "'/>";
-            
+
             if (!StringConvertor.isEmpty(xNode)) {
                 xml += "<x xmlns='http://jabber.org/protocol/muc'>" + xNode + "</x>";
             }
@@ -2262,25 +2286,27 @@ public final class JabberXml extends ClientConnection {
             xml += "<show>" + status + "</show>";
         }
 
-        if (Options.getBoolean(Options.OPTION_TITLE_IN_CONFERENCE)) { 
-			String xstatusTitle = getJabber().getProfile().xstatusTitle;  
-			xml += (StringConvertor.isEmpty(xstatusTitle) ? "" : "<status>" + Util.xmlEscape(xstatusTitle) + "</status>"); 
-		}
+        if (Options.getBoolean(Options.OPTION_TITLE_IN_CONFERENCE)) {
+            String xstatusTitle = getJabber().getProfile().xstatusTitle;
+            xml += (StringConvertor.isEmpty(xstatusTitle) ? "" : "<status>" + Util.xmlEscape(xstatusTitle) + "</status>");
+        }
 
-        xml = "<presence to='"+ Util.xmlEscape(to) + "'>" + xml
+        xml = "<presence to='" + Util.xmlEscape(to) + "'>" + xml
                 + getCaps() + "</presence>";
         putPacketIntoQueue(xml);
     }
+
     void sendPresenceUnavailable(String to) {
         putPacketIntoQueue("<presence type='unavailable' to='" + Util.xmlEscape(to)
                 + "'><status>"
-				+ Options.getString(Options.UNAVAILABLE_NESSAGE)
-				+ "</status></presence>");
+                + Options.getString(Options.UNAVAILABLE_NESSAGE)
+                + "</status></presence>");
     }
 
     void setStatus(byte statusIndex, String msg, int priority) {
         setStatus(getNativeStatus(statusIndex), msg, priority);
     }
+
     void setStatus(String status, String msg, int priority) {
         String xXml = getQipXStatus();
         if (0 != xXml.length()) {
@@ -2290,46 +2316,49 @@ public final class JabberXml extends ClientConnection {
                 msg = msg + " " + descr;
             }
         }
-        
+
         String xml = "<presence>"
                 + (StringConvertor.isEmpty(status) ? "" : "<show>" + status + "</show>")
                 + (StringConvertor.isEmpty(msg) ? "" : "<status>" + Util.xmlEscape(msg) + "</status>")
                 + (0 < priority ? "<priority>" + priority + "</priority>" : "")
                 + getCaps()
-                
-                + xXml
-				+ "</presence>";
-		putPacketIntoQueue(xml);
-		if (Options.getBoolean(Options.OPTION_TITLE_IN_CONFERENCE)) { 																				
-		    setConferencesXStatus(status, msg, priority);												
-		}		
-    }
-	void setConferencesXStatus(String status, String msg, int priority) {                                
-        String xml;                                                                                      
-        Vector contacts = getJabber().getContactItems();                                                 
-        for (int i = 0; i < contacts.size(); ++i) {                                                      
-            JabberContact contact = (JabberContact)contacts.elementAt(i);                                    
-            if (contact instanceof JabberContact) {                                                          
-                if ((contact).isConference() && contact.isOnline()) {           	                 
-                    if (0 <= priority) {                                                                             
-                        xml = "<presence to='" + Util.xmlEscape(contact.getUserId()) + "'>";                         
-                        xml += (StringConvertor.isEmpty(status) ? "" : "<show>" + status + "</show>");               
-                        xml += (StringConvertor.isEmpty(msg) ? "" : "<status>" + Util.xmlEscape(msg) + "</status>"); 
-                        xml += getCaps() + "</presence>";                                                            
-                        putPacketIntoQueue(xml);                                                                     
 
-                    }	                                                                                 
-                }	                                                                                 
-            }	                                                                                         
-        }                                                                                                
-    }   
+                + xXml
+                + "</presence>";
+        putPacketIntoQueue(xml);
+        if (Options.getBoolean(Options.OPTION_TITLE_IN_CONFERENCE)) {
+            setConferencesXStatus(status, msg, priority);
+        }
+    }
+
+    void setConferencesXStatus(String status, String msg, int priority) {
+        String xml;
+        Vector contacts = getJabber().getContactItems();
+        for (int i = 0; i < contacts.size(); ++i) {
+            JabberContact contact = (JabberContact) contacts.elementAt(i);
+            if (contact instanceof JabberContact) {
+                if ((contact).isConference() && contact.isOnline()) {
+                    if (0 <= priority) {
+                        xml = "<presence to='" + Util.xmlEscape(contact.getUserId()) + "'>";
+                        xml += (StringConvertor.isEmpty(status) ? "" : "<show>" + status + "</show>");
+                        xml += (StringConvertor.isEmpty(msg) ? "" : "<status>" + Util.xmlEscape(msg) + "</status>");
+                        xml += getCaps() + "</presence>";
+                        putPacketIntoQueue(xml);
+
+                    }
+                }
+            }
+        }
+    }
 
     public void sendSubscribed(String jid) {
         requestPresence(jid, "s" + "ubscribed");
     }
+
     public void sendUnsubscribed(String jid) {
         requestPresence(jid, "u" + "nsubscribed");
     }
+
     public void requestSubscribe(String jid) {
         requestPresence(jid, "s" + "ubscribe");
     }
@@ -2337,10 +2366,12 @@ public final class JabberXml extends ClientConnection {
     private void requestPresence(String jid, String type) {
         putPacketIntoQueue("<presence type='" + Util.xmlEscape(type) + "' to='" + Util.xmlEscape(jid) + "'/>");
     }
+
     private void requestIq(String jid, String xmlns, String id) {
         putPacketIntoQueue("<iq type='get' to='" + Util.xmlEscape(jid)
                 + "' id='" + Util.xmlEscape(id) + "'><query xmlns='" + xmlns + "'/></iq>");
     }
+
     private void requestIq(String jid, String xmlns) {
         requestIq(jid, xmlns, generateId());
     }
@@ -2348,9 +2379,11 @@ public final class JabberXml extends ClientConnection {
     public void requestClientVersion(String jid) {
         requestIq(jid, "jabber:iq:version");
     }
+
     public void requestConferenceInfo(String jid) {
         requestIq(jid, "http://jabber.org/protocol/disco#info");
     }
+
     public void requestConferenceUsers(String jid) {
         requestIq(jid, "http://jabber.org/protocol/disco#items");
         serviceDiscovery = getJabber().getServiceDiscovery();
@@ -2360,30 +2393,33 @@ public final class JabberXml extends ClientConnection {
         requestIq(server, "http://jabber.org/protocol/disco#items");
         serviceDiscovery = getJabber().getServiceDiscovery();
     }
-	public void requestAffiliationListConf(String jidConference, String affiliation) {
+
+    public void requestAffiliationListConf(String jidConference, String affiliation) {
         putPacketIntoQueue("<iq type='get' to='" + Util.xmlEscape(jidConference)
                 + "' id='" + Util.xmlEscape(affiliation)
-				+ "'><query xmlns='http://jabber.org/protocol/muc#admin'><item affiliation='"
-				+ Util.xmlEscape(affiliation) + "'/></query></iq>");
+                + "'><query xmlns='http://jabber.org/protocol/muc#admin'><item affiliation='"
+                + Util.xmlEscape(affiliation) + "'/></query></iq>");
         affListConf = getJabber().getAffiliationListConf();
     }
-	public void setAffiliationListConf(String jidConference, String jidItem, String setAffiliation, String setReason) {
+
+    public void setAffiliationListConf(String jidConference, String jidItem, String setAffiliation, String setReason) {
         putPacketIntoQueue("<iq type='set' to='" + Util.xmlEscape(jidConference)
                 + "' id='admin_modify'><query xmlns='http://jabber.org/protocol/muc#admin'><item jid='"
-				+ Util.xmlEscape(jidItem) + "' affiliation='" + Util.xmlEscape(setAffiliation)
-				+ "'><reason>" + Util.xmlEscape(setReason) + "</reason></item></query></iq>");
+                + Util.xmlEscape(jidItem) + "' affiliation='" + Util.xmlEscape(setAffiliation)
+                + "'><reason>" + Util.xmlEscape(setReason) + "</reason></item></query></iq>");
         affListConf = getJabber().getAffiliationListConf();
     }
-	
-	public void sendInvite(String jidMessTo, String jidInviteTo, String setReason) {
-	    putPacketIntoQueue("<message to='" + Util.xmlEscape(jidMessTo)
-		    + "'><x xmlns='http://jabber.org/protocol/muc#user'><invite to='"
-		    + Util.xmlEscape(jidInviteTo) + "'><reason>" + Util.xmlEscape(setReason) + "</reason></invite></x></message>");
-	}
+
+    public void sendInvite(String jidMessTo, String jidInviteTo, String setReason) {
+        putPacketIntoQueue("<message to='" + Util.xmlEscape(jidMessTo)
+                + "'><x xmlns='http://jabber.org/protocol/muc#user'><invite to='"
+                + Util.xmlEscape(jidInviteTo) + "'><reason>" + Util.xmlEscape(setReason) + "</reason></invite></x></message>");
+    }
 
     void requestRawXml(String xml) {
         putPacketIntoQueue(xml);
     }
+
     public void setMucRole(String jid, String nick, String role) {
         putPacketIntoQueue("<iq type='set' to='" + Util.xmlEscape(jid)
                 + "'><query xmlns='http://jabber.org/protocol/muc#admin'><item nick='"
@@ -2391,6 +2427,7 @@ public final class JabberXml extends ClientConnection {
                 + "' role='" + Util.xmlEscape(role)
                 + "'/></query></iq>");
     }
+
     public void setMucAffiliation(String jid, String userJid, String affiliation) {
         putPacketIntoQueue("<iq type='set' to='" + Util.xmlEscape(jid)
                 + "'><query xmlns='http://jabber.org/protocol/muc#admin'><item affiliation='"
@@ -2398,20 +2435,22 @@ public final class JabberXml extends ClientConnection {
                 + "' jid='" + Util.xmlEscape(userJid)
                 + "'/></query></iq>");
     }
-	public void setMucRoleR(String jid, String nick, String role, String setReason) {
+
+    public void setMucRoleR(String jid, String nick, String role, String setReason) {
         putPacketIntoQueue("<iq type='set' to='" + Util.xmlEscape(jid)
-		        + "' id='itemmuc'><query xmlns='http://jabber.org/protocol/muc#admin'><item nick='"
+                + "' id='itemmuc'><query xmlns='http://jabber.org/protocol/muc#admin'><item nick='"
                 + Util.xmlEscape(nick)
                 + "' role='" + Util.xmlEscape(role)
-				+ "'><reason>" + Util.xmlEscape(setReason) + "</reason></item>"
+                + "'><reason>" + Util.xmlEscape(setReason) + "</reason></item>"
                 + "</query></iq>");
     }
-	public void setMucAffiliationR(String jid, String userJid, String affiliation, String setReason) {
+
+    public void setMucAffiliationR(String jid, String userJid, String affiliation, String setReason) {
         putPacketIntoQueue("<iq type='set' to='" + Util.xmlEscape(jid)
-		        + "' id='itemmuc'><query xmlns='http://jabber.org/protocol/muc#admin'><item affiliation='"
+                + "' id='itemmuc'><query xmlns='http://jabber.org/protocol/muc#admin'><item affiliation='"
                 + Util.xmlEscape(affiliation)
                 + "' jid='" + Util.xmlEscape(userJid)
-				+ "'><reason>" + Util.xmlEscape(setReason) + "</reason></item>"
+                + "'><reason>" + Util.xmlEscape(setReason) + "</reason></item>"
                 + "</query></iq>");
     }
 
@@ -2420,23 +2459,27 @@ public final class JabberXml extends ClientConnection {
         getVCard(contact.getUserId());
         return singleUserInfo;
     }
+
     void register2(JabberForm form, String rawXml, String jid) {
         jabberForm = form;
         autoSubscribeDomain = jid;
         requestRawXml(rawXml);
     }
+
     private boolean isAutoGateContact(String jid) {
         return !StringConvertor.isEmpty(autoSubscribeDomain)
-        && (jid.equals(autoSubscribeDomain) || jid.endsWith('@' + autoSubscribeDomain));
+                && (jid.equals(autoSubscribeDomain) || jid.endsWith('@' + autoSubscribeDomain));
     }
+
     void register(String jid) {
         jabberForm = new JabberForm(JabberForm.TYPE_REGISTER, getJabber(), jid);
         requestIq(jid, "jabber:iq:register", jabberForm.getId());
         jabberForm.show();
     }
+
     void unregister(String jid) {
         putPacketIntoQueue("<iq type='set' to='" + Util.xmlEscape(jid)
-        + "' id='unreg1'><query xmlns='jabber:iq:register'><remove/></query></iq>");
+                + "' id='unreg1'><query xmlns='jabber:iq:register'><remove/></query></iq>");
     }
 
     void requestOwnerForm(String jid) {
@@ -2445,10 +2488,10 @@ public final class JabberXml extends ClientConnection {
         jabberForm.show();
     }
 
-	void showContactSeen(String jid) {
-	    putPacketIntoQueue("<iq to='" + Util.xmlEscape(jid) + "' type='get' id='last_seen'><query xmlns='jabber:iq:last'/></iq>");
-	}
-    
+    void showContactSeen(String jid) {
+        putPacketIntoQueue("<iq to='" + Util.xmlEscape(jid) + "' type='get' id='last_seen'><query xmlns='jabber:iq:last'/></iq>");
+    }
+
     private void sendXStatus(String xstatus, String text) {
         String[] path = Util.explode(Util.xmlEscape(xstatus), ':');
         StringBuffer sb = new StringBuffer();
@@ -2475,6 +2518,7 @@ public final class JabberXml extends ClientConnection {
         sb.append("</item></publish></pubsub></iq>");
         putPacketIntoQueue(sb.toString());
     }
+
     private String getQipXStatus() {
         byte x = getJabber().getProfile().xstatusIndex;
         if (XStatusInfo.XSTATUS_NONE == x) {
@@ -2495,6 +2539,7 @@ public final class JabberXml extends ClientConnection {
     }
 
     private static final String S_FEATURE_XSTATUS = "http://qip.ru/x-status";
+
     void setXStatus() {
         String xstatusCode = Jabber.xStatus.getCode(getJabber().getProfile().xstatusIndex);
         if (null == xstatusCode) {
@@ -2508,7 +2553,7 @@ public final class JabberXml extends ClientConnection {
                     getJabber().getProfile().statusMessage, Jabber.PRIORITY);
             return;
         }
-        final String mood = "mo"+"od";
+        final String mood = "mo" + "od";
         final String activity = "acti" + "vity";
         if (!xstatusCode.startsWith(mood)) {
             sendXStatus(mood, null);
@@ -2530,15 +2575,16 @@ public final class JabberXml extends ClientConnection {
         desc = StringConvertor.notNull(desc);
         if (gate.isOnline() && Jid.isPyIcqGate(gate.getUserId())) {
             String out = "<iq type='set' id='" + generateId() + "' to='"
-                + Util.xmlEscape(gate.getUserId())
-                + "'><command xmlns='http://jabber.org/protocol/commands' node='setxstatus' action='complete'><x xmlns='jabber:x:data' type='submit'><field var='xstatus_desc'><value>"
-                + Util.xmlEscape(desc)
-                + "</value></field><field var='xstatus_name'><value>"
-                + Util.xmlEscape(xstatus)
-                + "</value></field></x></command></iq>";
+                    + Util.xmlEscape(gate.getUserId())
+                    + "'><command xmlns='http://jabber.org/protocol/commands' node='setxstatus' action='complete'><x xmlns='jabber:x:data' type='submit'><field var='xstatus_desc'><value>"
+                    + Util.xmlEscape(desc)
+                    + "</value></field><field var='xstatus_name'><value>"
+                    + Util.xmlEscape(xstatus)
+                    + "</value></field></x></command></iq>";
             putPacketIntoQueue(out);
         }
     }
+
     private void setXStatusToIcqTransports() {
         String x = Jabber.xStatus.getIcqXStatus(getJabber().getProfile().xstatusIndex);
         if (null == x) {
@@ -2546,13 +2592,13 @@ public final class JabberXml extends ClientConnection {
         }
         Vector contacts = getJabber().getContactItems();
         for (int i = contacts.size() - 1; i >= 0; --i) {
-            JabberContact c = (JabberContact)contacts.elementAt(i);
+            JabberContact c = (JabberContact) contacts.elementAt(i);
             if (c.isOnline() && Jid.isPyIcqGate(c.getUserId())) {
-                setXStatusToIcqTransport((JabberServiceContact)c);
+                setXStatusToIcqTransport((JabberServiceContact) c);
             }
         }
     }
-    
+
 
     private String getVerHash(Vector features) {
         StringBuffer sb = new StringBuffer();
@@ -2562,6 +2608,7 @@ public final class JabberXml extends ClientConnection {
         }
         return MD5.toBase64(new MD5().calculate(StringConvertor.stringToByteArrayUtf8(sb.toString())));
     }
+
     private String getFeatures(Vector features) {
         StringBuffer sb = new StringBuffer();
         sb.append("<identity category='client' type='phone' name='" + General.NAME + "'/>");
@@ -2570,27 +2617,28 @@ public final class JabberXml extends ClientConnection {
         }
         return sb.toString();
     }
+
     private void initFeatures() {
         Vector features = new Vector();
         features.addElement("bugs");
-        
+
         features.addElement("http://jabber.org/protocol/activity");
         features.addElement("http://jabber.org/protocol/activity+notify");
-        
-        
+
+
         if (0 < Options.getInt(Options.OPTION_TYPING_MODE)) {
             features.addElement("http://jabber.org/protocol/chatstates");
         }
-        
+
         features.addElement("http://jabber.org/protocol/disco#info");
-        
+
         features.addElement("http://jabber.org/protocol/mood");
         features.addElement("http://jabber.org/protocol/mood+notify");
-        
+
         features.addElement("http://jabber.org/protocol/rosterx");
-        
+
         features.addElement(S_FEATURE_XSTATUS);
-        
+
         features.addElement("jabber:iq:last");
         features.addElement("jabber:iq:version");
         features.addElement("urn:xmpp:attention:0");
@@ -2603,6 +2651,7 @@ public final class JabberXml extends ClientConnection {
     private boolean isMessageExist(String id) {
         return isMessageExist(Util.strToIntDef(id, -1));
     }
+
     private void setMessageSended(String id, int state) {
         markMessageSended(Util.strToIntDef(id, -1), state);
     }
@@ -2610,6 +2659,7 @@ public final class JabberXml extends ClientConnection {
     void resetAdhoc() {
         adhoc = null;
     }
+
     void requestCommand(AdHoc adhoc, String node) {
         this.adhoc = adhoc;
         putPacketIntoQueue("<iq to='" + Util.xmlEscape(adhoc.getJid())
@@ -2617,6 +2667,7 @@ public final class JabberXml extends ClientConnection {
                 + "<command xmlns='http://jabber.org/protocol/commands' "
                 + "node='" + Util.xmlEscape(node) + "'/></iq>");
     }
+
     void requestCommandList(AdHoc adhoc) {
         this.adhoc = adhoc;
         putPacketIntoQueue("<iq type='get' to='" + Util.xmlEscape(adhoc.getJid())
@@ -2625,19 +2676,20 @@ public final class JabberXml extends ClientConnection {
                 + "' node='http://jabber.org/protocol/commands'/></iq>");
     }
 
-    
+
     void setIBB(IBBFileTransfer transfer) {
         ibb = transfer;
         ibb.setProgress(0);
         putPacketIntoQueue(ibb.getRequest());
     }
+
     private boolean processIbb(XmlNode iq, byte type, String id) {
         id = StringConvertor.notNull(id);
         if (!id.startsWith("Sawimibb_")) {
             return false;
         }
         if (IQ_TYPE_RESULT != type) {
-            
+
             ibb.setProgress(-1);
             ibb.destroy();
             ibb = null;
@@ -2670,7 +2722,7 @@ public final class JabberXml extends ClientConnection {
         putPacketIntoQueue(stanza);
         return true;
     }
-    
+
 }
 
 

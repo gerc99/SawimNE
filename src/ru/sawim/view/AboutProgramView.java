@@ -10,7 +10,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import ru.sawim.General;
 import ru.sawim.R;
-import ru.sawim.Scheme;
 
 /**
  * Created with IntelliJ IDEA.

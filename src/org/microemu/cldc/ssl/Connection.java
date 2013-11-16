@@ -39,74 +39,76 @@ import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 
 public class Connection extends org.microemu.cldc.socket.SocketConnection implements SecureConnection, ClosedConnection {
-	
-	private SecurityInfo securityInfo;
-	
-	public Connection() {
-		securityInfo = null;
-	}
 
-	public javax.microedition.io.Connection open(String name) throws IOException {
-		
-		if (!org.microemu.cldc.http.Connection.isAllowNetworkConnection()) {
-			throw new IOException("No network");
-		}
-		
-		int portSepIndex = name.lastIndexOf(':');
-		int port = Integer.parseInt(name.substring(portSepIndex + 1));
-		String host = name.substring("ssl://".length(), portSepIndex);
-		
-		// TODO validate certificate chains
-	    TrustManager[] trustAllCerts = new TrustManager[]{
-	        new X509TrustManager() {
-	            public X509Certificate[] getAcceptedIssuers() {
-	                return null;
-	            }
-	            public void checkClientTrusted(
-	                X509Certificate[] certs, String authType) {
-	            }
-	            public void checkServerTrusted(
-	                X509Certificate[] certs, String authType) {
-	            }
-	        }
-	    };
-		
-		try {
-			SSLContext sc = SSLContext.getInstance("SSL");			
-			sc.init(null, trustAllCerts, new SecureRandom());
-			SSLSocketFactory factory = sc.getSocketFactory();
-			socket = factory.createSocket(host, port);
-		} catch (NoSuchAlgorithmException ex) {
-			throw new IOException(ex.toString());
-		} catch (KeyManagementException ex) {
-			throw new IOException(ex.toString());
-		}
-		
-		return this;
-	}
+    private SecurityInfo securityInfo;
 
-	public void close() throws IOException {
-		// TODO fix differences between Java ME and Java SE
-		
-		socket.close();
-	}
+    public Connection() {
+        securityInfo = null;
+    }
 
-	public SecurityInfo getSecurityInfo() throws IOException {
-		if (securityInfo == null) {
-			SSLSession session = ((SSLSocket) socket).getSession();
-			
-			Certificate[] certs = session.getPeerCertificates();
-			if (certs.length == 0) {
-				throw new IOException();
-			}
-			
-			securityInfo = new SecurityInfoImpl(
-					session.getCipherSuite(),
-					session.getProtocol(),
-					new CertificateImpl((X509Certificate) certs[0]));
-		}
+    public javax.microedition.io.Connection open(String name) throws IOException {
 
-		return securityInfo;
-	}
+        if (!org.microemu.cldc.http.Connection.isAllowNetworkConnection()) {
+            throw new IOException("No network");
+        }
+
+        int portSepIndex = name.lastIndexOf(':');
+        int port = Integer.parseInt(name.substring(portSepIndex + 1));
+        String host = name.substring("ssl://".length(), portSepIndex);
+
+        // TODO validate certificate chains
+        TrustManager[] trustAllCerts = new TrustManager[]{
+                new X509TrustManager() {
+                    public X509Certificate[] getAcceptedIssuers() {
+                        return null;
+                    }
+
+                    public void checkClientTrusted(
+                            X509Certificate[] certs, String authType) {
+                    }
+
+                    public void checkServerTrusted(
+                            X509Certificate[] certs, String authType) {
+                    }
+                }
+        };
+
+        try {
+            SSLContext sc = SSLContext.getInstance("SSL");
+            sc.init(null, trustAllCerts, new SecureRandom());
+            SSLSocketFactory factory = sc.getSocketFactory();
+            socket = factory.createSocket(host, port);
+        } catch (NoSuchAlgorithmException ex) {
+            throw new IOException(ex.toString());
+        } catch (KeyManagementException ex) {
+            throw new IOException(ex.toString());
+        }
+
+        return this;
+    }
+
+    public void close() throws IOException {
+        // TODO fix differences between Java ME and Java SE
+
+        socket.close();
+    }
+
+    public SecurityInfo getSecurityInfo() throws IOException {
+        if (securityInfo == null) {
+            SSLSession session = ((SSLSocket) socket).getSession();
+
+            Certificate[] certs = session.getPeerCertificates();
+            if (certs.length == 0) {
+                throw new IOException();
+            }
+
+            securityInfo = new SecurityInfoImpl(
+                    session.getCipherSuite(),
+                    session.getProtocol(),
+                    new CertificateImpl((X509Certificate) certs[0]));
+        }
+
+        return securityInfo;
+    }
 
 }

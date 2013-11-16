@@ -9,6 +9,7 @@ import sawim.comm.StringConvertor;
 import sawim.comm.Util;
 import sawim.modules.DebugLog;
 import sawim.util.JLocale;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -78,6 +79,7 @@ public class Forms {
 
     public interface OnUpdateForm {
         void updateForm();
+
         void back();
     }
 
@@ -111,7 +113,7 @@ public class Forms {
         caption = JLocale.getString(caption_);
         formListener = l;
         instance = null;
-		instance = this;
+        instance = this;
     }
 
     public void setControlStateListener(ControlStateListener l) {
@@ -267,9 +269,11 @@ public class Forms {
         }
         return null;
     }
+
     public boolean hasControl(int controlId) {
         return null != get(controlId);
     }
+
     public void setTextFieldLabel(int controlId, String desc) {
         Control c = get(controlId);
         c.description = desc;
@@ -284,9 +288,11 @@ public class Forms {
         }
         return 0;
     }
+
     public int getVolumeValue(int controlId) {
         return getGaugeValue(controlId) * 10;
     }
+
     public String getTextFieldValue(int controlId) {
         try {
             return get(controlId).text;
@@ -295,6 +301,7 @@ public class Forms {
         }
         return null;
     }
+
     public int getSelectorValue(int controlId) {
         try {
             return get(controlId).current;
@@ -303,6 +310,7 @@ public class Forms {
         }
         return 0;
     }
+
     public String getSelectorString(int controlId) {
         try {
             return get(controlId).items[get(controlId).current];

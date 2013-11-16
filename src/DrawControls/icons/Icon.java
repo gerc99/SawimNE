@@ -9,7 +9,7 @@ public class Icon {
     public Icon(BitmapDrawable image) {
         this.image = image;
     }
-    
+
     public BitmapDrawable getImage() {
         return image;
     }

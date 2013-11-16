@@ -10,9 +10,9 @@ import ru.sawim.General;
 import ru.sawim.activities.SawimActivity;
 import sawim.chat.Chat;
 import sawim.chat.message.PlainMessage;
-import sawim.roster.Roster;
 import sawim.modules.MagicEye;
 import sawim.modules.Notify;
+import sawim.roster.Roster;
 import sawim.util.JLocale;
 
 import javax.microedition.rms.RecordStore;
@@ -346,11 +346,11 @@ public final class Tracking {
         Chat chat_ = new Chat(protocol, item);
         switch (action) {
             case ACTION_CHAT:
-                ((SawimActivity)General.currentActivity).openChat(chat.getProtocol(), chat.getContact(), true);
+                ((SawimActivity) General.currentActivity).openChat(chat.getProtocol(), chat.getContact(), true);
                 break;
             case ACTION_NOTICE:
                 Roster.getInstance().activateWithMsg(JLocale.getString("track_form_title")
-                        + " " + item.getName() + "\n" + item.getName() + " ["+item.getUserId() + "] " + JLocale.getString("track_action_online"));
+                        + " " + item.getName() + "\n" + item.getName() + " [" + item.getUserId() + "] " + JLocale.getString("track_action_online"));
                 break;
             case ACTION_INCHAT:
                 String notice = JLocale.getString("track_action_online");
@@ -387,7 +387,7 @@ public final class Tracking {
         switch (action) {
             case ACTION_NOTICE:
                 Roster.getInstance().activateWithMsg(JLocale.getString("track_form_title")
-                        + " " + item.getName() + "\n" + item.getName() + " ["+item.getUserId() + "] " + JLocale.getString("track_action_offline"));
+                        + " " + item.getName() + "\n" + item.getName() + " [" + item.getUserId() + "] " + JLocale.getString("track_action_offline"));
                 break;
             case ACTION_INCHAT:
                 String notice = JLocale.getString("track_action_offline");
