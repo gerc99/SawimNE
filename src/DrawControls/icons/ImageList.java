@@ -108,8 +108,7 @@ public class ImageList {
             for (int x = 0; x < imgWidth; x += width) {
                 Bitmap bitmap = scalingIconForDPI(Bitmap.createBitmap(resImage.getBitmap(), x, y, width, height));
                 BitmapDrawable drawable = new BitmapDrawable(SawimApplication.getInstance().getContext().getResources(), bitmap);
-                drawable.setBounds(0, 0, drawable.getIntrinsicWidth(),
-                        drawable.getIntrinsicHeight());
+                drawable.setBounds(0, 0, width, height);
                 tmpIcons.addElement(new Icon(drawable));
             }
         }

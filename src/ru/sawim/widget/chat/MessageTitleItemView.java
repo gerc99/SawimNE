@@ -39,8 +39,6 @@ public class MessageTitleItemView extends View {
 
     public MessageTitleItemView(Context context) {
         super(context);
-        int padding = Util.dipToPixels(context, 5);
-        setPadding(padding, padding, padding, padding);
         if (textPaint == null) {
             textPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
             textPaint.setAntiAlias(true);

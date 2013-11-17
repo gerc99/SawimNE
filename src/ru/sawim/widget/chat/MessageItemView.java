@@ -22,11 +22,14 @@ public class MessageItemView extends LinearLayout {
 
     public MessageItemView(Context context, boolean isAddTitleView) {
         super(context);
-        int padding = Util.dipToPixels(context, 5);
-        setPadding(padding, 0, padding, padding);
-        setOrientation(VERTICAL);
         titleItemView = new MessageTitleItemView(context);
         msgText = new MessageTextView(context);
+        int padding = Util.dipToPixels(context, 5);
+        setPadding(padding, 0, padding, 0);
+        setOrientation(VERTICAL);
+        setPadding(padding, padding, padding, padding);
+        titleItemView.setPadding(0, padding, padding, padding);
+        msgText.setPadding(0, 0, 0, padding);
 
         if (isAddTitleView)
             addViewInLayout(titleItemView, 0, new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));

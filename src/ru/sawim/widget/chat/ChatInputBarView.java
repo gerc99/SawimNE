@@ -6,6 +6,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import ru.sawim.R;
+import ru.sawim.Scheme;
 import ru.sawim.widget.IcsLinearLayout;
 
 /**
@@ -31,7 +32,7 @@ public class ChatInputBarView extends IcsLinearLayout {
         addViewInLayout(menuButton, 0, menuButtonLP);
 
         LinearLayout.LayoutParams smileButtonLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
-        smileButton.setImageResource(R.drawable.input_smile_button);
+        smileButton.setImageResource(Scheme.isBlack() ? R.drawable.ic_emoji_dark : R.drawable.ic_emoji_light);
         addViewInLayout(smileButton, 1, smileButtonLP);
 
         LinearLayout.LayoutParams messageEditorLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -40,7 +41,7 @@ public class ChatInputBarView extends IcsLinearLayout {
         addViewInLayout(messageEditor, 2, messageEditorLP);
 
         LinearLayout.LayoutParams sendButtonLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
-        sendButton.setImageResource(R.drawable.input_send_button);
+        sendButton.setImageResource(Scheme.isBlack() ? R.drawable.ic_send_dark : R.drawable.ic_send_light);
         addViewInLayout(sendButton, 3, sendButtonLP);
     }
 }
