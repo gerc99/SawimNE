@@ -2,6 +2,8 @@ package ru.sawim.view;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.TypedArray;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
@@ -345,6 +347,8 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
                 headerViewHolder = (HeaderViewHolder) v.getTag();
             }
             if (string == null) return v;
+            if (Scheme.isBlack() && Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN)
+                headerViewHolder.header.setTextColor(0xff000000);
             headerViewHolder.header.setTextSize(General.getFontSize());
             headerViewHolder.header.setText(string);
             return v;
@@ -364,7 +368,8 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
                 dropDownViewHolder = (DropDownViewHolder) v.getTag();
             }
             if (string == null) return v;
-
+            if (Scheme.isBlack() && Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN)
+                dropDownViewHolder.label.setTextColor(0xff000000);
             dropDownViewHolder.label.setTextSize(General.getFontSize());
             dropDownViewHolder.label.setText(string);
             return v;

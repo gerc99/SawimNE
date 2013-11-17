@@ -64,7 +64,7 @@ public class Scheme {
     private static int[] currentTheme = new int[baseTheme.length];
     private static int[][] themeColors;
     private static String[] themeNames;
-    private static int oldTheme;
+    private static int oldTheme = -1;
 
     public static void load() {
         setColorScheme(baseTheme);

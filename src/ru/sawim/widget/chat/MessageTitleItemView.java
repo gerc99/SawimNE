@@ -5,6 +5,8 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
+import android.text.TextPaint;
+import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.View;
 import ru.sawim.General;
@@ -31,16 +33,16 @@ public class MessageTitleItemView extends View {
 
     private int nickX;
     private float msgTimeX;
-    private int msgTimeWidth;
+    private int msgIconY;
     private int textY;
-    private static Paint textPaint;
+    private static TextPaint textPaint;
 
     public MessageTitleItemView(Context context) {
         super(context);
         int padding = Util.dipToPixels(context, 5);
         setPadding(padding, padding, padding, padding);
         if (textPaint == null) {
-            textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            textPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
             textPaint.setAntiAlias(true);
             textPaint.setTextSize(General.getFontSize());
             textPaint.setColor(Scheme.getColor(Scheme.THEME_TEXT));
@@ -68,9 +70,9 @@ public class MessageTitleItemView extends View {
         if (specMode == MeasureSpec.EXACTLY) {
             result = specSize;
         } else {
-            result = msgImage == null
-                    ? (-ascent + descent) + getPaddingTop() + getPaddingBottom()
-                    : msgImage.getBitmap().getHeight();
+            int textHeight = (-ascent + descent) + getPaddingTop() + getPaddingBottom();
+            int iconHeight = msgImage == null ? 0 : msgImage.getBitmap().getHeight();
+             result = Math.max(textHeight, iconHeight);
             if (specMode == MeasureSpec.AT_MOST) {
                 result = Math.min(result, specSize);
             }
@@ -86,15 +88,11 @@ public class MessageTitleItemView extends View {
     }
 
     private void computeCoordinates(int viewWidth, int viewHeight) {
-        int y = viewHeight / 2;
+        int y = viewHeight >> 1;
+        msgIconY = y - (msgImage.getBitmap().getHeight() >> 1);
         nickX = msgImage == null ? getPaddingLeft() : msgImage.getBitmap().getWidth() + getPaddingRight();
-        if (msgTimeText != null) {
-            msgTimeWidth = (int) textPaint.measureText(msgTimeText);
-            msgTimeX = viewWidth - msgTimeWidth - getPaddingRight();
-        } else {
-            msgTimeX = viewWidth - getPaddingRight();
-        }
-        textY = (int) (textPaint.getTextSize()) + getPaddingTop();
+        msgTimeX = viewWidth - getPaddingRight();
+        textY = getPaddingTop() - (int) textPaint.ascent();
     }
 
     public void setMsgImage(BitmapDrawable msgImage) {
@@ -121,20 +119,24 @@ public class MessageTitleItemView extends View {
     }
 
     @Override
+    public void requestLayout() {
+    }
+
+    @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         if (msgImage != null)
-            canvas.drawBitmap(msgImage.getBitmap(), 0, 0, null);
+            canvas.drawBitmap(msgImage.getBitmap(), 0, msgIconY, null);
         if (nickText != null) {
             textPaint.setColor(nickColor);
+            textPaint.setTextAlign(Paint.Align.LEFT);
             setTextSize(nickSize);
             textPaint.setTypeface(nickTypeface);
-            if (msgTimeText != null)
-                textPaint.setStrokeWidth(getWidth() - msgTimeWidth - getPaddingRight());
             canvas.drawText(nickText, nickX, textY, textPaint);
         }
         if (msgTimeText != null) {
             textPaint.setColor(msgTimeColor);
+            textPaint.setTextAlign(Paint.Align.RIGHT);
             setTextSize(msgTimeSize);
             textPaint.setTypeface(msgTimeTypeface);
             canvas.drawText(msgTimeText, msgTimeX, textY, textPaint);

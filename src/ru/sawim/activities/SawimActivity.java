@@ -72,7 +72,6 @@ public class SawimActivity extends ActionBarActivity {
     public void onCreate(Bundle savedInstanceState) {
         setTheme(Scheme.isBlack() ? R.style.BaseTheme : R.style.BaseThemeLight);
         super.onCreate(savedInstanceState);
-        LeaksManager.getThis().monitorObject(this);
         General.currentActivity = this;
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
 

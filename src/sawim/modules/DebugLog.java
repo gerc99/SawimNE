@@ -117,11 +117,6 @@ public final class DebugLog {
         int time = TimeZone.getDefault().getRawOffset() / (1000 * 60 * 60);
         int t2 = TimeZone.getDefault().getDSTSavings() / (1000 * 60 * 60);
         println("GMT " + (t2 + time)); */
-        Vector<String> leaks = LeaksManager.getThis().checkLeaks();
-        for (int i = 0; i < leaks.size(); ++i) {
-            println("leak: " + leaks.get(i));
-            Log.e("DebugLog", "leak: " + leaks.get(i));
-        }
     }
 
     public static void dump(String comment, byte[] data) {

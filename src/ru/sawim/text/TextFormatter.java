@@ -1,5 +1,6 @@
 package ru.sawim.text;
 
+import android.R;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ClickableSpan;
@@ -8,6 +9,7 @@ import android.text.style.ImageSpan;
 import android.util.Patterns;
 import protocol.Contact;
 import ru.sawim.SawimApplication;
+import ru.sawim.Scheme;
 import ru.sawim.view.menu.JuickMenu;
 import sawim.modules.Emotions;
 
@@ -43,12 +45,9 @@ public class TextFormatter {
         smilesPattern = compilePattern();
     }
 
-    private static final int linkColor = SawimApplication.getContext().getTheme()
-            .obtainStyledAttributes(new int[]{
-                    android.R.attr.textColorLink,
-            }).getColor(0, -1);
 
     public CharSequence parsedText(final Contact contact, final CharSequence text) {
+        final int linkColor = 0xff35B6E5;
         SpannableStringBuilder builder = new SpannableStringBuilder(text);
         if (contact != null)
             if (contact.getUserId().equals(JuickMenu.JUICK) || contact.getUserId().equals(JuickMenu.JUBO))
@@ -112,11 +111,11 @@ public class TextFormatter {
         addLinks(linkList, ssb, Patterns.EMAIL_ADDRESS);
         for (Hyperlink link : msgList) {
             ssb.setSpan(link.span, link.start, link.end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            ssb.setSpan(new ForegroundColorSpan(linkColor), link.start, link.end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            //ssb.setSpan(new ForegroundColorSpan(linkColor), link.start, link.end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
         for (Hyperlink link : linkList) {
             ssb.setSpan(link.span, link.start, link.end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            ssb.setSpan(new ForegroundColorSpan(linkColor), link.start, link.end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            //ssb.setSpan(new ForegroundColorSpan(linkColor), link.start, link.end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
     }
 

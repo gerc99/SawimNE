@@ -23,7 +23,7 @@ public class MessageItemView extends LinearLayout {
     public MessageItemView(Context context, boolean isAddTitleView) {
         super(context);
         int padding = Util.dipToPixels(context, 5);
-        setPadding(padding, padding, padding, padding);
+        setPadding(padding, 0, padding, padding);
         setOrientation(VERTICAL);
         titleItemView = new MessageTitleItemView(context);
         msgText = new MessageTextView(context);
@@ -31,12 +31,11 @@ public class MessageItemView extends LinearLayout {
         if (isAddTitleView)
             addViewInLayout(titleItemView, 0, new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 
-        msgText.setScrollContainer(false);
         addViewInLayout(msgText, isAddTitleView ? 1 : 0, new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
     }
 
-    public void initDivider(int color) {
-        paintDivider.setColor(color);
+    @Override
+    public void requestLayout() {
     }
 
     @Override
@@ -46,7 +45,8 @@ public class MessageItemView extends LinearLayout {
             canvas.drawLine(getLeft(), getScrollY(), getWidth(), getScrollY(), paintDivider);
     }
 
-    public void setShowDivider(boolean showDivider) {
+    public void setShowDivider(int color, boolean showDivider) {
+        paintDivider.setColor(color);
         isShowDivider = showDivider;
     }
 }

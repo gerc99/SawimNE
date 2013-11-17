@@ -118,9 +118,8 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
         General.getInstance().setConfigurationChanged(new General.OnConfigurationChanged() {
             @Override
             public void onConfigurationChanged() {
-                if (chat == null) return;
-                if (adapter != null)
-                    adapter.repaintList(chat.getMessData());
+                if (chat != null && adapter != null)
+                    adapter.repaintList();
             }
         });
     }

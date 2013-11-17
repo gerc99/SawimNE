@@ -5,6 +5,8 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
+import android.text.TextPaint;
+import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.View;
 import ru.sawim.General;
@@ -32,7 +34,7 @@ public class RosterItemView extends View {
     public BitmapDrawable itemFourthImage = null;
     public BitmapDrawable itemFifthImage = null;
 
-    private static Paint textPaint;
+    private static TextPaint textPaint;
 
     private int lineOneY, lineTwoY,
             firstImageX, firstImageY,
@@ -47,7 +49,7 @@ public class RosterItemView extends View {
         int padding = Util.dipToPixels(context, 15);
         setPadding(padding, padding, padding, padding);
         if (textPaint == null) {
-            textPaint = new Paint();
+            textPaint = new TextPaint();
             textPaint.setAntiAlias(true);
             textPaint.setTextSize(General.getFontSize());
             textPaint.setColor(Scheme.getColor(Scheme.THEME_TEXT));
@@ -97,11 +99,11 @@ public class RosterItemView extends View {
         int bottomPadding = getPaddingBottom();
         int topPadding = getPaddingTop();
         if (itemName != null && itemDesc != null) {
-            ascent *= 2;
-            descent *= 2;
+            ascent <<= 1;
+            descent <<= 1;
         } else if (itemName == null && itemDesc != null) {
-            topPadding /= 3;
-            bottomPadding /= 3;
+            topPadding >>= 2;
+            bottomPadding >>= 2;
         }
         if (specMode == MeasureSpec.EXACTLY) {
             result = specSize;
@@ -127,7 +129,7 @@ public class RosterItemView extends View {
         int rightPadding = getPaddingRight();
         int bottomPadding = getPaddingBottom();
         int topPadding = getPaddingTop();
-        int y = viewHeight / 2;
+        int y = viewHeight >> 1;
         int ascent = (int) textPaint.ascent();
         int descent = (int) textPaint.descent();
         textX = leftPadding;
@@ -145,30 +147,30 @@ public class RosterItemView extends View {
         firstImageX = leftPadding;
         if (itemFirstImage != null) {
             secondImageX = firstImageX + itemFirstImage.getBitmap().getWidth();
-            firstImageY = y - itemFirstImage.getBitmap().getHeight() / 2;
+            firstImageY = y - (itemFirstImage.getBitmap().getHeight() >> 1);
             textX = secondImageX + leftPadding;
         }
         if (itemSecondImage != null) {
             secondImageX += leftPadding;
-            secondImageY = y - itemSecondImage.getBitmap().getHeight() / 2;
+            secondImageY = y - (itemSecondImage.getBitmap().getHeight() >> 1);
             textX += itemSecondImage.getBitmap().getWidth() + leftPadding;
         }
         thirdImageX = secondImageX;
         if (itemThirdImage != null) {
             thirdImageX += leftPadding;
-            thirdImageY = y - itemThirdImage.getBitmap().getHeight() / 2;
+            thirdImageY = y - (itemThirdImage.getBitmap().getHeight() >> 1);
             textX = thirdImageX + itemThirdImage.getBitmap().getWidth() + leftPadding;
         }
 
         fourthImageX = viewWidth;
         if (itemFourthImage != null) {
             fourthImageX = viewWidth - itemFourthImage.getBitmap().getWidth() - rightPadding;
-            fourthImageY = y - itemFourthImage.getBitmap().getHeight() / 2;
+            fourthImageY = y - (itemFourthImage.getBitmap().getHeight() >> 1);
         }
         fifthImageX = fourthImageX;
         if (itemFifthImage != null) {
             fifthImageX = fourthImageX - itemFifthImage.getBitmap().getWidth() - rightPadding;
-            fifthImageY = y - itemFifthImage.getBitmap().getHeight() / 2;
+            fifthImageY = y - (itemFifthImage.getBitmap().getHeight() >> 1);
         }
     }
 
@@ -191,7 +193,7 @@ public class RosterItemView extends View {
             textPaint.setColor(itemDescColor);
             setTextSize(General.getFontSize() - 2);
             textPaint.setTypeface(Typeface.DEFAULT);
-            canvas.drawText(itemDesc, textX, lineTwoY, textPaint);
+            canvas.drawText(TextUtils.ellipsize(itemDesc, textPaint, fifthImageX - textX, TextUtils.TruncateAt.END).toString(), textX, lineTwoY, textPaint);
         }
         if (itemFourthImage != null)
             canvas.drawBitmap(itemFourthImage.getBitmap(), fourthImageX, fourthImageY, null);
