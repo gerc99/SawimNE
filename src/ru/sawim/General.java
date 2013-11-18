@@ -4,6 +4,7 @@ import DrawControls.icons.ImageList;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.BitmapDrawable;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import sawim.Options;
 import sawim.Updater;
@@ -39,6 +40,7 @@ public class General {
     private static General instance;
     public static boolean returnFromAcc = false;
     public static ActionBarActivity currentActivity;
+    public static ActionBar actionBar;
     private static Resources resources;
     public static String message = "";
     private boolean paused = true;

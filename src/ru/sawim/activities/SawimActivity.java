@@ -33,6 +33,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
@@ -72,6 +73,7 @@ public class SawimActivity extends ActionBarActivity {
     public void onCreate(Bundle savedInstanceState) {
         setTheme(Scheme.isBlack() ? R.style.BaseTheme : R.style.BaseThemeLight);
         super.onCreate(savedInstanceState);
+        General.actionBar = getSupportActionBar();
         General.currentActivity = this;
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
@@ -123,11 +125,11 @@ public class SawimActivity extends ActionBarActivity {
     }
 
     public static void resetBar() {
-        General.currentActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        General.currentActivity.getSupportActionBar().setDisplayShowTitleEnabled(true);
-        General.currentActivity.getSupportActionBar().setDisplayUseLogoEnabled(true);
-        General.currentActivity.getSupportActionBar().setDisplayShowHomeEnabled(true);
-        General.currentActivity.getSupportActionBar().setDisplayShowCustomEnabled(false);
+        General.actionBar.setDisplayHomeAsUpEnabled(true);
+        General.actionBar.setDisplayShowTitleEnabled(true);
+        General.actionBar.setDisplayUseLogoEnabled(true);
+        General.actionBar.setDisplayShowHomeEnabled(true);
+        General.actionBar.setDisplayShowCustomEnabled(false);
         General.currentActivity.setTitle(R.string.app_name);
     }
 
@@ -161,10 +163,11 @@ public class SawimActivity extends ActionBarActivity {
 
     public void openChat(Protocol p, Contact c, boolean allowingStateLoss) {
         FragmentManager fragmentManager = getSupportFragmentManager();
+        ChatView chatView = (ChatView) fragmentManager.findFragmentById(R.id.chat_fragment);
         c.activate(p);
-        if (findViewById(R.id.fragment_container) != null) {
+        if (chatView == null) {
             Fragment rosterView = getSupportFragmentManager().findFragmentByTag(RosterView.TAG);
-            ChatView chatView = (ChatView) getSupportFragmentManager().findFragmentByTag(ChatView.TAG);
+            chatView = (ChatView) getSupportFragmentManager().findFragmentByTag(ChatView.TAG);
             if (fragmentManager.getFragments() == null || rosterView == null || chatView == null) {
                 createChatView(p, c, fragmentManager, true, allowingStateLoss);
                 return;
@@ -178,13 +181,9 @@ public class SawimActivity extends ActionBarActivity {
                 }
             }
         } else {
-            ChatView chatView = (ChatView) fragmentManager.findFragmentById(R.id.chat_fragment);
-            if (chatView != null) {
-                chatView.pause(chatView.getCurrentChat());
-                if (c != null) {
-                    chatView.openChat(p, c);
-                    chatView.resume(chatView.getCurrentChat());
-                }
+            if (c != null) {
+                chatView.openChat(p, c);
+                chatView.resume(chatView.getCurrentChat());
             }
         }
     }
@@ -235,6 +234,8 @@ public class SawimActivity extends ActionBarActivity {
             if (formView.hasBack())
                 back();
         } else moveTaskToBack(true);
+        if (getSupportFragmentManager().findFragmentById(R.id.roster_fragment) != null)
+            ((RosterView) getSupportFragmentManager().findFragmentById(R.id.roster_fragment)).resume();
     }
 
     @Override
@@ -263,7 +264,6 @@ public class SawimActivity extends ActionBarActivity {
     }
 
     int oldOrientation;
-
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);

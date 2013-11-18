@@ -22,6 +22,7 @@ public class SendToActivity extends ActionBarActivity {
     public void onCreate(Bundle savedInstanceState) {
         setTheme(Scheme.isBlack() ? R.style.BaseTheme : R.style.BaseThemeLight);
         super.onCreate(savedInstanceState);
+        General.actionBar = getSupportActionBar();
         General.currentActivity = this;
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
         setContentView(R.layout.intercalation_layout);

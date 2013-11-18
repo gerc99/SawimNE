@@ -87,7 +87,8 @@ public class MessageTitleItemView extends View {
 
     private void computeCoordinates(int viewWidth, int viewHeight) {
         int y = viewHeight >> 1;
-        msgIconY = y - (msgImage.getBitmap().getHeight() >> 1);
+        if (msgImage != null)
+            msgIconY = y - (msgImage.getBitmap().getHeight() >> 1);
         nickX = msgImage == null ? getPaddingLeft() : msgImage.getBitmap().getWidth() + getPaddingRight();
         msgTimeX = viewWidth - getPaddingRight();
         textY = getPaddingTop() - (int) textPaint.ascent();

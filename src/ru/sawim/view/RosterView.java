@@ -11,6 +11,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.PagerTitleStrip;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.*;
 import android.widget.*;
 import protocol.Contact;
@@ -133,6 +134,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         viewPagerLayoutParams.height = ViewPager.LayoutParams.WRAP_CONTENT;
         viewPagerLayoutParams.width = ViewPager.LayoutParams.FILL_PARENT;
         viewPagerLayoutParams.gravity = Gravity.TOP;
+        indicator.setPadding(5, 5, 5, 5);
         viewPager.setLayoutParams(viewPagerLayoutParams);
         viewPager.addView(indicator, viewPagerLayoutParams);
     }
@@ -224,11 +226,11 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
 
     private void initBar() {
         boolean isShowTabs = roster.getProtocolCount() > 1;
-        General.currentActivity.getSupportActionBar().setDisplayShowTitleEnabled(!isShowTabs);
-        General.currentActivity.getSupportActionBar().setDisplayShowHomeEnabled(!isShowTabs);
-        General.currentActivity.getSupportActionBar().setDisplayUseLogoEnabled(!isShowTabs);
-        General.currentActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(!isShowTabs);
-        General.currentActivity.getSupportActionBar().setDisplayShowCustomEnabled(isShowTabs);
+        General.actionBar.setDisplayShowTitleEnabled(!isShowTabs);
+        General.actionBar.setDisplayShowHomeEnabled(!isShowTabs);
+        General.actionBar.setDisplayUseLogoEnabled(!isShowTabs);
+        General.actionBar.setDisplayHomeAsUpEnabled(!isShowTabs);
+        General.actionBar.setDisplayShowCustomEnabled(isShowTabs);
         getActivity().setTitle(R.string.app_name);
         if (isTablet) {
             ChatView chatView = (ChatView) getActivity().getSupportFragmentManager()
@@ -242,9 +244,10 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
             barLinearLayout.addView(horizontalScrollView);
             chatView.removeTitleBar();
             barLinearLayout.addView(chatView.getTitleBar());
-            General.currentActivity.getSupportActionBar().setCustomView(barLinearLayout);
+            General.actionBar.setCustomView(barLinearLayout);
+            General.currentActivity.supportInvalidateOptionsMenu();
         } else
-            General.currentActivity.getSupportActionBar().setCustomView(horizontalScrollView);
+            General.actionBar.setCustomView(horizontalScrollView);
     }
 
     public void addProtocolsTabs() {
@@ -298,6 +301,10 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     @Override
     public void onResume() {
         super.onResume();
+        resume();
+    }
+
+    public void resume() {
         General.currentActivity = (ActionBarActivity) getActivity();
         initBar();
         if (roster.getProtocolCount() == 0) return;
@@ -320,7 +327,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         roster.setOnUpdateRoster(null);
     }
 
-    public void openChat(Protocol p, Contact c, boolean allowingStateLoss) {
+    private void openChat(Protocol p, Contact c, boolean allowingStateLoss) {
         c.activate(p);
         ChatView chatView = (ChatView) getActivity().getSupportFragmentManager()
                 .findFragmentById(R.id.chat_fragment);

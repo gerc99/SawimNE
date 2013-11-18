@@ -15,6 +15,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.*;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -137,13 +138,13 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceStateLog) {
         isTablet = getActivity().findViewById(R.id.fragment_container) == null;
-        General.currentActivity.getSupportActionBar().setDisplayShowTitleEnabled(false);
-        General.currentActivity.getSupportActionBar().setDisplayShowHomeEnabled(false);
-        General.currentActivity.getSupportActionBar().setDisplayUseLogoEnabled(false);
+        General.actionBar.setDisplayShowTitleEnabled(false);
+        General.actionBar.setDisplayShowHomeEnabled(false);
+        General.actionBar.setDisplayUseLogoEnabled(false);
         if (!isTablet) {
             removeTitleBar();
-            General.currentActivity.getSupportActionBar().setDisplayShowCustomEnabled(true);
-            General.currentActivity.getSupportActionBar().setCustomView(viewsState.chatBarLayout);
+            General.actionBar.setDisplayShowCustomEnabled(true);
+            General.actionBar.setCustomView(viewsState.chatBarLayout);
         }
         updateChatIcon();
 
@@ -216,6 +217,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
                     if (contact == null) return;
                     isOpenMenu = true;
                     getActivity().openOptionsMenu();
+                    getActivity().supportInvalidateOptionsMenu();
                 }
             });
         } else
@@ -359,7 +361,9 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
         updateChatIcon();
         updateList(contact);
 
-        if (!isTablet)
+        if (isTablet)
+            adapter.repaintList();
+        else
             drawerLayout.setDrawerLockMode(contact.isConference() ? DrawerLayout.LOCK_MODE_UNLOCKED : DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
     }
 
@@ -415,7 +419,6 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
     }
 
     DialogFragment chatDialogFragment;
-
     private void initLabel() {
         chatsSpinnerAdapter = new ChatsSpinnerAdapter(getActivity());
         viewsState.chatBarLayout.updateLabelIcon(chatsSpinnerAdapter.getImageChat(chat, false));

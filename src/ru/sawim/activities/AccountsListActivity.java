@@ -38,13 +38,13 @@ public class AccountsListActivity extends ActionBarActivity implements JabberReg
             setContentView(R.layout.intercalation_layout);
         else
             setContentView(R.layout.main);
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setDisplayUseLogoEnabled(true);
-        actionBar.setDisplayShowHomeEnabled(true);
-        actionBar.setDisplayShowCustomEnabled(false);
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+        General.actionBar = getSupportActionBar();
+        General.actionBar.setDisplayHomeAsUpEnabled(true);
+        General.actionBar.setDisplayShowTitleEnabled(true);
+        General.actionBar.setDisplayUseLogoEnabled(true);
+        General.actionBar.setDisplayShowHomeEnabled(true);
+        General.actionBar.setDisplayShowCustomEnabled(false);
+        General.actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         General.currentActivity = this;
         mResultBundle = savedInstanceState;
         mAccountAuthenticatorResponse =
