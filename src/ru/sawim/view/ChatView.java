@@ -354,7 +354,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
         adapter.setPosition(chat.dividerPosition);
         if (contact.isConference() && chat.scrollPosition == 0)
             chatListView.setSelection(0);
-        else if (chat.getMessCount() > 0 && chat.scrollPosition == 0)
+        else if ((chat.getHistory() != null && chat.getHistory().getHistorySize() > 0) && chat.scrollPosition == 0)
             chatListView.setSelection(chat.getMessCount());
         else
             chatListView.setSelectionFromTop(chat.scrollPosition + 2, chat.offset);
