@@ -565,7 +565,7 @@ public final class Roster {
     }
 
     public String getStatusMessage(Contact contact) {
-        String message;
+        String message = "";
         Protocol protocol = getCurrentProtocol();
         if (protocol == null || contact == null) return "";
         if (XStatusInfo.XSTATUS_NONE != contact.getXStatusIndex()) {
@@ -573,17 +573,15 @@ public final class Roster {
             if (!StringConvertor.isEmpty(message)) {
                 return message;
             }
-            message = protocol.getXStatusInfo().getName(contact.getXStatusIndex());
-            if (!StringConvertor.isEmpty(message)) {
-                return message;
-            }
+            XStatusInfo xStatusInfo = protocol.getXStatusInfo();
+            if (xStatusInfo != null)
+                return xStatusInfo.getName(contact.getXStatusIndex());
         }
         message = contact.getStatusText();
         if (!StringConvertor.isEmpty(message)) {
             return message;
         }
-        message = protocol.getStatusInfo().getName(contact.getStatusIndex());
-        return (message == null) ? "" : message;
+        return protocol.getStatusInfo().getName(contact.getStatusIndex());
     }
 
     private OnUpdateChat updateChatListener;

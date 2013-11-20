@@ -73,7 +73,8 @@ public class SawimActivity extends ActionBarActivity {
     public void onCreate(Bundle savedInstanceState) {
         setTheme(Scheme.isBlack() ? R.style.BaseTheme : R.style.BaseThemeLight);
         super.onCreate(savedInstanceState);
-        General.actionBar = getSupportActionBar();
+        if (General.actionBar == null)
+            General.actionBar = getSupportActionBar();
         General.currentActivity = this;
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
@@ -195,14 +196,11 @@ public class SawimActivity extends ActionBarActivity {
         General.maximize();
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         if (Roster.getInstance().getProtocolCount() == 0) {
+            if (General.currentActivity.getSupportFragmentManager()
+                    .findFragmentById(R.id.chat_fragment) != null)
+                General.currentActivity.setContentView(R.layout.intercalation_layout);
             StartWindowView newFragment = new StartWindowView();
-            if (getSupportFragmentManager()
-                    .findFragmentById(R.id.chat_fragment) != null) {
-                getSupportFragmentManager().findFragmentById(R.id.chat_fragment).getView().setVisibility(View.GONE);
-                transaction.replace(R.id.roster_fragment, newFragment, StartWindowView.TAG);
-            } else {
-                transaction.replace(R.id.fragment_container, newFragment, StartWindowView.TAG);
-            }
+            transaction.replace(R.id.fragment_container, newFragment, StartWindowView.TAG);
             transaction.addToBackStack(null);
             transaction.commitAllowingStateLoss();
         } else {
@@ -238,6 +236,14 @@ public class SawimActivity extends ActionBarActivity {
             ((RosterView) getSupportFragmentManager().findFragmentById(R.id.roster_fragment)).resume();
     }
 
+    private void back() {
+        if (General.currentActivity.getSupportFragmentManager()
+                .findFragmentById(R.id.chat_fragment) != null)
+            recreateActivity();
+        else
+            super.onBackPressed();
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         ChatView view = (ChatView) getSupportFragmentManager().findFragmentByTag(ChatView.TAG);
@@ -248,14 +254,6 @@ public class SawimActivity extends ActionBarActivity {
             return;
         }
         super.onActivityResult(requestCode, resultCode, data);
-    }
-
-    private void back() {
-        super.onBackPressed();
-        if (General.currentActivity.getSupportFragmentManager()
-                .findFragmentById(R.id.chat_fragment) != null)
-            General.currentActivity.getSupportFragmentManager()
-                    .findFragmentById(R.id.chat_fragment).getView().setVisibility(View.VISIBLE);
     }
 
     public void recreateActivity() {
@@ -294,11 +292,11 @@ public class SawimActivity extends ActionBarActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        menu.clear();
         ChatView chatView = (ChatView) getSupportFragmentManager().findFragmentByTag(ChatView.TAG);
         ChatView tabletChatView = (ChatView) getSupportFragmentManager().findFragmentById(R.id.chat_fragment);
         VirtualListView virtualListView = (VirtualListView) getSupportFragmentManager().findFragmentByTag(VirtualListView.TAG);
         FormView formView = (FormView) getSupportFragmentManager().findFragmentByTag(FormView.TAG);
+        menu.clear();
         if (formView != null) {
             return false;
         } else if (chatView != null) {
@@ -363,7 +361,7 @@ public class SawimActivity extends ActionBarActivity {
 
         menu.add(Menu.NONE, MENU_DEBUG_LOG, Menu.NONE, R.string.debug);
         menu.add(Menu.NONE, MENU_QUIT, Menu.NONE, R.string.quit);
-        return super.onCreateOptionsMenu(menu);
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override

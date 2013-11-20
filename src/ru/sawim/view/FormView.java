@@ -75,17 +75,13 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
         General.currentActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                FormView newFragment = new FormView();
-                FragmentTransaction transaction = General.currentActivity.getSupportFragmentManager().beginTransaction();
                 SawimActivity.resetBar();
                 if (General.currentActivity.getSupportFragmentManager()
-                        .findFragmentById(R.id.chat_fragment) != null) {
-                    General.currentActivity.getSupportFragmentManager()
-                            .findFragmentById(R.id.chat_fragment).getView().setVisibility(View.GONE);
-                    transaction.replace(R.id.roster_fragment, newFragment, FormView.TAG);
-                } else {
-                    transaction.replace(R.id.fragment_container, newFragment, FormView.TAG);
-                }
+                        .findFragmentById(R.id.chat_fragment) != null)
+                    General.currentActivity.setContentView(R.layout.intercalation_layout);
+                FormView newFragment = new FormView();
+                FragmentTransaction transaction = General.currentActivity.getSupportFragmentManager().beginTransaction();
+                transaction.replace(R.id.fragment_container, newFragment, FormView.TAG);
                 transaction.addToBackStack(null);
                 transaction.commitAllowingStateLoss();
             }
@@ -104,14 +100,13 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
 
     @Override
     public void back() {
-        if (Forms.getInstance().getBackPressedListener() != null)
-            Forms.getInstance().getBackPressedListener().back();
-        getFragmentManager().popBackStack();
         if (General.currentActivity.getSupportFragmentManager()
                 .findFragmentById(R.id.chat_fragment) != null)
-            General.currentActivity.getSupportFragmentManager()
-                    .findFragmentById(R.id.chat_fragment).getView().setVisibility(View.VISIBLE);
+            ((SawimActivity)General.currentActivity).recreateActivity();
+        else
+            getFragmentManager().popBackStack();
         hideKeyboard();
+        General.currentActivity.supportInvalidateOptionsMenu();
     }
 
     private void hideKeyboard() {

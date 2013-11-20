@@ -20,11 +20,13 @@ import protocol.Group;
 import protocol.Protocol;
 import ru.sawim.General;
 import ru.sawim.R;
+import ru.sawim.activities.SawimActivity;
 import ru.sawim.models.ChatsAdapter;
 import ru.sawim.models.CustomPagerAdapter;
 import ru.sawim.models.RosterAdapter;
 import ru.sawim.widget.IconTabPageIndicator;
 import ru.sawim.widget.MyListView;
+import ru.sawim.widget.Util;
 import ru.sawim.widget.roster.RosterViewRoot;
 import sawim.chat.Chat;
 import sawim.chat.ChatHistory;
@@ -104,7 +106,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         General.currentActivity = (ActionBarActivity) activity;
         isTablet = activity.findViewById(R.id.fragment_container) == null;
         barLinearLayout = new LinearLayout(activity);
-        horizontalScrollView = new IconTabPageIndicator(activity);
+        horizontalScrollView = new IconTabPageIndicator(getActivity());
 
         progressBar = new ProgressBar(activity, null, android.R.attr.progressBarStyleHorizontal);
         progressBar.setMax(100);
@@ -134,7 +136,8 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         viewPagerLayoutParams.height = ViewPager.LayoutParams.WRAP_CONTENT;
         viewPagerLayoutParams.width = ViewPager.LayoutParams.FILL_PARENT;
         viewPagerLayoutParams.gravity = Gravity.TOP;
-        indicator.setPadding(5, 5, 5, 5);
+        int padding = Util.dipToPixels(activity, 5);
+        indicator.setPadding(padding, padding, padding, padding);
         viewPager.setLayoutParams(viewPagerLayoutParams);
         viewPager.addView(indicator, viewPagerLayoutParams);
     }
@@ -245,9 +248,9 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
             chatView.removeTitleBar();
             barLinearLayout.addView(chatView.getTitleBar());
             General.actionBar.setCustomView(barLinearLayout);
-            General.currentActivity.supportInvalidateOptionsMenu();
-        } else
+        } else {
             General.actionBar.setCustomView(horizontalScrollView);
+        }
     }
 
     public void addProtocolsTabs() {
@@ -307,16 +310,17 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     public void resume() {
         General.currentActivity = (ActionBarActivity) getActivity();
         initBar();
-        if (roster.getProtocolCount() == 0) return;
-        roster.setCurrentContact(null);
-        roster.setOnUpdateRoster(this);
-        if (General.returnFromAcc) {
-            General.returnFromAcc = false;
-            if (roster.getCurrentProtocol().getContactItems().size() == 0 && !roster.getCurrentProtocol().isConnecting())
-                Toast.makeText(getActivity(), R.string.press_menu_for_connect, Toast.LENGTH_LONG).show();
-            addProtocolsTabs();
+        if (roster.getProtocolCount() > 0) {
+            roster.setCurrentContact(null);
+            roster.setOnUpdateRoster(this);
+            if (General.returnFromAcc) {
+                General.returnFromAcc = false;
+                if (roster.getCurrentProtocol().getContactItems().size() == 0 && !roster.getCurrentProtocol().isConnecting())
+                    Toast.makeText(getActivity(), R.string.press_menu_for_connect, Toast.LENGTH_LONG).show();
+                addProtocolsTabs();
+            }
+            update();
         }
-        update();
         if (!isTablet)
             getActivity().supportInvalidateOptionsMenu();
     }

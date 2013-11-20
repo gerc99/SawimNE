@@ -38,7 +38,8 @@ public class AccountsListActivity extends ActionBarActivity implements JabberReg
             setContentView(R.layout.intercalation_layout);
         else
             setContentView(R.layout.main);
-        General.actionBar = getSupportActionBar();
+        if (General.actionBar == null)
+            General.actionBar = getSupportActionBar();
         General.actionBar.setDisplayHomeAsUpEnabled(true);
         General.actionBar.setDisplayShowTitleEnabled(true);
         General.actionBar.setDisplayUseLogoEnabled(true);

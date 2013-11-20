@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.support.v4.app.FragmentActivity;
 import android.view.ContextMenu;
+import android.view.ContextThemeWrapper;
 import android.widget.Toast;
 import protocol.jabber.Jabber;
 import ru.sawim.General;

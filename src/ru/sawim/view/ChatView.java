@@ -76,17 +76,14 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
     private static final MessagesAdapter adapter = new MessagesAdapter();
     private DrawerLayout drawerLayout;
 
-    private static ViewsState viewsState;
-    public boolean isOpenMenu = false;
+    private ImageButton usersImage;
+    private ImageButton chatsImage;
+    private ImageButton menuButton;
+    private ImageButton smileButton;
+    private ImageButton sendButton;
+    private ChatBarView chatBarLayout;
 
-    private static class ViewsState {
-        private ImageButton usersImage;
-        private ImageButton chatsImage;
-        private ImageButton menuButton;
-        private ImageButton smileButton;
-        private ImageButton sendButton;
-        private ChatBarView chatBarLayout;
-    }
+    public boolean isOpenMenu = false;
 
     @Override
     public void onAttach(Activity activity) {
@@ -95,22 +92,19 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
         isTablet = activity.findViewById(R.id.fragment_container) == null;
         messageEditor = new EditText(activity);
 
-        if (viewsState == null) {
-            viewsState = new ViewsState();
-            viewsState.usersImage = new ImageButton(activity);
-            viewsState.chatsImage = new ImageButton(activity);
+        usersImage = new ImageButton(activity);
+        chatsImage = new ImageButton(activity);
 
-            viewsState.menuButton = new ImageButton(activity);
-            viewsState.smileButton = new ImageButton(activity);
-            viewsState.sendButton = new ImageButton(activity);
+        menuButton = new ImageButton(activity);
+        smileButton = new ImageButton(activity);
+        sendButton = new ImageButton(activity);
 
-            viewsState.chatBarLayout = new ChatBarView(activity, viewsState.usersImage, viewsState.chatsImage);
-        }
+        chatBarLayout = new ChatBarView(activity, usersImage, chatsImage);
         chatListView = new MyListView(activity);
         if (isTablet)
             nickList = new MyListView(getActivity());
         chatListsView = new ChatListsView(activity, isTablet, chatListView, nickList);
-        chatInputBarView = new ChatInputBarView(activity, viewsState.menuButton, viewsState.smileButton, messageEditor, viewsState.sendButton);
+        chatInputBarView = new ChatInputBarView(activity, menuButton, smileButton, messageEditor, sendButton);
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
             messageEditor.getBackground().setColorFilter(Scheme.getColor(Scheme.THEME_BACKGROUND), PorterDuff.Mode.MULTIPLY);
@@ -126,12 +120,12 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
     }
 
     public void removeTitleBar() {
-        if (viewsState.chatBarLayout != null && viewsState.chatBarLayout.getParent() != null)
-            ((ViewGroup) viewsState.chatBarLayout.getParent()).removeView(viewsState.chatBarLayout);
+        if (chatBarLayout != null && chatBarLayout.getParent() != null)
+            ((ViewGroup) chatBarLayout.getParent()).removeView(chatBarLayout);
     }
 
     public ChatBarView getTitleBar() {
-        return viewsState.chatBarLayout;
+        return chatBarLayout;
     }
 
     @Override
@@ -144,7 +138,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
         if (!isTablet) {
             removeTitleBar();
             General.actionBar.setDisplayShowCustomEnabled(true);
-            General.actionBar.setCustomView(viewsState.chatBarLayout);
+            General.actionBar.setCustomView(chatBarLayout);
         }
         updateChatIcon();
 
@@ -182,10 +176,10 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
         }
 
         if (!isTablet) {
-            viewsState.chatBarLayout.setVisibilityUsersImage(ImageView.VISIBLE);
-            viewsState.usersImage.setBackgroundColor(0);
-            viewsState.usersImage.setImageDrawable(General.usersIcon);
-            viewsState.usersImage.setOnClickListener(new View.OnClickListener() {
+            chatBarLayout.setVisibilityUsersImage(ImageView.VISIBLE);
+            usersImage.setBackgroundColor(0);
+            usersImage.setImageDrawable(General.usersIcon);
+            usersImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     if (nickList == null) return;
@@ -197,9 +191,9 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
                 }
             });
         } else
-            viewsState.chatBarLayout.setVisibilityUsersImage(View.GONE);
-        viewsState.chatsImage.setBackgroundColor(0);
-        viewsState.chatsImage.setOnClickListener(new View.OnClickListener() {
+            chatBarLayout.setVisibilityUsersImage(View.GONE);
+        chatsImage.setBackgroundColor(0);
+        chatsImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 forceGoToChat(ChatHistory.instance.getPreferredItem());
@@ -209,21 +203,20 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
             }
         });
         if (isTablet) {
-            viewsState.menuButton.setVisibility(ImageButton.VISIBLE);
-            viewsState.menuButton.setBackgroundColor(0);
-            viewsState.menuButton.setOnClickListener(new View.OnClickListener() {
+            menuButton.setVisibility(ImageButton.VISIBLE);
+            menuButton.setBackgroundColor(0);
+            menuButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     if (contact == null) return;
                     isOpenMenu = true;
                     getActivity().openOptionsMenu();
-                    getActivity().supportInvalidateOptionsMenu();
                 }
             });
         } else
-            viewsState.menuButton.setVisibility(ImageButton.GONE);
-        viewsState.smileButton.setBackgroundColor(0);
-        viewsState.smileButton.setOnClickListener(new View.OnClickListener() {
+            menuButton.setVisibility(ImageButton.GONE);
+        smileButton.setBackgroundColor(0);
+        smileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 hideKeyboard(view);
@@ -245,11 +238,11 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
         }
         sendByEnter = Options.getBoolean(Options.OPTION_SIMPLE_INPUT);
         if (sendByEnter) {
-            viewsState.sendButton.setVisibility(ImageButton.GONE);
+            sendButton.setVisibility(ImageButton.GONE);
         } else {
-            viewsState.sendButton.setVisibility(ImageButton.VISIBLE);
-            viewsState.sendButton.setBackgroundColor(0);
-            viewsState.sendButton.setOnClickListener(new View.OnClickListener() {
+            sendButton.setVisibility(ImageButton.VISIBLE);
+            sendButton.setBackgroundColor(0);
+            sendButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     send();
@@ -259,7 +252,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
                         }
                 }
             });
-            viewsState.sendButton.setOnLongClickListener(new View.OnLongClickListener() {
+            sendButton.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
                     insert("/me ");
@@ -274,17 +267,17 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
     @Override
     public void onDetach() {
         super.onDetach();
-        viewsState.chatsImage.setOnClickListener(null);
-        viewsState.menuButton.setOnClickListener(null);
-        viewsState.usersImage.setOnClickListener(null);
-        viewsState.smileButton.setOnClickListener(null);
+        chatsImage.setOnClickListener(null);
+        menuButton.setOnClickListener(null);
+        usersImage.setOnClickListener(null);
+        smileButton.setOnClickListener(null);
         General.getInstance().setConfigurationChanged(null);
         messageEditor.addTextChangedListener(null);
         chatListView.setOnCreateContextMenuListener(null);
         chatListView.setOnItemClickListener(null);
         messageEditor = null;
         chatsSpinnerAdapter = null;
-        viewsState.chatBarLayout.setOnClickListener(null);
+        chatBarLayout.setOnClickListener(null);
         chatListView = null;
         nickList = null;
         chatListsView = null;
@@ -421,9 +414,9 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
     DialogFragment chatDialogFragment;
     private void initLabel() {
         chatsSpinnerAdapter = new ChatsSpinnerAdapter(getActivity());
-        viewsState.chatBarLayout.updateLabelIcon(chatsSpinnerAdapter.getImageChat(chat, false));
-        viewsState.chatBarLayout.updateTextView(contact.getName());
-        viewsState.chatBarLayout.setOnClickListener(new View.OnClickListener() {
+        chatBarLayout.updateLabelIcon(chatsSpinnerAdapter.getImageChat(chat, false));
+        chatBarLayout.updateTextView(contact.getName());
+        chatBarLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 chatDialogFragment = new DialogFragment() {
@@ -484,9 +477,9 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
             mucUsersView = new MucUsersView();
             mucUsersView.init(protocol, (JabberServiceContact) contact);
             mucUsersView.show(this, nickList);
-            viewsState.chatBarLayout.setVisibilityUsersImage(isTablet ? View.GONE : View.VISIBLE);
+            chatBarLayout.setVisibilityUsersImage(isTablet ? View.GONE : View.VISIBLE);
         } else {
-            viewsState.chatBarLayout.setVisibilityUsersImage(View.GONE);
+            chatBarLayout.setVisibilityUsersImage(View.GONE);
             if (isTablet) {
                 nickList.setVisibility(View.GONE);
             } else {
@@ -500,10 +493,10 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
     public void updateChatIcon() {
         Icon icMess = ChatHistory.instance.getUnreadMessageIcon();
         if (icMess == null) {
-            viewsState.chatBarLayout.setVisibilityChatsImage(View.GONE);
+            chatBarLayout.setVisibilityChatsImage(View.GONE);
         } else {
-            viewsState.chatBarLayout.setVisibilityChatsImage(View.VISIBLE);
-            viewsState.chatsImage.setImageDrawable(icMess.getImage());
+            chatBarLayout.setVisibilityChatsImage(View.VISIBLE);
+            chatsImage.setImageDrawable(icMess.getImage());
         }
     }
 
@@ -521,7 +514,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
     private void updateList(Contact contact) {
         if (contact == this.contact) {
             if (chatsSpinnerAdapter != null) {
-                viewsState.chatBarLayout.updateLabelIcon(chatsSpinnerAdapter.getImageChat(chat, false));
+                chatBarLayout.updateLabelIcon(chatsSpinnerAdapter.getImageChat(chat, false));
             }
             if (adapter != null)
                 adapter.refreshList(chat.getMessData());
@@ -584,8 +577,8 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
     };
 
     public void onPrepareOptionsMenu_(Menu menu) {
-        menu.clear();
         if (chat == null) return;
+        menu.clear();
         boolean accessible = chat.getWritable() && (contact.isSingleUserContact() || contact.isOnline());
         menu.add(Menu.FIRST, ContactMenu.MENU_MULTI_CITATION, 2, getString(adapter.isMultiQuote() ?
                 R.string.disable_multi_citation : R.string.include_multi_citation));
