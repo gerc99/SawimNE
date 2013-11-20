@@ -73,8 +73,7 @@ public class SawimActivity extends ActionBarActivity {
     public void onCreate(Bundle savedInstanceState) {
         setTheme(Scheme.isBlack() ? R.style.BaseTheme : R.style.BaseThemeLight);
         super.onCreate(savedInstanceState);
-        if (General.actionBar == null)
-            General.actionBar = getSupportActionBar();
+        General.actionBar = getSupportActionBar();
         General.currentActivity = this;
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
@@ -215,6 +214,13 @@ public class SawimActivity extends ActionBarActivity {
     public void onPause() {
         super.onPause();
         General.minimize();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        General.actionBar = null;
+        General.currentActivity = null;
     }
 
     @Override

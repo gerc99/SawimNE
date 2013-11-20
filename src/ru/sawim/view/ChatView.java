@@ -271,24 +271,30 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
         menuButton.setOnClickListener(null);
         usersImage.setOnClickListener(null);
         smileButton.setOnClickListener(null);
-        General.getInstance().setConfigurationChanged(null);
+        chatBarLayout.setOnClickListener(null);
+        chatListView.setOnItemClickListener(null);
         messageEditor.addTextChangedListener(null);
         chatListView.setOnCreateContextMenuListener(null);
-        chatListView.setOnItemClickListener(null);
-        messageEditor = null;
-        chatsSpinnerAdapter = null;
-        chatBarLayout.setOnClickListener(null);
-        chatListView = null;
-        nickList = null;
-        chatListsView = null;
-        chatInputBarView = null;
-        mucUsersView = null;
-        chat_viewLayout = null;
-        protocol = null;
-        contact = null;
-        chat = null;
+        General.getInstance().setConfigurationChanged(null);
         sharingText = "";
+        chat = null;
+        contact = null;
+        nickList = null;
+        protocol = null;
+        usersImage = null;
+        chatsImage = null;
+        menuButton = null;
+        sendButton = null;
+        smileButton = null;
+        mucUsersView = null;
+        chatListView = null;
+        chatBarLayout = null;
+        messageEditor = null;
+        chatListsView = null;
+        chat_viewLayout = null;
+        chatInputBarView = null;
         chatDialogFragment = null;
+        chatsSpinnerAdapter = null;
     }
 
     @Override
