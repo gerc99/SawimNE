@@ -80,7 +80,6 @@ public class EditInfo implements FormListener {
     }
 
     private void destroy() {
-        form.destroy();
         protocol = null;
         form = null;
         userInfo = null;

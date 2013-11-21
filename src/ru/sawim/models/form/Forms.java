@@ -38,23 +38,32 @@ public class Forms {
     private CharSequence caption;
     private static Forms instance;
 
-    public void back() {
-        backForm();
-        destroy();
+    public static class Control {
+        public int id;
+        public String description;
+        public String label;
+        public byte type;
+
+        public String text; // input
+        public boolean selected;// checkbox
+        public String[] items;// select
+        public int current;
+        public int level;// gauge
+        public Drawable image;
     }
 
-    public void backForm() {
-        if (updateFormListener != null)
-            updateFormListener.back();
+    public Forms(String caption_, FormListener l) {
+        instance = this;
+        caption = JLocale.getString(caption_);
+        formListener = l;
     }
 
-    public void show() {
-        FormView.show();
+    public static Forms getInstance() {
+        return instance;
     }
 
-    public void invalidate() {
-        if (updateFormListener != null)
-            updateFormListener.updateForm();
+    public void setControlStateListener(ControlStateListener l) {
+        controlListener = l;
     }
 
     public void setUpdateFormListener(OnUpdateForm l) {
@@ -63,10 +72,6 @@ public class Forms {
 
     public FormListener getFormListener() {
         return formListener;
-    }
-
-    public static Forms getInstance() {
-        return instance;
     }
 
     public void setCaption(String caption) {
@@ -95,41 +100,19 @@ public class Forms {
         this.backPressedListener = backPressedListener;
     }
 
-    public static class Control {
-        public int id;
-        public String description;
-        public String label;
-        public byte type;
-
-        public String text; // input
-        public boolean selected;// checkbox
-        public String[] items;// select
-        public int current;
-        public int level;// gauge
-        public Drawable image;
+    public void show() {
+        FormView.show();
     }
 
-    public Forms(String caption_, FormListener l) {
-        caption = JLocale.getString(caption_);
-        formListener = l;
+    public void invalidate() {
+        if (updateFormListener != null)
+            updateFormListener.updateForm();
+    }
+
+    public void back() {
+        if (updateFormListener != null)
+            updateFormListener.back();
         instance = null;
-        instance = this;
-    }
-
-    public void setControlStateListener(ControlStateListener l) {
-        controlListener = l;
-    }
-
-    public void destroy() {
-        clearForm();
-        Forms.getInstance().clearListeners();
-    }
-
-    public void clearListeners() {
-        formListener = null;
-        controlListener = null;
-        updateFormListener = null;
-        backPressedListener = null;
     }
 
     private Control create(int controlId, byte type, String label, String desc) {
@@ -150,6 +133,10 @@ public class Forms {
     private void add(Control c) {
         controls.add(c);
         invalidate();
+    }
+
+    public int getSize() {
+        return controls.size();
     }
 
     public void clearForm() {
@@ -327,10 +314,6 @@ public class Forms {
             DebugLog.panic("getChoiceItemValue", e);
         }
         return false;
-    }
-
-    public int getSize() {
-        return controls.size();
     }
 
     public void controlUpdated(Control c) {

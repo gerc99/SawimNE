@@ -172,9 +172,11 @@ public class OptionsForm implements FormListener, ControlStateListener {
     }
 
     public void formAction(Forms form, boolean apply) {
-        if (apply)
-            save(currentOptionsForm);
-        form.back();
+        save(currentOptionsForm);
+        if (Scheme.isChangeTheme(Options.getInt(Options.OPTION_COLOR_SCHEME)))
+            ((SawimActivity) General.currentActivity).recreateActivity();
+        else
+            form.back();
     }
 
     public void select(CharSequence name, int cmd) {
@@ -184,7 +186,6 @@ public class OptionsForm implements FormListener, ControlStateListener {
             @Override
             public boolean back() {
                 save(currentOptionsForm);
-                form.destroy();
                 if (Scheme.isChangeTheme(Options.getInt(Options.OPTION_COLOR_SCHEME)))
                     ((SawimActivity) General.currentActivity).recreateActivity();
                 return true;

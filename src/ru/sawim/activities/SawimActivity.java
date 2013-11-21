@@ -217,13 +217,6 @@ public class SawimActivity extends ActionBarActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        General.actionBar = null;
-        General.currentActivity = null;
-    }
-
-    @Override
     public void onBackPressed() {
         SawimFragment chatView = (SawimFragment) getSupportFragmentManager().findFragmentByTag(ChatView.TAG);
         SawimFragment formView = (SawimFragment) getSupportFragmentManager().findFragmentByTag(FormView.TAG);

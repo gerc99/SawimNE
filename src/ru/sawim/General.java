@@ -54,9 +54,6 @@ public class General {
     }
 
     public void startApp() {
-        /*if (!paused && (null != General.instance)) {
-            return;
-        }*/
         instance = this;
         instance.paused = false;
 
@@ -65,7 +62,6 @@ public class General {
         new ru.sawim.config.Options().load();
         JLocale.loadLanguageList();
         Scheme.load();
-        JLocale.setCurrUiLanguage(/*Options.getString(Options.OPTION_UI_LANGUAGE)*/JLocale.getSystemLanguage());
         Scheme.setColorScheme(Options.getInt(Options.OPTION_COLOR_SCHEME));
         updateOptions();
         Updater.startUIUpdater();
@@ -98,23 +94,15 @@ public class General {
 
     public void quit() {
         Roster cl = Roster.getInstance();
-        /*boolean wait;
-        try {
-            wait = roster.disconnect();
-        } catch (Exception e) {
-            return;
-        }*/
         try {
             Thread.sleep(100);
         } catch (InterruptedException e1) {
         }
         cl.safeSave();
-        //if (wait) {
         try {
             Thread.sleep(500);
         } catch (InterruptedException e1) {
         }
-        //}
         ChatHistory.instance.saveUnreadMessages();
     }
 

@@ -139,7 +139,7 @@ public final class AdHoc implements FormListener, ControlStateListener {
             execForm();
             Roster.getInstance().activate(contact);
         }
-        form.backForm();
+        form.back();
     }
 
     private void execForm() {

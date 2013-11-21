@@ -281,7 +281,7 @@ public final class HistoryStorageList implements Runnable, FormListener {
         if (apply) {
             frmFind.remove(NOT_FOUND);
             new Thread(this).start();
-            form.backForm();
+            form.back();
         } else {
             searching = null;
         }

@@ -64,7 +64,7 @@ public class Scheme {
     private static int[] currentTheme = new int[baseTheme.length];
     private static int[][] themeColors;
     private static String[] themeNames;
-    private static int oldTheme = -1;
+    private static int oldTheme;
 
     public static void load() {
         setColorScheme(baseTheme);
@@ -89,6 +89,7 @@ public class Scheme {
             themeNames[i + 1] = config.getName();
             themeColors[i + 1] = configToTheme(config);
         }
+        oldTheme = Options.getInt(Options.OPTION_COLOR_SCHEME);
     }
 
     public static boolean isBlack() {

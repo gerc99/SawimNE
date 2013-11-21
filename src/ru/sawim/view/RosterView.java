@@ -185,16 +185,19 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     }
 
     @Override
-    public void updateRoster() {
-        roster.updateOptions();
+    public void updateBarProtocols() {
+        final int protocolCount = roster.getProtocolCount();
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (adaptersPages != null && adaptersPages.size() > 0) {
-                    if (roster.getCurrPage() == Roster.ACTIVE_CONTACTS) {
-                        ((ChatsAdapter) adaptersPages.get(roster.getCurrPage())).refreshList();
-                    } else {
-                        ((RosterAdapter) adaptersPages.get(roster.getCurrPage())).buildFlatItems();
+                if (protocolCount > 1) {
+                    for (int i = 0; i < protocolCount; ++i) {
+                        Protocol protocol = roster.getProtocol(i);
+                        Drawable icon = protocol.getCurrentStatusIcon().getImage();
+                        Icon messageIcon = ChatHistory.instance.getUnreadMessageIcon(protocol);
+                        if (null != messageIcon)
+                            icon = messageIcon.getImage();
+                        horizontalScrollView.updateTabIcon(i, icon);
                     }
                 }
             }
@@ -216,6 +219,23 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
                     progressBar.setProgress(percent);
                 } else {
                     progressBar.setVisibility(ProgressBar.GONE);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void updateRoster() {
+        roster.updateOptions();
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (adaptersPages != null && adaptersPages.size() > 0) {
+                    if (roster.getCurrPage() == Roster.ACTIVE_CONTACTS) {
+                        ((ChatsAdapter) adaptersPages.get(roster.getCurrPage())).refreshList();
+                    } else {
+                        ((RosterAdapter) adaptersPages.get(roster.getCurrPage())).buildFlatItems();
+                    }
                 }
             }
         });
@@ -253,7 +273,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         }
     }
 
-    public void addProtocolsTabs() {
+    private void addProtocolsTabs() {
         final int protocolCount = roster.getProtocolCount();
         horizontalScrollView.removeAllTabs();
         horizontalScrollView.setOnTabSelectedListener(null);
@@ -279,26 +299,6 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
             }
             horizontalScrollView.setCurrentItem(roster.getCurrentItemProtocol());
         }
-    }
-
-    @Override
-    public void updateBarProtocols() {
-        final int protocolCount = roster.getProtocolCount();
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (protocolCount > 1) {
-                    for (int i = 0; i < protocolCount; ++i) {
-                        Protocol protocol = roster.getProtocol(i);
-                        Drawable icon = protocol.getCurrentStatusIcon().getImage();
-                        Icon messageIcon = ChatHistory.instance.getUnreadMessageIcon(protocol);
-                        if (null != messageIcon)
-                            icon = messageIcon.getImage();
-                        horizontalScrollView.updateTabIcon(i, icon);
-                    }
-                }
-            }
-        });
     }
 
     @Override

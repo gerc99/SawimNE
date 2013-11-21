@@ -25,8 +25,6 @@ import ru.sawim.view.AccountsListView;
  * To change this template use File | Settings | File Templates.
  */
 public class AccountsListActivity extends ActionBarActivity implements JabberRegistration.OnAddAccount {
-    private AccountAuthenticatorResponse mAccountAuthenticatorResponse = null;
-    private Bundle mResultBundle = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -47,12 +45,6 @@ public class AccountsListActivity extends ActionBarActivity implements JabberReg
         General.actionBar.setDisplayShowCustomEnabled(false);
         General.actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         General.currentActivity = this;
-        mResultBundle = savedInstanceState;
-        mAccountAuthenticatorResponse =
-                getIntent().getParcelableExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE);
-        if (mAccountAuthenticatorResponse != null) {
-            mAccountAuthenticatorResponse.onRequestContinued();
-        }
 
         if (findViewById(R.id.fragment_container) != null) {
             if (savedInstanceState != null) return;
@@ -98,18 +90,5 @@ public class AccountsListActivity extends ActionBarActivity implements JabberReg
         AccountsListView view = (AccountsListView) getSupportFragmentManager().findFragmentByTag(AccountsListView.TAG);
         if (view != null)
             view.addAccount(num, acc);
-    }
-
-    public void finish() {
-        if (mAccountAuthenticatorResponse != null) {
-            if (mResultBundle != null) {
-                mAccountAuthenticatorResponse.onResult(mResultBundle);
-            } else {
-                mAccountAuthenticatorResponse.onError(AccountManager.ERROR_CODE_CANCELED,
-                        "canceled");
-            }
-            mAccountAuthenticatorResponse = null;
-        }
-        super.finish();
     }
 }

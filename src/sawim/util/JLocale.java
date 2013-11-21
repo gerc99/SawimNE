@@ -19,8 +19,8 @@ public class JLocale {
         Config config = new Config().load("/langlist.txt");
         langAvailable = config.getKeys();
         langAvailableName = config.getValues();
+        setCurrUiLanguage();
     }
-
 
     public static String getCurrUiLanguage() {
         return currentLanguage;
@@ -54,11 +54,10 @@ public class JLocale {
                 || "BE".equals(language);
     }
 
-
-    public static void setCurrUiLanguage(String currUiLanguage) {
+    private static void setCurrUiLanguage() {
         String language = JLocale.langAvailable[0];
         for (int i = 0; i < JLocale.langAvailable.length; ++i) {
-            if (langAvailable[i].equals(currUiLanguage)) {
+            if (langAvailable[i].equals(JLocale.getSystemLanguage())) {
                 language = langAvailable[i];
                 break;
             }
@@ -81,7 +80,6 @@ public class JLocale {
         }
     }
 
-
     public static String getString(String key) {
         if (null == key) return null;
         String value = (String) resources.get(key);
@@ -92,5 +90,3 @@ public class JLocale {
         return getString(key) + "...";
     }
 }
-
-
