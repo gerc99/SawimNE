@@ -112,7 +112,6 @@ public class Forms {
     public void back() {
         if (updateFormListener != null)
             updateFormListener.back();
-        instance = null;
     }
 
     private Control create(int controlId, byte type, String label, String desc) {

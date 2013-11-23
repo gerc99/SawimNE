@@ -125,8 +125,8 @@ public class RosterItemView extends View {
     }
 
     private void computeCoordinates(int viewWidth, int viewHeight) {
-        int leftPadding = getPaddingLeft();
-        int rightPadding = getPaddingRight();
+        int leftPadding = getPaddingLeft() >> 1;
+        int rightPadding = getPaddingRight() >> 1;
         int bottomPadding = getPaddingBottom();
         int topPadding = getPaddingTop();
         int y = viewHeight >> 1;
@@ -187,7 +187,7 @@ public class RosterItemView extends View {
             textPaint.setColor(itemNameColor);
             setTextSize(General.getFontSize());
             textPaint.setTypeface(itemNameFont);
-            canvas.drawText(itemName, textX, lineOneY, textPaint);
+            canvas.drawText(TextUtils.ellipsize(itemName, textPaint, fifthImageX - textX, TextUtils.TruncateAt.END).toString(), textX, lineOneY, textPaint);
         }
         if (itemDesc != null) {
             textPaint.setColor(itemDescColor);

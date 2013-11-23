@@ -87,7 +87,7 @@ public class MessagesAdapter extends BaseAdapter {
         }
 
         MessageItemView item = mData.messView;
-        CharSequence parsedText = mData.parsedText();
+        CharSequence parsedText = mData.getText();
         String nick = mData.getNick();
         boolean incoming = mData.isIncoming();
 

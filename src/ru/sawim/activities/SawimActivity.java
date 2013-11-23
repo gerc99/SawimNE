@@ -217,6 +217,12 @@ public class SawimActivity extends ActionBarActivity {
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        General.currentActivity = null;
+    }
+
+    @Override
     public void onBackPressed() {
         SawimFragment chatView = (SawimFragment) getSupportFragmentManager().findFragmentByTag(ChatView.TAG);
         SawimFragment formView = (SawimFragment) getSupportFragmentManager().findFragmentByTag(FormView.TAG);
@@ -335,7 +341,8 @@ public class SawimActivity extends ActionBarActivity {
                 if (p instanceof Icq) {
                     menu.add(Menu.NONE, MENU_MYSELF, Menu.NONE, R.string.myself);
                 } else {
-                    SubMenu moreMenu = menu.addSubMenu(Menu.NONE, MENU_MORE, Menu.NONE, R.string.more);
+                    //SubMenu moreMenu = menu.addSubMenu(Menu.NONE, MENU_MORE, Menu.NONE, R.string.more);
+                    Menu moreMenu = menu;
                     if (p instanceof Jabber) {
                         moreMenu.add(Menu.NONE, MENU_NOTES, Menu.NONE, R.string.notes);
                     }
@@ -348,7 +355,7 @@ public class SawimActivity extends ActionBarActivity {
         }
         menu.add(Menu.NONE, MENU_SOUND, Menu.NONE, Options.getBoolean(Options.OPTION_SILENT_MODE)
                 ? R.string.sound_on : R.string.sound_off);
-        menu.add(Menu.NONE, MENU_MAGIC_EYE, Menu.NONE, R.string.magic_eye);
+        //menu.add(Menu.NONE, MENU_MAGIC_EYE, Menu.NONE, R.string.magic_eye);
         SubMenu optionsMenu = menu.addSubMenu(Menu.NONE, MENU_OPTIONS, Menu.NONE, R.string.options);
         optionsMenu.add(Menu.NONE, OptionsForm.OPTIONS_ACCOUNT, Menu.NONE, R.string.options_account);
         optionsMenu.add(Menu.NONE, OptionsForm.OPTIONS_INTERFACE, Menu.NONE, R.string.options_interface);
@@ -358,7 +365,7 @@ public class SawimActivity extends ActionBarActivity {
         optionsMenu.add(Menu.NONE, OptionsForm.OPTIONS_ANSWERER, Menu.NONE, R.string.answerer);
         optionsMenu.add(Menu.NONE, OptionsForm.OPTIONS_ABOUT, Menu.NONE, R.string.about_program);
 
-        menu.add(Menu.NONE, MENU_DEBUG_LOG, Menu.NONE, R.string.debug);
+        //menu.add(Menu.NONE, MENU_DEBUG_LOG, Menu.NONE, R.string.debug);
         menu.add(Menu.NONE, MENU_QUIT, Menu.NONE, R.string.quit);
         return super.onPrepareOptionsMenu(menu);
     }

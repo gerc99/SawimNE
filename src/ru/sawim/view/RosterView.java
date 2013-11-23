@@ -5,13 +5,14 @@ import android.app.Activity;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.PagerTitleStrip;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.*;
 import android.widget.*;
 import protocol.Contact;
@@ -20,7 +21,6 @@ import protocol.Group;
 import protocol.Protocol;
 import ru.sawim.General;
 import ru.sawim.R;
-import ru.sawim.activities.SawimActivity;
 import ru.sawim.models.ChatsAdapter;
 import ru.sawim.models.CustomPagerAdapter;
 import ru.sawim.models.RosterAdapter;
@@ -45,9 +45,14 @@ import java.util.List;
  * Time: 19:58
  * To change this template use File | Settings | File Templates.
  */
-public class RosterView extends Fragment implements ListView.OnItemClickListener, Roster.OnUpdateRoster {
+public class RosterView extends Fragment implements ListView.OnItemClickListener, Roster.OnUpdateRoster, Handler.Callback {
 
     public static final String TAG = "RosterView";
+
+    private static final int UPDATE_BAR_PROTOCOLS = 0;
+    private static final int UPDATE_PROGRESS_BAR = 1;
+    private static final int UPDATE_ROSTER = 2;
+    private static final int PUT_INTO_QUEUE = 3;
 
     private static boolean isTablet;
     private LinearLayout barLinearLayout;
@@ -59,6 +64,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     private CustomPagerAdapter pagerAdapter;
     private Roster roster;
     private AdapterView.AdapterContextMenuInfo contextMenuInfo;
+    private Handler handler;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -103,6 +109,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
+        handler = new Handler(this);
         General.currentActivity = (ActionBarActivity) activity;
         isTablet = activity.findViewById(R.id.fragment_container) == null;
         barLinearLayout = new LinearLayout(activity);
@@ -168,28 +175,14 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         pagerAdapter = null;
         roster = null;
         contextMenuInfo = null;
+        handler = null;
     }
 
     @Override
-    public void putIntoQueue(final Group g) {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (adaptersPages != null && adaptersPages.size() > 0) {
-                    if (roster.getCurrPage() != Roster.ACTIVE_CONTACTS) {
-                        ((RosterAdapter) adaptersPages.get(roster.getCurrPage())).putIntoQueue(g);
-                    }
-                }
-            }
-        });
-    }
-
-    @Override
-    public void updateBarProtocols() {
-        final int protocolCount = roster.getProtocolCount();
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
+    public boolean handleMessage(Message msg) {
+        switch (msg.what) {
+            case UPDATE_BAR_PROTOCOLS:
+                final int protocolCount = roster.getProtocolCount();
                 if (protocolCount > 1) {
                     for (int i = 0; i < protocolCount; ++i) {
                         Protocol protocol = roster.getProtocol(i);
@@ -200,36 +193,23 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
                         horizontalScrollView.updateTabIcon(i, icon);
                     }
                 }
-            }
-        });
-    }
-
-    @Override
-    public void updateProgressBar() {
-        final Protocol p = roster.getCurrentProtocol();
-        if (p == null) return;
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (p.isConnecting()) {
-                    progressBar.setVisibility(ProgressBar.VISIBLE);
-                    byte percent = p.getConnectingProgress();
-                    Rect bounds = progressBar.getProgressDrawable().getBounds();
-                    progressBar.getProgressDrawable().setBounds(bounds);
-                    progressBar.setProgress(percent);
-                } else {
-                    progressBar.setVisibility(ProgressBar.GONE);
+                break;
+            case UPDATE_PROGRESS_BAR:
+                final Protocol p = roster.getCurrentProtocol();
+                if (p != null) {
+                    if (p.isConnecting()) {
+                        progressBar.setVisibility(ProgressBar.VISIBLE);
+                        byte percent = p.getConnectingProgress();
+                        Rect bounds = progressBar.getProgressDrawable().getBounds();
+                        progressBar.getProgressDrawable().setBounds(bounds);
+                        progressBar.setProgress(percent);
+                    } else {
+                        progressBar.setVisibility(ProgressBar.GONE);
+                    }
                 }
-            }
-        });
-    }
-
-    @Override
-    public void updateRoster() {
-        roster.updateOptions();
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
+                break;
+            case UPDATE_ROSTER:
+                roster.updateOptions();
                 if (adaptersPages != null && adaptersPages.size() > 0) {
                     if (roster.getCurrPage() == Roster.ACTIVE_CONTACTS) {
                         ((ChatsAdapter) adaptersPages.get(roster.getCurrPage())).refreshList();
@@ -237,8 +217,36 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
                         ((RosterAdapter) adaptersPages.get(roster.getCurrPage())).buildFlatItems();
                     }
                 }
-            }
-        });
+                break;
+            case PUT_INTO_QUEUE:
+                if (adaptersPages != null && adaptersPages.size() > 0) {
+                    if (roster.getCurrPage() != Roster.ACTIVE_CONTACTS) {
+                        ((RosterAdapter) adaptersPages.get(roster.getCurrPage())).putIntoQueue((Group) msg.obj);
+                    }
+                }
+                break;
+        }
+        return false;
+    }
+
+    @Override
+    public void updateBarProtocols() {
+        handler.sendEmptyMessage(UPDATE_BAR_PROTOCOLS);
+    }
+
+    @Override
+    public void updateProgressBar() {
+        handler.sendEmptyMessage(UPDATE_PROGRESS_BAR);
+    }
+
+    @Override
+    public void updateRoster() {
+        handler.sendEmptyMessage(UPDATE_ROSTER);
+    }
+
+    @Override
+    public void putIntoQueue(final Group g) {
+        handler.sendMessage(Message.obtain(handler, PUT_INTO_QUEUE, g));
     }
 
     public void update() {
@@ -434,14 +442,9 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     }
 
     private void contactMenuItemSelected(final Contact c, final android.view.MenuItem item) {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Protocol p = roster.getCurrentProtocol();
-                if (roster.getCurrPage() == Roster.ACTIVE_CONTACTS)
-                    p = c.getProtocol();
-                new ContactMenu(p, c).doAction(item.getItemId());
-            }
-        });
+        Protocol p = roster.getCurrentProtocol();
+        if (roster.getCurrPage() == Roster.ACTIVE_CONTACTS)
+            p = c.getProtocol();
+        new ContactMenu(p, c).doAction(item.getItemId());
     }
 }

@@ -149,7 +149,7 @@ public final class MirandaNotes {
             Note note = (Note) notes.elementAt(i);
             storage.append("<note tags='").append(Util.xmlEscape(note.tags)).append("'>");
             storage.append("<title>").append(Util.xmlEscape(note.title)).append("</title>");
-            storage.append("<text>").append(Util.xmlEscape(note.text)).append("</text>");
+            storage.append("<text>").append(Util.xmlEscape(note.text.toString())).append("</text>");
             storage.append("</note>");
         }
         return storage.toString();
@@ -186,7 +186,7 @@ public final class MirandaNotes {
     public class Note {
         private String title;
         public String tags;
-        public String text;
+        public CharSequence text;
     }
 
     private class NoteEditor implements FormListener {
@@ -204,7 +204,7 @@ public final class MirandaNotes {
             Forms form = new Forms("notes", this);
             form.addTextField(FIELD_TITLE, "title", note.title);
             form.addTextField(FIELD_TAGS, "tags", note.tags);
-            form.addTextField(FIELD_TEXT, "text", note.text);
+            form.addTextField(FIELD_TEXT, "text", note.text.toString());
             form.show();
         }
 

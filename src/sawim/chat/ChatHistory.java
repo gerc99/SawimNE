@@ -436,7 +436,7 @@ public final class ChatHistory {
                     o.writeUTF(chat.getProtocol().getUserId());
                     o.writeUTF(chat.getContact().getUserId());
                     o.writeUTF(message.getNick());
-                    o.writeUTF(message.getText());
+                    o.writeUTF(message.getText().toString());
                     o.writeLong(message.getTime());
                     s.addRecord(out.toByteArray());
                 }

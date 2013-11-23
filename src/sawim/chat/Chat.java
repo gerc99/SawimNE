@@ -176,7 +176,7 @@ public final class Chat {
     public String onMessageSelected(MessData md) {
         if (contact.isSingleUserContact()) {
             if (isBlogBot()) {
-                return getBlogPostId(md.getText());
+                return getBlogPostId(md.getText().toString());
             }
             return "";
         }
@@ -351,7 +351,7 @@ public final class Chat {
         if ((null == md) || (null == md.getText())) {
             return;
         }
-        addToHistory(md.getText(), md.isIncoming(), md.getNick(), md.getTime());
+        addToHistory(md.getText().toString(), md.isIncoming(), md.getNick(), md.getTime());
     }
 
     private boolean isHistory() {

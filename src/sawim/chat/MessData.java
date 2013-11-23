@@ -10,7 +10,6 @@ import sawim.comm.Util;
 public final class MessData {
 
     private long time;
-    private String text;
     private String nick;
     public String strTime;
     public int iconIndex;
@@ -31,7 +30,6 @@ public final class MessData {
 
     public MessData(Contact currentContact, long time, String text, String nick, short flags, int iconIndex, boolean highLight) {
         isHighLight = highLight;
-        this.text = text;
         this.nick = nick;
         this.time = time;
         this.rowData = flags;
@@ -51,11 +49,7 @@ public final class MessData {
         return nick;
     }
 
-    public String getText() {
-        return text;
-    }
-
-    public CharSequence parsedText() {
+    public CharSequence getText() {
         return parsedText;
     }
 
