@@ -49,7 +49,7 @@ public final class TrackingForm implements TextBoxView.TextBoxListener {
             @Override
             public boolean back() {
                 saveList();
-                screen.clearAll();
+                screen.updateModel();
                 return true;
             }
         });

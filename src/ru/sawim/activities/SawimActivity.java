@@ -37,7 +37,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
-import android.view.View;
 import org.microemu.log.Logger;
 import org.microemu.util.AndroidLoggerAppender;
 import protocol.Contact;
@@ -214,12 +213,6 @@ public class SawimActivity extends ActionBarActivity {
     public void onPause() {
         super.onPause();
         General.minimize();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        General.currentActivity = null;
     }
 
     @Override
@@ -460,7 +453,6 @@ public class SawimActivity extends ActionBarActivity {
                 System.exit(0);
                 break;
         }
-
         return super.onOptionsItemSelected(item);
     }
 }

@@ -38,10 +38,6 @@ public class MessageItemView extends LinearLayout {
     }
 
     @Override
-    public void requestLayout() {
-    }
-
-    @Override
     protected void dispatchDraw(Canvas canvas) {
         super.dispatchDraw(canvas);
         if (isShowDivider)

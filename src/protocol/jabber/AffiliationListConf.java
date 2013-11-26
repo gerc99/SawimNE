@@ -47,7 +47,7 @@ public final class AffiliationListConf implements FormListener, TextBoxView.Text
 
             @Override
             public boolean back() {
-                screen.clearAll();
+                screen.updateModel();
                 return true;
             }
         });

@@ -83,7 +83,7 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
 
             @Override
             public boolean back() {
-                profileView.clearAll();
+                profileView.updateModel();
                 return true;
             }
         });

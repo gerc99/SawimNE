@@ -54,7 +54,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     private static final int UPDATE_ROSTER = 2;
     private static final int PUT_INTO_QUEUE = 3;
 
-    private static boolean isTablet;
+    private boolean isTablet;
     private LinearLayout barLinearLayout;
     private IconTabPageIndicator horizontalScrollView;
     private RosterViewRoot rosterViewLayout;

@@ -103,7 +103,7 @@ public final class MirandaNotes {
 
             @Override
             public boolean back() {
-                screen.clearAll();
+                screen.updateModel();
                 return true;
             }
         });
@@ -204,7 +204,7 @@ public final class MirandaNotes {
             Forms form = new Forms("notes", this);
             form.addTextField(FIELD_TITLE, "title", note.title);
             form.addTextField(FIELD_TAGS, "tags", note.tags);
-            form.addTextField(FIELD_TEXT, "text", note.text.toString());
+            form.addTextField(FIELD_TEXT, "text", note.text == null ? "" : note.text.toString());
             form.show();
         }
 

@@ -19,6 +19,7 @@ import ru.sawim.Scheme;
 import ru.sawim.activities.SawimActivity;
 import ru.sawim.models.form.Forms;
 import ru.sawim.widget.MySpinner;
+import ru.sawim.widget.Util;
 
 import java.util.List;
 
@@ -100,13 +101,18 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
 
     @Override
     public void back() {
-        if (General.currentActivity.getSupportFragmentManager()
-                .findFragmentById(R.id.chat_fragment) != null)
-            ((SawimActivity)General.currentActivity).recreateActivity();
-        else
-            getFragmentManager().popBackStack();
-        hideKeyboard();
-        General.currentActivity.supportInvalidateOptionsMenu();
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (General.currentActivity.getSupportFragmentManager()
+                        .findFragmentById(R.id.chat_fragment) != null)
+                    ((SawimActivity)General.currentActivity).recreateActivity();
+                else
+                    getFragmentManager().popBackStack();
+                hideKeyboard();
+                General.currentActivity.supportInvalidateOptionsMenu();
+            }
+        });
     }
 
     private void hideKeyboard() {
@@ -130,11 +136,11 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
     private void buildList(final LinearLayout convertView) {
         convertView.removeAllViews();
         List<Forms.Control> controls = Forms.getInstance().controls;
+        int padding = Util.dipToPixels(getActivity(), 10);
         for (int position = 0; position < controls.size(); ++position) {
             final Forms.Control c = controls.get(position);
             ViewHolder holder = new ViewHolder();
             holder.imageView = new ImageView(getActivity());
-            holder.textView = new TextView(getActivity());
             holder.descView = new TextView(getActivity());
             holder.labelView = new TextView(getActivity());
             holder.checkBox = new CheckBox(getActivity());
@@ -143,7 +149,6 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
             holder.editText = new EditText(getActivity());
 
             final ImageView imageView = holder.imageView;
-            final TextView textView = holder.textView;
             final TextView descView = holder.descView;
             final TextView labelView = holder.labelView;
             final CheckBox checkBox = holder.checkBox;
@@ -153,13 +158,17 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
 
             descView.setVisibility(TextView.GONE);
             labelView.setVisibility(TextView.GONE);
-            textView.setVisibility(TextView.GONE);
             imageView.setVisibility(ImageView.GONE);
             checkBox.setVisibility(CheckBox.GONE);
             spinner.setVisibility(Spinner.GONE);
             seekBar.setVisibility(SeekBar.GONE);
             editText.setVisibility(EditText.GONE);
-            setAllTextSize(descView, labelView, textView, checkBox, editText, General.getFontSize());
+            setAllTextSize(descView, labelView, checkBox, editText, General.getFontSize());
+
+            imageView.setPadding(0, padding, 0, padding);
+            labelView.setPadding(0, padding, 0, padding);
+            spinner.setPadding(0, padding, 0, padding);
+            seekBar.setPadding(0, padding, 0, padding);
 
             if (Forms.CONTROL_TEXT == c.type) {
                 drawText(c, labelView, descView, convertView);
@@ -269,10 +278,9 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
         }
     }
 
-    private void setAllTextSize(TextView descView, TextView labelView, TextView textView, CheckBox checkBox, EditText editText, int size) {
+    private void setAllTextSize(TextView descView, TextView labelView, CheckBox checkBox, EditText editText, int size) {
         descView.setTextSize(size - 1);
         labelView.setTextSize(size - 1);
-        textView.setTextSize(size);
         checkBox.setTextSize(size);
         editText.setTextSize(size);
     }
@@ -292,7 +300,6 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
 
     static class ViewHolder {
         ImageView imageView;
-        TextView textView;
         TextView descView;
         TextView labelView;
         CheckBox checkBox;

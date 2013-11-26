@@ -40,5 +40,4 @@ public class MessageTextView extends MyTextView {
             makeLayout(specSize);
         setMeasuredDimension(specSize, layout.getLineTop(layout.getLineCount()));
     }
-
 }

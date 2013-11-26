@@ -59,28 +59,25 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
 
     public static final String TAG = "ChatView";
 
-    private static final int UPDATE_CHAT = 0;
-    private static final int UPDATE_MUC_LIST = 1;
-
     private Chat chat;
     private Protocol protocol;
     private Contact contact;
     private boolean sendByEnter;
-    private static boolean isTablet;
+    private boolean isTablet;
     private String sharingText = "";
     public boolean isOpenMenu = false;
 
     private EditText messageEditor;
     private MyListView nickList;
     private MyListView chatListView;
-    private ChatsSpinnerAdapter chatsSpinnerAdapter;
     private ChatListsView chatListsView;
     private ChatInputBarView chatInputBarView;
     private ChatViewRoot chat_viewLayout;
     private MucUsersView mucUsersView;
+    private ChatsSpinnerAdapter chatsSpinnerAdapter;
     private MessagesAdapter adapter;
-    private DrawerLayout drawerLayout;
 
+    private DrawerLayout drawerLayout;
     private ImageButton usersImage;
     private ImageButton chatsImage;
     private ImageButton menuButton;
@@ -89,6 +86,8 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
     private ChatBarView chatBarLayout;
 
     private Handler handler;
+    private static final int UPDATE_CHAT = 0;
+    private static final int UPDATE_MUC_LIST = 1;
 
     @Override
     public void onAttach(Activity activity) {
@@ -148,9 +147,8 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
         }
         updateChatIcon();
 
-        if (!isTablet)
-            nickList = new MyListView(getActivity());
         if (!isTablet) {
+            nickList = new MyListView(getActivity());
             drawerLayout = new DrawerLayout(getActivity());
             DrawerLayout.LayoutParams nickListLP = new DrawerLayout.LayoutParams(Util.dipToPixels(getActivity(), 240), DrawerLayout.LayoutParams.MATCH_PARENT);
             DrawerLayout.LayoutParams drawerLayoutLP = new DrawerLayout.LayoutParams(DrawerLayout.LayoutParams.MATCH_PARENT, DrawerLayout.LayoutParams.MATCH_PARENT);
@@ -357,13 +355,18 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
         chat.resetUnreadMessages();
         removeMessages(Options.getInt(Options.OPTION_MAX_MSG_COUNT));
         messageEditor.setText(chat.message + sharingText);
+
         adapter.setPosition(chat.dividerPosition);
         if (contact.isConference() && chat.scrollPosition == 0)
             chatListView.setSelection(0);
         else if ((chat.getHistory() != null && chat.getHistory().getHistorySize() > 0) && chat.scrollPosition == 0)
             chatListView.setSelection(chat.getMessCount());
         else
-            chatListView.setSelectionFromTop(chat.scrollPosition + 2, chat.offset);
+            if (chat.dividerPosition == chat.getMessCount())
+                chatListView.setSelectionFromTop(chat.scrollPosition + 1, chat.offset);
+            else
+                chatListView.setSelectionFromTop(chat.scrollPosition + 2, chat.offset);
+
         updateChatIcon();
         updateList(contact);
 
@@ -567,7 +570,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
                         if (messData.isMe())
                             msg = "*" + messData.getNick() + " " + msg;
                         sb.append(Clipboard.serialize(false, messData.isIncoming(), messData.getNick() + " " + messData.strTime, msg));
-                        sb.append("\n-----\n");
+                        sb.append("\n---\n");
                     }
                 }
                 Clipboard.setClipBoardText(0 == sb.length() ? null : sb.toString());

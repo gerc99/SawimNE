@@ -73,12 +73,12 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
             @Override
             public boolean back() {
                 if (isMucUsers) {
-                    screen.clearAll();
+                    screen.updateModel();
                     setServer("");
                     return true;
                 }
                 if (serverJid == "") {
-                    screen.clearAll();
+                    screen.updateModel();
                     return true;
                 }
                 setServer("");
