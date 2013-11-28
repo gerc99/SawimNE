@@ -1,6 +1,9 @@
 package ru.sawim.text;
 
+import android.text.TextPaint;
+import android.text.style.CharacterStyle;
 import android.text.style.ClickableSpan;
+import android.text.style.UpdateAppearance;
 import android.view.View;
 
 /**
@@ -10,7 +13,7 @@ import android.view.View;
  * Time: 13:30
  * To change this template use File | Settings | File Templates.
  */
-public class InternalURLSpan extends ClickableSpan {
+public class InternalURLSpan extends CharacterStyle implements UpdateAppearance {
 
     public String clickedSpan;
 
@@ -19,6 +22,8 @@ public class InternalURLSpan extends ClickableSpan {
     }
 
     @Override
-    public void onClick(View textView) {
+    public void updateDrawState(TextPaint ds) {
+        ds.setColor(ds.linkColor);
+        ds.setUnderlineText(false);
     }
 }

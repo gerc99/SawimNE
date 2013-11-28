@@ -14,7 +14,6 @@ import sawim.comm.GUID;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
 import sawim.modules.DebugLog;
-import sawim.modules.MagicEye;
 import sawim.util.JLocale;
 
 public final class IcqNetDefActions {
@@ -98,7 +97,7 @@ public final class IcqNetDefActions {
                     userOffline(snacPacket);
 
                 } else if (0x1F == command) {
-                    MagicEye.addAction(getIcq(), "1", "Verification");
+                    //MagicEye.addAction(getIcq(), "1", "Verification");
                     DebugLog.println("Verification");
                 } else {
                     unknownPacket(packet);
@@ -150,8 +149,8 @@ public final class IcqNetDefActions {
             } else if (SnacPacket.SSI_FAMILY == family) {
                 if (SnacPacket.SRV_ADDEDYOU_COMMAND == command) {
                     String uin = getUinByByteLen(snacPacket.getReader());
-                    MagicEye.addAction(getIcq(), uin,
-                            JLocale.getString("youwereadded") + uin);
+                    //MagicEye.addAction(getIcq(), uin,
+                    //        JLocale.getString("youwereadded") + uin);
 
                 } else if (SnacPacket.SRV_GRANT_FUTURE_AUTH_COMMAND == command) {
                     ArrayReader authMarker = snacPacket.getReader();
@@ -180,8 +179,8 @@ public final class IcqNetDefActions {
                     } else {
                         Contact c = getIcq().getItemByUIN(uin);
                         if ((null != c) && !c.isTemp()) {
-                            MagicEye.addAction(getIcq(), uin,
-                                    JLocale.getString("denyedby") + uin);
+                            //MagicEye.addAction(getIcq(), uin,
+                            //        JLocale.getString("denyedby") + uin);
                         }
                     }
                 } else if (SnacPacket.CLI_ROSTERDELETE_COMMAND == command) {
@@ -200,7 +199,7 @@ public final class IcqNetDefActions {
                                 getIcq().addMessage(new SystemNotice(getIcq(),
                                         SystemNotice.SYS_NOTICE_MESSAGE, uin, message));
                             }
-                            MagicEye.addAction(getIcq(), uin, message);
+                            //MagicEye.addAction(getIcq(), uin, message);
                         }
                     }
                 } else {
@@ -559,7 +558,7 @@ public final class IcqNetDefActions {
             boolean hasBeenOffline = !item.isOnline();
             if (getIcq().isConnected() && hasBeenOffline) {
                 if (item.getUserId().equals(lastOfflineUin)) {
-                    MagicEye.addAction(getIcq(), lastOfflineUin, "hiding_from_you");
+                    //MagicEye.addAction(getIcq(), lastOfflineUin, "hiding_from_you");
                 }
                 lastOfflineUin = item.getUserId();
             }
@@ -733,7 +732,7 @@ public final class IcqNetDefActions {
         String xml = StringConvertor.utf8beByteArrayToString(
                 reader.getArray(xmlLen), 0, xmlLen);
         if (xml.startsWith("<N>")) {
-            MagicEye.addAction(icq, uin, "read xtraz");
+            //MagicEye.addAction(icq, uin, "read xtraz");
         }
         if (contact == null) return null;
         if (xml.startsWith("<NR>")) {

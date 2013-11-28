@@ -231,7 +231,6 @@ abstract public class Protocol {
 
     public final void setConnectingProgress(int percent) {
         progress = (byte) ((percent < 0) ? 100 : percent);
-        DebugLog.println("setConnectingProgress " + percent);
         if (100 == percent) {
             reconnect_attempts = RECONNECT_COUNT;
             getRoster().updateConnectionStatus();
@@ -444,12 +443,8 @@ abstract public class Protocol {
     protected void s_removeContact(Contact contact) {
     }
 
-    ;
-
     protected void s_removedContact(Contact contact) {
     }
-
-    ;
 
     public final void removeContact(Contact contact) {
         if (contact.isTemp()) {
@@ -491,8 +486,6 @@ abstract public class Protocol {
 
     protected void s_addContact(Contact contact) {
     }
-
-    ;
 
     protected void s_addedContact(Contact contact) {
     }
@@ -784,13 +777,7 @@ abstract public class Protocol {
         getRoster().markMessages(contact);
     }
 
-    private static final int UPDATE_INTERVAL = 500;
-    private static long lastUpdate;
-
     public final void ui_changeContactStatus(Contact contact) {
-        long now = System.currentTimeMillis();
-        if ((now - lastUpdate) < UPDATE_INTERVAL) return;
-        lastUpdate = now;
         ui_updateContact(contact);
     }
 

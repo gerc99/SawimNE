@@ -136,7 +136,7 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
     private void buildList(final LinearLayout convertView) {
         convertView.removeAllViews();
         List<Forms.Control> controls = Forms.getInstance().controls;
-        int padding = Util.dipToPixels(getActivity(), 10);
+        int padding = Util.dipToPixels(getActivity(), 15);
         for (int position = 0; position < controls.size(); ++position) {
             final Forms.Control c = controls.get(position);
             ViewHolder holder = new ViewHolder();

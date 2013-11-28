@@ -4,6 +4,7 @@ import DrawControls.icons.Icon;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -115,6 +116,16 @@ public class ChatsAdapter extends BaseAdapter {
             rosterItemView.itemFifthImage = (BitmapDrawable) Tracking.getTrackIcon(id);
     }
 
+    public Drawable getImageChat(Chat chat, boolean showMess) {
+        if (chat.getContact().isTyping()) {
+            return Message.msgIcons.iconAt(Message.ICON_TYPE).getImage();
+        } else {
+            Icon icStatus = chat.getContact().getLeftIcon(chat.getProtocol());
+            Icon icMess = Message.msgIcons.iconAt(chat.getContact().getUnreadMessageIcon());
+            return icMess == null || !showMess ? icStatus.getImage() : icMess.getImage();
+        }
+    }
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
@@ -124,7 +135,6 @@ public class ChatsAdapter extends BaseAdapter {
         Object o = getItem(position);
         if (o instanceof String) {
             rosterItemView.addLayer((String) o);
-            rosterItemView.setBackgroundColor(Scheme.getColor(Scheme.THEME_PROTOCOL_BACKGROUND));
         }
         if (o instanceof Chat) {
             Chat chat = (Chat) o;

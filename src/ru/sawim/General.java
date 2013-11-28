@@ -104,6 +104,7 @@ public class General {
         } catch (InterruptedException e1) {
         }
         ChatHistory.instance.saveUnreadMessages();
+        AutoAbsence.getInstance().online();
     }
 
     public static long getCurrentGmtTime() {
@@ -133,14 +134,13 @@ public class General {
     }
 
     public static void maximize() {
-        AutoAbsence.instance.online();
+        AutoAbsence.getInstance().online();
         instance.paused = false;
     }
 
     public static void minimize() {
-        sawim.modules.AutoAbsence.instance.userActivity();
+        sawim.modules.AutoAbsence.getInstance().userActivity();
         instance.paused = true;
-        AutoAbsence.instance.away();
     }
 
     public static void gc() {

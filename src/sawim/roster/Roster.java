@@ -345,7 +345,7 @@ public final class Roster {
     }
 
     public final void timerAction() {
-        AutoAbsence.instance.updateTime();
+        AutoAbsence.getInstance().updateTime();
         /*if (0 < contactListSaveDelay) {
             contactListSaveDelay--;
             if (0 == contactListSaveDelay) {

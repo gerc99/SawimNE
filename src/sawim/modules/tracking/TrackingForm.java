@@ -149,8 +149,6 @@ public final class TrackingForm implements TextBoxView.TextBoxListener {
         list.addElement(createLine(Tracking.EVENT_ENTER, Tracking.ACTION_ICON, No, null, getName("track_action_icon"), false));
         list.addElement(createLine(Tracking.EVENT_ENTER, Tracking.ACTION_INCHAT, No, null, getName("track_action_inchat"), false));
 
-        list.addElement(createLine(Tracking.EVENT_ENTER, Tracking.ACTION_EYE, No, null, getName("track_action_eye"), false));
-
         list.addElement(createLine(Tracking.EVENT_ENTER, Tracking.ACTION_SOUND, No, null, getName("track_action_sound"), false));
         list.addElement(createLine(Tracking.EVENT_ENTER, Tracking.ACTION_VIBRA, No, null, getName("track_action_vibra"), false));
         list.addElement(createLine(Tracking.EVENT_ENTER, Tracking.ACTION_MESSAGE, No, null, getName("track_action_message"), false));
@@ -161,8 +159,6 @@ public final class TrackingForm implements TextBoxView.TextBoxListener {
         list.addElement(createLine(Tracking.EVENT_EXIT, Tracking.ACTION_NOTICE, No, null, getName("track_action_notice"), false));
         list.addElement(createLine(Tracking.EVENT_EXIT, Tracking.ACTION_ICON, No, null, getName("track_action_icon"), false));
         list.addElement(createLine(Tracking.EVENT_EXIT, Tracking.ACTION_INCHAT, No, null, getName("track_action_inchat"), false));
-
-        list.addElement(createLine(Tracking.EVENT_EXIT, Tracking.ACTION_EYE, No, null, getName("track_action_eye"), false));
 
         list.addElement(createLine(Tracking.EVENT_EXIT, Tracking.ACTION_SOUND, No, null, getName("track_action_sound"), false));
         list.addElement(createLine(Tracking.EVENT_EXIT, Tracking.ACTION_VIBRA, No, null, getName("track_action_vibra"), false));

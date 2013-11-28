@@ -10,7 +10,6 @@ import ru.sawim.General;
 import ru.sawim.activities.SawimActivity;
 import sawim.chat.Chat;
 import sawim.chat.message.PlainMessage;
-import sawim.modules.MagicEye;
 import sawim.modules.Notify;
 import sawim.roster.Roster;
 import sawim.util.JLocale;
@@ -37,7 +36,6 @@ public final class Tracking {
     public final static int ACTION_CHAT = 10;
     public final static int ACTION_NOTICE = 11;
     public final static int ACTION_SOUND = 12;
-    public final static int ACTION_EYE = 13;
     public final static int ACTION_VIBRA = 14;
     public final static int ACTION_MESSAGE = 15;
     public final static int ACTION_MESSAGE_TEXT = 16;
@@ -364,9 +362,6 @@ public final class Tracking {
             case ACTION_VIBRA:
                 vibration();
                 break;
-            case ACTION_EYE:
-                MagicEye.addAction(item.getProtocol(), item.getUserId(), JLocale.getString("track_action_online"));
-                break;
             case ACTION_MESSAGE_TEXT:
                 Track track_prev = getTrackingMessageByTrackMessageText(track);
                 if (track_prev != null) {
@@ -397,9 +392,6 @@ public final class Tracking {
                 break;
             case ACTION_VIBRA:
                 vibration();
-                break;
-            case ACTION_EYE:
-                MagicEye.addAction(item.getProtocol(), item.getUserId(), JLocale.getString("track_action_offline"));
                 break;
         }
     }
@@ -447,9 +439,6 @@ public final class Tracking {
                 break;
             case ACTION_VIBRA:
                 vibration();
-                break;
-            case ACTION_EYE:
-                MagicEye.addAction(protocol, item.getUserId(), status_name, status_comm, icon_status);
                 break;
         }
     }

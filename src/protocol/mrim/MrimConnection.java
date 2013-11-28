@@ -15,7 +15,6 @@ import sawim.chat.message.SystemNotice;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
 import sawim.modules.DebugLog;
-import sawim.modules.MagicEye;
 import sawim.modules.Notify;
 import sawim.roster.Roster;
 import sawim.search.Search;
@@ -268,7 +267,6 @@ public final class MrimConnection extends ClientConnection {
 
                 Roster.getInstance().activateWithMsg(from + " (SMS):\n" + msg);
             }
-            MagicEye.addAction(mrim, fromEmail, "SMS", msg);
             return;
         }
         if ((MrimPacket.MESSAGE_FLAG_AUTHORIZE & flags) != 0) {
@@ -485,7 +483,7 @@ public final class MrimConnection extends ClientConnection {
                 }
                 if ((StatusInfo.STATUS_OFFLINE == newStatusIndex)
                         && (StatusInfo.STATUS_OFFLINE == oldStatusIndex)) {
-                    MagicEye.addAction(mrim, contact.getUserId(), "hiding_from_you");
+                    //MagicEye.addAction(mrim, contact.getUserId(), "hiding_from_you");
                 }
             }
 

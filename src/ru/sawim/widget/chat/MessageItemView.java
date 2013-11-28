@@ -17,13 +17,15 @@ public class MessageItemView extends LinearLayout {
 
     public MessageTitleItemView titleItemView;
     public MessageTextView msgText;
-    private static final Paint paintDivider = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private static Paint paintDivider;
     private boolean isShowDivider = false;
 
     public MessageItemView(Context context, boolean isAddTitleView) {
         super(context);
         titleItemView = new MessageTitleItemView(context);
         msgText = new MessageTextView(context);
+        if (paintDivider == null)
+            paintDivider = new Paint(Paint.ANTI_ALIAS_FLAG);
         int padding = Util.dipToPixels(context, 5);
         setPadding(padding, 0, padding, 0);
         setOrientation(VERTICAL);

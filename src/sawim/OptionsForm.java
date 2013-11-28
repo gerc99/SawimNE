@@ -21,7 +21,6 @@ public class OptionsForm implements FormListener, ControlStateListener {
     public static final int OPTIONS_INTERFACE = 8;
     public static final int OPTIONS_SIGNALING = 9;
     public static final int OPTIONS_ANTISPAM = 10;
-    public static final int OPTIONS_ABSENCE = 11;
     public static final int OPTIONS_ANSWERER = 12;
     public static final int OPTIONS_ABOUT = 13;
 
@@ -134,7 +133,7 @@ public class OptionsForm implements FormListener, ControlStateListener {
                 //        saveOptionBoolean(Options.OPTION_SAVE_TEMP_CONTACT);
                 //saveOptionBoolean(Options.OPTION_SORT_UP_WITH_MSG);
                 saveOptionBoolean(Options.OPTION_SHOW_STATUS_LINE);
-                saveOptionSelector(Options.OPTION_CL_SORT_BY);
+                //saveOptionSelector(Options.OPTION_CL_SORT_BY);
                 //        saveOptionBoolean(Options.OPTION_SHOW_PLATFORM);
                 saveOptionBoolean(Options.OPTION_HISTORY);
                 saveOptionInt(Options.OPTION_MAX_MSG_COUNT);
@@ -161,10 +160,6 @@ public class OptionsForm implements FormListener, ControlStateListener {
                 saveOptionString(Options.OPTION_ANTISPAM_HELLO);
                 saveOptionString(Options.OPTION_ANTISPAM_KEYWORDS);
                 saveOptionBoolean(Options.OPTION_ANTISPAM_ENABLE);
-                break;
-
-            case OPTIONS_ABSENCE:
-                Options.setInt(Options.OPTION_AA_TIME, form.getSelectorValue(Options.OPTION_AA_TIME) * 5);
                 break;
         }
         Options.safeSave();
@@ -222,9 +217,9 @@ public class OptionsForm implements FormListener, ControlStateListener {
                 setChecked("show_status_line", Options.OPTION_SHOW_STATUS_LINE);
                 //    setChecked("contacts_with_msg_at_top", Options.OPTION_SORT_UP_WITH_MSG);
 
-                createSelector("sort_by",
-                        "sort_by_status" + "|" + "sort_by_online" + "|" + "sort_by_name",
-                        Options.OPTION_CL_SORT_BY);
+                //createSelector("sort_by",
+                //        "sort_by_status" + "|" + "sort_by_online" + "|" + "sort_by_name",
+                //        Options.OPTION_CL_SORT_BY);
 
                 form.addString("chat", null);
                 //		setChecked("show_platform", Options.OPTION_SHOW_PLATFORM);
@@ -265,10 +260,6 @@ public class OptionsForm implements FormListener, ControlStateListener {
                 loadOptionString(Options.OPTION_ANTISPAM_ANSWER, "antispam_answer");
                 loadOptionString(Options.OPTION_ANTISPAM_HELLO, "antispam_hello");
                 loadOptionString(Options.OPTION_ANTISPAM_KEYWORDS, "antispam_keywords");
-                break;
-
-            case OPTIONS_ABSENCE:
-                form.addSelector(Options.OPTION_AA_TIME, "after_time", "off" + "|5 |10 |15 ", Options.getInt(Options.OPTION_AA_TIME) / 5);
                 break;
 
             case OPTIONS_ANSWERER:

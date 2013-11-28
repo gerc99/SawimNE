@@ -18,7 +18,7 @@ isSystemBackground = true
 14 = 0xFFFFFF
 15 = 0xFFD700
 16 = 0x999999
-17 = 0x636363
+17 = 0x168686
 [Black] ;;
 isBlack = true
 isSystemBackground = false
@@ -39,4 +39,4 @@ isSystemBackground = false
 14 = 0xFFFFFF
 15 = 0xFFD700
 16 = 0x999999
-17 = 0x636363
+17 = 0x168686

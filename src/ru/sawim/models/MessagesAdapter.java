@@ -27,7 +27,7 @@ import java.util.List;
  */
 public class MessagesAdapter extends BaseAdapter {
 
-    private List<MessData> items = new ArrayList<MessData>();
+    private List<MessData> items;
     private Protocol currentProtocol;
     private String currentContact;
 
@@ -43,8 +43,7 @@ public class MessagesAdapter extends BaseAdapter {
     }
 
     public void refreshList(List<MessData> list) {
-        items.clear();
-        items.addAll(list);
+        items = list;
         notifyDataSetChanged();
     }
 
@@ -66,6 +65,7 @@ public class MessagesAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
+        if (items == null) return 0;
         return items.size();
     }
 

@@ -243,7 +243,7 @@ public class JabberServiceContact extends JabberContact {
                 text += '.';
                 playSoundEye();
                 textPresence.append(text).append(" ").append(reasone);
-                sawim.modules.MagicEye.addAction(getProtocol(), getUserId(), nick + " " + text, reasone);
+                //sawim.modules.MagicEye.addAction(getProtocol(), getUserId(), nick + " " + text, reasone);
                 jabber.addMessage(new SystemNotice(jabber,
                         SystemNotice.SYS_NOTICE_ERROR, getUserId(), text));
             }
@@ -272,7 +272,7 @@ public class JabberServiceContact extends JabberContact {
             if (null != event) {
                 event = JLocale.getString(event);
                 textPresence.append(event).append(" ").append(reasone);
-                sawim.modules.MagicEye.addAction(jabber, getUserId(), nick + " " + event, reasone);
+                //sawim.modules.MagicEye.addAction(jabber, getUserId(), nick + " " + event, reasone);
             }
         }
         addPresence(jabber, nick, textPresence.toString());

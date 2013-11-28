@@ -295,19 +295,19 @@ abstract public class Contact extends TreeNode {
         if (!isSingleUserContact()) {
             return isOnline() ? 9 : 50;
         }
-        if (Roster.SORT_BY_NAME == General.sortType) {
-            return 20;
-        }
+        //if (Roster.SORT_BY_NAME == General.sortType) {
+        //    return 20;
+        //}
         if (isOnline()) {
             if (hasChat()) {
                 return 10;
             }
-            switch (General.sortType) {
-                case Roster.SORT_BY_STATUS:
+            //switch (General.sortType) {
+            //    case Roster.SORT_BY_STATUS:
                     return 20 + StatusInfo.getWidth(getStatusIndex());
-                case Roster.SORT_BY_ONLINE:
-                    return 20;
-            }
+            //    case Roster.SORT_BY_ONLINE:
+            //        return 20;
+            //}
         }
         if (isTemp()) {
             return 60;

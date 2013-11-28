@@ -1,15 +1,10 @@
 package ru.sawim.text;
 
-import android.R;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
-import android.text.style.ClickableSpan;
-import android.text.style.ForegroundColorSpan;
 import android.text.style.ImageSpan;
 import android.util.Patterns;
 import protocol.Contact;
-import ru.sawim.SawimApplication;
-import ru.sawim.Scheme;
 import ru.sawim.view.menu.JuickMenu;
 import sawim.modules.Emotions;
 
@@ -85,7 +80,7 @@ public class TextFormatter {
     private static boolean isThereLinks(Spannable spannable, int... positions) {
         InternalURLSpan[] spans = spannable.getSpans(0, spannable.length(), InternalURLSpan.class);
         for (int i = 0; i < spans.length; ++i) {
-            ClickableSpan span = spans[i];
+            InternalURLSpan span = spans[i];
             int spanStart = spannable.getSpanStart(span);
             int spanEnd = spannable.getSpanEnd(span);
             int lengthPos = positions.length;

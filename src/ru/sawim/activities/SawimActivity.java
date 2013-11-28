@@ -44,6 +44,7 @@ import protocol.Protocol;
 import protocol.StatusInfo;
 import protocol.icq.Icq;
 import protocol.jabber.Jabber;
+import protocol.jabber.JabberContact;
 import protocol.mrim.Mrim;
 import ru.sawim.*;
 import ru.sawim.view.*;
@@ -55,13 +56,13 @@ import sawim.chat.ChatHistory;
 import sawim.forms.ManageContactListForm;
 import sawim.forms.SmsForm;
 import sawim.modules.DebugLog;
-import sawim.modules.MagicEye;
 import sawim.modules.Notify;
 import sawim.roster.Roster;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.ArrayList;
 
 public class SawimActivity extends ActionBarActivity {
 
@@ -72,12 +73,11 @@ public class SawimActivity extends ActionBarActivity {
     public void onCreate(Bundle savedInstanceState) {
         setTheme(Scheme.isBlack() ? R.style.BaseTheme : R.style.BaseThemeLight);
         super.onCreate(savedInstanceState);
-        General.actionBar = getSupportActionBar();
-        General.currentActivity = this;
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
-
         setContentView(R.layout.main);
         ExternalApi.instance.setActivity(this);
+        General.actionBar = getSupportActionBar();
+        General.currentActivity = this;
 
         Logger.removeAllAppenders();
         Logger.setLocationEnabled(false);
@@ -229,7 +229,8 @@ public class SawimActivity extends ActionBarActivity {
         } else if (formView != null) {
             if (formView.hasBack())
                 back();
-        } else moveTaskToBack(true);
+        } else super.onBackPressed();
+        supportInvalidateOptionsMenu();
         if (getSupportFragmentManager().findFragmentById(R.id.roster_fragment) != null)
             ((RosterView) getSupportFragmentManager().findFragmentById(R.id.roster_fragment)).resume();
     }
@@ -279,13 +280,11 @@ public class SawimActivity extends ActionBarActivity {
     private static final int MENU_SOUND = 5;
     private static final int MENU_OPTIONS = 6;
     private static final int MENU_QUIT = 14; //OptionsForm
-    private static final int MENU_MORE = 15;
     private static final int MENU_DISCO = 16;
     private static final int MENU_NOTES = 17;
     private static final int MENU_GROUPS = 18;
     private static final int MENU_MYSELF = 19;
     private static final int MENU_MICROBLOG = 20;//ManageContactListForm
-    private static final int MENU_MAGIC_EYE = 21;
     private static final int MENU_DEBUG_LOG = 22;
 
     @Override
@@ -334,31 +333,26 @@ public class SawimActivity extends ActionBarActivity {
                 if (p instanceof Icq) {
                     menu.add(Menu.NONE, MENU_MYSELF, Menu.NONE, R.string.myself);
                 } else {
-                    //SubMenu moreMenu = menu.addSubMenu(Menu.NONE, MENU_MORE, Menu.NONE, R.string.more);
-                    Menu moreMenu = menu;
                     if (p instanceof Jabber) {
-                        moreMenu.add(Menu.NONE, MENU_NOTES, Menu.NONE, R.string.notes);
+                        menu.add(Menu.NONE, MENU_NOTES, Menu.NONE, R.string.notes);
                     }
                     if (p.hasVCardEditor())
-                        moreMenu.add(Menu.NONE, MENU_MYSELF, Menu.NONE, R.string.myself);
+                        menu.add(Menu.NONE, MENU_MYSELF, Menu.NONE, R.string.myself);
                     if (p instanceof Mrim)
-                        moreMenu.add(Menu.NONE, MENU_MICROBLOG, Menu.NONE, R.string.microblog);
+                        menu.add(Menu.NONE, MENU_MICROBLOG, Menu.NONE, R.string.microblog);
                 }
             }
         }
         menu.add(Menu.NONE, MENU_SOUND, Menu.NONE, Options.getBoolean(Options.OPTION_SILENT_MODE)
                 ? R.string.sound_on : R.string.sound_off);
-        //menu.add(Menu.NONE, MENU_MAGIC_EYE, Menu.NONE, R.string.magic_eye);
         SubMenu optionsMenu = menu.addSubMenu(Menu.NONE, MENU_OPTIONS, Menu.NONE, R.string.options);
         optionsMenu.add(Menu.NONE, OptionsForm.OPTIONS_ACCOUNT, Menu.NONE, R.string.options_account);
         optionsMenu.add(Menu.NONE, OptionsForm.OPTIONS_INTERFACE, Menu.NONE, R.string.options_interface);
         optionsMenu.add(Menu.NONE, OptionsForm.OPTIONS_SIGNALING, Menu.NONE, R.string.options_signaling);
         optionsMenu.add(Menu.NONE, OptionsForm.OPTIONS_ANTISPAM, Menu.NONE, R.string.antispam);
-        optionsMenu.add(Menu.NONE, OptionsForm.OPTIONS_ABSENCE, Menu.NONE, R.string.absence);
         optionsMenu.add(Menu.NONE, OptionsForm.OPTIONS_ANSWERER, Menu.NONE, R.string.answerer);
         optionsMenu.add(Menu.NONE, OptionsForm.OPTIONS_ABOUT, Menu.NONE, R.string.about_program);
 
-        //menu.add(Menu.NONE, MENU_DEBUG_LOG, Menu.NONE, R.string.debug);
         menu.add(Menu.NONE, MENU_QUIT, Menu.NONE, R.string.quit);
         return super.onPrepareOptionsMenu(menu);
     }
@@ -402,9 +396,6 @@ public class SawimActivity extends ActionBarActivity {
             case MENU_SOUND:
                 Notify.getSound().changeSoundMode(false);
                 break;
-            case MENU_MAGIC_EYE:
-                MagicEye.instance.activate();
-                break;
             case MENU_DISCO:
                 ((Jabber) p).getServiceDiscovery().showIt();
                 break;
@@ -432,9 +423,6 @@ public class SawimActivity extends ActionBarActivity {
                 break;
             case OptionsForm.OPTIONS_ANTISPAM:
                 new OptionsForm().select(item.getTitle(), OptionsForm.OPTIONS_ANTISPAM);
-                break;
-            case OptionsForm.OPTIONS_ABSENCE:
-                new OptionsForm().select(item.getTitle(), OptionsForm.OPTIONS_ABSENCE);
                 break;
             case OptionsForm.OPTIONS_ANSWERER:
                 new OptionsForm().select(item.getTitle(), OptionsForm.OPTIONS_ANSWERER);

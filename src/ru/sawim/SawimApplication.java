@@ -28,7 +28,6 @@ public class SawimApplication extends Application {
 
     public static SawimApplication instance;
     private final SawimServiceConnection serviceConnection = new SawimServiceConnection();
-    public boolean useAbsence = false;
     public Common common;
     private NetworkStateReceiver networkStateReceiver = new NetworkStateReceiver();
 

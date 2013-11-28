@@ -37,8 +37,6 @@ public class Options {
     ////////////////////// UTF8
     static final int OPTION_UIN1 = 0;
     public static final int UNAVAILABLE_NESSAGE = 1;
-    public static final int OPTION_UI_LANGUAGE = 3;
-    public static final int OPTION_STATUS_MESSAGE = 7;
     static final int OPTION_UIN2 = 14;
     static final int OPTION_UIN3 = 15;
     static final int OPTION_NICK1 = 21;
@@ -64,19 +62,16 @@ public class Options {
     public static final int OPTION_CHAT_PRESENSEFONT_SCHEME = 92;
     public static final int OPTION_PRIVATE_STATUS = 93;
     public static final int OPTION_MAX_MSG_COUNT = 94;
-    public static final int OPTION_AA_TIME = 106;
     public static final int OPTION_FONT_SCHEME = 107;
     public static final int OPTION_MIN_ITEM_SIZE = 110;
 
     ////////////////////// BOOLEAN
     public static final int OPTION_ANSWERER = 128;
-    public static final int OPTION_SHOW_PLATFORM = 129;
     public static final int OPTION_CL_HIDE_OFFLINE = 130;
     public static final int OPTION_USER_GROUPS = 136;
     public static final int OPTION_HISTORY = 137;
     public static final int OPTION_TITLE_IN_CONFERENCE = 140;
     public static final int OPTION_CLASSIC_CHAT = 143;
-    public static final int OPTION_SAVE_TEMP_CONTACT = 147;
     public static final int OPTION_SILENT_MODE = 150;
     public static final int OPTION_BRING_UP = 151;
     public static final int OPTION_ANTISPAM_ENABLE = 158;

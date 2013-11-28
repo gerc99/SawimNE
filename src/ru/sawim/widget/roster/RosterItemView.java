@@ -35,6 +35,7 @@ public class RosterItemView extends View {
     public BitmapDrawable itemFifthImage = null;
 
     private static TextPaint textPaint;
+    private static Paint paintDivider;
 
     private int lineOneY, lineTwoY,
             firstImageX, firstImageY,
@@ -50,6 +51,7 @@ public class RosterItemView extends View {
         setPadding(padding, padding, padding, padding);
         if (textPaint == null) {
             textPaint = new TextPaint();
+            paintDivider = new Paint(Paint.ANTI_ALIAS_FLAG);
             textPaint.setAntiAlias(true);
             textPaint.setTextSize(General.getFontSize());
             textPaint.setColor(Scheme.getColor(Scheme.THEME_TEXT));
@@ -58,7 +60,7 @@ public class RosterItemView extends View {
 
     public void addLayer(String text) {
         setNull();
-        itemDescColor = Scheme.getColor(Scheme.THEME_GROUP);
+        itemDescColor = Scheme.getColor(Scheme.THEME_PROTOCOL_BACKGROUND);
         itemDesc = text;
     }
 
@@ -199,5 +201,12 @@ public class RosterItemView extends View {
             canvas.drawBitmap(itemFourthImage.getBitmap(), fourthImageX, fourthImageY, null);
         if (itemFifthImage != null)
             canvas.drawBitmap(itemFifthImage.getBitmap(), fifthImageX, fifthImageY, null);
+
+        if (itemName == null && itemDesc != null) {
+            paintDivider.setStrokeWidth(TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_SP, 2, General.getResources(getContext()).getDisplayMetrics()));
+            paintDivider.setColor(Scheme.getColor(Scheme.THEME_PROTOCOL_BACKGROUND));
+            canvas.drawLine(textX, getScrollY() + getHeight(), getWidth() - textX, getScrollY() + getHeight(), paintDivider);
+        }
     }
 }

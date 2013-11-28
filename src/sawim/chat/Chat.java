@@ -15,7 +15,6 @@ import sawim.comm.StringConvertor;
 import sawim.comm.Util;
 import sawim.history.CachedRecord;
 import sawim.history.HistoryStorage;
-import sawim.modules.MagicEye;
 import sawim.roster.Roster;
 
 import java.util.ArrayList;
@@ -448,7 +447,7 @@ public final class Chat {
             } else if (inc) {
                 sysNoticeCounter = inc(sysNoticeCounter);
             }
-            MagicEye.addAction(protocol, contact.getUserId(), message.getText());
+            //MagicEye.addAction(protocol, contact.getUserId(), message.getText());
             addTextToForm(message, from, isHighlight);
         }
         if (inc) {

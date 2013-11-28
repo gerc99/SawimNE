@@ -19,6 +19,9 @@ import sawim.search.UserInfo;
 public class Vk extends Protocol {
     private VkConnection connection = null;
 
+    public Vk() {
+    }
+
     @Override
     public String getUserIdName() {
         return "Id";
