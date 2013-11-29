@@ -167,11 +167,11 @@ public class SawimActivity extends ActionBarActivity {
         if (chatView == null) {
             Fragment rosterView = getSupportFragmentManager().findFragmentByTag(RosterView.TAG);
             chatView = (ChatView) getSupportFragmentManager().findFragmentByTag(ChatView.TAG);
-            if (!chatView.isLastPosition()) return;
             if (fragmentManager.getFragments() == null || rosterView == null || chatView == null) {
                 createChatView(p, c, fragmentManager, true, allowingStateLoss);
                 return;
             }
+            if (!chatView.isLastPosition()) return;
             if (rosterView.isVisible()) {
                 createChatView(p, c, fragmentManager, true, allowingStateLoss);
             } else if (chatView.isVisible()) {
