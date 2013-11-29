@@ -55,7 +55,7 @@ import sawim.util.JLocale;
  * Time: 20:30
  * To change this template use File | Settings | File Templates.
  */
-public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
+public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Handler.Callback {
 
     public static final String TAG = "ChatView";
 
@@ -85,11 +85,16 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
     private ImageButton sendButton;
     private ChatBarView chatBarLayout;
 
+    private Handler handler;
+    private static final int UPDATE_CHAT = 0;
+    private static final int UPDATE_MUC_LIST = 1;
+
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         General.currentActivity = (ActionBarActivity) activity;
         isTablet = activity.findViewById(R.id.fragment_container) == null;
+        handler = new Handler(this);
         messageEditor = new EditText(activity);
 
         usersImage = new ImageButton(activity);
@@ -107,7 +112,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
         chatInputBarView = new ChatInputBarView(activity, menuButton, smileButton, messageEditor, sendButton);
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-            messageEditor.getBackground().setColorFilter(Scheme.getColor(Scheme.THEME_BACKGROUND), PorterDuff.Mode.MULTIPLY);
+            messageEditor.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
         }
 
         General.getInstance().setConfigurationChanged(new General.OnConfigurationChanged() {
@@ -275,17 +280,18 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
         messageEditor.addTextChangedListener(null);
         chatListView.setOnCreateContextMenuListener(null);
         General.getInstance().setConfigurationChanged(null);
-        sharingText = null;
         chat = null;
         contact = null;
-        nickList = null;
-        protocol = null;
         adapter = null;
+        handler = null;
+        protocol = null;
+        nickList = null;
         usersImage = null;
         chatsImage = null;
         menuButton = null;
         sendButton = null;
         smileButton = null;
+        sharingText = null;
         mucUsersView = null;
         chatListView = null;
         chatBarLayout = null;
@@ -357,7 +363,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
         else if ((chat.getHistory() != null && chat.getHistory().getHistorySize() > 0) && chat.scrollPosition == 0)
             chatListView.setSelection(chat.getMessCount());
         else
-            if (chat.dividerPosition == chat.getMessCount())
+            if (isLastPosition())
                 chatListView.setSelectionFromTop(chat.scrollPosition + 1, chat.offset);
             else
                 chatListView.setSelectionFromTop(chat.scrollPosition + 2, chat.offset);
@@ -367,6 +373,10 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
             adapter.repaintList();
         else
             drawerLayout.setDrawerLockMode(contact.isConference() ? DrawerLayout.LOCK_MODE_UNLOCKED : DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+    }
+
+    public boolean isLastPosition() {
+        return chat.dividerPosition == chat.getMessCount();
     }
 
     public void setSharingText(String sharingText) {
@@ -501,32 +511,35 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat {
     }
 
     @Override
-    public void updateChat(final Contact c) {
-        General.currentActivity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
+    public boolean handleMessage(Message msg) {
+        switch (msg.what) {
+            case UPDATE_CHAT:
                 updateChatIcon();
-                if (contact.equals(c))
+                if (contact == this.contact)
                     if (adapter != null)
                         adapter.refreshList(chat.getMessData());
                 if (chatsSpinnerAdapter != null && chatDialogFragment != null && chatDialogFragment.isVisible())
                     chatsSpinnerAdapter.refreshList();
-            }
-        });
-    }
-
-    @Override
-    public void updateMucList() {
-        General.currentActivity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
+                break;
+            case UPDATE_MUC_LIST:
                 if (contact != null && contact.isPresence() == (byte) 1)
                     if (adapter != null)
                         adapter.refreshList(chat.getMessData());
                 if (mucUsersView != null)
                     mucUsersView.update();
-            }
-        });
+                break;
+        }
+        return false;
+    }
+
+    @Override
+    public void updateChat(final Contact contact) {
+        handler.sendEmptyMessage(UPDATE_CHAT);
+    }
+
+    @Override
+    public void updateMucList() {
+        handler.sendEmptyMessage(UPDATE_MUC_LIST);
     }
 
     private void updateChatIcon() {

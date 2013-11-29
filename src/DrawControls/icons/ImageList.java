@@ -70,6 +70,7 @@ public class ImageList {
                 bitmap.setDensity(0);
                 BitmapDrawable drawable = new BitmapDrawable(SawimApplication.getInstance().getContext().getResources(), bitmap);
                 drawable.setBounds(0, 0, (int) (drawable.getIntrinsicWidth() * 0.5), (int) (drawable.getIntrinsicHeight() * 0.5));
+                drawable.setTargetDensity(SawimApplication.getInstance().getResources().getDisplayMetrics());
                 tmpIcons.addElement(new Icon(drawable));
             }
         }
@@ -109,6 +110,7 @@ public class ImageList {
                 Bitmap bitmap = scalingIconForDPI(Bitmap.createBitmap(resImage.getBitmap(), x, y, width, height));
                 BitmapDrawable drawable = new BitmapDrawable(SawimApplication.getInstance().getContext().getResources(), bitmap);
                 drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
+                drawable.setTargetDensity(SawimApplication.getInstance().getResources().getDisplayMetrics());
                 tmpIcons.addElement(new Icon(drawable));
             }
         }

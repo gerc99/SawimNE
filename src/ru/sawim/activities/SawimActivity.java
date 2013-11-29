@@ -167,6 +167,7 @@ public class SawimActivity extends ActionBarActivity {
         if (chatView == null) {
             Fragment rosterView = getSupportFragmentManager().findFragmentByTag(RosterView.TAG);
             chatView = (ChatView) getSupportFragmentManager().findFragmentByTag(ChatView.TAG);
+            if (!chatView.isLastPosition()) return;
             if (fragmentManager.getFragments() == null || rosterView == null || chatView == null) {
                 createChatView(p, c, fragmentManager, true, allowingStateLoss);
                 return;
@@ -180,10 +181,9 @@ public class SawimActivity extends ActionBarActivity {
                 }
             }
         } else {
-            if (c != null) {
-                chatView.openChat(p, c);
-                chatView.resume(chatView.getCurrentChat());
-            }
+            if (c == null && !chatView.isLastPosition()) return;
+            chatView.openChat(p, c);
+            chatView.resume(chatView.getCurrentChat());
         }
     }
 
