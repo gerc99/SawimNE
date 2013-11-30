@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Sawim NE</string>
-    <string name="notify_title">You have new messages...</string>
+    <string name="notify_title">You have new messages…</string>
     <string name="notify_info">Unread messages: %d</string>
     <string name="unread_messages">Unread messages: %d</string>
     <string name="takePhotoButton">OK</string>
     <string name="offline">Offline</string>
-    <string name="connecting">Connecting</string>
+    <string name="connecting">Connecting…</string>
     <string name="online">Online</string>
     <string name="app_running">App running.</string>
 
@@ -14,9 +14,9 @@
     <string name="disconnect">Disconnect</string>
     <string name="sound_on">Sound On</string>
     <string name="sound_off">Sound Off</string>
-    <string name="add_contact">Add contact...</string>
+    <string name="add_contact">Add contact…</string>
     <string name="options">Options</string>
-    <string name="about">About...</string>
+    <string name="about">About</string>
     <string name="quit">Quit</string>
 
     <string name="msg_send">Send message</string>
@@ -69,7 +69,7 @@
     <string name="move">Move</string>
     <string name="remove">Remove</string>
     <string name="remove_contact">Remove contact</string>
-    <string name="remove_me">Remove Me...</string>
+    <string name="remove_me">Remove Me…</string>
     <string name="rename">Rename</string>
 
     <string name="contact_seen">Seen</string>
@@ -86,7 +86,7 @@
     <string name="acc_pass">Password:</string>
     <string name="acc_nick">Nick:</string>
     <string name="acc_sel_protocol">Select protocol:</string>
-    <string name="acc_delete_confirm">Delete confirm?</string>
+    <string name="acc_delete_confirm">Do you really want to delete %s?</string>
 
     <string name="auto_connect">Auto connect</string>
     <string name="reconnect_number">Reconnect number</string>
@@ -136,20 +136,20 @@
     <string name="invite">Invite</string>
     <string name="wake">Wake</string>
     <string name="user_statuses">User status</string>
-    <string name="info">Info</string>
+    <string name="info">User info</string>
     <string name="extra_settings">Extra settings</string>
-    <string name="set_theme_conference">Set theme conference</string>
-    <string name="conf_aff_list">Conf all list</string>
+    <string name="set_theme_conference">Set conference topic</string>
+    <string name="conf_aff_list">Affiliations list</string>
     <string name="owner_options">Owner options</string>
     <string name="unregister">Unregister</string>
     <string name="register">Register</string>
     <string name="send_sms">Send sms</string>
     <string name="ft_name">Send file</string>
-    <string name="ft_cam">Send foto</string>
+    <string name="ft_cam">Send photo</string>
     <string name="search_user">Search user</string>
     <string name="add_group">Add group</string>
     <string name="rename_group">Rename group</string>
-    <string name="del_group">Del group</string>
+    <string name="del_group">Remove group</string>
     <string name="ms_xstatus_menu">XStatus menu</string>
     <string name="Settings">Settings</string>
     <string name="sound">Sound</string>
@@ -160,10 +160,10 @@
     <string name="active_contacts">Active contacts</string>
     <string name="options_account">Accounts</string>
     <string name="options_interface">Interface</string>
-    <string name="options_signaling">Signaling</string>
+    <string name="options_signaling">Notifications</string>
     <string name="absence">Absence</string>
     <string name="answerer">Answerer</string>
-    <string name="register_new">Registration jid</string>
+    <string name="register_new">Register new JID</string>
     <string name="more">More</string>
     <string name="service_discovery">Service discovery</string>
     <string name="manage_contact_list">Manage contact list</string>
@@ -172,19 +172,19 @@
     <string name="open_private">Private</string>
     <string name="next">Next</string>
     <string name="prev">Prev</string>
-    <string name="xmppAccountDontFound">Jabber-account do not found</string>
+    <string name="xmppAccountDontFound">Jabber-account is not found</string>
     <string name="add_to_notes">Add to notes</string>
     <string name="accpromt">Press the "Menu" button to add a profile</string>
-    <string name="hide_icons_clients">Hide icons clients</string>
+    <string name="hide_icons_clients">Hide client icons</string>
     <string name="magic_eye">Magic eye</string>
     <string name="debug">Debug</string>
     <string name="open_url">Open url</string>
     <string name="copy">Copy</string>
-    <string name="url_menu">Menu url</string>
-    <string name="press_menu_for_connect">Press the menu button and choose action</string>
+    <string name="url_menu">URL menu</string>
+    <string name="press_menu_for_connect">Press the "Menu" button and choose action</string>
     <string name="add_conference">Add conference</string>
-    <string name="include_setting_the_story">To preserve the history, include setting the story too</string>
-    <string name="contact_walked">Contact walked out of the conference</string>
+    <string name="include_setting_the_story">You mush enable "Save history" in app settings</string>
+    <string name="contact_walked">Contact has left the conference</string>
     <string name="close">Close</string>
     <string name="messages_are_deleted">Messages are deleted</string>
 
@@ -206,16 +206,16 @@
     <string name="version">Version</string>
     <string name="author">Author</string>
     <string name="registration_jid">Jabber ID registration </string>
-    <string name="sign_in_jabber">Sign in Jabber</string>
-    <string name="sign_into_other_networks">Sign into other networks</string>
-    <string name="include_multi_citation">Include multi citation</string>
+    <string name="sign_in_jabber">Sign in to Jabber</string>
+    <string name="sign_into_other_networks">Sign in to other networks</string>
+    <string name="include_multi_citation">Enable multi citation</string>
     <string name="disable_multi_citation">Disable multi citation</string>
-    <string name="hint_multi_citation">Check the message and long press in the input box, select \"Paste\"</string>
-    <string name="hint_message">message...</string>
+    <string name="hint_multi_citation">Check messages and paste them with long tap on message editor</string>
+    <string name="hint_message">message…</string>
     <string name="enter_the">Enter the</string>
     <string name="select_contact">Select a contact to chat</string>
     <string name="server">Server</string>
-    <string name="hint_registration_domen">this is the default server, you can register to the other</string>
+    <string name="hint_registration_domen">%s is the default server; you can register at another one</string>
     <string name="my_conference">My conference</string>
     <string name="classmates">Classmates</string>
     <string name="lift_up">Lift up</string>

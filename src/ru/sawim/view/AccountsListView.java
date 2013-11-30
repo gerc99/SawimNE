@@ -98,7 +98,7 @@ public class AccountsListView extends Fragment {
             case R.id.menu_delete:
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 builder.setCancelable(true);
-                builder.setMessage(getString(R.string.acc_delete_confirm) + " " + itemName + "?")
+                builder.setMessage(String.format(getString(R.string.acc_delete_confirm), itemName))
                         .setCancelable(false)
                         .setPositiveButton(android.R.string.yes,
                                 new DialogInterface.OnClickListener() {

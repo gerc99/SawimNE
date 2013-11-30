@@ -35,7 +35,7 @@ public class JabberRegistration implements Runnable, FormListener {
         form = new XForm();
         form.init("registration", this);
         form.getForm().addTextField(FORM_SERVER, "domain", General.DEFAULT_SERVER);
-        form.getForm().addString(General.DEFAULT_SERVER + " - " + SawimApplication.getContext().getString(R.string.hint_registration_domen));
+        form.getForm().addString(String.format(SawimApplication.getContext().getString(R.string.hint_registration_domen), General.DEFAULT_SERVER));
         return form.getForm();
     }
 
