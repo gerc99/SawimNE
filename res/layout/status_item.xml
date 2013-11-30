@@ -7,26 +7,20 @@
         xmlns:android="http://schemas.android.com/apk/res/android">
     <ImageView
             android:id="@+id/status_image"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:src="@android:drawable/presence_online"
             android:padding="10dp" />
-    <LinearLayout
-            android:id="@+id/widget45"
+    <TextView
+            android:id="@+id/status"
             android:layout_width="match_parent"
-            android:layout_height="fill_parent"
-            android:orientation="vertical">
-        <TextView
-                android:id="@+id/status"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:ellipsize="marquee"
-                android:fadingEdge="horizontal"
-                android:lines="1"
-                android:marqueeRepeatLimit="marquee_forever"
-                android:scrollHorizontally="true"
-                android:text="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaawwwwwwwwqertyuiopkjhgfc"
-                android:textSize="20sp"
-                android:textStyle="bold" android:gravity="center_vertical" android:padding="10dp"/>
-    </LinearLayout>
+            android:layout_height="wrap_content"
+            android:ellipsize="marquee"
+            android:fadingEdge="horizontal"
+            android:lines="1"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:scrollHorizontally="true"
+            android:text="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaawwwwwwwwqertyuiopkjhgfc"
+            android:textSize="20sp"
+            android:textStyle="bold" android:gravity="center_vertical" android:padding="10dp"/>
 </LinearLayout>

@@ -1,13 +1,14 @@
 package ru.sawim.view;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import protocol.Protocol;
@@ -16,6 +17,7 @@ import protocol.jabber.Jabber;
 import protocol.mrim.Mrim;
 import ru.sawim.R;
 import ru.sawim.models.XStatusesAdapter;
+import ru.sawim.widget.Util;
 import sawim.comm.StringConvertor;
 import sawim.io.Storage;
 import sawim.roster.Roster;
@@ -39,48 +41,48 @@ public class XStatusesView extends DialogFragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        getDialog().setTitle(R.string.ms_xstatus_menu);
-        View v = inflater.inflate(R.layout.xstatuses_view, container, false);
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        final Context context = getActivity();
+
+        View dialogView = LayoutInflater.from(context).inflate(R.layout.statuses_view, null);
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
+        dialogBuilder.setView(dialogView);
+        dialogBuilder.setTitle(R.string.ms_xstatus_menu);
+        dialogBuilder.setInverseBackgroundForced(Util.isNeedToInverseDialogBackground());
         statusesAdapter = new XStatusesAdapter(getActivity(), protocol);
-        final ListView lv = (ListView) v.findViewById(R.id.xstatuses_view);
+        final ListView lv = (ListView)dialogView.findViewById(R.id.statuses_view);
         statusesAdapter.setSelectedItem(protocol.getProfile().xstatusIndex + 1);
-        lv.setCacheColorHint(0x00000000);
         lv.setAdapter(statusesAdapter);
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, final int position, long l) {
-                final Dialog dialogXStatusText = new Dialog(getActivity());
-                dialogXStatusText.setContentView(R.layout.xtraz_text);
-                dialogXStatusText.setTitle(protocol.getXStatusInfo().getName(position - 1));
                 if (position == 0) {
                     setXStatus(-1, "", "");
                     dismiss();
                     return;
                 }
 
+                final View dialogXStatusText = LayoutInflater.from(context).inflate(R.layout.xtraz_text, null);
                 final EditText editTitle = (EditText) dialogXStatusText.findViewById(R.id.xstatus_title_edit);
                 final EditText editDesciption = (EditText) dialogXStatusText.findViewById(R.id.xstatus_description_edit);
-
-                editTitle.setText(xst_titles[position - 1]);
-                editDesciption.setText(xst_descs[position - 1]);
-
-                Button buttonSave = (Button) dialogXStatusText.findViewById(R.id.xstatus_save_button);
-                buttonSave.setOnClickListener(new View.OnClickListener() {
-
+                AlertDialog.Builder dialogXStatusTextBuilder = new AlertDialog.Builder(getActivity());
+                dialogXStatusTextBuilder.setView(dialogXStatusText);
+                dialogXStatusTextBuilder.setTitle(protocol.getXStatusInfo().getName(position - 1));
+                dialogXStatusTextBuilder.setInverseBackgroundForced(Util.isNeedToInverseDialogBackground());
+                dialogXStatusTextBuilder.setPositiveButton(getString(R.string.save), new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(View v) {
+                    public void onClick(DialogInterface dialogInterface, int i) {
                         setXStatus(position - 1, editTitle.getText().toString(), editDesciption.getText().toString());
                         statusesAdapter.setSelectedItem(position - 1);
-                        dialogXStatusText.dismiss();
-                        dismiss();
                     }
                 });
-                dialogXStatusText.show();
+                dialogXStatusTextBuilder.setNegativeButton(android.R.string.cancel, null);
+                editTitle.setText(xst_titles[position - 1]);
+                editDesciption.setText(xst_descs[position - 1]);
+                dialogXStatusTextBuilder.create().show();
             }
         });
-        return v;
+        return dialogBuilder.create();
     }
 
     private void load() {

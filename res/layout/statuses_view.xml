@@ -1,12 +1,6 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
-
-    <ListView android:id="@+id/statuses_view"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:text=""
-              android:divider="#1ea5c5"
-              android:dividerHeight="1px"
-              android:fastScrollEnabled="true"/>
-</LinearLayout>
+<ListView xmlns:android="http://schemas.android.com/apk/res/android"
+          android:id="@+id/statuses_view"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:cacheColorHint="@android:color/transparent"
+          android:fastScrollEnabled="true"/>
