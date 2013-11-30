@@ -146,9 +146,9 @@ public class SawimActivity extends ActionBarActivity {
         }
     }
 
-    private ChatView createChatView(Protocol p, Contact c, FragmentManager fragmentManager, boolean addToBackStack, boolean allowingStateLoss) {
+    private void createChatView(Protocol p, Contact c, FragmentManager fragmentManager, boolean addToBackStack, boolean allowingStateLoss) {
         ChatView chatView = new ChatView();
-        chatView.initChat(p, c);
+        chatView.openChat(p, c);
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.replace(R.id.fragment_container, chatView, ChatView.TAG);
         if (addToBackStack)
@@ -157,7 +157,6 @@ public class SawimActivity extends ActionBarActivity {
             transaction.commitAllowingStateLoss();
         else
             transaction.commit();
-        return chatView;
     }
 
     public void openChat(Protocol p, Contact c, boolean allowingStateLoss) {
@@ -171,7 +170,6 @@ public class SawimActivity extends ActionBarActivity {
                 createChatView(p, c, fragmentManager, true, allowingStateLoss);
                 return;
             }
-            if (!chatView.isLastPosition()) return;
             if (rosterView.isVisible()) {
                 createChatView(p, c, fragmentManager, true, allowingStateLoss);
             } else if (chatView.isVisible()) {
