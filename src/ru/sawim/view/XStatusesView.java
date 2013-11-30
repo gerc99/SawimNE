@@ -74,6 +74,7 @@ public class XStatusesView extends DialogFragment {
                     public void onClick(DialogInterface dialogInterface, int i) {
                         setXStatus(position - 1, editTitle.getText().toString(), editDesciption.getText().toString());
                         statusesAdapter.setSelectedItem(position - 1);
+                        XStatusesView.this.dismiss();
                     }
                 });
                 dialogXStatusTextBuilder.setNegativeButton(android.R.string.cancel, null);

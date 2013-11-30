@@ -80,10 +80,9 @@ public class XStatusesAdapter extends BaseAdapter {
         }
 
         void populateFrom(int item) {
-            --item;
-            Icon ic = statusInfo.getIcon(item);
+            Icon ic = statusInfo.getIcon(item - 1);
             itemXStatus.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
-            itemXStatus.setText(statusInfo.getName(item));
+            itemXStatus.setText(statusInfo.getName(item - 1));
             if (ic != null) {
                 itemImage.setVisibility(ImageView.VISIBLE);
                 itemImage.setImageDrawable(ic.getImage());
