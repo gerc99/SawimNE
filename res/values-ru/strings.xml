@@ -14,9 +14,9 @@
     <string name="disconnect">Отключиться</string>
     <string name="sound_on">Включить звук</string>
     <string name="sound_off">Отключить звук</string>
-    <string name="add_contact">Добавить контакт...</string>
+    <string name="add_contact">Добавить контакт…</string>
     <string name="options">Настройки</string>
-    <string name="about">О...</string>
+    <string name="about">О…</string>
     <string name="quit">Выход</string>
 
     <string name="msg_send">Отправить сообщение</string>
@@ -50,7 +50,7 @@
     <string name="private_status">Приватный статус</string>
     <string name="private_status_visible_to_all">Видимый для всех</string>
     <string name="private_status_visible_to_white_list">Видимый для списка видящих</string>
-    <string name="private_status_visible_to_all_exclude_black_list">Видимый для всех кроме списка невидящих</string>
+    <string name="private_status_visible_to_all_exclude_black_list">Видимый для всех, кроме списка невидящих</string>
     <string name="private_status_visible_to_contacts_only">Видимый для КЛ</string>
     <string name="private_status_invisible_for_all">Невидимый для всех</string>
 
@@ -64,7 +64,7 @@
     <string name="group_conferences">Conferences</string>
     <string name="group_transports">Transports</string>
 
-    <string name="contact_list">Контакт лист</string>
+    <string name="contact_list">Контакт-лист</string>
     <string name="contact_add">Добавить контакт</string>
     <string name="move">Перенести</string>
     <string name="remove">Удалить</string>
@@ -86,7 +86,7 @@
     <string name="acc_pass">Пароль:</string>
     <string name="acc_nick">Ник:</string>
     <string name="acc_sel_protocol">Выберите протокол:</string>
-    <string name="acc_delete_confirm">Вы действительно хотите удалить аккаунт</string>
+    <string name="acc_delete_confirm">Вы действительно хотите удалить аккаунт %s?</string>
 
     <string name="auto_connect">Подключаться автоматически</string>
     <string name="reconnect_number">Количество попыток подключения</string>
@@ -180,7 +180,7 @@
     <string name="open_url">Открыть ссылку</string>
     <string name="copy">Копировать</string>
     <string name="url_menu">Меню ссылки</string>
-    <string name="press_menu_for_connect">Нажмите кнопку Меню и выберите действие</string>
+    <string name="press_menu_for_connect">Нажмите кнопку "Меню" и выберите действие</string>
     <string name="add_conference">Добавить конференцию</string>
     <string name="include_setting_the_story">Для сохранения истории, включите в настройках историю тоже</string>
     <string name="contact_walked">Контакт вышел из конференции</string>
@@ -210,12 +210,11 @@
     <string name="include_multi_citation">Вкл. мультицитирование</string>
     <string name="disable_multi_citation">Откл. мультицитирование</string>
     <string name="hint_multi_citation">Отметьте сообщения и долгим нажатием в поле вводе выберите \"Вставить\"</string>
-    <string name="hint_message">сообщение...</string>
+    <string name="hint_message">сообщение…</string>
     <string name="enter_the">Введите</string>
     <string name="select_contact">Выберите контакт, чтобы начать чат</string>
     <string name="server">Сервер</string>
-    <string name="hint_registration_domen">это сервер по умолчанию, вы можете зарегистрироваться на другом</string>
-    <string name="my_conference">Мои конференции</string>
+    <string name="hint_registration_domen">%s – сервер по умолчанию, вы можете зарегистрироваться на другом</string>
     <string name="classmates">Одноклассники</string>
     <string name="lift_up">Выше</string>
     <string name="put_down">Ниже</string>
