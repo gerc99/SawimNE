@@ -2,12 +2,12 @@ package ru.sawim.models;
 
 import DrawControls.icons.Icon;
 import android.content.Context;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import protocol.Protocol;
 import protocol.XStatusInfo;
@@ -65,13 +65,6 @@ public class XStatusesAdapter extends BaseAdapter {
         }
         int item = getItem(position);
         wr.populateFrom(item);
-
-        LinearLayout activeItem = (LinearLayout) row;
-        if (item == selectedItem) {
-            activeItem.setBackgroundColor(Scheme.getInversColor(Scheme.THEME_BACKGROUND));
-        } else {
-            activeItem.setBackgroundColor(0);
-        }
         return row;
     }
 
@@ -87,15 +80,19 @@ public class XStatusesAdapter extends BaseAdapter {
         }
 
         void populateFrom(int item) {
-            --item;
-            Icon ic = statusInfo.getIcon(item);
+            Icon ic = statusInfo.getIcon(item - 1);
             itemXStatus.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
-            itemXStatus.setText(statusInfo.getName(item));
+            itemXStatus.setText(statusInfo.getName(item - 1));
             if (ic != null) {
                 itemImage.setVisibility(ImageView.VISIBLE);
                 itemImage.setImageDrawable(ic.getImage());
             } else {
                 itemImage.setVisibility(ImageView.GONE);
+            }
+            if (item == selectedItem) {
+                itemXStatus.setTypeface(Typeface.DEFAULT_BOLD);
+            } else {
+                itemXStatus.setTypeface(Typeface.DEFAULT);
             }
         }
     }

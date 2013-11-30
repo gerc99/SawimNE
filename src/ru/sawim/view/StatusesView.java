@@ -1,19 +1,21 @@
 package ru.sawim.view;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import protocol.Protocol;
 import ru.sawim.R;
 import ru.sawim.models.StatusesAdapter;
+import ru.sawim.widget.Util;
 import sawim.Options;
 
 public class StatusesView extends DialogFragment {
-    private StatusesAdapter statusesAdapter;
     public static final int ADAPTER_STATUS = 0;
     public static final int ADAPTER_PRIVATESTATUS = 1;
     private int type;
@@ -25,13 +27,16 @@ public class StatusesView extends DialogFragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        getDialog().setTitle(R.string.ms_status_menu);
-        View v = inflater.inflate(R.layout.statuses_view, container, false);
-        statusesAdapter = new StatusesAdapter(getActivity(), protocol, type);
-        ListView lv = (ListView) v.findViewById(R.id.statuses_view);
-        lv.setCacheColorHint(0x00000000);
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        final Context context = getActivity();
+
+        View dialogView = LayoutInflater.from(context).inflate(R.layout.statuses_view, null);
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
+        dialogBuilder.setTitle(R.string.ms_status_menu);
+        dialogBuilder.setView(dialogView);
+        dialogBuilder.setInverseBackgroundForced(Util.isNeedToInverseDialogBackground());
+        StatusesAdapter statusesAdapter = new StatusesAdapter(getActivity(), protocol, type);
+        ListView lv = (ListView) dialogView.findViewById(R.id.statuses_view);
         if (type == ADAPTER_STATUS)
             statusesAdapter.setSelectedItem(protocol.getProfile().statusIndex);
         else
@@ -52,6 +57,7 @@ public class StatusesView extends DialogFragment {
                 dismiss();
             }
         });
-        return v;
+
+        return dialogBuilder.create();
     }
 }

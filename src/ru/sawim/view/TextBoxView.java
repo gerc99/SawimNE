@@ -1,14 +1,16 @@
 package ru.sawim.view;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.widget.Button;
 import android.widget.EditText;
 import ru.sawim.R;
+import ru.sawim.widget.Util;
 
 /**
  * Created with IntelliJ IDEA.
@@ -17,42 +19,37 @@ import ru.sawim.R;
  * Time: 18:25
  * To change this template use File | Settings | File Templates.
  */
-public class TextBoxView extends DialogFragment implements View.OnClickListener {
-
+public class TextBoxView extends DialogFragment {
     private EditText editText;
-    private Button okButton;
-    private Button cancelButton;
     private String caption = null;
     private String text;
     private TextBoxListener textBoxListener;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        if (caption == null) {
-            getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
-        } else {
-            getDialog().setTitle(caption);
-        }
-        View v = inflater.inflate(R.layout.text_box_view, container, false);
-        editText = (EditText) v.findViewById(R.id.editText);
-        editText.setText(text);
-        okButton = (Button) v.findViewById(R.id.button_ok);
-        okButton.setOnClickListener(this);
-        cancelButton = (Button) v.findViewById(R.id.button_cancel);
-        cancelButton.setOnClickListener(this);
-        return v;
-    }
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        final Context context = getActivity();
 
-    @Override
-    public void onClick(View view) {
-        if (view.equals(cancelButton)) {
-            textBoxListener.textboxAction(this, false);
-            dismiss();
-        } else if (view.equals(okButton)) {
-            textBoxListener.textboxAction(this, true);
-            dismiss();
-        }
+        View dialogView = LayoutInflater.from(context).inflate(R.layout.text_box_view, null);
+        editText = (EditText)dialogView.findViewById(R.id.editText);
+        editText.setText(text);
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
+        dialogBuilder.setTitle(R.string.ms_status_menu);
+        dialogBuilder.setTitle(caption);
+        dialogBuilder.setView(dialogView);
+        dialogBuilder.setInverseBackgroundForced(Util.isNeedToInverseDialogBackground());
+        dialogBuilder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                textBoxListener.textboxAction(TextBoxView.this, true);
+            }
+        });
+        dialogBuilder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                textBoxListener.textboxAction(TextBoxView.this, false);
+            }
+        });
+        return dialogBuilder.create();
     }
 
     public void setCaption(String caption) {

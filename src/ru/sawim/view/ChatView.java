@@ -2,11 +2,12 @@ package ru.sawim.view;
 
 import DrawControls.icons.Icon;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
-import android.graphics.PorterDuff;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,7 +18,6 @@ import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.*;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -440,15 +440,14 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
             public void onClick(View v) {
                 chatDialogFragment = new DialogFragment() {
                     @Override
-                    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                             Bundle savedInstanceState) {
-                        getDialog().setCanceledOnTouchOutside(true);
-                        getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-                        setStyle(STYLE_NO_FRAME, R.style.BaseThemeLight);
-                        View v = inflater.inflate(R.layout.chats_dialog, container, false);
-                        MyListView lv = (MyListView) v.findViewById(R.id.listView);
-                        if (!Scheme.isSystemBackground())
-                            lv.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
+                    public Dialog onCreateDialog(Bundle savedInstanceState) {
+                        final Context context = getActivity();
+
+                        View dialogView = LayoutInflater.from(context).inflate(R.layout.chats_dialog, null);
+                        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
+                        dialogBuilder.setView(dialogView);
+                        dialogBuilder.setInverseBackgroundForced(Util.isNeedToInverseDialogBackground());
+                        MyListView lv = (MyListView) dialogView.findViewById(R.id.listView);
                         lv.setAdapter(chatsSpinnerAdapter);
                         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                             @Override
@@ -466,7 +465,9 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
                                 }
                             }
                         });
-                        return v;
+                        Dialog dialog =  dialogBuilder.create();
+                        dialog.setCanceledOnTouchOutside(true);
+                        return dialog;
                     }
                 };
                 chatDialogFragment.show(getFragmentManager().beginTransaction(), "force go to chat");

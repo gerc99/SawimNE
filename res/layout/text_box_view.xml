@@ -1,29 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
               android:layout_width="match_parent"
-              android:layout_height="match_parent" android:padding="10dp">
-
-    <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/editText" android:layout_weight="1" android:padding="25dp"/>
-    <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" android:padding="15dp">
-        <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@android:string/ok"
-                android:id="@+id/button_ok" android:layout_gravity="right|center_vertical" android:padding="20dp"/>
-        <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@android:string/cancel"
-                android:id="@+id/button_cancel" android:layout_gravity="left|center_vertical" android:padding="20dp"/>
-    </LinearLayout>
+              android:layout_height="match_parent"
+              android:paddingLeft="5dp"
+              android:paddingRight="5dp">
+    <EditText android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:id="@+id/editText"/>
 </LinearLayout>

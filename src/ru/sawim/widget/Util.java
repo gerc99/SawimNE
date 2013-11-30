@@ -6,11 +6,13 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.os.Build;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.LinearLayout;
 import ru.sawim.General;
+import ru.sawim.Scheme;
 
 /**
  * Created with IntelliJ IDEA.
@@ -65,5 +67,13 @@ public class Util {
         int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
                 dipValue, r.getDisplayMetrics());
         return px;
+    }
+
+    public static boolean isNeedToInverseDialogBackground() {
+        // workaround for buggy GingerBread AlertDialog
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+            return !Scheme.isBlack();
+        }
+        return false;
     }
 }

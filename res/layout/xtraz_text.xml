@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView android:layout_width="wrap_content" android:layout_height="wrap_content"
+<ScrollView android:layout_width="match_parent" android:layout_height="wrap_content"
             xmlns:android="http://schemas.android.com/apk/res/android">
 
     <LinearLayout
-            android:layout_width="256dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingLeft="14.0sp"
-            android:paddingRight="14.0sp">
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp">
 
         <TextView
                 android:id="@+id/xstatus_title_text"
@@ -32,14 +32,7 @@
         <EditText
                 android:id="@+id/xstatus_description_edit"
                 android:layout_width="match_parent"
-                android:layout_height="119dp"
-                android:inputType="textMultiLine"/>
-
-        <Button
-                android:id="@+id/xstatus_save_button"
-                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/save"/>
-
+                android:inputType="textMultiLine"/>
     </LinearLayout>
 </ScrollView>
