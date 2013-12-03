@@ -847,17 +847,9 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
                     messageEditor.setText(previousText);
                     messageEditor.setSelection(start);
                     send();
+                    return;
                 }
             }
-            if (lineCount != messageEditor.getLineCount()) {
-                lineCount = messageEditor.getLineCount();
-                messageEditor.requestLayout();
-            }
-        }
-
-        @Override
-        public void afterTextChanged(Editable s) {
-            if (protocol == null) return;
             int length = s.length();
             if (length > 0) {
                 if (!compose) {
@@ -870,6 +862,14 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
                     protocol.sendTypingNotify(contact, false);
                 }
             }
+            if (lineCount != messageEditor.getLineCount()) {
+                lineCount = messageEditor.getLineCount();
+                messageEditor.requestLayout();
+            }
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
         }
     };
 
