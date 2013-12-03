@@ -691,9 +691,14 @@ abstract public class Protocol {
     protected abstract void s_updateOnlineStatus();
 
     public final void setOnlineStatus(int statusIndex, String msg) {
+        setOnlineStatus(statusIndex, msg, true);
+    }
+
+    public final void setOnlineStatus(int statusIndex, String msg, boolean save) {
         profile.statusIndex = (byte) statusIndex;
         profile.statusMessage = msg;
-        Options.saveAccount(profile);
+        if (save)
+            Options.saveAccount(profile);
 
         setLastStatusChangeTime();
         if (isConnected()) {

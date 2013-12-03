@@ -18,6 +18,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.*;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -92,7 +93,8 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        General.currentActivity = (ActionBarActivity) activity;
+        if (General.currentActivity == null)
+            General.currentActivity = (ActionBarActivity) activity;
         isTablet = activity.findViewById(R.id.fragment_container) == null;
         handler = new Handler(this);
         messageEditor = new EditText(activity);
@@ -306,15 +308,14 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
     @Override
     public void onStart() {
         super.onStart();
-        General.currentActivity = (ActionBarActivity) getActivity();
+        if (General.currentActivity == null)
+            General.currentActivity = (ActionBarActivity) getActivity();
+        if (contact != null)
+            openChat(protocol, contact);
         if (isTablet) {
             if (contact == null)
                 chat_viewLayout.showHint();
-            else
-                openChat(protocol, contact);
         } else {
-            if (contact != null)
-                openChat(protocol, contact);
             getActivity().supportInvalidateOptionsMenu();
         }
     }
@@ -338,7 +339,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
         View item = chatListView.getChildAt(0);
         chat.scrollPosition = chatListView.getFirstVisiblePosition();
         chat.offset = (item == null) ? 0 : Math.abs(item.getBottom());
-        chat.dividerPosition = chat.getMessData().size();
+        chat.dividerPosition = chat.getMessCount();
         chat.message = getText();
 
         chat.setVisibleChat(false);
@@ -354,8 +355,8 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
         Roster.getInstance().setOnUpdateChat(this);
         chat.resetUnreadMessages();
         removeMessages(Options.getInt(Options.OPTION_MAX_MSG_COUNT));
-        if (sharingText != null) chat.message = chat.message + " " + sharingText;
-        messageEditor.setText(sharingText);
+        if (sharingText != null) chat.message += " " + sharingText;
+        messageEditor.setText(chat.message);
 
         adapter.setPosition(chat.dividerPosition);
         if (contact.isConference() && chat.scrollPosition == 0)
@@ -376,7 +377,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
     }
 
     public boolean isLastPosition() {
-        return chat.dividerPosition == chat.getMessCount();
+        return chat.scrollPosition == chatListView.getFirstVisiblePosition();
     }
 
     public void setSharingText(String sharingText) {
@@ -384,9 +385,9 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
     }
 
     private void removeMessages(final int limit) {
-        if (chat.getMessData().size() < limit) return;
-        if ((0 < limit) && (0 < chat.getMessData().size())) {
-            while (limit < chat.getMessData().size()) {
+        if (chat.getMessCount() < limit) return;
+        if ((0 < limit) && (0 < chat.getMessCount())) {
+            while (limit < chat.getMessCount()) {
                 chat.scrollPosition--;
                 chat.dividerPosition--;
                 chat.getMessData().remove(0);

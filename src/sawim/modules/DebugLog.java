@@ -13,6 +13,7 @@ import sawim.comm.Util;
 import sawim.util.JLocale;
 
 import java.util.List;
+import java.util.TimeZone;
 import java.util.Vector;
 
 public final class DebugLog {
@@ -108,7 +109,7 @@ public final class DebugLog {
     public static void startTests() {
         //println("1329958015 " + Util.createGmtTime(2012, 02, 23, 4, 46, 55));
 
-        /*println("TimeZone info");
+        println("TimeZone info");
         java.util.TimeZone tz = java.util.TimeZone.getDefault();
         println("TimeZone offset: " + tz.getRawOffset());
         println("Daylight: " + tz.useDaylightTime());
@@ -116,7 +117,7 @@ public final class DebugLog {
 
         int time = TimeZone.getDefault().getRawOffset() / (1000 * 60 * 60);
         int t2 = TimeZone.getDefault().getDSTSavings() / (1000 * 60 * 60);
-        println("GMT " + (t2 + time)); */
+        println("GMT " + (t2 + time));
     }
 
     public static void dump(String comment, byte[] data) {

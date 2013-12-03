@@ -45,12 +45,15 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
     private static final int COMMAND_SET_SERVER = 4;
     private static final int COMMAND_HOME = 5;
 
+    public ServiceDiscovery() {
+        serverBox = new TextBoxView();
+        searchBox = new TextBoxView();
+    }
+
     public void init(Jabber protocol) {
         isMucUsers(false);
         screen = VirtualList.getInstance();
         jabber = protocol;
-        serverBox = new TextBoxView();
-        searchBox = new TextBoxView();
         screen.setModel(model);
         screen.setCaption(JLocale.getString("service_discovery"));
         groupItem = model.createNewParser(true);

@@ -67,7 +67,7 @@ public final class AutoAbsence {
                     p.getProfile().xstatusDescription = "";
                 }
 
-                p.setOnlineStatus(StatusInfo.STATUS_AWAY, pr.statusMessage);
+                p.setOnlineStatus(StatusInfo.STATUS_AWAY, pr.statusMessage, false);
             } else {
                 protos[i] = null;
             }
@@ -91,7 +91,7 @@ public final class AutoAbsence {
                     p.xstatusDescription = pr.xstatusDescription;
                 }
 
-                protos[i].setOnlineStatus(pr.statusIndex, pr.statusMessage);
+                protos[i].setOnlineStatus(pr.statusIndex, pr.statusMessage, false);
             }
         }
     }

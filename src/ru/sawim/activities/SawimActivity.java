@@ -74,10 +74,11 @@ public class SawimActivity extends ActionBarActivity {
         setTheme(Scheme.isBlack() ? R.style.BaseTheme : R.style.BaseThemeLight);
         super.onCreate(savedInstanceState);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
-        setContentView(R.layout.main);
         ExternalApi.instance.setActivity(this);
         General.actionBar = getSupportActionBar();
-        General.currentActivity = this;
+        if (General.currentActivity == null)
+            General.currentActivity = this;
+        setContentView(R.layout.main);
 
         Logger.removeAllAppenders();
         Logger.setLocationEnabled(false);
@@ -146,19 +147,6 @@ public class SawimActivity extends ActionBarActivity {
         }
     }
 
-    private void createChatView(Protocol p, Contact c, FragmentManager fragmentManager, boolean addToBackStack, boolean allowingStateLoss) {
-        ChatView chatView = new ChatView();
-        chatView.openChat(p, c);
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.replace(R.id.fragment_container, chatView, ChatView.TAG);
-        if (addToBackStack)
-            transaction.addToBackStack(null);
-        if (allowingStateLoss)
-            transaction.commitAllowingStateLoss();
-        else
-            transaction.commit();
-    }
-
     public void openChat(Protocol p, Contact c, boolean allowingStateLoss) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         ChatView chatView = (ChatView) fragmentManager.findFragmentById(R.id.chat_fragment);
@@ -166,20 +154,26 @@ public class SawimActivity extends ActionBarActivity {
         if (chatView == null) {
             Fragment rosterView = getSupportFragmentManager().findFragmentByTag(RosterView.TAG);
             chatView = (ChatView) getSupportFragmentManager().findFragmentByTag(ChatView.TAG);
-            if (fragmentManager.getFragments() == null || rosterView == null || chatView == null) {
-                createChatView(p, c, fragmentManager, true, allowingStateLoss);
+            if (fragmentManager.getFragments() == null || rosterView == null || chatView == null || rosterView.isVisible()) {
+                chatView = new ChatView();
+                chatView.initChat(p, c);
+                FragmentTransaction transaction = fragmentManager.beginTransaction();
+                transaction.replace(R.id.fragment_container, chatView, ChatView.TAG);
+                transaction.addToBackStack(null);
+                if (allowingStateLoss)
+                    transaction.commitAllowingStateLoss();
+                else
+                    transaction.commit();
                 return;
             }
-            if (rosterView.isVisible()) {
-                createChatView(p, c, fragmentManager, true, allowingStateLoss);
-            } else if (chatView.isVisible()) {
+            if (chatView.isVisible() && chatView.isLastPosition()) {
                 if (c != null) {
                     chatView.openChat(p, c);
                     chatView.resume(p.getChat(c));
                 }
             }
         } else {
-            if (c == null && !chatView.isLastPosition()) return;
+            if (c == null || !chatView.isLastPosition()) return;
             chatView.openChat(p, c);
             chatView.resume(chatView.getCurrentChat());
         }
@@ -188,7 +182,8 @@ public class SawimActivity extends ActionBarActivity {
     @Override
     public void onResume() {
         super.onResume();
-        General.currentActivity = this;
+        if (General.currentActivity == null)
+            General.currentActivity = this;
         General.maximize();
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         if (Roster.getInstance().getProtocolCount() == 0) {

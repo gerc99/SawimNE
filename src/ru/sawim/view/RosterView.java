@@ -111,7 +111,8 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         handler = new Handler(this);
-        General.currentActivity = (ActionBarActivity) activity;
+        if (General.currentActivity == null)
+            General.currentActivity = (ActionBarActivity) activity;
         isTablet = activity.findViewById(R.id.fragment_container) == null;
         barLinearLayout = new LinearLayout(activity);
         horizontalScrollView = new IconTabPageIndicator(getActivity());
@@ -317,7 +318,8 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     }
 
     public void resume() {
-        General.currentActivity = (ActionBarActivity) getActivity();
+        if (General.currentActivity == null)
+            General.currentActivity = (ActionBarActivity) getActivity();
         initBar();
         if (roster.getProtocolCount() > 0) {
             roster.setCurrentContact(null);

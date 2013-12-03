@@ -2260,7 +2260,6 @@ public final class JabberXml extends ClientConnection {
                 + "' id='0'>" + tag + "</message>");
     }
 
-
     void sendPresence(JabberServiceContact conf) {
         String to = conf.getUserId();
         String xml = "";
