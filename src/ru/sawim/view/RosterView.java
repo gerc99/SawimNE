@@ -55,7 +55,6 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     private static final int UPDATE_ROSTER = 2;
     private static final int PUT_INTO_QUEUE = 3;
 
-    private boolean isTablet;
     private LinearLayout barLinearLayout;
     private IconTabPageIndicator horizontalScrollView;
     private RosterViewRoot rosterViewLayout;
@@ -113,7 +112,6 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         handler = new Handler(this);
         if (General.currentActivity == null)
             General.currentActivity = (ActionBarActivity) activity;
-        isTablet = activity.findViewById(R.id.fragment_container) == null;
         barLinearLayout = new LinearLayout(activity);
         horizontalScrollView = new IconTabPageIndicator(getActivity());
 
@@ -154,7 +152,6 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        isTablet = getActivity().findViewById(R.id.fragment_container) == null;
         if (rosterViewLayout == null)
             rosterViewLayout = new RosterViewRoot(getActivity(), progressBar, viewPager);
         else
@@ -265,7 +262,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         General.actionBar.setDisplayHomeAsUpEnabled(!isShowTabs);
         General.actionBar.setDisplayShowCustomEnabled(isShowTabs);
         getActivity().setTitle(R.string.app_name);
-        if (isTablet) {
+        if (General.isTablet) {
             ChatView chatView = (ChatView) getActivity().getSupportFragmentManager()
                     .findFragmentById(R.id.chat_fragment);
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);

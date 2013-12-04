@@ -30,6 +30,7 @@ public class MyListView extends ListView {
 
     private void init() {
         setCacheColorHint(0x00000000);
+        setFastScrollEnabled(true);
         setScrollingCacheEnabled(false);
         setAnimationCacheEnabled(false);
         setDivider(null);

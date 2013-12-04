@@ -114,8 +114,8 @@ public class SawimActivity extends ActionBarActivity {
                 }
             }
         }));
-
-        if (findViewById(R.id.fragment_container) != null) {
+        General.isTablet = findViewById(R.id.fragment_container) == null;
+        if (!General.isTablet) {
             if (savedInstanceState != null) return;
             RosterView rosterView = new RosterView();
             rosterView.setArguments(getIntent().getExtras());
@@ -206,6 +206,12 @@ public class SawimActivity extends ActionBarActivity {
     public void onPause() {
         super.onPause();
         General.minimize();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        General.currentActivity = null;
     }
 
     @Override

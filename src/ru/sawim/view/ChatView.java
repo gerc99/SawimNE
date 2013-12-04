@@ -64,7 +64,6 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
     private Protocol protocol;
     private Contact contact;
     private boolean sendByEnter;
-    private boolean isTablet;
     private String sharingText;
     public boolean isOpenMenu = false;
 
@@ -95,7 +94,6 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
         super.onAttach(activity);
         if (General.currentActivity == null)
             General.currentActivity = (ActionBarActivity) activity;
-        isTablet = activity.findViewById(R.id.fragment_container) == null;
         handler = new Handler(this);
         messageEditor = new EditText(activity);
 
@@ -108,9 +106,9 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
 
         chatBarLayout = new ChatBarView(activity, usersImage, chatsImage);
         chatListView = new MyListView(activity);
-        if (isTablet)
+        if (General.isTablet)
             nickList = new MyListView(getActivity());
-        chatListsView = new ChatListsView(activity, isTablet, chatListView, nickList);
+        chatListsView = new ChatListsView(activity, General.isTablet, chatListView, nickList);
         chatInputBarView = new ChatInputBarView(activity, menuButton, smileButton, messageEditor, sendButton);
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
@@ -138,18 +136,17 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceStateLog) {
-        isTablet = getActivity().findViewById(R.id.fragment_container) == null;
         General.actionBar.setDisplayShowTitleEnabled(false);
         General.actionBar.setDisplayShowHomeEnabled(false);
         General.actionBar.setDisplayUseLogoEnabled(false);
-        if (!isTablet) {
+        if (!General.isTablet) {
             removeTitleBar();
             General.actionBar.setDisplayShowCustomEnabled(true);
             General.actionBar.setCustomView(chatBarLayout);
         }
         updateChatIcon();
 
-        if (!isTablet) {
+        if (!General.isTablet) {
             nickList = new MyListView(getActivity());
             drawerLayout = new DrawerLayout(getActivity());
             DrawerLayout.LayoutParams nickListLP = new DrawerLayout.LayoutParams(Util.dipToPixels(getActivity(), 240), DrawerLayout.LayoutParams.MATCH_PARENT);
@@ -168,10 +165,10 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
         }
 
         if (chat_viewLayout == null)
-            chat_viewLayout = new ChatViewRoot(getActivity(), isTablet, chatListsView, chatInputBarView);
+            chat_viewLayout = new ChatViewRoot(getActivity(), General.isTablet, chatListsView, chatInputBarView);
         else
             ((ViewGroup) chat_viewLayout.getParent()).removeView(chat_viewLayout);
-        if (!isTablet) {
+        if (!General.isTablet) {
             drawerLayout.addView(chat_viewLayout);
             drawerLayout.addView(nickList);
         }
@@ -181,7 +178,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
             chat_viewLayout.setBackgroundColor(background);
         }
 
-        if (!isTablet) {
+        if (!General.isTablet) {
             chatBarLayout.setVisibilityUsersImage(ImageView.VISIBLE);
             usersImage.setBackgroundColor(0);
             usersImage.setImageDrawable(General.usersIcon);
@@ -208,7 +205,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
                     rosterView.update();
             }
         });
-        if (isTablet) {
+        if (General.isTablet) {
             menuButton.setVisibility(ImageButton.VISIBLE);
             menuButton.setBackgroundColor(0);
             menuButton.setOnClickListener(new View.OnClickListener() {
@@ -252,7 +249,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
                 @Override
                 public void onClick(View view) {
                     send();
-                    if (!isTablet)
+                    if (!General.isTablet)
                         if (drawerLayout.isDrawerVisible(nickList)) {
                             drawerLayout.closeDrawer(nickList);
                         }
@@ -267,7 +264,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
                 }
             });
         }
-        return isTablet ? chat_viewLayout : drawerLayout;
+        return General.isTablet ? chat_viewLayout : drawerLayout;
     }
 
     @Override
@@ -312,7 +309,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
             General.currentActivity = (ActionBarActivity) getActivity();
         if (contact != null)
             openChat(protocol, contact);
-        if (isTablet) {
+        if (General.isTablet) {
             if (contact == null)
                 chat_viewLayout.showHint();
         } else {
@@ -370,7 +367,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
                 chatListView.setSelectionFromTop(chat.scrollPosition + 2, chat.offset);
         updateChat(contact);
 
-        if (isTablet)
+        if (General.isTablet)
             adapter.repaintList();
         else
             drawerLayout.setDrawerLockMode(contact.isConference() ? DrawerLayout.LOCK_MODE_UNLOCKED : DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
@@ -396,7 +393,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
     }
 
     public boolean hasBack() {
-        if (nickList != null && !isTablet)
+        if (nickList != null && !General.isTablet)
             if (drawerLayout.isDrawerOpen(nickList)) {
                 drawerLayout.closeDrawer(nickList);
                 return false;
@@ -482,7 +479,6 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
         adapter.init(chat);
         chatListView.setAdapter(adapter);
         chatListView.setStackFromBottom(true);
-        chatListView.setFastScrollEnabled(true);
         chatListView.setTranscriptMode(ListView.TRANSCRIPT_MODE_NORMAL);
         chatListView.setOnCreateContextMenuListener(this);
         chatListView.setOnItemClickListener(chatClick);
@@ -490,7 +486,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
     }
 
     private void initMucUsers() {
-        if (isTablet)
+        if (General.isTablet)
             nickList.setVisibility(View.VISIBLE);
         else if (drawerLayout.isDrawerOpen(nickList))
             drawerLayout.closeDrawer(nickList);
@@ -499,10 +495,10 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
             mucUsersView = new MucUsersView();
             mucUsersView.init(protocol, (JabberServiceContact) contact);
             mucUsersView.show(this, nickList);
-            chatBarLayout.setVisibilityUsersImage(isTablet ? View.GONE : View.VISIBLE);
+            chatBarLayout.setVisibilityUsersImage(General.isTablet ? View.GONE : View.VISIBLE);
         } else {
             chatBarLayout.setVisibilityUsersImage(View.GONE);
-            if (isTablet) {
+            if (General.isTablet) {
                 nickList.setVisibility(View.GONE);
             } else {
                 if (drawerLayout.isDrawerOpen(nickList)) {
@@ -584,7 +580,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
                     }
                 }
                 setText(chat.onMessageSelected(mData));
-                if (isTablet) {
+                if (General.isTablet) {
                     if (nickList.getVisibility() == View.VISIBLE && getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
                         nickList.setVisibility(View.GONE);
                 } else {

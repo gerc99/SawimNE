@@ -42,7 +42,7 @@ public class General {
     public static ActionBarActivity currentActivity;
     public static ActionBar actionBar;
     private static Resources resources;
-    public static String message = "";
+    public static boolean isTablet;
     private boolean paused = true;
     private static int fontSize;
     public static boolean hideIconsClient;

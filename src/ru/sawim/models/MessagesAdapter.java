@@ -39,12 +39,11 @@ public class MessagesAdapter extends BaseAdapter {
         currentProtocol = chat.getProtocol();
         currentContact = chat.getContact().getUserId();
         isRepaint = false;
-        refreshList(chat.getMessData());
+        items = chat.getMessData();
     }
 
     public void refreshList(List<MessData> list) {
-        items.clear();
-        items.addAll(list);
+        items = list;
         notifyDataSetChanged();
     }
 
