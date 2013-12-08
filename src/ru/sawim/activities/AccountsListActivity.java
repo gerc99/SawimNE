@@ -44,8 +44,6 @@ public class AccountsListActivity extends ActionBarActivity implements JabberReg
         General.actionBar.setDisplayShowHomeEnabled(true);
         General.actionBar.setDisplayShowCustomEnabled(false);
         General.actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-        if (General.currentActivity == null)
-            General.currentActivity = this;
 
         if (findViewById(R.id.fragment_container) != null) {
             if (savedInstanceState != null) return;

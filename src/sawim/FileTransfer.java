@@ -49,12 +49,10 @@ public final class FileTransfer implements FileBrowserListener,
     private Chat chat;
     private JSR75FileSystem file;
     private Forms name_Desc;
-    private FragmentActivity activity;
     private FileProgressView fileProgressView;
     private boolean isFinish = false;
 
-    public FileTransfer(FragmentActivity a, Protocol p, Contact _cItem) {
-        activity = a;
+    public FileTransfer(Protocol p, Contact _cItem) {
         protocol = p;
         cItem = _cItem;
     }
@@ -72,9 +70,9 @@ public final class FileTransfer implements FileBrowserListener,
             fileProgressView.changeFileProgress(percent, caption, text);
     }
 
-    private void showFileProgress(FragmentActivity a) {
+    private void showFileProgress() {
         if (fileProgressView != null)
-            fileProgressView.show(a.getSupportFragmentManager(), "file");
+            fileProgressView.showProgress();
     }
 
     public Contact getReceiver() {
@@ -192,7 +190,7 @@ public final class FileTransfer implements FileBrowserListener,
                 setProgress(0);
                 new Thread(this).start();
             }
-            showFileProgress(activity);
+            showFileProgress();
         } else {
             destroy();
         }
@@ -275,7 +273,7 @@ public final class FileTransfer implements FileBrowserListener,
         } catch (Exception ignored) {
         }
         name_Desc.back();
-        if (isFinish) activity.finish();
+        if (isFinish) General.currentActivity.finish();
         fileProgressView = null;
     }
 

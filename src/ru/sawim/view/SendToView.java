@@ -99,7 +99,7 @@ public class SendToView extends Fragment implements AdapterView.OnItemClickListe
                 if (data == null) return;
                 try {
                     InputStream is = getActivity().getContentResolver().openInputStream(data);
-                    FileTransfer fileTransfer = new FileTransfer(getActivity(), p, c);
+                    FileTransfer fileTransfer = new FileTransfer(p, c);
                     fileTransfer.setFinish(true);
                     fileTransfer.onFileSelect(is, ExternalApi.getFileName(data, getActivity()));
                 } catch (FileNotFoundException e) {

@@ -11,12 +11,8 @@ import java.util.List;
 
 
 public final class VirtualListModel {
-    public List<VirtualListItem> elements;
+    public List<VirtualListItem> elements = new ArrayList<VirtualListItem>();
     private String header = null;
-
-    public VirtualListModel() {
-        elements = new ArrayList<VirtualListItem>();
-    }
 
     public final void addPar(VirtualListItem item) {
         elements.add(item);

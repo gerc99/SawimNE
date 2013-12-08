@@ -76,7 +76,6 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
             @Override
             public boolean back() {
                 if (isMucUsers) {
-                    screen.updateModel();
                     setServer("");
                     return true;
                 }
@@ -85,6 +84,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
                     return true;
                 }
                 setServer("");
+                screen.updateModel();
                 return false;
             }
         });

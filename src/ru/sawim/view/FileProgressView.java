@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,15 +51,20 @@ public class FileProgressView extends DialogFragment {
         return v;
     }
 
+    public void showProgress() {
+        FragmentTransaction transaction = General.currentActivity.getSupportFragmentManager().beginTransaction();
+        transaction.add(this, "file_progress");
+        transaction.commitAllowingStateLoss();
+    }
+
     public void changeFileProgress(final int percent, final String caption, final String text) {
-        final String strTime = Util.getLocalDateString(General.getCurrentGmtTime(), true);
-        FragmentActivity activity = getActivity();
-        if (activity == null) return;
+        if (General.currentActivity == null) return;
         if (percent == 100) {
             Roster.getInstance().removeTransfer(true);
             dismiss();
         }
-        Handler handler = new Handler(activity.getMainLooper());
+        final String strTime = Util.getLocalDateString(General.getCurrentGmtTime(), true);
+        Handler handler = new Handler(General.currentActivity.getMainLooper());
         handler.post(new Runnable() {
             @Override
             public void run() {
@@ -70,6 +76,5 @@ public class FileProgressView extends DialogFragment {
                 progressBar.setProgress(percent);
             }
         });
-
     }
 }

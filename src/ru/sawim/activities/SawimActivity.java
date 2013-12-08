@@ -114,7 +114,6 @@ public class SawimActivity extends ActionBarActivity {
                 }
             }
         }));
-        General.isTablet = findViewById(R.id.fragment_container) == null;
         if (!General.isTablet) {
             if (savedInstanceState != null) return;
             RosterView rosterView = new RosterView();
@@ -298,9 +297,9 @@ public class SawimActivity extends ActionBarActivity {
         } else if (chatView != null) {
             chatView.onPrepareOptionsMenu_(menu);
             return true;
-        } else if (tabletChatView != null && tabletChatView.isOpenMenu) {
+        } else if (tabletChatView != null && tabletChatView.isOpenMenu()) {
             tabletChatView.onPrepareOptionsMenu_(menu);
-            tabletChatView.isOpenMenu = false;
+            tabletChatView.setOpenMenu(false);
             return true;
         } else if (virtualListView != null) {
             virtualListView.onPrepareOptionsMenu_(menu);
@@ -365,9 +364,9 @@ public class SawimActivity extends ActionBarActivity {
         VirtualListView virtualListView = (VirtualListView) getSupportFragmentManager().findFragmentByTag(VirtualListView.TAG);
         if (virtualListView != null) {
             return virtualListView.onOptionsItemSelected_(item);
-        } else if (tabletChatView != null && tabletChatView.isOpenMenu) {
+        } else if (tabletChatView != null && tabletChatView.isOpenMenu()) {
             tabletChatView.onOptionsItemSelected_(item);
-            tabletChatView.isOpenMenu = false;
+            tabletChatView.setOpenMenu(false);
             return true;
         } else if (chatView != null) {
             return chatView.onOptionsItemSelected_(item);

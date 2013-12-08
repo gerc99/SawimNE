@@ -130,7 +130,7 @@ public class AccountsListView extends Fragment {
     }
 
     public void update() {
-        General.currentActivity.runOnUiThread(new Runnable() {
+        getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 accountsListAdapter.notifyDataSetChanged();

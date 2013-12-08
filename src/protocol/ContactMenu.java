@@ -166,11 +166,11 @@ public class ContactMenu implements TextBoxView.TextBoxListener {
                 break;
 
             case USER_MENU_FILE_TRANS:
-                new FileTransfer(activity, protocol, contact).startFileTransfer();
+                new FileTransfer(protocol, contact).startFileTransfer();
                 break;
 
             case USER_MENU_CAM_TRANS:
-                new FileTransfer(activity, protocol, contact).startPhotoTransfer();
+                new FileTransfer(protocol, contact).startPhotoTransfer();
                 break;
 
             case USER_MENU_RENAME:

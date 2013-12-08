@@ -2,7 +2,6 @@ package ru.sawim.models;
 
 import DrawControls.icons.Icon;
 import android.graphics.Typeface;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -39,11 +38,14 @@ public class MessagesAdapter extends BaseAdapter {
         currentProtocol = chat.getProtocol();
         currentContact = chat.getContact().getUserId();
         isRepaint = false;
-        items = chat.getMessData();
+        refreshList(chat.getMessData());
     }
 
     public void refreshList(List<MessData> list) {
-        items = list;
+        items.clear();
+        for (int i = 0; i < list.size(); ++i) {
+            items.add(list.get(i));
+        }
         notifyDataSetChanged();
     }
 

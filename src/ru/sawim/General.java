@@ -42,7 +42,7 @@ public class General {
     public static ActionBarActivity currentActivity;
     public static ActionBar actionBar;
     private static Resources resources;
-    public static boolean isTablet;
+    public static boolean isTablet = ru.sawim.widget.Util.isTablet(SawimApplication.getContext());
     private boolean paused = true;
     private static int fontSize;
     public static boolean hideIconsClient;
