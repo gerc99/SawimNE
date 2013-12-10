@@ -42,7 +42,7 @@ public class General {
     public static ActionBarActivity currentActivity;
     public static ActionBar actionBar;
     private static Resources resources;
-    public static boolean isTablet = ru.sawim.widget.Util.isTablet(SawimApplication.getContext());
+    public static boolean isTablet = SawimApplication.getContext().getResources().getBoolean(R.bool.is_tablet);
     private boolean paused = true;
     private static int fontSize;
     public static boolean hideIconsClient;
@@ -162,14 +162,15 @@ public class General {
         return resources;
     }
 
-    private OnConfigurationChanged configurationChanged;
+    private static OnConfigurationChanged configurationChanged;
 
     public OnConfigurationChanged getConfigurationChanged() {
         return configurationChanged;
     }
 
-    public void setConfigurationChanged(OnConfigurationChanged configurationChanged) {
-        this.configurationChanged = configurationChanged;
+    public void setConfigurationChanged(OnConfigurationChanged cC) {
+        if (configurationChanged == null)
+            configurationChanged = cC;
     }
 
     public interface OnConfigurationChanged {

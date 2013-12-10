@@ -44,25 +44,20 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 final Object o = usersAdapter.getItem(position);
-                activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        chatView.hasBack();
-                        if (o instanceof JabberContact.SubContact) {
-                            JabberContact.SubContact c = (JabberContact.SubContact) o;
-                            chatView.insert(c.resource + ", ");
-                            chatView.showKeyboard();
-                        }
-                    }
-                });
+                chatView.hasBack();
+                if (o instanceof JabberContact.SubContact) {
+                    JabberContact.SubContact c = (JabberContact.SubContact) o;
+                    chatView.insert(c.resource + ", ");
+                    chatView.showKeyboard();
+                }
             }
         });
         nickList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, final int position, long l) {
                 final Object o = usersAdapter.getItem(position);
-                final String nick = usersAdapter.getCurrentSubContact(o);
                 if (o instanceof String) return false;
+                final String nick = usersAdapter.getCurrentSubContact(o);
                 final MyMenu menu = new MyMenu(activity);
                 menu.add(activity.getString(R.string.open_private), ContactMenu.COMMAND_PRIVATE);
                 menu.add(activity.getString(R.string.info), ContactMenu.COMMAND_INFO);

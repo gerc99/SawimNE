@@ -211,6 +211,7 @@
     <string name="include_multi_citation">Enable multi citation</string>
     <string name="disable_multi_citation">Disable multi citation</string>
     <string name="hint_multi_citation">Check messages and paste them with long tap on message editor</string>
+    <string name="hint_citation">Paste them with long tap on message editor</string>
     <string name="hint_message">message…</string>
     <string name="enter_the">Enter the</string>
     <string name="select_contact">Select a contact to chat</string>

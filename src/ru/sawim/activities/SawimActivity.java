@@ -208,12 +208,6 @@ public class SawimActivity extends ActionBarActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        General.currentActivity = null;
-    }
-
-    @Override
     public void onBackPressed() {
         SawimFragment chatView = (SawimFragment) getSupportFragmentManager().findFragmentByTag(ChatView.TAG);
         SawimFragment formView = (SawimFragment) getSupportFragmentManager().findFragmentByTag(FormView.TAG);
@@ -264,9 +258,8 @@ public class SawimActivity extends ActionBarActivity {
         super.onConfigurationChanged(newConfig);
         if (oldOrientation != newConfig.orientation) {
             oldOrientation = newConfig.orientation;
-            if (General.getInstance().getConfigurationChanged() != null) {
+            if (General.getInstance().getConfigurationChanged() != null)
                 General.getInstance().getConfigurationChanged().onConfigurationChanged();
-            }
         }
     }
 

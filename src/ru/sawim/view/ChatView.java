@@ -110,15 +110,13 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
         chatListsView = new ChatListsView(activity, General.isTablet, chatListView, nickList);
         chatInputBarView = new ChatInputBarView(activity, menuButton, smileButton, messageEditor, sendButton);
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN)
             messageEditor.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
-        }
 
         General.getInstance().setConfigurationChanged(new General.OnConfigurationChanged() {
             @Override
             public void onConfigurationChanged() {
-                if (chat != null && adapter != null)
-                    adapter.repaintList();
+                MessagesAdapter.isRepaint = true;
             }
         });
     }
@@ -277,7 +275,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
         chatListView.setOnItemClickListener(null);
         messageEditor.addTextChangedListener(null);
         chatListView.setOnCreateContextMenuListener(null);
-        General.getInstance().setConfigurationChanged(null);
+        MessagesAdapter.isRepaint = false;
         chat = null;
         contact = null;
         adapter = null;
@@ -370,7 +368,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
         updateList(contact);
 
         if (General.isTablet)
-            adapter.repaintList();
+            MessagesAdapter.isRepaint = true;
         else
             drawerLayout.setDrawerLockMode(contact.isConference() ? DrawerLayout.LOCK_MODE_UNLOCKED : DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
     }
@@ -708,6 +706,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
                     msg = "*" + md.getNick() + " " + msg;
                 }
                 Clipboard.setClipBoardText(msg + "\n");
+                Toast.makeText(General.currentActivity, R.string.hint_citation, Toast.LENGTH_LONG).show();
                 break;
 
             case ContactMenu.ACTION_QUOTE:
@@ -718,6 +717,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
                 sb.append(Clipboard.serialize(true, md.isIncoming(), md.getNick() + " " + md.strTime, msg));
                 sb.append("\n-----\n");
                 Clipboard.setClipBoardText(0 == sb.length() ? null : sb.toString());
+                Toast.makeText(General.currentActivity, R.string.hint_citation, Toast.LENGTH_LONG).show();
                 break;
 
             case ContactMenu.COMMAND_PRIVATE:

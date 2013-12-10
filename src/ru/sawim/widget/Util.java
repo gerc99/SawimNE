@@ -8,10 +8,12 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.os.Build;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.LinearLayout;
 import ru.sawim.General;
+import ru.sawim.R;
 import ru.sawim.Scheme;
 
 /**
@@ -22,12 +24,6 @@ import ru.sawim.Scheme;
  * To change this template use File | Settings | File Templates.
  */
 public class Util {
-
-    public static boolean isTablet(Context context) {
-        boolean xlarge = ((context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_XLARGE);
-        boolean large = ((context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_LARGE);
-        return (xlarge || large);
-    }
 
     public static Bitmap avatarBitmap(byte[] buffer) {
         if (buffer == null) return null;

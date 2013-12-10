@@ -1,6 +1,5 @@
 package sawim;
 
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import protocol.Contact;
 import protocol.Protocol;

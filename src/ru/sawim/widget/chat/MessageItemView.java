@@ -27,7 +27,6 @@ public class MessageItemView extends LinearLayout {
         if (paintDivider == null)
             paintDivider = new Paint(Paint.ANTI_ALIAS_FLAG);
         int padding = Util.dipToPixels(context, 5);
-        setPadding(padding, 0, padding, 0);
         setOrientation(VERTICAL);
         setPadding(padding, padding, padding, padding);
         titleItemView.setPadding(0, padding, padding, padding);
@@ -36,7 +35,7 @@ public class MessageItemView extends LinearLayout {
         if (isAddTitleView)
             addViewInLayout(titleItemView, 0, new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 
-        addViewInLayout(msgText, isAddTitleView ? 1 : 0, new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+        addViewInLayout(msgText, isAddTitleView ? 1 : 0, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
     }
 
     @Override
@@ -47,7 +46,7 @@ public class MessageItemView extends LinearLayout {
     }
 
     public void setShowDivider(int color, boolean showDivider) {
-        paintDivider.setColor(color);
         isShowDivider = showDivider;
+        paintDivider.setColor(color);
     }
 }

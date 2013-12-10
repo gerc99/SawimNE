@@ -2,6 +2,7 @@ package ru.sawim.models;
 
 import DrawControls.icons.Icon;
 import android.graphics.Typeface;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -30,14 +31,13 @@ public class MessagesAdapter extends BaseAdapter {
     private Protocol currentProtocol;
     private String currentContact;
 
-    private boolean isRepaint = false;
+    public static boolean isRepaint;
     private boolean isMultiQuote = false;
     private int position = -1;
 
     public void init(Chat chat) {
         currentProtocol = chat.getProtocol();
         currentContact = chat.getContact().getUserId();
-        isRepaint = false;
         refreshList(chat.getMessData());
     }
 
@@ -47,10 +47,6 @@ public class MessagesAdapter extends BaseAdapter {
             items.add(list.get(i));
         }
         notifyDataSetChanged();
-    }
-
-    public void repaintList() {
-        isRepaint = true;
     }
 
     public boolean isMultiQuote() {
