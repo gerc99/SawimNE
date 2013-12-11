@@ -62,21 +62,22 @@ public class StartWindowView extends Fragment {
         signInJabberButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                new LoginDialog(Profile.PROTOCOL_JABBER).show(getActivity().getSupportFragmentManager(), "login");
+                new LoginDialog(Profile.PROTOCOL_JABBER).show(General.currentActivity.getSupportFragmentManager(), "login");
             }
         });
         Button signIntoOtherNetworksButton = (Button) v.findViewById(R.id.sign_into_other_networks);
         signIntoOtherNetworksButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                AlertDialog.Builder builder = new AlertDialog.Builder(General.currentActivity);
                 builder.setCancelable(true);
                 builder.setTitle(R.string.acc_sel_protocol);
                 builder.setItems(Profile.protocolNames, new DialogInterface.OnClickListener() {
 
                     @Override
                     public void onClick(DialogInterface dialog, int item) {
-                        new LoginDialog(Profile.protocolTypes[item]).show(getActivity().getSupportFragmentManager(), "login");
+                        new LoginDialog(Profile.protocolTypes[item])
+                                .show(General.currentActivity.getSupportFragmentManager(), "login");
                     }
                 });
                 builder.create().show();

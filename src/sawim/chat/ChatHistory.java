@@ -1,6 +1,7 @@
 package sawim.chat;
 
 import DrawControls.icons.Icon;
+import android.util.Log;
 import protocol.Contact;
 import protocol.Protocol;
 import sawim.chat.message.Message;
@@ -442,6 +443,7 @@ public final class ChatHistory {
                 }
             }
         } catch (Exception ignored) {
+            Log.e("saveUnreadMessages", ignored.getMessage());
         }
         s.close();
     }

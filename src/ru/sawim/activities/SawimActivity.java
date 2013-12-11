@@ -76,8 +76,7 @@ public class SawimActivity extends ActionBarActivity {
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
         ExternalApi.instance.setActivity(this);
         General.actionBar = getSupportActionBar();
-        if (General.currentActivity == null)
-            General.currentActivity = this;
+        General.currentActivity = this;
         setContentView(R.layout.main);
 
         Logger.removeAllAppenders();

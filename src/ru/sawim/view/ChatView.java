@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
@@ -48,6 +49,8 @@ import sawim.chat.ChatHistory;
 import sawim.chat.MessData;
 import sawim.roster.Roster;
 import sawim.util.JLocale;
+
+import java.lang.reflect.Field;
 
 /**
  * Created with IntelliJ IDEA.
@@ -94,7 +97,6 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
         if (General.currentActivity == null)
             General.currentActivity = (ActionBarActivity) activity;
         handler = new Handler(this);
-        messageEditor = new EditText(activity);
 
         usersImage = new ImageButton(activity);
         chatsImage = new ImageButton(activity);
@@ -102,6 +104,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
         menuButton = new ImageButton(activity);
         smileButton = new ImageButton(activity);
         sendButton = new ImageButton(activity);
+        messageEditor = new EditText(activity);
 
         chatBarLayout = new ChatBarView(activity, usersImage, chatsImage);
         chatListView = new MyListView(activity);
@@ -130,9 +133,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
         return chatBarLayout;
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceStateLog) {
+    private void resetBar() {
         General.actionBar.setDisplayShowTitleEnabled(false);
         General.actionBar.setDisplayShowHomeEnabled(false);
         General.actionBar.setDisplayUseLogoEnabled(false);
@@ -141,8 +142,13 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
             General.actionBar.setDisplayShowCustomEnabled(true);
             General.actionBar.setCustomView(chatBarLayout);
         }
-        updateChatIcon();
+    }
 
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceStateLog) {
+        resetBar();
+        updateChatIcon();
         if (!General.isTablet) {
             nickList = new MyListView(getActivity());
             drawerLayout = new DrawerLayout(getActivity());

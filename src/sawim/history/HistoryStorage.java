@@ -24,7 +24,7 @@ public class HistoryStorage {
 
     public HistoryStorage(Contact contact) {
         this.contact = contact;
-        uniqueUserId = Roster.getInstance().getProtocol(contact).getUniqueUserId(contact);
+        uniqueUserId = contact.getUserId();
         storageName = getRSName();
         //androidStorage = new AndroidHistoryStorage(this);
     }
