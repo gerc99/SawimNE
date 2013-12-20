@@ -8,6 +8,7 @@ import android.widget.LinearLayout;
 import ru.sawim.R;
 import ru.sawim.Scheme;
 import ru.sawim.widget.IcsLinearLayout;
+import ru.sawim.widget.Util;
 
 /**
  * Created with IntelliJ IDEA.
@@ -21,10 +22,11 @@ public class ChatInputBarView extends IcsLinearLayout {
     public ChatInputBarView(Context context, ImageButton menuButton, ImageButton smileButton, EditText messageEditor, ImageButton sendButton) {
         super(context,
                 com.viewpagerindicator.R.attr.vpiTabPageIndicatorStyle);
+        int padding = Util.dipToPixels(context, 5);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         setOrientation(HORIZONTAL);
-        setPadding(5, 5, 5, 5);
-        setDividerPadding(5);
+        setPadding(padding, padding, padding, padding);
+        setDividerPadding(padding);
         setLayoutParams(layoutParams);
 
         LinearLayout.LayoutParams menuButtonLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);

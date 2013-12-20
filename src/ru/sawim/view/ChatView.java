@@ -360,16 +360,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
         if (sharingText != null) chat.message += " " + sharingText;
         messageEditor.setText(chat.message);
 
-        adapter.setPosition(chat.dividerPosition);
-        if (contact.isConference() && chat.dividerPosition == 0)
-            chatListView.setSelection(0);
-        else if ((chat.getHistory() != null && chat.getHistory().getHistorySize() > 0) && chat.dividerPosition == 0)
-            chatListView.setSelection(chat.getMessCount());
-        else
-            if (isLastPosition())
-                chatListView.setSelectionFromTop(chat.scrollPosition + 1, chat.offset);
-            else
-                chatListView.setSelectionFromTop(chat.scrollPosition + 2, chat.offset);
+        setPosition();
         updateChatIcon();
         updateList(contact);
 
@@ -377,6 +368,24 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
             MessagesAdapter.isRepaint = true;
         else
             drawerLayout.setDrawerLockMode(contact.isConference() ? DrawerLayout.LOCK_MODE_UNLOCKED : DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+    }
+
+    private void setPosition() {
+        boolean hasHistory = chat.getHistory() != null && chat.getHistory().getHistorySize() > 0;
+        adapter.setPosition(chat.dividerPosition);
+        if (chat.dividerPosition == 0) {
+            if (contact.isConference() || (!contact.isConference() && !hasHistory)) {
+                chatListView.setSelection(0);
+            } else if (hasHistory) {
+                chatListView.setSelection(chat.getMessCount());
+            }
+        } else {
+            if (isLastPosition()) {
+                chatListView.setSelectionFromTop(chat.scrollPosition + 1, chat.offset);
+            } else {
+                chatListView.setSelectionFromTop(chat.scrollPosition + 2, chat.offset);
+            }
+        }
     }
 
     public boolean isLastPosition() {

@@ -9,7 +9,6 @@ import android.widget.ListView;
 import protocol.ContactMenu;
 import protocol.Protocol;
 import protocol.jabber.*;
-import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.models.MucUsersAdapter;
 import ru.sawim.view.menu.MyMenu;
@@ -37,7 +36,7 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
     }
 
     public void show(final ChatView chatView, ListView nickList) {
-        final FragmentActivity activity = General.currentActivity;
+        final FragmentActivity activity = (FragmentActivity) nickList.getContext();
         usersAdapter.init(activity, (Jabber) protocol, jabberServiceContact);
         nickList.setAdapter(usersAdapter);
         nickList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
