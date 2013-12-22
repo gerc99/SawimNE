@@ -1,12 +1,15 @@
 package ru.sawim.view;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.*;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.MenuItemCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.*;
 import android.view.inputmethod.InputMethodManager;
 import ru.sawim.General;
@@ -14,7 +17,6 @@ import ru.sawim.R;
 import ru.sawim.Scheme;
 import ru.sawim.activities.SawimActivity;
 import ru.sawim.models.form.Forms;
-import ru.sawim.view.preference.EditTextPreference;
 import ru.sawim.view.preference.IconPreferenceScreen;
 import ru.sawim.view.preference.PreferenceFragment;
 import ru.sawim.view.preference.SeekBarPreference;
@@ -59,9 +61,9 @@ public class FormView extends PreferenceFragment implements Forms.OnUpdateForm {
     public void onPrepareOptionsMenu_(Menu menu) {
         menu.clear();
         Drawable acceptImage = getResources().getDrawable(Scheme.isBlack() ? R.drawable.ic_action_accept_light : R.drawable.ic_action_accept_dark);
-        menu.add(Menu.NONE, 1, Menu.NONE, "Save")
-                .setIcon(Forms.getInstance().isAccept() ? acceptImage : getResources().getDrawable(android.R.drawable.ic_menu_save))
-                .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+        MenuItem item = menu.add(Menu.NONE, 1, Menu.NONE, "Save")
+                                .setIcon(Forms.getInstance().isAccept() ? acceptImage : getResources().getDrawable(android.R.drawable.ic_menu_save));
+        MenuItemCompat.setShowAsAction(item, MenuItem.SHOW_AS_ACTION_ALWAYS);
     }
 
     public void onOptionsItemSelected_(MenuItem item) {
@@ -133,14 +135,14 @@ public class FormView extends PreferenceFragment implements Forms.OnUpdateForm {
                 PreferenceCategory preferenceCategory = new PreferenceCategory(getActivity());
                 preferenceCategory.setKey("pc" + position);
                 preferenceCategory.setTitle(getText(c));
-                //preferenceCategory.setSummary("Description of category 1");
                 rootScreen.addPreference(preferenceCategory);
             } else if (Forms.CONTROL_INPUT == c.type) {
                 EditTextPreference editTextPreference = new EditTextPreference(getActivity());
                 editTextPreference.setKey("et" + position);
+                editTextPreference.setTitle(getText(c));
                 editTextPreference.setSummary(getText(c));
                 editTextPreference.setText(c.text);
-                editTextPreference.addTextChangedListener(new TextWatcher() {
+                editTextPreference.getEditText().addTextChangedListener(new TextWatcher() {
 
                     public void afterTextChanged(Editable s) {
                     }
@@ -226,7 +228,6 @@ public class FormView extends PreferenceFragment implements Forms.OnUpdateForm {
                 PreferenceCategory preferenceCategory = new PreferenceCategory(getActivity());
                 preferenceCategory.setKey("pcl" + position);
                 preferenceCategory.setTitle(getText(c));
-                //preferenceCategory.setSummary("Description of category 1");
                 rootScreen.addPreference(preferenceCategory);
             }
         }
