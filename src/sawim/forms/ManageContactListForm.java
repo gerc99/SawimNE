@@ -149,7 +149,7 @@ public final class ManageContactListForm implements FormListener, TextBoxView.Te
 
             case RENAME_GROUP:
                 if (null == group) {
-                    Forms form = new Forms("rename_group", this);
+                    Forms form = new Forms("rename_group", this, true);
                     addGroup(form, getGroups(Group.MODE_EDITABLE));
                     form.addTextField(GROUP_NEW_NAME, "new_group_name", "");
                     form.show();
@@ -160,7 +160,7 @@ public final class ManageContactListForm implements FormListener, TextBoxView.Te
 
             case DEL_GROUP:
                 if (null == group) {
-                    Forms form = new Forms("del_group", this);
+                    Forms form = new Forms("del_group", this, true);
                     addGroup(form, getGroups(Group.MODE_REMOVABLE));
                     form.show();
                 } else {

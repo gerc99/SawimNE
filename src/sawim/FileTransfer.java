@@ -161,7 +161,7 @@ public final class FileTransfer implements FileBrowserListener,
     }
 
     private void askForNameDesc() {
-        name_Desc = new Forms("name_desc", this);
+        name_Desc = new Forms("name_desc", this, true);
         name_Desc.addString("filename", filename);
         name_Desc.addTextField(descriptionField, "description", "");
         String items = "jimm.net.ru|www.jimm.net.ru|jimm.org";

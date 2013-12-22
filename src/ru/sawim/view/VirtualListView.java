@@ -140,13 +140,11 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
         menu.clear();
         if (list.getBuildOptionsMenu() != null)
             list.getBuildOptionsMenu().onCreateOptionsMenu(menu);
-        super.onPrepareOptionsMenu(menu);
     }
 
-    public boolean onOptionsItemSelected_(MenuItem item) {
+    public void onOptionsItemSelected_(MenuItem item) {
         if (list.getBuildOptionsMenu() != null)
             list.getBuildOptionsMenu().onOptionsItemSelected(item);
-        return super.onOptionsItemSelected(item);
     }
 
     @Override

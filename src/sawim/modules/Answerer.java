@@ -63,7 +63,7 @@ public final class Answerer implements FormListener {
             public void onContextItemSelected(int listItem, int itemMenuId) {
                 switch (itemMenuId) {
                     case MENU_EDIT:
-                        form = new Forms("answerer_dictionary", Answerer.this);
+                        form = new Forms("answerer_dictionary", Answerer.this, false);
                         selItem = listItem;
                         form.clearForm();
                         form.addTextField(FORM_EDIT_QUESTION, JLocale.getString("answerer_question"), getItemQuestion(listItem));
@@ -95,7 +95,7 @@ public final class Answerer implements FormListener {
             public void onOptionsItemSelected(MenuItem item) {
                 switch (item.getItemId()) {
                     case MENU_ADD:
-                        form = new Forms("answerer_dictionary", Answerer.this);
+                        form = new Forms("answerer_dictionary", Answerer.this, false);
                         dictionary.addElement(" = ");
                         selItem = dictionary.size() - 1;
                         form.clearForm();

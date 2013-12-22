@@ -312,6 +312,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     public void onResume() {
         super.onResume();
         resume();
+        getActivity().supportInvalidateOptionsMenu();
     }
 
     public void resume() {

@@ -231,7 +231,7 @@ public class SeekBarPreference extends Preference implements SeekBar.OnSeekBarCh
      *
      * @see #setSummary(String)
      */
-    public static abstract class AbstractSeekBarListener implements Preference.OnPreferenceChangeListener {
+    private static abstract class AbstractSeekBarListener implements Preference.OnPreferenceChangeListener {
 
         SeekBarPreference pref;
         /**

@@ -228,7 +228,7 @@ public final class AffiliationListConf implements FormListener, TextBoxView.Text
     }
 
     private void showOptionsForm(String jid, String reason) {
-        enterData = new Forms("conf_aff_list", this);
+        enterData = new Forms("conf_aff_list", this, true);
         enterData.addTextField(JID, "jid", jid);
         enterData.addSelector(AFFILIATION, "affiliation", affiliationList, getAffiliation());
         enterData.addTextField(REASON, "reason", reason);

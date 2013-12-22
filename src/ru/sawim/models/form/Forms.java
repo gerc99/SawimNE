@@ -37,6 +37,7 @@ public class Forms {
     private ControlStateListener controlListener;
     private CharSequence caption;
     private static Forms instance;
+    private boolean isAccept;
 
     public static class Control {
         public int id;
@@ -52,10 +53,11 @@ public class Forms {
         public Drawable image;
     }
 
-    public Forms(String caption_, FormListener l) {
+    public Forms(String caption_, FormListener l, boolean isAccept) {
         instance = this;
         caption = JLocale.getString(caption_);
         formListener = l;
+        this.isAccept = isAccept;
     }
 
     public static Forms getInstance() {
@@ -72,6 +74,10 @@ public class Forms {
 
     public FormListener getFormListener() {
         return formListener;
+    }
+
+    public boolean isAccept() {
+        return isAccept;
     }
 
     public void setCaption(String caption) {

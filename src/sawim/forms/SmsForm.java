@@ -51,7 +51,7 @@ public class SmsForm implements FormListener {
         if (0 == agents.length()) {
             return;
         }
-        form = new Forms("send_sms", this);
+        form = new Forms("send_sms", this, true);
         if (null == phones) {
             form.addTextField(PHONE, "phone", "");
 

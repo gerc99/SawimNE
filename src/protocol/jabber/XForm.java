@@ -25,7 +25,7 @@ final class XForm {
     }
 
     void init(String caption, FormListener listener) {
-        form = new Forms(caption, listener);
+        form = new Forms(caption, listener, true);
     }
 
     public boolean isWaiting() {

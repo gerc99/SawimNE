@@ -38,7 +38,7 @@ public final class AdHoc implements FormListener, ControlStateListener {
     }
 
     public void show() {
-        commandsListForm = new Forms(JLocale.getString("adhoc"), this);
+        commandsListForm = new Forms(JLocale.getString("adhoc"), this, true);
         updateForm(false);
         commandsListForm.setControlStateListener(this);
         commandsListForm.show();

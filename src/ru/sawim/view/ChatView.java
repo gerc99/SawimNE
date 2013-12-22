@@ -91,6 +91,9 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
     private static final int UPDATE_CHAT = 0;
     private static final int UPDATE_MUC_LIST = 1;
 
+    public ChatView() {
+    }
+
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -648,7 +651,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
         super.onPrepareOptionsMenu(menu);
     }
 
-    public boolean onOptionsItemSelected_(MenuItem item) {
+    public void onOptionsItemSelected_(MenuItem item) {
         switch (item.getItemId()) {
             case ContactMenu.MENU_MULTI_CITATION:
                 if (adapter.isMultiQuote()) {
@@ -684,7 +687,6 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
             default:
                 new ContactMenu(protocol, contact).doAction(item.getItemId());
         }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override

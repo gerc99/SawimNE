@@ -221,7 +221,7 @@ public class SawimActivity extends ActionBarActivity {
             if (formView.hasBack())
                 back();
         } else super.onBackPressed();
-        supportInvalidateOptionsMenu();
+        //supportInvalidateOptionsMenu();
         if (getSupportFragmentManager().findFragmentById(R.id.roster_fragment) != null)
             ((RosterView) getSupportFragmentManager().findFragmentById(R.id.roster_fragment)).resume();
     }
@@ -279,13 +279,15 @@ public class SawimActivity extends ActionBarActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
+        Log.e(LOG_TAG, "onPrepareOptionsMenu");
         ChatView chatView = (ChatView) getSupportFragmentManager().findFragmentByTag(ChatView.TAG);
         ChatView tabletChatView = (ChatView) getSupportFragmentManager().findFragmentById(R.id.chat_fragment);
         VirtualListView virtualListView = (VirtualListView) getSupportFragmentManager().findFragmentByTag(VirtualListView.TAG);
         FormView formView = (FormView) getSupportFragmentManager().findFragmentByTag(FormView.TAG);
         menu.clear();
         if (formView != null) {
-            return false;
+            formView.onPrepareOptionsMenu_(menu);
+            return true;
         } else if (chatView != null) {
             chatView.onPrepareOptionsMenu_(menu);
             return true;
@@ -354,14 +356,20 @@ public class SawimActivity extends ActionBarActivity {
         ChatView chatView = (ChatView) getSupportFragmentManager().findFragmentByTag(ChatView.TAG);
         ChatView tabletChatView = (ChatView) getSupportFragmentManager().findFragmentById(R.id.chat_fragment);
         VirtualListView virtualListView = (VirtualListView) getSupportFragmentManager().findFragmentByTag(VirtualListView.TAG);
-        if (virtualListView != null) {
-            return virtualListView.onOptionsItemSelected_(item);
+        FormView formView = (FormView) getSupportFragmentManager().findFragmentByTag(FormView.TAG);
+        if (formView != null) {
+            formView.onOptionsItemSelected_(item);
+            return true;
+        } else if (virtualListView != null) {
+            virtualListView.onOptionsItemSelected_(item);
+            return true;
         } else if (tabletChatView != null && tabletChatView.isOpenMenu()) {
             tabletChatView.onOptionsItemSelected_(item);
             tabletChatView.setOpenMenu(false);
             return true;
         } else if (chatView != null) {
-            return chatView.onOptionsItemSelected_(item);
+            chatView.onOptionsItemSelected_(item);
+            return true;
         }
         Protocol p = Roster.getInstance().getCurrentProtocol();
         switch (item.getItemId()) {

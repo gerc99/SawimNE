@@ -1,30 +1,23 @@
 package ru.sawim.view;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.res.TypedArray;
-import android.os.Build;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.*;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.*;
 import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.Scheme;
 import ru.sawim.activities.SawimActivity;
 import ru.sawim.models.form.Forms;
+import ru.sawim.view.preference.EditTextPreference;
 import ru.sawim.view.preference.IconPreferenceScreen;
 import ru.sawim.view.preference.PreferenceFragment;
 import ru.sawim.view.preference.SeekBarPreference;
-import ru.sawim.widget.MySpinner;
-import ru.sawim.widget.Util;
 
 import java.util.List;
 
@@ -59,9 +52,23 @@ public class FormView extends PreferenceFragment implements Forms.OnUpdateForm {
 
         rootScreen = getPreferenceManager().createPreferenceScreen(getActivity());
         setPreferenceScreen(rootScreen);
-
         buildList();
         getActivity().supportInvalidateOptionsMenu();
+    }
+
+    public void onPrepareOptionsMenu_(Menu menu) {
+        menu.clear();
+        Drawable acceptImage = getResources().getDrawable(Scheme.isBlack() ? R.drawable.ic_action_accept_light : R.drawable.ic_action_accept_dark);
+        menu.add(Menu.NONE, 1, Menu.NONE, "Save")
+                .setIcon(Forms.getInstance().isAccept() ? acceptImage : getResources().getDrawable(android.R.drawable.ic_menu_save))
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+    }
+
+    public void onOptionsItemSelected_(MenuItem item) {
+        if (item.getItemId() == 1) {
+            if (Forms.getInstance().getFormListener() != null)
+                Forms.getInstance().getFormListener().formAction(Forms.getInstance(), true);
+        }
     }
 
     public static void show() {
@@ -102,7 +109,6 @@ public class FormView extends PreferenceFragment implements Forms.OnUpdateForm {
                 else
                     getFragmentManager().popBackStack();
                 hideKeyboard();
-                General.currentActivity.supportInvalidateOptionsMenu();
             }
         });
     }
@@ -132,9 +138,9 @@ public class FormView extends PreferenceFragment implements Forms.OnUpdateForm {
             } else if (Forms.CONTROL_INPUT == c.type) {
                 EditTextPreference editTextPreference = new EditTextPreference(getActivity());
                 editTextPreference.setKey("et" + position);
-                editTextPreference.setTitle(getText(c));
+                editTextPreference.setSummary(getText(c));
                 editTextPreference.setText(c.text);
-                editTextPreference.getEditText().addTextChangedListener(new TextWatcher() {
+                editTextPreference.addTextChangedListener(new TextWatcher() {
 
                     public void afterTextChanged(Editable s) {
                     }
@@ -152,7 +158,7 @@ public class FormView extends PreferenceFragment implements Forms.OnUpdateForm {
                 CheckBoxPreference checkBoxPreference = new CheckBoxPreference(getActivity());
                 checkBoxPreference.setKey("cb" + position);
                 checkBoxPreference.setTitle(getText(c));
-                //checkBoxPreference.setSummary(c.description);
+                checkBoxPreference.setSummary(getText(c));
                 checkBoxPreference.setChecked(c.selected);
                 checkBoxPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                     public boolean onPreferenceClick(Preference preference) {
