@@ -1,19 +1,17 @@
 package ru.sawim.models;
 
-import DrawControls.icons.Icon;
 import android.graphics.Typeface;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import protocol.Protocol;
 import ru.sawim.General;
+import ru.sawim.R;
 import ru.sawim.Scheme;
 import ru.sawim.text.TextLinkClickListener;
 import ru.sawim.widget.chat.MessageItemView;
 import sawim.chat.Chat;
 import sawim.chat.MessData;
-import sawim.chat.message.Message;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,6 +74,18 @@ public class MessagesAdapter extends BaseAdapter {
         return i;
     }
 
+    public void onTimeStampShow(final View view) {
+        ((MessageItemView)view).titleItemView.setTimeStampVisible(true);
+        view.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                ((MessageItemView)view).titleItemView.setTimeStampVisible(false);
+                notifyDataSetChanged();
+            }
+        }, 1000);
+        notifyDataSetChanged();
+    }
+
     @Override
     public View getView(int index, View row, ViewGroup viewGroup) {
         final MessData mData = items.get(index);
@@ -106,12 +116,19 @@ public class MessagesAdapter extends BaseAdapter {
                 item.msgText.setTextColor(Scheme.getColor(Scheme.THEME_CHAT_INMSG));
             }
         } else {
-            if (mData.iconIndex != Message.ICON_NONE) {
+            item.setBackgroundResource(incoming ? R.drawable.msg_in : R.drawable.msg_out);
+            float displayDensity = General.getInstance().getDisplayDensity();
+            if (incoming) {
+                item.setPadding((int)(19 * displayDensity), (int)(7 * displayDensity), (int)(9 * displayDensity), (int)(9 * displayDensity));
+            } else {
+                item.setPadding((int)(11 * displayDensity), (int)(7 * displayDensity), (int)(18 * displayDensity), (int)(9 * displayDensity));
+            }
+            /*if (mData.iconIndex != Message.ICON_NONE) {
                 Icon icon = Message.msgIcons.iconAt(mData.iconIndex);
                 if (icon != null) {
                     item.titleItemView.setMsgImage(icon.getImage());
                 }
-            }
+            }*/
 
             item.titleItemView.setNick(Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG),
                     General.getFontSize(), Typeface.DEFAULT_BOLD, nick);
@@ -124,9 +141,9 @@ public class MessagesAdapter extends BaseAdapter {
             item.msgText.setLinkTextColor(0xff35B6E5);
             item.msgText.setText(parsedText);
         }
-        //item.msgText.repaint();
         item.setShowDivider(Scheme.getColor(Scheme.THEME_TEXT), position == index && index > 0 && position != getCount());
         item.titleItemView.repaint();
+        //item.msgText.repaint();
         return item;
     }
 }

@@ -36,6 +36,7 @@ import ru.sawim.R;
 import ru.sawim.Scheme;
 import ru.sawim.models.ChatsAdapter;
 import ru.sawim.models.MessagesAdapter;
+import ru.sawim.view.listener.SwipeDismissListViewTouchListener;
 import ru.sawim.widget.MyListView;
 import ru.sawim.widget.Util;
 import ru.sawim.widget.chat.ChatBarView;
@@ -499,6 +500,17 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
         chatListView.setStackFromBottom(true);
         chatListView.setTranscriptMode(ListView.TRANSCRIPT_MODE_NORMAL);
         chatListView.setOnCreateContextMenuListener(this);
+        SwipeDismissListViewTouchListener touchListener =
+                new SwipeDismissListViewTouchListener(
+                        chatListView,
+                        new SwipeDismissListViewTouchListener.DismissCallbacks() {
+                            @Override
+                            public boolean canDismiss(View v, int position) {
+                                adapter.onTimeStampShow(v);
+                                return true;
+                            }
+                        });
+        chatListView.setOnTouchListener(touchListener);
         chatListView.setOnItemClickListener(chatClick);
         chatListView.setFocusable(true);
     }
@@ -581,36 +593,36 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
         public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
             MessData mData = (MessData) adapterView.getAdapter().getItem(position);
             if (adapter.isMultiQuote()) {
-                mData.setMarked(!mData.isMarked());
-                StringBuffer sb = new StringBuffer();
-                for (int i = 0; i < chat.getMessData().size(); ++i) {
-                    MessData messData = chat.getMessageDataByIndex(i);
-                    if (messData.isMarked()) {
-                        CharSequence msg = messData.getText();
-                        if (messData.isMe())
-                            msg = "*" + messData.getNick() + " " + msg;
-                        sb.append(Clipboard.serialize(false, messData.isIncoming(), messData.getNick() + " " + messData.strTime, msg));
-                        sb.append("\n---\n");
+                    mData.setMarked(!mData.isMarked());
+                    StringBuffer sb = new StringBuffer();
+                    for (int i = 0; i < chat.getMessData().size(); ++i) {
+                        MessData messData = chat.getMessageDataByIndex(i);
+                        if (messData.isMarked()) {
+                            CharSequence msg = messData.getText();
+                            if (messData.isMe())
+                                msg = "*" + messData.getNick() + " " + msg;
+                            sb.append(Clipboard.serialize(false, messData.isIncoming(), messData.getNick() + " " + messData.strTime, msg));
+                            sb.append("\n---\n");
+                        }
                     }
-                }
-                Clipboard.setClipBoardText(0 == sb.length() ? null : sb.toString());
-                adapter.notifyDataSetChanged();
-            } else {
-                if (contact instanceof JabberServiceContact) {
-                    JabberServiceContact jabberServiceContact = ((JabberServiceContact) contact);
-                    if (jabberServiceContact.getContact(mData.getNick()) == null && !jabberServiceContact.getName().equals(mData.getNick())) {
-                        Toast.makeText(General.currentActivity, getString(R.string.contact_walked), Toast.LENGTH_LONG).show();
-                    }
-                }
-                setText(chat.onMessageSelected(mData));
-                if (General.isTablet) {
-                    if (nickList.getVisibility() == View.VISIBLE && getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
-                        nickList.setVisibility(View.GONE);
+                    Clipboard.setClipBoardText(0 == sb.length() ? null : sb.toString());
+                    adapter.notifyDataSetChanged();
                 } else {
-                    if (drawerLayout.isDrawerOpen(nickList) && getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
-                        drawerLayout.closeDrawer(nickList);
+                    if (contact instanceof JabberServiceContact) {
+                        JabberServiceContact jabberServiceContact = ((JabberServiceContact) contact);
+                        if (jabberServiceContact.getContact(mData.getNick()) == null && !jabberServiceContact.getName().equals(mData.getNick())) {
+                            Toast.makeText(General.currentActivity, getString(R.string.contact_walked), Toast.LENGTH_LONG).show();
+                        }
+                    }
+                    setText(chat.onMessageSelected(mData));
+                    if (General.isTablet) {
+                        if (nickList.getVisibility() == View.VISIBLE && getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
+                            nickList.setVisibility(View.GONE);
+                    } else {
+                        if (drawerLayout.isDrawerOpen(nickList) && getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
+                            drawerLayout.closeDrawer(nickList);
+                    }
                 }
-            }
         }
     };
 

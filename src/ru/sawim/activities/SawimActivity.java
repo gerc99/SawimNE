@@ -279,7 +279,6 @@ public class SawimActivity extends ActionBarActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        Log.e(LOG_TAG, "onPrepareOptionsMenu");
         ChatView chatView = (ChatView) getSupportFragmentManager().findFragmentByTag(ChatView.TAG);
         ChatView tabletChatView = (ChatView) getSupportFragmentManager().findFragmentById(R.id.chat_fragment);
         VirtualListView virtualListView = (VirtualListView) getSupportFragmentManager().findFragmentByTag(VirtualListView.TAG);

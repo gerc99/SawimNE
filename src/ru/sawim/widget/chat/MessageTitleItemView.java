@@ -7,6 +7,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.text.TextPaint;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import ru.sawim.General;
@@ -21,7 +22,6 @@ import ru.sawim.widget.Util;
  * To change this template use File | Settings | File Templates.
  */
 public class MessageTitleItemView extends View {
-    private BitmapDrawable msgImage;
     private String msgTimeText;
     private String nickText;
     private int nickColor;
@@ -31,11 +31,10 @@ public class MessageTitleItemView extends View {
     private int nickSize;
     private int msgTimeSize;
 
-    private int nickX;
     private float msgTimeX;
-    private int msgIconY;
     private int textY;
     private static TextPaint textPaint;
+    private boolean isTimeStampVisible;
 
     public MessageTitleItemView(Context context) {
         super(context);
@@ -69,8 +68,7 @@ public class MessageTitleItemView extends View {
             result = specSize;
         } else {
             int textHeight = (-ascent + descent) + getPaddingTop() + getPaddingBottom();
-            int iconHeight = msgImage == null ? 0 : msgImage.getBitmap().getHeight();
-             result = Math.max(textHeight, iconHeight);
+             result = textHeight;
             if (specMode == MeasureSpec.AT_MOST) {
                 result = Math.min(result, specSize);
             }
@@ -86,16 +84,8 @@ public class MessageTitleItemView extends View {
     }
 
     private void computeCoordinates(int viewWidth, int viewHeight) {
-        int y = viewHeight >> 1;
-        if (msgImage != null)
-            msgIconY = y - (msgImage.getBitmap().getHeight() >> 1);
-        nickX = msgImage == null ? getPaddingLeft() : msgImage.getBitmap().getWidth() + getPaddingRight();
         msgTimeX = viewWidth - getPaddingRight();
         textY = getPaddingTop() - (int) textPaint.ascent();
-    }
-
-    public void setMsgImage(BitmapDrawable msgImage) {
-        this.msgImage = msgImage;
     }
 
     public void setNick(int nickColor, int nickSize, Typeface nickTypeface, String nickText) {
@@ -124,21 +114,24 @@ public class MessageTitleItemView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        if (msgImage != null)
-            canvas.drawBitmap(msgImage.getBitmap(), 0, msgIconY, null);
         if (nickText != null) {
             textPaint.setColor(nickColor);
             textPaint.setTextAlign(Paint.Align.LEFT);
             setTextSize(nickSize);
             textPaint.setTypeface(nickTypeface);
-            canvas.drawText(nickText, nickX, textY, textPaint);
+            canvas.drawText(nickText, getPaddingLeft(), textY, textPaint);
         }
-        if (msgTimeText != null) {
+        if (msgTimeText != null && isTimeStampVisible) {
             textPaint.setColor(msgTimeColor);
             textPaint.setTextAlign(Paint.Align.RIGHT);
             setTextSize(msgTimeSize);
             textPaint.setTypeface(msgTimeTypeface);
             canvas.drawText(msgTimeText, msgTimeX, textY, textPaint);
         }
+    }
+
+    public void setTimeStampVisible(boolean timeStampVisible) {
+        isTimeStampVisible = timeStampVisible;
+        invalidate();
     }
 }

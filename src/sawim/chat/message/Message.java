@@ -17,10 +17,7 @@ public abstract class Message {
     public static final int ICON_OUT_MSG = 5;
     public static final int ICON_OUT_MSG_FROM_SERVER = 6;
     public static final int ICON_OUT_MSG_FROM_CLIENT = 7;
-    public static final int ICON_MSG_TRACK = 8;
 
-    public static final int NOTIFY_OFF = -1;
-    public static final int NOTIFY_NONE = ICON_OUT_MSG;
     public static final int NOTIFY_FROM_SERVER = ICON_OUT_MSG_FROM_SERVER;
     public static final int NOTIFY_FROM_CLIENT = ICON_OUT_MSG_FROM_CLIENT;
 

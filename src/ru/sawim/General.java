@@ -6,6 +6,7 @@ import android.content.res.Resources;
 import android.graphics.drawable.BitmapDrawable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import sawim.Options;
 import sawim.Updater;
 import sawim.chat.ChatHistory;
@@ -48,6 +49,7 @@ public class General {
     public static boolean hideIconsClient;
     public static boolean showStatusLine;
     public static int sortType;
+    private float displayDensity;
 
     public static General getInstance() {
         return instance;
@@ -83,6 +85,7 @@ public class General {
             DebugLog.instance.activate();
         }
         DebugLog.startTests();
+        displayDensity = General.getResources(General.currentActivity).getDisplayMetrics().density;
     }
 
     public static void updateOptions() {
@@ -171,6 +174,10 @@ public class General {
     public void setConfigurationChanged(OnConfigurationChanged cC) {
         if (configurationChanged == null)
             configurationChanged = cC;
+    }
+
+    public float getDisplayDensity() {
+        return displayDensity;
     }
 
     public interface OnConfigurationChanged {

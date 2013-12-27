@@ -3,7 +3,16 @@ package ru.sawim.widget.chat;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.support.v4.view.MotionEventCompat;
+import android.support.v4.view.ViewConfigurationCompat;
+import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewConfiguration;
+import android.widget.AbsListView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 import ru.sawim.widget.Util;
 
 /**
@@ -31,11 +40,10 @@ public class MessageItemView extends LinearLayout {
         setPadding(padding, padding, padding, padding);
         titleItemView.setPadding(0, padding, padding, padding);
         msgText.setPadding(0, 0, 0, padding);
-
         if (isAddTitleView)
-            addViewInLayout(titleItemView, 0, new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+            addViewInLayout(titleItemView, 0, new AbsListView.LayoutParams(AbsListView.LayoutParams.WRAP_CONTENT, AbsListView.LayoutParams.WRAP_CONTENT));
 
-        addViewInLayout(msgText, isAddTitleView ? 1 : 0, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        addViewInLayout(msgText, isAddTitleView ? 1 : 0, new AbsListView.LayoutParams(AbsListView.LayoutParams.WRAP_CONTENT, AbsListView.LayoutParams.WRAP_CONTENT));
     }
 
     @Override
