@@ -116,7 +116,9 @@ public class MessagesAdapter extends BaseAdapter {
                 item.msgText.setTextColor(Scheme.getColor(Scheme.THEME_CHAT_INMSG));
             }
         } else {
-            item.setBackgroundResource(incoming ? R.drawable.msg_in : R.drawable.msg_out);
+            item.setBackgroundResource(incoming ?
+                    (Scheme.isBlack() ? R.drawable.msg_in_dark : R.drawable.msg_in)
+                    : (Scheme.isBlack() ? R.drawable.msg_out_dark : R.drawable.msg_out));
             float displayDensity = General.getInstance().getDisplayDensity();
             if (incoming) {
                 item.setPadding((int)(19 * displayDensity), (int)(7 * displayDensity), (int)(9 * displayDensity), (int)(9 * displayDensity));
