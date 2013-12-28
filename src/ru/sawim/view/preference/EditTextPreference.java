@@ -1,14 +1,15 @@
 package ru.sawim.view.preference;
 
 import android.content.Context;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Typeface;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.preference.Preference;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -63,6 +64,7 @@ public class EditTextPreference extends Preference {
             public void onClick(View v) {
                 editTextView.setVisibility(View.VISIBLE);
                 editTextView.requestFocus();
+                showKeyboard(editTextView);
             }
         });
         editTextView.setText(getText());
@@ -71,6 +73,14 @@ public class EditTextPreference extends Preference {
         layout.addView(textView);
         layout.addView(editTextView);
         ((ViewGroup)view).addView(layout);
+    }
+
+    private void showKeyboard(View view) {
+        Configuration conf = Resources.getSystem().getConfiguration();
+        if (conf.hardKeyboardHidden != Configuration.HARDKEYBOARDHIDDEN_NO) {
+            InputMethodManager keyboard = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            keyboard.showSoftInput(view, InputMethodManager.SHOW_FORCED);
+        }
     }
 
     public void addTextChangedListener(TextWatcher textWatcher) {

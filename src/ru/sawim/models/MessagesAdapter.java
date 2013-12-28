@@ -12,6 +12,7 @@ import ru.sawim.text.TextLinkClickListener;
 import ru.sawim.widget.chat.MessageItemView;
 import sawim.chat.Chat;
 import sawim.chat.MessData;
+import sawim.chat.message.Message;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,6 +76,7 @@ public class MessagesAdapter extends BaseAdapter {
     }
 
     public void onTimeStampShow(final View view) {
+        if (((MessageItemView)view).titleItemView == null) return;
         ((MessageItemView)view).titleItemView.setTimeStampVisible(true);
         view.postDelayed(new Runnable() {
             @Override
@@ -125,12 +127,9 @@ public class MessagesAdapter extends BaseAdapter {
             } else {
                 item.setPadding((int)(11 * displayDensity), (int)(7 * displayDensity), (int)(18 * displayDensity), (int)(9 * displayDensity));
             }
-            /*if (mData.iconIndex != Message.ICON_NONE) {
-                Icon icon = Message.msgIcons.iconAt(mData.iconIndex);
-                if (icon != null) {
-                    item.titleItemView.setMsgImage(icon.getImage());
-                }
-            }*/
+            if (mData.getIconIndex() == Message.ICON_OUT_MSG_FROM_CLIENT) {
+                item.titleItemView.setMsgImage(General.messageIconCheck);
+            }
 
             item.titleItemView.setNick(Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG),
                     General.getFontSize(), Typeface.DEFAULT_BOLD, nick);

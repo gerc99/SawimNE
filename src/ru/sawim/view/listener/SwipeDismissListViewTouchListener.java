@@ -218,7 +218,8 @@ public class SwipeDismissListViewTouchListener implements View.OnTouchListener {
                 }
                 if (dismiss && mDownPosition != ListView.INVALID_POSITION) {
                     // dismiss
-                    mCallbacks.canDismiss(mDownView, mDownPosition);
+                    if (mDownView != null)
+                        mCallbacks.canDismiss(mDownView, mDownPosition);
                 } else {
                     // cancel
                 }

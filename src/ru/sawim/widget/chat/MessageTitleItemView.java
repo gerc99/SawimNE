@@ -22,6 +22,7 @@ import ru.sawim.widget.Util;
  * To change this template use File | Settings | File Templates.
  */
 public class MessageTitleItemView extends View {
+
     private String msgTimeText;
     private String nickText;
     private int nickColor;
@@ -30,6 +31,8 @@ public class MessageTitleItemView extends View {
     private Typeface msgTimeTypeface;
     private int nickSize;
     private int msgTimeSize;
+    private BitmapDrawable msgImage;
+    private int msgIconY;
 
     private float msgTimeX;
     private int textY;
@@ -68,7 +71,8 @@ public class MessageTitleItemView extends View {
             result = specSize;
         } else {
             int textHeight = (-ascent + descent) + getPaddingTop() + getPaddingBottom();
-             result = textHeight;
+            int iconHeight = msgImage == null ? 0 : msgImage.getBitmap().getHeight();
+            result = Math.max(textHeight, iconHeight);
             if (specMode == MeasureSpec.AT_MOST) {
                 result = Math.min(result, specSize);
             }
@@ -84,6 +88,9 @@ public class MessageTitleItemView extends View {
     }
 
     private void computeCoordinates(int viewWidth, int viewHeight) {
+        int y = viewHeight >> 1;
+        if (msgImage != null)
+            msgIconY = y - (msgImage.getBitmap().getHeight() >> 1);
         msgTimeX = viewWidth - getPaddingRight();
         textY = getPaddingTop() - (int) textPaint.ascent();
     }
@@ -100,6 +107,10 @@ public class MessageTitleItemView extends View {
         this.msgTimeSize = msgTimeSize;
         this.msgTimeTypeface = msgTimeTypeface;
         this.msgTimeText = msgTimeText;
+    }
+
+    public void setMsgImage(BitmapDrawable msgImage) {
+        this.msgImage = msgImage;
     }
 
     public void repaint() {
@@ -128,6 +139,8 @@ public class MessageTitleItemView extends View {
             textPaint.setTypeface(msgTimeTypeface);
             canvas.drawText(msgTimeText, msgTimeX, textY, textPaint);
         }
+        if (msgImage != null && !isTimeStampVisible)
+            canvas.drawBitmap(msgImage.getBitmap(), msgTimeX - msgImage.getBitmap().getWidth(), msgIconY, null);
     }
 
     public void setTimeStampVisible(boolean timeStampVisible) {

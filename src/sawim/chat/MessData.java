@@ -5,6 +5,7 @@ import ru.sawim.General;
 import ru.sawim.Scheme;
 import ru.sawim.text.TextFormatter;
 import ru.sawim.widget.chat.MessageItemView;
+import sawim.chat.message.Message;
 import sawim.comm.Util;
 
 public final class MessData {
@@ -12,7 +13,7 @@ public final class MessData {
     private long time;
     private String nick;
     public String strTime;
-    public int iconIndex;
+    private int iconIndex = Message.ICON_NONE;
     private short rowData;
     private final boolean confHighLight;
     private boolean isHighLight;
@@ -28,12 +29,11 @@ public final class MessData {
     public static final short PRESENCE = 32;
     public static final short MARKED = 64;
 
-    public MessData(Contact currentContact, long time, String text, String nick, short flags, int iconIndex, boolean highLight) {
+    public MessData(Contact currentContact, long time, String text, String nick, short flags, boolean highLight) {
         isHighLight = highLight;
         this.nick = nick;
         this.time = time;
         this.rowData = flags;
-        this.iconIndex = iconIndex;
         boolean today = (General.getCurrentGmtTime() - 24 * 60 * 60 < time);
         strTime = Util.getLocalDateString(time, today);
 
@@ -90,5 +90,13 @@ public final class MessData {
         if (confHighLight)
             messColor = Scheme.THEME_CHAT_HIGHLIGHT_MSG;
         return messColor;
+    }
+
+    public int getIconIndex() {
+        return iconIndex;
+    }
+
+    public void setIconIndex(int iconIndex) {
+        this.iconIndex = iconIndex;
     }
 }

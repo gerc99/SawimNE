@@ -510,6 +510,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
                                 return true;
                             }
                         });
+        chatListView.setOnScrollListener(touchListener.makeScrollListener());
         chatListView.setOnTouchListener(touchListener);
         chatListView.setOnItemClickListener(chatClick);
         chatListView.setFocusable(true);

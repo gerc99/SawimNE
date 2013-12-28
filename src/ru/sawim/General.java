@@ -3,6 +3,7 @@ package ru.sawim;
 import DrawControls.icons.ImageList;
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
@@ -43,7 +44,8 @@ public class General {
     public static ActionBarActivity currentActivity;
     public static ActionBar actionBar;
     private static Resources resources;
-    public static boolean isTablet = SawimApplication.getContext().getResources().getBoolean(R.bool.is_tablet);
+    public static boolean isTablet = getResources(SawimApplication.getContext()).getBoolean(R.bool.is_tablet);
+    public static BitmapDrawable messageIconCheck = (BitmapDrawable) getResources(SawimApplication.getContext()).getDrawable(R.drawable.msg_check);
     private boolean paused = true;
     private static int fontSize;
     public static boolean hideIconsClient;

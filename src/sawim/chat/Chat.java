@@ -83,24 +83,7 @@ public final class Chat {
     }
 
     public void addFileProgress(String caption, String text) {
-        addMessage(new MessData(contact, General.getCurrentGmtTime(), text, caption, MessData.PROGRESS, Message.ICON_NONE, false));
-    }
-
-    private int getIcon(Message message, boolean incoming, boolean isHighlight) {
-        if (message instanceof SystemNotice) {
-            int type = ((SystemNotice) message).getSysnoteType();
-            if (SystemNotice.SYS_NOTICE_MESSAGE == type) {
-                return Message.ICON_NONE;
-            }
-            return Message.ICON_SYSREQ;
-        }
-        if (incoming) {
-            if (!contact.isSingleUserContact() && !isHighlight) {
-                return Message.ICON_IN_MSG;
-            }
-            return Message.ICON_IN_MSG_HI;
-        }
-        return Message.ICON_OUT_MSG;
+        addMessage(new MessData(contact, General.getCurrentGmtTime(), text, caption, MessData.PROGRESS, false));
     }
 
     public String getMyName() {
@@ -399,7 +382,7 @@ public final class Chat {
             flags |= MessData.SERVICE;
         }
 
-        final MessData mData = new MessData(contact, message.getNewDate(), messageText, from, flags, getIcon(message, incoming, isHighlight), isHighlight);
+        final MessData mData = new MessData(contact, message.getNewDate(), messageText, from, flags, isHighlight);
         if (!incoming) {
             message.setVisibleIcon(mData);
         }
@@ -414,7 +397,7 @@ public final class Chat {
         if (getMessCount() <= 1)
             ChatHistory.instance.registerChat(this);
         String messageText = message.getProcessedText();
-        addMessage(new MessData(contact, message.getNewDate(), messageText, message.getName(), MessData.PRESENCE, Message.ICON_NONE, false));
+        addMessage(new MessData(contact, message.getNewDate(), messageText, message.getName(), MessData.PRESENCE, false));
         if (!isVisibleChat()) {
             contact.updateChatState(this);
             ChatHistory.instance.updateChatList();

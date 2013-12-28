@@ -14,7 +14,6 @@ public abstract class Message {
     public static final int ICON_TYPE = 2;
     public static final int ICON_IN_MSG_HI = 3;
     public static final int ICON_IN_MSG = 4;
-    public static final int ICON_OUT_MSG = 5;
     public static final int ICON_OUT_MSG_FROM_SERVER = 6;
     public static final int ICON_OUT_MSG_FROM_CLIENT = 7;
 
@@ -49,7 +48,7 @@ public abstract class Message {
 
     public final void setSendingState(int state) {
         if (mData != null && !mData.isMe()) {
-            mData.iconIndex = state;
+            mData.setIconIndex(state);
         }
         if (Roster.getInstance().getUpdateChatListener() != null)
             Roster.getInstance().getUpdateChatListener().updateChat(contact);
