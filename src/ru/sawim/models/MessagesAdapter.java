@@ -31,6 +31,7 @@ public class MessagesAdapter extends BaseAdapter {
     private String currentContact;
 
     public static boolean isRepaint;
+    private boolean isShowTimeStamps;
     private boolean isMultiQuote = false;
     private int position = -1;
 
@@ -76,15 +77,14 @@ public class MessagesAdapter extends BaseAdapter {
     }
 
     public void onTimeStampShow(final View view) {
-        if (((MessageItemView)view).titleItemView == null) return;
-        ((MessageItemView)view).titleItemView.setTimeStampVisible(true);
+        isShowTimeStamps = true;
         view.postDelayed(new Runnable() {
             @Override
             public void run() {
-                ((MessageItemView)view).titleItemView.setTimeStampVisible(false);
+                isShowTimeStamps = false;
                 notifyDataSetChanged();
             }
-        }, 1000);
+        }, 2000);
         notifyDataSetChanged();
     }
 
@@ -107,7 +107,7 @@ public class MessagesAdapter extends BaseAdapter {
             item.msgText.setTypeface(Typeface.DEFAULT_BOLD);
             item.setBackgroundColor(Scheme.getColor(Scheme.THEME_MARKED_BACKGROUND));
         }
-
+        item.titleItemView.setTimeStampVisible(isShowTimeStamps);
         if (mData.isMe() || mData.isPresence()) {
             item.msgText.setTextSize(General.getFontSize() - 2);
             if (mData.isMe()) {

@@ -3,7 +3,6 @@ package ru.sawim.view.preference;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.graphics.Typeface;
 import android.preference.Preference;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
@@ -12,7 +11,6 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 /**
  * Created with IntelliJ IDEA.
@@ -50,29 +48,25 @@ public class EditTextPreference extends Preference {
     protected void onBindView(View view) {
         super.onBindView(view);
         ((ViewGroup)view).removeAllViews();
-        LinearLayout layout = new LinearLayout(getContext());
-        layout.setOrientation(LinearLayout.VERTICAL);
         final EditText editTextView = new EditText(getContext());
-        editTextView.setVisibility(View.GONE);
-        TextView textView = new TextView(getContext());
-        textView.setId(android.R.id.title);
-        textView.setTypeface(Typeface.DEFAULT_BOLD);
-        textView.setTextAppearance(getContext(), android.R.style.TextAppearance_DeviceDefault_Medium);
-        textView.setTextColor(textView.getCurrentTextColor());
-        textView.setOnClickListener(new View.OnClickListener() {
+        setOnPreferenceClickListener(new OnPreferenceClickListener() {
             @Override
-            public void onClick(View v) {
-                editTextView.setVisibility(View.VISIBLE);
+            public boolean onPreferenceClick(Preference preference) {
                 editTextView.requestFocus();
                 showKeyboard(editTextView);
+                return true;
             }
         });
+        editTextView.setHint(getTitle());
         editTextView.setText(getText());
         editTextView.addTextChangedListener(textWatcher);
-        textView.setText(getSummary());
-        layout.addView(textView);
-        layout.addView(editTextView);
-        ((ViewGroup)view).addView(layout);
+        ((ViewGroup)view).addView(editTextView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+    }
+
+    @Override
+    protected void onAttachedToActivity() {
+        super.onAttachedToActivity();
+
     }
 
     private void showKeyboard(View view) {

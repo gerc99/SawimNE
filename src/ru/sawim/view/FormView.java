@@ -137,6 +137,27 @@ public class FormView extends PreferenceFragment implements Forms.OnUpdateForm {
                 preferenceCategory.setTitle(getText(c));
                 rootScreen.addPreference(preferenceCategory);
             } else if (Forms.CONTROL_INPUT == c.type) {
+                EditTextPreference editTextPreference = new EditTextPreference(getActivity());
+                editTextPreference.setKey("et" + position);
+                editTextPreference.setPersistent(false);
+                editTextPreference.setTitle(getText(c));
+                editTextPreference.setSummary(getText(c));
+                editTextPreference.setText(c.text);
+                editTextPreference.getEditText().addTextChangedListener(new TextWatcher() {
+
+                    public void afterTextChanged(Editable s) {
+                    }
+
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                    }
+
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                        c.text = s.toString();
+                        Forms.getInstance().controlUpdated(c);
+                    }
+                });
+                rootScreen.addPreference(editTextPreference);
+            } else if (Forms.CONTROL_CAPTCHA_INPUT == c.type) {
                 ru.sawim.view.preference.EditTextPreference editTextPreference = new ru.sawim.view.preference.EditTextPreference(getActivity());
                 editTextPreference.setKey("et" + position);
                 editTextPreference.setPersistent(false);

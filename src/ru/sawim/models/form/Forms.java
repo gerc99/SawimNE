@@ -22,6 +22,7 @@ import java.util.List;
  */
 public class Forms {
 
+
     public List<Control> controls = new ArrayList<Control>();
     public static final byte CONTROL_TEXT = 0;
     public static final byte CONTROL_INPUT = 1;
@@ -31,6 +32,7 @@ public class Forms {
     public static final byte CONTROL_IMAGE = 5;
     public static final byte CONTROL_LINK = 6;
     public static final byte CONTROL_GAUGE_FONT = 7;
+    public static final byte CONTROL_CAPTCHA_INPUT = 8;
     private OnUpdateForm updateFormListener;
     private FormListener formListener;
     private OnBackPressed backPressedListener;
@@ -220,9 +222,17 @@ public class Forms {
         addTextField_(controlId, label, text);
     }
 
-    public void addTextField_(int controlId, String label, String text) {
+    private void addTextField_(int controlId, String label, String text) {
         label = (null == label) ? " " : label;
         Control c = create(controlId, CONTROL_INPUT, null, JLocale.getString(label));
+        text = StringConvertor.notNull(text);
+        c.text = text;
+        add(c);
+    }
+
+    public void addCaptchaTextField(int controlId, String label, String text) {
+        label = (null == label) ? " " : label;
+        Control c = create(controlId, CONTROL_CAPTCHA_INPUT, null, JLocale.getString(label));
         text = StringConvertor.notNull(text);
         c.text = text;
         add(c);

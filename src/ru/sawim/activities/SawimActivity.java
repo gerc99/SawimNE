@@ -221,7 +221,6 @@ public class SawimActivity extends ActionBarActivity {
             if (formView.hasBack())
                 back();
         } else super.onBackPressed();
-        //supportInvalidateOptionsMenu();
         if (getSupportFragmentManager().findFragmentById(R.id.roster_fragment) != null)
             ((RosterView) getSupportFragmentManager().findFragmentById(R.id.roster_fragment)).resume();
     }

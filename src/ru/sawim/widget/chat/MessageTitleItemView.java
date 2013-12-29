@@ -140,7 +140,7 @@ public class MessageTitleItemView extends View {
             canvas.drawText(msgTimeText, msgTimeX, textY, textPaint);
         }
         if (msgImage != null && !isTimeStampVisible)
-            canvas.drawBitmap(msgImage.getBitmap(), msgTimeX - msgImage.getBitmap().getWidth(), msgIconY, null);
+            canvas.drawBitmap(msgImage.getBitmap(), msgTimeX - msgImage.getBitmap().getWidth(), msgIconY + getPaddingTop(), null);
     }
 
     public void setTimeStampVisible(boolean timeStampVisible) {

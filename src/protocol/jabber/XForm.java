@@ -3,6 +3,7 @@ package protocol.jabber;
 
 import DrawControls.icons.ImageList;
 import android.graphics.Bitmap;
+import android.util.Log;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
 import sawim.comm.StringConvertor;
@@ -249,7 +250,6 @@ final class XForm {
         fields.addElement(name);
         types.addElement(type);
         values.addElement(value);
-
         if (S_HIDDEN.equals(type)) {
 
         } else if (S_TEXT_SINGLE.equals(type)) {
@@ -273,7 +273,7 @@ final class XForm {
             form.addTextField(num, label, value);
 
         } else if ("".equals(type)) {
-            form.addTextField(num, label, value);
+            form.addCaptchaTextField(num, label, value);
         }
     }
 
