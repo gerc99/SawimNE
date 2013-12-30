@@ -273,7 +273,7 @@ final class XForm {
             form.addTextField(num, label, value);
 
         } else if ("".equals(type)) {
-            form.addCaptchaTextField(num, label, value);
+            form.addTextField(num, label, value);
         }
     }
 

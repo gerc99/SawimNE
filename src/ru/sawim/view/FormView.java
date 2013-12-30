@@ -1,24 +1,24 @@
 package ru.sawim.view;
 
 import android.app.Activity;
-import android.graphics.drawable.Drawable;
+import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
-import android.preference.*;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.MenuItemCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
-import android.view.*;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.*;
 import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.Scheme;
 import ru.sawim.activities.SawimActivity;
 import ru.sawim.models.form.Forms;
-import ru.sawim.view.preference.IconPreferenceScreen;
-import ru.sawim.view.preference.PreferenceFragment;
-import ru.sawim.view.preference.SeekBarPreference;
+import ru.sawim.widget.MySpinner;
+import ru.sawim.widget.Util;
 
 import java.util.List;
 
@@ -29,10 +29,12 @@ import java.util.List;
  * Time: 21:30
  * To change this template use File | Settings | File Templates.
  */
-public class FormView extends PreferenceFragment implements Forms.OnUpdateForm {
+public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.OnClickListener {
 
     public static final String TAG = "FormView";
-    PreferenceScreen rootScreen;
+    private LinearLayout listLayout;
+    private Button okButton;
+    private Button cancelButton;
 
     @Override
     public void onAttach(Activity a) {
@@ -50,26 +52,23 @@ public class FormView extends PreferenceFragment implements Forms.OnUpdateForm {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         getActivity().setTitle(Forms.getInstance().getCaption());
-
-        rootScreen = getPreferenceManager().createPreferenceScreen(getActivity());
-        setPreferenceScreen(rootScreen);
-        buildList();
+        okButton = (Button) getActivity().findViewById(R.id.data_form_ok);
+        okButton.setOnClickListener(this);
+        buildList(listLayout);
+        cancelButton = (Button) getActivity().findViewById(R.id.data_form_cancel);
+        cancelButton.setOnClickListener(this);
         getActivity().supportInvalidateOptionsMenu();
     }
 
-    public void onPrepareOptionsMenu_(Menu menu) {
-        menu.clear();
-        Drawable acceptImage = getResources().getDrawable(Scheme.isBlack() ? R.drawable.ic_action_accept_light : R.drawable.ic_action_accept_dark);
-        MenuItem item = menu.add(Menu.NONE, 1, Menu.NONE, "Save")
-                                .setIcon(Forms.getInstance().isAccept() ? acceptImage : getResources().getDrawable(android.R.drawable.ic_menu_save));
-        MenuItemCompat.setShowAsAction(item, MenuItem.SHOW_AS_ACTION_ALWAYS);
-    }
-
-    public void onOptionsItemSelected_(MenuItem item) {
-        if (item.getItemId() == 1) {
-            if (Forms.getInstance().getFormListener() != null)
-                Forms.getInstance().getFormListener().formAction(Forms.getInstance(), true);
-        }
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View v = inflater.inflate(R.layout.form, container, false);
+        LinearLayout rootLayout = (LinearLayout) v.findViewById(R.id.data_form);
+        listLayout = (LinearLayout) v.findViewById(R.id.data_form_linear);
+        if (!Scheme.isSystemBackground())
+            rootLayout.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
+        return v;
     }
 
     public static void show() {
@@ -94,7 +93,7 @@ public class FormView extends PreferenceFragment implements Forms.OnUpdateForm {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                buildList();
+                buildList(listLayout);
             }
         });
     }
@@ -106,10 +105,11 @@ public class FormView extends PreferenceFragment implements Forms.OnUpdateForm {
             public void run() {
                 if (General.currentActivity.getSupportFragmentManager()
                         .findFragmentById(R.id.chat_fragment) != null)
-                    ((SawimActivity) General.currentActivity).recreateActivity();
+                    ((SawimActivity)General.currentActivity).recreateActivity();
                 else
                     getFragmentManager().popBackStack();
                 hideKeyboard();
+                General.currentActivity.supportInvalidateOptionsMenu();
             }
         });
     }
@@ -119,31 +119,64 @@ public class FormView extends PreferenceFragment implements Forms.OnUpdateForm {
             ((InputMethodManager) General.currentActivity.getSystemService("input_method")).hideSoftInputFromWindow(General.currentActivity.getCurrentFocus().getWindowToken(), 0);
     }
 
+    @Override
+    public void onClick(View view) {
+        if (Forms.getInstance().getFormListener() != null)
+            Forms.getInstance().getFormListener().formAction(Forms.getInstance(), view.equals(okButton));
+        hideKeyboard();
+    }
+
     public boolean hasBack() {
         hideKeyboard();
         if (Forms.getInstance().getBackPressedListener() == null) return true;
         return Forms.getInstance().getBackPressedListener().back();
     }
 
-    private void buildList() {
-        rootScreen.removeAll();
+    private void buildList(final LinearLayout convertView) {
+        convertView.removeAllViews();
         List<Forms.Control> controls = Forms.getInstance().controls;
+        int padding = Util.dipToPixels(getActivity(), 15);
         for (int position = 0; position < controls.size(); ++position) {
             final Forms.Control c = controls.get(position);
+            ViewHolder holder = new ViewHolder();
+            holder.imageView = new ImageView(getActivity());
+            holder.descView = new TextView(getActivity());
+            holder.labelView = new TextView(getActivity());
+            holder.checkBox = new CheckBox(getActivity());
+            holder.spinner = new MySpinner(getActivity());
+            holder.seekBar = new SeekBar(getActivity());
+            holder.editText = new EditText(getActivity());
+
+            final ImageView imageView = holder.imageView;
+            final TextView descView = holder.descView;
+            final TextView labelView = holder.labelView;
+            final CheckBox checkBox = holder.checkBox;
+            final MySpinner spinner = holder.spinner;
+            final SeekBar seekBar = holder.seekBar;
+            final EditText editText = holder.editText;
+
+            descView.setVisibility(TextView.GONE);
+            labelView.setVisibility(TextView.GONE);
+            imageView.setVisibility(ImageView.GONE);
+            checkBox.setVisibility(CheckBox.GONE);
+            spinner.setVisibility(Spinner.GONE);
+            seekBar.setVisibility(SeekBar.GONE);
+            editText.setVisibility(EditText.GONE);
+            setAllTextSize(descView, labelView, checkBox, editText, General.getFontSize());
+
+            imageView.setPadding(0, padding, 0, padding);
+            labelView.setPadding(0, padding, 0, padding);
+            spinner.setPadding(0, padding, 0, padding);
+            seekBar.setPadding(0, padding, 0, padding);
+
             if (Forms.CONTROL_TEXT == c.type) {
-                PreferenceCategory preferenceCategory = new PreferenceCategory(getActivity());
-                preferenceCategory.setKey("pc" + position);
-                preferenceCategory.setPersistent(false);
-                preferenceCategory.setTitle(getText(c));
-                rootScreen.addPreference(preferenceCategory);
+                drawText(c, labelView, descView, convertView);
             } else if (Forms.CONTROL_INPUT == c.type) {
-                EditTextPreference editTextPreference = new EditTextPreference(getActivity());
-                editTextPreference.setKey("et" + position);
-                editTextPreference.setPersistent(false);
-                editTextPreference.setTitle(getText(c));
-                editTextPreference.setSummary(getText(c));
-                editTextPreference.setText(c.text);
-                editTextPreference.getEditText().addTextChangedListener(new TextWatcher() {
+                drawText(c, labelView, descView, convertView);
+                editText.setVisibility(EditText.VISIBLE);
+                editText.setHint(R.string.enter_the);
+                editText.setText(c.text);
+                editText.addTextChangedListener(new TextWatcher() {
 
                     public void afterTextChanged(Editable s) {
                     }
@@ -156,118 +189,199 @@ public class FormView extends PreferenceFragment implements Forms.OnUpdateForm {
                         Forms.getInstance().controlUpdated(c);
                     }
                 });
-                rootScreen.addPreference(editTextPreference);
-            } else if (Forms.CONTROL_CAPTCHA_INPUT == c.type) {
-                ru.sawim.view.preference.EditTextPreference editTextPreference = new ru.sawim.view.preference.EditTextPreference(getActivity());
-                editTextPreference.setKey("et" + position);
-                editTextPreference.setPersistent(false);
-                editTextPreference.setTitle(getText(c));
-                editTextPreference.setSummary(getText(c));
-                editTextPreference.setText(c.text);
-                editTextPreference.addTextChangedListener(new TextWatcher() {
-
-                    public void afterTextChanged(Editable s) {
-                    }
-
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                    }
-
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-                        c.text = s.toString();
-                        Forms.getInstance().controlUpdated(c);
-                    }
-                });
-                rootScreen.addPreference(editTextPreference);
+                convertView.addView(editText);
             } else if (Forms.CONTROL_CHECKBOX == c.type) {
-                CheckBoxPreference checkBoxPreference = new CheckBoxPreference(getActivity());
-                checkBoxPreference.setKey("cb" + position);
-                checkBoxPreference.setPersistent(false);
-                checkBoxPreference.setTitle(getText(c));
-                checkBoxPreference.setSummary(getText(c));
-                checkBoxPreference.setChecked(c.selected);
-                checkBoxPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                    public boolean onPreferenceClick(Preference preference) {
+                checkBox.setVisibility(CheckBox.VISIBLE);
+                checkBox.setText(c.description);
+                checkBox.setChecked(c.selected);
+                checkBox.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
                         c.selected = !c.selected;
                         Forms.getInstance().controlUpdated(c);
-                        return true;
                     }
                 });
-                rootScreen.addPreference(checkBoxPreference);
+                convertView.addView(checkBox);
             } else if (Forms.CONTROL_SELECT == c.type) {
-                ListPreference listPreference = new ListPreference(getActivity());
-                listPreference.setKey("l" + position);
-                listPreference.setPersistent(false);
-                listPreference.setTitle(getText(c));
-                listPreference.setEntries(c.items);
-                listPreference.setEntryValues(c.items);
-                listPreference.setValueIndex(c.current);
-                listPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                drawText(c, labelView, descView, convertView);
+                spinner.setVisibility(Spinner.VISIBLE);
+                MySpinnerAdapter adapter = new MySpinnerAdapter(getActivity(), c.items);
+                spinner.setAdapter(adapter);
+                spinner.setPrompt(c.description);
+                spinner.setSelection(c.current);
+                spinner.setOnItemSelectedEvenIfUnchangedListener(new AdapterView.OnItemSelectedListener() {
                     @Override
-                    public boolean onPreferenceChange(Preference preference, Object newValue) {
-                        String textValue = newValue.toString();
-                        ListPreference listPreference = (ListPreference) preference;
-                        int index = listPreference.findIndexOfValue(textValue);
-                        c.current = index;
+                    public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
+                        c.current = position;
                         Forms.getInstance().controlUpdated(c);
-                        return true;
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> adapterView) {
                     }
                 });
-                rootScreen.addPreference(listPreference);
+                convertView.addView(spinner);
             } else if (Forms.CONTROL_GAUGE == c.type) {
-                SeekBarPreference seekBarPreference = new SeekBarPreference(getActivity());
-                seekBarPreference.setKey("sb" + position);
-                seekBarPreference.setPersistent(false);
-                seekBarPreference.setTitle(getText(c));
-                seekBarPreference.setDefaultValue(c.level);
-                seekBarPreference.setMax(60);
-                seekBarPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                drawText(c, labelView, descView, convertView);
+                seekBar.setVisibility(SeekBar.VISIBLE);
+                seekBar.setProgress(c.level);
+                seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                     @Override
-                    public boolean onPreferenceChange(Preference preference, Object newValue) {
-                        c.level = Integer.parseInt(newValue.toString());
+                    public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                        c.level = i;
                         Forms.getInstance().controlUpdated(c);
-                        return true;
+                    }
+
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+                    }
+
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {
                     }
                 });
-                rootScreen.addPreference(seekBarPreference);
+                convertView.addView(seekBar);
             } else if (Forms.CONTROL_GAUGE_FONT == c.type) {
-                final SeekBarPreference seekBarPreference = new SeekBarPreference(getActivity());
-                seekBarPreference.setKey("sbf" + position);
-                seekBarPreference.setPersistent(false);
-                seekBarPreference.setTitle(c.description + "(" + c.level + ")");
-                seekBarPreference.setDefaultValue(c.level);
-                seekBarPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                descView.setVisibility(TextView.VISIBLE);
+                descView.setText(c.description + "(" + c.level + ")");
+                seekBar.setVisibility(SeekBar.VISIBLE);
+                seekBar.setMax(60);
+                seekBar.setProgress(c.level);
+                seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                     @Override
-                    public boolean onPreferenceChange(Preference preference, Object newValue) {
-                        c.level = Integer.parseInt(newValue.toString());
-                        seekBarPreference.setTitleTextSize(c.level);
-                        seekBarPreference.setTitleText(c.description + "(" + c.level + ")");
+                    public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                        c.level = i;
+                        descView.setTextSize(c.level);
+                        descView.setText(c.description + "(" + c.level + ")");
                         Forms.getInstance().controlUpdated(c);
-                        return true;
+                    }
+
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+                    }
+
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {
                     }
                 });
-                rootScreen.addPreference(seekBarPreference);
+                convertView.addView(descView);
+                convertView.addView(seekBar);
             } else if (Forms.CONTROL_IMAGE == c.type) {
-                IconPreferenceScreen iconPreferenceScreen = new IconPreferenceScreen(getActivity());
-                iconPreferenceScreen.setKey("ips" + position);
-                iconPreferenceScreen.setPersistent(false);
-                iconPreferenceScreen.setText(getText(c));
-                iconPreferenceScreen.setIcon(c.image);
-                rootScreen.addPreference(iconPreferenceScreen);
+                drawText(c, labelView, descView, convertView);
+                imageView.setVisibility(ImageView.VISIBLE);
+                imageView.setImageDrawable(c.image);
+                convertView.addView(imageView);
             } else if (Forms.CONTROL_LINK == c.type) {
-                PreferenceCategory preferenceCategory = new PreferenceCategory(getActivity());
-                preferenceCategory.setKey("pcl" + position);
-                preferenceCategory.setPersistent(false);
-                preferenceCategory.setTitle(getText(c));
-                rootScreen.addPreference(preferenceCategory);
+                drawText(c, labelView, descView, convertView);
             }
         }
     }
 
-    private String getText(Forms.Control c) {
-        String s = "";
-        if (c.label != null) s = c.label;
-        if (c.label != null && c.description != null) s += "\n";
-        if (c.description != null) s += c.description;
-        return s;
+    private void setAllTextSize(TextView descView, TextView labelView, CheckBox checkBox, EditText editText, int size) {
+        descView.setTextSize(size - 1);
+        labelView.setTextSize(size - 1);
+        checkBox.setTextSize(size);
+        editText.setTextSize(size);
+    }
+
+    private void drawText(Forms.Control c, TextView labelView, TextView descView, LinearLayout convertView) {
+        if (c.label != null) {
+            labelView.setVisibility(TextView.VISIBLE);
+            labelView.setText(c.label);
+            convertView.addView(labelView);
+        }
+        if (c.description != null) {
+            descView.setVisibility(TextView.VISIBLE);
+            descView.setText(c.description);
+            convertView.addView(descView);
+        }
+    }
+
+    static class ViewHolder {
+        ImageView imageView;
+        TextView descView;
+        TextView labelView;
+        CheckBox checkBox;
+        MySpinner spinner;
+        SeekBar seekBar;
+        EditText editText;
+    }
+
+    static class MySpinnerAdapter extends BaseAdapter implements SpinnerAdapter {
+
+        private String[] items;
+        Context context;
+        LayoutInflater layoutInflater;
+
+        public MySpinnerAdapter(Context context, String[] items) {
+            this.context = context;
+            layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            this.items = items;
+        }
+
+        @Override
+        public int getCount() {
+            return items.length;
+        }
+
+        @Override
+        public String getItem(int i) {
+            return items[i];
+        }
+
+        @Override
+        public long getItemId(int i) {
+            return i;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup viewGroup) {
+            View v = convertView;
+            HeaderViewHolder headerViewHolder;
+            String string = getItem(position);
+            if (v == null) {
+                v = layoutInflater.inflate(R.layout.spinner_item, null);
+                headerViewHolder = new HeaderViewHolder();
+                headerViewHolder.header = (TextView) v.findViewById(R.id.header);
+                v.setTag(headerViewHolder);
+            } else {
+                headerViewHolder = (HeaderViewHolder) v.getTag();
+            }
+            if (string == null) return v;
+            if (Scheme.isBlack() && Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN)
+                headerViewHolder.header.setTextColor(0xff000000);
+            headerViewHolder.header.setTextSize(General.getFontSize());
+            headerViewHolder.header.setText(string);
+            return v;
+        }
+
+        @Override
+        public View getDropDownView(int position, View convertView, ViewGroup parent) {
+            View v = convertView;
+            DropDownViewHolder dropDownViewHolder;
+            String string = getItem(position);
+            if (v == null) {
+                v = layoutInflater.inflate(R.layout.spinner_dropdown_item, null);
+                dropDownViewHolder = new DropDownViewHolder();
+                dropDownViewHolder.label = (TextView) v.findViewById(R.id.label);
+                v.setTag(dropDownViewHolder);
+            } else {
+                dropDownViewHolder = (DropDownViewHolder) v.getTag();
+            }
+            if (string == null) return v;
+            if (Scheme.isBlack() && Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN)
+                dropDownViewHolder.label.setTextColor(0xff000000);
+            dropDownViewHolder.label.setTextSize(General.getFontSize());
+            dropDownViewHolder.label.setText(string);
+            return v;
+        }
+
+        static class HeaderViewHolder {
+            TextView header;
+        }
+
+        static class DropDownViewHolder {
+            TextView label;
+        }
     }
 }

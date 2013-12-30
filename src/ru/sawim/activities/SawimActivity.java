@@ -48,6 +48,7 @@ import protocol.jabber.JabberContact;
 import protocol.mrim.Mrim;
 import ru.sawim.*;
 import ru.sawim.view.*;
+import ru.sawim.view.preference.PreferenceFormView;
 import sawim.ExternalApi;
 import sawim.Options;
 import sawim.OptionsForm;
@@ -281,10 +282,10 @@ public class SawimActivity extends ActionBarActivity {
         ChatView chatView = (ChatView) getSupportFragmentManager().findFragmentByTag(ChatView.TAG);
         ChatView tabletChatView = (ChatView) getSupportFragmentManager().findFragmentById(R.id.chat_fragment);
         VirtualListView virtualListView = (VirtualListView) getSupportFragmentManager().findFragmentByTag(VirtualListView.TAG);
-        FormView formView = (FormView) getSupportFragmentManager().findFragmentByTag(FormView.TAG);
+        PreferenceFormView preferenceFormView = (PreferenceFormView) getSupportFragmentManager().findFragmentByTag(PreferenceFormView.TAG);
         menu.clear();
-        if (formView != null) {
-            formView.onPrepareOptionsMenu_(menu);
+        if (preferenceFormView != null) {
+            preferenceFormView.onPrepareOptionsMenu_(menu);
             return true;
         } else if (chatView != null) {
             chatView.onPrepareOptionsMenu_(menu);
@@ -354,9 +355,9 @@ public class SawimActivity extends ActionBarActivity {
         ChatView chatView = (ChatView) getSupportFragmentManager().findFragmentByTag(ChatView.TAG);
         ChatView tabletChatView = (ChatView) getSupportFragmentManager().findFragmentById(R.id.chat_fragment);
         VirtualListView virtualListView = (VirtualListView) getSupportFragmentManager().findFragmentByTag(VirtualListView.TAG);
-        FormView formView = (FormView) getSupportFragmentManager().findFragmentByTag(FormView.TAG);
-        if (formView != null) {
-            formView.onOptionsItemSelected_(item);
+        PreferenceFormView preferenceFormView = (PreferenceFormView) getSupportFragmentManager().findFragmentByTag(PreferenceFormView.TAG);
+        if (preferenceFormView != null) {
+            preferenceFormView.onOptionsItemSelected_(item);
             return true;
         } else if (virtualListView != null) {
             virtualListView.onOptionsItemSelected_(item);

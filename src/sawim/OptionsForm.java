@@ -267,7 +267,7 @@ public class OptionsForm implements FormListener, ControlStateListener {
                 return;
         }
         form.setControlStateListener(this);
-        form.show();
+        form.preferenceFormShow();
     }
 
     public void controlStateChanged(int id) {

@@ -5,6 +5,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import ru.sawim.SawimApplication;
 import ru.sawim.view.FormView;
+import ru.sawim.view.preference.PreferenceFormView;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
 import sawim.modules.DebugLog;
@@ -32,7 +33,6 @@ public class Forms {
     public static final byte CONTROL_IMAGE = 5;
     public static final byte CONTROL_LINK = 6;
     public static final byte CONTROL_GAUGE_FONT = 7;
-    public static final byte CONTROL_CAPTCHA_INPUT = 8;
     private OnUpdateForm updateFormListener;
     private FormListener formListener;
     private OnBackPressed backPressedListener;
@@ -110,6 +110,10 @@ public class Forms {
 
     public void show() {
         FormView.show();
+    }
+
+    public void preferenceFormShow() {
+        PreferenceFormView.show();
     }
 
     public void invalidate() {
@@ -225,14 +229,6 @@ public class Forms {
     private void addTextField_(int controlId, String label, String text) {
         label = (null == label) ? " " : label;
         Control c = create(controlId, CONTROL_INPUT, null, JLocale.getString(label));
-        text = StringConvertor.notNull(text);
-        c.text = text;
-        add(c);
-    }
-
-    public void addCaptchaTextField(int controlId, String label, String text) {
-        label = (null == label) ? " " : label;
-        Control c = create(controlId, CONTROL_CAPTCHA_INPUT, null, JLocale.getString(label));
         text = StringConvertor.notNull(text);
         c.text = text;
         add(c);
