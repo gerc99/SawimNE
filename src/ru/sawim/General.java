@@ -2,12 +2,15 @@ package ru.sawim;
 
 import DrawControls.icons.ImageList;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.GradientDrawable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.WindowManager;
 import sawim.Options;
 import sawim.Updater;
 import sawim.chat.ChatHistory;
@@ -44,7 +47,6 @@ public class General {
     public static ActionBarActivity currentActivity;
     public static ActionBar actionBar;
     private static Resources resources;
-    public static boolean isTablet = getResources(SawimApplication.getContext()).getBoolean(R.bool.is_tablet);
     public static BitmapDrawable messageIconCheck = (BitmapDrawable) getResources(SawimApplication.getContext()).getDrawable(R.drawable.msg_check);
     private boolean paused = true;
     private static int fontSize;
@@ -87,7 +89,7 @@ public class General {
             DebugLog.instance.activate();
         }
         DebugLog.startTests();
-        displayDensity = General.getResources(General.currentActivity).getDisplayMetrics().density;
+        displayDensity = General.getResources(SawimApplication.getContext()).getDisplayMetrics().density;
     }
 
     public static void updateOptions() {
@@ -95,6 +97,18 @@ public class General {
         showStatusLine = Options.getBoolean(Options.OPTION_SHOW_STATUS_LINE);
         hideIconsClient = Options.getBoolean(Options.OPTION_HIDE_ICONS_CLIENTS);
         sortType = Options.getInt(Options.OPTION_CL_SORT_BY);
+    }
+
+    public static boolean isManyPane() {
+        int rotation = ((WindowManager) SawimApplication.getContext()
+                .getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getRotation();
+        if (rotation == 0 && isTablet())
+           return false;
+        return isTablet();
+    }
+
+    public static boolean isTablet() {
+        return getResources(SawimApplication.getContext()).getBoolean(R.bool.is_tablet);
     }
 
     public void quit() {

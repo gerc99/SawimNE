@@ -1,7 +1,5 @@
 package ru.sawim.activities;
 
-import android.accounts.AccountAuthenticatorResponse;
-import android.accounts.AccountManager;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
@@ -35,7 +33,7 @@ public class AccountsListActivity extends ActionBarActivity implements JabberReg
                 .findFragmentById(R.id.chat_fragment) != null)
             setContentView(R.layout.intercalation_layout);
         else
-            setContentView(R.layout.main);
+            setContentView(General.isManyPane() ? R.layout.main_twopane : R.layout.main);
         if (General.actionBar == null)
             General.actionBar = getSupportActionBar();
         General.actionBar.setDisplayHomeAsUpEnabled(true);

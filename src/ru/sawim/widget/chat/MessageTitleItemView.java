@@ -37,7 +37,6 @@ public class MessageTitleItemView extends View {
     private float msgTimeX;
     private int textY;
     private static TextPaint textPaint;
-    private boolean isTimeStampVisible;
 
     public MessageTitleItemView(Context context) {
         super(context);
@@ -132,19 +131,16 @@ public class MessageTitleItemView extends View {
             textPaint.setTypeface(nickTypeface);
             canvas.drawText(nickText, getPaddingLeft(), textY, textPaint);
         }
-        if (msgTimeText != null && isTimeStampVisible) {
+        if (msgTimeText != null) {
             textPaint.setColor(msgTimeColor);
             textPaint.setTextAlign(Paint.Align.RIGHT);
             setTextSize(msgTimeSize);
             textPaint.setTypeface(msgTimeTypeface);
-            canvas.drawText(msgTimeText, msgTimeX, textY, textPaint);
+            canvas.drawText(msgTimeText,
+                    msgTimeX - (msgImage == null ? 0 : (msgImage.getBitmap().getWidth() << 1) - getPaddingLeft()), textY, textPaint);
         }
-        if (msgImage != null && !isTimeStampVisible)
-            canvas.drawBitmap(msgImage.getBitmap(), msgTimeX - msgImage.getBitmap().getWidth(), msgIconY + getPaddingTop(), null);
-    }
-
-    public void setTimeStampVisible(boolean timeStampVisible) {
-        isTimeStampVisible = timeStampVisible;
-        invalidate();
+        if (msgImage != null)
+            canvas.drawBitmap(msgImage.getBitmap(),
+                    msgTimeX - msgImage.getBitmap().getWidth(), msgIconY + getPaddingTop(), null);
     }
 }

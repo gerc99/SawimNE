@@ -13,7 +13,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.PagerTitleStrip;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.*;
 import android.widget.*;
 import protocol.Contact;
@@ -262,7 +261,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         General.actionBar.setDisplayHomeAsUpEnabled(!isShowTabs);
         General.actionBar.setDisplayShowCustomEnabled(isShowTabs);
         getActivity().setTitle(R.string.app_name);
-        if (General.isTablet) {
+        if (General.isManyPane()) {
             ChatView chatView = (ChatView) getActivity().getSupportFragmentManager()
                     .findFragmentById(R.id.chat_fragment);
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);

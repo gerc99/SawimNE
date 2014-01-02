@@ -29,6 +29,7 @@ public class MyTextView extends View {
     TextLinkClickListener listener;
     private boolean isSecondTap;
     private boolean isLongTap;
+    private boolean isRight = false;
 
     public MyTextView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -84,12 +85,16 @@ public class MyTextView extends View {
                 TypedValue.COMPLEX_UNIT_SP, textSize, General.getResources(getContext()).getDisplayMetrics()));
     }
 
+    public void setGravity(boolean isRight) {
+          this.isRight = isRight;
+    }
+
     public void makeLayout(int specSize) {
         if (text == null) return;
         try {
-            layout = new StaticLayout(text, textPaint, specSize, Layout.Alignment.ALIGN_NORMAL, 1.0F, 0.0F, false);
+            layout = new StaticLayout(text, textPaint, specSize, isRight ? Layout.Alignment.ALIGN_OPPOSITE : Layout.Alignment.ALIGN_NORMAL, 1.0F, 0.0F, false);
         } catch (ArrayIndexOutOfBoundsException e) {
-            layout = new StaticLayout(text.toString(), textPaint, specSize, Layout.Alignment.ALIGN_NORMAL, 1.0F, 0.0F, false);
+            layout = new StaticLayout(text.toString(), textPaint, specSize, isRight ? Layout.Alignment.ALIGN_OPPOSITE : Layout.Alignment.ALIGN_NORMAL, 1.0F, 0.0F, false);
         }
     }
 

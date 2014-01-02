@@ -44,7 +44,6 @@ import protocol.Protocol;
 import protocol.StatusInfo;
 import protocol.icq.Icq;
 import protocol.jabber.Jabber;
-import protocol.jabber.JabberContact;
 import protocol.mrim.Mrim;
 import ru.sawim.*;
 import ru.sawim.view.*;
@@ -63,7 +62,6 @@ import sawim.roster.Roster;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.util.ArrayList;
 
 public class SawimActivity extends ActionBarActivity {
 
@@ -78,7 +76,7 @@ public class SawimActivity extends ActionBarActivity {
         ExternalApi.instance.setActivity(this);
         General.actionBar = getSupportActionBar();
         General.currentActivity = this;
-        setContentView(R.layout.main);
+        setContentView(General.isManyPane() ? R.layout.main_twopane : R.layout.main);
 
         Logger.removeAllAppenders();
         Logger.setLocationEnabled(false);
@@ -114,13 +112,17 @@ public class SawimActivity extends ActionBarActivity {
                 }
             }
         }));
-        if (!General.isTablet) {
-            if (savedInstanceState != null) return;
+        if (savedInstanceState == null && !General.isManyPane()) {
             RosterView rosterView = new RosterView();
             rosterView.setArguments(getIntent().getExtras());
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.fragment_container, rosterView, RosterView.TAG).commit();
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        //super.onSaveInstanceState(outState);
     }
 
     public static void resetBar() {
