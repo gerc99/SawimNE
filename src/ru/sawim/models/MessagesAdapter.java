@@ -114,7 +114,7 @@ public class MessagesAdapter extends BaseAdapter {
                 item.setPadding((int)(11 * displayDensity), (int)(7 * displayDensity), (int)(18 * displayDensity), (int)(9 * displayDensity));
             }
             if (mData.getIconIndex() == Message.ICON_OUT_MSG_FROM_CLIENT) {
-                item.titleItemView.setMsgImage(General.messageIconCheck);
+                item.titleItemView.setCheckImage(General.messageIconCheck.getBitmap());
             }
 
             item.titleItemView.setNick(Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG),

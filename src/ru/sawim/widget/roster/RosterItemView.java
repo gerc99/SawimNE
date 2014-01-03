@@ -1,10 +1,10 @@
 package ru.sawim.widget.roster;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Typeface;
-import android.graphics.drawable.BitmapDrawable;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.util.TypedValue;
@@ -28,11 +28,11 @@ public class RosterItemView extends View {
     public int itemDescColor;
     public Typeface itemNameFont;
 
-    public BitmapDrawable itemFirstImage = null;
-    public BitmapDrawable itemSecondImage = null;
-    public BitmapDrawable itemThirdImage = null;
-    public BitmapDrawable itemFourthImage = null;
-    public BitmapDrawable itemFifthImage = null;
+    public Bitmap itemFirstImage = null;
+    public Bitmap itemSecondImage = null;
+    public Bitmap itemThirdImage = null;
+    public Bitmap itemFourthImage = null;
+    public Bitmap itemFifthImage = null;
 
     private static TextPaint textPaint;
     private static Paint paintDivider;
@@ -148,31 +148,31 @@ public class RosterItemView extends View {
 
         firstImageX = leftPadding;
         if (itemFirstImage != null) {
-            secondImageX = firstImageX + itemFirstImage.getBitmap().getWidth();
-            firstImageY = y - (itemFirstImage.getBitmap().getHeight() >> 1);
+            secondImageX = firstImageX + itemFirstImage.getWidth();
+            firstImageY = y - (itemFirstImage.getHeight() >> 1);
             textX = secondImageX + leftPadding;
         }
         if (itemSecondImage != null) {
             secondImageX += leftPadding;
-            secondImageY = y - (itemSecondImage.getBitmap().getHeight() >> 1);
-            textX += itemSecondImage.getBitmap().getWidth() + leftPadding;
+            secondImageY = y - (itemSecondImage.getHeight() >> 1);
+            textX += itemSecondImage.getWidth() + leftPadding;
         }
         thirdImageX = secondImageX;
         if (itemThirdImage != null) {
             thirdImageX += leftPadding;
-            thirdImageY = y - (itemThirdImage.getBitmap().getHeight() >> 1);
-            textX = thirdImageX + itemThirdImage.getBitmap().getWidth() + leftPadding;
+            thirdImageY = y - (itemThirdImage.getHeight() >> 1);
+            textX = thirdImageX + itemThirdImage.getWidth() + leftPadding;
         }
 
         fourthImageX = viewWidth;
         if (itemFourthImage != null) {
-            fourthImageX = viewWidth - itemFourthImage.getBitmap().getWidth() - rightPadding;
-            fourthImageY = y - (itemFourthImage.getBitmap().getHeight() >> 1);
+            fourthImageX = viewWidth - itemFourthImage.getWidth() - rightPadding;
+            fourthImageY = y - (itemFourthImage.getHeight() >> 1);
         }
         fifthImageX = fourthImageX;
         if (itemFifthImage != null) {
-            fifthImageX = fourthImageX - itemFifthImage.getBitmap().getWidth() - rightPadding;
-            fifthImageY = y - (itemFifthImage.getBitmap().getHeight() >> 1);
+            fifthImageX = fourthImageX - itemFifthImage.getWidth() - rightPadding;
+            fifthImageY = y - (itemFifthImage.getHeight() >> 1);
         }
     }
 
@@ -180,11 +180,11 @@ public class RosterItemView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         if (itemFirstImage != null)
-            canvas.drawBitmap(itemFirstImage.getBitmap(), firstImageX, firstImageY, null);
+            canvas.drawBitmap(itemFirstImage, firstImageX, firstImageY, null);
         if (itemSecondImage != null)
-            canvas.drawBitmap(itemSecondImage.getBitmap(), secondImageX, secondImageY, null);
+            canvas.drawBitmap(itemSecondImage, secondImageX, secondImageY, null);
         if (itemThirdImage != null)
-            canvas.drawBitmap(itemThirdImage.getBitmap(), thirdImageX, thirdImageY, null);
+            canvas.drawBitmap(itemThirdImage, thirdImageX, thirdImageY, null);
         if (itemName != null) {
             textPaint.setColor(itemNameColor);
             setTextSize(General.getFontSize());
@@ -198,9 +198,9 @@ public class RosterItemView extends View {
             canvas.drawText(TextUtils.ellipsize(itemDesc, textPaint, fifthImageX - textX, TextUtils.TruncateAt.END).toString(), textX, lineTwoY, textPaint);
         }
         if (itemFourthImage != null)
-            canvas.drawBitmap(itemFourthImage.getBitmap(), fourthImageX, fourthImageY, null);
+            canvas.drawBitmap(itemFourthImage, fourthImageX, fourthImageY, null);
         if (itemFifthImage != null)
-            canvas.drawBitmap(itemFifthImage.getBitmap(), fifthImageX, fifthImageY, null);
+            canvas.drawBitmap(itemFifthImage, fifthImageX, fifthImageY, null);
 
         if (itemName == null && itemDesc != null) {
             paintDivider.setStrokeWidth(TypedValue.applyDimension(

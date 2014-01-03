@@ -109,11 +109,11 @@ public class RosterAdapter extends BaseAdapter {
 
         Icon icGroup = g.getLeftIcon(null);
         if (icGroup != null)
-            rosterItemView.itemFirstImage = icGroup.getImage();
+            rosterItemView.itemFirstImage = icGroup.getImage().getBitmap();
 
         Icon messIcon = ChatHistory.instance.getUnreadMessageIcon(g.getContacts());
         if (!g.isExpanded() && messIcon != null)
-            rosterItemView.itemFourthImage = messIcon.getImage();
+            rosterItemView.itemFourthImage = messIcon.getImage().getBitmap();
     }
 
     void populateFromContact(RosterItemView rosterItemView, Roster roster, Protocol p, Contact item) {
@@ -130,17 +130,17 @@ public class RosterAdapter extends BaseAdapter {
 
         Icon icStatus = item.getLeftIcon(p);
         if (icStatus != null)
-            rosterItemView.itemFirstImage = icStatus.getImage();
+            rosterItemView.itemFirstImage = icStatus.getImage().getBitmap();
         if (item.isTyping()) {
-            rosterItemView.itemFirstImage = Message.msgIcons.iconAt(Message.ICON_TYPE).getImage();
+            rosterItemView.itemFirstImage = Message.msgIcons.iconAt(Message.ICON_TYPE).getImage().getBitmap();
         } else {
             Icon icMess = Message.msgIcons.iconAt(item.getUnreadMessageIcon());
             if (icMess != null)
-                rosterItemView.itemFirstImage = icMess.getImage();
+                rosterItemView.itemFirstImage = icMess.getImage().getBitmap();
         }
 
         if (item.getXStatusIndex() != XStatusInfo.XSTATUS_NONE)
-            rosterItemView.itemSecondImage = p.getXStatusInfo().getIcon(item.getXStatusIndex()).getImage();
+            rosterItemView.itemSecondImage = p.getXStatusInfo().getIcon(item.getXStatusIndex()).getImage().getBitmap();
 
         if (!item.isTemp()) {
             Icon icAuth = item.authIcon.iconAt(0);
@@ -154,19 +154,19 @@ public class RosterAdapter extends BaseAdapter {
                     privacyList = 2;
                 }
                 if (privacyList != -1)
-                    rosterItemView.itemThirdImage = item.serverListsIcons.iconAt(privacyList).getImage();
+                    rosterItemView.itemThirdImage = item.serverListsIcons.iconAt(privacyList).getImage().getBitmap();
             } else {
-                rosterItemView.itemThirdImage = icAuth.getImage();
+                rosterItemView.itemThirdImage = icAuth.getImage().getBitmap();
             }
         }
 
         Icon icClient = (null != p.clientInfo) ? p.clientInfo.getIcon(item.clientIndex) : null;
         if (icClient != null && !General.hideIconsClient)
-            rosterItemView.itemFourthImage = icClient.getImage();
+            rosterItemView.itemFourthImage = icClient.getImage().getBitmap();
 
         String id = item.getUserId();
         if (Tracking.isTrackingEvent(id, Tracking.GLOBAL) == Tracking.TRUE)
-            rosterItemView.itemFifthImage = (BitmapDrawable) Tracking.getTrackIcon(id);
+            rosterItemView.itemFifthImage = ((BitmapDrawable) Tracking.getTrackIcon(id)).getBitmap();
     }
 
     @Override
@@ -192,7 +192,7 @@ public class RosterAdapter extends BaseAdapter {
                     populateFromContact(rosterItemView, roster, protocol, (Contact) o);
                 }
             }
-        ((RosterItemView) convertView).repaint();
+        rosterItemView.repaint();
         return convertView;
     }
 }

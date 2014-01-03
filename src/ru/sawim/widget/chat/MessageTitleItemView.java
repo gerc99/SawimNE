@@ -1,18 +1,16 @@
 package ru.sawim.widget.chat;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.text.TextPaint;
-import android.text.TextUtils;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import ru.sawim.General;
 import ru.sawim.Scheme;
-import ru.sawim.widget.Util;
 
 /**
  * Created with IntelliJ IDEA.
@@ -31,8 +29,7 @@ public class MessageTitleItemView extends View {
     private Typeface msgTimeTypeface;
     private int nickSize;
     private int msgTimeSize;
-    private BitmapDrawable msgImage;
-    private int msgIconY;
+    private Bitmap checkImage;
 
     private float msgTimeX;
     private int textY;
@@ -70,7 +67,7 @@ public class MessageTitleItemView extends View {
             result = specSize;
         } else {
             int textHeight = (-ascent + descent) + getPaddingTop() + getPaddingBottom();
-            int iconHeight = msgImage == null ? 0 : msgImage.getBitmap().getHeight();
+            int iconHeight = checkImage == null ? 0 : checkImage.getHeight();
             result = Math.max(textHeight, iconHeight);
             if (specMode == MeasureSpec.AT_MOST) {
                 result = Math.min(result, specSize);
@@ -87,9 +84,6 @@ public class MessageTitleItemView extends View {
     }
 
     private void computeCoordinates(int viewWidth, int viewHeight) {
-        int y = viewHeight >> 1;
-        if (msgImage != null)
-            msgIconY = y - (msgImage.getBitmap().getHeight() >> 1);
         msgTimeX = viewWidth - getPaddingRight();
         textY = getPaddingTop() - (int) textPaint.ascent();
     }
@@ -108,8 +102,8 @@ public class MessageTitleItemView extends View {
         this.msgTimeText = msgTimeText;
     }
 
-    public void setMsgImage(BitmapDrawable msgImage) {
-        this.msgImage = msgImage;
+    public void setCheckImage(Bitmap image) {
+        this.checkImage = image;
     }
 
     public void repaint() {
@@ -137,10 +131,11 @@ public class MessageTitleItemView extends View {
             setTextSize(msgTimeSize);
             textPaint.setTypeface(msgTimeTypeface);
             canvas.drawText(msgTimeText,
-                    msgTimeX - (msgImage == null ? 0 : (msgImage.getBitmap().getWidth() << 1) - getPaddingLeft()), textY, textPaint);
+                    msgTimeX - (checkImage == null ? 0 : (checkImage.getWidth() << 1) - getPaddingLeft()), textY, textPaint);
         }
-        if (msgImage != null)
-            canvas.drawBitmap(msgImage.getBitmap(),
-                    msgTimeX - msgImage.getBitmap().getWidth(), msgIconY + getPaddingTop(), null);
+        if (checkImage != null) {
+            canvas.drawBitmap(checkImage,
+                    msgTimeX - checkImage.getWidth(), getPaddingTop(), null);
+        }
     }
 }
