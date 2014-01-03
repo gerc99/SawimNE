@@ -178,6 +178,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
 
     @Override
     public boolean handleMessage(Message msg) {
+        if (roster == null) return false;
         switch (msg.what) {
             case UPDATE_BAR_PROTOCOLS:
                 final int protocolCount = roster.getProtocolCount();

@@ -257,6 +257,7 @@ public class SawimActivity extends ActionBarActivity {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
+        if (General.isTablet()) recreateActivity();
         if (oldOrientation != newConfig.orientation) {
             oldOrientation = newConfig.orientation;
             if (General.getInstance().getConfigurationChanged() != null)

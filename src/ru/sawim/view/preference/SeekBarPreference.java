@@ -169,7 +169,7 @@ public class SeekBarPreference extends Preference implements SeekBar.OnSeekBarCh
      *
      * @return <code>SeekBar</code> object
      */
-    private SeekBar getSeekBar () {
+    public SeekBar getSeekBar() {
         return seekbar;
     }
 
