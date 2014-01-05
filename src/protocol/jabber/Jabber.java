@@ -186,10 +186,10 @@ public final class Jabber extends Protocol implements FormListener {
         Group group = new Group(name);
         group.setGroupId(getNextGroupId());
         int mode = Group.MODE_FULL_ACCESS;
-        if (JLocale.getString(Jabber.CONFERENCE_GROUP).equals(name)) {
+        if (Jabber.CONFERENCE_GROUP.equals(name)) {
             mode &= ~Group.MODE_EDITABLE;
             mode |= Group.MODE_TOP;
-        } else if (JLocale.getString(Jabber.GATE_GROUP).equals(name)) {
+        } else if (Jabber.GATE_GROUP.equals(name)) {
             mode &= ~Group.MODE_EDITABLE;
             mode |= Group.MODE_BOTTOM;
         }

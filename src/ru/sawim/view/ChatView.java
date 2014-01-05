@@ -7,17 +7,17 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.content.res.TypedArray;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SlidingPaneLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.*;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -34,7 +34,6 @@ import ru.sawim.R;
 import ru.sawim.Scheme;
 import ru.sawim.models.ChatsAdapter;
 import ru.sawim.models.MessagesAdapter;
-import ru.sawim.view.listener.SwipeDismissListViewTouchListener;
 import ru.sawim.widget.MyListView;
 import ru.sawim.widget.Util;
 import ru.sawim.widget.chat.ChatBarView;
@@ -76,7 +75,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
     private ChatInputBarView chatInputBarView;
     private ChatViewRoot chat_viewLayout;
     private MucUsersView mucUsersView;
-    private DrawerLayout drawerLayout;
+    private SlidingPaneLayout slidingPaneLayout;
     private ImageButton usersImage;
     private ImageButton chatsImage;
     private ImageButton menuButton;
@@ -149,32 +148,10 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
                              Bundle savedInstanceStateLog) {
         resetBar();
         updateChatIcon();
-        if (!General.isManyPane()) {
-            nickList = new MyListView(getActivity());
-            drawerLayout = new DrawerLayout(getActivity());
-            DrawerLayout.LayoutParams nickListLP = new DrawerLayout.LayoutParams(Util.dipToPixels(getActivity(), 240), DrawerLayout.LayoutParams.MATCH_PARENT);
-            DrawerLayout.LayoutParams drawerLayoutLP = new DrawerLayout.LayoutParams(DrawerLayout.LayoutParams.MATCH_PARENT, DrawerLayout.LayoutParams.MATCH_PARENT);
-            drawerLayout.setDrawerShadow(R.drawable.drawer_shadow, Gravity.START);
-            drawerLayout.setScrimColor(Scheme.isBlack() ? 0x55FFFFFF : 0x99000000);
-            nickListLP.gravity = Gravity.START;
-            drawerLayout.setLayoutParams(drawerLayoutLP);
-
-            TypedArray a = getActivity().getTheme().obtainStyledAttributes(new int[]{android.R.attr.windowBackground});
-            int background = a.getResourceId(0, 0);
-            a.recycle();
-            nickList.setBackgroundResource(background);
-            nickList.setChoiceMode(MyListView.CHOICE_MODE_SINGLE);
-            nickList.setLayoutParams(nickListLP);
-        }
-
         if (chat_viewLayout == null)
-            chat_viewLayout = new ChatViewRoot(getActivity(), General.isManyPane(), chatListsView, chatInputBarView);
+            chat_viewLayout = new ChatViewRoot(getActivity(), chatListsView, chatInputBarView);
         else
             ((ViewGroup) chat_viewLayout.getParent()).removeView(chat_viewLayout);
-        if (!General.isManyPane()) {
-            drawerLayout.addView(chat_viewLayout);
-            drawerLayout.addView(nickList);
-        }
 
         if (!Scheme.isSystemBackground()) {
             int background = Scheme.getColor(Scheme.THEME_BACKGROUND);
@@ -182,6 +159,15 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
         }
 
         if (!General.isManyPane()) {
+            nickList = new MyListView(getActivity());
+            slidingPaneLayout = new SlidingPaneLayout(getActivity());
+            SlidingPaneLayout.LayoutParams nickListLP = new SlidingPaneLayout.LayoutParams(SlidingPaneLayout.LayoutParams.MATCH_PARENT, SlidingPaneLayout.LayoutParams.MATCH_PARENT);
+            slidingPaneLayout.setShadowResource(R.drawable.drawer_shadow);
+            //slidingPaneLayout.setSliderFadeColor(Scheme.isBlack() ? 0x55FFFFFF : 0x99000000);
+            nickList.setLayoutParams(nickListLP);
+            slidingPaneLayout.addView(nickList);
+            slidingPaneLayout.addView(chat_viewLayout);
+
             chatBarLayout.setVisibilityUsersImage(ImageView.VISIBLE);
             usersImage.setBackgroundColor(0);
             usersImage.setImageDrawable(General.usersIcon);
@@ -189,13 +175,14 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
                 @Override
                 public void onClick(View view) {
                     if (nickList == null) return;
-                    if (drawerLayout.isDrawerOpen(nickList)) {
-                        drawerLayout.closeDrawer(nickList);
+                    if (slidingPaneLayout.isOpen()) {
+                        slidingPaneLayout.closePane();
                     } else {
-                        drawerLayout.openDrawer(nickList);
+                        slidingPaneLayout.openPane();
                     }
                 }
             });
+            nickList.setVisibility(contact.isConference() ? View.VISIBLE : View.GONE);
         } else
             chatBarLayout.setVisibilityUsersImage(View.GONE);
         chatsImage.setBackgroundColor(0);
@@ -252,10 +239,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
                 @Override
                 public void onClick(View view) {
                     send();
-                    if (!General.isManyPane())
-                        if (drawerLayout.isDrawerVisible(nickList)) {
-                            drawerLayout.closeDrawer(nickList);
-                        }
+                    closePane();
                 }
             });
             sendButton.setOnLongClickListener(new View.OnLongClickListener() {
@@ -267,19 +251,17 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
                 }
             });
         }
-        return General.isManyPane() ? chat_viewLayout : drawerLayout;
+        return General.isManyPane() ? chat_viewLayout : slidingPaneLayout;
     }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
+    private void setNull() {
         chatsImage.setOnClickListener(null);
         menuButton.setOnClickListener(null);
         usersImage.setOnClickListener(null);
         smileButton.setOnClickListener(null);
         chatBarLayout.setOnClickListener(null);
         chatListView.setOnItemClickListener(null);
-        messageEditor.addTextChangedListener(null);
+        messageEditor.removeTextChangedListener(textWatcher);
         chatListView.setOnCreateContextMenuListener(null);
         MessagesAdapter.isRepaint = false;
         chat = null;
@@ -303,6 +285,24 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
         chatInputBarView = null;
         chatDialogFragment = null;
         chatsSpinnerAdapter = null;
+    }
+
+    public boolean hasBack() {
+        if (nickList != null && !General.isManyPane())
+            if (slidingPaneLayout.isOpen()) {
+                slidingPaneLayout.closePane();
+                return false;
+            }
+        setNull();
+        Log.e(TAG, "hasBack");
+        return true;
+    }
+
+    private void closePane() {
+        if (nickList != null && !General.isManyPane())
+            if (slidingPaneLayout.isOpen()) {
+                slidingPaneLayout.closePane();
+            }
     }
 
     @Override
@@ -364,10 +364,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
         updateChatIcon();
         updateList(contact);
 
-        if (General.isManyPane())
-            MessagesAdapter.isRepaint = true;
-        else
-            drawerLayout.setDrawerLockMode(contact.isConference() ? DrawerLayout.LOCK_MODE_UNLOCKED : DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        if (General.isManyPane()) MessagesAdapter.isRepaint = true;
     }
 
     private void setPosition() {
@@ -389,6 +386,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
     }
 
     public boolean isLastPosition() {
+        if (chat == null) return false;
         return chat.dividerPosition == chat.getMessCount();
     }
 
@@ -405,15 +403,6 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
                 chat.getMessData().remove(0);
             }
         } else ChatHistory.instance.unregisterChat(chat);
-    }
-
-    public boolean hasBack() {
-        if (nickList != null && !General.isManyPane())
-            if (drawerLayout.isDrawerOpen(nickList)) {
-                drawerLayout.closeDrawer(nickList);
-                return false;
-            }
-        return true;
     }
 
     private void forceGoToChat(int position) {
@@ -455,7 +444,6 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
                     @Override
                     public Dialog onCreateDialog(Bundle savedInstanceState) {
                         final Context context = getActivity();
-
                         View dialogView = LayoutInflater.from(context).inflate(R.layout.chats_dialog, null);
                         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
                         dialogBuilder.setView(dialogView);
@@ -501,10 +489,24 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
     }
 
     private void initMucUsers() {
+        closePane();
+        if (contact instanceof JabberServiceContact && contact.isConference()) {
+            chatBarLayout.setVisibilityUsersImage(General.isManyPane() ? View.GONE : View.VISIBLE);
+            nickList.setVisibility(View.VISIBLE);
+            mucUsersView = new MucUsersView();
+            mucUsersView.init(protocol, (JabberServiceContact) contact);
+            mucUsersView.show(this, nickList);
+        } else {
+            chatBarLayout.setVisibilityUsersImage(View.GONE);
+            nickList.setVisibility(View.GONE);
+        }
+    }
+
+    /*private void initMucUsers() {
         if (General.isManyPane())
             nickList.setVisibility(View.VISIBLE);
-        else if (drawerLayout.isDrawerOpen(nickList))
-            drawerLayout.closeDrawer(nickList);
+        else if (slidingPaneLayout.isOpen())
+            slidingPaneLayout.closePane();
 
         if (contact instanceof JabberServiceContact && contact.isConference()) {
             mucUsersView = new MucUsersView();
@@ -516,12 +518,11 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
             if (General.isManyPane()) {
                 nickList.setVisibility(View.GONE);
             } else {
-                if (drawerLayout.isDrawerOpen(nickList)) {
-                    drawerLayout.closeDrawer(nickList);
-                }
+                if (slidingPaneLayout.isOpen())
+                    slidingPaneLayout.closePane();
             }
         }
-    }
+    }*/
 
     private void updateList(Contact contact) {
         if (contact == this.contact) {
@@ -604,8 +605,8 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
                         if (nickList.getVisibility() == View.VISIBLE && getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
                             nickList.setVisibility(View.GONE);
                     } else {
-                        if (drawerLayout.isDrawerOpen(nickList) && getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
-                            drawerLayout.closeDrawer(nickList);
+                        if (slidingPaneLayout.isOpen() && getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
+                            slidingPaneLayout.closePane();
                     }
                 }
         }

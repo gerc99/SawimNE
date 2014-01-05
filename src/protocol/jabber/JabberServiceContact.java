@@ -101,7 +101,7 @@ public class JabberServiceContact extends JabberContact {
     }
 
     public boolean isConference() {
-        return isConference;
+        return !isSingleUserContact();
     }
 
     public boolean isVisibleInContactList() {
@@ -288,10 +288,10 @@ public class JabberServiceContact extends JabberContact {
 
     public final String getDefaultGroupName() {
         if (isConference) {
-            return JLocale.getString(Jabber.CONFERENCE_GROUP);
+            return Jabber.CONFERENCE_GROUP;
         }
         if (isGate) {
-            return JLocale.getString(Jabber.GATE_GROUP);
+            return Jabber.GATE_GROUP;
         }
         return null;
     }

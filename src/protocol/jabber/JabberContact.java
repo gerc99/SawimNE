@@ -30,7 +30,7 @@ public class JabberContact extends Contact {
     }
 
     public String getDefaultGroupName() {
-        return JLocale.getString(Jabber.GENERAL_GROUP);
+        return Jabber.GENERAL_GROUP;
     }
 
     public void addChatMenuItems(ContextMenu model) {

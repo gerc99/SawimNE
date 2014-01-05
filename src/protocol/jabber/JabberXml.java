@@ -2142,7 +2142,7 @@ public final class JabberXml extends ClientConnection {
         if (contact.isConference()) {
             g = getJabber().getOrCreateGroup(contact.getDefaultGroupName());
 
-        } else if (g.getName().equals(contact.getDefaultGroupName())) {
+        } else if (g.getName().equals(contact.getDefaultGroupName())) { // NPE
             g = null;
         }
 
@@ -2649,7 +2649,7 @@ public final class JabberXml extends ClientConnection {
         return isMessageExist(Util.strToIntDef(id, -1));
     }
 
-    private void setMessageSended(String id, int state) {
+    private void setMessageSended(String id, byte state) {
         markMessageSended(Util.strToIntDef(id, -1), state);
     }
 

@@ -8,17 +8,17 @@ import sawim.roster.Roster;
 
 public abstract class Message {
     public static final ImageList msgIcons = ImageList.createImageList("/msgs.png");
-    public static final int ICON_NONE = -1;
-    public static final int ICON_SYSREQ = 0;
-    public static final int ICON_SYS_OK = 1;
-    public static final int ICON_TYPE = 2;
-    public static final int ICON_IN_MSG_HI = 3;
-    public static final int ICON_IN_MSG = 4;
-    public static final int ICON_OUT_MSG_FROM_SERVER = 6;
-    public static final int ICON_OUT_MSG_FROM_CLIENT = 7;
+    public static final byte ICON_NONE = -1;
+    public static final byte ICON_SYSREQ = 0;
+    public static final byte ICON_SYS_OK = 1;
+    public static final byte ICON_TYPE = 2;
+    public static final byte ICON_IN_MSG_HI = 3;
+    public static final byte ICON_IN_MSG = 4;
+    public static final byte ICON_OUT_MSG_FROM_SERVER = 6;
+    public static final byte ICON_OUT_MSG_FROM_CLIENT = 7;
 
-    public static final int NOTIFY_FROM_SERVER = ICON_OUT_MSG_FROM_SERVER;
-    public static final int NOTIFY_FROM_CLIENT = ICON_OUT_MSG_FROM_CLIENT;
+    public static final byte NOTIFY_FROM_SERVER = ICON_OUT_MSG_FROM_SERVER;
+    public static final byte NOTIFY_FROM_CLIENT = ICON_OUT_MSG_FROM_CLIENT;
 
     protected boolean isIncoming;
     protected String contactId;
@@ -46,7 +46,7 @@ public abstract class Message {
         this.mData = mData;
     }
 
-    public final void setSendingState(int state) {
+    public final void setSendingState(byte state) {
         if (mData != null && !mData.isMe()) {
             mData.setIconIndex(state);
         }

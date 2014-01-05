@@ -19,13 +19,11 @@ import ru.sawim.widget.IcsLinearLayout;
  */
 public class ChatViewRoot extends IcsLinearLayout {
 
-    public ChatViewRoot(Context context, boolean isTablet, View chatListsView, View chatInputBarView) {
+    public ChatViewRoot(Context context, View chatListsView, View chatInputBarView) {
         super(context,
                 com.viewpagerindicator.R.attr.vpiTabPageIndicatorStyle);
         setOrientation(LinearLayout.VERTICAL);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-        if (isTablet)
-            layoutParams.rightMargin = 240;
         setLayoutParams(layoutParams);
         addViewInLayout(chatListsView, 0, chatListsView.getLayoutParams());
         addViewInLayout(chatInputBarView, 1, chatInputBarView.getLayoutParams());

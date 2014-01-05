@@ -3,6 +3,7 @@ package protocol.net;
 import protocol.Protocol;
 import ru.sawim.General;
 import sawim.SawimException;
+import sawim.chat.message.Message;
 import sawim.chat.message.PlainMessage;
 import sawim.modules.DebugLog;
 
@@ -126,7 +127,7 @@ public abstract class ClientConnection implements Runnable {
 
     public final void addMessage(PlainMessage msg) {
         messages.addElement(msg);
-        markMessageSended(-1, -1);
+        markMessageSended(-1, Message.ICON_NONE);
     }
 
     public final boolean isMessageExist(long msgId) {
@@ -141,7 +142,7 @@ public abstract class ClientConnection implements Runnable {
         return false;
     }
 
-    public final void markMessageSended(long msgId, int status) {
+    public final void markMessageSended(long msgId, byte status) {
         PlainMessage msg = null;
         for (int i = 0; i < messages.size(); ++i) {
             PlainMessage m = (PlainMessage) messages.elementAt(i);

@@ -141,22 +141,25 @@ public class SawimActivity extends ActionBarActivity {
     }
 
     private void handleIntent(Intent intent) {
+        boolean isOpenNewChat = false;
         if (NOTIFY.equals(intent.getAction())) {
             Chat current = ChatHistory.instance.chatAt(ChatHistory.instance.getPreferredItem());
             if (current != null)
-                openChat(current.getProtocol(), current.getContact(), true);
+                isOpenNewChat = openChat(current.getProtocol(), current.getContact(), true);
         }
+        if (!isOpenNewChat && General.isManyPane()) openChat(null, null, true);
     }
 
-    public void openChat(Protocol p, Contact c, boolean allowingStateLoss) {
+    public boolean openChat(Protocol p, Contact c, boolean allowingStateLoss) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         ChatView chatView = (ChatView) fragmentManager.findFragmentById(R.id.chat_fragment);
-        c.activate(p);
         if (chatView == null) {
             Fragment rosterView = getSupportFragmentManager().findFragmentByTag(RosterView.TAG);
             chatView = (ChatView) getSupportFragmentManager().findFragmentByTag(ChatView.TAG);
             if (fragmentManager.getFragments() == null || rosterView == null || chatView == null || rosterView.isVisible()) {
+                if (p == null || c == null) return false;
                 chatView = new ChatView();
+                c.activate(p);
                 chatView.initChat(p, c);
                 FragmentTransaction transaction = fragmentManager.beginTransaction();
                 transaction.replace(R.id.fragment_container, chatView, ChatView.TAG);
@@ -165,19 +168,33 @@ public class SawimActivity extends ActionBarActivity {
                     transaction.commitAllowingStateLoss();
                 else
                     transaction.commit();
-                return;
+                return true;
             }
             if (chatView.isVisible() && chatView.isLastPosition()) {
                 if (c != null) {
+                    c.activate(p);
                     chatView.openChat(p, c);
                     chatView.resume(p.getChat(c));
+                    return true;
                 }
             }
         } else {
-            if (c == null || !chatView.isLastPosition()) return;
-            chatView.openChat(p, c);
-            chatView.resume(chatView.getCurrentChat());
+            Protocol protocol = null;
+            Contact contact = null;
+            if (p != null && c != null && chatView.isLastPosition()) {
+                protocol = p;
+                contact = c;
+            } else if (chatView.getCurrentChat() != null) {
+                protocol = chatView.getCurrentChat().getProtocol();
+                contact = chatView.getCurrentChat().getContact();
+            }
+            if (protocol != null && contact != null) {
+                chatView.openChat(protocol, contact);
+                chatView.resume(chatView.getCurrentChat());
+                return true;
+            }
         }
+        return false;
     }
 
     @Override

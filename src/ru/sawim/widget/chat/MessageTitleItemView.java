@@ -103,7 +103,7 @@ public class MessageTitleItemView extends View {
     }
 
     public void setCheckImage(Bitmap image) {
-        this.checkImage = image;
+        checkImage = image;
     }
 
     public void repaint() {

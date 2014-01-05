@@ -13,7 +13,7 @@ public final class MessData {
     private long time;
     private String nick;
     public String strTime;
-    private int iconIndex = Message.ICON_NONE;
+    private byte iconIndex = Message.ICON_NONE;
     private short rowData;
     private final boolean confHighLight;
     private boolean isHighLight;
@@ -92,11 +92,11 @@ public final class MessData {
         return messColor;
     }
 
-    public int getIconIndex() {
+    public byte getIconIndex() {
         return iconIndex;
     }
 
-    public void setIconIndex(int iconIndex) {
+    public void setIconIndex(byte iconIndex) {
         this.iconIndex = iconIndex;
     }
 }

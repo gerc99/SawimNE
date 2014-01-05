@@ -338,12 +338,12 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         roster.setOnUpdateRoster(null);
     }
 
+    private static final ChatView chatView = new ChatView();
     private void openChat(Protocol p, Contact c, boolean allowingStateLoss) {
         c.activate(p);
-        ChatView chatView = (ChatView) getActivity().getSupportFragmentManager()
+        ChatView chatViewTablet = (ChatView) getActivity().getSupportFragmentManager()
                 .findFragmentById(R.id.chat_fragment);
-        if (chatView == null) {
-            chatView = new ChatView();
+        if (chatViewTablet == null) {
             chatView.initChat(p, c);
             FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.fragment_container, chatView, ChatView.TAG);
@@ -353,10 +353,10 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
             else
                 transaction.commit();
         } else {
-            chatView.pause(chatView.getCurrentChat());
+            chatViewTablet.pause(chatViewTablet.getCurrentChat());
             if (c != null) {
-                chatView.openChat(p, c);
-                chatView.resume(chatView.getCurrentChat());
+                chatViewTablet.openChat(p, c);
+                chatViewTablet.resume(chatViewTablet.getCurrentChat());
             }
         }
     }
