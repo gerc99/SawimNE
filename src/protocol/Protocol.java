@@ -1,7 +1,7 @@
 package protocol;
 
 import DrawControls.icons.Icon;
-import protocol.jabber.JabberContact;
+import protocol.xmpp.XmppContact;
 import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
@@ -529,7 +529,7 @@ abstract public class Protocol {
 
     abstract public boolean isConnected();
 
-    abstract protected void startConnection();
+    public abstract void startConnection();
 
     abstract protected void closeConnection();
 
@@ -951,7 +951,7 @@ abstract public class Protocol {
             isHuman = false;
         }
         boolean isMention = false;
-        if (!isPersonal && !message.isOffline() && (contact instanceof JabberContact)) {
+        if (!isPersonal && !message.isOffline() && (contact instanceof XmppContact)) {
             String msg = message.getText();
             String myName = contact.getMyName();
             isPersonal = msg.startsWith(myName)
@@ -1116,8 +1116,8 @@ abstract public class Protocol {
         }
         PlainMessage plainMsg = new PlainMessage(this, to, General.getCurrentGmtTime(), msg);
         if (isConnected()) {
-            if (msg.startsWith("/") && !msg.startsWith("/me ") && !msg.startsWith("/wakeup") && (to instanceof JabberContact)) {
-                boolean cmdExecuted = ((JabberContact) to).execCommand(this, msg);
+            if (msg.startsWith("/") && !msg.startsWith("/me ") && !msg.startsWith("/wakeup") && (to instanceof XmppContact)) {
+                boolean cmdExecuted = ((XmppContact) to).execCommand(this, msg);
                 if (!cmdExecuted) {
                     String text = JLocale.getString("jabber_command_not_found");
                     SystemNotice notice = new SystemNotice(this, SystemNotice.SYS_NOTICE_MESSAGE, to.getUserId(), text);

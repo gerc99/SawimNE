@@ -55,7 +55,7 @@ public final class Search implements FormListener, ControlStateListener {
     private boolean icqFields;
     private byte type;
     private String[] searchParams = new String[Search.LAST_INDEX];
-    private String jabberGate = null;
+    private String xmppGate = null;
 
     private int currentResultIndex;
     private static final String ageList = "-|13-17|18-22|23-29|30-39|40-49|50-59|60-";
@@ -83,8 +83,8 @@ public final class Search implements FormListener, ControlStateListener {
             if (StringConvertor.isEmpty(userid)) {
                 return;
             }
-            if ((null != jabberGate) && !userid.endsWith(jabberGate)) {
-                userid = userid.replace('@', '%') + '@' + jabberGate;
+            if ((null != xmppGate) && !userid.endsWith(xmppGate)) {
+                userid = userid.replace('@', '%') + '@' + xmppGate;
             }
             Contact contact = protocol.createTempContact(userid);
             if (null != contact) {
@@ -142,8 +142,8 @@ public final class Search implements FormListener, ControlStateListener {
         return results.size();
     }
 
-    public void setJabberGate(String gate) {
-        jabberGate = gate;
+    public void setXmppGate(String gate) {
+        xmppGate = gate;
     }
 
     public String getSearchParam(int param) {
@@ -182,8 +182,8 @@ public final class Search implements FormListener, ControlStateListener {
         searchForm = new Forms((TYPE_LITE == type) ? "add_user" : "search_user", this, true);
         if (TYPE_LITE == type) {
             addUserIdItem();
-            if (null != jabberGate) {
-                searchForm.addString("transport", jabberGate);
+            if (null != xmppGate) {
+                searchForm.addString("transport", xmppGate);
             }
             Vector groups = getGroups();
             if (!groups.isEmpty()) {
@@ -345,8 +345,8 @@ public final class Search implements FormListener, ControlStateListener {
                     return;
                 }
 
-                if ((null != jabberGate) && !userid.endsWith(jabberGate)) {
-                    userid = userid.replace('@', '%') + '@' + jabberGate;
+                if ((null != xmppGate) && !userid.endsWith(xmppGate)) {
+                    userid = userid.replace('@', '%') + '@' + xmppGate;
                 }
 
 
@@ -381,8 +381,8 @@ public final class Search implements FormListener, ControlStateListener {
     private Contact createContact(UserInfo resultData) {
         String uin = StringConvertor.toLowerCase(resultData.uin.trim());
 
-        if ((null != jabberGate) && !uin.endsWith(jabberGate)) {
-            uin = uin.replace('@', '%') + '@' + jabberGate;
+        if ((null != xmppGate) && !uin.endsWith(xmppGate)) {
+            uin = uin.replace('@', '%') + '@' + xmppGate;
         }
 
         Contact contact = protocol.getItemByUIN(uin);

@@ -1,4 +1,4 @@
-package protocol.jabber;
+package protocol.xmpp;
 
 import ru.sawim.models.form.ControlStateListener;
 import ru.sawim.models.form.FormListener;
@@ -9,8 +9,8 @@ import sawim.roster.Roster;
 import sawim.util.JLocale;
 
 public final class AdHoc implements FormListener, ControlStateListener {
-    private JabberContact contact;
-    private Jabber protocol;
+    private XmppContact contact;
+    private Xmpp protocol;
     private String jid = "";
     private String[] nodes;
     private String[] names;
@@ -19,7 +19,7 @@ public final class AdHoc implements FormListener, ControlStateListener {
     private static final int FORM_COMMAND = 2;
     private Forms commandsListForm;
 
-    public AdHoc(Jabber protocol, JabberContact contact) {
+    public AdHoc(Xmpp protocol, XmppContact contact) {
         this.protocol = protocol;
         this.contact = contact;
         this.jid = contact.getUserId() + "/" + contact.currentResource;
@@ -48,7 +48,7 @@ public final class AdHoc implements FormListener, ControlStateListener {
     private String[] getResources() {
         String[] resources = new String[contact.subcontacts.size()];
         for (int i = resources.length - 1; 0 <= i; --i) {
-            JabberContact.SubContact sub = (JabberContact.SubContact) contact.subcontacts.elementAt(i);
+            XmppContact.SubContact sub = (XmppContact.SubContact) contact.subcontacts.elementAt(i);
             resources[i] = sub.resource;
         }
         return resources;
@@ -93,7 +93,7 @@ public final class AdHoc implements FormListener, ControlStateListener {
             }
 
         } else if (1 == contact.subcontacts.size()) {
-            JabberContact.SubContact sub = (JabberContact.SubContact) contact.subcontacts.elementAt(0);
+            XmppContact.SubContact sub = (XmppContact.SubContact) contact.subcontacts.elementAt(0);
             if (StringConvertor.isEmpty(sub.resource)) {
                 jid = contact.getUserId();
             } else {

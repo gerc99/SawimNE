@@ -1,8 +1,33 @@
-
+/*
+ * SHA1.java - An implementation of the SHA-1 Algorithm
+ *
+ * This version by Chuck McManis (cmcmanis@netcom.com) and
+ * still public domain.
+ *
+ * Based on the C code that Steve Reid wrote his header
+ * was :
+ *      SHA-1 in C
+ *      By Steve Reid <steve@edmweb.com>
+ *      100% Public Domain
+ *
+ *      Test Vectors (from FIPS PUB 180-1)
+ *      "abc"
+ *      A9993E36 4706816A BA3E2571 7850C26C 9CD0D89D
+ *      "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq"
+ *      84983E44 1C3BD26E BAAE4AA1 F95129E5 E54670F1
+ *      A million repetitions of "a"
+ *      34AA973C D4C4DAA4 F61EEB2B DBAD2731 6534016F
+ * 
+ * This file was obtained from: http://www.mcmanis.com/~cmcmanis/java/src/util/crypt/SHA1.java
+ * More information can be found here: http://www.mcmanis.com/~cmcmanis/java/
+ */
 
 package com.ssttr.crypto;
 
-
+/**
+ * This is a simple port of Steve Reid's SHA-1 code into Java.
+ * I've run his test vectors through the code and they all pass.
+ */
 public final class SHA1 extends MessageDigest {
     private int state[] = new int[5];
     private long count;
@@ -17,11 +42,32 @@ public final class SHA1 extends MessageDigest {
         digestValid = false;
     }
 
-
+    /*
+     * The following array forms the basis for the transform
+     * buffer. Update puts bytes into this buffer and then
+     * transform adds it into the state of the digest.
+     */
     private int block[] = new int[16];
     private int blockIndex;
 
+    /*
+     * Bitwise rotate a 32-bit number to the left
+     */
 
+
+    // public static void main(String args[]) {
+    //     System.out.println(encode(args[0]));
+    // }
+
+
+    /*
+    * These functions are taken out of #defines in Steve's
+    * code. Java doesn't have a preprocessor so the first
+    * step is to just promote them to real methods.
+    * Later we can optimize them out into inline code,
+    * note that by making them final some compilers will
+    * inline them when given the -O flag.
+    */
     final int rol(int value, int bits) {
         int q = (value << bits) | (value >>> (32 - bits));
         return q;
@@ -69,18 +115,42 @@ public final class SHA1 extends MessageDigest {
     }
 
 
+    /*
+     * Steve's original code and comments :
+     *
+     * blk0() and blk() perform the initial expand.
+     * I got the idea of expanding during the round function from SSLeay
+     *
+     * #define blk0(i) block->l[i]
+     * #define blk(i) (block->l[i&15] = rol(block->l[(i+13)&15]^block->l[(i+8)&15] \
+     *   ^block->l[(i+2)&15]^block->l[i&15],1))
+     *
+     * (R0+R1), R2, R3, R4 are the different operations used in SHA1
+     * #define R0(v,w,x,y,z,i) z+=((w&(x^y))^y)+blk0(i)+0x5A827999+rol(v,5);w=rol(w,30);
+     * #define R1(v,w,x,y,z,i) z+=((w&(x^y))^y)+blk(i)+0x5A827999+rol(v,5);w=rol(w,30);
+     * #define R2(v,w,x,y,z,i) z+=(w^x^y)+blk(i)+0x6ED9EBA1+rol(v,5);w=rol(w,30);
+     * #define R3(v,w,x,y,z,i) z+=(((w|x)&y)|(w&x))+blk(i)+0x8F1BBCDC+rol(v,5);w=rol(w,30);
+     * #define R4(v,w,x,y,z,i) z+=(w^x^y)+blk(i)+0xCA62C1D6+rol(v,5);w=rol(w,30);
+     */
+
     int dd[] = new int[5];
 
+    /**
+     * Hash a single 512-bit block. This is the core of the algorithm.
+     * <p/>
+     * Note that working with arrays is very inefficent in Java as it
+     * does a class cast check each time you store into the array.
+     */
 
     void transform() {
 
-
+        /* Copy context->state[] to working vars */
         dd[0] = state[0];
         dd[1] = state[1];
         dd[2] = state[2];
         dd[3] = state[3];
         dd[4] = state[4];
-
+        /* 4 rounds of 20 operations each. Loop unrolled. */
         R0(dd, 0, 1, 2, 3, 4, 0);
         R0(dd, 4, 0, 1, 2, 3, 1);
         R0(dd, 3, 4, 0, 1, 2, 2);
@@ -161,7 +231,7 @@ public final class SHA1 extends MessageDigest {
         R4(dd, 3, 4, 0, 1, 2, 77);
         R4(dd, 2, 3, 4, 0, 1, 78);
         R4(dd, 1, 2, 3, 4, 0, 79);
-
+        /* Add the working vars back into context.state[] */
         state[0] += dd[0];
         state[1] += dd[1];
         state[2] += dd[2];
@@ -170,8 +240,11 @@ public final class SHA1 extends MessageDigest {
     }
 
 
+    /**
+     * SHA1Init - Initialize new context
+     */
     public void init() {
-
+        /* SHA1 initialization constants */
         state[0] = 0x67452301;
         state[1] = 0xEFCDAB89;
         state[2] = 0x98BADCFE;
@@ -183,7 +256,11 @@ public final class SHA1 extends MessageDigest {
         blockIndex = 0;
     }
 
-
+    /**
+     * Add one byte to the digest. When this is implemented
+     * all of the abstract class methods end up calling
+     * this method for types other than bytes.
+     */
     public synchronized void update(byte b) {
         int mask = (8 * (blockIndex & 3));
 
@@ -197,12 +274,23 @@ public final class SHA1 extends MessageDigest {
         }
     }
 
-
+    /**
+     * Add an array of bytes to the digest.
+     */
     public synchronized void update(byte input[]) {
         update(input, 0, input.length);
     }
 
+    /* 
+    public synchronized void update(byte input[], int offset, int len) {
+        for (int i = 0; i < len; i++) {
+            update(input[i+offset]);
+        }
+    }*/
 
+    /**
+     * Complete processing on the message digest.
+     */
     public void finish() {
         byte bits[] = new byte[8];
         int i;
@@ -214,7 +302,7 @@ public final class SHA1 extends MessageDigest {
         update((byte) 128);
         while (blockIndex != 56)
             update((byte) 0);
-
+        // This should cause a transform to happen.
         update(bits);
         for (i = 0; i < 20; i++) {
             digestBits[i] = (byte)
@@ -223,11 +311,12 @@ public final class SHA1 extends MessageDigest {
         digestValid = true;
     }
 
-
+    /**
+     * Return a string that identifies this algorithm
+     */
     public String getAlg() {
         return "sha-1";
     }
 
 
 }
-

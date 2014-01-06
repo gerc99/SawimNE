@@ -1,6 +1,6 @@
 package protocol;
 
-import protocol.jabber.JabberServiceContact;
+import protocol.xmpp.XmppServiceContact;
 import protocol.mrim.MrimPhoneContact;
 
 import java.util.Vector;
@@ -92,7 +92,7 @@ public class TemporaryRoster {
                     continue;
                 }
                 g = null;
-                if (o instanceof JabberServiceContact) {
+                if (o instanceof XmppServiceContact) {
                     if (o.isSingleUserContact()) {
                         continue;
                     }

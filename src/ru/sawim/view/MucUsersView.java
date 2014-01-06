@@ -8,7 +8,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import protocol.ContactMenu;
 import protocol.Protocol;
-import protocol.jabber.*;
+import protocol.xmpp.*;
 import ru.sawim.R;
 import ru.sawim.models.MucUsersAdapter;
 import ru.sawim.view.menu.MyMenu;
@@ -28,24 +28,24 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
     private TextBoxView banTextbox;
     private TextBoxView kikTextbox;
     private Protocol protocol;
-    private JabberServiceContact jabberServiceContact;
+    private XmppServiceContact xmppServiceContact;
 
-    public void init(Protocol protocol, JabberServiceContact jabberServiceContact) {
+    public void init(Protocol protocol, XmppServiceContact xmppServiceContact) {
         this.protocol = protocol;
-        this.jabberServiceContact = jabberServiceContact;
+        this.xmppServiceContact = xmppServiceContact;
     }
 
     public void show(final ChatView chatView, ListView nickList) {
         final FragmentActivity activity = (FragmentActivity) nickList.getContext();
-        usersAdapter.init(activity, (Jabber) protocol, jabberServiceContact);
+        usersAdapter.init(activity, (Xmpp) protocol, xmppServiceContact);
         nickList.setAdapter(usersAdapter);
         nickList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 final Object o = usersAdapter.getItem(position);
                 chatView.hasBack();
-                if (o instanceof JabberContact.SubContact) {
-                    JabberContact.SubContact c = (JabberContact.SubContact) o;
+                if (o instanceof XmppContact.SubContact) {
+                    XmppContact.SubContact c = (XmppContact.SubContact) o;
                     chatView.insert(c.resource + ", ");
                     chatView.showKeyboard();
                 }
@@ -62,55 +62,55 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
                 menu.add(activity.getString(R.string.info), ContactMenu.COMMAND_INFO);
                 menu.add(activity.getString(R.string.user_statuses), ContactMenu.COMMAND_STATUS);
                 menu.add(activity.getString(R.string.adhoc), ContactMenu.GATE_COMMANDS);
-                int myAffiliation = usersAdapter.getAffiliation(jabberServiceContact.getMyName());
-                int myRole = usersAdapter.getRole(jabberServiceContact.getMyName());
+                int myAffiliation = usersAdapter.getAffiliation(xmppServiceContact.getMyName());
+                int myRole = usersAdapter.getRole(xmppServiceContact.getMyName());
                 final int role = usersAdapter.getRole(nick);
                 final int affiliation = usersAdapter.getAffiliation(nick);
-                if (myAffiliation == JabberServiceContact.AFFILIATION_OWNER)
+                if (myAffiliation == XmppServiceContact.AFFILIATION_OWNER)
                     myAffiliation++;
-                if (JabberServiceContact.ROLE_MODERATOR == myRole) {
-                    if (JabberServiceContact.ROLE_MODERATOR > role) {
+                if (XmppServiceContact.ROLE_MODERATOR == myRole) {
+                    if (XmppServiceContact.ROLE_MODERATOR > role) {
                         menu.add(JLocale.getString("to_kick"), ContactMenu.COMMAND_KICK);
                     }
-                    if (myAffiliation >= JabberServiceContact.AFFILIATION_ADMIN && affiliation < myAffiliation) {
+                    if (myAffiliation >= XmppServiceContact.AFFILIATION_ADMIN && affiliation < myAffiliation) {
                         menu.add(JLocale.getString("to_ban"), ContactMenu.COMMAND_BAN);
                     }
-                    if (affiliation < JabberServiceContact.AFFILIATION_ADMIN) {
-                        if (role == JabberServiceContact.ROLE_VISITOR) {
+                    if (affiliation < XmppServiceContact.AFFILIATION_ADMIN) {
+                        if (role == XmppServiceContact.ROLE_VISITOR) {
                             menu.add(JLocale.getString("to_voice"), ContactMenu.COMMAND_VOICE);
                         } else {
                             menu.add(JLocale.getString("to_devoice"), ContactMenu.COMMAND_DEVOICE);
                         }
                     }
                 }
-                if (myAffiliation >= JabberServiceContact.AFFILIATION_ADMIN) {
-                    if (affiliation < JabberServiceContact.AFFILIATION_ADMIN) {
-                        if (role == JabberServiceContact.ROLE_MODERATOR) {
+                if (myAffiliation >= XmppServiceContact.AFFILIATION_ADMIN) {
+                    if (affiliation < XmppServiceContact.AFFILIATION_ADMIN) {
+                        if (role == XmppServiceContact.ROLE_MODERATOR) {
                             menu.add(JLocale.getString("to_voice"), ContactMenu.COMMAND_VOICE);
                         } else {
                             menu.add(JLocale.getString("to_moder"), ContactMenu.COMMAND_MODER);
                         }
                     }
                     if (affiliation < myAffiliation) {
-                        if (affiliation != JabberServiceContact.AFFILIATION_NONE) {
+                        if (affiliation != XmppServiceContact.AFFILIATION_NONE) {
                             menu.add(JLocale.getString("to_none"), ContactMenu.COMMAND_NONE);
                         }
-                        if (affiliation != JabberServiceContact.AFFILIATION_MEMBER) {
+                        if (affiliation != XmppServiceContact.AFFILIATION_MEMBER) {
                             menu.add(JLocale.getString("to_member"), ContactMenu.COMMAND_MEMBER);
                         }
                     }
                 }
-                if (myAffiliation >= JabberServiceContact.AFFILIATION_OWNER) {
-                    if (affiliation != JabberServiceContact.AFFILIATION_ADMIN) {
+                if (myAffiliation >= XmppServiceContact.AFFILIATION_OWNER) {
+                    if (affiliation != XmppServiceContact.AFFILIATION_ADMIN) {
                         menu.add(JLocale.getString("to_admin"), ContactMenu.COMMAND_ADMIN);
                     }
-                    if (affiliation != JabberServiceContact.AFFILIATION_OWNER) {
+                    if (affiliation != XmppServiceContact.AFFILIATION_OWNER) {
                         menu.add(JLocale.getString("to_owner"), ContactMenu.COMMAND_OWNER);
                     }
                 }
                 AlertDialog.Builder builder = new AlertDialog.Builder(activity);
                 builder.setCancelable(true);
-                builder.setTitle(jabberServiceContact.getName());
+                builder.setTitle(xmppServiceContact.getName());
                 builder.setAdapter(menu, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -118,10 +118,10 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
                         chatView.hasBack();
                         switch (menu.getItem(which).idItem) {
                             case ContactMenu.COMMAND_PRIVATE:
-                                String jid = Jid.realJidToSawimJid(jabberServiceContact.getUserId() + "/" + nick);
-                                JabberServiceContact c = (JabberServiceContact) protocol.getItemByUIN(jid);
+                                String jid = Jid.realJidToSawimJid(xmppServiceContact.getUserId() + "/" + nick);
+                                XmppServiceContact c = (XmppServiceContact) protocol.getItemByUIN(jid);
                                 if (null == c) {
-                                    c = (JabberServiceContact) protocol.createTempContact(jid);
+                                    c = (XmppServiceContact) protocol.createTempContact(jid);
                                     protocol.addTempContact(c);
                                 }
                                 chatView.pause(chatView.getCurrentChat());
@@ -129,14 +129,14 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
                                 chatView.resume(chatView.getCurrentChat());
                                 break;
                             case ContactMenu.COMMAND_INFO:
-                                protocol.showUserInfo(jabberServiceContact.getPrivateContact(nick));
+                                protocol.showUserInfo(xmppServiceContact.getPrivateContact(nick));
                                 break;
                             case ContactMenu.COMMAND_STATUS:
-                                protocol.showStatus(jabberServiceContact.getPrivateContact(nick));
+                                protocol.showStatus(xmppServiceContact.getPrivateContact(nick));
                                 break;
                             case ContactMenu.GATE_COMMANDS:
-                                JabberContact.SubContact subContact = jabberServiceContact.getExistSubContact(nick);
-                                AdHoc adhoc = new AdHoc((Jabber) protocol, jabberServiceContact);
+                                XmppContact.SubContact subContact = xmppServiceContact.getExistSubContact(nick);
+                                AdHoc adhoc = new AdHoc((Xmpp) protocol, xmppServiceContact);
                                 adhoc.setResource(subContact.resource);
                                 adhoc.show();
                                 break;
@@ -201,7 +201,7 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
     public void textboxAction(TextBoxView box, boolean ok) {
         String rzn = (box == banTextbox) ? banTextbox.getString() : kikTextbox.getString();
         String Nick = "";
-        String myNick = jabberServiceContact.getMyName();
+        String myNick = xmppServiceContact.getMyName();
         String reason = "";
         if (rzn.length() != 0 && rzn.charAt(0) == '!') {
             rzn = rzn.substring(1);

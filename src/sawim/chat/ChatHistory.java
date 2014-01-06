@@ -1,6 +1,7 @@
 package sawim.chat;
 
 import DrawControls.icons.Icon;
+import android.graphics.drawable.BitmapDrawable;
 import android.util.Log;
 import protocol.Contact;
 import protocol.Protocol;
@@ -101,7 +102,7 @@ public final class ChatHistory {
         return count;
     }
 
-    private int getMoreImportant(int v1, int v2) {
+    private byte getMoreImportant(int v1, int v2) {
         if ((Message.ICON_IN_MSG_HI == v1) || (Message.ICON_IN_MSG_HI == v2)) {
             return Message.ICON_IN_MSG_HI;
         }
@@ -117,16 +118,16 @@ public final class ChatHistory {
         return -1;
     }
 
-    public Icon getUnreadMessageIcon() {
-        int icon = -1;
+    public BitmapDrawable getUnreadMessageIcon() {
+        byte icon = -1;
         for (int i = getTotal() - 1; 0 <= i; --i) {
             icon = getMoreImportant(icon, chatAt(i).getNewMessageIcon());
         }
-        return Message.msgIcons.iconAt(icon);
+        return Message.getIcon(icon);
     }
 
-    public Icon getUnreadMessageIcon(Protocol p) {
-        int icon = -1;
+    public BitmapDrawable getUnreadMessageIcon(Protocol p) {
+        byte icon = -1;
         Chat chat;
         for (int i = getTotal() - 1; 0 <= i; --i) {
             chat = chatAt(i);
@@ -134,17 +135,17 @@ public final class ChatHistory {
                 icon = getMoreImportant(icon, chat.getNewMessageIcon());
             }
         }
-        return Message.msgIcons.iconAt(icon);
+        return Message.getIcon(icon);
     }
 
-    public Icon getUnreadMessageIcon(Vector contacts) {
-        int icon = -1;
+    public BitmapDrawable getUnreadMessageIcon(Vector contacts) {
+        byte icon = -1;
         Contact c;
         for (int i = contacts.size() - 1; 0 <= i; --i) {
             c = (Contact) contacts.elementAt(i);
             icon = getMoreImportant(icon, c.getUnreadMessageIcon());
         }
-        return Message.msgIcons.iconAt(icon);
+        return Message.getIcon(icon);
     }
 
     public void registerChat(Chat item) {

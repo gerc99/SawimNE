@@ -564,8 +564,8 @@ public final class StringConvertor {
         String mrimContent = Config.loadResource("/mrim-replaces.txt");
         Config.parseIniConfig(mrimContent, configs);
 
-        String jabberContent = Config.loadResource("/jabber-replaces.txt");
-        Config.parseIniConfig(jabberContent, configs);
+        String xmppContent = Config.loadResource("/jabber-replaces.txt");
+        Config.parseIniConfig(xmppContent, configs);
 
         StringConvertor.converters = new StringConvertor[configs.size()];
         for (int i = 0; i < configs.size(); ++i) {

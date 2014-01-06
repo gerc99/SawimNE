@@ -2,7 +2,6 @@ package ru.sawim.view;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -12,13 +11,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import protocol.Profile;
-import protocol.jabber.JabberRegistration;
+import protocol.xmpp.XmppRegistration;
 import ru.sawim.General;
 import ru.sawim.R;
-import ru.sawim.SawimApplication;
-import ru.sawim.activities.AccountsListActivity;
 import sawim.Options;
-import sawim.OptionsForm;
 import sawim.comm.StringConvertor;
 import sawim.roster.Roster;
 
@@ -47,19 +43,19 @@ public class StartWindowView extends Fragment {
         regJidButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                JabberRegistration jabberRegistration = new JabberRegistration();
-                jabberRegistration.setListener(new JabberRegistration.OnAddAccount() {
+                XmppRegistration xmppRegistration = new XmppRegistration();
+                xmppRegistration.setListener(new XmppRegistration.OnAddAccount() {
 
                     @Override
                     public void addAccount(int num, Profile acc) {
                         addAccount(num, acc);
                     }
                 });
-                jabberRegistration.init().show();
+                xmppRegistration.init().show();
             }
         });
-        Button signInJabberButton = (Button) v.findViewById(R.id.sign_in_jabber);
-        signInJabberButton.setOnClickListener(new View.OnClickListener() {
+        Button signInXmppButton = (Button) v.findViewById(R.id.sign_in_jabber);
+        signInXmppButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 new LoginDialog(Profile.PROTOCOL_JABBER).show(General.currentActivity.getSupportFragmentManager(), "login");
@@ -118,7 +114,7 @@ public class StartWindowView extends Fragment {
             final EditText editNick = (EditText) dialogLogin.findViewById(R.id.edit_nick);
             final EditText editPass = (EditText) dialogLogin.findViewById(R.id.edit_password);
             int protocolIndex = 0;
-            final boolean isJabber = type == Profile.PROTOCOL_JABBER;
+            final boolean isXmpp = type == Profile.PROTOCOL_JABBER;
             for (int i = 0; i < Profile.protocolTypes.length; ++i) {
                 if (type == Profile.protocolTypes[i]) {
                     protocolIndex = i;
@@ -127,7 +123,7 @@ public class StartWindowView extends Fragment {
             }
             loginText.setText(Profile.protocolIds[protocolIndex]);
             getDialog().setTitle(getText(R.string.acc_add));
-            if (isJabber) {
+            if (isXmpp) {
                 serverText.setVisibility(TextView.VISIBLE);
                 editServer.setVisibility(EditText.VISIBLE);
                 editServer.setText(General.DEFAULT_SERVER);
@@ -154,7 +150,7 @@ public class StartWindowView extends Fragment {
                     if (1 < Profile.protocolTypes.length) {
                         account.protocolType = Profile.protocolTypes[finalProtocolIndex];
                     }
-                    if (isJabber) {
+                    if (isXmpp) {
                         if (login.indexOf('@') + 1 > 0) //isServer
                             account.userId = login;
                         else

@@ -79,11 +79,11 @@ public class ChatsAdapter extends BaseAdapter {
         if (icStatus != null)
             rosterItemView.itemFirstImage = icStatus.getImage().getBitmap();
         if (item.isTyping()) {
-            rosterItemView.itemFirstImage = Message.msgIcons.iconAt(Message.ICON_TYPE).getImage().getBitmap();
+            rosterItemView.itemFirstImage = Message.getIcon(Message.ICON_TYPE).getBitmap();
         } else {
-            Icon icMess = Message.msgIcons.iconAt(item.getUnreadMessageIcon());
+            BitmapDrawable icMess = Message.getIcon((byte) item.getUnreadMessageIcon());
             if (icMess != null)
-                rosterItemView.itemFirstImage = icMess.getImage().getBitmap();
+                rosterItemView.itemFirstImage = icMess.getBitmap();
         }
 
         if (item.getXStatusIndex() != XStatusInfo.XSTATUS_NONE)
@@ -118,11 +118,11 @@ public class ChatsAdapter extends BaseAdapter {
 
     public Drawable getImageChat(Chat chat, boolean showMess) {
         if (chat.getContact().isTyping()) {
-            return Message.msgIcons.iconAt(Message.ICON_TYPE).getImage();
+            return Message.getIcon(Message.ICON_TYPE);
         } else {
             Icon icStatus = chat.getContact().getLeftIcon(chat.getProtocol());
-            Icon icMess = Message.msgIcons.iconAt(chat.getContact().getUnreadMessageIcon());
-            return icMess == null || !showMess ? icStatus.getImage() : icMess.getImage();
+            Drawable icMess = Message.getIcon((byte) chat.getContact().getUnreadMessageIcon());
+            return icMess == null || !showMess ? icStatus.getImage() : icMess;
         }
     }
 

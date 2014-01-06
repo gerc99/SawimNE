@@ -33,7 +33,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
@@ -43,7 +42,7 @@ import protocol.Contact;
 import protocol.Protocol;
 import protocol.StatusInfo;
 import protocol.icq.Icq;
-import protocol.jabber.Jabber;
+import protocol.xmpp.Xmpp;
 import protocol.mrim.Mrim;
 import ru.sawim.*;
 import ru.sawim.view.*;
@@ -335,8 +334,8 @@ public class SawimActivity extends ActionBarActivity {
                 }
             }
             if (p.isConnected()) {
-                if (p instanceof Jabber) {
-                    if (((Jabber) p).hasS2S()) {
+                if (p instanceof Xmpp) {
+                    if (((Xmpp) p).hasS2S()) {
                         menu.add(Menu.NONE, MENU_DISCO, Menu.NONE, R.string.service_discovery);
                     }
                 }
@@ -344,7 +343,7 @@ public class SawimActivity extends ActionBarActivity {
                 if (p instanceof Icq) {
                     menu.add(Menu.NONE, MENU_MYSELF, Menu.NONE, R.string.myself);
                 } else {
-                    if (p instanceof Jabber) {
+                    if (p instanceof Xmpp) {
                         menu.add(Menu.NONE, MENU_NOTES, Menu.NONE, R.string.notes);
                     }
                     if (p.hasVCardEditor())
@@ -410,10 +409,10 @@ public class SawimActivity extends ActionBarActivity {
                 Notify.getSound().changeSoundMode(false);
                 break;
             case MENU_DISCO:
-                ((Jabber) p).getServiceDiscovery().showIt();
+                ((Xmpp) p).getServiceDiscovery().showIt();
                 break;
             case MENU_NOTES:
-                ((Jabber) p).getMirandaNotes().showIt();
+                ((Xmpp) p).getMirandaNotes().showIt();
                 break;
             case MENU_GROUPS:
                 new ManageContactListForm(p).showMenu(General.currentActivity);

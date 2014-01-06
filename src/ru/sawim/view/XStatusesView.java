@@ -13,7 +13,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import protocol.Protocol;
 import protocol.icq.Icq;
-import protocol.jabber.Jabber;
+import protocol.xmpp.Xmpp;
 import protocol.mrim.Mrim;
 import ru.sawim.R;
 import ru.sawim.models.XStatusesAdapter;
@@ -103,7 +103,7 @@ public class XStatusesView extends DialogFragment {
         if (protocol instanceof Mrim) {
             return "mrim";
         }
-        if (protocol instanceof Jabber) {
+        if (protocol instanceof Xmpp) {
             return "jabber";
         }
         return "";

@@ -80,22 +80,20 @@ public final class MrimConnection extends ClientConnection {
     }
 
     private String getServer() throws SawimException {
-        byte[] server = new byte[32];
-        int size = 0;
+        StringBuilder buffer = new StringBuilder();
         try {
             TcpSocket s = new TcpSocket();
             s.connectForReadingTo("socket://mrim.mail.ru:2042");
-            s.waitData();
-            size = s.read(server, 0, server.length);
+            int ch;
+            while (true) {
+                ch = s.read();
+                if (-1 == ch) break;
+                if(('0' <= ch && ch <= '9') || (ch == '.') || (ch == ':')) {
+                    buffer.append((char)ch);
+                }
+            }
         } catch (Exception e) {
             throw new SawimException(120, 10);
-        }
-        StringBuffer buffer = new StringBuffer();
-        for (int i = 0; i < size; ++i) {
-            char ch = (char) server[i];
-            if (('0' <= ch && ch <= '9') || (ch == '.') || (ch == ':')) {
-                buffer.append(ch);
-            }
         }
         return buffer.toString();
     }

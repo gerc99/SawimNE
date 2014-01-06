@@ -1,9 +1,8 @@
-package protocol.jabber;
+package protocol.xmpp;
 
 
 import DrawControls.icons.ImageList;
 import android.graphics.Bitmap;
-import android.util.Log;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
 import sawim.comm.StringConvertor;
@@ -263,7 +262,7 @@ final class XForm {
             form.addPasswordField(num, label, value);
 
         } else if (S_BOOLEAN.equals(type)) {
-            form.addCheckBox(num, label, JabberXml.isTrue(value));
+            form.addCheckBox(num, label, XmppConnection.isTrue(value));
 
         } else if (S_JID_SINGLE.equals(type)) {
             form.addTextField(num, label, value);

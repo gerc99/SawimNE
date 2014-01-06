@@ -1,6 +1,6 @@
 
 
-package protocol.jabber;
+package protocol.xmpp;
 
 
 import sawim.FileTransfer;
@@ -22,9 +22,9 @@ public class IBBFileTransfer {
         this.fileName = name;
         this.fileDesc = desc;
         this.ft = ft;
-        JabberContact c = (JabberContact) ft.getReceiver();
+        XmppContact c = (XmppContact) ft.getReceiver();
         this.to = c.getUserId();
-        if (!(c instanceof JabberServiceContact)) {
+        if (!(c instanceof XmppServiceContact)) {
             String resource = c.getCurrentSubContact().resource;
             this.to += '/' + resource;
         }

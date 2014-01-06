@@ -87,12 +87,12 @@ public class SawimApplication extends Application {
         ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).cancelAll();
     }
 
-    public boolean isNetworkAvailable() {
-        return networkStateReceiver.isNetworkAvailable();
-    }
-
     public void updateAppIcon() {
         serviceConnection.send(Message.obtain(null, SawimService.UPDATE_APP_ICON));
+    }
+
+    public boolean isNetworkAvailable() {
+        return networkStateReceiver.isNetworkAvailable();
     }
 
     public String getVersion() {

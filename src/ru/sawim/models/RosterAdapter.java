@@ -111,9 +111,9 @@ public class RosterAdapter extends BaseAdapter {
         if (icGroup != null)
             rosterItemView.itemFirstImage = icGroup.getImage().getBitmap();
 
-        Icon messIcon = ChatHistory.instance.getUnreadMessageIcon(g.getContacts());
+        BitmapDrawable messIcon = ChatHistory.instance.getUnreadMessageIcon(g.getContacts());
         if (!g.isExpanded() && messIcon != null)
-            rosterItemView.itemFourthImage = messIcon.getImage().getBitmap();
+            rosterItemView.itemFourthImage = messIcon.getBitmap();
     }
 
     void populateFromContact(RosterItemView rosterItemView, Roster roster, Protocol p, Contact item) {
@@ -132,11 +132,11 @@ public class RosterAdapter extends BaseAdapter {
         if (icStatus != null)
             rosterItemView.itemFirstImage = icStatus.getImage().getBitmap();
         if (item.isTyping()) {
-            rosterItemView.itemFirstImage = Message.msgIcons.iconAt(Message.ICON_TYPE).getImage().getBitmap();
+            rosterItemView.itemFirstImage = Message.getIcon(Message.ICON_TYPE).getBitmap();
         } else {
-            Icon icMess = Message.msgIcons.iconAt(item.getUnreadMessageIcon());
+            BitmapDrawable icMess = Message.getIcon((byte) item.getUnreadMessageIcon());
             if (icMess != null)
-                rosterItemView.itemFirstImage = icMess.getImage().getBitmap();
+                rosterItemView.itemFirstImage = icMess.getBitmap();
         }
 
         if (item.getXStatusIndex() != XStatusInfo.XSTATUS_NONE)

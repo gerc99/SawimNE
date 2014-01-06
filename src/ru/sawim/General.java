@@ -39,15 +39,20 @@ public class General {
     public static final String DEFAULT_SERVER = "jabber.ru";
 
     public static ImageList affiliationIcons = ImageList.createImageList("/jabber-affiliations.png");
-    public static BitmapDrawable usersIcon = ImageList.createImageList("/participants.png").iconAt(0).getImage();
     public static final ImageList groupDownIcon = ImageList.createImageList("/control_down.png");
     public static final ImageList groupRightIcons = ImageList.createImageList("/control_right.png");
+    public static BitmapDrawable usersIcon;
+    public static BitmapDrawable authGrantIcon;
+    public static BitmapDrawable authReqIcon;
+    public static BitmapDrawable messageIcon;
+    public static BitmapDrawable personalMessageIcon;
+    public static BitmapDrawable typingIcon;
     private static General instance;
     public static boolean returnFromAcc = false;
     public static ActionBarActivity currentActivity;
     public static ActionBar actionBar;
     private static Resources resources;
-    public static BitmapDrawable messageIconCheck = (BitmapDrawable) getResources(SawimApplication.getContext()).getDrawable(R.drawable.msg_check);
+    public static BitmapDrawable messageIconCheck;
     private boolean paused = true;
     private static int fontSize;
     public static boolean hideIconsClient;
@@ -62,7 +67,6 @@ public class General {
     public void startApp() {
         instance = this;
         instance.paused = false;
-
         ru.sawim.config.HomeDirectory.init();
         Options.loadOptions();
         new ru.sawim.config.Options().load();
@@ -71,7 +75,6 @@ public class General {
         Scheme.setColorScheme(Options.getInt(Options.OPTION_COLOR_SCHEME));
         updateOptions();
         Updater.startUIUpdater();
-
         try {
             Notify.getSound().initSounds();
             gc();
@@ -89,7 +92,24 @@ public class General {
             DebugLog.instance.activate();
         }
         DebugLog.startTests();
+        initIcons();
         displayDensity = General.getResources(SawimApplication.getContext()).getDisplayMetrics().density;
+    }
+
+    private void initIcons() {
+        messageIconCheck = (BitmapDrawable) getResources(SawimApplication.getContext()).getDrawable(R.drawable.msg_check);
+        usersIcon = (BitmapDrawable) getResources(SawimApplication.getContext()).
+                getDrawable(Scheme.isBlack() ? R.drawable.ic_participants_dark : R.drawable.ic_participants_light);
+        authGrantIcon = (BitmapDrawable) getResources(SawimApplication.getContext()).
+                getDrawable(R.drawable.ic_auth_grant);
+        authReqIcon = (BitmapDrawable) getResources(SawimApplication.getContext()).
+                getDrawable(R.drawable.ic_auth_req);
+        messageIcon = (BitmapDrawable) getResources(SawimApplication.getContext()).
+                getDrawable(R.drawable.ic_new_message);
+        personalMessageIcon = (BitmapDrawable) getResources(SawimApplication.getContext()).
+                getDrawable(R.drawable.ic_new_personal_message);
+        typingIcon = (BitmapDrawable) getResources(SawimApplication.getContext()).
+                getDrawable(Scheme.isBlack() ? R.drawable.ic_typing_dark : R.drawable.ic_typing_light);
     }
 
     public static void updateOptions() {

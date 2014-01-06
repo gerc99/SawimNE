@@ -1,4 +1,4 @@
-package protocol.jabber;
+package protocol.xmpp;
 
 import sawim.SawimException;
 import sawim.comm.StringConvertor;

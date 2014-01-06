@@ -1,13 +1,14 @@
 package sawim.chat.message;
 
-import DrawControls.icons.ImageList;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import protocol.Contact;
 import protocol.Protocol;
+import ru.sawim.General;
 import sawim.chat.MessData;
 import sawim.roster.Roster;
 
 public abstract class Message {
-    public static final ImageList msgIcons = ImageList.createImageList("/msgs.png");
     public static final byte ICON_NONE = -1;
     public static final byte ICON_SYSREQ = 0;
     public static final byte ICON_SYS_OK = 1;
@@ -27,6 +28,22 @@ public abstract class Message {
     private String senderName;
     private MessData mData = null;
     private long newDate;
+
+    public static BitmapDrawable getIcon(byte type) {
+        switch (type) {
+            case ICON_SYSREQ:
+                return General.authReqIcon;
+            case ICON_SYS_OK:
+                return General.authGrantIcon;
+            case ICON_TYPE:
+                return General.typingIcon;
+            case ICON_IN_MSG_HI:
+                return General.personalMessageIcon;
+            case ICON_IN_MSG:
+                return General.messageIcon;
+        }
+        return null;
+    }
 
     protected Message(long date, Protocol protocol, String contactId, boolean isIncoming) {
         this.newDate = date;

@@ -220,7 +220,7 @@ public class Icq extends Protocol {
         requestSimpleAction(act);
     }
 
-    protected void startConnection() {
+    public void startConnection() {
         connection = new IcqNetWorking();
         connection.initNet(this);
         ConnectAction act = new ConnectAction(this);

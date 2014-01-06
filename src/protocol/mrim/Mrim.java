@@ -69,7 +69,7 @@ public class Mrim extends Protocol {
         return contact.getUserId();
     }
 
-    protected void startConnection() {
+    public void startConnection() {
         connection = new MrimConnection(this);
         connection.start();
     }

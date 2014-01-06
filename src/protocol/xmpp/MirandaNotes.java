@@ -1,4 +1,4 @@
-package protocol.jabber;
+package protocol.xmpp;
 
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -25,17 +25,17 @@ public final class MirandaNotes {
     private static final int MENU_COPY = 3;
     private static final int MENU_COPY_ALL = 4;
 
-    private Jabber jabber;
+    private Xmpp xmpp;
     private Vector notes = new Vector();
 
     private VirtualList screen;
     private VirtualListModel model;
 
-    void init(Jabber protocol) {
+    void init(Xmpp protocol) {
         screen = VirtualList.getInstance();
         model = new VirtualListModel();
         screen.setCaption(JLocale.getString("notes"));
-        jabber = protocol;
+        xmpp = protocol;
         screen.setModel(model);
         screen.setBuildOptionsMenu(new VirtualList.OnBuildOptionsMenu() {
             @Override
@@ -73,7 +73,7 @@ public final class MirandaNotes {
 
                     case COMMAND_DEL:
                         removeNote(listItem);
-                        jabber.getConnection().saveMirandaNotes(getNotesStorage());
+                        xmpp.getConnection().saveMirandaNotes(getNotesStorage());
                         refresh();
                         break;
 
@@ -120,7 +120,7 @@ public final class MirandaNotes {
         wait.addDescription(JLocale.getString("wait"),
                 Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
         model.addPar(wait);
-        jabber.getConnection().requestMirandaNotes();
+        xmpp.getConnection().requestMirandaNotes();
         screen.show();
         screen.updateModel();
     }
@@ -226,7 +226,7 @@ public final class MirandaNotes {
 
                 refresh();
                 selectNote(note);
-                jabber.getConnection().saveMirandaNotes(getNotesStorage());
+                xmpp.getConnection().saveMirandaNotes(getNotesStorage());
                 form.back();
             }
         }

@@ -174,7 +174,7 @@ public class AccountsListView extends Fragment {
             final EditText editNick = (EditText) dialogLogin.findViewById(R.id.edit_nick);
             final EditText editPass = (EditText) dialogLogin.findViewById(R.id.edit_password);
             int protocolIndex = 0;
-            final boolean isJabber = type == Profile.PROTOCOL_JABBER;
+            final boolean isXmpp = type == Profile.PROTOCOL_JABBER;
             for (int i = 0; i < Profile.protocolTypes.length; ++i) {
                 if (type == Profile.protocolTypes[i]) {
                     protocolIndex = i;
@@ -182,7 +182,7 @@ public class AccountsListView extends Fragment {
                 }
             }
             loginText.setText(Profile.protocolIds[protocolIndex]);
-            if (isJabber) {
+            if (isXmpp) {
                 serverText.setVisibility(TextView.VISIBLE);
                 editServer.setVisibility(EditText.VISIBLE);
             } else {
@@ -192,7 +192,7 @@ public class AccountsListView extends Fragment {
             if (isEdit) {
                 final Profile account = Options.getAccount(id);
                 getDialog().setTitle(getText(R.string.acc_edit));
-                if (isJabber) {
+                if (isXmpp) {
                     editLogin.setText(account.userId.substring(0, account.userId.indexOf('@')));
                     editServer.setText(account.userId.substring(account.userId.indexOf('@') + 1));
                 } else {
@@ -202,7 +202,7 @@ public class AccountsListView extends Fragment {
                 editNick.setText(account.nick);
             } else {
                 getDialog().setTitle(getText(R.string.acc_add));
-                if (isJabber) {
+                if (isXmpp) {
                     editServer.setText(General.DEFAULT_SERVER);
                 }
             }
@@ -225,7 +225,7 @@ public class AccountsListView extends Fragment {
                     if (1 < Profile.protocolTypes.length) {
                         account.protocolType = Profile.protocolTypes[finalProtocolIndex];
                     }
-                    if (isJabber) {
+                    if (isXmpp) {
                         if (login.indexOf('@') + 1 > 0) //isServer
                             account.userId = login;
                         else

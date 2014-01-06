@@ -6,8 +6,8 @@ import android.net.Uri;
 import android.support.v7.app.ActionBarActivity;
 import protocol.Contact;
 import protocol.Protocol;
-import protocol.jabber.Jabber;
-import protocol.jabber.Jid;
+import protocol.xmpp.Xmpp;
+import protocol.xmpp.Jid;
 import ru.sawim.General;
 import ru.sawim.R;
 import sawim.roster.Roster;
@@ -60,29 +60,29 @@ public class OpenUriActivity extends ActionBarActivity {
             jid = path.substring(0, path.indexOf('?'));
         }
         sawim.modules.DebugLog.println("open xmpp " + path + " " + jid);
-        Jabber jabber = getFirstJabber();
-        if (null == jabber) {
+        Xmpp xmpp = getFirstXmpp();
+        if (null == xmpp) {
             alert();
             return;
         }
         try {
-            Contact c = jabber.createTempContact(Jid.getBareJid(jid));
-            while (jabber.isConnecting()) {
+            Contact c = xmpp.createTempContact(Jid.getBareJid(jid));
+            while (xmpp.isConnecting()) {
                 try {
                     Thread.sleep(2000);
                 } catch (Exception ignored) {
                 }
             }
-            jabber.addTempContact(c);
+            xmpp.addTempContact(c);
             Roster.getInstance().activate(c);
         } catch (Exception e) {
             sawim.modules.DebugLog.panic("uri", e);
         }
     }
 
-    private Jabber getFirstJabber() {
+    private Xmpp getFirstXmpp() {
         for (Protocol p : Roster.getInstance().getProtocols()) {
-            if (p instanceof Jabber) return (Jabber) p;
+            if (p instanceof Xmpp) return (Xmpp) p;
         }
         return null;
     }

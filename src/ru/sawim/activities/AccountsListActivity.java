@@ -9,7 +9,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import protocol.Profile;
-import protocol.jabber.JabberRegistration;
+import protocol.xmpp.XmppRegistration;
 import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.Scheme;
@@ -22,7 +22,7 @@ import ru.sawim.view.AccountsListView;
  * Time: 19:56
  * To change this template use File | Settings | File Templates.
  */
-public class AccountsListActivity extends ActionBarActivity implements JabberRegistration.OnAddAccount {
+public class AccountsListActivity extends ActionBarActivity implements XmppRegistration.OnAddAccount {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -74,7 +74,7 @@ public class AccountsListActivity extends ActionBarActivity implements JabberReg
                 return true;
 
             case R.id.menu_registration_jabber:
-                protocol.jabber.JabberRegistration jabberRegistration = new protocol.jabber.JabberRegistration();
+                protocol.xmpp.XmppRegistration jabberRegistration = new protocol.xmpp.XmppRegistration();
                 jabberRegistration.setListener(this);
                 jabberRegistration.init().show();
                 return true;

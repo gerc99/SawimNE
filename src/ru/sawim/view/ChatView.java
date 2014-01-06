@@ -8,18 +8,17 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v4.widget.SlidingPaneLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.*;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -27,10 +26,10 @@ import android.widget.*;
 import protocol.Contact;
 import protocol.ContactMenu;
 import protocol.Protocol;
-import protocol.jabber.Jabber;
-import protocol.jabber.JabberServiceContact;
-import protocol.jabber.Jid;
-import protocol.jabber.MirandaNotes;
+import protocol.xmpp.Xmpp;
+import protocol.xmpp.XmppServiceContact;
+import protocol.xmpp.Jid;
+import protocol.xmpp.MirandaNotes;
 import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.Scheme;
@@ -75,7 +74,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
     private MyListView chatListView;
     private ChatListsView chatListsView;
     private ChatInputBarView chatInputBarView;
-    private ChatViewRoot chat_viewLayout;
+    private ChatViewRoot chatViewLayout;
     private MucUsersView mucUsersView;
     private DrawerLayout drawerLayout;
     private ImageButton usersImage;
@@ -90,13 +89,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
     private static final int UPDATE_MUC_LIST = 1;
 
     public ChatView() {
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        if (General.currentActivity == null)
-            General.currentActivity = (ActionBarActivity) activity;
+        Activity activity = General.currentActivity;
         handler = new Handler(this);
 
         usersImage = new ImageButton(activity);
@@ -109,14 +102,12 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
 
         chatBarLayout = new ChatBarView(activity, usersImage, chatsImage);
         chatListView = new MyListView(activity);
-        if (General.isManyPane())
-            nickList = new MyListView(getActivity());
+        nickList = new MyListView(activity);
         chatListsView = new ChatListsView(activity, General.isManyPane(), chatListView, nickList);
         chatInputBarView = new ChatInputBarView(activity, menuButton, smileButton, messageEditor, sendButton);
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN)
-            messageEditor.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
-
+        chatViewLayout = new ChatViewRoot(activity, chatListsView, chatInputBarView);
+        if (!General.isManyPane())
+            drawerLayout = new DrawerLayout(activity);
         General.getInstance().setConfigurationChanged(new General.OnConfigurationChanged() {
             @Override
             public void onConfigurationChanged() {
@@ -150,20 +141,17 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
                              Bundle savedInstanceStateLog) {
         resetBar();
         updateChatIcon();
-        if (chat_viewLayout == null)
-            chat_viewLayout = new ChatViewRoot(getActivity(), chatListsView, chatInputBarView);
-        else
-            ((ViewGroup) chat_viewLayout.getParent()).removeView(chat_viewLayout);
+        if (drawerLayout != null && drawerLayout.getParent() != null)
+            ((ViewGroup) drawerLayout.getParent()).removeView(drawerLayout);
+        if (chatViewLayout.getParent() != null)
+            ((ViewGroup) chatViewLayout.getParent()).removeView(chatViewLayout);
 
         if (!Scheme.isSystemBackground()) {
             int background = Scheme.getColor(Scheme.THEME_BACKGROUND);
-            chat_viewLayout.setBackgroundColor(background);
+            chatViewLayout.setBackgroundColor(background);
         }
 
         if (!General.isManyPane()) {
-            nickList = new MyListView(getActivity());
-            nickList = new MyListView(getActivity());
-            drawerLayout = new DrawerLayout(getActivity());
             DrawerLayout.LayoutParams nickListLP = new DrawerLayout.LayoutParams(Util.dipToPixels(getActivity(), 240), DrawerLayout.LayoutParams.MATCH_PARENT);
             DrawerLayout.LayoutParams drawerLayoutLP = new DrawerLayout.LayoutParams(DrawerLayout.LayoutParams.MATCH_PARENT, DrawerLayout.LayoutParams.MATCH_PARENT);
             drawerLayout.setDrawerShadow(R.drawable.drawer_shadow, Gravity.START);
@@ -176,8 +164,10 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
             a.recycle();
             nickList.setBackgroundResource(background);
             nickList.setLayoutParams(nickListLP);
+            if (nickList.getParent() != null)
+                ((ViewGroup) nickList.getParent()).removeView(nickList);
+            drawerLayout.addView(chatViewLayout);
             drawerLayout.addView(nickList);
-            drawerLayout.addView(chat_viewLayout);
 
             chatBarLayout.setVisibilityUsersImage(ImageView.VISIBLE);
             usersImage.setBackgroundColor(0);
@@ -189,11 +179,10 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
                     if (drawerLayout.isDrawerOpen(nickList)) {
                         drawerLayout.closeDrawer(nickList);
                     } else {
-                        drawerLayout.openDrawer(nickList);;
+                        drawerLayout.openDrawer(nickList);
                     }
                 }
             });
-            nickList.setVisibility(contact.isConference() ? View.VISIBLE : View.GONE);
         } else
             chatBarLayout.setVisibilityUsersImage(View.GONE);
         chatsImage.setBackgroundColor(0);
@@ -227,6 +216,8 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
                 new SmilesView().show(General.currentActivity.getSupportFragmentManager(), "show-smiles");
             }
         });
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN)
+            messageEditor.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
         messageEditor.setSingleLine(false);
         messageEditor.setMaxLines(4);
         messageEditor.setHorizontallyScrolling(false);
@@ -262,7 +253,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
                 }
             });
         }
-        return General.isManyPane() ? chat_viewLayout : drawerLayout;
+        return General.isManyPane() ? chatViewLayout : drawerLayout;
     }
 
     @Override
@@ -281,22 +272,9 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
         chat = null;
         contact = null;
         adapter = null;
-        handler = null;
         protocol = null;
-        nickList = null;
-        usersImage = null;
-        chatsImage = null;
-        menuButton = null;
-        sendButton = null;
-        smileButton = null;
         sharingText = null;
         mucUsersView = null;
-        chatListView = null;
-        chatBarLayout = null;
-        messageEditor = null;
-        chatListsView = null;
-        chat_viewLayout = null;
-        chatInputBarView = null;
         chatDialogFragment = null;
         chatsSpinnerAdapter = null;
     }
@@ -328,7 +306,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
             openChat(protocol, contact);
         if (General.isManyPane()) {
             if (contact == null)
-                chat_viewLayout.showHint();
+                chatViewLayout.showHint();
         } else {
             getActivity().supportInvalidateOptionsMenu();
         }
@@ -433,7 +411,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
     }
 
     public void openChat(Protocol p, Contact c) {
-        chat_viewLayout.hideHint();
+        chatViewLayout.hideHint();
         initChat(p, c);
         chat = protocol.getChat(contact);
 
@@ -508,9 +486,9 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
         else if (drawerLayout.isDrawerOpen(nickList))
             drawerLayout.closeDrawer(nickList);
 
-        if (contact instanceof JabberServiceContact && contact.isConference()) {
+        if (contact instanceof XmppServiceContact && contact.isConference()) {
             mucUsersView = new MucUsersView();
-            mucUsersView.init(protocol, (JabberServiceContact) contact);
+            mucUsersView.init(protocol, (XmppServiceContact) contact);
             mucUsersView.show(this, nickList);
             chatBarLayout.setVisibilityUsersImage(General.isManyPane() ? View.GONE : View.VISIBLE);
         } else {
@@ -564,12 +542,12 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
 
     private void updateChatIcon() {
         if (chatBarLayout == null) return;
-        Icon icMess = ChatHistory.instance.getUnreadMessageIcon();
+        Drawable icMess = ChatHistory.instance.getUnreadMessageIcon();
         if (icMess == null) {
             chatBarLayout.setVisibilityChatsImage(View.GONE);
         } else {
             chatBarLayout.setVisibilityChatsImage(View.VISIBLE);
-            chatsImage.setImageDrawable(icMess.getImage());
+            chatsImage.setImageDrawable(icMess);
         }
         if (chatsSpinnerAdapter != null)
             chatBarLayout.updateLabelIcon(chatsSpinnerAdapter.getImageChat(chat, false));
@@ -595,9 +573,9 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
                     Clipboard.setClipBoardText(0 == sb.length() ? null : sb.toString());
                     adapter.notifyDataSetChanged();
                 } else {
-                    if (contact instanceof JabberServiceContact) {
-                        JabberServiceContact jabberServiceContact = ((JabberServiceContact) contact);
-                        if (jabberServiceContact.getContact(mData.getNick()) == null && !jabberServiceContact.getName().equals(mData.getNick())) {
+                    if (contact instanceof XmppServiceContact) {
+                        XmppServiceContact xmppServiceContact = ((XmppServiceContact) contact);
+                        if (xmppServiceContact.getContact(mData.getNick()) == null && !xmppServiceContact.getName().equals(mData.getNick())) {
                             Toast.makeText(General.currentActivity, getString(R.string.contact_walked), Toast.LENGTH_LONG).show();
                         }
                     }
@@ -666,7 +644,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
             case ContactMenu.ACTION_CURRENT_DEL_CHAT:
                 ChatHistory.instance.unregisterChat(chat);
                 if (General.isManyPane())
-                    chat_viewLayout.setVisibility(LinearLayout.GONE);
+                    chatViewLayout.setVisibility(LinearLayout.GONE);
                 else
                     getFragmentManager().popBackStack();
                 break;
@@ -678,7 +656,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
             case ContactMenu.ACTION_DEL_ALL_CHATS:
                 ChatHistory.instance.removeAll(null);
                 if (General.isManyPane())
-                    chat_viewLayout.setVisibility(LinearLayout.GONE);
+                    chatViewLayout.setVisibility(LinearLayout.GONE);
                 else
                     getFragmentManager().popBackStack();
                 break;
@@ -693,12 +671,12 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
         super.onCreateContextMenu(menu, v, menuInfo);
         menu.add(Menu.FIRST, ContactMenu.MENU_COPY_TEXT, 0, android.R.string.copy);
         menu.add(Menu.FIRST, ContactMenu.ACTION_QUOTE, 0, JLocale.getString("quote"));
-        if (contact instanceof JabberServiceContact && contact.isConference()) {
+        if (contact instanceof XmppServiceContact && contact.isConference()) {
             menu.add(Menu.FIRST, ContactMenu.COMMAND_PRIVATE, 0, R.string.open_private);
             menu.add(Menu.FIRST, ContactMenu.COMMAND_INFO, 0, R.string.info);
             menu.add(Menu.FIRST, ContactMenu.COMMAND_STATUS, 0, R.string.user_statuses);
         }
-        if (protocol instanceof Jabber) {
+        if (protocol instanceof Xmpp) {
             menu.add(Menu.FIRST, ContactMenu.ACTION_TO_NOTES, 0, R.string.add_to_notes);
         }
         if (!Options.getBoolean(Options.OPTION_HISTORY) && chat.hasHistory()) {
@@ -738,9 +716,9 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
 
             case ContactMenu.COMMAND_PRIVATE:
                 String jid = Jid.realJidToSawimJid(contact.getUserId() + "/" + nick);
-                JabberServiceContact c = (JabberServiceContact) protocol.getItemByUIN(jid);
+                XmppServiceContact c = (XmppServiceContact) protocol.getItemByUIN(jid);
                 if (null == c) {
-                    c = (JabberServiceContact) protocol.createTempContact(jid);
+                    c = (XmppServiceContact) protocol.createTempContact(jid);
                     protocol.addTempContact(c);
                 }
                 pause(getCurrentChat());
@@ -748,10 +726,10 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
                 resume(getCurrentChat());
                 break;
             case ContactMenu.COMMAND_INFO:
-                protocol.showUserInfo(((JabberServiceContact) contact).getPrivateContact(nick));
+                protocol.showUserInfo(((XmppServiceContact) contact).getPrivateContact(nick));
                 break;
             case ContactMenu.COMMAND_STATUS:
-                protocol.showStatus(((JabberServiceContact) contact).getPrivateContact(nick));
+                protocol.showStatus(((XmppServiceContact) contact).getPrivateContact(nick));
                 break;
 
             case ContactMenu.ACTION_ADD_TO_HISTORY:
@@ -759,7 +737,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
                 break;
 
             case ContactMenu.ACTION_TO_NOTES:
-                MirandaNotes notes = ((Jabber) protocol).getMirandaNotes();
+                MirandaNotes notes = ((Xmpp) protocol).getMirandaNotes();
                 notes.showIt();
                 MirandaNotes.Note note = notes.addEmptyNote();
                 note.tags = md.getNick() + " " + md.strTime;

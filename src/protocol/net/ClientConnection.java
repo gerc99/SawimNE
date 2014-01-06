@@ -50,6 +50,7 @@ public abstract class ClientConnection implements Runnable {
         initPingValues();
         SawimException exception = null;
         try {
+            getProtocol().setConnectingProgress(0);
             connect();
             while (isConnected()) {
                 boolean doing = processPacket();

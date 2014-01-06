@@ -1,4 +1,4 @@
-package protocol.jabber;
+package protocol.xmpp;
 
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,7 +19,7 @@ import java.util.Vector;
 
 public final class AffiliationListConf implements FormListener, TextBoxView.TextBoxListener {
 
-    private Jabber jabber;
+    private Xmpp xmpp;
     private String serverJid;
     private TextBoxView searchBox;
     private Vector jids = new Vector();
@@ -33,8 +33,8 @@ public final class AffiliationListConf implements FormListener, TextBoxView.Text
     private static final int COMMAND_ADD = 0;
     private static final int COMMAND_SEARCH = 1;
 
-    public void init(Jabber protocol) {
-        jabber = protocol;
+    public void init(Xmpp protocol) {
+        xmpp = protocol;
         searchBox = new TextBoxView();
         screen.setCaption(JLocale.getString("conf_aff_list"));
         screen.setModel(model);
@@ -240,7 +240,7 @@ public final class AffiliationListConf implements FormListener, TextBoxView.Text
             if (apply) {
                 try {
                     String reason = enterData.getTextFieldValue(REASON);
-                    jabber.getConnection().setAffiliationListConf(serverJid,
+                    xmpp.getConnection().setAffiliationListConf(serverJid,
                             enterData.getTextFieldValue(JID),
                             affiliationI[enterData.getSelectorValue(AFFILIATION)],
                             reason);

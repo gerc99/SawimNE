@@ -1,7 +1,7 @@
 
 
 
-package protocol.jabber;
+package protocol.xmpp;
 
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;

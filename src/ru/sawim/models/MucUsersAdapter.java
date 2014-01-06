@@ -10,9 +10,9 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import protocol.jabber.Jabber;
-import protocol.jabber.JabberContact;
-import protocol.jabber.JabberServiceContact;
+import protocol.xmpp.Xmpp;
+import protocol.xmpp.XmppContact;
+import protocol.xmpp.XmppServiceContact;
 import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.Scheme;
@@ -35,27 +35,27 @@ public class MucUsersAdapter extends BaseAdapter {
     private static final int ITEM_GROUP = 0;
     private static final int ITEM_CONTACT = 1;
     private static final int ITEM_TYPECOUNT = 2;
-    private JabberServiceContact conference;
+    private XmppServiceContact conference;
     private List<Object> items = new ArrayList<Object>();
-    private Jabber protocol;
+    private Xmpp protocol;
     Context context;
 
-    public void init(Context context, Jabber jabber, JabberServiceContact conf) {
+    public void init(Context context, Xmpp xmpp, XmppServiceContact conf) {
         this.context = context;
-        protocol = jabber;
+        protocol = xmpp;
         conference = conf;
         update();
     }
 
     public void update() {
         items.clear();
-        final int moderators = getContactCount(JabberServiceContact.ROLE_MODERATOR);
-        final int participants = getContactCount(JabberServiceContact.ROLE_PARTICIPANT);
-        final int visitors = getContactCount(JabberServiceContact.ROLE_VISITOR);
+        final int moderators = getContactCount(XmppServiceContact.ROLE_MODERATOR);
+        final int participants = getContactCount(XmppServiceContact.ROLE_PARTICIPANT);
+        final int visitors = getContactCount(XmppServiceContact.ROLE_VISITOR);
 
-        addLayerToListOfSubcontacts("list_of_moderators", moderators, JabberServiceContact.ROLE_MODERATOR);
-        addLayerToListOfSubcontacts("list_of_participants", participants, JabberServiceContact.ROLE_PARTICIPANT);
-        addLayerToListOfSubcontacts("list_of_visitors", visitors, JabberServiceContact.ROLE_VISITOR);
+        addLayerToListOfSubcontacts("list_of_moderators", moderators, XmppServiceContact.ROLE_MODERATOR);
+        addLayerToListOfSubcontacts("list_of_participants", participants, XmppServiceContact.ROLE_PARTICIPANT);
+        addLayerToListOfSubcontacts("list_of_visitors", visitors, XmppServiceContact.ROLE_VISITOR);
     }
 
     @Override
@@ -72,7 +72,7 @@ public class MucUsersAdapter extends BaseAdapter {
     public int getItemViewType(int position) {
         Object o = items.get(position);
         if (o instanceof String) return ITEM_GROUP;
-        if (o instanceof JabberContact.SubContact) return ITEM_CONTACT;
+        if (o instanceof XmppContact.SubContact) return ITEM_CONTACT;
         return -1;
     }
 
@@ -92,14 +92,14 @@ public class MucUsersAdapter extends BaseAdapter {
     }
 
     public final int getRole(String nick) {
-        JabberContact.SubContact c = getContact(nick);
-        final int priority = (null == c) ? JabberServiceContact.ROLE_VISITOR : c.priority;
+        XmppContact.SubContact c = getContact(nick);
+        final int priority = (null == c) ? XmppServiceContact.ROLE_VISITOR : c.priority;
         return priority;
     }
 
     public final int getAffiliation(String nick) {
-        JabberContact.SubContact c = getContact(nick);
-        final int priorityA = (null == c) ? JabberServiceContact.AFFILIATION_NONE : c.priorityA;
+        XmppContact.SubContact c = getContact(nick);
+        final int priorityA = (null == c) ? XmppServiceContact.AFFILIATION_NONE : c.priorityA;
         return priorityA;
     }
 
@@ -107,7 +107,7 @@ public class MucUsersAdapter extends BaseAdapter {
         int count = 0;
         Vector subcontacts = conference.subcontacts;
         for (int i = 0; i < subcontacts.size(); ++i) {
-            JabberContact.SubContact contact = (JabberContact.SubContact) subcontacts.elementAt(i);
+            XmppContact.SubContact contact = (XmppContact.SubContact) subcontacts.elementAt(i);
             if (contact != null)
                 if (contact.priority == priority) {
                     count++;
@@ -116,13 +116,13 @@ public class MucUsersAdapter extends BaseAdapter {
         return (count);
     }
 
-    private final JabberContact.SubContact getContact(String nick) {
+    private final XmppContact.SubContact getContact(String nick) {
         if (TextUtils.isEmpty(nick)) {
             return null;
         }
         Vector subcontacts = conference.subcontacts;
         for (int i = 0; i < subcontacts.size(); ++i) {
-            JabberContact.SubContact contact = (JabberContact.SubContact) subcontacts.elementAt(i);
+            XmppContact.SubContact contact = (XmppContact.SubContact) subcontacts.elementAt(i);
             if (nick.equals(contact.resource)) {
                 return contact;
             }
@@ -135,7 +135,7 @@ public class MucUsersAdapter extends BaseAdapter {
         items.add(JLocale.getString(layer)/* + "(" + size + ")"*/);
         Vector subcontacts = conference.subcontacts;
         for (int i = 0; i < subcontacts.size(); ++i) {
-            JabberContact.SubContact contact = (JabberContact.SubContact) subcontacts.elementAt(i);
+            XmppContact.SubContact contact = (XmppContact.SubContact) subcontacts.elementAt(i);
             if (contact.priority == priority) {
                 items.add(contact);
                 hasLayer = true;
@@ -148,8 +148,8 @@ public class MucUsersAdapter extends BaseAdapter {
     }
 
     public String getCurrentSubContact(Object o) {
-        if (o instanceof JabberContact.SubContact) {
-            JabberContact.SubContact c = (JabberContact.SubContact) o;
+        if (o instanceof XmppContact.SubContact) {
+            XmppContact.SubContact c = (XmppContact.SubContact) o;
             return c.resource;
         }
         return null;
@@ -160,7 +160,7 @@ public class MucUsersAdapter extends BaseAdapter {
     }
 
     public void setMucAffiliation(String nick, String affiliation) {
-        JabberContact.SubContact c = conference.getExistSubContact(nick);
+        XmppContact.SubContact c = conference.getExistSubContact(nick);
         if ((null == c) || (null == c.realJid)) {
             return;
         }
@@ -173,7 +173,7 @@ public class MucUsersAdapter extends BaseAdapter {
     }
 
     public void setMucAffiliationR(String nick, String affiliation, String setReason) {
-        JabberContact.SubContact c = conference.getExistSubContact(nick);
+        XmppContact.SubContact c = conference.getExistSubContact(nick);
         if ((null == c) || (null == c.realJid)) {
             return;
         }
@@ -198,7 +198,7 @@ public class MucUsersAdapter extends BaseAdapter {
             convView.setPadding(0, 0, 0, 0);
             wr.populateLayerFrom((String) o);
         }
-        if (o instanceof JabberContact.SubContact)
+        if (o instanceof XmppContact.SubContact)
             wr.populateFrom(protocol, o);
         return convView;
     }
@@ -225,14 +225,14 @@ public class MucUsersAdapter extends BaseAdapter {
             itemLayer.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
         }
 
-        void populateFrom(Jabber protocol, Object o) {
-            JabberContact.SubContact c = (JabberContact.SubContact) o;
+        void populateFrom(Xmpp protocol, Object o) {
+            XmppContact.SubContact c = (XmppContact.SubContact) o;
             TextView itemName = getItemName();
             itemName.setTextSize(General.getFontSize());
             itemName.setText(c.resource);
             itemName.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
             getItemStatusImage().setImageDrawable(protocol.getStatusInfo().getIcon(c.status).getImage());
-            getItemAffilationImage().setImageDrawable(General.affiliationIcons.iconAt(JabberServiceContact.getAffiliationName(c.priorityA)).getImage());
+            getItemAffilationImage().setImageDrawable(General.affiliationIcons.iconAt(XmppServiceContact.getAffiliationName(c.priorityA)).getImage());
             Icon ic = protocol.clientInfo.getIcon(c.client);
             ImageView itemClientImage = getItemClientImage();
             if (ic != null && !Options.getBoolean(Options.OPTION_HIDE_ICONS_CLIENTS)) {

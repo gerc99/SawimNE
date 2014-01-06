@@ -98,7 +98,7 @@ public class Vk extends Protocol {
     }
 
     @Override
-    protected void startConnection() {
+    public void startConnection() {
         connection = new VkConnection(this);
         connection.login();
     }

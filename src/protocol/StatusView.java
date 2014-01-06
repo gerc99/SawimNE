@@ -3,7 +3,7 @@ package protocol;
 import DrawControls.icons.Icon;
 import android.view.ContextMenu;
 import android.view.Menu;
-import protocol.jabber.JabberServiceContact;
+import protocol.xmpp.XmppServiceContact;
 import ru.sawim.General;
 import ru.sawim.Scheme;
 import ru.sawim.models.list.VirtualList;
@@ -48,7 +48,7 @@ public final class StatusView {
         if (!contact.isSingleUserContact()) {
             return;
         }
-        if (contact instanceof JabberServiceContact) {
+        if (contact instanceof XmppServiceContact) {
             return;
         }
         long signonTime = contact.chaingingStatusTime;

@@ -10,7 +10,7 @@ import protocol.Contact;
 import protocol.Protocol;
 import protocol.StatusInfo;
 import protocol.icq.Icq;
-import protocol.jabber.Jabber;
+import protocol.xmpp.Xmpp;
 import protocol.mrim.Mrim;
 import protocol.net.TcpSocket;
 import ru.sawim.General;
@@ -43,7 +43,7 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
     private boolean searchResult = false;
     public byte[] avatar;
     public String status;
-    public protocol.jabber.XmlNode vCard;
+    public protocol.xmpp.XmlNode vCard;
     public final String realUin;
 
     public String localName, uin, nick, email, homeCity, firstName, lastName, homeState, homePhones, homeFax, homeAddress, cellPhone, homePage,
@@ -189,7 +189,7 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
             public void onCreateOptionsMenu(Menu menu) {
                 if (isEditable()) {
                     menu.add(Menu.FIRST, INFO_MENU_EDIT, 2, JLocale.getString("edit"));
-                    if (protocol instanceof Jabber) {
+                    if (protocol instanceof Xmpp) {
                         menu.add(Menu.FIRST, INFO_MENU_TAKE_AVATAR, 2, JLocale.getString("take_photo"));
                         if (sawim.modules.fs.FileSystem.isSupported()) {
                             menu.add(Menu.FIRST, INFO_MENU_ADD_AVATAR, 2, JLocale.getString("add_from_fs"));
@@ -295,7 +295,7 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
     public boolean isEditable() {
         boolean isEditable = false;
         isEditable |= (protocol instanceof Icq);
-        isEditable |= (protocol instanceof Jabber);
+        isEditable |= (protocol instanceof Xmpp);
         return isEditable && protocol.getUserId().equals(uin)
                 && protocol.isConnected();
     }

@@ -2,10 +2,10 @@ package sawim.chat;
 
 import protocol.Contact;
 import protocol.Protocol;
-import protocol.jabber.Jabber;
-import protocol.jabber.JabberContact;
-import protocol.jabber.JabberServiceContact;
-import protocol.jabber.Jid;
+import protocol.xmpp.Xmpp;
+import protocol.xmpp.XmppContact;
+import protocol.xmpp.XmppServiceContact;
+import protocol.xmpp.Jid;
 import ru.sawim.General;
 import sawim.Options;
 import sawim.chat.message.Message;
@@ -87,7 +87,7 @@ public final class Chat {
     }
 
     public String getMyName() {
-        if (contact instanceof JabberServiceContact) {
+        if (contact instanceof XmppServiceContact) {
             String nick = contact.getMyName();
             if (null != nick) return nick;
         }
@@ -141,15 +141,15 @@ public final class Chat {
     }
 
     private boolean isBlogBot() {
-        if (contact instanceof JabberContact) {
-            return ((Jabber) protocol).isBlogBot(contact.getUserId());
+        if (contact instanceof XmppContact) {
+            return ((Xmpp) protocol).isBlogBot(contact.getUserId());
         }
         return false;
     }
 
     public boolean isHuman() {
         boolean service = isBlogBot() || protocol.isBot(contact);
-        if (contact instanceof JabberContact) {
+        if (contact instanceof XmppContact) {
             service |= Jid.isGate(contact.getUserId());
         }
         return !service && contact.isSingleUserContact();
@@ -338,7 +338,7 @@ public final class Chat {
 
     private boolean isHistory() {
         boolean useHist = Options.getBoolean(Options.OPTION_HISTORY);
-        if (contact instanceof JabberServiceContact) {
+        if (contact instanceof XmppServiceContact) {
             return useHist && contact.isHistory() == (byte) 1;
         }
         return useHist || contact.isHistory() == (byte) 1;

@@ -5,7 +5,7 @@ import android.os.Looper;
 import android.widget.Toast;
 import protocol.*;
 import protocol.icq.Icq;
-import protocol.jabber.Jabber;
+import protocol.xmpp.Xmpp;
 import protocol.mrim.Mrim;
 import ru.sawim.SawimApplication;
 import sawim.FileTransfer;
@@ -158,7 +158,7 @@ public final class Roster {
                 break;
 
             case Profile.PROTOCOL_JABBER:
-                protocol = new Jabber();
+                protocol = new Xmpp();
                 break;
 
             case Profile.PROTOCOL_VK_API:
@@ -185,6 +185,17 @@ public final class Roster {
             }
         }
         return null;
+    }
+
+    public int getProtocol(Protocol protocol) {
+        int count = getProtocolCount();
+        for (int i = 0; i < count; ++i) {
+            Protocol p = getProtocol(i);
+            if (protocol == p) {
+                return i;
+            }
+        }
+        return 0;
     }
 
     public Protocol getProtocol(String account) {

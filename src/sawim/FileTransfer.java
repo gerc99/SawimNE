@@ -165,7 +165,7 @@ public final class FileTransfer implements FileBrowserListener,
         name_Desc.addString("filename", filename);
         name_Desc.addTextField(descriptionField, "description", "");
         String items = "jimm.net.ru|www.jimm.net.ru|jimm.org";
-        if (cItem instanceof protocol.jabber.JabberContact) {
+        if (cItem instanceof protocol.xmpp.XmppContact) {
             if (cItem.isSingleUserContact() && cItem.isOnline()) {
                 items += "|ibb";
             }

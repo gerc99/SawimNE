@@ -1,4 +1,4 @@
-package protocol.jabber;
+package protocol.xmpp;
 
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -26,7 +26,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
     private boolean isConferenceList = false;
     private int totalCount = 0;
 
-    private Jabber jabber;
+    private Xmpp xmpp;
     private String serverJid;
     private TextBoxView serverBox;
     private TextBoxView searchBox;
@@ -50,10 +50,10 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
         searchBox = new TextBoxView();
     }
 
-    public void init(Jabber protocol) {
+    public void init(Xmpp protocol) {
         isMucUsers(false);
         screen = VirtualList.getInstance();
-        jabber = protocol;
+        xmpp = protocol;
         screen.setModel(model);
         screen.setCaption(JLocale.getString("service_discovery"));
         groupItem = model.createNewParser(true);
@@ -62,12 +62,12 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
             public void itemSelected(int position) {
                 String jid = getCurrentJid(position);
                 if (Jid.isConference(jid)) {
-                    Contact c = jabber.createTempContact(jid);
-                    jabber.addContact(c);
-                    jabber.getConnection().sendPresence((JabberServiceContact) c);
+                    Contact c = xmpp.createTempContact(jid);
+                    xmpp.addContact(c);
+                    xmpp.getConnection().sendPresence((XmppServiceContact) c);
                     Toast.makeText(SawimApplication.getContext(), R.string.added, Toast.LENGTH_SHORT).show();
                 } else if (Jid.isKnownGate(jid)) {
-                    jabber.getConnection().register(jid);
+                    xmpp.getConnection().register(jid);
                 } else {
                     setServer(jid);
                 }
@@ -113,8 +113,8 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
                 if (!StringConvertor.isEmpty(jid)) {
                     switch (action) {
                         case COMMAND_ADD:
-                            Contact c = jabber.createTempContact(jid);
-                            jabber.addContact(c);
+                            Contact c = xmpp.createTempContact(jid);
+                            xmpp.addContact(c);
                             Roster.getInstance().activate(c);
                             break;
 
@@ -123,7 +123,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
                             break;
 
                         case COMMAND_REGISTER:
-                            jabber.getConnection().register(jid);
+                            xmpp.getConnection().register(jid);
                             break;
                     }
                 }
@@ -269,10 +269,10 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
     }
 
     private void addBookmarks() {
-        Vector all = jabber.getContactItems();
+        Vector all = xmpp.getContactItems();
         boolean notEmpty = false;
         for (int i = 0; i < all.size(); ++i) {
-            JabberContact contact = (JabberContact) all.elementAt(i);
+            XmppContact contact = (XmppContact) all.elementAt(i);
             if (contact.isConference()) {
                 addUnique(contact.getName(), contact.getUserId());
                 notEmpty = true;
@@ -293,7 +293,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
         model.addPar(br);
         screen.updateModel();
 
-        String domain = Jid.getDomain(jabber.getUserId());
+        String domain = Jid.getDomain(xmpp.getUserId());
         addUnique(JLocale.getString("my_server"), domain);
         addUnique(JLocale.getString("conferences_on_") + domain, "conference." + domain);
     }
@@ -329,7 +329,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
                 Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
         model.addPar(wait);
         screen.updateModel();
-        jabber.getConnection().requestDiscoItems(serverJid);
+        xmpp.getConnection().requestDiscoItems(serverJid);
     }
 
     private void rebuild(VirtualListItem item) {

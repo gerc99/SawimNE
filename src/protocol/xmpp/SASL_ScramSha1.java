@@ -1,4 +1,4 @@
-package protocol.jabber;
+package protocol.xmpp;
 
 
 import com.ssttr.crypto.HMACSHA1;

@@ -4,9 +4,8 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.support.v4.app.FragmentActivity;
 import android.view.ContextMenu;
-import android.view.ContextThemeWrapper;
 import android.widget.Toast;
-import protocol.jabber.Jabber;
+import protocol.xmpp.Xmpp;
 import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
@@ -271,7 +270,7 @@ public class ContactMenu implements TextBoxView.TextBoxListener {
                     }
                 }
                 xml.append("</storage></query></iq>");
-                ((Jabber) protocol).saveAnnotations(xml.toString());
+                ((Xmpp) protocol).saveAnnotations(xml.toString());
             }
             messageTextbox.back();
             return;
