@@ -26,7 +26,7 @@ import java.util.List;
  */
 public class MessagesAdapter extends BaseAdapter {
 
-    private static List<MessData> items = new ArrayList<MessData>();
+    private List<MessData> items = new ArrayList<MessData>();
     private Protocol currentProtocol;
     private String currentContact;
 

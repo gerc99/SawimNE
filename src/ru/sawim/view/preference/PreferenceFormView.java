@@ -1,18 +1,14 @@
 package ru.sawim.view.preference;
 
 import android.app.Activity;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.*;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.MenuItemCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.*;
 import android.view.inputmethod.InputMethodManager;
 import ru.sawim.General;
 import ru.sawim.R;
-import ru.sawim.Scheme;
 import ru.sawim.activities.SawimActivity;
 import ru.sawim.models.form.Forms;
 
@@ -51,21 +47,6 @@ public class PreferenceFormView extends PreferenceFragment implements Forms.OnUp
         setPreferenceScreen(rootScreen);
         buildList();
         getActivity().supportInvalidateOptionsMenu();
-    }
-
-    public void onPrepareOptionsMenu_(Menu menu) {
-        menu.clear();
-        Drawable acceptImage = getResources().getDrawable(Scheme.isBlack() ? R.drawable.ic_action_accept_light : R.drawable.ic_action_accept_dark);
-        MenuItem item = menu.add(Menu.NONE, 1, Menu.NONE, "Save")
-                                .setIcon(Forms.getInstance().isAccept() ? acceptImage : getResources().getDrawable(android.R.drawable.ic_menu_save));
-        MenuItemCompat.setShowAsAction(item, MenuItem.SHOW_AS_ACTION_ALWAYS);
-    }
-
-    public void onOptionsItemSelected_(MenuItem item) {
-        if (item.getItemId() == 1) {
-            if (Forms.getInstance().getFormListener() != null)
-                Forms.getInstance().getFormListener().formAction(Forms.getInstance(), true);
-        }
     }
 
     public static void show() {
@@ -128,13 +109,13 @@ public class PreferenceFormView extends PreferenceFragment implements Forms.OnUp
             final Forms.Control c = controls.get(position);
             if (Forms.CONTROL_TEXT == c.type) {
                 PreferenceCategory preferenceCategory = new PreferenceCategory(getActivity());
-                preferenceCategory.setKey("pc" + position);
+                preferenceCategory.setKey("" + c.id);
                 preferenceCategory.setPersistent(false);
                 preferenceCategory.setTitle(getText(c));
                 rootScreen.addPreference(preferenceCategory);
             } else if (Forms.CONTROL_INPUT == c.type) {
                 EditTextPreference editTextPreference = new EditTextPreference(getActivity());
-                editTextPreference.setKey("et" + position);
+                editTextPreference.setKey("" + c.id);
                 editTextPreference.setPersistent(false);
                 editTextPreference.setTitle(getText(c));
                 editTextPreference.setSummary(getText(c));
@@ -155,7 +136,7 @@ public class PreferenceFormView extends PreferenceFragment implements Forms.OnUp
                 rootScreen.addPreference(editTextPreference);
             } else if (Forms.CONTROL_CHECKBOX == c.type) {
                 CheckBoxPreference checkBoxPreference = new CheckBoxPreference(getActivity());
-                checkBoxPreference.setKey("cb" + position);
+                checkBoxPreference.setKey("" + c.id);
                 checkBoxPreference.setPersistent(false);
                 checkBoxPreference.setTitle(getText(c));
                 checkBoxPreference.setSummary(getText(c));
@@ -170,7 +151,7 @@ public class PreferenceFormView extends PreferenceFragment implements Forms.OnUp
                 rootScreen.addPreference(checkBoxPreference);
             } else if (Forms.CONTROL_SELECT == c.type) {
                 ListPreference listPreference = new ListPreference(getActivity());
-                listPreference.setKey("l" + position);
+                listPreference.setKey("" + c.id);
                 listPreference.setPersistent(false);
                 listPreference.setTitle(getText(c));
                 listPreference.setEntries(c.items);
@@ -190,8 +171,7 @@ public class PreferenceFormView extends PreferenceFragment implements Forms.OnUp
                 rootScreen.addPreference(listPreference);
             } else if (Forms.CONTROL_GAUGE == c.type) {
                 SeekBarPreference seekBarPreference = new SeekBarPreference(getActivity());
-                seekBarPreference.setKey("sb" + position);
-                seekBarPreference.setPersistent(false);
+                seekBarPreference.setKey("" + c.id);
                 seekBarPreference.setTitle(getText(c));
                 seekBarPreference.setDefaultValue(c.level);
                 seekBarPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
@@ -205,8 +185,7 @@ public class PreferenceFormView extends PreferenceFragment implements Forms.OnUp
                 rootScreen.addPreference(seekBarPreference);
             } else if (Forms.CONTROL_GAUGE_FONT == c.type) {
                 final SeekBarPreference seekBarPreference = new SeekBarPreference(getActivity());
-                seekBarPreference.setKey("sbf" + position);
-                seekBarPreference.setPersistent(false);
+                seekBarPreference.setKey("" + c.id);
                 seekBarPreference.setTitle(c.description + "(" + c.level + ")");
                 seekBarPreference.setMax(60);
                 seekBarPreference.setDefaultValue(c.level);
@@ -214,8 +193,10 @@ public class PreferenceFormView extends PreferenceFragment implements Forms.OnUp
                     @Override
                     public boolean onPreferenceChange(Preference preference, Object newValue) {
                         int value = Integer.parseInt(newValue.toString());
-                        if (value <= 7) return false;
-                        c.level = Integer.parseInt(newValue.toString());
+                        if (value == 0) return false;
+                        if (value >= 7) {
+                            c.level = Integer.parseInt(newValue.toString());
+                        }
                         seekBarPreference.setTitleTextSize(c.level);
                         seekBarPreference.setTitleText(c.description + "(" + c.level + ")");
                         Forms.getInstance().controlUpdated(c);
@@ -225,14 +206,14 @@ public class PreferenceFormView extends PreferenceFragment implements Forms.OnUp
                 rootScreen.addPreference(seekBarPreference);
             } else if (Forms.CONTROL_IMAGE == c.type) {
                 IconPreferenceScreen iconPreferenceScreen = new IconPreferenceScreen(getActivity());
-                iconPreferenceScreen.setKey("ips" + position);
+                iconPreferenceScreen.setKey("" + c.id);
                 iconPreferenceScreen.setPersistent(false);
                 iconPreferenceScreen.setText(getText(c));
                 iconPreferenceScreen.setIcon(c.image);
                 rootScreen.addPreference(iconPreferenceScreen);
             } else if (Forms.CONTROL_LINK == c.type) {
                 PreferenceCategory preferenceCategory = new PreferenceCategory(getActivity());
-                preferenceCategory.setKey("pcl" + position);
+                preferenceCategory.setKey("" + c.id);
                 preferenceCategory.setPersistent(false);
                 preferenceCategory.setTitle(getText(c));
                 rootScreen.addPreference(preferenceCategory);

@@ -32,7 +32,6 @@ public final class Tracking {
     public final static int EVENT_MESSAGE = 4;
     public final static int EVENT_TYPING = 5;
     public final static int EVENT_XSTATUS = 6;
-    public final static int SOUND_EYE = 7;
     public final static int ACTION_CHAT = 10;
     public final static int ACTION_NOTICE = 11;
     public final static int ACTION_SOUND = 12;

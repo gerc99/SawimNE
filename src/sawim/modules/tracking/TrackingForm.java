@@ -20,17 +20,12 @@ public final class TrackingForm implements TextBoxView.TextBoxListener {
     private static final int NO = 0;
     private static final int YES = 1;
     private static final int NOTHING = 2;
-    private static final int TYPING = 2;
-    private static final int MESSAGE = 3;
 
     public static final Drawable No = SawimApplication.getContext().getResources().getDrawable(android.R.drawable.checkbox_off_background);
     public static final Drawable Yes = SawimApplication.getContext().getResources().getDrawable(android.R.drawable.checkbox_on_background);
     private static final Drawable Nothing = SawimApplication.getContext().getResources().getDrawable(android.R.drawable.radiobutton_off_background);
     private static final Drawable Track = SawimApplication.getContext().getResources().getDrawable(android.R.drawable.ic_menu_search);
     private static Vector list = new Vector();
-    private final ImageList lineList0 = ImageList.createImageList("/msgs.png");
-    private final Icon Message = lineList0.iconAt(MESSAGE);
-    private final Icon Typing = lineList0.iconAt(TYPING);
     private String uin;
     private VirtualList screen = VirtualList.getInstance();
     private VirtualListModel model = new VirtualListModel();
@@ -102,7 +97,6 @@ public final class TrackingForm implements TextBoxView.TextBoxListener {
             Line line = getLine(i);
             if (line.id_event == evt_index && line.id_action == act_index) {
                 setLine(line_new, i);
-
                 break;
             }
         }
@@ -118,7 +112,6 @@ public final class TrackingForm implements TextBoxView.TextBoxListener {
             Line line = getLine(i);
             if (line.id_event == evt_index && line.id_action == act_index) {
                 l = line;
-
             }
         }
         return l;
@@ -131,14 +124,12 @@ public final class TrackingForm implements TextBoxView.TextBoxListener {
         list.addElement(createLine(Tracking.EVENT_ENTER, Tracking.ACTION_HISTORY, No, null, getName("use_history")
                 + " (" + SawimApplication.getInstance().getResources().getString(R.string.include_setting_the_story) + ")", false));
         list.addElement(createLine(Tracking.EVENT_ENTER, Tracking.ACTION_PRESENCE, No, null, getName("notice_presence"), false));
-        list.addElement(createLine(Tracking.EVENT_ENTER, Tracking.SOUND_EYE, No, null, getName("eye_notif"), false));
-        list.addElement(createLine(Tracking.EVENT_MESSAGE, Tracking.EVENT_MESSAGE, No, Message, getName("track_event_message"), true));
+        list.addElement(createLine(Tracking.EVENT_MESSAGE, Tracking.EVENT_MESSAGE, No, null, getName("track_event_message"), true));
         list.addElement(createLine(Tracking.EVENT_MESSAGE, Tracking.ACTION_SOUND, No, null, getName("track_action_sound"), false));
         list.addElement(createLine(Tracking.EVENT_MESSAGE, Tracking.ACTION_VIBRA, No, null, getName("track_action_vibra"), false));
     }
 
     private void createList() {
-
         list.removeAllElements();
         list.addElement(createLine(Tracking.GLOBAL, Tracking.GLOBAL, No, null, getName("extra_settings"), true, false));
 
@@ -154,7 +145,6 @@ public final class TrackingForm implements TextBoxView.TextBoxListener {
         list.addElement(createLine(Tracking.EVENT_ENTER, Tracking.ACTION_MESSAGE, No, null, getName("track_action_message"), false));
         list.addElement(createLine(Tracking.EVENT_ENTER, Tracking.ACTION_MESSAGE_TEXT, null, null, JLocale.getString("message"), false));
 
-
         list.addElement(createLine(Tracking.EVENT_EXIT, Tracking.EVENT_EXIT, No, null, getName("track_event_exit"), true));
         list.addElement(createLine(Tracking.EVENT_EXIT, Tracking.ACTION_NOTICE, No, null, getName("track_action_notice"), false));
         list.addElement(createLine(Tracking.EVENT_EXIT, Tracking.ACTION_ICON, No, null, getName("track_action_icon"), false));
@@ -163,18 +153,16 @@ public final class TrackingForm implements TextBoxView.TextBoxListener {
         list.addElement(createLine(Tracking.EVENT_EXIT, Tracking.ACTION_SOUND, No, null, getName("track_action_sound"), false));
         list.addElement(createLine(Tracking.EVENT_EXIT, Tracking.ACTION_VIBRA, No, null, getName("track_action_vibra"), false));
 
-        list.addElement(createLine(Tracking.EVENT_MESSAGE, Tracking.EVENT_MESSAGE, No, Message, getName("track_event_message"), true));
+        list.addElement(createLine(Tracking.EVENT_MESSAGE, Tracking.EVENT_MESSAGE, No, null, getName("track_event_message"), true));
         list.addElement(createLine(Tracking.EVENT_MESSAGE, Tracking.ACTION_SOUND, No, null, getName("track_action_sound"), false));
         list.addElement(createLine(Tracking.EVENT_MESSAGE, Tracking.ACTION_VIBRA, No, null, getName("track_action_vibra"), false));
 
-
-        list.addElement(createLine(Tracking.EVENT_TYPING, Tracking.EVENT_TYPING, No, Typing, getName("track_event_typing"), true));
+        list.addElement(createLine(Tracking.EVENT_TYPING, Tracking.EVENT_TYPING, No, null, getName("track_event_typing"), true));
         list.addElement(createLine(Tracking.EVENT_TYPING, Tracking.ACTION_SOUND, No, null, getName("track_action_sound"), false));
         list.addElement(createLine(Tracking.EVENT_TYPING, Tracking.ACTION_VIBRA, No, null, getName("track_action_vibra"), false));
     }
 
     private void updateMassMenu() {
-
     }
 
     private Drawable convertStatusToIcon(int status) {
@@ -306,7 +294,6 @@ public final class TrackingForm implements TextBoxView.TextBoxListener {
                 line.status_flag = NO;
             }
             setLine(line, 0);
-            line.status_flag = line.status_flag;
             line.status_icon = convertStatusToIcon(line.status_flag);
             setLine(line, 0);
         } else if (line.isEvent) {
@@ -337,7 +324,6 @@ public final class TrackingForm implements TextBoxView.TextBoxListener {
             evt_line.status_icon = convertStatusToIcon(evt_line.status_flag);
             setLine(evt_line, evt_index);
         }
-
         showList();
         updateMassMenu();
     }

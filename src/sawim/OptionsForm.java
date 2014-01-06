@@ -1,5 +1,6 @@
 package sawim;
 
+import android.util.Log;
 import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;

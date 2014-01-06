@@ -212,9 +212,6 @@ public class JabberServiceContact extends JabberContact {
         String id = getUserId();
         if (Tracking.isTrackingEvent(id, Tracking.GLOBAL) == Tracking.TRUE) {
             if (Tracking.isTracking(id, Tracking.EVENT_ENTER) == Tracking.TRUE) {
-                if (Tracking.beginTrackActionItem(this, Tracking.SOUND_EYE) == Tracking.TRUE) {
-
-                }
             }
         } else if (Tracking.isTracking(id, Tracking.EVENT_ENTER) == Tracking.FALSE) {
         }

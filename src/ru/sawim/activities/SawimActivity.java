@@ -230,6 +230,7 @@ public class SawimActivity extends ActionBarActivity {
     public void onBackPressed() {
         SawimFragment chatView = (SawimFragment) getSupportFragmentManager().findFragmentByTag(ChatView.TAG);
         SawimFragment formView = (SawimFragment) getSupportFragmentManager().findFragmentByTag(FormView.TAG);
+        SawimFragment preferenceFormView = (SawimFragment) getSupportFragmentManager().findFragmentByTag(PreferenceFormView.TAG);
         SawimFragment virtualListView = (SawimFragment) getSupportFragmentManager().findFragmentByTag(VirtualListView.TAG);
         if (chatView != null && chatView.isVisible()) {
             if (chatView.hasBack())
@@ -239,6 +240,9 @@ public class SawimActivity extends ActionBarActivity {
                 back();
         } else if (formView != null) {
             if (formView.hasBack())
+                back();
+        } else if (preferenceFormView != null) {
+            if (preferenceFormView.hasBack())
                 back();
         } else super.onBackPressed();
         if (getSupportFragmentManager().findFragmentById(R.id.roster_fragment) != null)
@@ -302,12 +306,8 @@ public class SawimActivity extends ActionBarActivity {
         ChatView chatView = (ChatView) getSupportFragmentManager().findFragmentByTag(ChatView.TAG);
         ChatView tabletChatView = (ChatView) getSupportFragmentManager().findFragmentById(R.id.chat_fragment);
         VirtualListView virtualListView = (VirtualListView) getSupportFragmentManager().findFragmentByTag(VirtualListView.TAG);
-        PreferenceFormView preferenceFormView = (PreferenceFormView) getSupportFragmentManager().findFragmentByTag(PreferenceFormView.TAG);
         menu.clear();
-        if (preferenceFormView != null) {
-            preferenceFormView.onPrepareOptionsMenu_(menu);
-            return true;
-        } else if (chatView != null) {
+        if (chatView != null) {
             chatView.onPrepareOptionsMenu_(menu);
             return true;
         } else if (tabletChatView != null && tabletChatView.isOpenMenu()) {
@@ -375,11 +375,7 @@ public class SawimActivity extends ActionBarActivity {
         ChatView chatView = (ChatView) getSupportFragmentManager().findFragmentByTag(ChatView.TAG);
         ChatView tabletChatView = (ChatView) getSupportFragmentManager().findFragmentById(R.id.chat_fragment);
         VirtualListView virtualListView = (VirtualListView) getSupportFragmentManager().findFragmentByTag(VirtualListView.TAG);
-        PreferenceFormView preferenceFormView = (PreferenceFormView) getSupportFragmentManager().findFragmentByTag(PreferenceFormView.TAG);
-        if (preferenceFormView != null) {
-            preferenceFormView.onOptionsItemSelected_(item);
-            return true;
-        } else if (virtualListView != null) {
+        if (virtualListView != null) {
             virtualListView.onOptionsItemSelected_(item);
             return true;
         } else if (tabletChatView != null && tabletChatView.isOpenMenu()) {
