@@ -1,6 +1,5 @@
 package ru.sawim.service;
 
-
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -11,7 +10,6 @@ import android.os.Message;
 import android.os.Messenger;
 import android.util.Log;
 import ru.sawim.R;
-import ru.sawim.Tray;
 import ru.sawim.activities.SawimActivity;
 import sawim.chat.ChatHistory;
 import sawim.roster.Roster;
@@ -22,7 +20,6 @@ public class SawimService extends Service {
     private static final String LOG_TAG = "SawimService";
 
     private final Messenger messenger = new Messenger(new IncomingHandler());
-    private Tray tray = null;
 
     public static final int UPDATE_APP_ICON = 1;
 
@@ -30,8 +27,7 @@ public class SawimService extends Service {
     public void onCreate() {
         super.onCreate();
         Log.i(LOG_TAG, "onStart();");
-        tray = new Tray(this);
-        tray.startForegroundCompat(R.string.app_name, getNotification());//
+        startForeground(R.string.app_name, getNotification());
         //musicReceiver = new MusicReceiver(this);
         //this.registerReceiver(musicReceiver, musicReceiver.getIntentFilter());
         //scrobbling finished
@@ -41,7 +37,7 @@ public class SawimService extends Service {
     public void onDestroy() {
         Log.i(LOG_TAG, "onDestroy();");
         //this.unregisterReceiver(musicReceiver);
-        tray.stopForegroundCompat(R.string.app_name);
+        stopForeground(true);
     }
 
     @Override
@@ -94,7 +90,7 @@ public class SawimService extends Service {
             try {
                 switch (msg.what) {
                     case UPDATE_APP_ICON:
-                        tray.startForegroundCompat(R.string.app_name, getNotification());
+                        SawimService.this.startForeground(R.string.app_name, getNotification());
                         break;
                 }
             } catch (Exception e) {

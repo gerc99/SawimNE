@@ -268,6 +268,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
     @Override
     public void onDetach() {
         super.onDetach();
+        MessagesAdapter.isRepaint = false;
         if (General.isManyPane()) return;
         chatsImage.setOnClickListener(null);
         menuButton.setOnClickListener(null);
@@ -277,7 +278,6 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
         chatListView.setOnItemClickListener(null);
         messageEditor.removeTextChangedListener(textWatcher);
         chatListView.setOnCreateContextMenuListener(null);
-        MessagesAdapter.isRepaint = false;
         chat = null;
         contact = null;
         adapter = null;
