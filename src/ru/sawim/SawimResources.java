@@ -25,6 +25,8 @@ public class SawimResources {
             getDrawable(R.drawable.ic_new_personal_message);
 
     public static void initIcons() {
+        usersIcon = null;
+        typingIcon = null;
         usersIcon = (BitmapDrawable) General.getResources(SawimApplication.getContext()).
                 getDrawable(Scheme.isBlack() ? R.drawable.ic_participants_dark : R.drawable.ic_participants_light);
         typingIcon = (BitmapDrawable) General.getResources(SawimApplication.getContext()).

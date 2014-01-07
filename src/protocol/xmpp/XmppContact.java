@@ -62,7 +62,7 @@ public class XmppContact extends Contact {
                 menu.add(SawimApplication.getContext().getString(R.string.adhoc), ContactMenu.USER_MENU_ADHOC);
             }
             if (isTemp()) {
-                menu.add(SawimApplication.getContext().getString(R.string.add_user), ContactMenu.CONFERENCE_ADD);
+                menu.add(SawimApplication.getContext().getString(R.string.add_user), ContactMenu.USER_MENU_ADD_USER);
 
             } else {
                 if (protocol.getGroupItems().size() > 1) {

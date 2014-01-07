@@ -2154,7 +2154,7 @@ public final class XmppConnection extends ClientConnection {
         if (contact.isConference()) {
             g = getXmpp().getOrCreateGroup(contact.getDefaultGroupName());
 
-        } else if (g.getName().equals(contact.getDefaultGroupName())) { // NPE
+        } else if (g.getName().equals(contact.getDefaultGroupName())) {
             g = null;
         }
 

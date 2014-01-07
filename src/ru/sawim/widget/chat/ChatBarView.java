@@ -56,7 +56,7 @@ public class ChatBarView extends IcsLinearLayout {
     }
 
     public void update() {
-        updateDivider();
+        updateDivider(Scheme.isBlack());
     }
 
     public void setVisibilityUsersImage(int visibility) {

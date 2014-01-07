@@ -9,6 +9,7 @@ import android.widget.ListView;
 import protocol.ContactMenu;
 import protocol.Protocol;
 import protocol.xmpp.*;
+import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.models.MucUsersAdapter;
 import ru.sawim.view.menu.MyMenu;
@@ -36,7 +37,7 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
     }
 
     public void show(final ChatView chatView, ListView nickList) {
-        final FragmentActivity activity = (FragmentActivity) nickList.getContext();
+        final FragmentActivity activity = General.currentActivity;
         usersAdapter.init(activity, (Xmpp) protocol, xmppServiceContact);
         nickList.setAdapter(usersAdapter);
         nickList.setOnItemClickListener(new AdapterView.OnItemClickListener() {

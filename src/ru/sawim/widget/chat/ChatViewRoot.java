@@ -31,7 +31,7 @@ public class ChatViewRoot extends IcsLinearLayout {
     }
 
     public void update() {
-        updateDivider();
+        updateDivider(Scheme.isBlack());
     }
 
     public void showHint() {

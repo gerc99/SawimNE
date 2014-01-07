@@ -1,6 +1,7 @@
 package protocol;
 
 import DrawControls.icons.Icon;
+import android.util.Log;
 import protocol.xmpp.XmppContact;
 import ru.sawim.General;
 import ru.sawim.R;
@@ -804,12 +805,10 @@ abstract public class Protocol {
         if (hasnt) {
             contacts.addElement(contact);
         }
-        synchronized (rosterLockObject) {
-            if (hasnt) {
-                sortedContacts.addElement(contact);
-            }
-            ui_addContactToGroup(contact, g);
+        if (hasnt) {
+            sortedContacts.addElement(contact);
         }
+        ui_addContactToGroup(contact, g);
         ui_updateContact(contact);
     }
 
@@ -818,14 +817,6 @@ abstract public class Protocol {
             ui_addContactToGroup(contact, to);
         }
         ui_updateContact(contact);
-    }
-
-    private void cl_removeContact(final Contact contact) {
-        contacts.removeElement(contact);
-        synchronized (rosterLockObject) {
-            sortedContacts.removeElement(contact);
-            ui_removeFromAnyGroup(contact);
-        }
     }
 
     private void cl_addGroup(Group group) {
@@ -861,7 +852,9 @@ abstract public class Protocol {
         }
         boolean inCL = inContactList(contact);
         if (inCL) {
-            cl_removeContact(contact);
+            contacts.removeElement(contact);
+            sortedContacts.removeElement(contact);
+            ui_removeFromAnyGroup(contact);
         }
         if (contact.hasChat()) {
             ChatHistory.instance.unregisterChat(ChatHistory.instance.getChat(contact));

@@ -101,7 +101,7 @@ public class MessagesAdapter extends BaseAdapter {
                 item.msgText.setText("* " + nick + " " + parsedText);
                 item.msgText.setTextColor(Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG));
             } else {
-                item.msgText.setText(mData.strTime + ": " + nick + parsedText);
+                item.msgText.setText(mData.strTime + " " + nick + parsedText);
                 item.msgText.setTextColor(Scheme.getColor(Scheme.THEME_CHAT_INMSG));
             }
         } else {

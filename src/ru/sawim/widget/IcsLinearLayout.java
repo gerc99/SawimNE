@@ -6,6 +6,9 @@ import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.LinearLayout;
+import ru.sawim.General;
+import ru.sawim.R;
+import ru.sawim.SawimApplication;
 
 /**
  * A simple extension of a regular linear layout that supports the divider API
@@ -29,15 +32,15 @@ public class IcsLinearLayout extends LinearLayout {
     private int mDividerHeight;
     private int mShowDividers;
     private int mDividerPadding;
-    private TypedArray mTypedArray;
+    private Drawable mOldDivider;
 
     public IcsLinearLayout(Context context, int themeAttr) {
         super(context);
-        mTypedArray = context.obtainStyledAttributes(null, LL, themeAttr, 0);
-        setDividerDrawable(mTypedArray.getDrawable(IcsLinearLayout.LL_DIVIDER));
-        mDividerPadding = mTypedArray.getDimensionPixelSize(LL_DIVIDER_PADDING, 0);
-        mShowDividers = mTypedArray.getInteger(LL_SHOW_DIVIDER, SHOW_DIVIDER_NONE);
-        mTypedArray.recycle();
+        TypedArray a = context.obtainStyledAttributes(null, LL, themeAttr, 0);
+        setDividerDrawable(a.getDrawable(IcsLinearLayout.LL_DIVIDER));
+        mDividerPadding = a.getDimensionPixelSize(LL_DIVIDER_PADDING, 0);
+        mShowDividers = a.getInteger(LL_SHOW_DIVIDER, SHOW_DIVIDER_NONE);
+        a.recycle();
     }
 
     public void setDividerPadding(int dividerPadding) {
@@ -45,9 +48,6 @@ public class IcsLinearLayout extends LinearLayout {
     }
 
     public void setDividerDrawable(Drawable divider) {
-        if (divider == mDivider) {
-            return;
-        }
         mDivider = divider;
         if (divider != null) {
             mDividerWidth = divider.getIntrinsicWidth();
@@ -60,9 +60,9 @@ public class IcsLinearLayout extends LinearLayout {
         requestLayout();
     }
 
-    public void updateDivider() {
-        setDividerDrawable(mTypedArray.getDrawable(IcsLinearLayout.LL_DIVIDER));
-        mTypedArray.recycle();
+    public void updateDivider(boolean isBlack) {
+        setDividerDrawable(General.getResources(SawimApplication.getContext()).
+                getDrawable(isBlack ? R.drawable.abc_list_divider_holo_dark : R.drawable.abc_list_divider_holo_light));
     }
 
     @Override

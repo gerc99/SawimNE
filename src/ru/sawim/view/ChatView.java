@@ -152,9 +152,9 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
         } else {
             chatViewLayout.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
         }
-        chatBarLayout.updateDivider();
-        chatViewLayout.updateDivider();
-        chatListsView.updateDivider();
+        chatBarLayout.updateDivider(Scheme.isBlack());
+        chatViewLayout.updateDivider(Scheme.isBlack());
+        chatListsView.updateDivider(Scheme.isBlack());
         chatInputBarView.setImageButtons(menuButton, smileButton, sendButton);
         if (!General.isManyPane()) {
             DrawerLayout.LayoutParams nickListLP = new DrawerLayout.LayoutParams(Util.dipToPixels(getActivity(), 240), DrawerLayout.LayoutParams.MATCH_PARENT);
@@ -465,7 +465,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
                         return dialog;
                     }
                 };
-                chatDialogFragment.show(getFragmentManager().beginTransaction(), "force go to chat");
+                chatDialogFragment.show(getFragmentManager().beginTransaction(), "force-go-to-chat");
                 chatsSpinnerAdapter.refreshList();
             }
         });

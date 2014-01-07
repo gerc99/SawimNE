@@ -78,8 +78,8 @@ public class TemporaryRoster {
 
     public final Vector mergeContacts() {
         Vector newContacts = contacts;
-        boolean sync = /*Options.getBoolean(Options.OPTION_SAVE_TEMP_CONTACT)*/true;
-        sync |= protocol.isReconnect();
+        boolean sync = protocol.isReconnect();
+//        sync |= Options.getBoolean(Options.OPTION_SAVE_TEMP_CONTACT);
         if (sync) {
             Group g;
             Contact o;
