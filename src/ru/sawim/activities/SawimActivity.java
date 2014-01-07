@@ -447,7 +447,7 @@ public class SawimActivity extends ActionBarActivity {
                 DebugLog.instance.activate();
                 break;
             case MENU_QUIT:
-                General.getInstance().quit();
+                General.getInstance().quit(false);
                 SawimApplication.getInstance().quit();
                 General.currentActivity.finish();
                 System.exit(0);

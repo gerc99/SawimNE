@@ -32,6 +32,7 @@ import protocol.xmpp.Jid;
 import protocol.xmpp.MirandaNotes;
 import ru.sawim.General;
 import ru.sawim.R;
+import ru.sawim.SawimResources;
 import ru.sawim.Scheme;
 import ru.sawim.models.ChatsAdapter;
 import ru.sawim.models.MessagesAdapter;
@@ -146,11 +147,15 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
         if (chatViewLayout.getParent() != null)
             ((ViewGroup) chatViewLayout.getParent()).removeView(chatViewLayout);
 
-        if (!Scheme.isSystemBackground()) {
-            int background = Scheme.getColor(Scheme.THEME_BACKGROUND);
-            chatViewLayout.setBackgroundColor(background);
+        if (Scheme.isSystemBackground()) {
+            chatViewLayout.setBackgroundResource(Util.getSystemBackground(getActivity()));
+        } else {
+            chatViewLayout.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
         }
-
+        chatBarLayout.updateDivider();
+        chatViewLayout.updateDivider();
+        chatListsView.updateDivider();
+        chatInputBarView.setImageButtons(menuButton, smileButton, sendButton);
         if (!General.isManyPane()) {
             DrawerLayout.LayoutParams nickListLP = new DrawerLayout.LayoutParams(Util.dipToPixels(getActivity(), 240), DrawerLayout.LayoutParams.MATCH_PARENT);
             DrawerLayout.LayoutParams drawerLayoutLP = new DrawerLayout.LayoutParams(DrawerLayout.LayoutParams.MATCH_PARENT, DrawerLayout.LayoutParams.MATCH_PARENT);
@@ -159,10 +164,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
             nickListLP.gravity = Gravity.START;
             drawerLayout.setLayoutParams(drawerLayoutLP);
 
-            TypedArray a = getActivity().getTheme().obtainStyledAttributes(new int[]{android.R.attr.windowBackground});
-            int background = a.getResourceId(0, 0);
-            a.recycle();
-            nickList.setBackgroundResource(background);
+            nickList.setBackgroundResource(Util.getSystemBackground(getActivity()));
             nickList.setLayoutParams(nickListLP);
             if (nickList.getParent() != null)
                 ((ViewGroup) nickList.getParent()).removeView(nickList);
@@ -171,7 +173,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
 
             chatBarLayout.setVisibilityUsersImage(ImageView.VISIBLE);
             usersImage.setBackgroundColor(0);
-            usersImage.setImageDrawable(General.usersIcon);
+            usersImage.setImageDrawable(SawimResources.usersIcon);
             usersImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -216,6 +218,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
                 new SmilesView().show(General.currentActivity.getSupportFragmentManager(), "show-smiles");
             }
         });
+        messageEditor.clearFocus();
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN)
             messageEditor.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
         messageEditor.setSingleLine(false);
@@ -265,7 +268,6 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
         menuButton.setOnClickListener(null);
         usersImage.setOnClickListener(null);
         smileButton.setOnClickListener(null);
-        chatBarLayout.setOnClickListener(null);
         chatListView.setOnItemClickListener(null);
         messageEditor.removeTextChangedListener(textWatcher);
         chatListView.setOnCreateContextMenuListener(null);

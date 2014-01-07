@@ -3,6 +3,7 @@ package ru.sawim.widget.chat;
 import android.content.Context;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import ru.sawim.General;
@@ -27,6 +28,10 @@ public class ChatViewRoot extends IcsLinearLayout {
         setLayoutParams(layoutParams);
         addViewInLayout(chatListsView, 0, chatListsView.getLayoutParams());
         addViewInLayout(chatInputBarView, 1, chatInputBarView.getLayoutParams());
+    }
+
+    public void update() {
+        updateDivider();
     }
 
     public void showHint() {

@@ -3,6 +3,7 @@ package ru.sawim.widget;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -56,6 +57,13 @@ public class Util {
             v.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, 1));
         v.setBackgroundColor(color);
         return v;
+    }
+
+    public static int getSystemBackground(Context context) {
+        TypedArray a = context.getTheme().obtainStyledAttributes(new int[]{android.R.attr.windowBackground});
+        int background = a.getResourceId(0, 0);
+        a.recycle();
+        return background;
     }
 
     public static int dipToPixels(Context context, int dipValue) {

@@ -7,6 +7,7 @@ import android.widget.BaseAdapter;
 import protocol.Protocol;
 import ru.sawim.General;
 import ru.sawim.R;
+import ru.sawim.SawimResources;
 import ru.sawim.Scheme;
 import ru.sawim.text.TextLinkClickListener;
 import ru.sawim.widget.chat.MessageItemView;
@@ -100,7 +101,7 @@ public class MessagesAdapter extends BaseAdapter {
                 item.msgText.setText("* " + nick + " " + parsedText);
                 item.msgText.setTextColor(Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG));
             } else {
-                item.msgText.setText(nick + parsedText);
+                item.msgText.setText(mData.strTime + ": " + nick + parsedText);
                 item.msgText.setTextColor(Scheme.getColor(Scheme.THEME_CHAT_INMSG));
             }
         } else {
@@ -114,7 +115,7 @@ public class MessagesAdapter extends BaseAdapter {
                 item.setPadding((int)(11 * displayDensity), (int)(7 * displayDensity), (int)(18 * displayDensity), (int)(9 * displayDensity));
             }
             if (mData.getIconIndex() == Message.ICON_OUT_MSG_FROM_CLIENT) {
-                item.titleItemView.setCheckImage(General.messageIconCheck.getBitmap());
+                item.titleItemView.setCheckImage(SawimResources.messageIconCheck.getBitmap());
             }
 
             item.titleItemView.setNick(Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG),

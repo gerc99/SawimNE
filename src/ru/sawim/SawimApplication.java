@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Message;
+import android.util.Log;
 import org.microemu.MIDletBridge;
 import org.microemu.app.Common;
 import org.microemu.cldc.file.FileSystem;

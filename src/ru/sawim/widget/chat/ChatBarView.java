@@ -55,6 +55,10 @@ public class ChatBarView extends IcsLinearLayout {
         addViewInLayout(chatsImage, 2, chatsImageLP);
     }
 
+    public void update() {
+        updateDivider();
+    }
+
     public void setVisibilityUsersImage(int visibility) {
         getChildAt(0).setVisibility(visibility);
     }

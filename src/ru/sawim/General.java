@@ -1,15 +1,9 @@
 package ru.sawim;
 
-import DrawControls.icons.ImageList;
 import android.content.Context;
-import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.GradientDrawable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.WindowManager;
 import sawim.Options;
 import sawim.Updater;
@@ -38,21 +32,11 @@ public class General {
             + "/" + android.os.Build.VERSION.RELEASE;
     public static final String DEFAULT_SERVER = "jabber.ru";
 
-    public static ImageList affiliationIcons = ImageList.createImageList("/jabber-affiliations.png");
-    public static final ImageList groupDownIcon = ImageList.createImageList("/control_down.png");
-    public static final ImageList groupRightIcons = ImageList.createImageList("/control_right.png");
-    public static BitmapDrawable usersIcon;
-    public static BitmapDrawable authGrantIcon;
-    public static BitmapDrawable authReqIcon;
-    public static BitmapDrawable messageIcon;
-    public static BitmapDrawable personalMessageIcon;
-    public static BitmapDrawable typingIcon;
     private static General instance;
     public static boolean returnFromAcc = false;
     public static ActionBarActivity currentActivity;
     public static ActionBar actionBar;
     private static Resources resources;
-    public static BitmapDrawable messageIconCheck;
     private boolean paused = true;
     private static int fontSize;
     public static boolean hideIconsClient;
@@ -92,27 +76,11 @@ public class General {
             DebugLog.instance.activate();
         }
         DebugLog.startTests();
-        initIcons();
         displayDensity = General.getResources(SawimApplication.getContext()).getDisplayMetrics().density;
     }
 
-    private void initIcons() {
-        messageIconCheck = (BitmapDrawable) getResources(SawimApplication.getContext()).getDrawable(R.drawable.msg_check);
-        usersIcon = (BitmapDrawable) getResources(SawimApplication.getContext()).
-                getDrawable(Scheme.isBlack() ? R.drawable.ic_participants_dark : R.drawable.ic_participants_light);
-        authGrantIcon = (BitmapDrawable) getResources(SawimApplication.getContext()).
-                getDrawable(R.drawable.ic_auth_grant);
-        authReqIcon = (BitmapDrawable) getResources(SawimApplication.getContext()).
-                getDrawable(R.drawable.ic_auth_req);
-        messageIcon = (BitmapDrawable) getResources(SawimApplication.getContext()).
-                getDrawable(R.drawable.ic_new_message);
-        personalMessageIcon = (BitmapDrawable) getResources(SawimApplication.getContext()).
-                getDrawable(R.drawable.ic_new_personal_message);
-        typingIcon = (BitmapDrawable) getResources(SawimApplication.getContext()).
-                getDrawable(Scheme.isBlack() ? R.drawable.ic_typing_dark : R.drawable.ic_typing_light);
-    }
-
     public static void updateOptions() {
+        SawimResources.initIcons();
         fontSize = Options.getInt(Options.OPTION_FONT_SCHEME);
         showStatusLine = Options.getBoolean(Options.OPTION_SHOW_STATUS_LINE);
         hideIconsClient = Options.getBoolean(Options.OPTION_HIDE_ICONS_CLIENTS);
@@ -131,7 +99,7 @@ public class General {
         return getResources(SawimApplication.getContext()).getBoolean(R.bool.is_tablet);
     }
 
-    public void quit() {
+    public void quit(boolean isForceClose) {
         Roster cl = Roster.getInstance();
         try {
             Thread.sleep(100);
@@ -142,7 +110,8 @@ public class General {
             Thread.sleep(500);
         } catch (InterruptedException e1) {
         }
-        ChatHistory.instance.saveUnreadMessages();
+        if (!isForceClose)
+            ChatHistory.instance.saveUnreadMessages();
         AutoAbsence.getInstance().online();
     }
 

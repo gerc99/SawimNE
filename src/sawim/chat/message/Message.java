@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable;
 import protocol.Contact;
 import protocol.Protocol;
 import ru.sawim.General;
+import ru.sawim.SawimResources;
 import sawim.chat.MessData;
 import sawim.roster.Roster;
 
@@ -32,15 +33,15 @@ public abstract class Message {
     public static BitmapDrawable getIcon(byte type) {
         switch (type) {
             case ICON_SYSREQ:
-                return General.authReqIcon;
+                return SawimResources.authReqIcon;
             case ICON_SYS_OK:
-                return General.authGrantIcon;
+                return SawimResources.authGrantIcon;
             case ICON_TYPE:
-                return General.typingIcon;
+                return SawimResources.typingIcon;
             case ICON_IN_MSG_HI:
-                return General.personalMessageIcon;
+                return SawimResources.personalMessageIcon;
             case ICON_IN_MSG:
-                return General.messageIcon;
+                return SawimResources.messageIcon;
         }
         return null;
     }

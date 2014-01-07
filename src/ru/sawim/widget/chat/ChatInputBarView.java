@@ -2,6 +2,7 @@ package ru.sawim.widget.chat;
 
 import android.content.Context;
 import android.view.Gravity;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -30,11 +31,9 @@ public class ChatInputBarView extends IcsLinearLayout {
         setLayoutParams(layoutParams);
 
         LinearLayout.LayoutParams menuButtonLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
-        menuButton.setImageResource(android.R.drawable.ic_menu_sort_by_size);
         addViewInLayout(menuButton, 0, menuButtonLP);
 
         LinearLayout.LayoutParams smileButtonLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
-        smileButton.setImageResource(Scheme.isBlack() ? R.drawable.ic_emoji_dark : R.drawable.ic_emoji_light);
         addViewInLayout(smileButton, 1, smileButtonLP);
 
         LinearLayout.LayoutParams messageEditorLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -43,7 +42,13 @@ public class ChatInputBarView extends IcsLinearLayout {
         addViewInLayout(messageEditor, 2, messageEditorLP);
 
         LinearLayout.LayoutParams sendButtonLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
-        sendButton.setImageResource(Scheme.isBlack() ? R.drawable.ic_send_dark : R.drawable.ic_send_light);
         addViewInLayout(sendButton, 3, sendButtonLP);
+    }
+
+    public void setImageButtons(ImageButton menuButton, ImageButton smileButton, ImageButton sendButton) {
+        menuButton.setImageResource(android.R.drawable.ic_menu_sort_by_size);
+        smileButton.setImageResource(Scheme.isBlack() ? R.drawable.ic_emoji_dark : R.drawable.ic_emoji_light);
+        sendButton.setImageResource(Scheme.isBlack() ? R.drawable.ic_send_dark : R.drawable.ic_send_light);
+        updateDivider();
     }
 }

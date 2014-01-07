@@ -2,6 +2,7 @@ package protocol;
 
 import DrawControls.icons.Icon;
 import ru.sawim.General;
+import ru.sawim.SawimResources;
 import sawim.comm.Util;
 import sawim.roster.TreeNode;
 
@@ -111,7 +112,7 @@ public class Group extends TreeNode {
 
     @Override
     public Icon getLeftIcon(Protocol p) {
-        return expanded ? General.groupDownIcon.iconAt(0) : General.groupRightIcons.iconAt(0);
+        return expanded ? SawimResources.groupDownIcon.iconAt(0) : SawimResources.groupRightIcons.iconAt(0);
     }
 
     @Override

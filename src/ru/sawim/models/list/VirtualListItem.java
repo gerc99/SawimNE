@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import ru.sawim.General;
 import ru.sawim.SawimApplication;
+import ru.sawim.SawimResources;
 import ru.sawim.text.TextFormatter;
 
 /**
@@ -63,7 +64,7 @@ public class VirtualListItem {
     }
 
     public void addGroup(int marginLeft, CharSequence text, byte themeText, byte font, OnGroupListListener groupListListener) {
-        addImage(opened ? General.groupDownIcon.iconAt(0).getImage() : General.groupRightIcons.iconAt(0).getImage());
+        addImage(opened ? SawimResources.groupDownIcon.iconAt(0).getImage() : SawimResources.groupRightIcons.iconAt(0).getImage());
         addDescription(marginLeft, text, themeText, font);
         this.groupListListener = groupListListener;
     }
