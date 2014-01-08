@@ -42,7 +42,7 @@ public final class Xmpp extends Protocol implements FormListener {
 
         byte type = getProfile().protocolType;
         ImageList icons = createStatusIcons(type);
-        final int[] statusIconIndex = {1, 0, 3, 4, -1, -1, -1, -1, -1, 6, -1, 5, -1, -1, 1};
+        final int[] statusIconIndex = {1, 0, 2, 3, -1, -1, -1, -1, -1, 5, -1, 4, -1, -1, 1};
         info = new StatusInfo(icons, statusIconIndex, statuses);
         xstatusInfo = Xmpp.xStatus.getInfo();
         clientInfo = XmppClient.get();

@@ -44,9 +44,26 @@ public class ImageList {
             return imgs;
         }
         ImageList icons = new ImageList();
-        try {
-            icons.load(resName, -1, -1);
-        } catch (Exception e) {
+        if (resName.equals("/jabber-status.png")) {
+            Vector tmpIcons = new Vector();
+            tmpIcons.addElement(new Icon((BitmapDrawable) General.getResources(SawimApplication.getContext()).
+                    getDrawable(R.drawable.online)));
+            tmpIcons.addElement(new Icon((BitmapDrawable) General.getResources(SawimApplication.getContext()).
+                    getDrawable(R.drawable.offline)));
+            tmpIcons.addElement(new Icon((BitmapDrawable) General.getResources(SawimApplication.getContext()).
+                    getDrawable(R.drawable.away)));
+            tmpIcons.addElement(new Icon((BitmapDrawable) General.getResources(SawimApplication.getContext()).
+                    getDrawable(R.drawable.chat)));
+            tmpIcons.addElement(new Icon((BitmapDrawable) General.getResources(SawimApplication.getContext()).
+                    getDrawable(R.drawable.dnd)));
+            tmpIcons.addElement(new Icon((BitmapDrawable) General.getResources(SawimApplication.getContext()).
+                    getDrawable(R.drawable.unavailable)));
+            icons.add(tmpIcons);
+        } else {
+            try {
+                icons.load(resName, -1, -1);
+            } catch (Exception e) {
+            }
         }
         files.put(resName, icons);
         return icons;
@@ -75,6 +92,11 @@ public class ImageList {
                 tmpIcons.addElement(new Icon(drawable));
             }
         }
+        icons = new Icon[tmpIcons.size()];
+        tmpIcons.copyInto(icons);
+    }
+
+    private void add(Vector tmpIcons) {
         icons = new Icon[tmpIcons.size()];
         tmpIcons.copyInto(icons);
     }
