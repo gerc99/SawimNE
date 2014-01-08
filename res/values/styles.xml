@@ -3,11 +3,13 @@
     <style name="BaseTheme" parent="Theme.AppCompat">
         <item name="vpiIconPageIndicatorStyle">@style/Widget.IconPageIndicator</item>
         <item name="vpiTabPageIndicatorStyle">@style/CustomTabPageIndicator</item>
+        <item name="android:editTextStyle">@style/EditText</item>
     </style>
 
     <style name="BaseThemeLight" parent="Theme.AppCompat.Light">
         <item name="vpiIconPageIndicatorStyle">@style/Widget.IconPageIndicator</item>
         <item name="vpiTabPageIndicatorStyle">@style/CustomTabPageIndicatorLight</item>
+        <item name="android:editTextStyle">@style/EditText</item>
     </style>
 
     <style name="CustomTabPageIndicatorLight" parent="Widget.TabPageIndicator">
