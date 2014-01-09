@@ -33,7 +33,5 @@ public class MyListView extends ListView {
         setFastScrollEnabled(true);
         setScrollingCacheEnabled(false);
         setAnimationCacheEnabled(false);
-        setDivider(null);
-        setDividerHeight(0);
     }
 }

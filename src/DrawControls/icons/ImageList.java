@@ -92,8 +92,7 @@ public class ImageList {
                 tmpIcons.addElement(new Icon(drawable));
             }
         }
-        icons = new Icon[tmpIcons.size()];
-        tmpIcons.copyInto(icons);
+        add(tmpIcons);
     }
 
     private void add(Vector tmpIcons) {
@@ -136,8 +135,7 @@ public class ImageList {
                 tmpIcons.addElement(new Icon(drawable));
             }
         }
-        icons = new Icon[tmpIcons.size()];
-        tmpIcons.copyInto(icons);
+        add(tmpIcons);
     }
 
     public static Bitmap scalingIconForDPI(Bitmap originBitmap) {

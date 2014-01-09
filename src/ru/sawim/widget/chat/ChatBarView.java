@@ -67,6 +67,10 @@ public class ChatBarView extends IcsLinearLayout {
         getChildAt(2).setVisibility(visibility);
     }
 
+    public void setVisibilityLabelImage(int visibility) {
+        imageView.setVisibility(visibility);
+    }
+
     public void updateTextView(String text) {
         textView.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
         textView.setTextSize(General.getFontSize());

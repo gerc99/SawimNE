@@ -156,6 +156,8 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
         chatViewLayout.updateDivider(Scheme.isBlack());
         chatListsView.updateDivider(Scheme.isBlack());
         chatInputBarView.setImageButtons(menuButton, smileButton, sendButton);
+        chatListView.setDivider(null);
+        chatListView.setDividerHeight(0);
         if (!General.isManyPane()) {
             DrawerLayout.LayoutParams nickListLP = new DrawerLayout.LayoutParams(Util.dipToPixels(getActivity(), 240), DrawerLayout.LayoutParams.MATCH_PARENT);
             DrawerLayout.LayoutParams drawerLayoutLP = new DrawerLayout.LayoutParams(DrawerLayout.LayoutParams.MATCH_PARENT, DrawerLayout.LayoutParams.MATCH_PARENT);
@@ -186,7 +188,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
                 }
             });
         } else
-            chatBarLayout.setVisibilityUsersImage(View.GONE);
+            chatBarLayout.setVisibilityUsersImage(ImageView.GONE);
         chatsImage.setBackgroundColor(0);
         chatsImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -359,6 +361,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
         if (General.isManyPane()) MessagesAdapter.isRepaint = true;
         else drawerLayout.setDrawerLockMode(contact.isConference() ?
                 DrawerLayout.LOCK_MODE_UNLOCKED : DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        chatBarLayout.setVisibilityLabelImage(contact.isConference() ? ImageView.GONE : ImageView.VISIBLE);
     }
 
     private void setPosition() {

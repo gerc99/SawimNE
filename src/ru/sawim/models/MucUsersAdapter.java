@@ -78,6 +78,13 @@ public class MucUsersAdapter extends BaseAdapter {
     }
 
     @Override
+    public boolean isEnabled(int position) {
+        Object o = items.get(position);
+        if (o instanceof String) return false;
+        return super.isEnabled(position);
+    }
+
+    @Override
     public int getCount() {
         return items.size();
     }

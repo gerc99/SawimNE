@@ -1,13 +1,17 @@
 package protocol.xmpp;
 
+import DrawControls.icons.Icon;
+import android.graphics.drawable.BitmapDrawable;
 import android.view.ContextMenu;
 import android.view.Menu;
 import protocol.Contact;
 import protocol.ContactMenu;
 import protocol.Protocol;
 import protocol.StatusInfo;
+import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
+import ru.sawim.SawimResources;
 import ru.sawim.view.menu.MyMenu;
 import sawim.Options;
 import sawim.chat.message.SystemNotice;
@@ -73,9 +77,7 @@ public class XmppServiceContact extends XmppContact {
                 return 3;
         }
         return 0;
-    }
-
-    ;
+    };
 
     public boolean isAutoJoin() {
         return autojoin;
@@ -126,6 +128,13 @@ public class XmppServiceContact extends XmppContact {
 
     void doJoining() {
         setStatus(StatusInfo.STATUS_AWAY, "");
+    }
+
+    @Override
+    public Icon getLeftIcon(Protocol p) {
+        if (isConference())
+            return new Icon(SawimResources.usersIcon);
+        return super.getLeftIcon(p);
     }
 
     public byte isPresence() {

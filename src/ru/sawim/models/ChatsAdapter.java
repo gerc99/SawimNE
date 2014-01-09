@@ -63,6 +63,13 @@ public class ChatsAdapter extends BaseAdapter {
         return position;
     }
 
+    @Override
+    public boolean isEnabled(int position) {
+        Object o = getItem(position);
+        if (o instanceof String) return false;
+        return super.isEnabled(position);
+    }
+
     void populateFromContact(RosterItemView rosterItemView, Roster roster, Protocol p, Contact item) {
         rosterItemView.setNull();
         rosterItemView.itemNameColor = Scheme.getColor(item.getTextTheme());
