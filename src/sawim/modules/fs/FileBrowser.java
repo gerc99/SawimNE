@@ -10,7 +10,6 @@ import java.util.Vector;
 
 
 public final class FileBrowser implements Runnable {
-    private final ImageList fsIcons = ImageList.createImageList("/fs.png");
     private static final int TYPE_FILE = 1;
     private static final int TYPE_DIR = 0;
     private static final int TYPE_PARENT_DIR = 0;
@@ -35,10 +34,6 @@ public final class FileBrowser implements Runnable {
         root = new Vector();
         restoring();
         invalidate();*/
-    }
-
-    private Icon[] getIcon(int type) {
-        return new Icon[]{fsIcons.iconAt(type)};
     }
 
     public FileBrowser(boolean selectDir) {
@@ -141,7 +136,7 @@ public final class FileBrowser implements Runnable {
 
             case NativeCanvas.Sawim_BACK:
                 if ((null != errorMessage) || FileSystem.ROOT_DIRECTORY.equals(currDir)) {
-                    Roster.getSawimActivity().updateRoster();
+                    RosterHelper.getSawimActivity().updateRoster();
 
                 } else {
                     int d = currDir.lastIndexOf('/', currDir.length() - 2);

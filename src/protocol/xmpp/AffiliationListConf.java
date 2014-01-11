@@ -12,7 +12,7 @@ import ru.sawim.models.list.VirtualListModel;
 import ru.sawim.view.TextBoxView;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
-import sawim.roster.Roster;
+import sawim.roster.RosterHelper;
 import sawim.util.JLocale;
 
 import java.util.Vector;
@@ -246,7 +246,7 @@ public final class AffiliationListConf implements FormListener, TextBoxView.Text
                             reason);
                 } catch (Exception e) {
                 }
-                Roster.getInstance().updateRoster();
+                RosterHelper.getInstance().updateRoster();
             }
             enterData.back();
             enterData = null;

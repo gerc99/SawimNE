@@ -19,7 +19,7 @@ import sawim.chat.ChatHistory;
 import sawim.chat.message.Message;
 import sawim.comm.Util;
 import sawim.modules.tracking.Tracking;
-import sawim.roster.Roster;
+import sawim.roster.RosterHelper;
 import sawim.roster.TreeNode;
 
 import java.util.ArrayList;
@@ -36,12 +36,12 @@ import java.util.Vector;
 public class RosterAdapter extends BaseAdapter {
 
     private final Context context;
-    private final Roster roster;
+    private final RosterHelper roster;
     private int type;
     private List<TreeNode> items = new ArrayList<TreeNode>();
     private Vector updateQueue = new Vector();
 
-    public RosterAdapter(Context context, Roster vcl, int type) {
+    public RosterAdapter(Context context, RosterHelper vcl, int type) {
         this.context = context;
         this.roster = vcl;
         this.type = type;
@@ -116,7 +116,7 @@ public class RosterAdapter extends BaseAdapter {
             rosterItemView.itemFourthImage = messIcon.getBitmap();
     }
 
-    void populateFromContact(RosterItemView rosterItemView, Roster roster, Protocol p, Contact item) {
+    void populateFromContact(RosterItemView rosterItemView, RosterHelper roster, Protocol p, Contact item) {
         rosterItemView.setNull();
         rosterItemView.itemNameColor = Scheme.getColor(item.getTextTheme());
         rosterItemView.itemNameFont = item.hasChat() ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT;
@@ -160,9 +160,7 @@ public class RosterAdapter extends BaseAdapter {
             }
         }
 
-        Icon icClient = (null != p.clientInfo) ? p.clientInfo.getIcon(item.clientIndex) : null;
-        if (icClient != null && !General.hideIconsClient)
-            rosterItemView.itemFourthImage = icClient.getImage().getBitmap();
+        //rosterItemView.itemFourthImage
 
         String id = item.getUserId();
         if (Tracking.isTrackingEvent(id, Tracking.GLOBAL) == Tracking.TRUE)
@@ -178,8 +176,8 @@ public class RosterAdapter extends BaseAdapter {
         TreeNode o = getItem(i);
         RosterItemView rosterItemView = ((RosterItemView) convertView);
         if (o != null)
-            if (type != Roster.ALL_CONTACTS) {
-                if (type != Roster.ACTIVE_CONTACTS)
+            if (type != RosterHelper.ALL_CONTACTS) {
+                if (type != RosterHelper.ACTIVE_CONTACTS)
                     if (o.isGroup()) {
                         populateFromGroup(rosterItemView, (Group) o);
                     } else if (o.isContact()) {

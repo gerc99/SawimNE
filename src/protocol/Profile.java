@@ -22,7 +22,7 @@ public final class Profile {
     public static final int PROTOCOL_VK_API = 20;
     public static final String[] protocolNames = Util.explode((""
             + "|ICQ"
-            + "|Xmpp"
+            + "|XMPP"
             + "|vk.com (api)"
             + "|Mail.ru Agent"
             + "|Facebook"

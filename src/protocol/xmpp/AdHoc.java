@@ -5,7 +5,7 @@ import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
-import sawim.roster.Roster;
+import sawim.roster.RosterHelper;
 import sawim.util.JLocale;
 
 public final class AdHoc implements FormListener, ControlStateListener {
@@ -137,7 +137,7 @@ public final class AdHoc implements FormListener, ControlStateListener {
             }
         } else {
             execForm();
-            Roster.getInstance().activate(contact);
+            RosterHelper.getInstance().activate(contact);
         }
         form.back();
     }

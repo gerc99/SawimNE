@@ -12,7 +12,7 @@ import android.util.Log;
 import ru.sawim.R;
 import ru.sawim.activities.SawimActivity;
 import sawim.chat.ChatHistory;
-import sawim.roster.Roster;
+import sawim.roster.RosterHelper;
 
 public class SawimService extends Service {
     public static final String ACTION_FOREGROUND = "FOREGROUND";
@@ -53,12 +53,12 @@ public class SawimService extends Service {
         final int icon;
         if (0 < allUnread) {
             icon = R.drawable.ic_tray_msg;
-        } else if (Roster.getInstance().isConnected()) {
+        } else if (RosterHelper.getInstance().isConnected()) {
             icon = R.drawable.ic_tray_on;
             stateMsg = getText(R.string.online);
         } else {
             icon = R.drawable.ic_tray_off;
-            if (Roster.getInstance().isConnecting()) {
+            if (RosterHelper.getInstance().isConnecting()) {
                 stateMsg = getText(R.string.connecting);
             } else {
                 stateMsg = getText(R.string.offline);

@@ -11,7 +11,7 @@ import sawim.modules.fs.FileBrowser;
 import sawim.modules.fs.FileBrowserListener;
 import sawim.modules.fs.FileSystem;
 import sawim.modules.fs.JSR75FileSystem;
-import sawim.roster.Roster;
+import sawim.roster.RosterHelper;
 import sawim.util.JLocale;
 
 import java.io.IOException;
@@ -77,7 +77,7 @@ class HistoryExport implements Runnable, FileBrowserListener {
             if (ex instanceof SawimException) {
                 e = (SawimException) ex;
             }
-            Roster.getInstance().activateWithMsg(e.getMessage());
+            RosterHelper.getInstance().activateWithMsg(e.getMessage());
         }
     }
 

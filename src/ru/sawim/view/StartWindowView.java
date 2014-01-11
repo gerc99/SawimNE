@@ -16,7 +16,7 @@ import ru.sawim.General;
 import ru.sawim.R;
 import sawim.Options;
 import sawim.comm.StringConvertor;
-import sawim.roster.Roster;
+import sawim.roster.RosterHelper;
 
 /**
  * Created with IntelliJ IDEA.
@@ -85,7 +85,7 @@ public class StartWindowView extends Fragment {
 
     public void addAccount(int num, Profile acc) {
         Options.setAccount(num, acc);
-        Roster.getInstance().setCurrentProtocol();
+        RosterHelper.getInstance().setCurrentProtocol();
     }
 
     private void back() {

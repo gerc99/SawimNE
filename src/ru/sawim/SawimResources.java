@@ -12,9 +12,12 @@ public class SawimResources {
     public static final ImageList groupDownIcon = ImageList.createImageList("/control_down.png");
     public static final ImageList groupRightIcons = ImageList.createImageList("/control_right.png");
     public static BitmapDrawable usersIcon;
+    public static BitmapDrawable usersIconOn = (BitmapDrawable) General.getResources(SawimApplication.getContext())
+            .getDrawable(R.drawable.ic_participants_on);
     public static BitmapDrawable typingIcon;
 
-    public static BitmapDrawable messageIconCheck = (BitmapDrawable) General.getResources(SawimApplication.getContext()).getDrawable(R.drawable.msg_check);
+    public static BitmapDrawable messageIconCheck = (BitmapDrawable) General.getResources(SawimApplication.getContext())
+            .getDrawable(R.drawable.msg_check);
     public static BitmapDrawable authGrantIcon = (BitmapDrawable) General.getResources(SawimApplication.getContext()).
             getDrawable(R.drawable.ic_auth_grant);
     public static BitmapDrawable authReqIcon = (BitmapDrawable) General.getResources(SawimApplication.getContext()).
@@ -31,6 +34,5 @@ public class SawimResources {
                 getDrawable(Scheme.isBlack() ? R.drawable.ic_participants_dark : R.drawable.ic_participants_light);
         typingIcon = (BitmapDrawable) General.getResources(SawimApplication.getContext()).
                 getDrawable(Scheme.isBlack() ? R.drawable.ic_typing_dark : R.drawable.ic_typing_light);
-
     }
 }

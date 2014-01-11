@@ -13,7 +13,7 @@ import sawim.comm.MD5;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
 import sawim.modules.DebugLog;
-import sawim.roster.Roster;
+import sawim.roster.RosterHelper;
 import sawim.search.UserInfo;
 import sawim.util.JLocale;
 
@@ -800,7 +800,7 @@ public final class XmppConnection extends ClientConnection {
 
                     DebugLog.println("ver " + jid + " " + name + " " + ver + " in " + os);
 
-                    StatusView sv = Roster.getInstance().getStatusView();
+                    StatusView sv = RosterHelper.getInstance().getStatusView();
                     Contact c = sv.getContact();
 
                     if ((null != c) && c.getUserId().equals(jid)) {
@@ -1238,7 +1238,8 @@ public final class XmppConnection extends ClientConnection {
                 if (null != realJid) {
                     conf.setRealJid(fromRes, Jid.getBareJid(realJid));
                 }
-                contact.setClient(fromRes, x.getFirstNodeAttribute("c", S_NODE));
+                Log.e("XMPP", x.getXmlns());
+                contact.setClient(fromRes);
                 if (303 == code) {
                     conf.addPresence(getXmpp(), fromRes, ": " + JLocale.getString("change_nick") + " " + StringConvertor.notNull(newNick));
                 }
@@ -1276,7 +1277,7 @@ public final class XmppConnection extends ClientConnection {
             getXmpp().setContactStatus(contact, fromRes, nativeStatus2StatusIndex(type), statusString, priority);
             contact.updateMainStatus(getXmpp());
             if (contact.isOnline()) {
-                contact.setClient(fromRes, x.getFirstNodeAttribute("c", S_NODE));
+                contact.setClient(fromRes);
             }
             if (contact.getUserId().equals(contact.getName())) {
                 getXmpp().renameContact(contact, getNickFromNode(x));

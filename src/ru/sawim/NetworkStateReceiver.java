@@ -9,7 +9,7 @@ import android.net.NetworkInfo;
 import protocol.Protocol;
 import sawim.Options;
 import sawim.modules.DebugLog;
-import sawim.roster.Roster;
+import sawim.roster.RosterHelper;
 
 public class NetworkStateReceiver extends BroadcastReceiver {
     private String previousNetworkType = null;
@@ -38,15 +38,15 @@ public class NetworkStateReceiver extends BroadcastReceiver {
     }
 
     private void resetConnections() {
-        int count = Roster.getInstance().getProtocolCount();
+        int count = RosterHelper.getInstance().getProtocolCount();
         for (int i = 0; i < count; ++i) {
-            Protocol p = Roster.getInstance().getProtocol(i);
+            Protocol p = RosterHelper.getInstance().getProtocol(i);
             p.disconnect(false);
         }
     }
 
     private void restoreConnections() {
-        Roster.getInstance().autoConnect();
+        RosterHelper.getInstance().autoConnect();
     }
 
     @Override

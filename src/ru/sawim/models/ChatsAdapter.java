@@ -18,7 +18,7 @@ import sawim.chat.Chat;
 import sawim.chat.ChatHistory;
 import sawim.chat.message.Message;
 import sawim.modules.tracking.Tracking;
-import sawim.roster.Roster;
+import sawim.roster.RosterHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,8 +42,8 @@ public class ChatsAdapter extends BaseAdapter {
     public void refreshList() {
         items.clear();
         ChatHistory.instance.sort();
-        for (int i = 0; i < Roster.getInstance().getProtocolCount(); ++i) {
-            ChatHistory.instance.addLayerToListOfChats(Roster.getInstance().getProtocol(i), items);
+        for (int i = 0; i < RosterHelper.getInstance().getProtocolCount(); ++i) {
+            ChatHistory.instance.addLayerToListOfChats(RosterHelper.getInstance().getProtocol(i), items);
         }
         notifyDataSetChanged();
     }
@@ -70,7 +70,7 @@ public class ChatsAdapter extends BaseAdapter {
         return super.isEnabled(position);
     }
 
-    void populateFromContact(RosterItemView rosterItemView, Roster roster, Protocol p, Contact item) {
+    void populateFromContact(RosterItemView rosterItemView, RosterHelper roster, Protocol p, Contact item) {
         rosterItemView.setNull();
         rosterItemView.itemNameColor = Scheme.getColor(item.getTextTheme());
         rosterItemView.itemNameFont = item.hasChat() ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT;
@@ -114,9 +114,7 @@ public class ChatsAdapter extends BaseAdapter {
             }
         }
 
-        Icon icClient = (null != p.clientInfo) ? p.clientInfo.getIcon(item.clientIndex) : null;
-        if (icClient != null && !General.hideIconsClient)
-            rosterItemView.itemFourthImage = icClient.getImage().getBitmap();
+        //rosterItemView.itemFourthImage
 
         String id = item.getUserId();
         if (Tracking.isTrackingEvent(id, Tracking.GLOBAL) == Tracking.TRUE)
@@ -145,7 +143,7 @@ public class ChatsAdapter extends BaseAdapter {
         }
         if (o instanceof Chat) {
             Chat chat = (Chat) o;
-            populateFromContact(rosterItemView, Roster.getInstance(), chat.getProtocol(), chat.getContact());
+            populateFromContact(rosterItemView, RosterHelper.getInstance(), chat.getProtocol(), chat.getContact());
             rosterItemView.setBackgroundColor(0);
         }
         ((RosterItemView) convertView).repaint();

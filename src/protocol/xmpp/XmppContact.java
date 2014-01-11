@@ -1,5 +1,6 @@
 package protocol.xmpp;
 
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import protocol.*;
@@ -160,7 +161,7 @@ public class XmppContact extends Contact {
         public String statusText;
         public String realJid;
 
-        public short client = ClientInfo.CLI_NONE;
+        public String client = "";
 
         public byte status;
         public byte priority;
@@ -276,13 +277,13 @@ public class XmppContact extends Contact {
         }
     }
 
-    public void setClient(String resource, String caps) {
+    public void setClient(String resource) {
         SubContact c = getExistSubContact(resource);
         if (null != c) {
-            c.client = XmppClient.createClient(caps);
+            c.client = resource;
         }
         SubContact cur = getCurrentSubContact();
-        setClient((null == cur) ? ClientInfo.CLI_NONE : cur.client, null);
+        super.setClient(cur.client);
     }
 
     public void setXStatus(String id, String text) {
@@ -304,7 +305,7 @@ public class XmppContact extends Contact {
         } else {
             setStatus(cur.status, cur.statusText);
         }
-        setClient((null == cur) ? ClientInfo.CLI_NONE : cur.client, null);
+        setClient(cur.client);
     }
 
     public boolean isSingleUserContact() {

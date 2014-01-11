@@ -15,7 +15,7 @@ import sawim.comm.StringConvertor;
 import sawim.comm.Util;
 import sawim.history.CachedRecord;
 import sawim.history.HistoryStorage;
-import sawim.roster.Roster;
+import sawim.roster.RosterHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -95,7 +95,7 @@ public final class Chat {
     }
 
     public void activate() {
-        Roster.getInstance().activate(contact);
+        RosterHelper.getInstance().activate(contact);
     }
 
     public void sendMessage(String message) {

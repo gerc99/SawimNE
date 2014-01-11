@@ -17,13 +17,13 @@ import sawim.modules.AutoAbsence;
 import java.util.List;
 import java.util.Vector;
 
-public final class Roster {
+public final class RosterHelper {
 
     public static final int ALL_CONTACTS = 0;
     public static final int ONLINE_CONTACTS = 1;
     public static final int ACTIVE_CONTACTS = 2;
 
-    private static final Roster instance = new Roster();
+    private static final RosterHelper instance = new RosterHelper();
     private final StatusView statusView = new StatusView();
 
     private Contact currentContact;
@@ -37,7 +37,7 @@ public final class Roster {
     private Protocol[] protocolList;
     private int count = 0;
 
-    public static Roster getInstance() {
+    public static RosterHelper getInstance() {
         return instance;
     }
 
@@ -95,7 +95,7 @@ public final class Roster {
     }
 
     public void setCurrentProtocol() {
-        Roster cl = Roster.getInstance();
+        RosterHelper cl = RosterHelper.getInstance();
         Vector listOfProfiles = new Vector();
         for (int i = 0; i < Options.getAccountCount(); ++i) {
             Profile p = Options.getAccount(i);
@@ -467,7 +467,7 @@ public final class Roster {
         int contactCounter;
         int onlineContactCounter;
         boolean all = !hideOffline;
-        Vector groups = p.getSortedGroups();
+        Vector groups = p.getGroupItems();
         Util.sort(groups);
         for (int groupIndex = 0; groupIndex < groups.size(); ++groupIndex) {
             g = (Group) groups.elementAt(groupIndex);
@@ -521,7 +521,7 @@ public final class Roster {
     public void rebuildFlatItemsWOG(Protocol p, List<TreeNode> drawItems) {
         boolean all = !hideOffline;
         Contact c;
-        Vector contacts = p.getSortedContacts();
+        Vector contacts = p.getContactItems();
         Util.sort(contacts);
         for (int contactIndex = 0; contactIndex < contacts.size(); ++contactIndex) {
             c = (Contact) contacts.elementAt(contactIndex);
@@ -554,7 +554,7 @@ public final class Roster {
         } else {
             Protocol p = getProtocol(group);
             if (p != null)
-                Util.sort(p.getSortedContacts());
+                Util.sort(p.getContactItems());
         }
     }
 

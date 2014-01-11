@@ -11,7 +11,7 @@ import ru.sawim.activities.SawimActivity;
 import sawim.chat.Chat;
 import sawim.chat.message.PlainMessage;
 import sawim.modules.Notify;
-import sawim.roster.Roster;
+import sawim.roster.RosterHelper;
 import sawim.util.JLocale;
 
 import javax.microedition.rms.RecordStore;
@@ -346,7 +346,7 @@ public final class Tracking {
                 ((SawimActivity) General.currentActivity).openChat(chat.getProtocol(), chat.getContact(), true);
                 break;
             case ACTION_NOTICE:
-                Roster.getInstance().activateWithMsg(JLocale.getString("track_form_title")
+                RosterHelper.getInstance().activateWithMsg(JLocale.getString("track_form_title")
                         + " " + item.getName() + "\n" + item.getName() + " [" + item.getUserId() + "] " + JLocale.getString("track_action_online"));
                 break;
             case ACTION_INCHAT:
@@ -367,7 +367,7 @@ public final class Tracking {
                     if (track_prev.idAction == ACTION_MESSAGE) {
                         String str = track.valueAction;
                         if (str.length() != 0)
-                            Roster.getInstance().getCurrentProtocol().sendMessage(item, str, true);
+                            RosterHelper.getInstance().getCurrentProtocol().sendMessage(item, str, true);
                     }
                 }
                 break;
@@ -380,7 +380,7 @@ public final class Tracking {
         Chat chat_ = new Chat(protocol, item);
         switch (action) {
             case ACTION_NOTICE:
-                Roster.getInstance().activateWithMsg(JLocale.getString("track_form_title")
+                RosterHelper.getInstance().activateWithMsg(JLocale.getString("track_form_title")
                         + " " + item.getName() + "\n" + item.getName() + " [" + item.getUserId() + "] " + JLocale.getString("track_action_offline"));
                 break;
             case ACTION_INCHAT:

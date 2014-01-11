@@ -53,11 +53,7 @@ public class ImageList {
             tmpIcons.addElement(new Icon((BitmapDrawable) General.getResources(SawimApplication.getContext()).
                     getDrawable(R.drawable.away)));
             tmpIcons.addElement(new Icon((BitmapDrawable) General.getResources(SawimApplication.getContext()).
-                    getDrawable(R.drawable.chat)));
-            tmpIcons.addElement(new Icon((BitmapDrawable) General.getResources(SawimApplication.getContext()).
                     getDrawable(R.drawable.dnd)));
-            tmpIcons.addElement(new Icon((BitmapDrawable) General.getResources(SawimApplication.getContext()).
-                    getDrawable(R.drawable.unavailable)));
             icons.add(tmpIcons);
         } else {
             try {

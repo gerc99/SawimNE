@@ -16,7 +16,7 @@ import ru.sawim.models.list.VirtualList;
 import ru.sawim.models.list.VirtualListModel;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
-import sawim.roster.Roster;
+import sawim.roster.RosterHelper;
 import sawim.util.JLocale;
 
 import java.util.Vector;
@@ -368,7 +368,7 @@ public final class Search implements FormListener, ControlStateListener {
                             protocol.requestAuth(contact);
                         }
                     }
-                    Roster.getInstance().activate(contact);
+                    RosterHelper.getInstance().activate(contact);
                     form.back();
                 }
             }

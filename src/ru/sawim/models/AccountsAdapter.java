@@ -13,7 +13,7 @@ import protocol.Profile;
 import protocol.Protocol;
 import ru.sawim.R;
 import sawim.Options;
-import sawim.roster.Roster;
+import sawim.roster.RosterHelper;
 
 
 /**
@@ -73,7 +73,7 @@ public class AccountsAdapter extends BaseAdapter {
 
         void populateFrom(final int position) {
             final Profile account = getItem(position);
-            Protocol p = Roster.getInstance().getProtocol(account);
+            Protocol p = RosterHelper.getInstance().getProtocol(account);
             if (null != p) {
                 ImageView icProtocol = getImageProtocol();
                 Icon ic = p.getStatusInfo().getIcon((byte) 0);
@@ -95,7 +95,7 @@ public class AccountsAdapter extends BaseAdapter {
                 public void onClick(View v) {
                     ToggleButton t = (ToggleButton) v.findViewById(R.id.toggle_button);
                     account.isActive = t.isChecked();
-                    Roster.getInstance().setCurrentProtocol();
+                    RosterHelper.getInstance().setCurrentProtocol();
                     Options.saveAccount(account);
                     notifyDataSetChanged();
                 }

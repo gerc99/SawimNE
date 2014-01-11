@@ -17,7 +17,7 @@ import sawim.modules.fs.FileBrowserListener;
 import sawim.modules.fs.FileSystem;
 import sawim.modules.fs.JSR75FileSystem;
 import sawim.modules.photo.PhotoListener;
-import sawim.roster.Roster;
+import sawim.roster.RosterHelper;
 import sawim.util.JLocale;
 
 import javax.microedition.io.Connector;
@@ -222,7 +222,7 @@ public final class FileTransfer implements FileBrowserListener,
         chat.activate();
         addFileProgress();
         chat.addFileProgress(JLocale.getEllipsisString("sending_file"), getProgressText());
-        Roster.getInstance().addTransfer(this);
+        RosterHelper.getInstance().addTransfer(this);
     }
 
     public void setProgress(int percent) {
@@ -238,7 +238,7 @@ public final class FileTransfer implements FileBrowserListener,
             }
             changeFileProgress(percent, JLocale.getEllipsisString("sending_file"));
             if (100 == percent) {
-                Roster.getInstance().removeTransfer(false);
+                RosterHelper.getInstance().removeTransfer(false);
                 changeFileProgress(percent, "complete");
                 return;
             }
@@ -267,7 +267,7 @@ public final class FileTransfer implements FileBrowserListener,
     public void destroy() {
         try {
             closeFile();
-            Roster.getInstance().removeTransfer(false);
+            RosterHelper.getInstance().removeTransfer(false);
             General.gc();
         } catch (Exception ignored) {
         }

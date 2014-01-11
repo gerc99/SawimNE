@@ -18,7 +18,7 @@ import sawim.comm.Util;
 import sawim.forms.ManageContactListForm;
 import sawim.history.HistoryStorage;
 import sawim.history.HistoryStorageList;
-import sawim.roster.Roster;
+import sawim.roster.RosterHelper;
 import sawim.util.JLocale;
 
 import java.util.Vector;
@@ -93,6 +93,7 @@ public class ContactMenu implements TextBoxView.TextBoxListener {
     public static final int CONFERENCE_DISCONNECT = 61;
     public static final int USER_MENU_CLOSE_CHAT = 62;
     public static final int MENU_MULTI_CITATION = 63;
+    public static final int ROLE_COMMANDS = 64;
 
     private Contact contact;
     private Protocol protocol;
@@ -132,8 +133,8 @@ public class ContactMenu implements TextBoxView.TextBoxListener {
             case USER_MENU_USER_REMOVE:
                 HistoryStorage.getHistory(contact).removeHistory();
                 protocol.removeContact(contact);
-                Roster.getInstance().updateRoster();
-                Roster.getInstance().updateBarProtocols();
+                RosterHelper.getInstance().updateRoster();
+                RosterHelper.getInstance().updateBarProtocols();
                 break;
 
             case USER_MENU_STATUSES:

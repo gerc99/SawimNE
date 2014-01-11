@@ -1,6 +1,5 @@
 package ru.sawim.view;
 
-import DrawControls.icons.Icon;
 import android.app.Activity;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
@@ -14,7 +13,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.PagerTitleStrip;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.*;
 import android.widget.*;
 import protocol.Contact;
@@ -33,7 +31,7 @@ import ru.sawim.widget.roster.RosterViewRoot;
 import sawim.chat.Chat;
 import sawim.chat.ChatHistory;
 import sawim.forms.ManageContactListForm;
-import sawim.roster.Roster;
+import sawim.roster.RosterHelper;
 import sawim.roster.TreeNode;
 
 import java.util.ArrayList;
@@ -47,7 +45,7 @@ import java.util.List;
  * Time: 19:58
  * To change this template use File | Settings | File Templates.
  */
-public class RosterView extends Fragment implements ListView.OnItemClickListener, Roster.OnUpdateRoster, Handler.Callback {
+public class RosterView extends Fragment implements ListView.OnItemClickListener, RosterHelper.OnUpdateRoster, Handler.Callback {
 
     public static final String TAG = "RosterView";
 
@@ -63,7 +61,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     private ViewPager viewPager;
     private ArrayList<BaseAdapter> adaptersPages;
     private CustomPagerAdapter pagerAdapter;
-    private Roster roster;
+    private RosterHelper roster;
     private AdapterView.AdapterContextMenuInfo contextMenuInfo;
     private Handler handler;
 
@@ -71,13 +69,13 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         final FragmentActivity activity = getActivity();
-        roster = Roster.getInstance();
+        roster = RosterHelper.getInstance();
         adaptersPages = new ArrayList<BaseAdapter>();
         MyListView allListView = new MyListView(activity);
         MyListView onlineListView = new MyListView(activity);
         MyListView activeListView = new MyListView(activity);
-        RosterAdapter allRosterAdapter = new RosterAdapter(getActivity(), roster, Roster.ALL_CONTACTS);
-        RosterAdapter onlineRosterAdapter = new RosterAdapter(getActivity(), roster, Roster.ONLINE_CONTACTS);
+        RosterAdapter allRosterAdapter = new RosterAdapter(getActivity(), roster, RosterHelper.ALL_CONTACTS);
+        RosterAdapter onlineRosterAdapter = new RosterAdapter(getActivity(), roster, RosterHelper.ONLINE_CONTACTS);
         ChatsAdapter activeRosterAdapter = new ChatsAdapter(getActivity());
         adaptersPages.add(allRosterAdapter);
         adaptersPages.add(onlineRosterAdapter);
@@ -212,7 +210,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
             case UPDATE_ROSTER:
                 roster.updateOptions();
                 if (adaptersPages != null && adaptersPages.size() > 0) {
-                    if (roster.getCurrPage() == Roster.ACTIVE_CONTACTS) {
+                    if (roster.getCurrPage() == RosterHelper.ACTIVE_CONTACTS) {
                         ((ChatsAdapter) adaptersPages.get(roster.getCurrPage())).refreshList();
                     } else {
                         ((RosterAdapter) adaptersPages.get(roster.getCurrPage())).buildFlatItems();
@@ -221,7 +219,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
                 break;
             case PUT_INTO_QUEUE:
                 if (adaptersPages != null && adaptersPages.size() > 0) {
-                    if (roster.getCurrPage() != Roster.ACTIVE_CONTACTS) {
+                    if (roster.getCurrPage() != RosterHelper.ACTIVE_CONTACTS) {
                         ((RosterAdapter) adaptersPages.get(roster.getCurrPage())).putIntoQueue((Group) msg.obj);
                     }
                 }
@@ -365,7 +363,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-        if (roster.getCurrPage() == Roster.ACTIVE_CONTACTS) {
+        if (roster.getCurrPage() == RosterHelper.ACTIVE_CONTACTS) {
             ChatsAdapter chatsAdapter = ((ChatsAdapter) adaptersPages.get(roster.getCurrPage()));
             Object o = chatsAdapter.getItem(position);
             if (o instanceof Chat) {
@@ -395,7 +393,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         contextMenuInfo = (AdapterView.AdapterContextMenuInfo) menuInfo;
-        if (roster.getCurrPage() == Roster.ACTIVE_CONTACTS) {
+        if (roster.getCurrPage() == RosterHelper.ACTIVE_CONTACTS) {
             ChatsAdapter chatsAdapter = ((ChatsAdapter) adaptersPages.get(roster.getCurrPage()));
             Object o = chatsAdapter.getItem(contextMenuInfo.position);
             if (o instanceof Chat) {
@@ -424,7 +422,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         AdapterView.AdapterContextMenuInfo menuInfo = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         if (menuInfo == null)
             menuInfo = contextMenuInfo;
-        if (roster.getCurrPage() == Roster.ACTIVE_CONTACTS) {
+        if (roster.getCurrPage() == RosterHelper.ACTIVE_CONTACTS) {
             ChatsAdapter chatsAdapter = ((ChatsAdapter) adaptersPages.get(roster.getCurrPage()));
             Object o = chatsAdapter.getItem(menuInfo.position);
             if (o instanceof Chat) {
@@ -444,7 +442,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
 
     private void contactMenuItemSelected(final Contact c, final android.view.MenuItem item) {
         Protocol p = roster.getCurrentProtocol();
-        if (roster.getCurrPage() == Roster.ACTIVE_CONTACTS)
+        if (roster.getCurrPage() == RosterHelper.ACTIVE_CONTACTS)
             p = c.getProtocol();
         new ContactMenu(p, c).doAction(item.getItemId());
     }

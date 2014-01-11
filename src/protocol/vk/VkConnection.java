@@ -3,7 +3,9 @@ package protocol.vk;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import protocol.Contact;
 import protocol.Group;
+import protocol.Roster;
 import protocol.vk.api.VkApp;
 import ru.sawim.SawimApplication;
 import sawim.chat.message.PlainMessage;
@@ -61,8 +63,8 @@ public class VkConnection implements Runnable {
         return running && api.isLogged() && !api.isError();
     }
 
-    private Vector<VkContact> to(JSONArray list) throws JSONException {
-        Vector<VkContact> cl = new Vector<VkContact>();
+    private Vector<Contact> to(JSONArray list) throws JSONException {
+        Vector<Contact> cl = new Vector<Contact>();
         for (int i = 0; i < list.length(); ++i) {
             JSONObject o = list.getJSONObject(i);
             String userId = "" + o.getInt("uid");
@@ -125,9 +127,9 @@ public class VkConnection implements Runnable {
 
     private void processContacts() {
         try {
-            Vector<VkContact> contacts = to(api.getFriends().getJSONArray("response"));
+            Vector<Contact> contacts = to(api.getFriends().getJSONArray("response"));
             Vector<Group> groups = groups();
-            vk.setContactList(groups, contacts);
+            vk.setContactList(new Roster(groups, contacts), false);
         } catch (Exception e) {
             sawim.modules.DebugLog.panic("Vk processContacts", e);
         }

@@ -1,6 +1,5 @@
 package ru.sawim.view;
 
-import DrawControls.icons.Icon;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -26,7 +25,7 @@ import sawim.ExternalApi;
 import sawim.FileTransfer;
 import sawim.chat.ChatHistory;
 import sawim.modules.DebugLog;
-import sawim.roster.Roster;
+import sawim.roster.RosterHelper;
 import sawim.roster.TreeNode;
 
 import java.io.FileNotFoundException;
@@ -43,13 +42,13 @@ public class SendToView extends Fragment implements AdapterView.OnItemClickListe
 
     public static final String TAG = "SendToView";
     private RosterAdapter allRosterAdapter;
-    private Roster roster;
+    private RosterHelper roster;
     private IconTabPageIndicator horizontalScrollView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        roster = Roster.getInstance();
+        roster = RosterHelper.getInstance();
     }
 
     @Override
@@ -65,7 +64,7 @@ public class SendToView extends Fragment implements AdapterView.OnItemClickListe
         allListView.setDividerHeight(0);
         allListView.setOnItemClickListener(this);
 
-        allRosterAdapter = new RosterAdapter(getActivity(), roster, Roster.ALL_CONTACTS);
+        allRosterAdapter = new RosterAdapter(getActivity(), roster, RosterHelper.ALL_CONTACTS);
         allListView.setAdapter(allRosterAdapter);
 
         if (!Scheme.isSystemBackground())

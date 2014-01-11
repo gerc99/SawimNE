@@ -14,7 +14,7 @@ import ru.sawim.view.TextBoxView;
 import ru.sawim.view.menu.MyMenu;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
-import sawim.roster.Roster;
+import sawim.roster.RosterHelper;
 import sawim.search.Search;
 import sawim.util.JLocale;
 
@@ -80,7 +80,7 @@ public final class ManageContactListForm implements FormListener, TextBoxView.Te
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 protocol.moveContactTo(contact, protocol.getGroupById(itemsId.get(which)));
-                Roster.getInstance().updateRoster();
+                RosterHelper.getInstance().updateRoster();
             }
         });
         builder.create().show();
@@ -215,7 +215,7 @@ public final class ManageContactListForm implements FormListener, TextBoxView.Te
         if (null != contact) {
             if (renameContactTextbox == box) {
                 protocol.renameContact(contact, renameContactTextbox.getString());
-                Roster.getInstance().updateRoster();
+                RosterHelper.getInstance().updateRoster();
                 renameContactTextbox.setString(null);
             }
             return;
@@ -227,25 +227,25 @@ public final class ManageContactListForm implements FormListener, TextBoxView.Te
         String groupName_ = groupName.getString();
         boolean isExist = null != protocol.getGroup(groupName_);
         if (0 == groupName_.length()) {
-            Roster.getInstance().updateRoster();
+            RosterHelper.getInstance().updateRoster();
             return;
         }
         switch (action) {
             case ADD_GROUP:
                 if (!isExist) {
                     protocol.addGroup(protocol.createGroup(groupName_));
-                    Roster.getInstance().updateRoster();
+                    RosterHelper.getInstance().updateRoster();
                 }
                 break;
 
             case RENAME_GROUP:
                 boolean isMyName = group.getName().equals(groupName_);
                 if (isMyName) {
-                    Roster.getInstance().updateRoster();
+                    RosterHelper.getInstance().updateRoster();
 
                 } else if (!isExist) {
                     protocol.renameGroup(group, groupName_);
-                    Roster.getInstance().updateRoster();
+                    RosterHelper.getInstance().updateRoster();
                 }
                 break;
         }

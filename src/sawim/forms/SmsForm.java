@@ -4,7 +4,7 @@ import protocol.Protocol;
 import protocol.mrim.Mrim;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
-import sawim.roster.Roster;
+import sawim.roster.RosterHelper;
 import sawim.util.JLocale;
 
 import java.util.Vector;
@@ -19,7 +19,7 @@ public class SmsForm implements FormListener {
 
         Protocol[] protos;
         if (null == protocol) {
-            protos = Roster.getInstance().getProtocols();
+            protos = RosterHelper.getInstance().getProtocols();
         } else {
             protos = new Protocol[]{protocol};
         }

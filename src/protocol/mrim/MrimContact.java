@@ -63,7 +63,7 @@ public class MrimContact extends Contact {
 
     public void setClient(String cl) {
         DebugLog.println("client " + userId + " " + cl);
-        MrimClient.createClient(this, cl);
+        setClient(cl);
     }
 
     public void addChatMenuItems(ContextMenu model) {

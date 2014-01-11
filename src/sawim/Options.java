@@ -7,7 +7,7 @@ import sawim.comm.Util;
 import sawim.forms.PrivateStatusForm;
 import sawim.io.Storage;
 import sawim.modules.DebugLog;
-import sawim.roster.Roster;
+import sawim.roster.RosterHelper;
 
 import java.io.*;
 import java.util.TimeZone;
@@ -75,7 +75,6 @@ public class Options {
     public static final int OPTION_SILENT_MODE = 150;
     public static final int OPTION_BRING_UP = 151;
     public static final int OPTION_ANTISPAM_ENABLE = 158;
-    public static final int OPTION_HIDE_ICONS_CLIENTS = 160;
     public static final int OPTION_SHOW_SOFTBAR = 167;
     public static final int OPTION_TF_FLAGS = 169;
     public static final int OPTION_SORT_UP_WITH_MSG = 171;
@@ -134,7 +133,7 @@ public class Options {
     }
 
     public static void delAccount(int num) {
-        Roster.getInstance().removeProtocol(num);
+        RosterHelper.getInstance().removeProtocol(num);
         synchronized (listOfProfiles) {
             listOfProfiles.removeElementAt(num);
             int current = getCurrentAccount();
@@ -330,7 +329,6 @@ public class Options {
         setInt(Options.OPTION_CL_SORT_BY, 0);
         setBoolean(Options.OPTION_TITLE_IN_CONFERENCE, true);
         setBoolean(Options.OPTION_CL_HIDE_OFFLINE, false);
-        setBoolean(Options.OPTION_HIDE_ICONS_CLIENTS, false);
         setBoolean(Options.OPTION_SHOW_SOFTBAR, true);
         setInt(Options.OPTION_MESS_NOTIF_MODE, 0);
         setInt(Options.OPTION_ONLINE_NOTIF_MODE, 0);

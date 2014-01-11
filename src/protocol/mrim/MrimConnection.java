@@ -16,7 +16,7 @@ import sawim.comm.StringConvertor;
 import sawim.comm.Util;
 import sawim.modules.DebugLog;
 import sawim.modules.Notify;
-import sawim.roster.Roster;
+import sawim.roster.RosterHelper;
 import sawim.search.Search;
 import sawim.search.UserInfo;
 import sawim.util.JLocale;
@@ -263,7 +263,7 @@ public final class MrimConnection extends ClientConnection {
                     General.maximize();
                 }
 
-                Roster.getInstance().activateWithMsg(from + " (SMS):\n" + msg);
+                RosterHelper.getInstance().activateWithMsg(from + " (SMS):\n" + msg);
             }
             return;
         }

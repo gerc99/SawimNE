@@ -1,13 +1,11 @@
 package sawim.chat.message;
 
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import protocol.Contact;
 import protocol.Protocol;
-import ru.sawim.General;
 import ru.sawim.SawimResources;
 import sawim.chat.MessData;
-import sawim.roster.Roster;
+import sawim.roster.RosterHelper;
 
 public abstract class Message {
     public static final byte ICON_NONE = -1;
@@ -68,8 +66,8 @@ public abstract class Message {
         if (mData != null && !mData.isMe()) {
             mData.setIconIndex(state);
         }
-        if (Roster.getInstance().getUpdateChatListener() != null)
-            Roster.getInstance().getUpdateChatListener().updateChat(contact);
+        if (RosterHelper.getInstance().getUpdateChatListener() != null)
+            RosterHelper.getInstance().getUpdateChatListener().updateChat(contact);
     }
 
     public final void setName(String name) {

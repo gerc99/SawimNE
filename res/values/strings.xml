@@ -221,4 +221,5 @@
     <string name="classmates">Classmates</string>
     <string name="lift_up">Lift up</string>
     <string name="put_down">Put down</string>
+    <string name="role_commands">Role commands</string>
 </resources>

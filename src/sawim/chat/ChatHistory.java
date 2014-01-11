@@ -1,6 +1,5 @@
 package sawim.chat;
 
-import DrawControls.icons.Icon;
 import android.graphics.drawable.BitmapDrawable;
 import android.util.Log;
 import protocol.Contact;
@@ -10,7 +9,7 @@ import sawim.chat.message.PlainMessage;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
 import sawim.io.Storage;
-import sawim.roster.Roster;
+import sawim.roster.RosterHelper;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -173,7 +172,7 @@ public final class ChatHistory {
         c.updateChatState(null);
         item.getProtocol().ui_updateContact(c);
         if (0 < item.getUnreadMessageCount()) {
-            Roster.getInstance().markMessages(c);
+            RosterHelper.getInstance().markMessages(c);
         }
     }
 
@@ -186,14 +185,14 @@ public final class ChatHistory {
                 key.getContact().updateChatState(null);
             }
         }
-        Roster.getInstance().markMessages(null);
+        RosterHelper.getInstance().markMessages(null);
     }
 
     private void removeChat(Chat chat) {
         if (null != chat) {
             clearChat(chat);
             //if (General.getSawim().getDisplay().remove(chat)) {
-            //    Roster.getSawimActivity()._setActiveContact(null);
+            //    RosterHelper.getSawimActivity()._setActiveContact(null);
             //}
             //setCurrentItemIndex(getCurrItem());
             //invalidate();
@@ -201,7 +200,7 @@ public final class ChatHistory {
         if (0 < getSize()) {
             //restore();
         } else {
-            Roster.getInstance().updateRoster();
+            RosterHelper.getInstance().updateRoster();
         }
     }
 
@@ -224,7 +223,7 @@ public final class ChatHistory {
             //    restore();
 
         } else {
-            Roster.getInstance().updateRoster();
+            RosterHelper.getInstance().updateRoster();
         }
     }
 
@@ -287,7 +286,7 @@ public final class ChatHistory {
                 return i;
             }
         }
-        //Contact currentContact = Roster.getSawimActivity().getCurrentContact();
+        //Contact currentContact = RosterHelper.getSawimActivity().getCurrentContact();
         int current = -1;
         for (int i = 0; i < historyTable.size(); ++i) {
             Chat chat = chatAt(i);
@@ -460,7 +459,7 @@ public final class ChatHistory {
                 String nick = in.readUTF();
                 String text = in.readUTF();
                 long time = in.readLong();
-                Protocol protocol = Roster.getInstance().getProtocol(account);
+                Protocol protocol = RosterHelper.getInstance().getProtocol(account);
                 if (null == protocol) {
                     continue;
                 }

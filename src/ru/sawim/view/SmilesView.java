@@ -10,7 +10,7 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import ru.sawim.models.SmilesAdapter;
 import sawim.modules.Emotions;
-import sawim.roster.Roster;
+import sawim.roster.RosterHelper;
 
 /**
  * Created with IntelliJ IDEA.
@@ -34,8 +34,8 @@ public class SmilesView extends DialogFragment {
         gv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                if (Roster.getInstance().getUpdateChatListener() != null)
-                    Roster.getInstance().getUpdateChatListener().pastText(Emotions.instance.getSmileCode(i));
+                if (RosterHelper.getInstance().getUpdateChatListener() != null)
+                    RosterHelper.getInstance().getUpdateChatListener().pastText(Emotions.instance.getSmileCode(i));
                 dismiss();
             }
         });

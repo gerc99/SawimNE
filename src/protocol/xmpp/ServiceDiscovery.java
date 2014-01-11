@@ -15,7 +15,7 @@ import ru.sawim.models.list.VirtualListModel;
 import ru.sawim.view.TextBoxView;
 import sawim.comm.Config;
 import sawim.comm.StringConvertor;
-import sawim.roster.Roster;
+import sawim.roster.RosterHelper;
 import sawim.util.JLocale;
 
 import java.util.Vector;
@@ -115,7 +115,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
                         case COMMAND_ADD:
                             Contact c = xmpp.createTempContact(jid);
                             xmpp.addContact(c);
-                            Roster.getInstance().activate(c);
+                            RosterHelper.getInstance().activate(c);
                             break;
 
                         case COMMAND_SET:

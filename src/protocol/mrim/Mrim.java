@@ -8,7 +8,7 @@ import ru.sawim.models.list.VirtualListModel;
 import sawim.chat.message.PlainMessage;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
-import sawim.roster.Roster;
+import sawim.roster.RosterHelper;
 import sawim.search.Search;
 import sawim.search.UserInfo;
 import sawim.util.JLocale;
@@ -50,7 +50,6 @@ public class Mrim extends Protocol {
         info = new StatusInfo(statusIcons, statusIconIndex, statuses);
         microBlog = new MicroBlog(this);
         xstatusInfo = Mrim.xStatus.getInfo();
-        clientInfo = MrimClient.get();
     }
 
     protected String processUin(String uin) {
@@ -224,8 +223,8 @@ public class Mrim extends Protocol {
     }
 
     public MrimContact getContactByPhone(String phone) {
-        for (int i = contacts.size() - 1; i >= 0; i--) {
-            MrimContact contact = (MrimContact) contacts.elementAt(i);
+        for (int i = getContactItems().size() - 1; i >= 0; i--) {
+            MrimContact contact = (MrimContact) getContactItems().elementAt(i);
             String phones = contact.getPhones();
             if ((null != phones) && (-1 != phones.indexOf(phone))) {
                 return contact;
@@ -302,7 +301,7 @@ public class Mrim extends Protocol {
                 }
                 contact.setFlags(flags);
                 getConnection().updateContact(contact);
-                Roster.getInstance().updateRoster();
+                RosterHelper.getInstance().updateRoster();
                 break;
 
         }
@@ -355,7 +354,7 @@ public class Mrim extends Protocol {
         if (contact instanceof MrimPhoneContact) {
             return;
         }
-        StatusView statusView = Roster.getInstance().getStatusView();
+        StatusView statusView = RosterHelper.getInstance().getStatusView();
         statusView.init(this, contact);
         statusView.initUI();
 

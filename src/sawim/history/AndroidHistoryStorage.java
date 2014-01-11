@@ -3,7 +3,7 @@ package sawim.history;
 import ru.sawim.config.HomeDirectory;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
-import sawim.roster.Roster;
+import sawim.roster.RosterHelper;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -79,7 +79,7 @@ public class AndroidHistoryStorage {
         cachedRecord.date = header.substring(loginTimeDelim + 1);
         cachedRecord.text = msg.substring(msg.indexOf("]\n") + 2);
         cachedRecord.type = 0;
-        if (Roster.getInstance().getProtocol(historyStorage.getContact())
+        if (RosterHelper.getInstance().getProtocol(historyStorage.getContact())
                 .getNick().equals(cachedRecord.from)) {
             cachedRecord.type = 1;
         }

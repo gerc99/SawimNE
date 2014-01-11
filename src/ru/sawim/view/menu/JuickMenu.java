@@ -8,7 +8,7 @@ import protocol.Protocol;
 import ru.sawim.R;
 import ru.sawim.view.ChatView;
 import sawim.chat.Chat;
-import sawim.roster.Roster;
+import sawim.roster.RosterHelper;
 
 /**
  * Created with IntelliJ IDEA.
@@ -138,7 +138,7 @@ public class JuickMenu implements DialogInterface.OnClickListener {
                     break;
             }
         }
-        if (Roster.getInstance().getUpdateChatListener() != null)
-            Roster.getInstance().getUpdateChatListener().pastText(textToInser);
+        if (RosterHelper.getInstance().getUpdateChatListener() != null)
+            RosterHelper.getInstance().getUpdateChatListener().pastText(textToInser);
     }
 }

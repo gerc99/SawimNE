@@ -14,7 +14,7 @@ import sawim.comm.GUID;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
 import sawim.forms.PrivateStatusForm;
-import sawim.roster.Roster;
+import sawim.roster.RosterHelper;
 import sawim.search.Search;
 import sawim.search.UserInfo;
 import sawim.util.JLocale;
@@ -89,7 +89,6 @@ public class Icq extends Protocol {
     protected void initStatusInfo() {
         info = new StatusInfo(statusIcons, statusIconIndex, statuses);
         xstatusInfo = Icq.xstatus.getInfo();
-        clientInfo = ClientDetector.instance.get();
     }
 
     public boolean isEmpty() {
@@ -250,7 +249,7 @@ public class Icq extends Protocol {
         switch (action) {
             case IcqContact.USER_MENU_REMOVE_ME:
                 sendRemoveMePacket(contact.getUserId());
-                Roster.getInstance().updateRoster();
+                RosterHelper.getInstance().updateRoster();
                 break;
 
             case ContactMenu.USER_MENU_PS_VISIBLE:
@@ -269,7 +268,7 @@ public class Icq extends Protocol {
                         break;
                 }
                 changeServerList(list, (IcqContact) contact);
-                Roster.getInstance().updateRoster();
+                RosterHelper.getInstance().updateRoster();
                 break;
 
         }
@@ -409,14 +408,14 @@ public class Icq extends Protocol {
         if (id == privateStatusId) {
             return true;
         }
-        for (int i = groups.size() - 1; i >= 0; --i) {
-            Group group = (Group) groups.elementAt(i);
+        for (int i = getGroupItems().size() - 1; i >= 0; --i) {
+            Group group = (Group) getGroupItems().elementAt(i);
             if (group.getId() == id) {
                 return true;
             }
         }
-        for (int i = contacts.size() - 1; i >= 0; --i) {
-            IcqContact item = (IcqContact) contacts.elementAt(i);
+        for (int i = getContactItems().size() - 1; i >= 0; --i) {
+            IcqContact item = (IcqContact) getContactItems().elementAt(i);
             if ((item.getContactId() == id)) {
                 return true;
             }
@@ -922,7 +921,7 @@ public class Icq extends Protocol {
     }
 
     public void showStatus(Contact contact) {
-        StatusView statusView = Roster.getInstance().getStatusView();
+        StatusView statusView = RosterHelper.getInstance().getStatusView();
         _updateStatusView(statusView, contact);
         statusView.showIt();
         if ((XStatusInfo.XSTATUS_NONE != contact.getXStatusIndex())
@@ -933,7 +932,7 @@ public class Icq extends Protocol {
     }
 
     public void updateStatusView(Contact contact) {
-        StatusView statusView = Roster.getInstance().getStatusView();
+        StatusView statusView = RosterHelper.getInstance().getStatusView();
         if (contact == statusView.getContact()) {
             _updateStatusView(statusView, contact);
         }

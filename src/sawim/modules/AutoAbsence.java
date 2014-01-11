@@ -5,7 +5,7 @@ import protocol.Protocol;
 import protocol.StatusInfo;
 import protocol.XStatusInfo;
 import ru.sawim.General;
-import sawim.roster.Roster;
+import sawim.roster.RosterHelper;
 
 public final class AutoAbsence {
 
@@ -46,11 +46,11 @@ public final class AutoAbsence {
         if (absence) {
             return;
         }
-        int count = Roster.getInstance().getProtocolCount();
+        int count = RosterHelper.getInstance().getProtocolCount();
         protos = new Protocol[count];
         profiles = new Profile[count];
         for (int i = 0; i < count; ++i) {
-            Protocol p = Roster.getInstance().getProtocol(i);
+            Protocol p = RosterHelper.getInstance().getProtocol(i);
             if (isSupported(p)) {
                 Profile pr = new Profile();
                 protos[i] = p;

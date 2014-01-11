@@ -1,14 +1,12 @@
 package protocol.xmpp;
 
 import DrawControls.icons.Icon;
-import android.graphics.drawable.BitmapDrawable;
 import android.view.ContextMenu;
 import android.view.Menu;
 import protocol.Contact;
 import protocol.ContactMenu;
 import protocol.Protocol;
 import protocol.StatusInfo;
-import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.SawimResources;
@@ -17,7 +15,7 @@ import sawim.Options;
 import sawim.chat.message.SystemNotice;
 import sawim.comm.StringConvertor;
 import sawim.modules.tracking.Tracking;
-import sawim.roster.Roster;
+import sawim.roster.RosterHelper;
 import sawim.util.JLocale;
 
 import java.util.Vector;
@@ -107,7 +105,7 @@ public class XmppServiceContact extends XmppContact {
     }
 
     public boolean isVisibleInContactList() {
-        if (Roster.getInstance().getCurrPage() != Roster.ONLINE_CONTACTS
+        if (RosterHelper.getInstance().getCurrPage() != RosterHelper.ONLINE_CONTACTS
         /*!Options.getBoolean(Options.OPTION_CL_HIDE_OFFLINE)*/)
             return true;
         return isConference() || isGate ? super.isVisibleInContactList() : true;
@@ -133,7 +131,7 @@ public class XmppServiceContact extends XmppContact {
     @Override
     public Icon getLeftIcon(Protocol p) {
         if (isConference())
-            return new Icon(SawimResources.usersIcon);
+            return new Icon(StatusInfo.STATUS_ONLINE == getStatusIndex() ? SawimResources.usersIconOn : SawimResources.usersIcon);
         return super.getLeftIcon(p);
     }
 
@@ -449,7 +447,7 @@ public class XmppServiceContact extends XmppContact {
         SubContact sc = (null == conf) ? null : conf.getExistSubContact(nick);
         if (null == sc) {
             setOfflineStatus();
-            setClient(XmppClient.CLIENT_NONE, null);
+            setClient(null);
         } else {
             if (subcontacts.isEmpty()) {
                 subcontacts.addElement(sc);
@@ -457,7 +455,7 @@ public class XmppServiceContact extends XmppContact {
                 subcontacts.setElementAt(sc, 0);
             }
             setStatus(sc.status, sc.statusText);
-            setClient(sc.client, null);
+            setClient(sc.client);
         }
     }
 }

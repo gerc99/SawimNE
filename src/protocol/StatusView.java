@@ -31,11 +31,8 @@ public final class StatusView {
     }
 
     public void addClient() {
-        if ((ClientInfo.CLI_NONE != contact.clientIndex)
-                && (null != protocol.clientInfo)) {
-            addPlain(protocol.clientInfo.getIcon(contact.clientIndex),
-                    (protocol.clientInfo.getName(contact.clientIndex)
-                            + " " + contact.version).trim());
+        if ((null != contact.version)) {
+            addPlain(null, contact.version.trim());
         }
         addPlain(null, clientVersion);
     }

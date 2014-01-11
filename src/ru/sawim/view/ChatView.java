@@ -1,13 +1,11 @@
 package ru.sawim.view;
 
-import DrawControls.icons.Icon;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -26,6 +24,7 @@ import android.widget.*;
 import protocol.Contact;
 import protocol.ContactMenu;
 import protocol.Protocol;
+import protocol.StatusInfo;
 import protocol.xmpp.Xmpp;
 import protocol.xmpp.XmppServiceContact;
 import protocol.xmpp.Jid;
@@ -47,7 +46,7 @@ import sawim.Options;
 import sawim.chat.Chat;
 import sawim.chat.ChatHistory;
 import sawim.chat.MessData;
-import sawim.roster.Roster;
+import sawim.roster.RosterHelper;
 import sawim.util.JLocale;
 
 /**
@@ -57,7 +56,7 @@ import sawim.util.JLocale;
  * Time: 20:30
  * To change this template use File | Settings | File Templates.
  */
-public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Handler.Callback {
+public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat, Handler.Callback {
 
     public static final String TAG = "ChatView";
 
@@ -165,7 +164,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
             drawerLayout.setScrimColor(Scheme.isBlack() ? 0x55FFFFFF : 0x99000000);
             nickListLP.gravity = Gravity.START;
             drawerLayout.setLayoutParams(drawerLayoutLP);
-
+            nickList.updateDivider();
             nickList.setBackgroundResource(Util.getSystemBackground(getActivity()));
             nickList.setLayoutParams(nickListLP);
             if (nickList.getParent() != null)
@@ -175,7 +174,6 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
 
             chatBarLayout.setVisibilityUsersImage(ImageView.VISIBLE);
             usersImage.setBackgroundColor(0);
-            usersImage.setImageDrawable(SawimResources.usersIcon);
             usersImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -305,7 +303,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
         if (General.currentActivity == null)
             General.currentActivity = (ActionBarActivity) getActivity();
         if (contact == null)
-            initChat(Roster.getInstance().getCurrentProtocol(), Roster.getInstance().getCurrentContact());
+            initChat(RosterHelper.getInstance().getCurrentProtocol(), RosterHelper.getInstance().getCurrentContact());
         if (contact != null)
             openChat(protocol, contact);
         if (General.isManyPane()) {
@@ -339,7 +337,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
         chat.message = getText();
 
         chat.setVisibleChat(false);
-        Roster.getInstance().setOnUpdateChat(null);
+        RosterHelper.getInstance().setOnUpdateChat(null);
         chat.resetUnreadMessages();
         if (chat.empty()) ChatHistory.instance.unregisterChat(chat);
     }
@@ -348,7 +346,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
         if (chat == null) return;
         chat.setVisibleChat(true);
         ChatHistory.instance.registerChat(chat);
-        Roster.getInstance().setOnUpdateChat(this);
+        RosterHelper.getInstance().setOnUpdateChat(this);
         chat.resetUnreadMessages();
         removeMessages(Options.getInt(Options.OPTION_MAX_MSG_COUNT));
         if (sharingText != null) chat.message += " " + sharingText;
@@ -548,6 +546,7 @@ public class ChatView extends SawimFragment implements Roster.OnUpdateChat, Hand
     private void updateChatIcon() {
         if (chatBarLayout == null) return;
         Drawable icMess = ChatHistory.instance.getUnreadMessageIcon();
+        usersImage.setImageDrawable(StatusInfo.STATUS_ONLINE == contact.getStatusIndex() ? SawimResources.usersIconOn : SawimResources.usersIcon);
         if (icMess == null) {
             chatBarLayout.setVisibilityChatsImage(View.GONE);
         } else {

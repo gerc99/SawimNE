@@ -15,7 +15,7 @@ import sawim.FileTransfer;
 import sawim.chat.message.PlainMessage;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
-import sawim.roster.Roster;
+import sawim.roster.RosterHelper;
 import sawim.search.Search;
 import sawim.search.UserInfo;
 
@@ -42,18 +42,15 @@ public final class Xmpp extends Protocol implements FormListener {
 
         byte type = getProfile().protocolType;
         ImageList icons = createStatusIcons(type);
-        final int[] statusIconIndex = {1, 0, 2, 3, -1, -1, -1, -1, -1, 5, -1, 4, -1, -1, 1};
+        final int[] statusIconIndex = {1, 0, 2, 0, -1, -1, -1, -1, -1, 2, -1, 3, -1, -1, 1};
         info = new StatusInfo(icons, statusIconIndex, statuses);
         xstatusInfo = Xmpp.xStatus.getInfo();
-        clientInfo = XmppClient.get();
     }
 
     private static final byte[] statuses = {
             StatusInfo.STATUS_OFFLINE,
-            StatusInfo.STATUS_CHAT,
             StatusInfo.STATUS_ONLINE,
             StatusInfo.STATUS_AWAY,
-            StatusInfo.STATUS_XA,
             StatusInfo.STATUS_DND
     };
 
@@ -163,8 +160,8 @@ public final class Xmpp extends Protocol implements FormListener {
     private int getNextGroupId() {
         while (true) {
             int id = Util.nextRandInt() % 0x1000;
-            for (int i = groups.size() - 1; i >= 0; --i) {
-                Group group = (Group) groups.elementAt(i);
+            for (int i = getGroupItems().size() - 1; i >= 0; --i) {
+                Group group = (Group) getGroupItems().elementAt(i);
                 if (group.getId() == id) {
                     id = -1;
                     break;
@@ -268,8 +265,8 @@ public final class Xmpp extends Protocol implements FormListener {
 
     void setConfContactStatus(XmppServiceContact conf, String resource, byte status, String statusText, int role, int priorityA) {
         conf.__setStatus(resource, role, priorityA, status, statusText);
-        if (Roster.getInstance().getUpdateChatListener() != null)
-            Roster.getInstance().getUpdateChatListener().updateMucList();
+        if (RosterHelper.getInstance().getUpdateChatListener() != null)
+            RosterHelper.getInstance().getUpdateChatListener().updateMucList();
     }
 
     void setContactStatus(XmppContact c, String resource, byte status, String text, int priority) {
@@ -305,7 +302,7 @@ public final class Xmpp extends Protocol implements FormListener {
 
     protected final void s_renameGroup(Group group, String name) {
         group.setName(name);
-        connection.updateContacts(contacts);
+        connection.updateContacts(getContactItems());
     }
 
     protected final void s_moveContact(Contact contact, Group to) {
@@ -515,12 +512,12 @@ public final class Xmpp extends Protocol implements FormListener {
         switch (cmd) {
             case ContactMenu.GATE_CONNECT:
                 getConnection().sendPresence((XmppServiceContact) contact);
-                Roster.getInstance().updateRoster();
+                RosterHelper.getInstance().updateRoster();
                 break;
 
             case ContactMenu.GATE_DISCONNECT:
                 getConnection().sendPresenceUnavailable(c.getUserId());
-                Roster.getInstance().updateRoster();
+                RosterHelper.getInstance().updateRoster();
                 break;
 
             case ContactMenu.GATE_REGISTER:
@@ -530,7 +527,7 @@ public final class Xmpp extends Protocol implements FormListener {
             case ContactMenu.GATE_UNREGISTER:
                 getConnection().unregister(c.getUserId());
                 getConnection().removeGateContacts(c.getUserId());
-                Roster.getInstance().updateRoster();
+                RosterHelper.getInstance().updateRoster();
                 break;
 
             case ContactMenu.GATE_ADD:
@@ -599,12 +596,12 @@ public final class Xmpp extends Protocol implements FormListener {
 
             case ContactMenu.CONFERENCE_DISCONNECT:
                 leave((XmppServiceContact) c);
-                Roster.getInstance().updateRoster();
+                RosterHelper.getInstance().updateRoster();
                 break;
 
             case ContactMenu.CONFERENCE_ADD:
                 addContact(c);
-                Roster.getInstance().updateRoster();
+                RosterHelper.getInstance().updateRoster();
                 break;
 
             case ContactMenu.USER_MENU_CONNECTIONS:
@@ -619,7 +616,7 @@ public final class Xmpp extends Protocol implements FormListener {
 
             case ContactMenu.USER_MENU_SEEN:
                 getConnection().showContactSeen(c.getUserId());
-                Roster.getInstance().updateRoster();
+                RosterHelper.getInstance().updateRoster();
                 break;
 
             case ContactMenu.USER_MENU_ADHOC:
@@ -629,7 +626,7 @@ public final class Xmpp extends Protocol implements FormListener {
 
             case ContactMenu.USER_MENU_REMOVE_ME:
                 removeMe(c.getUserId());
-                Roster.getInstance().updateRoster();
+                RosterHelper.getInstance().updateRoster();
                 break;
 
         }
@@ -652,7 +649,7 @@ public final class Xmpp extends Protocol implements FormListener {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 c.setActiveResource((String) items.get(which));
-                Roster.getInstance().updateRoster();
+                RosterHelper.getInstance().updateRoster();
                 dialog.dismiss();
             }
         });
@@ -724,7 +721,7 @@ public final class Xmpp extends Protocol implements FormListener {
     }
 
     public void showStatus(Contact contact) {
-        StatusView statusView = Roster.getInstance().getStatusView();
+        StatusView statusView = RosterHelper.getInstance().getStatusView();
         try {
             if (contact.isOnline() && contact.isSingleUserContact()) {
                 String jid = contact.getUserId();
@@ -824,7 +821,7 @@ public final class Xmpp extends Protocol implements FormListener {
                         join(enterConf);
                     }
                 }
-                //Roster.getSawimActivity().updateRoster();
+                //RosterHelper.getSawimActivity().updateRoster();
             }
             enterData.back();
             enterData = null;
@@ -834,7 +831,7 @@ public final class Xmpp extends Protocol implements FormListener {
             if (apply) {
                 String[] onlineConferenceI = Util.explode(onlineConference(getContactItems()), '|');
                 getConnection().sendInvite(onlineConferenceI[enterDataInvite.getSelectorValue(JID_MESS_TO)], enterDataInvite.getTextFieldValue(JID_INVITE_TO), enterDataInvite.getTextFieldValue(REASON_INVITE));
-                //Roster.getSawimActivity().updateRoster();
+                //RosterHelper.getSawimActivity().updateRoster();
                 Toast.makeText(SawimApplication.getContext(), R.string.invitation_sent, Toast.LENGTH_LONG).show();
             }
             enterDataInvite.back();

@@ -11,7 +11,7 @@ import ru.sawim.view.menu.MyMenu;
 import sawim.chat.Chat;
 import sawim.comm.StringConvertor;
 import sawim.modules.tracking.Tracking;
-import sawim.roster.Roster;
+import sawim.roster.RosterHelper;
 import sawim.roster.TreeNode;
 import sawim.util.JLocale;
 
@@ -28,7 +28,6 @@ abstract public class Contact extends TreeNode {
     private String statusText = null;
     private int xstatus = XStatusInfo.XSTATUS_NONE;
     private String xstatusText = null;
-    public short clientIndex = ClientInfo.CLI_NONE;
     String version = "";
     public long chaingingStatusTime = 0;
 
@@ -99,7 +98,7 @@ abstract public class Contact extends TreeNode {
     }
 
     public Protocol getProtocol() {
-        return Roster.getInstance().getProtocol(this);
+        return RosterHelper.getInstance().getProtocol(this);
     }
 
     public final void setXStatus(int index, String text) {
@@ -115,8 +114,7 @@ abstract public class Contact extends TreeNode {
         return xstatusText;
     }
 
-    public void setClient(short clientNum, String ver) {
-        clientIndex = clientNum;
+    public void setClient(String ver) {
         version = StringConvertor.notNull(ver);
     }
 
@@ -154,7 +152,7 @@ abstract public class Contact extends TreeNode {
     }
 
     public void activate(Protocol p) {
-        Roster.getInstance().setCurrentContact(this);
+        RosterHelper.getInstance().setCurrentContact(this);
     }
 
     public static final byte CONTACT_NO_AUTH = 1 << 1;
@@ -295,7 +293,7 @@ abstract public class Contact extends TreeNode {
         if (!isSingleUserContact()) {
             return isOnline() ? 9 : 50;
         }
-        //if (Roster.SORT_BY_NAME == General.sortType) {
+        //if (RosterHelper.SORT_BY_NAME == General.sortType) {
         //    return 20;
         //}
         if (isOnline()) {
@@ -303,9 +301,9 @@ abstract public class Contact extends TreeNode {
                 return 10;
             }
             //switch (General.sortType) {
-            //    case Roster.SORT_BY_STATUS:
+            //    case RosterHelper.SORT_BY_STATUS:
                     return 20 + StatusInfo.getWidth(getStatusIndex());
-            //    case Roster.SORT_BY_ONLINE:
+            //    case RosterHelper.SORT_BY_ONLINE:
             //        return 20;
             //}
         }

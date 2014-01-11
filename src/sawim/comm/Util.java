@@ -1,5 +1,6 @@
 package sawim.comm;
 
+import protocol.Contact;
 import ru.sawim.General;
 import sawim.Options;
 import sawim.roster.TreeNode;
@@ -1014,6 +1015,20 @@ public class Util {
             }
         }
         return -1;
+    }
+
+    public static void removeAll(Vector to, Vector all) {
+        synchronized (to) {
+            int current = 0;
+            for (int index = 0; index < to.size(); ++index) {
+                if (0 <= Util.getIndex(all, to.elementAt(index))) continue;
+                if (current < index) {
+                    to.setElementAt(to.elementAt(index), current);
+                    current++;
+                }
+            }
+            if (current < to.size()) to.setSize(current);
+        }
     }
 }
 

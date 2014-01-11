@@ -17,7 +17,7 @@ import ru.sawim.R;
 import ru.sawim.models.AccountsAdapter;
 import sawim.Options;
 import sawim.comm.StringConvertor;
-import sawim.roster.Roster;
+import sawim.roster.RosterHelper;
 
 /**
  * Created with IntelliJ IDEA.
@@ -79,7 +79,7 @@ public class AccountsListView extends Fragment {
                     Profile down = Options.getAccount(num - 1);
                     Options.setAccount(num - 1, up);
                     Options.setAccount(num, down);
-                    Roster.getInstance().setCurrentProtocol();
+                    RosterHelper.getInstance().setCurrentProtocol();
                     update();
                 }
                 return true;
@@ -90,7 +90,7 @@ public class AccountsListView extends Fragment {
                     Profile down = Options.getAccount(num + 1);
                     Options.setAccount(num, down);
                     Options.setAccount(num + 1, up);
-                    Roster.getInstance().setCurrentProtocol();
+                    RosterHelper.getInstance().setCurrentProtocol();
                     update();
                 }
                 return true;
@@ -104,14 +104,14 @@ public class AccountsListView extends Fragment {
                                 new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int id) {
-                                        Protocol p = Roster.getInstance().getProtocol(Options.getAccount(accountID));
+                                        Protocol p = RosterHelper.getInstance().getProtocol(Options.getAccount(accountID));
                                         android.accounts.Account acc = new android.accounts.Account(Options.getId(accountID), getString(R.string.app_name));
                                         AccountManager am = AccountManager.get(getActivity());
                                         am.removeAccount(acc, null, null);
                                         if (p != null)
                                             p.setStatus(StatusInfo.STATUS_OFFLINE, "");
                                         Options.delAccount(accountID);
-                                        Roster.getInstance().setCurrentProtocol();
+                                        RosterHelper.getInstance().setCurrentProtocol();
                                         Options.safeSave();
                                         update();
                                     }
@@ -125,7 +125,7 @@ public class AccountsListView extends Fragment {
 
     public void addAccount(int num, Profile acc) {
         Options.setAccount(num, acc);
-        Roster.getInstance().setCurrentProtocol();
+        RosterHelper.getInstance().setCurrentProtocol();
         update();
     }
 

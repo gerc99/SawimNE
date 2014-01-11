@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Message;
-import android.util.Log;
 import org.microemu.MIDletBridge;
 import org.microemu.app.Common;
 import org.microemu.cldc.file.FileSystem;
@@ -16,7 +15,7 @@ import ru.sawim.service.SawimService;
 import ru.sawim.service.SawimServiceConnection;
 import ru.sawim.text.TextFormatter;
 import sawim.chat.ChatHistory;
-import sawim.roster.Roster;
+import sawim.roster.RosterHelper;
 
 /**
  * Created with IntelliJ IDEA.
@@ -57,8 +56,8 @@ public class SawimApplication extends Application {
                 ChatHistory.instance.loadUnreadMessages();
             }
         }).start();
-        if (Roster.getInstance() != null) {
-            Roster.getInstance().autoConnect();
+        if (RosterHelper.getInstance() != null) {
+            RosterHelper.getInstance().autoConnect();
             Thread.yield();
         }
         updateAppIcon();

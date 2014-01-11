@@ -3,7 +3,7 @@ package protocol.xmpp;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
 import sawim.comm.Util;
-import sawim.roster.Roster;
+import sawim.roster.RosterHelper;
 
 final class XmppForm implements FormListener {
     private XForm form;
@@ -88,7 +88,7 @@ final class XmppForm implements FormListener {
     }
 
     void success() {
-        Roster.getInstance().activate(xmpp.getItemByUIN(jid));
+        RosterHelper.getInstance().activate(xmpp.getItemByUIN(jid));
     }
 
     private String getCaptchaXml() {

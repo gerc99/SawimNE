@@ -128,7 +128,6 @@ public class OptionsForm implements FormListener, ControlStateListener {
                 //Scheme.updateUI();
 
                 saveOptionBoolean(Options.OPTION_USER_GROUPS);
-                saveOptionBoolean(Options.OPTION_HIDE_ICONS_CLIENTS);
                 //saveOptionSelector(Options.OPTION_USER_ACCOUNTS);
                 //saveOptionBoolean(Options.OPTION_CL_HIDE_OFFLINE);
                 //        saveOptionBoolean(Options.OPTION_SAVE_TEMP_CONTACT);
@@ -208,7 +207,6 @@ public class OptionsForm implements FormListener, ControlStateListener {
 
                 form.addString("contact_list", null);
                 setChecked("show_user_groups", Options.OPTION_USER_GROUPS);
-                setChecked_(SawimApplication.getContext().getString(R.string.hide_icons_clients), Options.OPTION_HIDE_ICONS_CLIENTS);
 
                 //createSelector("show_user_accounts",
                 //        "no" + "|" + "by_groups" + "|" + "by_windows", Options.OPTION_USER_ACCOUNTS);

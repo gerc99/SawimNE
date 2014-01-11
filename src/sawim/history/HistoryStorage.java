@@ -3,7 +3,6 @@ package sawim.history;
 import protocol.Contact;
 import sawim.comm.Util;
 import sawim.io.Storage;
-import sawim.roster.Roster;
 
 import javax.microedition.rms.RecordStore;
 import java.io.ByteArrayInputStream;

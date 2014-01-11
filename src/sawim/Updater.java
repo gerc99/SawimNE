@@ -1,7 +1,7 @@
 package sawim;
 
 import sawim.modules.DebugLog;
-import sawim.roster.Roster;
+import sawim.roster.RosterHelper;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -31,7 +31,7 @@ public class Updater extends TimerTask {
 
     public void run() {
         try {
-            Roster.getInstance().timerAction();
+            RosterHelper.getInstance().timerAction();
         } catch (OutOfMemoryError out) {
             // nothing
         } catch (Exception e) {

@@ -56,7 +56,7 @@ import sawim.forms.ManageContactListForm;
 import sawim.forms.SmsForm;
 import sawim.modules.DebugLog;
 import sawim.modules.Notify;
-import sawim.roster.Roster;
+import sawim.roster.RosterHelper;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -203,7 +203,7 @@ public class SawimActivity extends ActionBarActivity {
             General.currentActivity = this;
         General.maximize();
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        if (Roster.getInstance().getProtocolCount() == 0) {
+        if (RosterHelper.getInstance().getProtocolCount() == 0) {
             if (General.currentActivity.getSupportFragmentManager()
                     .findFragmentById(R.id.chat_fragment) != null)
                 General.currentActivity.setContentView(R.layout.intercalation_layout);
@@ -317,7 +317,7 @@ public class SawimActivity extends ActionBarActivity {
             virtualListView.onPrepareOptionsMenu_(menu);
             return true;
         }
-        Protocol p = Roster.getInstance().getCurrentProtocol();
+        Protocol p = RosterHelper.getInstance().getCurrentProtocol();
         if (p != null) {
             menu.add(Menu.NONE, MENU_CONNECT, Menu.NONE, R.string.connect);
             menu.findItem(MENU_CONNECT).setTitle((p.isConnected() || p.isConnecting()) ? R.string.disconnect : R.string.connect);
@@ -326,9 +326,9 @@ public class SawimActivity extends ActionBarActivity {
             if ((p instanceof Icq) || (p instanceof Mrim))
                 menu.add(Menu.NONE, MENU_PRIVATE_STATUS, Menu.NONE, R.string.private_status);
 
-            int count = Roster.getInstance().getProtocolCount();
+            int count = RosterHelper.getInstance().getProtocolCount();
             for (int i = 0; i < count; ++i) {
-                Protocol pr = Roster.getInstance().getProtocol(i);
+                Protocol pr = RosterHelper.getInstance().getProtocol(i);
                 if ((pr instanceof Mrim) && pr.isConnected()) {
                     menu.add(Menu.NONE, MENU_SEND_SMS, Menu.NONE, R.string.send_sms);
                 }
@@ -385,7 +385,7 @@ public class SawimActivity extends ActionBarActivity {
             chatView.onOptionsItemSelected_(item);
             return true;
         }
-        Protocol p = Roster.getInstance().getCurrentProtocol();
+        Protocol p = RosterHelper.getInstance().getCurrentProtocol();
         switch (item.getItemId()) {
             case MENU_CONNECT:
                 p.setStatus((p.isConnected() || p.isConnecting())

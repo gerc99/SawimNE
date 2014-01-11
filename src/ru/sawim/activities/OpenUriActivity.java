@@ -10,7 +10,7 @@ import protocol.xmpp.Xmpp;
 import protocol.xmpp.Jid;
 import ru.sawim.General;
 import ru.sawim.R;
-import sawim.roster.Roster;
+import sawim.roster.RosterHelper;
 
 /**
  * Created with IntelliJ IDEA.
@@ -74,14 +74,14 @@ public class OpenUriActivity extends ActionBarActivity {
                 }
             }
             xmpp.addTempContact(c);
-            Roster.getInstance().activate(c);
+            RosterHelper.getInstance().activate(c);
         } catch (Exception e) {
             sawim.modules.DebugLog.panic("uri", e);
         }
     }
 
     private Xmpp getFirstXmpp() {
-        for (Protocol p : Roster.getInstance().getProtocols()) {
+        for (Protocol p : RosterHelper.getInstance().getProtocols()) {
             if (p instanceof Xmpp) return (Xmpp) p;
         }
         return null;

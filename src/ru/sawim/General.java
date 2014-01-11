@@ -11,7 +11,7 @@ import sawim.chat.ChatHistory;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
 import sawim.modules.*;
-import sawim.roster.Roster;
+import sawim.roster.RosterHelper;
 import sawim.search.Search;
 import sawim.util.JLocale;
 
@@ -39,7 +39,6 @@ public class General {
     private static Resources resources;
     private boolean paused = true;
     private static int fontSize;
-    public static boolean hideIconsClient;
     public static boolean showStatusLine;
     public static int sortType;
     private float displayDensity;
@@ -68,8 +67,8 @@ public class General {
             gc();
 
             Options.loadAccounts();
-            Roster.getInstance().initAccounts();
-            Roster.getInstance().loadAccounts();
+            RosterHelper.getInstance().initAccounts();
+            RosterHelper.getInstance().loadAccounts();
             sawim.modules.tracking.Tracking.loadTrackingFromRMS();
         } catch (Exception e) {
             DebugLog.panic("init", e);
@@ -83,7 +82,6 @@ public class General {
         SawimResources.initIcons();
         fontSize = Options.getInt(Options.OPTION_FONT_SCHEME);
         showStatusLine = Options.getBoolean(Options.OPTION_SHOW_STATUS_LINE);
-        hideIconsClient = Options.getBoolean(Options.OPTION_HIDE_ICONS_CLIENTS);
         sortType = Options.getInt(Options.OPTION_CL_SORT_BY);
     }
 
@@ -100,7 +98,7 @@ public class General {
     }
 
     public void quit(boolean isForceClose) {
-        Roster cl = Roster.getInstance();
+        RosterHelper cl = RosterHelper.getInstance();
         try {
             Thread.sleep(100);
         } catch (InterruptedException e1) {
@@ -121,7 +119,7 @@ public class General {
     }
 
     public static void openUrl(String url) {
-        Search search = Roster.getInstance().getCurrentProtocol().getSearchForm();
+        Search search = RosterHelper.getInstance().getCurrentProtocol().getSearchForm();
         search.show(Util.getUrlWithoutProtocol(url), true);
     }
 

@@ -4,7 +4,6 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +15,7 @@ import android.widget.TextView;
 import ru.sawim.General;
 import ru.sawim.R;
 import sawim.comm.Util;
-import sawim.roster.Roster;
+import sawim.roster.RosterHelper;
 
 /**
  * Created with IntelliJ IDEA.
@@ -44,7 +43,7 @@ public class FileProgressView extends DialogFragment {
         closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Roster.getInstance().removeTransfer(true);
+                RosterHelper.getInstance().removeTransfer(true);
                 FileProgressView.this.dismiss();
             }
         });
@@ -60,7 +59,7 @@ public class FileProgressView extends DialogFragment {
     public void changeFileProgress(final int percent, final String caption, final String text) {
         if (General.currentActivity == null) return;
         if (percent == 100) {
-            Roster.getInstance().removeTransfer(true);
+            RosterHelper.getInstance().removeTransfer(true);
             dismiss();
         }
         final String strTime = Util.getLocalDateString(General.getCurrentGmtTime(), true);

@@ -241,14 +241,7 @@ public class MucUsersAdapter extends BaseAdapter {
             itemName.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
             getItemStatusImage().setImageDrawable(protocol.getStatusInfo().getIcon(c.status).getImage());
             getItemAffilationImage().setImageDrawable(SawimResources.affiliationIcons.iconAt(XmppServiceContact.getAffiliationName(c.priorityA)).getImage());
-            Icon ic = protocol.clientInfo.getIcon(c.client);
             ImageView itemClientImage = getItemClientImage();
-            if (ic != null && !Options.getBoolean(Options.OPTION_HIDE_ICONS_CLIENTS)) {
-                itemClientImage.setVisibility(ImageView.VISIBLE);
-                itemClientImage.setImageDrawable(ic.getImage());
-            } else {
-                itemClientImage.setVisibility(ImageView.GONE);
-            }
         }
 
         public ImageView getItemStatusImage() {

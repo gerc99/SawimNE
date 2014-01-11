@@ -683,7 +683,6 @@ public final class IcqNetDefActions {
             capabilities_new = null;
 
             contact.setTimeOfChaingingStatus(signon);
-            ClientDetector.instance.execVM(contact, capa, new int[]{dwFT1, dwFT2, dwFT3}, protocolVersion);
             getIcq().ui_changeContactStatus(contact);
         } else {
             DebugLog.println("USER_ONLINE for " + uin + " (0x" + Integer.toHexString(status) + ")");

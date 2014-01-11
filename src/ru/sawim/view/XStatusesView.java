@@ -20,7 +20,7 @@ import ru.sawim.models.XStatusesAdapter;
 import ru.sawim.widget.Util;
 import sawim.comm.StringConvertor;
 import sawim.io.Storage;
-import sawim.roster.Roster;
+import sawim.roster.RosterHelper;
 
 /**
  * Created with IntelliJ IDEA.
@@ -36,7 +36,7 @@ public class XStatusesView extends DialogFragment {
     private Protocol protocol;
 
     public XStatusesView() {
-        protocol = Roster.getInstance().getCurrentProtocol();
+        protocol = RosterHelper.getInstance().getCurrentProtocol();
         load();
     }
 
