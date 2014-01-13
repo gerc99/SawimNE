@@ -1,8 +1,6 @@
 
 package sawim.modules.fs;
 
-import DrawControls.icons.Icon;
-import DrawControls.icons.ImageList;
 import sawim.SawimException;
 import sawim.comm.Util;
 

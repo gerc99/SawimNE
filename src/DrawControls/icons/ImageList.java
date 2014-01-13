@@ -6,7 +6,6 @@ import android.graphics.drawable.BitmapDrawable;
 import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
-import ru.sawim.widget.Util;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

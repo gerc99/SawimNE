@@ -2,7 +2,6 @@ package ru.sawim.view;
 
 import android.app.Activity;
 import android.graphics.Rect;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -74,8 +73,8 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         MyListView allListView = new MyListView(activity);
         MyListView onlineListView = new MyListView(activity);
         MyListView activeListView = new MyListView(activity);
-        RosterAdapter allRosterAdapter = new RosterAdapter(getActivity(), roster, RosterHelper.ALL_CONTACTS);
-        RosterAdapter onlineRosterAdapter = new RosterAdapter(getActivity(), roster, RosterHelper.ONLINE_CONTACTS);
+        RosterAdapter allRosterAdapter = new RosterAdapter(getActivity(), RosterHelper.ALL_CONTACTS);
+        RosterAdapter onlineRosterAdapter = new RosterAdapter(getActivity(), RosterHelper.ONLINE_CONTACTS);
         ChatsAdapter activeRosterAdapter = new ChatsAdapter(getActivity());
         adaptersPages.add(allRosterAdapter);
         adaptersPages.add(onlineRosterAdapter);
@@ -186,7 +185,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
                     for (int i = 0; i < protocolCount; ++i) {
                         Protocol protocol = roster.getProtocol(i);
                         Drawable icon = protocol.getCurrentStatusIcon().getImage();
-                        BitmapDrawable messageIcon = ChatHistory.instance.getUnreadMessageIcon(protocol);
+                        Drawable messageIcon = ChatHistory.instance.getUnreadMessageIcon(protocol);
                         if (null != messageIcon)
                             icon = messageIcon;
                         horizontalScrollView.updateTabIcon(i, icon);
@@ -299,7 +298,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
             for (int i = 0; i < protocolCount; ++i) {
                 Protocol protocol = roster.getProtocol(i);
                 Drawable icon = protocol.getCurrentStatusIcon().getImage();
-                BitmapDrawable messageIcon = ChatHistory.instance.getUnreadMessageIcon(protocol);
+                Drawable messageIcon = ChatHistory.instance.getUnreadMessageIcon(protocol);
                 if (null != messageIcon)
                     icon = messageIcon;
                 horizontalScrollView.addTab(i, icon);
@@ -339,6 +338,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     }
 
     private static final ChatView chatView = new ChatView();
+
     private void openChat(Protocol p, Contact c, boolean allowingStateLoss) {
         c.activate(p);
         ChatView chatViewTablet = (ChatView) getActivity().getSupportFragmentManager()

@@ -3,7 +3,6 @@ package protocol.net;
 import sawim.SawimException;
 import sawim.modules.DebugLog;
 
-
 import javax.microedition.io.*;
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,13 +16,14 @@ public final class TcpSocket {
     public TcpSocket() {
     }
 
-	public void connectTo(String host, int port) throws SawimException {
+    public void connectTo(String host, int port) throws SawimException {
         connectTo("socket://" + host + ":" + port);
     }
+
     public void connectTo(String url) throws SawimException {
         try {
             sc = (StreamConnection) Connector.open(url, Connector.READ_WRITE);
-			SocketConnection socket = (SocketConnection)sc;
+            SocketConnection socket = (SocketConnection) sc;
             socket.setSocketOption(SocketConnection.DELAY, 0);
             //socket.setSocketOption(SocketConnection.KEEPALIVE, 2*60);
             //socket.setSocketOption(SocketConnection.LINGER, 0);
@@ -138,11 +138,11 @@ public final class TcpSocket {
             throw new SawimException(120, 3);
         }
     }
-	
-	public void startTls(String host) {
+
+    public void startTls(String host) {
         try {
             DebugLog.println("startTls start " + sc + os + is);
-            ((org.microemu.cldc.socket.SocketConnection)sc).startTls(host);
+            ((org.microemu.cldc.socket.SocketConnection) sc).startTls(host);
             is = sc.openInputStream();
             os = sc.openOutputStream();
             DebugLog.println("startTls done " + sc + os + is);

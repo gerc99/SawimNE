@@ -107,7 +107,7 @@ public class StatusesAdapter extends BaseAdapter {
                 itemImage.setImageDrawable(PrivateStatusForm.privateStatusIcons.iconAt(item).getImage());
             }
             if (item == selectedItem) {
-                 itemStatus.setTypeface(Typeface.DEFAULT_BOLD);
+                itemStatus.setTypeface(Typeface.DEFAULT_BOLD);
             } else {
                 itemStatus.setTypeface(Typeface.DEFAULT);
             }

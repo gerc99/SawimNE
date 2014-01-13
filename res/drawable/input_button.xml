@@ -3,22 +3,25 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_pressed="true">
         <shape android:shape="rectangle">
-            <gradient android:angle="270" android:centerColor="#FFF3F3F3" android:centerX="0.9" android:centerY="0.5" android:endColor="#FFC8C8C8" android:startColor="#FFF3F3F3" />
-            <stroke android:width="2dp" android:color="#50888888" />
-            <padding android:left="2dp" android:top="2dp" android:right="2dp" android:bottom="2dp" />
+            <gradient android:angle="270" android:centerColor="#FFF3F3F3" android:centerX="0.9" android:centerY="0.5"
+                      android:endColor="#FFC8C8C8" android:startColor="#FFF3F3F3"/>
+            <stroke android:width="2dp" android:color="#50888888"/>
+            <padding android:left="2dp" android:top="2dp" android:right="2dp" android:bottom="2dp"/>
         </shape>
     </item>
     <item android:state_focused="true">
         <shape>
-            <gradient android:angle="270" android:centerColor="#FFF3F3F3" android:centerX="0.9" android:centerY="0.5" android:endColor="#FFC8C8C8" android:startColor="#FFF3F3F3" />
-            <stroke android:width="2dp" android:color="#50888888" />
-            <padding android:left="2dp" android:top="2dp" android:right="2dp" android:bottom="2dp" />
+            <gradient android:angle="270" android:centerColor="#FFF3F3F3" android:centerX="0.9" android:centerY="0.5"
+                      android:endColor="#FFC8C8C8" android:startColor="#FFF3F3F3"/>
+            <stroke android:width="2dp" android:color="#50888888"/>
+            <padding android:left="2dp" android:top="2dp" android:right="2dp" android:bottom="2dp"/>
         </shape>
     </item>
     <item>
         <shape>
-            <gradient android:angle="270" android:centerColor="#FFFFFFFF" android:centerX="0.5" android:centerY="0.5" android:endColor="#FFFFFFFF" android:startColor="#FFFFFFFF" />
-            <padding android:left="2dp" android:top="2dp" android:right="2dp" android:bottom="2dp" />
+            <gradient android:angle="270" android:centerColor="#FFFFFFFF" android:centerX="0.5" android:centerY="0.5"
+                      android:endColor="#FFFFFFFF" android:startColor="#FFFFFFFF"/>
+            <padding android:left="2dp" android:top="2dp" android:right="2dp" android:bottom="2dp"/>
         </shape>
     </item>
 </selector>

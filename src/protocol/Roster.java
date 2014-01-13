@@ -23,6 +23,7 @@ public class Roster {
     public final Vector<Contact> getContactItems() {
         return contacts;
     }
+
     public final Vector<Group> getGroupItems() {
         return groups;
     }
@@ -36,22 +37,24 @@ public class Roster {
         }
         return null;
     }
+
     public final Group getGroupById(int id) {
         for (int i = groups.size() - 1; 0 <= i; --i) {
-            Group group = (Group)groups.elementAt(i);
+            Group group = (Group) groups.elementAt(i);
             if (group.getId() == id) {
                 return group;
             }
         }
         return null;
     }
+
     public final Group getGroup(Contact contact) {
         return getGroupById(contact.getGroupId());
     }
 
     public final Group getGroup(String name) {
         for (int i = groups.size() - 1; 0 <= i; --i) {
-            Group group = (Group)groups.elementAt(i);
+            Group group = (Group) groups.elementAt(i);
             if (group.getName().equals(name)) {
                 return group;
             }

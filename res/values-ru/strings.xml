@@ -105,12 +105,12 @@
     <string name="statuses">Статусы</string>
     <string name="reason">Причина</string>
     <string name="sysnotice">Системное уведомление</string>
-    <string name="youwereadded">Вас добавил: </string>
+    <string name="youwereadded">Вас добавил:</string>
     <string name="requauth">Запрос авторизации</string>
 
-    <string name="wantsyourauth"> хочет авторизироваться</string>
-    <string name="grantedby">Вас авторизировал: </string>
-    <string name="denyedby">Ваш запрос на авторизацию отклонил: </string>
+    <string name="wantsyourauth">хочет авторизироваться</string>
+    <string name="grantedby">Вас авторизировал:</string>
+    <string name="denyedby">Ваш запрос на авторизацию отклонил:</string>
 
     <string name="yes">Да</string>
     <string name="no">Нет</string>

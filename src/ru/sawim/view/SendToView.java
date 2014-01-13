@@ -1,7 +1,6 @@
 package ru.sawim.view;
 
 import android.content.Intent;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -64,7 +63,7 @@ public class SendToView extends Fragment implements AdapterView.OnItemClickListe
         allListView.setDividerHeight(0);
         allListView.setOnItemClickListener(this);
 
-        allRosterAdapter = new RosterAdapter(getActivity(), roster, RosterHelper.ALL_CONTACTS);
+        allRosterAdapter = new RosterAdapter(getActivity(), RosterHelper.ALL_CONTACTS);
         allListView.setAdapter(allRosterAdapter);
 
         if (!Scheme.isSystemBackground())
@@ -149,7 +148,7 @@ public class SendToView extends Fragment implements AdapterView.OnItemClickListe
                     for (int i = 0; i < protocolCount; ++i) {
                         Protocol protocol = roster.getProtocol(i);
                         Drawable icon = protocol.getCurrentStatusIcon().getImage();
-                        BitmapDrawable messageIcon = ChatHistory.instance.getUnreadMessageIcon(protocol);
+                        Drawable messageIcon = ChatHistory.instance.getUnreadMessageIcon(protocol);
                         if (null != messageIcon)
                             icon = messageIcon;
                         horizontalScrollView.addTab(i, icon);

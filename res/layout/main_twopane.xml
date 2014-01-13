@@ -4,15 +4,15 @@
               android:layout_width="fill_parent"
               android:layout_height="fill_parent">
     <fragment android:name="ru.sawim.view.RosterView"
-            android:id="@+id/roster_fragment"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="30"/>
+              android:id="@+id/roster_fragment"
+              android:layout_width="0dp"
+              android:layout_height="match_parent"
+              android:layout_weight="30"/>
 
     <fragment android:name="ru.sawim.view.ChatView"
-            android:id="@+id/chat_fragment"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="70"/>
+              android:id="@+id/chat_fragment"
+              android:layout_width="0dp"
+              android:layout_height="match_parent"
+              android:layout_weight="70"/>
 
 </LinearLayout>

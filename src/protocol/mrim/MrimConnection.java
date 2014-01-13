@@ -88,8 +88,8 @@ public final class MrimConnection extends ClientConnection {
             while (true) {
                 ch = s.read();
                 if (-1 == ch) break;
-                if(('0' <= ch && ch <= '9') || (ch == '.') || (ch == ':')) {
-                    buffer.append((char)ch);
+                if (('0' <= ch && ch <= '9') || (ch == '.') || (ch == ':')) {
+                    buffer.append((char) ch);
                 }
             }
         } catch (Exception e) {

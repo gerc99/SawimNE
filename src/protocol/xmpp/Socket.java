@@ -9,7 +9,9 @@
 
 package protocol.xmpp;
 
-import com.jcraft.jzlib.*;
+import com.jcraft.jzlib.JZlib;
+import com.jcraft.jzlib.ZInputStream;
+import com.jcraft.jzlib.ZOutputStream;
 import protocol.net.TcpSocket;
 import sawim.SawimException;
 import sawim.modules.DebugLog;
@@ -17,7 +19,6 @@ import sawim.modules.DebugLog;
 import java.util.Vector;
 
 /**
- *
  * @author Vladimir Krukov
  */
 final class Socket implements Runnable {
@@ -54,7 +55,7 @@ final class Socket implements Runnable {
     public boolean isConnected() {
         return connected;
     }
-    
+
     public void connectTo(String url) throws SawimException {
         System.out.println("url: " + url);
         socket.connectTo(url);
@@ -85,6 +86,7 @@ final class Socket implements Runnable {
         socket.write(data, 0, data.length);
         socket.flush();
     }
+
     public void close() {
         connected = false;
         try {
@@ -103,6 +105,7 @@ final class Socket implements Runnable {
         } catch (Exception ignored) {
         }
     }
+
     private void fillBuffer() throws SawimException {
         inputBufferIndex = 0;
         inputBufferLength = read(inputBuffer);
@@ -123,16 +126,16 @@ final class Socket implements Runnable {
         try {
             byte bt = readByte();
             if (0 <= bt) {
-                return (char)bt;
+                return (char) bt;
             }
             if ((bt & 0xE0) == 0xC0) {
                 byte bt2 = readByte();
-                return (char)(((bt & 0x3F) << 6) | (bt2 & 0x3F));
+                return (char) (((bt & 0x3F) << 6) | (bt2 & 0x3F));
 
             } else if ((bt & 0xF0) == 0xE0) {
                 byte bt2 = readByte();
                 byte bt3 = readByte();
-                return (char)(((bt & 0x1F) << 12) | ((bt2 & 0x3F) << 6) | (bt3 & 0x3F));
+                return (char) (((bt & 0x1F) << 12) | ((bt2 & 0x3F) << 6) | (bt3 & 0x3F));
 
             } else {
                 int seqLen = 0;

@@ -3,16 +3,11 @@ package ru.sawim.widget.chat;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.support.v4.view.MotionEventCompat;
-import android.support.v4.view.ViewConfigurationCompat;
-import android.util.Log;
-import android.view.GestureDetector;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.ViewConfiguration;
+import android.text.TextPaint;
 import android.widget.AbsListView;
 import android.widget.LinearLayout;
-import android.widget.Toast;
+import ru.sawim.General;
+import ru.sawim.Scheme;
 import ru.sawim.widget.Util;
 
 /**
@@ -26,6 +21,7 @@ public class MessageItemView extends LinearLayout {
 
     public MessageTitleItemView titleItemView;
     public MessageTextView msgText;
+    private static TextPaint textPaint;
     private static Paint paintDivider;
     private boolean isShowDivider = false;
 
@@ -33,6 +29,11 @@ public class MessageItemView extends LinearLayout {
         super(context);
         titleItemView = new MessageTitleItemView(context);
         msgText = new MessageTextView(context);
+        if (textPaint == null)
+            textPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
+        textPaint.setAntiAlias(true);
+        textPaint.setTextSize(General.getFontSize());
+        textPaint.setColor(Scheme.getColor(Scheme.THEME_TEXT));
         if (paintDivider == null)
             paintDivider = new Paint(Paint.ANTI_ALIAS_FLAG);
         int padding = Util.dipToPixels(context, 5);

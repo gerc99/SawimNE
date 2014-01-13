@@ -34,15 +34,15 @@ import org.microemu.microedition.ImplFactory;
  *         config2.xml example
  *         <p/>
  *         <pre>
- *                  &lt;extensions&gt;
- *                  &lt;extension&gt;
- *                  &lt;className&gt;org.microemu.cldc.file.FileSystem&lt;/className&gt;
- *                  &lt;properties&gt;
- *                  &lt;property NAME=&quot;fsRoot&quot; VALUE=&quot;C:&quot;/&gt;
- *                  &lt;/properties&gt;
- *                  &lt;/extension&gt;
- *                  &lt;/extensions&gt;
- *                 </pre>
+ *                          &lt;extensions&gt;
+ *                          &lt;extension&gt;
+ *                          &lt;className&gt;org.microemu.cldc.file.FileSystem&lt;/className&gt;
+ *                          &lt;properties&gt;
+ *                          &lt;property NAME=&quot;fsRoot&quot; VALUE=&quot;C:&quot;/&gt;
+ *                          &lt;/properties&gt;
+ *                          &lt;/extension&gt;
+ *                          &lt;/extensions&gt;
+ *                         </pre>
  */
 
 public class FileSystem {

@@ -165,6 +165,7 @@ public abstract class PreferenceFragment extends SawimFragment implements
 
     /**
      * Returns the {@link PreferenceManager} used by this fragment.
+     *
      * @return The {@link PreferenceManager}.
      */
     public PreferenceManager getPreferenceManager() {
@@ -189,7 +190,7 @@ public abstract class PreferenceFragment extends SawimFragment implements
      * Gets the root of the preference hierarchy that this fragment is showing.
      *
      * @return The {@link PreferenceScreen} that is the root of the preference
-     *         hierarchy.
+     * hierarchy.
      */
     public PreferenceScreen getPreferenceScreen() {
         return PreferenceManagerCompat.getPreferenceScreen(mPreferenceManager);
@@ -227,7 +228,7 @@ public abstract class PreferenceFragment extends SawimFragment implements
         //if (preference.getFragment() != null &&
         if (
                 getActivity() instanceof OnPreferenceStartFragmentCallback) {
-            return ((OnPreferenceStartFragmentCallback)getActivity()).onPreferenceStartFragment(
+            return ((OnPreferenceStartFragmentCallback) getActivity()).onPreferenceStartFragment(
                     this, preference);
         }
         return false;
@@ -284,7 +285,7 @@ public abstract class PreferenceFragment extends SawimFragment implements
                     "Content has view with id attribute 'android.R.id.list' "
                             + "that is not a ListView class");
         }
-        mList = (ListView)rawListView;
+        mList = (ListView) rawListView;
         if (mList == null) {
             throw new RuntimeException(
                     "Your content must have a ListView whose id attribute is " +

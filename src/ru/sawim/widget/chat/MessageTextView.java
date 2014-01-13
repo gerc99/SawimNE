@@ -1,7 +1,6 @@
 package ru.sawim.widget.chat;
 
 import android.content.Context;
-import android.util.AttributeSet;
 import ru.sawim.widget.MyTextView;
 
 /**
@@ -14,19 +13,8 @@ import ru.sawim.widget.MyTextView;
 
 public class MessageTextView extends MyTextView {
 
-    public MessageTextView(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
-        initPaint();
-    }
-
-    public MessageTextView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        initPaint();
-    }
-
     public MessageTextView(Context context) {
         super(context);
-        initPaint();
     }
 
     @Override

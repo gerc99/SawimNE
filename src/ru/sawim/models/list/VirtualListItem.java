@@ -4,7 +4,6 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.View;
-import ru.sawim.General;
 import ru.sawim.SawimApplication;
 import ru.sawim.SawimResources;
 import ru.sawim.text.TextFormatter;

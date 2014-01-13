@@ -1,7 +1,6 @@
 package protocol;
 
 import DrawControls.icons.Icon;
-import ru.sawim.General;
 import ru.sawim.SawimResources;
 import sawim.comm.Util;
 import sawim.roster.TreeNode;

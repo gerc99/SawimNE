@@ -7,6 +7,7 @@ package ru.sawim.view.preference;
  * Time: 18:55
  * To change this template use File | Settings | File Templates.
  */
+
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.preference.Preference;

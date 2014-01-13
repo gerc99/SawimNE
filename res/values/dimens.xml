@@ -7,8 +7,8 @@
     <!-- Optional button to Skip a PreferenceActivity [CHAR LIMIT=20] -->
     <string name="skip_button_label">Skip</string>
 
-	<dimen name="smallest_10_font_size">10.0sp</dimen>
-	<dimen name="smallest_13_font_size">13.0sp</dimen>
+    <dimen name="smallest_10_font_size">10.0sp</dimen>
+    <dimen name="smallest_13_font_size">13.0sp</dimen>
     <dimen name="small_font_size">16.0sp</dimen>
     <dimen name="medium_font_size">18.0sp</dimen>
     <dimen name="large_font_size">22.0sp</dimen>
@@ -21,5 +21,6 @@
     <!-- Preference fragment padding, sides -->
     <dimen name="preference_fragment_padding_side">0dp</dimen>
 
-    <integer name="preference_fragment_scrollbarStyle">0x02000000</integer> <!-- outsideOverlay -->
+    <integer name="preference_fragment_scrollbarStyle">0x02000000</integer>
+    <!-- outsideOverlay -->
 </resources>

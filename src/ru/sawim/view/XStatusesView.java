@@ -13,8 +13,8 @@ import android.widget.EditText;
 import android.widget.ListView;
 import protocol.Protocol;
 import protocol.icq.Icq;
-import protocol.xmpp.Xmpp;
 import protocol.mrim.Mrim;
+import protocol.xmpp.Xmpp;
 import ru.sawim.R;
 import ru.sawim.models.XStatusesAdapter;
 import ru.sawim.widget.Util;
@@ -50,7 +50,7 @@ public class XStatusesView extends DialogFragment {
         dialogBuilder.setTitle(R.string.ms_xstatus_menu);
         dialogBuilder.setInverseBackgroundForced(Util.isNeedToInverseDialogBackground());
         statusesAdapter = new XStatusesAdapter(getActivity(), protocol);
-        final ListView lv = (ListView)dialogView.findViewById(R.id.statuses_view);
+        final ListView lv = (ListView) dialogView.findViewById(R.id.statuses_view);
         statusesAdapter.setSelectedItem(protocol.getProfile().xstatusIndex + 1);
         lv.setAdapter(statusesAdapter);
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {

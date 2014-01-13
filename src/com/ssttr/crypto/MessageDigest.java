@@ -191,7 +191,7 @@ public abstract class MessageDigest {
         StringBuilder out = new StringBuilder();
         int len = digestBits.length;
         for (int i = 0; i < len; i++) {
-            String hex = Integer.toHexString(((int)digestBits[i]) & 0xFF);
+            String hex = Integer.toHexString(((int) digestBits[i]) & 0xFF);
             if (1 == hex.length()) out.append(0);
             out.append(hex);
         }

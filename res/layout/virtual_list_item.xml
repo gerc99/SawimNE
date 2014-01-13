@@ -18,7 +18,7 @@
                    android:layout_gravity="left|center_vertical"
                    android:paddingRight="2dp"/>
         <ru.sawim.widget.MyTextView android:layout_height="wrap_content"
-                  android:layout_width="match_parent"
-                  android:id="@+id/description"/>
+                                    android:layout_width="match_parent"
+                                    android:id="@+id/description"/>
     </LinearLayout>
 </LinearLayout>

@@ -7,11 +7,11 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.text.*;
 import android.util.AttributeSet;
-import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 import ru.sawim.General;
 import ru.sawim.text.InternalURLSpan;
+import ru.sawim.text.TextLinkClickListener;
 
 /**
  * Created with IntelliJ IDEA.
@@ -81,12 +81,11 @@ public class MyTextView extends View {
     }
 
     public void setTextSize(float textSize) {
-        textPaint.setTextSize(TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_SP, textSize, General.getResources(getContext()).getDisplayMetrics()));
+        textPaint.setTextSize(textSize * General.getResources(getContext()).getDisplayMetrics().scaledDensity);
     }
 
     public void setGravity(boolean isRight) {
-          this.isRight = isRight;
+        this.isRight = isRight;
     }
 
     public void makeLayout(int specSize) {
@@ -164,9 +163,5 @@ public class MyTextView extends View {
 
     public void setOnTextLinkClickListener(TextLinkClickListener onTextLinkClickListener) {
         listener = onTextLinkClickListener;
-    }
-
-    public interface TextLinkClickListener {
-        public void onTextLinkClick(View textView, String clickedString, boolean isLongTap);
     }
 }

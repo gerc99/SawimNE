@@ -35,18 +35,17 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package com.jcraft.jzlib;
 
 /**
- *
  * @author Vladimir Kryukov
  */
 public class ZBuffers {
     public byte[] next_in;     // next input byte
     public int next_in_index;
     public int avail_in;       // number of bytes available at next_in
-    
+
     public byte[] next_out;    // next output byte should be put there
     public int next_out_index;
     public int avail_out;      // remaining free space at next_out
-    
+
     public byte nextByte() {
         avail_in--;
         return next_in[next_in_index++];

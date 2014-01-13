@@ -10,7 +10,6 @@
 package com.jcraft.jzlib;
 
 /**
- *
  * @author Vladimir Kryukov
  */
 public final class ZError extends Exception {

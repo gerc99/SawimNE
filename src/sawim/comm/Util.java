@@ -1,6 +1,5 @@
 package sawim.comm;
 
-import protocol.Contact;
 import ru.sawim.General;
 import sawim.Options;
 import sawim.roster.TreeNode;

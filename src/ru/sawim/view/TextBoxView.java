@@ -30,7 +30,7 @@ public class TextBoxView extends DialogFragment {
         final Context context = getActivity();
 
         View dialogView = LayoutInflater.from(context).inflate(R.layout.text_box_view, null);
-        editText = (EditText)dialogView.findViewById(R.id.editText);
+        editText = (EditText) dialogView.findViewById(R.id.editText);
         editText.setText(text);
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
         dialogBuilder.setTitle(R.string.ms_status_menu);

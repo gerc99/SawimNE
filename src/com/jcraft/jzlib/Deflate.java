@@ -33,6 +33,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 package com.jcraft.jzlib;
+
 // #sijapp cond.if modules_ZLIB is "true" #
 public final class Deflate {
 
@@ -40,14 +41,14 @@ public final class Deflate {
 
     static final private int Z_DEFAULT_COMPRESSION = -1;
 
-// # ifdef JZLIB_STD_DEFLATE_BUFS
+    // # ifdef JZLIB_STD_DEFLATE_BUFS
 // //#   //  that is: 128K for windowBits=15  +  128K for memLevel = 8  (default values)
 // //#   static final private int MAX_WBITS=15;            // 32K LZ77 window
 // //#   static final private int DEF_MEM_LEVEL=8;
 // # else
     //  that is: 2K for windowBits=9  +  1K for memLevel = 1    thanks to Taras Zackrepa (ONjA)
-    static final public int MAX_WBITS=9;
-    static final private int DEF_MEM_LEVEL=1;
+    static final public int MAX_WBITS = 9;
+    static final private int DEF_MEM_LEVEL = 1;
 // # endif
 
     static class Config {
@@ -56,107 +57,119 @@ public final class Deflate {
         int nice_length; // quit search above this match length
         int max_chain;
         int func;
+
         Config(int good_length, int max_lazy,
-                int nice_length, int max_chain, int func) {
-            this.good_length=good_length;
-            this.max_lazy=max_lazy;
-            this.nice_length=nice_length;
-            this.max_chain=max_chain;
-            this.func=func;
+               int nice_length, int max_chain, int func) {
+            this.good_length = good_length;
+            this.max_lazy = max_lazy;
+            this.nice_length = nice_length;
+            this.max_chain = max_chain;
+            this.func = func;
         }
     }
 
-    static final private int STORED=0;
-    static final private int FAST=1;
-    static final private int SLOW=2;
+    static final private int STORED = 0;
+    static final private int FAST = 1;
+    static final private int SLOW = 2;
+
     private Config getConfig() {
         switch (level) {
             //                        good  lazy  nice  chain
-            case 0: return new Config(0,    0,    0,    0, STORED);
-            case 1: return new Config(4,    4,    8,    4, FAST);
-            case 2: return new Config(4,    5,   16,    8, FAST);
-            case 3: return new Config(4,    6,   32,   32, FAST);
-            case 4: return new Config(4,    4,   16,   16, SLOW);
-            case 5: return new Config(8,   16,   32,   32, SLOW);
-            case 6: return new Config(8,   16,  128,  128, SLOW);
-            case 7: return new Config(8,   32,  128,  256, SLOW);
-            case 8: return new Config(32, 128,  258, 1024, SLOW);
-            case 9: return new Config(32, 258,  258, 4096, SLOW);
+            case 0:
+                return new Config(0, 0, 0, 0, STORED);
+            case 1:
+                return new Config(4, 4, 8, 4, FAST);
+            case 2:
+                return new Config(4, 5, 16, 8, FAST);
+            case 3:
+                return new Config(4, 6, 32, 32, FAST);
+            case 4:
+                return new Config(4, 4, 16, 16, SLOW);
+            case 5:
+                return new Config(8, 16, 32, 32, SLOW);
+            case 6:
+                return new Config(8, 16, 128, 128, SLOW);
+            case 7:
+                return new Config(8, 32, 128, 256, SLOW);
+            case 8:
+                return new Config(32, 128, 258, 1024, SLOW);
+            case 9:
+                return new Config(32, 258, 258, 4096, SLOW);
         }
         return null;
     }
 
     // block not completed, need more input or more output
-    static final private int NeedMore=0;
+    static final private int NeedMore = 0;
 
     // block flush performed
-    static final private int BlockDone=1;
+    static final private int BlockDone = 1;
 
     // finish started, need only more output at next deflate
-    static final private int FinishStarted=2;
+    static final private int FinishStarted = 2;
 
     // finish done, accept no more input or output
-    static final private int FinishDone=3;
+    static final private int FinishDone = 3;
 
     // preset dictionary flag in zlib header
-    static final private int PRESET_DICT=0x20;
+    static final private int PRESET_DICT = 0x20;
 
-    static final private int Z_FILTERED=1;
-    static final private int Z_HUFFMAN_ONLY=2;
-    static final private int Z_DEFAULT_STRATEGY=0;
+    static final private int Z_FILTERED = 1;
+    static final private int Z_HUFFMAN_ONLY = 2;
+    static final private int Z_DEFAULT_STRATEGY = 0;
 
-    static final private int Z_NO_FLUSH=0;
-    static final private int Z_PARTIAL_FLUSH=1;
-    static final private int Z_SYNC_FLUSH=2;
-    static final private int Z_FULL_FLUSH=3;
-    static final private int Z_FINISH=4;
+    static final private int Z_NO_FLUSH = 0;
+    static final private int Z_PARTIAL_FLUSH = 1;
+    static final private int Z_SYNC_FLUSH = 2;
+    static final private int Z_FULL_FLUSH = 3;
+    static final private int Z_FINISH = 4;
 
-    static final private int Z_OK=0;
-    static final private int Z_STREAM_END=1;
-    static final private int Z_STREAM_ERROR=-2;
-    static final private int Z_DATA_ERROR=-3;
-    static final private int Z_BUF_ERROR=-5;
+    static final private int Z_OK = 0;
+    static final private int Z_STREAM_END = 1;
+    static final private int Z_STREAM_ERROR = -2;
+    static final private int Z_DATA_ERROR = -3;
+    static final private int Z_BUF_ERROR = -5;
 
-    static final private int INIT_STATE=42;
-    static final private int BUSY_STATE=113;
-    static final private int FINISH_STATE=666;
+    static final private int INIT_STATE = 42;
+    static final private int BUSY_STATE = 113;
+    static final private int FINISH_STATE = 666;
 
     // The deflate compression method
-    static final private int Z_DEFLATED=8;
+    static final private int Z_DEFLATED = 8;
 
-    static final private int STORED_BLOCK=0;
-    static final private int STATIC_TREES=1;
-    static final private int DYN_TREES=2;
+    static final private int STORED_BLOCK = 0;
+    static final private int STATIC_TREES = 1;
+    static final private int DYN_TREES = 2;
 
     // The three kinds of block type
-    static final private byte Z_BINARY=0;
-    static final private byte Z_ASCII=1;
-    static final private byte Z_UNKNOWN=2;
+    static final private byte Z_BINARY = 0;
+    static final private byte Z_ASCII = 1;
+    static final private byte Z_UNKNOWN = 2;
 
-    static final private int Buf_size=8*2;
+    static final private int Buf_size = 8 * 2;
 
     // repeat previous bit length 3-6 times (2 bits of repeat count)
-    static final private int REP_3_6=16;
+    static final private int REP_3_6 = 16;
 
     // repeat a zero length 3-10 times  (3 bits of repeat count)
-    static final private int REPZ_3_10=17;
+    static final private int REPZ_3_10 = 17;
 
     // repeat a zero length 11-138 times  (7 bits of repeat count)
-    static final private int REPZ_11_138=18;
+    static final private int REPZ_11_138 = 18;
 
-    static final private int MIN_MATCH=3;
-    static final private int MAX_MATCH=258;
-    static final private int MIN_LOOKAHEAD=(MAX_MATCH+MIN_MATCH+1);
+    static final private int MIN_MATCH = 3;
+    static final private int MAX_MATCH = 258;
+    static final private int MIN_LOOKAHEAD = (MAX_MATCH + MIN_MATCH + 1);
 
-    static final private int MAX_BITS=15;
-    static final private int D_CODES=30;
-    static final private int BL_CODES=19;
-    static final private int LENGTH_CODES=29;
-    static final private int LITERALS=256;
-    static final private int L_CODES=(LITERALS+1+LENGTH_CODES);
-    static final private int HEAP_SIZE=(2*L_CODES+1);
+    static final private int MAX_BITS = 15;
+    static final private int D_CODES = 30;
+    static final private int BL_CODES = 19;
+    static final private int LENGTH_CODES = 29;
+    static final private int LITERALS = 256;
+    static final private int L_CODES = (LITERALS + 1 + LENGTH_CODES);
+    static final private int HEAP_SIZE = (2 * L_CODES + 1);
 
-    static final private int END_BLOCK=256;
+    static final private int END_BLOCK = 256;
 
     ZBuffers strm;         // pointer back to this zlib stream
     int status;           // as the name implies
@@ -233,9 +246,13 @@ public final class Deflate {
     // greater than this length. This saves time but degrades compression.
     // max_insert_length is used only for compression levels <= 3.
 
-    /** compression level (1..9) */
+    /**
+     * compression level (1..9)
+     */
     int level;
-    /** favor or force Huffman coding */
+    /**
+     * favor or force Huffman coding
+     */
     int strategy;
 
     // Use a faster search when the previous match is longer than this
@@ -251,20 +268,26 @@ public final class Deflate {
     private int dyn_d_maxcode;       // distance tree
     //private int bl_maxcode;          // Huffman tree for bit lengths
 
-    /** desc for literal tree */
+    /**
+     * desc for literal tree
+     */
     private final StaticTree l_static_tree =
             new StaticTree(StaticTree.static_ltree, StaticTree.extra_lbits,
-            StaticTree.LITERALS + 1, StaticTree.L_CODES, StaticTree.MAX_BITS);
+                    StaticTree.LITERALS + 1, StaticTree.L_CODES, StaticTree.MAX_BITS);
 
-    /** desc for distance tree */
+    /**
+     * desc for distance tree
+     */
     private final StaticTree d_static_tree =
             new StaticTree(StaticTree.static_dtree, StaticTree.extra_dbits,
-            0,  StaticTree.D_CODES, StaticTree.MAX_BITS);
+                    0, StaticTree.D_CODES, StaticTree.MAX_BITS);
 
-    /** desc for bit length tree */
+    /**
+     * desc for bit length tree
+     */
     private final StaticTree bl_static_tree =
             new StaticTree(null, StaticTree.extra_blbits,
-            0, StaticTree.BL_CODES, StaticTree.MAX_BL_BITS);
+                    0, StaticTree.BL_CODES, StaticTree.MAX_BL_BITS);
 
     // number of codes at each bit length for an optimal tree
     short[] bl_count = new short[MAX_BITS + 1];
@@ -325,9 +348,9 @@ public final class Deflate {
     private long adlerHash;
 
     Deflate(ZBuffers strm) {
-        dyn_ltree = new short[HEAP_SIZE*2];
-        dyn_dtree = new short[(2*D_CODES+1)*2]; // distance tree
-        bl_tree = new short[(2*BL_CODES+1)*2];  // Huffman tree for bit lengths
+        dyn_ltree = new short[HEAP_SIZE * 2];
+        dyn_dtree = new short[(2 * D_CODES + 1) * 2]; // distance tree
+        bl_tree = new short[(2 * BL_CODES + 1) * 2];  // Huffman tree for bit lengths
         this.strm = strm;
     }
 
@@ -341,16 +364,16 @@ public final class Deflate {
 
         // Set the default configuration parameters:
         Config config = getConfig();
-        compress_func    = config.func;
-        max_lazy_match   = config.max_lazy;
-        good_match       = config.good_length;
-        nice_match       = config.nice_length;
+        compress_func = config.func;
+        max_lazy_match = config.max_lazy;
+        good_match = config.good_length;
+        nice_match = config.nice_length;
         max_chain_length = config.max_chain;
 
         strstart = 0;
         block_start = 0;
         lookahead = 0;
-        match_length = prev_length = MIN_MATCH-1;
+        match_length = prev_length = MIN_MATCH - 1;
         match_available = 0;
         ins_h = 0;
     }
@@ -368,11 +391,11 @@ public final class Deflate {
 
     void init_block() {
         // Initialize the trees.
-        for(int i = 0; i < L_CODES; ++i) dyn_ltree[i*2] = 0;
-        for(int i= 0; i < D_CODES; ++i) dyn_dtree[i*2] = 0;
-        for(int i= 0; i < BL_CODES; ++i) bl_tree[i*2] = 0;
+        for (int i = 0; i < L_CODES; ++i) dyn_ltree[i * 2] = 0;
+        for (int i = 0; i < D_CODES; ++i) dyn_dtree[i * 2] = 0;
+        for (int i = 0; i < BL_CODES; ++i) bl_tree[i * 2] = 0;
 
-        dyn_ltree[END_BLOCK*2] = 1;
+        dyn_ltree[END_BLOCK * 2] = 1;
         opt_len = static_len = 0;
         last_lit = matches = 0;
     }
@@ -383,19 +406,19 @@ public final class Deflate {
      * when the heap property is re-established (each father smaller than its
      * two sons).
      *
-     * @param tree   the tree to restore
-     * @param k      node to move down
+     * @param tree the tree to restore
+     * @param k    node to move down
      */
     void pqdownheap(short[] tree, int k) {
         int v = heap[k];
         int j = k << 1;  // left son of k
         while (j <= heap_len) {
             // Set j to the smallest of the two sons:
-            if (j < heap_len && smaller(tree, heap[j+1], heap[j], depth)) {
+            if (j < heap_len && smaller(tree, heap[j + 1], heap[j], depth)) {
                 ++j;
             }
             // Exit if v is smaller than both sons
-            if(smaller(tree, v, heap[j], depth)) break;
+            if (smaller(tree, v, heap[j], depth)) break;
 
             // Exchange v with the smallest son
             heap[k] = heap[j];
@@ -416,32 +439,35 @@ public final class Deflate {
      * Scan a literal or distance tree to determine the frequencies of the codes
      * in the bit length tree.
      *
-     * @param tree      the tree to be scanned
-     * @param max_code  and its largest code of non zero frequency
+     * @param tree     the tree to be scanned
+     * @param max_code and its largest code of non zero frequency
      */
     void scan_tree(short[] tree, int max_code) {
         int n;                     // iterates over all tree elements
         int prevlen = -1;          // last emitted length
         int curlen;                // length of current code
-        int nextlen = tree[0*2+1]; // length of next code
+        int nextlen = tree[0 * 2 + 1]; // length of next code
         int count = 0;             // repeat count of the current code
         int max_count = 7;         // max repeat count
         int min_count = 4;         // min repeat count
 
-        if (nextlen == 0) { max_count = 138; min_count = 3; }
-        tree[(max_code + 1) * 2 + 1] = (short)0xffff; // guard
+        if (nextlen == 0) {
+            max_count = 138;
+            min_count = 3;
+        }
+        tree[(max_code + 1) * 2 + 1] = (short) 0xffff; // guard
 
-        for(n = 0; n <= max_code; ++n) {
+        for (n = 0; n <= max_code; ++n) {
             curlen = nextlen;
             nextlen = tree[(n + 1) * 2 + 1];
             if (++count < max_count && curlen == nextlen) {
                 continue;
-            } else if(count < min_count) {
+            } else if (count < min_count) {
                 bl_tree[curlen * 2] += count;
-            } else if(curlen != 0) {
-                if(curlen != prevlen) ++bl_tree[curlen << 1];
+            } else if (curlen != 0) {
+                if (curlen != prevlen) ++bl_tree[curlen << 1];
                 ++bl_tree[REP_3_6 * 2];
-            } else if(count <= 10) {
+            } else if (count <= 10) {
                 ++bl_tree[REPZ_3_10 * 2];
             } else {
                 ++bl_tree[REPZ_11_138 * 2];
@@ -480,11 +506,11 @@ public final class Deflate {
         // Determine the number of bit length codes to send. The pkzip format
         // requires that at least 4 bit length codes be sent. (appnote.txt says
         // 3 but the actual value used is 4.)
-        for (max_blindex = BL_CODES-1; max_blindex >= 3; --max_blindex) {
+        for (max_blindex = BL_CODES - 1; max_blindex >= 3; --max_blindex) {
             if (bl_tree[(StaticTree.bl_order[max_blindex] << 1) + 1] != 0) break;
         }
         // Update opt_len to include the bit length tree and counts
-        opt_len += 3*(max_blindex+1) + 5+5+4;
+        opt_len += 3 * (max_blindex + 1) + 5 + 5 + 4;
 
         return max_blindex;
     }
@@ -495,8 +521,8 @@ public final class Deflate {
     // IN assertion: lcodes >= 257, dcodes >= 1, blcodes >= 4.
     void send_all_trees(int lcodes, int dcodes, int blcodes) {
         send_bits(lcodes - 257, 5); // not +255 as stated in appnote.txt
-        send_bits(dcodes - 1,   5);
-        send_bits(blcodes - 4,  4); // not -3 as stated in appnote.txt
+        send_bits(dcodes - 1, 5);
+        send_bits(blcodes - 4, 4); // not -3 as stated in appnote.txt
         for (int rank = 0; rank < blcodes; ++rank) {
             send_bits(bl_tree[(StaticTree.bl_order[rank] << 1) + 1], 3);
         }
@@ -508,86 +534,99 @@ public final class Deflate {
      * Send a literal or distance tree in compressed form, using the codes in
      * bl_tree.
      *
-     * @param tree      the tree to be sent
-     * @param max_code  and its largest code of non zero frequency
+     * @param tree     the tree to be sent
+     * @param max_code and its largest code of non zero frequency
      */
     void send_tree(short[] tree, int max_code) {
         int n;                     // iterates over all tree elements
         int prevlen = -1;          // last emitted length
         int curlen;                // length of current code
-        int nextlen = tree[0*2+1]; // length of next code
+        int nextlen = tree[0 * 2 + 1]; // length of next code
         int count = 0;             // repeat count of the current code
         int max_count = 7;         // max repeat count
         int min_count = 4;         // min repeat count
 
-        if (nextlen == 0){ max_count = 138; min_count = 3; }
+        if (nextlen == 0) {
+            max_count = 138;
+            min_count = 3;
+        }
 
         for (n = 0; n <= max_code; ++n) {
-            curlen = nextlen; nextlen = tree[((n+1) << 1) + 1];
-            if(++count < max_count && curlen == nextlen) {
+            curlen = nextlen;
+            nextlen = tree[((n + 1) << 1) + 1];
+            if (++count < max_count && curlen == nextlen) {
                 continue;
-            } else if(count < min_count) {
-                do { send_code(curlen, bl_tree); } while (--count != 0);
-            } else if(curlen != 0) {
-                if(curlen != prevlen) {
-                    send_code(curlen, bl_tree); count--;
+            } else if (count < min_count) {
+                do {
+                    send_code(curlen, bl_tree);
+                } while (--count != 0);
+            } else if (curlen != 0) {
+                if (curlen != prevlen) {
+                    send_code(curlen, bl_tree);
+                    count--;
                 }
                 send_code(REP_3_6, bl_tree);
-                send_bits(count-3, 2);
-            } else if(count <= 10) {
+                send_bits(count - 3, 2);
+            } else if (count <= 10) {
                 send_code(REPZ_3_10, bl_tree);
-                send_bits(count-3, 3);
+                send_bits(count - 3, 3);
             } else {
                 send_code(REPZ_11_138, bl_tree);
-                send_bits(count-11, 7);
+                send_bits(count - 11, 7);
             }
-            count = 0; prevlen = curlen;
-            if(nextlen == 0){
-                max_count = 138; min_count = 3;
-            } else if(curlen == nextlen){
-                max_count = 6; min_count = 3;
-            } else{
-                max_count = 7; min_count = 4;
+            count = 0;
+            prevlen = curlen;
+            if (nextlen == 0) {
+                max_count = 138;
+                min_count = 3;
+            } else if (curlen == nextlen) {
+                max_count = 6;
+                min_count = 3;
+            } else {
+                max_count = 7;
+                min_count = 4;
             }
         }
     }
 
     // Output a byte on the stream.
     // IN assertion: there is enough room in pending_buf.
-    final void put_byte(byte[] p, int start, int len){
+    final void put_byte(byte[] p, int start, int len) {
         System.arraycopy(p, start, pending_buf, pending, len);
         pending += len;
     }
 
-    final void put_byte(byte c){
+    final void put_byte(byte c) {
         pending_buf[pending++] = c;
     }
+
     final void put_short(int w) {
-        put_byte((byte)(w/*&0xff*/));
-        put_byte((byte)(w >>> 8));
-    }
-    final void putShortMSB(int b){
-        put_byte((byte)(b >> 8));
-        put_byte((byte)(b/*&0xff*/));
+        put_byte((byte) (w/*&0xff*/));
+        put_byte((byte) (w >>> 8));
     }
 
-    final void send_code(int c, short[] tree){
+    final void putShortMSB(int b) {
+        put_byte((byte) (b >> 8));
+        put_byte((byte) (b/*&0xff*/));
+    }
+
+    final void send_code(int c, short[] tree) {
         int c2 = c * 2;
-        send_bits((tree[c2] & 0xffff), (tree[c2+1] & 0xffff));
+        send_bits((tree[c2] & 0xffff), (tree[c2 + 1] & 0xffff));
     }
 
     void send_bits(int value, int length) {
         int len = length;
-        if (bi_valid > (int)Buf_size - len) {
+        if (bi_valid > (int) Buf_size - len) {
             int val = value;
 //      bi_buf |= (val << bi_valid);
-            bi_buf |= ((val << bi_valid)&0xffff);
+            bi_buf |= ((val << bi_valid) & 0xffff);
             put_short(bi_buf);
-            bi_buf = (short)(val >>> (Buf_size - bi_valid));
+            bi_buf = (short) (val >>> (Buf_size - bi_valid));
             bi_valid += len - Buf_size;
         } else {
 //      bi_buf |= (value) << bi_valid;
-            bi_buf |= (((value) << bi_valid)&0xffff);
+            bi_buf |= (((value) << bi_valid) & 0xffff);
             bi_valid += len;
         }
     }
@@ -626,14 +665,14 @@ public final class Deflate {
      * Save the match info and tally the frequency counts. Return true if
      * the current block must be flushed.
      *
-     * @param dist  distance of matched string
-     * @param lc    match length-MIN_MATCH or unmatched char (if dist==0)
+     * @param dist distance of matched string
+     * @param lc   match length-MIN_MATCH or unmatched char (if dist==0)
      */
     boolean _tr_tally(int dist, int lc) {
-        pending_buf[d_buf + (last_lit << 1)] = (byte)(dist >>> 8);
-        pending_buf[d_buf + (last_lit << 1) + 1] = (byte)dist;
+        pending_buf[d_buf + (last_lit << 1)] = (byte) (dist >>> 8);
+        pending_buf[d_buf + (last_lit << 1) + 1] = (byte) dist;
 
-        pending_buf[l_buf + last_lit] = (byte)lc;
+        pending_buf[l_buf + last_lit] = (byte) lc;
         ++last_lit;
 
         if (dist == 0) {
@@ -653,14 +692,14 @@ public final class Deflate {
             int in_length = strstart - block_start;
             int dcode;
             for (dcode = 0; dcode < D_CODES; ++dcode) {
-                out_length += (int)dyn_dtree[dcode*2] *
-                        (5L+d_static_tree.extra_bits[dcode]);
+                out_length += (int) dyn_dtree[dcode * 2] *
+                        (5L + d_static_tree.extra_bits[dcode]);
             }
             out_length >>>= 3;
-            if ((matches < (last_lit/2)) && out_length < in_length/2) return true;
+            if ((matches < (last_lit / 2)) && out_length < in_length / 2) return true;
         }
 
-        return (last_lit == lit_bufsize-1);
+        return (last_lit == lit_bufsize - 1);
         // We avoid equality with lit_bufsize because of wraparound at 64K
         // on 16 bit machines and because stored blocks are restricted to
         // 64K-1 bytes.
@@ -682,7 +721,7 @@ public final class Deflate {
 
     // Send the block data compressed using the given Huffman trees
     void compress_block(short[] ltree, short[] dtree) {
-        int  dist;      // distance of matched string
+        int dist;      // distance of matched string
         int lc;         // match length or unmatched char (if dist == 0)
         int lx = 0;     // running index in l_buf
         int code;       // the code to send
@@ -690,9 +729,9 @@ public final class Deflate {
 
         if (0 != last_lit) {
             do {
-                dist = ((pending_buf[d_buf + (lx << 1)]<<8) & 0xff00) |
+                dist = ((pending_buf[d_buf + (lx << 1)] << 8) & 0xff00) |
                         (pending_buf[d_buf + (lx << 1) + 1] & 0xff);
-                lc = (pending_buf[l_buf+lx]) & 0xff;
+                lc = (pending_buf[l_buf + lx]) & 0xff;
                 ++lx;
 
                 if (0 == dist) {
@@ -701,7 +740,7 @@ public final class Deflate {
                     // Here, lc is the match length - MIN_MATCH
                     code = getLength_code(lc);
 
-                    send_code(code+LITERALS+1, ltree); // send the length code
+                    send_code(code + LITERALS + 1, ltree); // send the length code
                     extra = l_static_tree.extra_bits[code];
                     if (extra != 0) {
                         lc -= StaticTree.base_length[code];
@@ -723,7 +762,7 @@ public final class Deflate {
         }
 
         send_code(END_BLOCK, ltree);
-        last_eob_len = ltree[END_BLOCK*2+1];
+        last_eob_len = ltree[END_BLOCK * 2 + 1];
     }
 
 //    // Set the data type to ASCII or BINARY, using a crude approximation:
@@ -744,12 +783,12 @@ public final class Deflate {
     void bi_flush() {
         if (bi_valid == 16) {
             put_short(bi_buf);
-            bi_buf=0;
-            bi_valid=0;
+            bi_buf = 0;
+            bi_valid = 0;
         } else if (bi_valid >= 8) {
-            put_byte((byte)bi_buf);
-            bi_buf>>>=8;
-            bi_valid-=8;
+            put_byte((byte) bi_buf);
+            bi_buf >>>= 8;
+            bi_valid -= 8;
         }
     }
 
@@ -758,7 +797,7 @@ public final class Deflate {
         if (bi_valid > 8) {
             put_short(bi_buf);
         } else if (bi_valid > 0) {
-            put_byte((byte)bi_buf);
+            put_byte((byte) bi_buf);
         }
         bi_buf = 0;
         bi_valid = 0;
@@ -768,9 +807,9 @@ public final class Deflate {
      * Copy a stored block, storing first the length and its
      * one's complement if requested.
      *
-     * @param buf     the input data
-     * @param len     its length
-     * @param header  true if block header must be written
+     * @param buf    the input data
+     * @param len    its length
+     * @param header true if block header must be written
      */
     void copy_block(int buf, int len, boolean header) {
         int index = 0;
@@ -778,8 +817,8 @@ public final class Deflate {
         last_eob_len = 8; // enough lookahead for inflate
 
         if (header) {
-            put_short((short)len);
-            put_short((short)~len);
+            put_short((short) len);
+            put_short((short) ~len);
         }
 
         //  while(len--!=0) {
@@ -789,7 +828,7 @@ public final class Deflate {
         put_byte(window, buf, len);
     }
 
-    void flush_block_only(boolean eof){
+    void flush_block_only(boolean eof) {
         _tr_flush_block(block_start >= 0 ? block_start : -1,
                 strstart - block_start,
                 eof);
@@ -816,39 +855,39 @@ public final class Deflate {
         }
 
         // Copy as much as possible from input to output:
-        while(true) {
+        while (true) {
             // Fill the window as much as possible:
-            if(lookahead<=1) {
+            if (lookahead <= 1) {
                 fill_window();
-                if(lookahead==0 && flush==Z_NO_FLUSH) return NeedMore;
-                if(lookahead==0) break; // flush the current block
+                if (lookahead == 0 && flush == Z_NO_FLUSH) return NeedMore;
+                if (lookahead == 0) break; // flush the current block
             }
 
-            strstart+=lookahead;
-            lookahead=0;
+            strstart += lookahead;
+            lookahead = 0;
 
             // Emit a stored block if pending_buf will be full:
-            max_start=block_start+max_block_size;
-            if(strstart==0|| strstart>=max_start) {
+            max_start = block_start + max_block_size;
+            if (strstart == 0 || strstart >= max_start) {
                 // strstart == 0 is possible when wraparound on 16-bit machine
-                lookahead = (int)(strstart-max_start);
-                strstart = (int)max_start;
+                lookahead = (int) (strstart - max_start);
+                strstart = (int) max_start;
 
                 flush_block_only(false);
-                if(strm.avail_out==0) return NeedMore;
+                if (strm.avail_out == 0) return NeedMore;
 
             }
 
             // Flush if we may have to slide, otherwise block_start may become
             // negative and the data will be gone:
-            if(strstart-block_start >= w_size-MIN_LOOKAHEAD) {
+            if (strstart - block_start >= w_size - MIN_LOOKAHEAD) {
                 flush_block_only(false);
-                if(strm.avail_out==0) return NeedMore;
+                if (strm.avail_out == 0) return NeedMore;
             }
         }
 
         flush_block_only(Z_FINISH == flush);
-        if(strm.avail_out==0) {
+        if (strm.avail_out == 0) {
             return (Z_FINISH == flush) ? FinishStarted : NeedMore;
         }
 
@@ -858,12 +897,12 @@ public final class Deflate {
     /**
      * Send a stored block
      *
-     * @param buf         input block
-     * @param stored_len  length of input block
-     * @param eof         true if this is the last block for a file
+     * @param buf        input block
+     * @param stored_len length of input block
+     * @param eof        true if this is the last block for a file
      */
     void _tr_stored_block(int buf, int stored_len, boolean eof) {
-        send_bits((STORED_BLOCK<<1)+(eof?1:0), 3);  // send block type
+        send_bits((STORED_BLOCK << 1) + (eof ? 1 : 0), 3);  // send block type
         copy_block(buf, stored_len, true);          // with header
     }
 
@@ -871,16 +910,16 @@ public final class Deflate {
      * Determine the best encoding for the current block: dynamic trees, static
      * trees or store, and output the encoded block to the zip file.
      *
-     * @param buf         input block, or NULL if too old
-     * @param stored_len  length of input block
-     * @param eof         true if this is the last block for a file
+     * @param buf        input block, or NULL if too old
+     * @param stored_len length of input block
+     * @param eof        true if this is the last block for a file
      */
     void _tr_flush_block(int buf, int stored_len, boolean eof) {
         int opt_lenb, static_lenb;// opt_len and static_len in bytes
         int max_blindex = 0;      // index of last bit length code of non zero freq
 
         // Build the Huffman trees unless a stored block is forced
-        if(level > 0) {
+        if (level > 0) {
 //            // Check if the file is ascii or binary
 //            if(data_type == Z_UNKNOWN) set_data_type();
 
@@ -893,18 +932,18 @@ public final class Deflate {
 
             // Build the bit length tree for the above two trees, and get the index
             // in bl_order of the last bit length code to send.
-            max_blindex=build_bl_tree();
+            max_blindex = build_bl_tree();
 
             // Determine the best encoding. Compute first the block length in bytes
-            opt_lenb=(opt_len+3+7)>>>3;
-            static_lenb=(static_len+3+7)>>>3;
+            opt_lenb = (opt_len + 3 + 7) >>> 3;
+            static_lenb = (static_len + 3 + 7) >>> 3;
 
-            if(static_lenb<=opt_lenb) opt_lenb=static_lenb;
+            if (static_lenb <= opt_lenb) opt_lenb = static_lenb;
         } else {
-            opt_lenb=static_lenb=stored_len+5; // force a stored block
+            opt_lenb = static_lenb = stored_len + 5; // force a stored block
         }
 
-        if (stored_len+4<=opt_lenb && buf != -1) {
+        if (stored_len + 4 <= opt_lenb && buf != -1) {
             // 4: two words for the lengths
             // The test buf != NULL is only necessary if LIT_BUFSIZE > WSIZE.
             // Otherwise we can't have processed more than WSIZE input bytes since
@@ -935,11 +974,11 @@ public final class Deflate {
     /**
      * Construct one Huffman tree and assigns the code bit strings and lengths.
      * Update the total bit length for the current block.
-     *
+     * <p/>
      * IN assertion: the field freq is set for all tree elements.
      * OUT assertions: the fields len and code are set to the optimal bit length
-     *      and corresponding code. The length opt_len is updated; static_len is
-     *      also updated if stree is not null. The field max_code is set.
+     * and corresponding code. The length opt_len is updated; static_len is
+     * also updated if stree is not null. The field max_code is set.
      */
     int build_tree(short[] tree, StaticTree stat_desc) {
         final short[] stree = stat_desc.static_tree;
@@ -955,10 +994,10 @@ public final class Deflate {
         heap_max = HEAP_SIZE;
 
         for (n = 0; n < elems; ++n) {
-            if(tree[n << 1] != 0) {
+            if (tree[n << 1] != 0) {
                 heap[++heap_len] = max_code = n;
                 depth[n] = 0;
-            } else{
+            } else {
                 tree[(n << 1) + 1] = 0;
             }
         }
@@ -989,7 +1028,7 @@ public final class Deflate {
         // frequent nodes.
 
         node = elems;                 // next internal node of the tree
-        do{
+        do {
             // n = node of least frequency
             n = heap[1];
             heap[1] = heap[heap_len--];
@@ -1000,9 +1039,9 @@ public final class Deflate {
             heap[--heap_max] = m;
 
             // Create a new node father of n and m
-            tree[node << 1] = (short)(tree[(n << 1)] + tree[m << 1]);
-            depth[node] = (byte)(Math.max(depth[n], depth[m]) + 1);
-            tree[(n << 1) + 1] = tree[(m << 1) + 1] = (short)node;
+            tree[node << 1] = (short) (tree[(n << 1)] + tree[m << 1]);
+            depth[node] = (byte) (Math.max(depth[n], depth[m]) + 1);
+            tree[(n << 1) + 1] = tree[(m << 1) + 1] = (short) node;
 
             // and insert the new node in the heap
             heap[1] = node++;
@@ -1029,12 +1068,12 @@ public final class Deflate {
      * OUT assertion: the field code is set for all tree elements of non
      * zero code length.
      *
-     * @param tree       the tree to decorate
-     * @param max_code   largest code with non zero frequency
-     * @param bl_count   number of codes at each bit length
+     * @param tree     the tree to decorate
+     * @param max_code largest code with non zero frequency
+     * @param bl_count number of codes at each bit length
      */
     private void gen_codes(short[] tree, int max_code, short[] bl_count) {
-        short[] next_code = new short[MAX_BITS+1]; // next code value for each bit length
+        short[] next_code = new short[MAX_BITS + 1]; // next code value for each bit length
         short code = 0;            // running code value
         int bits;                  // bit index
         int n;                     // code index
@@ -1042,7 +1081,7 @@ public final class Deflate {
         // The distribution counts are first used to generate the code values
         // without bit reversal.
         for (bits = 1; bits <= MAX_BITS; ++bits) {
-            next_code[bits] = code = (short)((code + bl_count[bits - 1]) << 1);
+            next_code[bits] = code = (short) ((code + bl_count[bits - 1]) << 1);
         }
 
         // Check that the bit counts in bl_count are consistent. The last code
@@ -1051,7 +1090,7 @@ public final class Deflate {
         //        "inconsistent bit counts");
         //Tracev((stderr,"\ngen_codes: max_code %d ", max_code));
 
-        for (n = 0;  n <= max_code; ++n) {
+        for (n = 0; n <= max_code; ++n) {
             int len = tree[(n << 1) + 1];
             if (len == 0) continue;
             // Now reverse the bits
@@ -1067,23 +1106,23 @@ public final class Deflate {
      * its bit length
      */
     private short bi_reverse(int code, int len) {
-        code  = ((code & 0x5555) << 1 ) | ((code >> 1) & 0x5555);
-        code  = ((code & 0x3333) << 2 ) | ((code >> 2) & 0x3333);
-        code  = ((code & 0x0F0F) << 4 ) | ((code >> 4) & 0x0F0F);
-        code  = ((code & 0x00FF) << 8 ) | ((code >> 8) & 0x00FF);
-        return (short)(code >>> (16 - len));
+        code = ((code & 0x5555) << 1) | ((code >> 1) & 0x5555);
+        code = ((code & 0x3333) << 2) | ((code >> 2) & 0x3333);
+        code = ((code & 0x0F0F) << 4) | ((code >> 4) & 0x0F0F);
+        code = ((code & 0x00FF) << 8) | ((code >> 8) & 0x00FF);
+        return (short) (code >>> (16 - len));
     }
 
     /**
      * Compute the optimal bit lengths for a tree and update the total bit length
      * for the current block.
-     *
+     * <p/>
      * IN assertion: the fields freq and dad are set, heap[heap_max] and
-     *     above are the tree nodes sorted by increasing frequency.
+     * above are the tree nodes sorted by increasing frequency.
      * OUT assertions: the field len is set to the optimal bit length, the
-     *     array bl_count contains the frequencies for each bit length.
-     *     The length opt_len is updated; static_len is also updated if stree is
-     *     not null.
+     * array bl_count contains the frequencies for each bit length.
+     * The length opt_len is updated; static_len is also updated if stree is
+     * not null.
      */
     void gen_bitlen(short[] tree, int max_code, StaticTree stat_desc) {
         short[] stree = stat_desc.static_tree;
@@ -1108,18 +1147,18 @@ public final class Deflate {
         for (h = heap_max + 1; h < HEAP_SIZE; ++h) {
             n = heap[h];
             bits = tree[(tree[(n << 1) + 1] << 1) + 1] + 1;
-            if (bits > max_length){
+            if (bits > max_length) {
                 bits = max_length;
                 ++overflow;
             }
-            tree[(n << 1) + 1] = (short)bits;
+            tree[(n << 1) + 1] = (short) bits;
             // We overwrite tree[n*2+1] which is no longer needed
 
             if (n > max_code) continue;  // not a leaf node
 
             ++bl_count[bits];
             xbits = 0;
-            if (n >= base) xbits = extra[n-base];
+            if (n >= base) xbits = extra[n - base];
             f = tree[n << 1];
             opt_len += f * (bits + xbits);
             if (null != stree) {
@@ -1136,7 +1175,7 @@ public final class Deflate {
                 --bits;
             }
             --bl_count[bits];      // move one leaf down the tree
-            bl_count[bits+1]+=2;   // move one overflow item as its brother
+            bl_count[bits + 1] += 2;   // move one overflow item as its brother
             --bl_count[max_length];
             // The brother of the overflow item also moves one step up,
             // but this does not affect bl_count[max_length]
@@ -1149,14 +1188,13 @@ public final class Deflate {
                 m = heap[--h];
                 if (m > max_code) continue;
                 if (tree[(m << 1) + 1] != bits) {
-                    opt_len += ((long)bits - (long)tree[(m << 1) + 1])*(long)tree[m << 1];
-                    tree[(m << 1) + 1] = (short)bits;
+                    opt_len += ((long) bits - (long) tree[(m << 1) + 1]) * (long) tree[m << 1];
+                    tree[(m << 1) + 1] = (short) bits;
                 }
                 --n;
             }
         }
     }
-
 
 
     // Fill the window when the lookahead becomes insufficient.
@@ -1172,24 +1210,24 @@ public final class Deflate {
         int p;
         int more;    // Amount of free space at the end of the window.
 
-        do{
-            more = (window_size-lookahead-strstart);
+        do {
+            more = (window_size - lookahead - strstart);
 
             // Deal with !@#$% 64K limit:
-            if(more==0 && strstart==0 && lookahead==0){
+            if (more == 0 && strstart == 0 && lookahead == 0) {
                 more = w_size;
-            } else if(more==-1) {
+            } else if (more == -1) {
                 // Very unlikely, but possible on 16 bit machine if strstart == 0
                 // and lookahead == 1 (input done one byte at time)
                 more--;
 
                 // If the window is almost full and there is insufficient lookahead,
                 // move the upper half to the lower one to make room in the upper half.
-            } else if (strstart >= w_size+ w_size-MIN_LOOKAHEAD) {
+            } else if (strstart >= w_size + w_size - MIN_LOOKAHEAD) {
                 System.arraycopy(window, w_size, window, 0, w_size);
-                match_start-=w_size;
-                strstart-=w_size; // we now have strstart >= MAX_DIST
-                block_start-=w_size;
+                match_start -= w_size;
+                strstart -= w_size; // we now have strstart >= MAX_DIST
+                block_start -= w_size;
 
                 // Slide the hash table (could be avoided with 32 bit values
                 // at the expense of memory usage). We slide even when level == 0
@@ -1198,20 +1236,20 @@ public final class Deflate {
                 // zlib, so we don't care about this pathological case.)
 
                 n = hash_size;
-                p=n;
+                p = n;
                 do {
-                    m = (head[--p]&0xffff);
-                    head[p]=(m>=w_size ? (short)(m-w_size) : 0);
+                    m = (head[--p] & 0xffff);
+                    head[p] = (m >= w_size ? (short) (m - w_size) : 0);
                 } while (--n != 0);
 
                 n = w_size;
                 p = n;
                 do {
-                    m = (prev[--p]&0xffff);
-                    prev[p] = (m >= w_size ? (short)(m-w_size) : 0);
+                    m = (prev[--p] & 0xffff);
+                    prev[p] = (m >= w_size ? (short) (m - w_size) : 0);
                     // If n is not on any hash chain, prev[n] is garbage but
                     // its value will never be used.
-                } while (--n!=0);
+                } while (--n != 0);
                 more += w_size;
             }
 
@@ -1235,9 +1273,9 @@ public final class Deflate {
             lookahead += n;
 
             // Initialize the hash value now that we have some input:
-            if(lookahead >= MIN_MATCH) {
-                ins_h = window[strstart]&0xff;
-                ins_h=(((ins_h)<<hash_shift)^(window[strstart+1]&0xff))&hash_mask;
+            if (lookahead >= MIN_MATCH) {
+                ins_h = window[strstart] & 0xff;
+                ins_h = (((ins_h) << hash_shift) ^ (window[strstart + 1] & 0xff)) & hash_mask;
             }
             // If the whole input has less than MIN_MATCH bytes, ins_h is garbage,
             // but this is not important since only literal bytes will be emitted.
@@ -1271,19 +1309,19 @@ public final class Deflate {
             // Insert the string window[strstart .. strstart+2] in the
             // dictionary, and set hash_head to the head of the hash chain:
             if (lookahead >= MIN_MATCH) {
-                ins_h=(((ins_h)<<hash_shift)^(window[(strstart)+(MIN_MATCH-1)]&0xff))&hash_mask;
+                ins_h = (((ins_h) << hash_shift) ^ (window[(strstart) + (MIN_MATCH - 1)] & 0xff)) & hash_mask;
 
 //	prev[strstart&w_mask]=hash_head=head[ins_h];
-                hash_head=(head[ins_h]&0xffff);
-                prev[strstart&w_mask]=head[ins_h];
-                head[ins_h]=(short)strstart;
+                hash_head = (head[ins_h] & 0xffff);
+                prev[strstart & w_mask] = head[ins_h];
+                head[ins_h] = (short) strstart;
             }
 
             // Find the longest match, discarding those <= prev_length.
             // At this point we have always match_length < MIN_MATCH
 
             if (0L != hash_head &&
-                    ((strstart-hash_head)&0xffff) <= w_size-MIN_LOOKAHEAD
+                    ((strstart - hash_head) & 0xffff) <= w_size - MIN_LOOKAHEAD
                     ) {
                 // To simplify the code, we prevent matches with the string
                 // of window index 0 (in particular we have to avoid a match
@@ -1293,25 +1331,25 @@ public final class Deflate {
                 }
                 // longest_match() sets match_start
             }
-            if (match_length>=MIN_MATCH) {
+            if (match_length >= MIN_MATCH) {
                 //        check_match(strstart, match_start, match_length);
 
-                bflush = _tr_tally(strstart-match_start, match_length-MIN_MATCH);
+                bflush = _tr_tally(strstart - match_start, match_length - MIN_MATCH);
 
                 lookahead -= match_length;
 
                 // Insert new strings in the hash table only if the match length
                 // is not too large. This saves time but degrades compression.
-                if(match_length <= max_lazy_match && lookahead >= MIN_MATCH) {
+                if (match_length <= max_lazy_match && lookahead >= MIN_MATCH) {
                     --match_length; // string at strstart already in hash table
                     do {
                         ++strstart;
 
-                        ins_h=((ins_h<<hash_shift)^(window[(strstart)+(MIN_MATCH-1)]&0xff))&hash_mask;
+                        ins_h = ((ins_h << hash_shift) ^ (window[(strstart) + (MIN_MATCH - 1)] & 0xff)) & hash_mask;
 //	    prev[strstart&w_mask]=hash_head=head[ins_h];
-                        hash_head=(head[ins_h]&0xffff);
-                        prev[strstart&w_mask]=head[ins_h];
-                        head[ins_h]=(short)strstart;
+                        hash_head = (head[ins_h] & 0xffff);
+                        prev[strstart & w_mask] = head[ins_h];
+                        head[ins_h] = (short) strstart;
 
                         // strstart never exceeds WSIZE-MAX_MATCH, so there are
                         // always MIN_MATCH bytes ahead.
@@ -1321,23 +1359,23 @@ public final class Deflate {
                 } else {
                     strstart += match_length;
                     match_length = 0;
-                    ins_h = window[strstart]&0xff;
+                    ins_h = window[strstart] & 0xff;
 
-                    ins_h=(((ins_h)<<hash_shift)^(window[strstart+1]&0xff))&hash_mask;
+                    ins_h = (((ins_h) << hash_shift) ^ (window[strstart + 1] & 0xff)) & hash_mask;
                     // If lookahead < MIN_MATCH, ins_h is garbage, but it does not
                     // matter since it will be recomputed at next deflate call.
                 }
             } else {
                 // No match, output a literal byte
 
-                bflush=_tr_tally(0, window[strstart]&0xff);
+                bflush = _tr_tally(0, window[strstart] & 0xff);
                 --lookahead;
                 ++strstart;
             }
 
             if (bflush) {
                 flush_block_only(false);
-                if(0 == strm.avail_out) {
+                if (0 == strm.avail_out) {
                     return NeedMore;
                 }
             }
@@ -1367,30 +1405,31 @@ public final class Deflate {
 
             if (lookahead < MIN_LOOKAHEAD) {
                 fill_window();
-                if(lookahead < MIN_LOOKAHEAD && flush == Z_NO_FLUSH) {
+                if (lookahead < MIN_LOOKAHEAD && flush == Z_NO_FLUSH) {
                     return NeedMore;
                 }
-                if(lookahead == 0) break; // flush the current block
+                if (lookahead == 0) break; // flush the current block
             }
 
             // Insert the string window[strstart .. strstart+2] in the
             // dictionary, and set hash_head to the head of the hash chain:
 
             if (lookahead >= MIN_MATCH) {
-                ins_h=(((ins_h)<<hash_shift)^(window[(strstart)+(MIN_MATCH-1)]&0xff)) & hash_mask;
+                ins_h = (((ins_h) << hash_shift) ^ (window[(strstart) + (MIN_MATCH - 1)] & 0xff)) & hash_mask;
 //	prev[strstart&w_mask]=hash_head=head[ins_h];
-                hash_head=(head[ins_h]&0xffff);
-                prev[strstart&w_mask]=head[ins_h];
-                head[ins_h]=(short)strstart;
+                hash_head = (head[ins_h] & 0xffff);
+                prev[strstart & w_mask] = head[ins_h];
+                head[ins_h] = (short) strstart;
             }
 
             // Find the longest match, discarding those <= prev_length.
-            prev_length = match_length; prev_match = match_start;
-            match_length = MIN_MATCH-1;
+            prev_length = match_length;
+            prev_match = match_start;
+            match_length = MIN_MATCH - 1;
 
             if (hash_head != 0 && prev_length < max_lazy_match &&
-                    ((strstart-hash_head)&0xffff) <= w_size-MIN_LOOKAHEAD
-                    ){
+                    ((strstart - hash_head) & 0xffff) <= w_size - MIN_LOOKAHEAD
+                    ) {
                 // To simplify the code, we prevent matches with the string
                 // of window index 0 (in particular we have to avoid a match
                 // of the string with itself at the start of the input file).
@@ -1402,11 +1441,11 @@ public final class Deflate {
 
                 if (match_length <= 5 && (strategy == Z_FILTERED ||
                         (match_length == MIN_MATCH &&
-                        strstart - match_start > 4096))) {
+                                strstart - match_start > 4096))) {
 
                     // If prev_match is also MIN_MATCH, match_start is garbage
                     // but we will ignore the current match anyway.
-                    match_length = MIN_MATCH-1;
+                    match_length = MIN_MATCH - 1;
                 }
             }
 
@@ -1418,30 +1457,30 @@ public final class Deflate {
 
                 //          check_match(strstart-1, prev_match, prev_length);
 
-                bflush=_tr_tally(strstart-1-prev_match, prev_length - MIN_MATCH);
+                bflush = _tr_tally(strstart - 1 - prev_match, prev_length - MIN_MATCH);
 
                 // Insert in hash table all strings up to the end of the match.
                 // strstart-1 and strstart are already inserted. If there is not
                 // enough lookahead, the last two strings are not inserted in
                 // the hash table.
-                lookahead -= prev_length-1;
+                lookahead -= prev_length - 1;
                 prev_length -= 2;
                 do {
                     if (++strstart <= max_insert) {
-                        ins_h=(((ins_h)<<hash_shift)^(window[(strstart)+(MIN_MATCH-1)]&0xff))&hash_mask;
+                        ins_h = (((ins_h) << hash_shift) ^ (window[(strstart) + (MIN_MATCH - 1)] & 0xff)) & hash_mask;
                         //prev[strstart&w_mask]=hash_head=head[ins_h];
-                        hash_head=(head[ins_h]&0xffff);
-                        prev[strstart&w_mask]=head[ins_h];
-                        head[ins_h]=(short)strstart;
+                        hash_head = (head[ins_h] & 0xffff);
+                        prev[strstart & w_mask] = head[ins_h];
+                        head[ins_h] = (short) strstart;
                     }
                 } while (--prev_length != 0);
                 match_available = 0;
-                match_length = MIN_MATCH-1;
+                match_length = MIN_MATCH - 1;
                 ++strstart;
 
                 if (bflush) {
                     flush_block_only(false);
-                    if(0 == strm.avail_out) {
+                    if (0 == strm.avail_out) {
                         return NeedMore;
                     }
                 }
@@ -1451,14 +1490,14 @@ public final class Deflate {
                 // single literal. If there was a match but the current match
                 // is longer, truncate the previous match to a single literal.
 
-                bflush=_tr_tally(0, window[strstart-1]&0xff);
+                bflush = _tr_tally(0, window[strstart - 1] & 0xff);
 
                 if (bflush) {
                     flush_block_only(false);
                 }
                 ++strstart;
                 --lookahead;
-                if(0 == strm.avail_out) {
+                if (0 == strm.avail_out) {
                     return NeedMore;
                 }
 
@@ -1472,13 +1511,13 @@ public final class Deflate {
             }
         }
 
-        if(0 != match_available) {
-            bflush = _tr_tally(0, window[strstart-1]&0xff);
+        if (0 != match_available) {
+            bflush = _tr_tally(0, window[strstart - 1] & 0xff);
             match_available = 0;
         }
 
         flush_block_only(Z_FINISH == flush);
-        if(0 == strm.avail_out) {
+        if (0 == strm.avail_out) {
             return (Z_FINISH == flush) ? FinishStarted : NeedMore;
         }
 
@@ -1491,8 +1530,8 @@ public final class Deflate {
         int match;                           // matched string
         int len;                             // length of current match
         int best_len = prev_length;          // best match length so far
-        int limit = strstart>(w_size-MIN_LOOKAHEAD) ?
-            strstart-(w_size-MIN_LOOKAHEAD) : 0;
+        int limit = strstart > (w_size - MIN_LOOKAHEAD) ?
+                strstart - (w_size - MIN_LOOKAHEAD) : 0;
         int niceMatch = this.nice_match;
 
         // Stop when cur_match becomes <= limit. To simplify the code,
@@ -1501,8 +1540,8 @@ public final class Deflate {
         int wmask = w_mask;
 
         int strend = strstart + MAX_MATCH;
-        byte scan_end1 = window[scan+best_len-1];
-        byte scan_end = window[scan+best_len];
+        byte scan_end1 = window[scan + best_len - 1];
+        byte scan_end = window[scan + best_len];
 
         // The code is optimized for HASH_BITS >= 8 and MAX_MATCH-2 multiple of 16.
         // It is easy to get rid of this optimization if necessary.
@@ -1521,17 +1560,18 @@ public final class Deflate {
 
             // Skip to next match if the match length cannot increase
             // or if the match length is less than 2:
-            if (window[match+best_len]   != scan_end  ||
-                    window[match+best_len-1] != scan_end1 ||
-                    window[match]       != window[scan]     ||
-                    window[++match]     != window[scan+1])      continue;
+            if (window[match + best_len] != scan_end ||
+                    window[match + best_len - 1] != scan_end1 ||
+                    window[match] != window[scan] ||
+                    window[++match] != window[scan + 1]) continue;
 
             // The check at best_len-1 can be removed because it will be made
             // again later. (This heuristic is not always a win.)
             // It is not necessary to compare scan[2] and match[2] since they
             // are always equal when the other bytes match, given that
             // the hash keys are equal and that HASH_BITS >= 8.
-            scan += 2; ++match;
+            scan += 2;
+            ++match;
 
             // We check for insufficient lookahead only every 8th comparison;
             // the 256th check will be made at strstart+258.
@@ -1546,18 +1586,18 @@ public final class Deflate {
                     window[++scan] == window[++match] &&
                     scan < strend);
 
-            len = MAX_MATCH - (int)(strend - scan);
+            len = MAX_MATCH - (int) (strend - scan);
             scan = strend - MAX_MATCH;
 
-            if(len>best_len) {
+            if (len > best_len) {
                 match_start = cur_match;
                 best_len = len;
                 if (len >= niceMatch) break;
-                scan_end1  = window[scan+best_len-1];
-                scan_end   = window[scan+best_len];
+                scan_end1 = window[scan + best_len - 1];
+                scan_end = window[scan + best_len];
             }
 
-        } while ((cur_match = (prev[cur_match & wmask]&0xffff)) > limit
+        } while ((cur_match = (prev[cur_match & wmask] & 0xffff)) > limit
                 && --chain_length != 0);
 
         if (best_len <= lookahead) return best_len;
@@ -1568,8 +1608,9 @@ public final class Deflate {
         return deflateInit2(level, Z_DEFLATED, bits, DEF_MEM_LEVEL,
                 Z_DEFAULT_STRATEGY);
     }
-    private int deflateInit2(int level, int method,  int windowBits,
-            int memLevel, int strategy) {
+
+    private int deflateInit2(int level, int method, int windowBits,
+                             int memLevel, int strategy) {
         int noHeader = 0;
 
         if (level == Z_DEFAULT_COMPRESSION) {
@@ -1628,10 +1669,10 @@ public final class Deflate {
         pending = 0;
         pending_out = 0;
 
-        if(noheader < 0) {
+        if (noheader < 0) {
             noheader = 0; // was set to -1 by deflate(..., Z_FINISH);
         }
-        status = (noheader!=0) ? BUSY_STATE : INIT_STATE;
+        status = (noheader != 0) ? BUSY_STATE : INIT_STATE;
         adlerHash = Adler32.adler32(0, null, 0, 0);
 
         last_flush = Z_NO_FLUSH;
@@ -1642,14 +1683,14 @@ public final class Deflate {
     }
 
     int deflateEnd() {
-        if(status!=INIT_STATE && status!=BUSY_STATE && status!=FINISH_STATE){
+        if (status != INIT_STATE && status != BUSY_STATE && status != FINISH_STATE) {
             return Z_STREAM_ERROR;
         }
         // Deallocate in reverse order of allocations:
-        pending_buf=null;
-        head=null;
-        prev=null;
-        window=null;
+        pending_buf = null;
+        head = null;
+        prev = null;
+        window = null;
         // free
         // dstate=null;
         return status == BUSY_STATE ? Z_DATA_ERROR : Z_OK;
@@ -1669,7 +1710,7 @@ public final class Deflate {
             ZStream.setDeflateMsg(Z_STREAM_ERROR);
             return Z_STREAM_ERROR;
         }
-        if (0 ==strm.avail_out) {
+        if (0 == strm.avail_out) {
             ZStream.setDeflateMsg(Z_BUF_ERROR);
             return Z_BUF_ERROR;
         }
@@ -1678,31 +1719,31 @@ public final class Deflate {
         last_flush = flush;
 
         // Write the zlib header
-        if(status == INIT_STATE) {
+        if (status == INIT_STATE) {
             int header = (Z_DEFLATED + ((w_bits - 8) << 4)) << 8;
             int level_flags = ((level - 1) & 0xff) >> 1;
 
-            if(level_flags>3) level_flags=3;
-            header |= (level_flags<<6);
-            if(strstart!=0) header |= PRESET_DICT;
-            header+=31-(header % 31);
+            if (level_flags > 3) level_flags = 3;
+            header |= (level_flags << 6);
+            if (strstart != 0) header |= PRESET_DICT;
+            header += 31 - (header % 31);
 
-            status=BUSY_STATE;
+            status = BUSY_STATE;
             putShortMSB(header);
 
 
             // Save the adler32 of the preset dictionary:
-            if(0 != strstart) {
-                putShortMSB((int)(adlerHash >>> 16));
-                putShortMSB((int)(adlerHash & 0xffff));
+            if (0 != strstart) {
+                putShortMSB((int) (adlerHash >>> 16));
+                putShortMSB((int) (adlerHash & 0xffff));
             }
             adlerHash = Adler32.adler32(0, null, 0, 0);
         }
 
         // Flush as much pending output as possible
-        if(pending != 0) {
+        if (pending != 0) {
             flush_pending();
-            if(strm.avail_out == 0) {
+            if (strm.avail_out == 0) {
                 //System.out.println("  avail_out==0");
                 // Since avail_out is 0, deflate will be called again with
                 // more output space, but possibly with both pending and
@@ -1749,7 +1790,7 @@ public final class Deflate {
                 status = FINISH_STATE;
             }
             if (NeedMore == bstate || FinishStarted == bstate) {
-                if(strm.avail_out == 0) {
+                if (strm.avail_out == 0) {
                     last_flush = -1; // avoid BUF_ERROR next call, see above
                 }
                 return Z_OK;
@@ -1768,26 +1809,26 @@ public final class Deflate {
                     _tr_stored_block(0, 0, false);
                     // For a full flush, this empty block will be recognized
                     // as a special marker by inflate_sync().
-                    if(flush == Z_FULL_FLUSH) {
+                    if (flush == Z_FULL_FLUSH) {
                         //state.head[s.hash_size-1]=0;
-                        for(int i=0; i<hash_size/*-1*/; i++)  // forget history
-                            head[i]=0;
+                        for (int i = 0; i < hash_size/*-1*/; i++)  // forget history
+                            head[i] = 0;
                     }
                 }
                 flush_pending();
-                if(0 == strm.avail_out) {
+                if (0 == strm.avail_out) {
                     last_flush = -1; // avoid BUF_ERROR at next call, see above
                     return Z_OK;
                 }
             }
         }
 
-        if(Z_FINISH != flush) return Z_OK;
-        if(0 != noheader) return Z_STREAM_END;
+        if (Z_FINISH != flush) return Z_OK;
+        if (0 != noheader) return Z_STREAM_END;
 
         // Write the zlib trailer (adler32)
-        putShortMSB((int)(adlerHash>>>16));
-        putShortMSB((int)(adlerHash&0xffff));
+        putShortMSB((int) (adlerHash >>> 16));
+        putShortMSB((int) (adlerHash & 0xffff));
         flush_pending();
 
         // If avail_out is zero, the application will call deflate again

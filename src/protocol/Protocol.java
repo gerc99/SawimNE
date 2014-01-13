@@ -1,7 +1,6 @@
 package protocol;
 
 import DrawControls.icons.Icon;
-import android.util.Log;
 import protocol.xmpp.XmppContact;
 import ru.sawim.General;
 import ru.sawim.R;
@@ -180,33 +179,20 @@ abstract public class Protocol {
         }
         ChatHistory.instance.restoreContactsWithChat(this);
         synchronized (rosterLockObject) {
-            //sortedContacts = new Vector();
             for (int i = 0; i < roster.getContactItems().size(); ++i) {
                 oldRoster.getContactItems().addElement(roster.getContactItems().elementAt(i));
             }
-            //sortedGroups = new Vector();
             for (int i = 0; i < roster.getGroupItems().size(); ++i) {
-                Group g = (Group) roster.getGroupItems().elementAt(i);
+                Group g = roster.getGroupItems().elementAt(i);
                 updateContacts(g);
                 oldRoster.getGroupItems().addElement(g);
             }
-            //oldRoster.getContactItems().removeAllElements();
-            //addAll(oldRoster.getContactItems(), getContactItems());
-            //Util.sort(oldRoster.getContactItems());
-            //Util.sort(oldRoster.getGroupItems());
             updateContacts(notInListGroup);
         }
         if (RosterHelper.getInstance().getProtocolCount() == 0) return;
         RosterHelper.getInstance().updateRoster();
         if (needSave)
             needSave();
-    }
-    public static void addAll(Vector to, Vector all) {
-        synchronized (to) {
-            for (int i = 0; i < all.size(); ++i) {
-                to.addElement(all.elementAt(i));
-            }
-        }
     }
 
     public final void setContactListAddition(Group group) {

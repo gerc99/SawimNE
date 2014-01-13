@@ -1,7 +1,6 @@
 package sawim.modules.tracking;
 
 import DrawControls.icons.Icon;
-import DrawControls.icons.ImageList;
 import android.graphics.drawable.Drawable;
 import ru.sawim.General;
 import ru.sawim.R;

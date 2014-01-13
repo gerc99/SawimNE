@@ -42,9 +42,12 @@ import protocol.Contact;
 import protocol.Protocol;
 import protocol.StatusInfo;
 import protocol.icq.Icq;
-import protocol.xmpp.Xmpp;
 import protocol.mrim.Mrim;
-import ru.sawim.*;
+import protocol.xmpp.Xmpp;
+import ru.sawim.General;
+import ru.sawim.R;
+import ru.sawim.SawimApplication;
+import ru.sawim.Scheme;
 import ru.sawim.view.*;
 import ru.sawim.view.preference.PreferenceFormView;
 import sawim.ExternalApi;
@@ -274,6 +277,7 @@ public class SawimActivity extends ActionBarActivity {
     }
 
     int oldOrientation;
+
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);

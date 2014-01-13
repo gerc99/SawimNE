@@ -263,14 +263,14 @@ public final class Xmpp extends Protocol implements FormListener {
         }
     }
 
-    void setConfContactStatus(XmppServiceContact conf, String resource, byte status, String statusText, int role, int priorityA) {
-        conf.__setStatus(resource, role, priorityA, status, statusText);
+    void setConfContactStatus(XmppServiceContact conf, String resource, byte status, String statusText, int role, int priorityA, String roleText) {
+        conf.__setStatus(resource, role, priorityA, status, statusText, roleText);
         if (RosterHelper.getInstance().getUpdateChatListener() != null)
             RosterHelper.getInstance().getUpdateChatListener().updateMucList();
     }
 
     void setContactStatus(XmppContact c, String resource, byte status, String text, int priority) {
-        c.__setStatus(resource, priority, 0, status, text);
+        c.__setStatus(resource, priority, 0, status, text, null);
     }
 
     protected final void s_addedContact(Contact contact) {
@@ -727,6 +727,9 @@ public final class Xmpp extends Protocol implements FormListener {
                 String jid = contact.getUserId();
                 if (!(contact instanceof XmppServiceContact)) {
                     jid += '/' + ((XmppContact) contact).getCurrentSubContact().resource;
+                }
+                if (contact instanceof XmppServiceContact) {
+                    statusView.setUserRole(((XmppServiceContact) contact).getCurrentSubContact().roleText);
                 }
                 getConnection().requestClientVersion(jid);
             }

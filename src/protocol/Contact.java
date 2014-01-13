@@ -17,7 +17,6 @@ import sawim.util.JLocale;
 
 
 abstract public class Contact extends TreeNode {
-    public static final ImageList authIcon = ImageList.createImageList("/auth.png");
     public static final ImageList serverListsIcons = ImageList.createImageList("/serverlists.png");
 
     protected String userId;
@@ -302,7 +301,7 @@ abstract public class Contact extends TreeNode {
             }
             //switch (General.sortType) {
             //    case RosterHelper.SORT_BY_STATUS:
-                    return 20 + StatusInfo.getWidth(getStatusIndex());
+            return 20 + StatusInfo.getWidth(getStatusIndex());
             //    case RosterHelper.SORT_BY_ONLINE:
             //        return 20;
             //}

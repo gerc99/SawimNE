@@ -49,13 +49,14 @@ public class RosterItemView extends View {
         super(context);
         int padding = Util.dipToPixels(context, 15);
         setPadding(padding, padding, padding, padding);
+    }
+
+    public static void initTextPaint() {
         if (textPaint == null) {
             textPaint = new TextPaint();
             paintDivider = new Paint(Paint.ANTI_ALIAS_FLAG);
-            textPaint.setAntiAlias(true);
-            textPaint.setTextSize(General.getFontSize());
-            textPaint.setColor(Scheme.getColor(Scheme.THEME_TEXT));
         }
+        textPaint.setAntiAlias(true);
     }
 
     public void addLayer(String text) {
@@ -75,29 +76,31 @@ public class RosterItemView extends View {
     }
 
     public void repaint() {
+        initTextPaint();
+        setTextSize(General.getFontSize());
         requestLayout();
         invalidate();
     }
 
     private void setTextSize(int size) {
-        textPaint.setTextSize(TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_SP, size, General.getResources(getContext()).getDisplayMetrics()));
+        textPaint.setTextSize(size * General.getResources(getContext()).getDisplayMetrics().scaledDensity);
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        int ascent = (int) textPaint.ascent();
+        int descent = (int) textPaint.descent();
         int width = MeasureSpec.getSize(widthMeasureSpec);
-        int height = measureHeight(heightMeasureSpec);
+        int height = measureHeight(ascent, descent, heightMeasureSpec);
+        computeCoordinates(ascent, descent, width, height);
         setMeasuredDimension(width, height);
     }
 
-    private int measureHeight(int measureSpec) {
+    private int measureHeight(int ascent, int descent, int measureSpec) {
         int result = 0;
         int specMode = MeasureSpec.getMode(measureSpec);
         int specSize = MeasureSpec.getSize(measureSpec);
 
-        int ascent = (int) textPaint.ascent();
-        int descent = (int) textPaint.descent();
         int bottomPadding = getPaddingBottom();
         int topPadding = getPaddingTop();
         if (itemName != null && itemDesc != null) {
@@ -119,21 +122,12 @@ public class RosterItemView extends View {
         return result;
     }
 
-    @Override
-    protected void onLayout(boolean changed, int left, int top, int right,
-                            int bottom) {
-        super.onLayout(changed, left, top, right, bottom);
-        computeCoordinates(right - left, bottom - top);
-    }
-
-    private void computeCoordinates(int viewWidth, int viewHeight) {
+    private void computeCoordinates(int ascent, int descent, int viewWidth, int viewHeight) {
         int leftPadding = getPaddingLeft() >> 1;
         int rightPadding = getPaddingRight() >> 1;
         int bottomPadding = getPaddingBottom();
         int topPadding = getPaddingTop();
         int y = viewHeight >> 1;
-        int ascent = (int) textPaint.ascent();
-        int descent = (int) textPaint.descent();
         textX = leftPadding;
         if (itemDesc != null) {
             lineOneY = topPadding - ascent;

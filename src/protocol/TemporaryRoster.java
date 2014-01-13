@@ -1,7 +1,7 @@
 package protocol;
 
-import protocol.xmpp.XmppServiceContact;
 import protocol.mrim.MrimPhoneContact;
+import protocol.xmpp.XmppServiceContact;
 
 import java.util.Vector;
 

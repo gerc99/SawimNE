@@ -2,10 +2,10 @@ package sawim.chat;
 
 import protocol.Contact;
 import protocol.Protocol;
+import protocol.xmpp.Jid;
 import protocol.xmpp.Xmpp;
 import protocol.xmpp.XmppContact;
 import protocol.xmpp.XmppServiceContact;
-import protocol.xmpp.Jid;
 import ru.sawim.General;
 import sawim.Options;
 import sawim.chat.message.Message;

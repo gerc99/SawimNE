@@ -37,7 +37,7 @@ package com.jcraft.jzlib;
 // #sijapp cond.if modules_ZLIB is "true" #
 final class InfTree {
 
-    static final private int MANY=1440;
+    static final private int MANY = 1440;
 
     public static final int fixed_bl = 9;
     public static final int fixed_bd = 5;
@@ -47,26 +47,26 @@ final class InfTree {
 
     // Tables for deflate from PKZIP's appnote.txt.
     static final int[] cplens = { // Copy lengths for literal codes 257..285
-        3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 15, 17, 19, 23, 27, 31,
-        35, 43, 51, 59, 67, 83, 99, 115, 131, 163, 195, 227, 258, 0, 0
+            3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 15, 17, 19, 23, 27, 31,
+            35, 43, 51, 59, 67, 83, 99, 115, 131, 163, 195, 227, 258, 0, 0
     };
 
     // see note #13 above about 258
     static final int[] cplext = { // Extra bits for literal codes 257..285
-        0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2,
-        3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 0, 112, 112  // 112==invalid
+            0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2,
+            3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 0, 112, 112  // 112==invalid
     };
 
     static final int[] cpdist = { // Copy offsets for distance codes 0..29
-        1, 2, 3, 4, 5, 7, 9, 13, 17, 25, 33, 49, 65, 97, 129, 193,
-        257, 385, 513, 769, 1025, 1537, 2049, 3073, 4097, 6145,
-        8193, 12289, 16385, 24577
+            1, 2, 3, 4, 5, 7, 9, 13, 17, 25, 33, 49, 65, 97, 129, 193,
+            257, 385, 513, 769, 1025, 1537, 2049, 3073, 4097, 6145,
+            8193, 12289, 16385, 24577
     };
 
     static final int[] cpdext = { // Extra bits for distance codes
-        0, 0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6,
-        7, 7, 8, 8, 9, 9, 10, 10, 11, 11,
-        12, 12, 13, 13};
+            0, 0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6,
+            7, 7, 8, 8, 9, 9, 10, 10, 11, 11,
+            12, 12, 13, 13};
 
     // If BMAX needs to be larger than 16, then h and x[] should be uLong.
     static final int BMAX = 15;         // maximum bit length of any code
@@ -79,17 +79,17 @@ final class InfTree {
     int[] x = null;   // bit offsets, then code stack
 
     private void huft_build(int[] b, // code lengths in bits (all assumed <= BMAX)
-            int bindex,
-            int n,   // number of codes (assumed <= 288)
-            int s,   // number of simple-valued codes (0..s-1)
-            int[] d, // list of base values for non-simple codes
-            int[] e, // list of extra bits for non-simple codes
-            int[] t, // result: starting table
-            int[] m, // maximum lookup bits, returns actual
-            int[] hp,// space for trees
-            int[] hn,// hufts used in space
-            int[] v  // working area: values in order of bit length
-            ) throws ZError {
+                            int bindex,
+                            int n,   // number of codes (assumed <= 288)
+                            int s,   // number of simple-valued codes (0..s-1)
+                            int[] d, // list of base values for non-simple codes
+                            int[] e, // list of extra bits for non-simple codes
+                            int[] t, // result: starting table
+                            int[] m, // maximum lookup bits, returns actual
+                            int[] hp,// space for trees
+                            int[] hn,// hufts used in space
+                            int[] v  // working area: values in order of bit length
+    ) throws ZError {
         // Given a list of code lengths and a maximum table size, make a set of
         // tables to decode that set of codes.  Return Z_OK on success, Z_BUF_ERROR
         // if the given code set is incomplete (the tables are still built in this
@@ -114,9 +114,12 @@ final class InfTree {
 
         // Generate counts for each bit length
 
-        p = 0; i = n;
+        p = 0;
+        i = n;
         do {
-            c[b[bindex + p]]++; p++; i--;   // assume all entries <= BMAX
+            c[b[bindex + p]]++;
+            p++;
+            i--;   // assume all entries <= BMAX
         } while (0 != i);
 
         if (c[0] == n) {                // null input--all zero length codes
@@ -144,7 +147,7 @@ final class InfTree {
         m[0] = l;
 
         // Adjust last length count to fill out codes, if needed
-        for (y = 1 << j; j < i; j++, y <<= 1){
+        for (y = 1 << j; j < i; j++, y <<= 1) {
             if ((y -= c[j]) < 0) {
                 throw new ZError(ZError.Z_DATA_ERROR);
             }
@@ -156,17 +159,19 @@ final class InfTree {
 
         // Generate starting offsets into the value table for each length
         x[1] = j = 0;
-        p = 1;  xp = 2;
-        while (--i!=0) {                 // note that i == g from above
+        p = 1;
+        xp = 2;
+        while (--i != 0) {                 // note that i == g from above
             x[xp] = (j += c[p]);
             xp++;
             p++;
         }
 
         // Make a table of values in order of bit lengths
-        i = 0; p = 0;
+        i = 0;
+        p = 0;
         do {
-            if ((j = b[bindex+p]) != 0) {
+            if ((j = b[bindex + p]) != 0) {
                 v[x[j]++] = i;
             }
             p++;
@@ -185,7 +190,7 @@ final class InfTree {
         // go through the bit lengths (k already is bits in shortest code)
         for (; k <= g; k++) {
             a = c[k];
-            while (a--!=0) {
+            while (a-- != 0) {
                 // here i is the Huffman code of length k bits for value *p
                 // make tables up to required level
                 while (k > w + l) {
@@ -194,7 +199,7 @@ final class InfTree {
                     // compute minimum size table less than or equal to l bits
                     z = g - w;
                     z = (z > l) ? l : z;        // table size upper limit
-                    if ((f=1<<(j=k-w))>a+1) {     // try a k-w bit table
+                    if ((f = 1 << (j = k - w)) > a + 1) {     // try a k-w bit table
                         // too few codes for k-w bit table
                         f -= a + 1;               // deduct codes from patterns left
                         xp = k;
@@ -216,28 +221,28 @@ final class InfTree {
                     hn[0] += z;
 
                     // connect to last table, if there is one
-                    if(h!=0) {
-                        x[h]=i;           // save pattern for backing up
-                        r[0]=(byte)j;     // bits in this table
-                        r[1]=(byte)l;     // bits to dump before this table
-                        j=i>>>(w - l);
-                        r[2] = (int)(q - u[h-1] - j);               // offset to this table
-                        System.arraycopy(r, 0, hp, (u[h-1]+j)*3, 3); // connect to last table
+                    if (h != 0) {
+                        x[h] = i;           // save pattern for backing up
+                        r[0] = (byte) j;     // bits in this table
+                        r[1] = (byte) l;     // bits to dump before this table
+                        j = i >>> (w - l);
+                        r[2] = (int) (q - u[h - 1] - j);               // offset to this table
+                        System.arraycopy(r, 0, hp, (u[h - 1] + j) * 3, 3); // connect to last table
                     } else {
                         t[0] = q;               // first table is returned result
                     }
                 }
 
                 // set up table entry in r
-                r[1] = (byte)(k - w);
-                if (p >= n){
+                r[1] = (byte) (k - w);
+                if (p >= n) {
                     r[0] = 128 + 64;      // out of values--invalid code
                 } else if (v[p] < s) {
-                    r[0] = (byte)(v[p] < 256 ? 0 : 32 + 64);  // 256 is end-of-block
+                    r[0] = (byte) (v[p] < 256 ? 0 : 32 + 64);  // 256 is end-of-block
                     r[2] = v[p++];          // simple code is just the value
                 } else {
-                    r[0]=(byte)(e[v[p]-s]+16+64); // non-simple--look up in lists
-                    r[2]=d[v[p++] - s];
+                    r[0] = (byte) (e[v[p] - s] + 16 + 64); // non-simple--look up in lists
+                    r[2] = d[v[p++] - s];
                 }
 
                 // fill code-like entries with r
@@ -247,7 +252,7 @@ final class InfTree {
                 }
 
                 // backwards increment the k-bit code i
-                for (j = 1 << (k - 1); (i & j)!=0; j >>>= 1) {
+                for (j = 1 << (k - 1); (i & j) != 0; j >>>= 1) {
                     i ^= j;
                 }
                 i ^= j;
@@ -270,11 +275,10 @@ final class InfTree {
 
 
     /**
-     *
-     * @param c   19 code lengths
-     * @param bb  bits tree desired/actual depth
-     * @param tb  bits tree result
-     * @param hp  space for trees
+     * @param c  19 code lengths
+     * @param bb bits tree desired/actual depth
+     * @param tb bits tree result
+     * @param hp space for trees
      */
     void inflate_trees_bits(int[] c, int[] bb, int[] tb, int[] hp) throws ZError {
         initWorkArea(19);
@@ -287,14 +291,14 @@ final class InfTree {
     }
 
     void inflate_trees_dynamic(int nl,   // number of literal/length codes
-            int nd,   // number of distance codes
-            int[] c,  // that many (total) code lengths
-            int[] bl, // literal desired/actual bit depth
-            int[] bd, // distance desired/actual bit depth
-            int[] tl, // literal/length tree result
-            int[] td, // distance tree result
-            int[] hp // space for trees
-            ) throws ZError {
+                               int nd,   // number of distance codes
+                               int[] c,  // that many (total) code lengths
+                               int[] bl, // literal desired/actual bit depth
+                               int[] bd, // distance desired/actual bit depth
+                               int[] tl, // literal/length tree result
+                               int[] td, // distance tree result
+                               int[] hp // space for trees
+    ) throws ZError {
 
         // build literal/length tree
         initWorkArea(288);
@@ -328,14 +332,20 @@ final class InfTree {
             if (v.length < vsize) {
                 v = new int[vsize];
             } else {
-                for (int i = 0; i < vsize; ++i) {v[i] = 0;}
+                for (int i = 0; i < vsize; ++i) {
+                    v[i] = 0;
+                }
             }
-            for (int i = 0; i < BMAX + 1; ++i) {c[i] = 0;}
-            for (int i = 0; i < 3; ++i) {r[i] = 0;}
+            for (int i = 0; i < BMAX + 1; ++i) {
+                c[i] = 0;
+            }
+            for (int i = 0; i < 3; ++i) {
+                r[i] = 0;
+            }
             //for (int i = 0; i < BMAX; ++i) {u[i] = 0;}
             System.arraycopy(c, 0, u, 0, BMAX);
             //for (int i = 0; i < BMAX + 1; ++i) {x[i] = 0;}
-            System.arraycopy(c, 0, x, 0, BMAX+1);
+            System.arraycopy(c, 0, x, 0, BMAX + 1);
         }
     }
 }

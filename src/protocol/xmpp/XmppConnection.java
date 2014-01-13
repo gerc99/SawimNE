@@ -162,6 +162,7 @@ public final class XmppConnection extends ClientConnection {
         readXmlNode(true);
         parseAuth(readXmlNode(true));
     }
+
     private void setStreamTls() throws SawimException {
         setProgress(15);
         socket.startTls(domain_);
@@ -1215,13 +1216,13 @@ public final class XmppConnection extends ClientConnection {
                 }
             }
             getXmpp().setConfContactStatus(conf, fromRes,
-                    nativeStatus2StatusIndex(type), statusString, priority, priorityA);
+                    nativeStatus2StatusIndex(type), statusString, priority, priorityA, rangVoice + "/" + roleVoice);
             if (null != item) {
                 String newNick = item.getAttribute(XmlNode.S_NICK);
                 String realJid = item.getAttribute(XmlNode.S_JID);
                 if (null != newNick) {
                     getXmpp().setConfContactStatus(conf, newNick,
-                            nativeStatus2StatusIndex(""), "", priority, priorityA);
+                            nativeStatus2StatusIndex(""), "", priority, priorityA, rangVoice + "/" + roleVoice);
                     conf.nickChainged(getXmpp(), fromRes, newNick);
                 } else {
                     StringBuffer s = new StringBuffer(0);
@@ -1232,8 +1233,7 @@ public final class XmppConnection extends ClientConnection {
                     if (null != realJid) {
                         s.append(Jid.getBareJid(realJid)).append(" ");
                     }
-                    conf.nickOnline(getXmpp(), fromRes, rangVoice, roleVoice, s.toString());
-                    s = null;
+                    conf.nickOnline(getXmpp(), fromRes, s.toString());
                 }
                 if (null != realJid) {
                     conf.setRealJid(fromRes, Jid.getBareJid(realJid));
@@ -1709,7 +1709,7 @@ public final class XmppConnection extends ClientConnection {
             return;
         }
 
-		x2 = x.getFirstNode("starttls");
+        x2 = x.getFirstNode("starttls");
         if (null != x2) {
             DebugLog.println("starttls");
             sendRequest("<starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls'/>");

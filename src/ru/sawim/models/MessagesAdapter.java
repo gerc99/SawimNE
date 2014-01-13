@@ -1,6 +1,7 @@
 package ru.sawim.models;
 
 import android.graphics.Typeface;
+import android.text.SpannableStringBuilder;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -9,7 +10,7 @@ import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.SawimResources;
 import ru.sawim.Scheme;
-import ru.sawim.text.TextLinkClickListener;
+import ru.sawim.text.TextLinkClick;
 import ru.sawim.widget.chat.MessageItemView;
 import sawim.chat.Chat;
 import sawim.chat.MessData;
@@ -88,7 +89,8 @@ public class MessagesAdapter extends BaseAdapter {
         boolean incoming = mData.isIncoming();
 
         item.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
-        item.msgText.setOnTextLinkClickListener(new TextLinkClickListener(currentProtocol, currentContact));
+        item.msgText.setOnTextLinkClickListener(new TextLinkClick(currentProtocol, currentContact));
+        item.msgText.setLinkTextColor(0xff35B6E5);
         item.msgText.setTypeface(Typeface.DEFAULT);
         item.setBackgroundColor(0);
         if (mData.isMarked() && isMultiQuote) {
@@ -98,10 +100,14 @@ public class MessagesAdapter extends BaseAdapter {
         if (mData.isMe() || mData.isPresence()) {
             item.msgText.setTextSize(General.getFontSize() - 2);
             if (mData.isMe()) {
-                item.msgText.setText("* " + nick + " " + parsedText);
+                SpannableStringBuilder text = new SpannableStringBuilder();
+                text.append("* ").append(nick).append(" ").append(parsedText);
+                item.msgText.setText(text);
                 item.msgText.setTextColor(Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG));
             } else {
-                item.msgText.setText(mData.strTime + " " + nick + parsedText);
+                SpannableStringBuilder text = new SpannableStringBuilder();
+                text.append(mData.strTime).append(" ").append(nick).append(parsedText);
+                item.msgText.setText(text);
                 item.msgText.setTextColor(Scheme.getColor(Scheme.THEME_CHAT_INMSG));
             }
         } else {
@@ -110,9 +116,9 @@ public class MessagesAdapter extends BaseAdapter {
                     : (Scheme.isBlack() ? R.drawable.msg_out_dark : R.drawable.msg_out));
             float displayDensity = General.getInstance().getDisplayDensity();
             if (incoming) {
-                item.setPadding((int)(19 * displayDensity), (int)(7 * displayDensity), (int)(9 * displayDensity), (int)(9 * displayDensity));
+                item.setPadding((int) (19 * displayDensity), (int) (7 * displayDensity), (int) (9 * displayDensity), (int) (9 * displayDensity));
             } else {
-                item.setPadding((int)(11 * displayDensity), (int)(7 * displayDensity), (int)(18 * displayDensity), (int)(9 * displayDensity));
+                item.setPadding((int) (11 * displayDensity), (int) (7 * displayDensity), (int) (18 * displayDensity), (int) (9 * displayDensity));
             }
             if (mData.getIconIndex() == Message.ICON_OUT_MSG_FROM_CLIENT) {
                 item.titleItemView.setCheckImage(SawimResources.messageIconCheck.getBitmap());
@@ -126,12 +132,10 @@ public class MessagesAdapter extends BaseAdapter {
 
             item.msgText.setTextSize(General.getFontSize());
             item.msgText.setTextColor(Scheme.getColor(mData.getMessColor()));
-            item.msgText.setLinkTextColor(0xff35B6E5);
             item.msgText.setText(parsedText);
         }
         item.setShowDivider(Scheme.getColor(Scheme.THEME_TEXT), position == index && index > 0 && position != getCount());
         item.titleItemView.repaint();
-        //item.msgText.repaint();
         return item;
     }
 }

@@ -40,6 +40,7 @@ public class SendToActivity extends ActionBarActivity {
     }
 
     int oldOrientation;
+
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);

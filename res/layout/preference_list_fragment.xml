@@ -35,14 +35,14 @@
               android:clipToPadding="false"
               android:drawSelectorOnTop="false"
               android:cacheColorHint="@android:color/transparent"
-              android:scrollbarAlwaysDrawVerticalTrack="true" />
+              android:scrollbarAlwaysDrawVerticalTrack="true"/>
 
     <TextView android:id="@android:id/empty"
               android:layout_width="fill_parent"
               android:layout_height="fill_parent"
               android:padding="@dimen/preference_fragment_padding_side"
               android:gravity="center"
-              android:visibility="gone" />
+              android:visibility="gone"/>
 
     <RelativeLayout android:id="@+id/button_bar"
                     android:layout_height="wrap_content"

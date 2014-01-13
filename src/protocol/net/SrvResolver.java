@@ -22,16 +22,18 @@ package protocol.net;
 
 import sawim.comm.Util;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.IOException;
 
 /**
- *
  * @author Vladimir Kryukov
  */
 public final class SrvResolver {
     private static final String server = "8.8.8.8";
     private TcpSocket socket = new TcpSocket();
-    
+
     /**
      * Creates a new instance of SrvResolver
      */
@@ -40,22 +42,31 @@ public final class SrvResolver {
 
     private byte[] packet(String[] domain) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        out.write(0x12); out.write(0x10); // id
-        out.write(1); out.write(0); // flags
-        out.write(0); out.write(1); // queries count
-        out.write(0); out.write(0); // resources count
-        out.write(0); out.write(0); // answers count
-        out.write(0); out.write(0); // additions count
+        out.write(0x12);
+        out.write(0x10); // id
+        out.write(1);
+        out.write(0); // flags
+        out.write(0);
+        out.write(1); // queries count
+        out.write(0);
+        out.write(0); // resources count
+        out.write(0);
+        out.write(0); // answers count
+        out.write(0);
+        out.write(0); // additions count
         for (String domainPart : domain) {
             byte[] l = domainPart.getBytes();
             out.write(l.length);
             out.write(l);
         }
         out.write(0);
-        out.write(0);out.write(33); // type: SRV
-        out.write(0);out.write(1); // class: Internet
+        out.write(0);
+        out.write(33); // type: SRV
+        out.write(0);
+        out.write(1); // class: Internet
         return out.toByteArray();
     }
+
     private String read(byte[] data) throws IOException {
         ByteArrayInputStream bais = new ByteArrayInputStream(data);
         DataInputStream in = new DataInputStream(bais);
@@ -82,7 +93,7 @@ public final class SrvResolver {
             in.readUnsignedShort(); // class
             in.readInt(); // ttl
             int rdlength = in.readUnsignedShort(); // length
-            
+
             in.readUnsignedShort();
             in.readUnsignedShort();
             int port = in.readUnsignedShort(); // port
@@ -91,7 +102,7 @@ public final class SrvResolver {
                 int length = in.readUnsignedByte();
                 if (0 == length) break;
                 for (int j = 0; j < length; ++j) {
-                    result.append((char)in.readUnsignedByte());
+                    result.append((char) in.readUnsignedByte());
                 }
                 result.append('.');
             }
@@ -106,9 +117,11 @@ public final class SrvResolver {
     public String getXmpp(String domain) {
         return get("_xmpp-client._tcp." + domain);
     }
+
     public String get(String domain) {
         return get(Util.explode(domain, '.'));
     }
+
     private String get(String[] domain) {
         try {
             return sendTcp(packet(domain));
@@ -125,7 +138,7 @@ public final class SrvResolver {
             Util.putWordBE(packet, 0, message.length);
             socket.write(packet);
             socket.flush();
-            
+
             byte[] header = new byte[2];
             socket.readFully(header);
             byte[] data = new byte[Util.getWordBE(header, 0)];
@@ -135,6 +148,7 @@ public final class SrvResolver {
         }
         return null;
     }
+
     public void close() {
         socket.close();
     }

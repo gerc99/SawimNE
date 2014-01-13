@@ -26,26 +26,26 @@
  */
 
 package com.jcraft.jzlib;
+
 import ru.sawim.General;
 
 import java.io.DataInputStream;
 import java.io.InputStream;
 
 /**
- *
  * @author evgs
  */
 public class ArrayLoader {
-    
+
     public static int[] readIntArray(String name) {
         int[] arrayInt = null;
         InputStream in = null;
         try {
             in = General.getResourceAsStream(name);
-            DataInputStream is=new DataInputStream(in);
+            DataInputStream is = new DataInputStream(in);
             int len = is.readInt();
             arrayInt = new int[len];
-            
+
             for (int i = 0; i < len; ++i) {
                 arrayInt[i] = is.readInt();
             }
@@ -57,10 +57,10 @@ public class ArrayLoader {
             in.close();
         } catch (Exception ex) {
         }
-        
+
         return arrayInt;
     }
-    
+
     public static short[] readShortArray(String name) {
         short[] arrayShort = null;
         InputStream in = null;
@@ -69,7 +69,7 @@ public class ArrayLoader {
             DataInputStream is = new DataInputStream(in);
             int len = is.readInt();
             arrayShort = new short[len];
-            
+
             for (int i = 0; i < len; ++i) {
                 arrayShort[i] = is.readShort();
             }
@@ -81,9 +81,10 @@ public class ArrayLoader {
             in.close();
         } catch (Exception ex) {
         }
-        
+
         return arrayShort;
     }
+
     public static byte[] readByteArray(String name) {
         byte[] arrayByte = null;
         InputStream in = null;
@@ -101,7 +102,7 @@ public class ArrayLoader {
             in.close();
         } catch (Exception ex) {
         }
-        
+
         return arrayByte;
     }
 }

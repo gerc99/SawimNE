@@ -89,7 +89,7 @@ public class General {
         int rotation = ((WindowManager) SawimApplication.getContext()
                 .getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getRotation();
         if (rotation == 0 && isTablet())
-           return false;
+            return false;
         return isTablet();
     }
 

@@ -21,6 +21,7 @@ public final class StatusView {
     private Protocol protocol;
     private Contact contact;
     private String clientVersion;
+    private String userRole;
     private VirtualListModel model;
     private VirtualList list;
 
@@ -31,14 +32,17 @@ public final class StatusView {
     }
 
     public void addClient() {
-        if ((null != contact.version)) {
-            addPlain(null, contact.version.trim());
-        }
+        addPlain(null, userRole);
+        addPlain(null, contact.version.trim());
         addPlain(null, clientVersion);
     }
 
     public void setClientVersion(String version) {
         clientVersion = version;
+    }
+
+    public void setUserRole(String role) {
+        userRole = role;
     }
 
     public void addTime() {

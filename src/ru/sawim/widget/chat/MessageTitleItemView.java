@@ -5,9 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Typeface;
-import android.graphics.drawable.BitmapDrawable;
 import android.text.TextPaint;
-import android.util.TypedValue;
 import android.view.View;
 import ru.sawim.General;
 import ru.sawim.Scheme;
@@ -39,15 +37,14 @@ public class MessageTitleItemView extends View {
         super(context);
         if (textPaint == null) {
             textPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
-            textPaint.setAntiAlias(true);
-            textPaint.setTextSize(General.getFontSize());
-            textPaint.setColor(Scheme.getColor(Scheme.THEME_TEXT));
         }
+        textPaint.setAntiAlias(true);
+        textPaint.setTextSize(General.getFontSize());
+        textPaint.setColor(Scheme.getColor(Scheme.THEME_TEXT));
     }
 
     private void setTextSize(int size) {
-        textPaint.setTextSize(TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_SP, size, General.getResources(getContext()).getDisplayMetrics()));
+        textPaint.setTextSize(size * General.getResources(getContext()).getDisplayMetrics().scaledDensity);
     }
 
     @Override

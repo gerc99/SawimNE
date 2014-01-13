@@ -25,10 +25,10 @@ import protocol.Contact;
 import protocol.ContactMenu;
 import protocol.Protocol;
 import protocol.StatusInfo;
-import protocol.xmpp.Xmpp;
-import protocol.xmpp.XmppServiceContact;
 import protocol.xmpp.Jid;
 import protocol.xmpp.MirandaNotes;
+import protocol.xmpp.Xmpp;
+import protocol.xmpp.XmppServiceContact;
 import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.SawimResources;
@@ -428,6 +428,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
     }
 
     DialogFragment chatDialogFragment;
+
     private void initLabel() {
         chatsSpinnerAdapter = new ChatsAdapter(getActivity());
         chatBarLayout.updateLabelIcon(chatsSpinnerAdapter.getImageChat(chat, false));
@@ -461,7 +462,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
                                 }
                             }
                         });
-                        Dialog dialog =  dialogBuilder.create();
+                        Dialog dialog = dialogBuilder.create();
                         dialog.setCanceledOnTouchOutside(true);
                         return dialog;
                     }
@@ -562,36 +563,36 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
             MessData mData = (MessData) adapterView.getAdapter().getItem(position);
             if (adapter.isMultiQuote()) {
-                    mData.setMarked(!mData.isMarked());
-                    StringBuffer sb = new StringBuffer();
-                    for (int i = 0; i < chat.getMessData().size(); ++i) {
-                        MessData messData = chat.getMessageDataByIndex(i);
-                        if (messData.isMarked()) {
-                            CharSequence msg = messData.getText();
-                            if (messData.isMe())
-                                msg = "*" + messData.getNick() + " " + msg;
-                            sb.append(Clipboard.serialize(false, messData.isIncoming(), messData.getNick() + " " + messData.strTime, msg));
-                            sb.append("\n---\n");
-                        }
-                    }
-                    Clipboard.setClipBoardText(0 == sb.length() ? null : sb.toString());
-                    adapter.notifyDataSetChanged();
-                } else {
-                    if (contact instanceof XmppServiceContact) {
-                        XmppServiceContact xmppServiceContact = ((XmppServiceContact) contact);
-                        if (xmppServiceContact.getContact(mData.getNick()) == null && !xmppServiceContact.getName().equals(mData.getNick())) {
-                            Toast.makeText(General.currentActivity, getString(R.string.contact_walked), Toast.LENGTH_LONG).show();
-                        }
-                    }
-                    setText(chat.onMessageSelected(mData));
-                    if (General.isManyPane()) {
-                        if (nickList.getVisibility() == View.VISIBLE && getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
-                            nickList.setVisibility(View.GONE);
-                    } else {
-                        if (drawerLayout.isDrawerOpen(nickList) && getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
-                            drawerLayout.closeDrawer(nickList);
+                mData.setMarked(!mData.isMarked());
+                StringBuffer sb = new StringBuffer();
+                for (int i = 0; i < chat.getMessData().size(); ++i) {
+                    MessData messData = chat.getMessageDataByIndex(i);
+                    if (messData.isMarked()) {
+                        CharSequence msg = messData.getText();
+                        if (messData.isMe())
+                            msg = "*" + messData.getNick() + " " + msg;
+                        sb.append(Clipboard.serialize(false, messData.isIncoming(), messData.getNick() + " " + messData.strTime, msg));
+                        sb.append("\n---\n");
                     }
                 }
+                Clipboard.setClipBoardText(0 == sb.length() ? null : sb.toString());
+                adapter.notifyDataSetChanged();
+            } else {
+                if (contact instanceof XmppServiceContact) {
+                    XmppServiceContact xmppServiceContact = ((XmppServiceContact) contact);
+                    if (xmppServiceContact.getContact(mData.getNick()) == null && !xmppServiceContact.getName().equals(mData.getNick())) {
+                        Toast.makeText(General.currentActivity, getString(R.string.contact_walked), Toast.LENGTH_LONG).show();
+                    }
+                }
+                setText(chat.onMessageSelected(mData));
+                if (General.isManyPane()) {
+                    if (nickList.getVisibility() == View.VISIBLE && getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
+                        nickList.setVisibility(View.GONE);
+                } else {
+                    if (drawerLayout.isDrawerOpen(nickList) && getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
+                        drawerLayout.closeDrawer(nickList);
+                }
+            }
         }
     };
 

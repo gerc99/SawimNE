@@ -75,7 +75,9 @@ public class XmppServiceContact extends XmppContact {
                 return 3;
         }
         return 0;
-    };
+    }
+
+    ;
 
     public boolean isAutoJoin() {
         return autojoin;
@@ -169,7 +171,7 @@ public class XmppServiceContact extends XmppContact {
         }
     }
 
-    void nickOnline(Xmpp xmpp, String nick, String tempRang, String tempRole, String role_Xstatus) {
+    void nickOnline(Xmpp xmpp, String nick, String role_Xstatus) {
         if (hasChat()) {
             xmpp.getChat(this).setWritable(canWrite());
         }
@@ -183,7 +185,7 @@ public class XmppServiceContact extends XmppContact {
             if (isPresence() == Tracking.TRUE) {
                 StringBuffer prsnsText = new StringBuffer(0);
                 prsnsText.append(": ").append(xmpp.getStatusInfo().getName(sc.status)).append(" ");
-                prsnsText.append(tempRang).append("/").append(tempRole).append(" ").append(role_Xstatus);
+                prsnsText.append(sc.roleText).append(" ").append(role_Xstatus);
                 addPresence(xmpp, nick, prsnsText.toString());
             }
         }

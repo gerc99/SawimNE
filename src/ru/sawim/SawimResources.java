@@ -8,7 +8,6 @@ import android.graphics.drawable.BitmapDrawable;
  */
 public class SawimResources {
 
-    public static ImageList affiliationIcons = ImageList.createImageList("/jabber-affiliations.png");
     public static final ImageList groupDownIcon = ImageList.createImageList("/control_down.png");
     public static final ImageList groupRightIcons = ImageList.createImageList("/control_right.png");
     public static BitmapDrawable usersIcon;
@@ -16,6 +15,8 @@ public class SawimResources {
             .getDrawable(R.drawable.ic_participants_on);
     public static BitmapDrawable typingIcon;
 
+    public static BitmapDrawable authIcon = (BitmapDrawable) General.getResources(SawimApplication.getContext())
+            .getDrawable(android.R.drawable.stat_notify_error);
     public static BitmapDrawable messageIconCheck = (BitmapDrawable) General.getResources(SawimApplication.getContext())
             .getDrawable(R.drawable.msg_check);
     public static BitmapDrawable authGrantIcon = (BitmapDrawable) General.getResources(SawimApplication.getContext()).

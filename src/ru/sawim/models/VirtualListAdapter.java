@@ -12,7 +12,7 @@ import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.Scheme;
 import ru.sawim.models.list.VirtualListItem;
-import ru.sawim.text.TextLinkClickListener;
+import ru.sawim.text.TextLinkClick;
 import ru.sawim.widget.MyTextView;
 
 import java.util.ArrayList;
@@ -88,7 +88,7 @@ public class VirtualListAdapter extends BaseAdapter {
 
         holder.labelView.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
         holder.descView.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
-        holder.descView.setOnTextLinkClickListener(new TextLinkClickListener(null, ""));
+        holder.descView.setOnTextLinkClickListener(new TextLinkClick(null, ""));
 
         holder.labelView.setVisibility(TextView.GONE);
         holder.descView.setVisibility(TextView.GONE);

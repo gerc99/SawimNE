@@ -125,7 +125,7 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
     public void back() {
         if (General.currentActivity.getSupportFragmentManager()
                 .findFragmentById(R.id.chat_fragment) != null)
-            ((SawimActivity)General.currentActivity).recreateActivity();
+            ((SawimActivity) General.currentActivity).recreateActivity();
         else
             General.currentActivity.getSupportFragmentManager().popBackStack();
         General.currentActivity.supportInvalidateOptionsMenu();

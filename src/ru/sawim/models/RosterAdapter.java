@@ -13,6 +13,7 @@ import protocol.Group;
 import protocol.Protocol;
 import protocol.XStatusInfo;
 import ru.sawim.General;
+import ru.sawim.SawimResources;
 import ru.sawim.Scheme;
 import ru.sawim.widget.roster.RosterItemView;
 import sawim.chat.ChatHistory;
@@ -36,14 +37,12 @@ import java.util.Vector;
 public class RosterAdapter extends BaseAdapter {
 
     private final Context context;
-    private final RosterHelper roster;
     private int type;
     private List<TreeNode> items = new ArrayList<TreeNode>();
     private Vector updateQueue = new Vector();
 
-    public RosterAdapter(Context context, RosterHelper vcl, int type) {
+    public RosterAdapter(Context context, int type) {
         this.context = context;
-        this.roster = vcl;
         this.type = type;
     }
 
@@ -76,6 +75,7 @@ public class RosterAdapter extends BaseAdapter {
     }
 
     public void buildFlatItems() {
+        RosterHelper roster = RosterHelper.getInstance();
         Protocol p = roster.getCurrentProtocol();
         if (p == null) return;
         while (!updateQueue.isEmpty()) {
@@ -143,7 +143,6 @@ public class RosterAdapter extends BaseAdapter {
             rosterItemView.itemSecondImage = p.getXStatusInfo().getIcon(item.getXStatusIndex()).getImage().getBitmap();
 
         if (!item.isTemp()) {
-            Icon icAuth = item.authIcon.iconAt(0);
             if (item.isAuth()) {
                 int privacyList = -1;
                 if (item.inIgnoreList()) {
@@ -156,7 +155,7 @@ public class RosterAdapter extends BaseAdapter {
                 if (privacyList != -1)
                     rosterItemView.itemThirdImage = item.serverListsIcons.iconAt(privacyList).getImage().getBitmap();
             } else {
-                rosterItemView.itemThirdImage = icAuth.getImage().getBitmap();
+                rosterItemView.itemThirdImage = SawimResources.authIcon.getBitmap();
             }
         }
 
@@ -172,6 +171,7 @@ public class RosterAdapter extends BaseAdapter {
         if (convertView == null) {
             convertView = new RosterItemView(context);
         }
+        RosterHelper roster = RosterHelper.getInstance();
         Protocol protocol = roster.getCurrentProtocol();
         TreeNode o = getItem(i);
         RosterItemView rosterItemView = ((RosterItemView) convertView);

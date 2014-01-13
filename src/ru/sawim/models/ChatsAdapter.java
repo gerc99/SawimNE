@@ -12,6 +12,7 @@ import protocol.Contact;
 import protocol.Protocol;
 import protocol.XStatusInfo;
 import ru.sawim.General;
+import ru.sawim.SawimResources;
 import ru.sawim.Scheme;
 import ru.sawim.widget.roster.RosterItemView;
 import sawim.chat.Chat;
@@ -97,7 +98,6 @@ public class ChatsAdapter extends BaseAdapter {
             rosterItemView.itemSecondImage = p.getXStatusInfo().getIcon(item.getXStatusIndex()).getImage().getBitmap();
 
         if (!item.isTemp()) {
-            Icon icAuth = item.authIcon.iconAt(0);
             if (item.isAuth()) {
                 int privacyList = -1;
                 if (item.inIgnoreList()) {
@@ -110,7 +110,7 @@ public class ChatsAdapter extends BaseAdapter {
                 if (privacyList != -1)
                     rosterItemView.itemThirdImage = item.serverListsIcons.iconAt(privacyList).getImage().getBitmap();
             } else {
-                rosterItemView.itemThirdImage = icAuth.getImage().getBitmap();
+                rosterItemView.itemThirdImage = SawimResources.authIcon.getBitmap();
             }
         }
 
@@ -138,7 +138,7 @@ public class ChatsAdapter extends BaseAdapter {
         }
         RosterItemView rosterItemView = ((RosterItemView) convertView);
         Object o = getItem(position);
-        if (o instanceof String) {
+        if (o instanceof String && RosterHelper.getInstance().getProtocolCount() > 1) {
             rosterItemView.addLayer((String) o);
         }
         if (o instanceof Chat) {

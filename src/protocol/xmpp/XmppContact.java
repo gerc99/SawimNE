@@ -1,9 +1,11 @@
 package protocol.xmpp;
 
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
-import protocol.*;
+import protocol.Contact;
+import protocol.ContactMenu;
+import protocol.Protocol;
+import protocol.StatusInfo;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.view.menu.MyMenu;
@@ -159,6 +161,7 @@ public class XmppContact extends Contact {
     public static class SubContact {
         public String resource;
         public String statusText;
+        public String roleText;
         public String realJid;
 
         public String client = "";
@@ -242,7 +245,7 @@ public class XmppContact extends Contact {
         return (byte) 0;
     }
 
-    public void __setStatus(String resource, int priority, int priorityA, byte index, String statusText) {
+    public void __setStatus(String resource, int priority, int priorityA, byte index, String statusText, String roleText) {
         if (StatusInfo.STATUS_OFFLINE == index) {
             resource = StringConvertor.notNull(resource);
             if (resource.equals(currentResource)) {
@@ -259,6 +262,7 @@ public class XmppContact extends Contact {
             c.priorityA = (byte) priorityA;
             c.status = index;
             c.statusText = statusText;
+            c.roleText = roleText;
         }
     }
 

@@ -37,18 +37,18 @@ package com.jcraft.jzlib;
 import sawim.modules.DebugLog;
 
 final public class ZStream {
-    
+
     //static final private int MAX_WBITS=15;        // 32K LZ77 window
     //static final private int DEF_WBITS=MAX_WBITS;
-    
+
     static final private int Z_NO_FLUSH = 0;
     static final private int Z_PARTIAL_FLUSH = 1;
     static final private int Z_SYNC_FLUSH = 2;
     static final private int Z_FULL_FLUSH = 3;
     static final private int Z_FINISH = 4;
-    
+
     static final private int MAX_MEM_LEVEL = 9;
-    
+
     static final private int Z_OK = 0;
     static final private int Z_STREAM_END = 1;
     static final private int Z_NEED_DICT = 2;
@@ -57,23 +57,25 @@ final public class ZStream {
     static final private int Z_DATA_ERROR = -3;
     static final private int Z_BUF_ERROR = -5;
     static final private int Z_VERSION_ERROR = -6;
-    
-    
+
+
     public static final void setMsg(String msg) {
         DebugLog.println("zlib: " + msg);
     }
+
     private static final String[] z_errmsg = {
-        "need dictionary",     // Z_NEED_DICT       2
-        "stream end",          // Z_STREAM_END      1
-        "",                    // Z_OK              0
-        "file error",          // Z_ERRNO         (-1)
-        "stream error",        // Z_STREAM_ERROR  (-2)
-        "data error",          // Z_DATA_ERROR    (-3)
-        "insufficient memory", // Z_MEM_ERROR     (-4)
-        "buffer error",        // Z_BUF_ERROR     (-5)
-        "incompatible version",// Z_VERSION_ERROR (-6)
-        ""
+            "need dictionary",     // Z_NEED_DICT       2
+            "stream end",          // Z_STREAM_END      1
+            "",                    // Z_OK              0
+            "file error",          // Z_ERRNO         (-1)
+            "stream error",        // Z_STREAM_ERROR  (-2)
+            "data error",          // Z_DATA_ERROR    (-3)
+            "insufficient memory", // Z_MEM_ERROR     (-4)
+            "buffer error",        // Z_BUF_ERROR     (-5)
+            "incompatible version",// Z_VERSION_ERROR (-6)
+            ""
     };
+
     public static final void setDeflateMsg(int msg) {
         DebugLog.println("zlib: " + z_errmsg[Z_NEED_DICT - msg]);
     }
