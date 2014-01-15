@@ -1179,8 +1179,8 @@ public final class XmppConnection extends ClientConnection {
             XmlNode item = (null == xMuc) ? null : xMuc.getFirstNode(S_ITEM);
             XmppServiceContact conf = (XmppServiceContact) contact;
             String reasone = null;
-            String rangVoice = "";
-            String roleVoice = "";
+            String rangVoice = null;
+            String roleVoice = null;
             priority = 0;
             int priorityA = 0;
 
@@ -1188,7 +1188,7 @@ public final class XmppConnection extends ClientConnection {
                 String affiliation = item.getAttribute(XmlNode.S_AFFILIATION);
                 if (("m" + "ember").equals(affiliation)) {
                     priorityA = XmppServiceContact.AFFILIATION_MEMBER;
-                    rangVoice = JLocale.getString("member");
+                    //rangVoice = JLocale.getString("member");
                 } else if (("o" + "wner").equals(affiliation)) {
                     priorityA = XmppServiceContact.AFFILIATION_OWNER;
                     rangVoice = JLocale.getString("owner");
@@ -1215,14 +1215,16 @@ public final class XmppConnection extends ClientConnection {
                     roleVoice = JLocale.getString("visitor");
                 }
             }
+            if (rangVoice != null) rangVoice += "/" + roleVoice;
+            else rangVoice = roleVoice;
             getXmpp().setConfContactStatus(conf, fromRes,
-                    nativeStatus2StatusIndex(type), statusString, priority, priorityA, rangVoice + "/" + roleVoice);
+                    nativeStatus2StatusIndex(type), statusString, priority, priorityA, rangVoice);
             if (null != item) {
                 String newNick = item.getAttribute(XmlNode.S_NICK);
                 String realJid = item.getAttribute(XmlNode.S_JID);
                 if (null != newNick) {
                     getXmpp().setConfContactStatus(conf, newNick,
-                            nativeStatus2StatusIndex(""), "", priority, priorityA, rangVoice + "/" + roleVoice);
+                            nativeStatus2StatusIndex(""), "", priority, priorityA, rangVoice);
                     conf.nickChainged(getXmpp(), fromRes, newNick);
                 } else {
                     StringBuffer s = new StringBuffer(0);
@@ -1238,7 +1240,6 @@ public final class XmppConnection extends ClientConnection {
                 if (null != realJid) {
                     conf.setRealJid(fromRes, Jid.getBareJid(realJid));
                 }
-                Log.e("XMPP", x.getXmlns());
                 contact.setClient(fromRes);
                 if (303 == code) {
                     conf.addPresence(getXmpp(), fromRes, ": " + JLocale.getString("change_nick") + " " + StringConvertor.notNull(newNick));

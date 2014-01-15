@@ -109,6 +109,26 @@ public final class TcpSocket {
         }
     }
 
+    public static int readFully(InputStream in, byte[] data, final int offset, final int length) throws IOException {
+        if ((null == data) || (0 == data.length)) {
+            return 0;
+        }
+        int bReadSum = 0;
+        do {
+            int bRead = in.read(data, offset + bReadSum, length - bReadSum);
+            if (-1 == bRead) {
+                throw new IOException("EOF");
+            } else if (0 == bRead) {
+                try {
+                    Thread.sleep(100);
+                } catch (Exception ignored) {
+                }
+            }
+            bReadSum += bRead;
+        } while (bReadSum < length);
+        return bReadSum;
+    }
+
     public final void write(byte[] data) throws SawimException {
         write(data, 0, data.length);
     }

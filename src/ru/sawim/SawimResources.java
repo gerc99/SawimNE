@@ -8,6 +8,7 @@ import android.graphics.drawable.BitmapDrawable;
  */
 public class SawimResources {
 
+    public static ImageList affiliationIcons = ImageList.createImageList("/jabber-affiliations.png");
     public static final ImageList groupDownIcon = ImageList.createImageList("/control_down.png");
     public static final ImageList groupRightIcons = ImageList.createImageList("/control_right.png");
     public static BitmapDrawable usersIcon;

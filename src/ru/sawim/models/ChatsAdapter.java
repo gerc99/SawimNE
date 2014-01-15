@@ -138,7 +138,7 @@ public class ChatsAdapter extends BaseAdapter {
         }
         RosterItemView rosterItemView = ((RosterItemView) convertView);
         Object o = getItem(position);
-        if (o instanceof String && RosterHelper.getInstance().getProtocolCount() > 1) {
+        if (o instanceof String) {
             rosterItemView.addLayer((String) o);
         }
         if (o instanceof Chat) {

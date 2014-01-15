@@ -176,7 +176,7 @@ public final class Emotions {
             return emoImages;
         }
         emoImages = new ImageList();
-        emoImages.load("/smiles.png", iconsSize, iconsSize);
+        emoImages.loadSmiles();
         return emoImages;
     }
 

@@ -14,6 +14,7 @@ import protocol.xmpp.XmppContact;
 import protocol.xmpp.XmppServiceContact;
 import ru.sawim.General;
 import ru.sawim.R;
+import ru.sawim.SawimResources;
 import ru.sawim.Scheme;
 import sawim.util.JLocale;
 
@@ -221,6 +222,7 @@ public class MucUsersAdapter extends BaseAdapter {
 
         void populateLayerFrom(String layer) {
             getItemStatusImage().setVisibility(ImageView.GONE);
+            getItemClientImage().setVisibility(ImageView.GONE);
             TextView itemLayer = getItemName();
             itemLayer.setTextSize(General.getFontSize() - 2);
             itemLayer.setTypeface(Typeface.DEFAULT_BOLD);
@@ -235,6 +237,7 @@ public class MucUsersAdapter extends BaseAdapter {
             itemName.setText(c.resource);
             itemName.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
             getItemStatusImage().setImageDrawable(protocol.getStatusInfo().getIcon(c.status).getImage());
+            getItemClientImage().setImageDrawable(SawimResources.affiliationIcons.iconAt(XmppServiceContact.getAffiliationName(c.priorityA)).getImage());
         }
 
         public ImageView getItemStatusImage() {

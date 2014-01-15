@@ -289,9 +289,15 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
                 public void onTabSelected(int position) {
                     roster.setCurrentItemProtocol(position);
                     update();
-                    Toast toast = Toast.makeText(getActivity(), roster.getProtocol(position).getUserId(), Toast.LENGTH_LONG);
-                    toast.setDuration(100);
+                    final Toast toast = Toast.makeText(getActivity(), roster.getProtocol(position).getUserId(), Toast.LENGTH_SHORT);
                     toast.show();
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            toast.cancel();
+                        }
+                    }, 500);
                     getActivity().supportInvalidateOptionsMenu();
                 }
             });

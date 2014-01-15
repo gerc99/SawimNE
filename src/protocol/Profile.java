@@ -48,16 +48,16 @@ public final class Profile {
     };
     public static final String[] protocolIds = new String[]{
             "UIN/E-mail",
-            "Login",
+            SawimApplication.getContext().getString(R.string.acc_login),
             "E-mail/phone",
-            "e-mail",
-            "Login",
+            "E-mail",
+            SawimApplication.getContext().getString(R.string.acc_login),
             "ID",
             //        "ID",
-            "Login",
-            "Login",
-            "Login",
-            "Login",
+            SawimApplication.getContext().getString(R.string.acc_login),
+            SawimApplication.getContext().getString(R.string.acc_login),
+            SawimApplication.getContext().getString(R.string.acc_login),
+            SawimApplication.getContext().getString(R.string.acc_login),
     };
 
     public byte protocolType;

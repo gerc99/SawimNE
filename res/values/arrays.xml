@@ -1,4 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
+    <integer-array name="default_smileys_images">
+        <item>@drawable/smile_0</item>
+        <item>@drawable/smile_1</item>
+        <item>@drawable/smile_2</item>
+        <item>@drawable/smile_3</item>
+        <item>@drawable/smile_4</item>
+        <item>@drawable/smile_5</item>
+        <item>@drawable/smile_6</item>
+        <item>@drawable/smile_7</item>
+        <item>@drawable/smile_8</item>
+        <item>@drawable/smile_9</item>
+        <item>@drawable/smile_10</item>
+        <item>@drawable/smile_11</item>
+        <item>@drawable/smile_12</item>
+        <item>@drawable/smile_13</item>
+        <item>@drawable/smile_14</item>
+        <item>@drawable/smile_15</item>
+        <item>@drawable/smile_16</item>
+        <item>@drawable/smile_17</item>
+        <item>@drawable/smile_18</item>
+        <item>@drawable/smile_19</item>
+        <item>@drawable/smile_20</item>
+        <item>@drawable/smile_21</item>
+        <item>@drawable/smile_22</item>
+        <item>@drawable/smile_23</item>
+        <item>@drawable/smile_24</item>
+        <item>@drawable/smile_25</item>
+        <item>@drawable/smile_26</item>
+        <item>@drawable/smile_27</item>
+        <item>@drawable/smile_28</item>
+        <item>@drawable/smile_29</item>
+        <item>@drawable/smile_30</item>
+        <item>@drawable/smile_31</item>
+        <item>@drawable/smile_32</item>
+        <item>@drawable/smile_33</item>
+        <item>@drawable/smile_34</item>
+        <item>@drawable/smile_35</item>
+        <item>@drawable/smile_36</item>
+        <item>@drawable/smile_37</item>
+        <item>@drawable/smile_38</item>
+        <item>@drawable/smile_39</item>
+        <item>@drawable/smile_40</item>
+        <item>@drawable/smile_41</item>
+        <item>@drawable/smile_42</item>
+        <item>@drawable/smile_43</item>
+        <item>@drawable/smile_44</item>
+        <item>@drawable/smile_45</item>
+        <item>@drawable/smile_46</item>
+        <item>@drawable/smile_47</item>
+        <item>@drawable/smile_48</item>
+    </integer-array>
 </resources>

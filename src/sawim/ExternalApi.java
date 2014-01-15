@@ -6,11 +6,16 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
+import protocol.net.TcpSocket;
 import ru.sawim.photo.CameraActivity;
 import sawim.modules.DebugLog;
 import sawim.modules.photo.PhotoListener;
 
+import java.io.File;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class ExternalApi {
 
@@ -23,6 +28,7 @@ public class ExternalApi {
 
     private PhotoListener photoListener = null;
     private FileTransfer fileTransferListener = null;
+    private Uri imageUrl = null;
     private static final int RESULT_PHOTO = FragmentActivity.RESULT_FIRST_USER + 1;
     private static final int RESULT_EXTERNAL_PHOTO = FragmentActivity.RESULT_FIRST_USER + 2;
     public static final int RESULT_EXTERNAL_FILE = FragmentActivity.RESULT_FIRST_USER + 3;
@@ -33,6 +39,8 @@ public class ExternalApi {
             try {
                 Intent extCameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 if (!isCallable(extCameraIntent)) throw new Exception("not found");
+                imageUrl = Uri.fromFile(getOutputMediaFile());
+                extCameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUrl);
                 activity.startActivityForResult(extCameraIntent, RESULT_EXTERNAL_PHOTO);
                 return;
             } catch (Exception ignored) {
@@ -65,7 +73,6 @@ public class ExternalApi {
 
     public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
         DebugLog.println("result " + requestCode + " " + resultCode + " " + data);
-        if (null == data) return false;
         if (FragmentActivity.RESULT_OK != resultCode) return false;
         try {
             if (RESULT_PHOTO == requestCode) {
@@ -76,11 +83,23 @@ public class ExternalApi {
 
             } else if (RESULT_EXTERNAL_PHOTO == requestCode) {
                 if (null == photoListener) return false;
-                Uri uriImage = data.getData();
+                // remove copy of image
+                if ((null != data) && (null != data.getData()) && (null != imageUrl)) {
+                    Uri file = Uri.parse("file://" + getRealPathFromUri(data.getData(), activity));
+                    DebugLog.println("pickFile " + imageUrl + " " + file);
+                    if (!imageUrl.equals(file)) {
+                        new File(file.getPath()).delete();
+                    }
+                }
+
+                Uri uriImage = imageUrl;
+                DebugLog.println("pickFile " + uriImage);
                 InputStream in = activity.getContentResolver().openInputStream(uriImage);
                 byte[] img = new byte[in.available()];
-                in.read(img);
+                TcpSocket.readFully(in, img, 0, img.length);
                 photoListener.processPhoto(img);
+
+                imageUrl = null;
                 photoListener = null;
                 return true;
 
@@ -126,4 +145,18 @@ public class ExternalApi {
         intent.setDataAndType(uri, "text/plain");
         activity.startActivity(intent);
     }*/
+
+    private static File getOutputMediaFile() {
+        File mediaStorageDir = new File(android.os.Environment.getExternalStoragePublicDirectory(
+                android.os.Environment.DIRECTORY_PICTURES), "Sawim");
+        if (!mediaStorageDir.exists()) {
+            if (!mediaStorageDir.mkdirs()) {
+                Log.d("Sawim", "failed to create directory");
+                return null;
+            }
+        }
+        // Create a media file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        return new File(mediaStorageDir.getPath(), "IMG_"+ timeStamp + ".jpg");
+    }
 }

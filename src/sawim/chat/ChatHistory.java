@@ -48,6 +48,9 @@ public final class ChatHistory {
                 hasLayer = true;
             }
         }
+        if (RosterHelper.getInstance().getProtocolCount() == 1) {
+            items.remove(0);
+        }
         if (!hasLayer) {
             items.remove(items.size() - 1);
             return;

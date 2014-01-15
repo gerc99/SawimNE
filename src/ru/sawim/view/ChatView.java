@@ -139,7 +139,6 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceStateLog) {
-        resetBar();
         updateChatIcon();
         if (drawerLayout != null && drawerLayout.getParent() != null)
             ((ViewGroup) drawerLayout.getParent()).removeView(drawerLayout);
@@ -343,6 +342,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
     }
 
     public void resume(Chat chat) {
+        resetBar();
         if (chat == null) return;
         chat.setVisibleChat(true);
         ChatHistory.instance.registerChat(chat);
@@ -547,7 +547,8 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
     private void updateChatIcon() {
         if (chatBarLayout == null) return;
         Drawable icMess = ChatHistory.instance.getUnreadMessageIcon();
-        usersImage.setImageDrawable(StatusInfo.STATUS_ONLINE == contact.getStatusIndex() ? SawimResources.usersIconOn : SawimResources.usersIcon);
+        if (contact != null)
+            usersImage.setImageDrawable(StatusInfo.STATUS_ONLINE == contact.getStatusIndex() ? SawimResources.usersIconOn : SawimResources.usersIcon);
         if (icMess == null) {
             chatBarLayout.setVisibilityChatsImage(View.GONE);
         } else {

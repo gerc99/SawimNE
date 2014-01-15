@@ -1,5 +1,6 @@
 package DrawControls.icons;
 
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -81,7 +82,7 @@ public class ImageList {
                 Bitmap bitmap = Bitmap.createScaledBitmap(
                         Bitmap.createBitmap(resImage.getBitmap(), x, y, width, height), width * size, height * size, true);
                 bitmap.setDensity(0);
-                BitmapDrawable drawable = new BitmapDrawable(SawimApplication.getInstance().getContext().getResources(), bitmap);
+                BitmapDrawable drawable = new BitmapDrawable(SawimApplication.getInstance().getResources(), bitmap);
                 drawable.setBounds(0, 0, (int) (drawable.getIntrinsicWidth() * 0.5), (int) (drawable.getIntrinsicHeight() * 0.5));
                 drawable.setTargetDensity(SawimApplication.getInstance().getResources().getDisplayMetrics());
                 tmpIcons.addElement(new Icon(drawable));
@@ -125,10 +126,22 @@ public class ImageList {
         for (int y = 0; y < imgHeight; y += height) {
             for (int x = 0; x < imgWidth; x += width) {
                 Bitmap bitmap = scalingIconForDPI(Bitmap.createBitmap(resImage.getBitmap(), x, y, width, height));
-                BitmapDrawable drawable = new BitmapDrawable(SawimApplication.getInstance().getContext().getResources(), bitmap);
+                BitmapDrawable drawable = new BitmapDrawable(SawimApplication.getInstance().getResources(), bitmap);
                 drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
                 tmpIcons.addElement(new Icon(drawable));
             }
+        }
+        add(tmpIcons);
+    }
+
+    public void loadSmiles() throws IOException {
+        TypedArray smileyDrawables = SawimApplication.getInstance().getResources().obtainTypedArray(R.array.default_smileys_images);
+        Vector tmpIcons = new Vector();
+        for (int i = 0; i < 48; ++i) {
+            BitmapDrawable smile = ((BitmapDrawable) General.getResources(SawimApplication.getContext())
+                .getDrawable(smileyDrawables.getResourceId(i, 0)));
+            smile.setBounds(0, 0, smile.getIntrinsicWidth(), smile.getIntrinsicHeight());
+            tmpIcons.addElement(new Icon(smile));
         }
         add(tmpIcons);
     }
