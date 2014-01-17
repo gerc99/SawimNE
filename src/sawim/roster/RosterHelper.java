@@ -479,7 +479,7 @@ public final class RosterHelper {
             int contactsSize = contacts.size();
             for (int contactIndex = 0; contactIndex < contactsSize; contactIndex++) {
                 c = (Contact) contacts.elementAt(contactIndex);
-                if (all || c.isVisibleInContactList() || (c == selectedItem)) {
+                if (all || c.isVisibleInContactList()/* || (c == selectedItem)*/) {
                     if (g.isExpanded()) {
                         drawItems.add(c);
                     }
@@ -503,7 +503,7 @@ public final class RosterHelper {
         int contactsSize = contacts.size();
         for (int contactIndex = 0; contactIndex < contactsSize; contactIndex++) {
             c = (Contact) contacts.elementAt(contactIndex);
-            if (all || c.isVisibleInContactList() || (c == selectedItem)) {
+            if (all || c.isVisibleInContactList()/* || (c == selectedItem)*/) {
                 if (g.isExpanded()) {
                     drawItems.add(c);
                 }
@@ -525,7 +525,7 @@ public final class RosterHelper {
         Util.sort(contacts);
         for (int contactIndex = 0; contactIndex < contacts.size(); ++contactIndex) {
             c = (Contact) contacts.elementAt(contactIndex);
-            if (all || c.isVisibleInContactList() || (c == selectedItem)) {
+            if (all || c.isVisibleInContactList()/* || (c == selectedItem)*/) {
                 drawItems.add(c);
             }
         }

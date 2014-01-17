@@ -108,8 +108,7 @@ public class General {
             Thread.sleep(500);
         } catch (InterruptedException e1) {
         }
-        if (!isForceClose)
-            ChatHistory.instance.saveUnreadMessages();
+        ChatHistory.instance.saveUnreadMessages();
         AutoAbsence.getInstance().online();
     }
 

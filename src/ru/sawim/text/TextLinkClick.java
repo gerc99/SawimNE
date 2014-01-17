@@ -69,14 +69,14 @@ public class TextLinkClick implements TextLinkClickListener {
                 DebugLog.panic("onTextLinkClick", e);
             }
         } else {
-            clickedString = clickedString.toLowerCase();
             if (!clickedString.startsWith("http://") && !clickedString.startsWith("https://"))
                 clickedString = "http://" + clickedString;
-            if ((clickedString.endsWith(".jpg"))
-                    || (clickedString.endsWith(".jpeg"))
-                    || (clickedString.endsWith(".png"))
-                    || (clickedString.endsWith(".gif"))
-                    || (clickedString.endsWith(".bmp"))) {
+            String url = clickedString.toLowerCase();
+            if ((url.endsWith(".jpg"))
+                    || (url.endsWith(".jpeg"))
+                    || (url.endsWith(".png"))
+                    || (url.endsWith(".gif"))
+                    || (url.endsWith(".bmp"))) {
                 PictureView pictureView = new PictureView();
                 pictureView.setLink(clickedString);
                 FragmentTransaction transaction = General.currentActivity.getSupportFragmentManager().beginTransaction();

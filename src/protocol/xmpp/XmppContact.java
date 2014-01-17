@@ -286,9 +286,9 @@ public class XmppContact extends Contact {
         if (null != c) {
             c.client = resource;
         }
-        SubContact cur = getCurrentSubContact();
-        if (cur != null)
-            super.setClient(cur.client);
+        //SubContact cur = getCurrentSubContact();
+        //if (cur != null)
+        //    super.setClient(cur.client);
     }
 
     public void setXStatus(String id, String text) {
