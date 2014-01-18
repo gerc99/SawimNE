@@ -17,6 +17,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.*;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -154,8 +155,6 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         chatViewLayout.updateDivider(Scheme.isBlack());
         chatListsView.updateDivider(Scheme.isBlack());
         chatInputBarView.setImageButtons(menuButton, smileButton, sendButton);
-        chatListView.setDivider(null);
-        chatListView.setDividerHeight(0);
         if (!General.isManyPane()) {
             DrawerLayout.LayoutParams nickListLP = new DrawerLayout.LayoutParams(Util.dipToPixels(getActivity(), 240), DrawerLayout.LayoutParams.MATCH_PARENT);
             DrawerLayout.LayoutParams drawerLayoutLP = new DrawerLayout.LayoutParams(DrawerLayout.LayoutParams.MATCH_PARENT, DrawerLayout.LayoutParams.MATCH_PARENT);
@@ -163,7 +162,6 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
             drawerLayout.setScrimColor(Scheme.isBlack() ? 0x55FFFFFF : 0x99000000);
             nickListLP.gravity = Gravity.START;
             drawerLayout.setLayoutParams(drawerLayoutLP);
-            nickList.updateDivider();
             nickList.setBackgroundResource(Util.getSystemBackground(getActivity()));
             nickList.setLayoutParams(nickListLP);
             if (nickList.getParent() != null)
@@ -763,8 +761,10 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
     }
 
     private void hideKeyboard(View view) {
-        InputMethodManager imm = (InputMethodManager) General.currentActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        if (Options.getBoolean(Options.OPTION_HIDE_KEYBOARD)) {
+            InputMethodManager imm = (InputMethodManager) General.currentActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
     }
 
     public void showKeyboard() {

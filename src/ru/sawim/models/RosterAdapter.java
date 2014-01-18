@@ -81,7 +81,9 @@ public class RosterAdapter extends BaseAdapter {
         while (!updateQueue.isEmpty()) {
             Group group = (Group) updateQueue.firstElement();
             updateQueue.removeElementAt(0);
-            roster.updateGroup(group);
+            synchronized (p.getRosterLockObject()) {
+                roster.updateGroup(group);
+            }
         }
         items.clear();
         synchronized (p.getRosterLockObject()) {
@@ -166,6 +168,10 @@ public class RosterAdapter extends BaseAdapter {
             rosterItemView.itemFifthImage = ((BitmapDrawable) Tracking.getTrackIcon(id)).getBitmap();
     }
 
+    void setShowDivider(RosterItemView rosterItemView, boolean value) {
+        rosterItemView.isShowDivider = value;
+    }
+
     @Override
     public View getView(int i, View convertView, ViewGroup viewGroup) {
         if (convertView == null) {
@@ -174,7 +180,7 @@ public class RosterAdapter extends BaseAdapter {
         RosterHelper roster = RosterHelper.getInstance();
         Protocol protocol = roster.getCurrentProtocol();
         TreeNode o = getItem(i);
-        RosterItemView rosterItemView = ((RosterItemView) convertView);
+        RosterItemView rosterItemView = (RosterItemView) convertView;
         if (o != null)
             if (type != RosterHelper.ALL_CONTACTS) {
                 if (type != RosterHelper.ACTIVE_CONTACTS)
@@ -190,6 +196,7 @@ public class RosterAdapter extends BaseAdapter {
                     populateFromContact(rosterItemView, roster, protocol, (Contact) o);
                 }
             }
+        setShowDivider(rosterItemView, true);
         rosterItemView.repaint();
         return convertView;
     }

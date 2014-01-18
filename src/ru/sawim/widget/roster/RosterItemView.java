@@ -10,6 +10,7 @@ import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.View;
 import ru.sawim.General;
+import ru.sawim.SawimResources;
 import ru.sawim.Scheme;
 import ru.sawim.widget.Util;
 
@@ -44,11 +45,13 @@ public class RosterItemView extends View {
             fourthImageX, fourthImageY,
             fifthImageX, fifthImageY;
     private int textX;
+    public boolean isShowDivider;
 
     public RosterItemView(Context context) {
         super(context);
-        int padding = Util.dipToPixels(context, 15);
-        setPadding(padding, padding, padding, padding);
+        int paddingW = Util.dipToPixels(context, 10);
+        int paddingH = Util.dipToPixels(context, 15);
+        setPadding(paddingW, paddingH, paddingW, paddingH);
     }
 
     public static void initTextPaint() {
@@ -103,12 +106,12 @@ public class RosterItemView extends View {
 
         int bottomPadding = getPaddingBottom();
         int topPadding = getPaddingTop();
-        if (itemName != null && itemDesc != null) {
-            ascent <<= 1;
-            descent <<= 1;
-        } else if (itemName == null && itemDesc != null) {
+        if (itemName == null && itemDesc != null) {
             topPadding >>= 2;
             bottomPadding >>= 2;
+        } else if (itemName != null && itemDesc != null) {
+            ascent <<= 1;
+            descent <<= 1;
         }
         if (specMode == MeasureSpec.EXACTLY) {
             result = specSize;
@@ -123,8 +126,8 @@ public class RosterItemView extends View {
     }
 
     private void computeCoordinates(int ascent, int descent, int viewWidth, int viewHeight) {
-        int leftPadding = getPaddingLeft() >> 1;
-        int rightPadding = getPaddingRight() >> 1;
+        int leftPadding = getPaddingLeft();
+        int rightPadding = getPaddingRight();
         int bottomPadding = getPaddingBottom();
         int topPadding = getPaddingTop();
         int y = viewHeight >> 1;
@@ -196,11 +199,11 @@ public class RosterItemView extends View {
         if (itemFifthImage != null)
             canvas.drawBitmap(itemFifthImage, fifthImageX, fifthImageY, null);
 
-        if (itemName == null && itemDesc != null) {
-            paintDivider.setStrokeWidth(TypedValue.applyDimension(
-                    TypedValue.COMPLEX_UNIT_SP, 2, General.getResources(getContext()).getDisplayMetrics()));
-            paintDivider.setColor(Scheme.getColor(Scheme.THEME_PROTOCOL_BACKGROUND));
-            canvas.drawLine(textX, getScrollY() + getHeight(), getWidth() - textX, getScrollY() + getHeight(), paintDivider);
+        boolean isLayer = itemName == null && itemDesc != null;
+        if (isShowDivider) {
+            paintDivider.setStrokeWidth((isLayer ? 4 : 2) * General.getResources(getContext()).getDisplayMetrics().scaledDensity);
+            paintDivider.setColor(Scheme.isBlack() ? 0xff424446 : 0xffbdbdbd);
+            canvas.drawLine(getPaddingLeft(), getScrollY() + getHeight(), getWidth() - getPaddingRight(), getScrollY() + getHeight(), paintDivider);
         }
     }
 }

@@ -16,6 +16,8 @@ import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.SawimResources;
 import ru.sawim.Scheme;
+import ru.sawim.widget.roster.RosterItemView;
+import sawim.chat.Chat;
 import sawim.util.JLocale;
 
 import java.util.ArrayList;
@@ -88,8 +90,10 @@ public class MucUsersAdapter extends BaseAdapter {
     }
 
     @Override
-    public Object getItem(int i) {
-        return items.get(i);
+    public Object getItem(int position) {
+        if ((items.size() > position) && (position >= 0))
+            return items.get(position);
+        return null;
     }
 
     @Override
@@ -187,85 +191,35 @@ public class MucUsersAdapter extends BaseAdapter {
                 c.realJid, affiliation, setReason);
     }
 
-    @Override
-    public View getView(int i, View convView, ViewGroup viewGroup) {
-        Object o = items.get(i);
-        if (o == null) return convView;
-        ItemWrapper wr;
-        if (convView == null) {
-            LayoutInflater inf = LayoutInflater.from(context);
-            convView = inf.inflate(R.layout.muc_users_item, null);
-            wr = new ItemWrapper(convView);
-            convView.setTag(wr);
-        } else {
-            wr = (ItemWrapper) convView.getTag();
-        }
-        if (o instanceof String) {
-            convView.setPadding(0, 0, 0, 0);
-            wr.populateLayerFrom((String) o);
-        }
-        if (o instanceof XmppContact.SubContact)
-            wr.populateFrom(protocol, o);
-        return convView;
+
+    void setShowDivider(RosterItemView rosterItemView, boolean value) {
+        rosterItemView.isShowDivider = value;
     }
 
-    static class ItemWrapper {
-        View item = null;
-        private TextView itemName = null;
-        private ImageView itemStatusImage = null;
-        private ImageView itemAffilationImage = null;
-        private ImageView itemClientImage = null;
-
-        public ItemWrapper(View item) {
-            this.item = item;
+    @Override
+    public View getView(int i, View convertView, ViewGroup viewGroup) {
+        Object o = items.get(i);
+        if (convertView == null) {
+            convertView = new RosterItemView(context);
         }
-
-        void populateLayerFrom(String layer) {
-            getItemStatusImage().setVisibility(ImageView.GONE);
-            getItemClientImage().setVisibility(ImageView.GONE);
-            TextView itemLayer = getItemName();
-            itemLayer.setTextSize(General.getFontSize() - 2);
-            itemLayer.setTypeface(Typeface.DEFAULT_BOLD);
-            itemLayer.setText(layer);
-            itemLayer.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
+        RosterItemView rosterItemView = (RosterItemView) convertView;
+        if (o == null) return rosterItemView;
+        if (o instanceof String) {
+            rosterItemView.addLayer((String) o);
         }
+        if (o instanceof XmppContact.SubContact)
+            populateFrom(rosterItemView, protocol, o);
+        setShowDivider(rosterItemView, getItem(i + 1) instanceof XmppContact.SubContact);
+        ((RosterItemView) convertView).repaint();
+        return rosterItemView;
+    }
 
-        void populateFrom(Xmpp protocol, Object o) {
-            XmppContact.SubContact c = (XmppContact.SubContact) o;
-            TextView itemName = getItemName();
-            itemName.setTextSize(General.getFontSize());
-            itemName.setText(c.resource);
-            itemName.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
-            getItemStatusImage().setImageDrawable(protocol.getStatusInfo().getIcon(c.status).getImage());
-            getItemClientImage().setImageDrawable(SawimResources.affiliationIcons.iconAt(XmppServiceContact.getAffiliationName(c.priorityA)).getImage());
-        }
-
-        public ImageView getItemStatusImage() {
-            if (itemStatusImage == null) {
-                itemStatusImage = (ImageView) item.findViewById(R.id.status_image);
-            }
-            return itemStatusImage;
-        }
-
-        public ImageView getItemAffilationImage() {
-            if (itemAffilationImage == null) {
-                itemAffilationImage = (ImageView) item.findViewById(R.id.affilation_image);
-            }
-            return itemAffilationImage;
-        }
-
-        public TextView getItemName() {
-            if (itemName == null) {
-                itemName = (TextView) item.findViewById(R.id.item_name);
-            }
-            return itemName;
-        }
-
-        public ImageView getItemClientImage() {
-            if (itemClientImage == null) {
-                itemClientImage = (ImageView) item.findViewById(R.id.client_image);
-            }
-            return itemClientImage;
-        }
+    void populateFrom(RosterItemView rosterItemView, Xmpp protocol, Object o) {
+        XmppContact.SubContact c = (XmppContact.SubContact) o;
+        rosterItemView.itemFirstImage = protocol.getStatusInfo().getIcon(c.status).getImage().getBitmap();
+        rosterItemView.itemNameColor = Scheme.getColor(Scheme.THEME_TEXT);
+        rosterItemView.itemNameFont = Typeface.DEFAULT;
+        rosterItemView.itemName = c.resource;
+        rosterItemView.itemFifthImage = SawimResources.affiliationIcons.iconAt(XmppServiceContact.getAffiliationName(c.priorityA)).getImage().getBitmap();
     }
 }

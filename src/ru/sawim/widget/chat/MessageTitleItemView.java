@@ -39,7 +39,6 @@ public class MessageTitleItemView extends View {
             textPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         }
         textPaint.setAntiAlias(true);
-        textPaint.setTextSize(General.getFontSize());
         textPaint.setColor(Scheme.getColor(Scheme.THEME_TEXT));
     }
 
@@ -104,6 +103,7 @@ public class MessageTitleItemView extends View {
     }
 
     public void repaint() {
+        setTextSize(General.getFontSize());
         requestLayout();
         invalidate();
     }

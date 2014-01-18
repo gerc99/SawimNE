@@ -220,4 +220,5 @@
     <string name="lift_up">Выше</string>
     <string name="put_down">Ниже</string>
     <string name="role_commands">Команды администратора</string>
+    <string name="hide_chat_keyboard">Скрывать клавиатуру после отправки</string>
 </resources>

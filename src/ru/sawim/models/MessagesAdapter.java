@@ -93,10 +93,6 @@ public class MessagesAdapter extends BaseAdapter {
         item.msgText.setLinkTextColor(0xff35B6E5);
         item.msgText.setTypeface(Typeface.DEFAULT);
         item.setBackgroundColor(0);
-        if (mData.isMarked() && isMultiQuote) {
-            item.msgText.setTypeface(Typeface.DEFAULT_BOLD);
-            item.setBackgroundColor(Scheme.getColor(Scheme.THEME_MARKED_BACKGROUND));
-        }
         if (mData.isMe() || mData.isPresence()) {
             item.msgText.setTextSize(General.getFontSize() - 2);
             if (mData.isMe()) {
@@ -133,6 +129,10 @@ public class MessagesAdapter extends BaseAdapter {
             item.msgText.setTextSize(General.getFontSize());
             item.msgText.setTextColor(Scheme.getColor(mData.getMessColor()));
             item.msgText.setText(parsedText);
+        }
+        if (mData.isMarked() && isMultiQuote) {
+            item.msgText.setTypeface(Typeface.DEFAULT_BOLD);
+            item.setBackgroundColor(Scheme.getColor(Scheme.THEME_MARKED_BACKGROUND));
         }
         item.setShowDivider(Scheme.getColor(Scheme.THEME_TEXT), position == index && index > 0 && position != getCount());
         item.titleItemView.repaint();

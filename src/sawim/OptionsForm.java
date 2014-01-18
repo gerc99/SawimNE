@@ -135,6 +135,7 @@ public class OptionsForm implements FormListener, ControlStateListener {
                 //saveOptionSelector(Options.OPTION_CL_SORT_BY);
                 //        saveOptionBoolean(Options.OPTION_SHOW_PLATFORM);
                 saveOptionBoolean(Options.OPTION_HISTORY);
+                saveOptionBoolean(Options.OPTION_HIDE_KEYBOARD);
                 saveOptionInt(Options.OPTION_MAX_MSG_COUNT);
                 saveOptionBoolean(Options.OPTION_TITLE_IN_CONFERENCE);
                 saveOptionString(Options.UNAVAILABLE_NESSAGE);
@@ -221,6 +222,7 @@ public class OptionsForm implements FormListener, ControlStateListener {
 
                 form.addString("chat", null);
                 //		setChecked("show_platform", Options.OPTION_SHOW_PLATFORM);
+                setChecked(SawimApplication.getContext().getString(R.string.hide_chat_keyboard), Options.OPTION_HIDE_KEYBOARD);
                 setChecked("use_history", Options.OPTION_HISTORY);
                 loadOptionInt(Options.OPTION_MAX_MSG_COUNT, "max_message_count", "10|50|100|250|500|1000");
 

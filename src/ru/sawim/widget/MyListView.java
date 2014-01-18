@@ -36,10 +36,7 @@ public class MyListView extends ListView {
         setFastScrollEnabled(true);
         setScrollingCacheEnabled(false);
         setAnimationCacheEnabled(false);
-    }
-
-    public void updateDivider() {
-        setDivider(General.getResources(SawimApplication.getContext())
-                .getDrawable(Scheme.isBlack() ? android.R.drawable.divider_horizontal_dark : android.R.drawable.divider_horizontal_bright));
+        setDivider(null);
+        setDividerHeight(0);
     }
 }

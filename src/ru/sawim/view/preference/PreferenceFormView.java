@@ -200,6 +200,8 @@ public class PreferenceFormView extends PreferenceFragment implements Forms.OnUp
                         seekBarPreference.setTitleTextSize(c.level);
                         seekBarPreference.setTitleText(c.description + "(" + c.level + ")");
                         Forms.getInstance().controlUpdated(c);
+                        if (General.getInstance().getConfigurationChanged() != null)
+                            General.getInstance().getConfigurationChanged().onConfigurationChanged();
                         return true;
                     }
                 });

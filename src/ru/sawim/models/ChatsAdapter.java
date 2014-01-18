@@ -56,7 +56,9 @@ public class ChatsAdapter extends BaseAdapter {
 
     @Override
     public Object getItem(int position) {
-        return items.get(position);
+        if ((items.size() > position) && (position >= 0))
+            return items.get(position);
+        return null;
     }
 
     @Override
@@ -67,7 +69,7 @@ public class ChatsAdapter extends BaseAdapter {
     @Override
     public boolean isEnabled(int position) {
         Object o = getItem(position);
-        if (o instanceof String) return false;
+        if (o != null && o instanceof String) return false;
         return super.isEnabled(position);
     }
 
@@ -131,21 +133,26 @@ public class ChatsAdapter extends BaseAdapter {
         }
     }
 
+    void setShowDivider(RosterItemView rosterItemView, boolean value) {
+        rosterItemView.isShowDivider = value;
+    }
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
             convertView = new RosterItemView(context);
         }
-        RosterItemView rosterItemView = ((RosterItemView) convertView);
+        RosterItemView rosterItemView = (RosterItemView) convertView;
         Object o = getItem(position);
+        if (o == null) return convertView;
         if (o instanceof String) {
             rosterItemView.addLayer((String) o);
         }
         if (o instanceof Chat) {
             Chat chat = (Chat) o;
             populateFromContact(rosterItemView, RosterHelper.getInstance(), chat.getProtocol(), chat.getContact());
-            rosterItemView.setBackgroundColor(0);
         }
+        setShowDivider(rosterItemView, getItem(position + 1) instanceof Chat);
         ((RosterItemView) convertView).repaint();
         return convertView;
     }

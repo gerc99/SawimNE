@@ -67,6 +67,7 @@ public class Options {
 
     ////////////////////// BOOLEAN
     public static final int OPTION_ANSWERER = 128;
+    public static final int OPTION_HIDE_KEYBOARD = 129;
     public static final int OPTION_CL_HIDE_OFFLINE = 130;
     public static final int OPTION_USER_GROUPS = 136;
     public static final int OPTION_HISTORY = 137;
@@ -329,6 +330,7 @@ public class Options {
         setInt(Options.OPTION_CL_SORT_BY, 0);
         setBoolean(Options.OPTION_TITLE_IN_CONFERENCE, true);
         setBoolean(Options.OPTION_CL_HIDE_OFFLINE, false);
+        setBoolean(Options.OPTION_HIDE_KEYBOARD, true);
         setBoolean(Options.OPTION_SHOW_SOFTBAR, true);
         setInt(Options.OPTION_MESS_NOTIF_MODE, 0);
         setInt(Options.OPTION_ONLINE_NOTIF_MODE, 0);
