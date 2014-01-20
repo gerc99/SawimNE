@@ -117,7 +117,7 @@ public class VirtualListAdapter extends BaseAdapter {
             if (element.getThemeTextDesc() > -1) {
                 holder.descView.setTextColor(Scheme.getColor(element.getThemeTextDesc()));
             }
-            holder.descView.setLinkTextColor(0xff35B6E5);
+            holder.descView.setLinkTextColor(Scheme.LINKS);
             holder.descView.setTextSize(General.getFontSize());
             holder.descView.setText(element.getDescStr());
             holder.descView.repaint();

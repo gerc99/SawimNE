@@ -6,6 +6,7 @@ import android.preference.*;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.inputmethod.InputMethodManager;
 import ru.sawim.General;
 import ru.sawim.R;
@@ -193,10 +194,10 @@ public class PreferenceFormView extends PreferenceFragment implements Forms.OnUp
                     @Override
                     public boolean onPreferenceChange(Preference preference, Object newValue) {
                         int value = Integer.parseInt(newValue.toString());
-                        if (value == 0) return false;
-                        if (value >= 7) {
-                            c.level = Integer.parseInt(newValue.toString());
-                        }
+                        if (value <= 7) {
+                            c.level = 7;
+                        } else c.level = Integer.parseInt(newValue.toString());
+                        seekBarPreference.getSeekBar().setProgress(c.level);
                         seekBarPreference.setTitleTextSize(c.level);
                         seekBarPreference.setTitleText(c.description + "(" + c.level + ")");
                         Forms.getInstance().controlUpdated(c);

@@ -6,6 +6,8 @@ import android.os.Build;
 import ru.sawim.General;
 import ru.sawim.activities.SawimActivity;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 public final class Clipboard {
 
     private static void insertQuotingChars(StringBuffer out, CharSequence text, boolean isSubstring, char qChars) {
@@ -31,12 +33,6 @@ public final class Clipboard {
     }
 
     public static void setClipBoardText(String text) {
-        putToClipboard(text);
-    }
-
-    public static void putToClipboard(final String text) {
-        //SawimApplication.getSawimActivity().runOnUiThread(new Runnable() {
-        //    public void run() {
         try {
             if (Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
                 android.text.ClipboardManager clipboard = (android.text.ClipboardManager)
@@ -50,7 +46,18 @@ public final class Clipboard {
         } catch (Throwable e) {
             sawim.modules.DebugLog.panic("set clipboard", e);
         }
-        //    }
-        //});
+    }
+
+    public static String getClipBoardText() {
+        final AtomicReference<String> text = new AtomicReference<String>();
+        text.set(null);
+        try {
+            ClipboardManager clipboard = (ClipboardManager) General.currentActivity.getSystemService(SawimActivity.CLIPBOARD_SERVICE);
+            text.set(clipboard.hasText() ? clipboard.getText().toString() : null);
+        } catch (Throwable e) {
+            sawim.modules.DebugLog.panic("get clipboard", e);
+            // do nothing
+        }
+        return text.get();
     }
 }

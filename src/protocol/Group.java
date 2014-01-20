@@ -111,7 +111,7 @@ public class Group extends TreeNode {
 
     @Override
     public Icon getLeftIcon(Protocol p) {
-        return expanded ? SawimResources.groupDownIcon.iconAt(0) : SawimResources.groupRightIcons.iconAt(0);
+        return new Icon(expanded ? SawimResources.groupDownIcon : SawimResources.groupRightIcons);
     }
 
     @Override

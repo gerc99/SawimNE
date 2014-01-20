@@ -258,7 +258,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         General.actionBar.setDisplayShowTitleEnabled(!isShowTabs);
         General.actionBar.setDisplayShowHomeEnabled(!isShowTabs);
         General.actionBar.setDisplayUseLogoEnabled(!isShowTabs);
-        General.actionBar.setDisplayHomeAsUpEnabled(!isShowTabs);
+        General.actionBar.setDisplayHomeAsUpEnabled(false);
         General.actionBar.setDisplayShowCustomEnabled(isShowTabs);
         getActivity().setTitle(R.string.app_name);
         if (General.isManyPane()) {

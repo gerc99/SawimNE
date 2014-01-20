@@ -32,6 +32,10 @@ public class Scheme {
     public static final byte THEME_CONTACT_STATUS = 16;
     public static final byte THEME_PROTOCOL_BACKGROUND = 17;
 
+    public static final int LINKS = 0xff35B6E5;
+    public static final int DIVIDER_BLACK = 0xff424446;
+    public static final int DIVIDER_LIGHT = 0xff424446;
+
     public static final byte FONT_STYLE_PLAIN = 0;
     public static final byte FONT_STYLE_BOLD = 1;
 

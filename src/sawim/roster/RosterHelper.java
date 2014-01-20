@@ -95,7 +95,6 @@ public final class RosterHelper {
     }
 
     public void setCurrentProtocol() {
-        RosterHelper cl = RosterHelper.getInstance();
         Vector listOfProfiles = new Vector();
         for (int i = 0; i < Options.getAccountCount(); ++i) {
             Profile p = Options.getAccount(i);
@@ -108,7 +107,7 @@ public final class RosterHelper {
             p.isActive = true;
             listOfProfiles.addElement(p);
         }*/
-        cl.addProtocols(listOfProfiles);
+        addProtocols(listOfProfiles);
         updateRoster();
     }
 

@@ -203,9 +203,11 @@ public class MucUsersAdapter extends BaseAdapter {
             convertView = new RosterItemView(context);
         }
         RosterItemView rosterItemView = (RosterItemView) convertView;
+        rosterItemView.setNull();
         if (o == null) return rosterItemView;
         if (o instanceof String) {
             rosterItemView.addLayer((String) o);
+            rosterItemView.itemNameFont = Typeface.DEFAULT_BOLD;
         }
         if (o instanceof XmppContact.SubContact)
             populateFrom(rosterItemView, protocol, o);

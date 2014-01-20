@@ -5,6 +5,7 @@ import android.text.SpannableStringBuilder;
 import android.text.style.ImageSpan;
 import android.util.Patterns;
 import protocol.Contact;
+import ru.sawim.Scheme;
 import ru.sawim.view.menu.JuickMenu;
 import sawim.modules.Emotions;
 
@@ -42,7 +43,7 @@ public class TextFormatter {
 
 
     public CharSequence parsedText(final Contact contact, final CharSequence text) {
-        final int linkColor = 0xff35B6E5;
+        final int linkColor = Scheme.LINKS;
         SpannableStringBuilder builder = new SpannableStringBuilder(text);
         if (contact != null)
             if (contact.getUserId().equals(JuickMenu.JUICK) || contact.getUserId().equals(JuickMenu.JUBO))

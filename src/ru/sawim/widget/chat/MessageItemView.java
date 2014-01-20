@@ -39,7 +39,7 @@ public class MessageItemView extends LinearLayout {
         int padding = Util.dipToPixels(context, 5);
         setOrientation(VERTICAL);
         setPadding(padding, padding, padding, padding);
-        titleItemView.setPadding(0, padding, padding, padding);
+        titleItemView.setPadding(0, 0, padding, padding);
         msgText.setPadding(0, 0, 0, padding);
         if (isAddTitleView)
             addViewInLayout(titleItemView, 0, new AbsListView.LayoutParams(AbsListView.LayoutParams.WRAP_CONTENT, AbsListView.LayoutParams.WRAP_CONTENT));

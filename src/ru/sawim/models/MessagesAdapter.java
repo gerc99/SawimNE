@@ -90,7 +90,7 @@ public class MessagesAdapter extends BaseAdapter {
 
         item.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
         item.msgText.setOnTextLinkClickListener(new TextLinkClick(currentProtocol, currentContact));
-        item.msgText.setLinkTextColor(0xff35B6E5);
+        item.msgText.setLinkTextColor(Scheme.LINKS);
         item.msgText.setTypeface(Typeface.DEFAULT);
         item.setBackgroundColor(0);
         if (mData.isMe() || mData.isPresence()) {

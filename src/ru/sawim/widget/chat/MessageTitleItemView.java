@@ -132,7 +132,7 @@ public class MessageTitleItemView extends View {
         }
         if (checkImage != null) {
             canvas.drawBitmap(checkImage,
-                    msgTimeX - checkImage.getWidth(), getPaddingTop(), null);
+                    msgTimeX - checkImage.getWidth(), getPaddingTop() + checkImage.getHeight() / 2, null);
         }
     }
 }

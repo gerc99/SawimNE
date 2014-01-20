@@ -104,7 +104,6 @@ public class RosterAdapter extends BaseAdapter {
     }
 
     void populateFromGroup(RosterItemView rosterItemView, Group g) {
-        rosterItemView.setNull();
         rosterItemView.itemNameColor = Scheme.getColor(Scheme.THEME_GROUP);
         rosterItemView.itemNameFont = Typeface.DEFAULT;
         rosterItemView.itemName = g.getText();
@@ -119,7 +118,6 @@ public class RosterAdapter extends BaseAdapter {
     }
 
     void populateFromContact(RosterItemView rosterItemView, RosterHelper roster, Protocol p, Contact item) {
-        rosterItemView.setNull();
         rosterItemView.itemNameColor = Scheme.getColor(item.getTextTheme());
         rosterItemView.itemNameFont = item.hasChat() ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT;
         rosterItemView.itemName = (item.subcontactsS() == 0) ?
@@ -141,8 +139,11 @@ public class RosterAdapter extends BaseAdapter {
                 rosterItemView.itemFirstImage = icMess.getBitmap();
         }
 
-        if (item.getXStatusIndex() != XStatusInfo.XSTATUS_NONE)
-            rosterItemView.itemSecondImage = p.getXStatusInfo().getIcon(item.getXStatusIndex()).getImage().getBitmap();
+        if (item.getXStatusIndex() != XStatusInfo.XSTATUS_NONE) {
+            XStatusInfo xStatusInfo = p.getXStatusInfo();
+            if (xStatusInfo != null)
+                rosterItemView.itemSecondImage = xStatusInfo.getIcon(item.getXStatusIndex()).getImage().getBitmap();
+        }
 
         if (!item.isTemp()) {
             if (item.isAuth()) {
@@ -181,6 +182,7 @@ public class RosterAdapter extends BaseAdapter {
         Protocol protocol = roster.getCurrentProtocol();
         TreeNode o = getItem(i);
         RosterItemView rosterItemView = (RosterItemView) convertView;
+        rosterItemView.setNull();
         if (o != null)
             if (type != RosterHelper.ALL_CONTACTS) {
                 if (type != RosterHelper.ACTIVE_CONTACTS)

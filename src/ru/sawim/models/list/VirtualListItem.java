@@ -63,7 +63,7 @@ public class VirtualListItem {
     }
 
     public void addGroup(int marginLeft, CharSequence text, byte themeText, byte font, OnGroupListListener groupListListener) {
-        addImage(opened ? SawimResources.groupDownIcon.iconAt(0).getImage() : SawimResources.groupRightIcons.iconAt(0).getImage());
+        addImage(opened ? SawimResources.groupDownIcon : SawimResources.groupRightIcons);
         addDescription(marginLeft, text, themeText, font);
         this.groupListListener = groupListListener;
     }

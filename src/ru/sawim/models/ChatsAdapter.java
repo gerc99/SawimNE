@@ -74,7 +74,6 @@ public class ChatsAdapter extends BaseAdapter {
     }
 
     void populateFromContact(RosterItemView rosterItemView, RosterHelper roster, Protocol p, Contact item) {
-        rosterItemView.setNull();
         rosterItemView.itemNameColor = Scheme.getColor(item.getTextTheme());
         rosterItemView.itemNameFont = item.hasChat() ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT;
         rosterItemView.itemName = (item.subcontactsS() == 0) ?
@@ -96,8 +95,11 @@ public class ChatsAdapter extends BaseAdapter {
                 rosterItemView.itemFirstImage = icMess.getBitmap();
         }
 
-        if (item.getXStatusIndex() != XStatusInfo.XSTATUS_NONE)
-            rosterItemView.itemSecondImage = p.getXStatusInfo().getIcon(item.getXStatusIndex()).getImage().getBitmap();
+        if (item.getXStatusIndex() != XStatusInfo.XSTATUS_NONE) {
+            XStatusInfo xStatusInfo = p.getXStatusInfo();
+            if (xStatusInfo != null)
+                rosterItemView.itemSecondImage = xStatusInfo.getIcon(item.getXStatusIndex()).getImage().getBitmap();
+        }
 
         if (!item.isTemp()) {
             if (item.isAuth()) {
@@ -143,6 +145,7 @@ public class ChatsAdapter extends BaseAdapter {
             convertView = new RosterItemView(context);
         }
         RosterItemView rosterItemView = (RosterItemView) convertView;
+        rosterItemView.setNull();
         Object o = getItem(position);
         if (o == null) return convertView;
         if (o instanceof String) {

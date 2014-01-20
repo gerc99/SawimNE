@@ -9,8 +9,8 @@ import android.graphics.drawable.BitmapDrawable;
 public class SawimResources {
 
     public static ImageList affiliationIcons = ImageList.createImageList("/jabber-affiliations.png");
-    public static final ImageList groupDownIcon = ImageList.createImageList("/control_down.png");
-    public static final ImageList groupRightIcons = ImageList.createImageList("/control_right.png");
+    public static BitmapDrawable groupDownIcon;
+    public static BitmapDrawable groupRightIcons;
     public static BitmapDrawable usersIcon;
     public static BitmapDrawable usersIconOn = (BitmapDrawable) General.getResources(SawimApplication.getContext())
             .getDrawable(R.drawable.ic_participants_on);
@@ -32,9 +32,15 @@ public class SawimResources {
     public static void initIcons() {
         usersIcon = null;
         typingIcon = null;
+        groupDownIcon = null;
+        groupRightIcons = null;
         usersIcon = (BitmapDrawable) General.getResources(SawimApplication.getContext()).
                 getDrawable(Scheme.isBlack() ? R.drawable.ic_participants_dark : R.drawable.ic_participants_light);
         typingIcon = (BitmapDrawable) General.getResources(SawimApplication.getContext()).
                 getDrawable(Scheme.isBlack() ? R.drawable.ic_typing_dark : R.drawable.ic_typing_light);
+        groupDownIcon = (BitmapDrawable) General.getResources(SawimApplication.getContext()).
+                getDrawable(Scheme.isBlack() ? R.drawable.ic_collapsed_dark : R.drawable.ic_collapsed_light);
+        groupRightIcons = (BitmapDrawable) General.getResources(SawimApplication.getContext()).
+                getDrawable(Scheme.isBlack() ? R.drawable.ic_expanded_dark : R.drawable.ic_expanded_light);
     }
 }

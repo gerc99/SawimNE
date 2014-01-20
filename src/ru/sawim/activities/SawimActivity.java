@@ -128,7 +128,7 @@ public class SawimActivity extends ActionBarActivity {
     }
 
     public static void resetBar() {
-        General.actionBar.setDisplayHomeAsUpEnabled(true);
+        General.actionBar.setDisplayHomeAsUpEnabled(false);
         General.actionBar.setDisplayShowTitleEnabled(true);
         General.actionBar.setDisplayUseLogoEnabled(true);
         General.actionBar.setDisplayShowHomeEnabled(true);
@@ -326,7 +326,8 @@ public class SawimActivity extends ActionBarActivity {
             menu.add(Menu.NONE, MENU_CONNECT, Menu.NONE, R.string.connect);
             menu.findItem(MENU_CONNECT).setTitle((p.isConnected() || p.isConnecting()) ? R.string.disconnect : R.string.connect);
             menu.add(Menu.NONE, MENU_STATUS, Menu.NONE, R.string.status);
-            menu.add(Menu.NONE, MENU_XSTATUS, Menu.NONE, R.string.xstatus);
+            if (p.getXStatusInfo() != null)
+                menu.add(Menu.NONE, MENU_XSTATUS, Menu.NONE, R.string.xstatus);
             if ((p instanceof Icq) || (p instanceof Mrim))
                 menu.add(Menu.NONE, MENU_PRIVATE_STATUS, Menu.NONE, R.string.private_status);
 
