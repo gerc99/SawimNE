@@ -49,7 +49,7 @@ public class Options {
     }
 
     private void setupSystem() {
-        int timeZone =  TimeZone.getDefault().getOffset(System.currentTimeMillis()) / 3600000;
+        int timeZone =  TimeZone.getDefault().getOffset(System.currentTimeMillis()) / 3600000 * 1;
         sawim.Options.setInt(sawim.Options.OPTION_GMT_OFFSET, timeZone);
         sawim.Options.setInt(sawim.Options.OPTION_LOCAL_OFFSET, 0);
     }
