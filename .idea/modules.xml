@@ -3,8 +3,10 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/SawimNE.iml" filepath="$PROJECT_DIR$/SawimNE.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../../Example/AndroidViewPager/JakeWharton-Android-ViewPagerIndicator-8cd549f/library/ViewPagerIndicator.iml" filepath="$PROJECT_DIR$/../../Example/AndroidViewPager/JakeWharton-Android-ViewPagerIndicator-8cd549f/library/ViewPagerIndicator.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../../libs/platform_frameworks_support-master/v7/appcompat/appcompat.iml" filepath="$PROJECT_DIR$/../../libs/platform_frameworks_support-master/v7/appcompat/appcompat.iml" />
+      <module fileurl="file://$USER_HOME$/Example/AndroidViewPager/JakeWharton-Android-ViewPagerIndicator-8cd549f/library/ViewPagerIndicator.iml" filepath="$USER_HOME$/Example/AndroidViewPager/JakeWharton-Android-ViewPagerIndicator-8cd549f/library/ViewPagerIndicator.iml" />
+      <module fileurl="file://$USER_HOME$/libs/platform_frameworks_support-master/v7/appcompat/appcompat.iml" filepath="$USER_HOME$/libs/platform_frameworks_support-master/v7/appcompat/appcompat.iml" />
+      <module fileurl="file://$APPLICATION_HOME_DIR$/sdk/extras/android/support/v7/appcompat/appcompat1.iml" filepath="$APPLICATION_HOME_DIR$/sdk/extras/android/support/v7/appcompat/appcompat1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../Android-ViewPagerIndicator/library/library.iml" filepath="$PROJECT_DIR$/../Android-ViewPagerIndicator/library/library.iml" />
     </modules>
   </component>
 </project>
