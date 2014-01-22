@@ -4,10 +4,6 @@
       <root url="jar://$PROJECT_DIR$/libs/android-support-v4.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES>
-      <root url="file://$PROJECT_DIR$/../../android-sdk/sources/android-16" />
-      <root url="file://$PROJECT_DIR$/../../libs/platform_frameworks_support-master/v4/java" />
-      <root url="file://$PROJECT_DIR$/../../libs/platform_frameworks_support-master/v4/jellybean-mr2" />
-    </SOURCES>
+    <SOURCES />
   </library>
 </component>
