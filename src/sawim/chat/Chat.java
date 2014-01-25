@@ -402,6 +402,8 @@ public final class Chat {
             contact.updateChatState(this);
             ChatHistory.instance.updateChatList();
         }
+        if (RosterHelper.getInstance().getUpdateChatListener() != null)
+            RosterHelper.getInstance().getUpdateChatListener().updateChat(contact);
     }
 
     public void addMessage(Message message, boolean toHistory, boolean isHighlight) {
