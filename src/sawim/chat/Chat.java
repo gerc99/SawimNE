@@ -403,7 +403,7 @@ public final class Chat {
             ChatHistory.instance.updateChatList();
         }
         if (RosterHelper.getInstance().getUpdateChatListener() != null)
-            RosterHelper.getInstance().getUpdateChatListener().updateChat(contact);
+            RosterHelper.getInstance().getUpdateChatListener().updateMucList();
     }
 
     public void addMessage(Message message, boolean toHistory, boolean isHighlight) {
