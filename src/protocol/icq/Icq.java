@@ -399,7 +399,6 @@ public class Icq extends Protocol {
             c.init(-1, Group.NOT_IN_GROUP, name, false);
             return c;
         } catch (Exception e) {
-
             return null;
         }
     }

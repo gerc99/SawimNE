@@ -179,7 +179,7 @@ public final class RosterHelper {
         int count = getProtocolCount();
         for (int i = 0; i < count; ++i) {
             Protocol p = getProtocol(i);
-            if (p.getProfile() == profile) {
+            if (p.getProfile().protocolType == profile.protocolType) {
                 return p;
             }
         }

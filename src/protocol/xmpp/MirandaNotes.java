@@ -163,6 +163,7 @@ public final class MirandaNotes {
             addNote((Note) notes.elementAt(i));
         }
         screen.setCurrentItemIndex(index, false);
+        screen.updateModel();
     }
 
     public Note addEmptyNote() {

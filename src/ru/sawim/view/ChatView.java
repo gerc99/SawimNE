@@ -62,11 +62,13 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
     public static final String TAG = "ChatView";
 
     private Chat chat;
+    private String oldChat;
     private Protocol protocol;
     private Contact contact;
     private String sharingText;
     private boolean sendByEnter;
     private boolean isOpenMenu = false;
+    private boolean isConference;
 
     private ChatsAdapter chatsSpinnerAdapter;
     private MessagesAdapter adapter = new MessagesAdapter();
@@ -76,7 +78,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
     private ChatListsView chatListsView;
     private ChatInputBarView chatInputBarView;
     private ChatViewRoot chatViewLayout;
-    private MucUsersView mucUsersView;
+    private MucUsersView mucUsersView = new MucUsersView();
     private DrawerLayout drawerLayout;
     private ImageButton usersImage;
     private ImageButton chatsImage;
@@ -266,14 +268,17 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         menuButton.setOnClickListener(null);
         usersImage.setOnClickListener(null);
         smileButton.setOnClickListener(null);
+        chatBarLayout.setOnClickListener(null);
         chatListView.setOnItemClickListener(null);
         messageEditor.removeTextChangedListener(textWatcher);
         chatListView.setOnCreateContextMenuListener(null);
+        chatListView.setAdapter(null);
+        mucUsersView.destroy(nickList);
         chat = null;
+        oldChat = null;
         contact = null;
         protocol = null;
         sharingText = null;
-        mucUsersView = null;
         chatDialogFragment = null;
         chatsSpinnerAdapter = null;
     }
@@ -301,7 +306,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
             General.currentActivity = (ActionBarActivity) getActivity();
         if (contact == null)
             initChat(RosterHelper.getInstance().getCurrentProtocol(), RosterHelper.getInstance().getCurrentContact());
-        if (contact != null)
+        else
             openChat(protocol, contact);
         if (General.isManyPane()) {
             if (contact == null)
@@ -326,7 +331,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
     public void pause(Chat chat) {
         if (chat == null) return;
         initChat(protocol, contact);
-
+        oldChat = chat.getContact().getUserId();
         View item = chatListView.getChildAt(0);
         chat.scrollPosition = chatListView.getFirstVisiblePosition();
         chat.offset = (item == null) ? 0 : Math.abs(item.getBottom());
@@ -348,7 +353,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         chat.resetUnreadMessages();
         removeMessages(Options.getInt(Options.OPTION_MAX_MSG_COUNT));
         if (sharingText != null) chat.message += " " + sharingText;
-        setText(chat.message);
+        messageEditor.setText(chat.message);
 
         setPosition();
         updateChatIcon();
@@ -370,11 +375,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
                 chatListView.setSelection(chat.getMessCount());
             }
         } else {
-            if (isLastPosition()) {
-                chatListView.setSelectionFromTop(chat.scrollPosition + 1, chat.offset);
-            } else {
-                chatListView.setSelectionFromTop(chat.scrollPosition + 2, chat.offset);
-            }
+            chatListView.setSelectionFromTop(chat.scrollPosition + 1, chat.offset - (isLastPosition() ? 0 : chat.offset / 2));
         }
     }
 
@@ -402,6 +403,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         Chat current = ChatHistory.instance.chatAt(position);
         if (current == null) return;
         pause(chat);
+        chatListView.stopScroll();
         openChat(current.getProtocol(), current.getContact());
         resume(current);
     }
@@ -415,7 +417,8 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         chatViewLayout.hideHint();
         initChat(p, c);
         chat = protocol.getChat(contact);
-
+        if (oldChat != null)
+            if (oldChat.equals(chat.getContact().getUserId())) return;
         initLabel();
         initList();
         initMucUsers();
@@ -426,7 +429,6 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
     }
 
     DialogFragment chatDialogFragment;
-
     private void initLabel() {
         chatsSpinnerAdapter = new ChatsAdapter(getActivity());
         chatBarLayout.updateLabelIcon(chatsSpinnerAdapter.getImageChat(chat, false));
@@ -486,9 +488,8 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
             nickList.setVisibility(View.VISIBLE);
         else if (drawerLayout.isDrawerOpen(nickList))
             drawerLayout.closeDrawer(nickList);
-
-        if (contact instanceof XmppServiceContact && contact.isConference()) {
-            mucUsersView = new MucUsersView();
+        isConference = contact instanceof XmppServiceContact && contact.isConference();
+        if (isConference) {
             mucUsersView.init(protocol, (XmppServiceContact) contact);
             mucUsersView.show(this, nickList);
             chatBarLayout.setVisibilityUsersImage(General.isManyPane() ? View.GONE : View.VISIBLE);
@@ -506,8 +507,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
 
     private void updateList(Contact contact) {
         if (contact == this.contact) {
-            if (adapter != null)
-                adapter.refreshList(chat.getMessData());
+            adapter.refreshList(chat.getMessData());
         }
     }
 
@@ -522,9 +522,8 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
                 break;
             case UPDATE_MUC_LIST:
                 if (contact != null && contact.isPresence() == (byte) 1)
-                    if (adapter != null)
-                        adapter.refreshList(chat.getMessData());
-                if (mucUsersView != null)
+                    adapter.refreshList(chat.getMessData());
+                if (isConference)
                     mucUsersView.update();
                 break;
         }
@@ -576,7 +575,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
                 Clipboard.setClipBoardText(0 == multiQuoteBuffer.length() ? null : multiQuoteBuffer.toString());
                 adapter.notifyDataSetChanged();
             } else {
-                if (contact instanceof XmppServiceContact) {
+                if (isConference) {
                     XmppServiceContact xmppServiceContact = ((XmppServiceContact) contact);
                     if (xmppServiceContact.getContact(mData.getNick()) == null && !xmppServiceContact.getName().equals(mData.getNick())) {
                         Toast.makeText(General.currentActivity, getString(R.string.contact_walked), Toast.LENGTH_LONG).show();
@@ -668,6 +667,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
 
             default:
                 new ContactMenu(protocol, contact).doAction(item.getItemId());
+                getActivity().supportInvalidateOptionsMenu();
         }
     }
 
@@ -676,7 +676,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         super.onCreateContextMenu(menu, v, menuInfo);
         menu.add(Menu.FIRST, ContactMenu.MENU_COPY_TEXT, 0, android.R.string.copy);
         menu.add(Menu.FIRST, ContactMenu.ACTION_QUOTE, 0, JLocale.getString("quote"));
-        if (contact instanceof XmppServiceContact && contact.isConference()) {
+        if (isConference) {
             menu.add(Menu.FIRST, ContactMenu.COMMAND_PRIVATE, 0, R.string.open_private);
             menu.add(Menu.FIRST, ContactMenu.COMMAND_INFO, 0, R.string.info);
             menu.add(Menu.FIRST, ContactMenu.COMMAND_STATUS, 0, R.string.user_statuses);
@@ -729,6 +729,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
                 pause(getCurrentChat());
                 openChat(protocol, c);
                 resume(getCurrentChat());
+                getActivity().supportInvalidateOptionsMenu();
                 break;
             case ContactMenu.COMMAND_INFO:
                 protocol.showUserInfo(((XmppServiceContact) contact).getPrivateContact(nick));
@@ -775,8 +776,13 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
 
     @Override
     public void pastText(final String text) {
-        insert(" " + text + " ");
-        showKeyboard();
+        General.currentActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                setText(" " + text + " ");
+                showKeyboard();
+            }
+        });
     }
 
     private void send() {
@@ -863,7 +869,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
                     return;
                 }
             }
-            if (protocol == null) return;
+            if (protocol == null || contact == null) return;
             int length = s.length();
             if (length > 0) {
                 if (!compose) {

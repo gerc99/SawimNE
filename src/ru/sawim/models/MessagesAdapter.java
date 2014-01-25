@@ -80,9 +80,10 @@ public class MessagesAdapter extends BaseAdapter {
     @Override
     public View getView(int index, View row, ViewGroup viewGroup) {
         final MessData mData = items.get(index);
-        if (mData.messView == null || isRepaint)
+        if (mData.messView == null || isRepaint) {
+            if (isRepaint) mData.messView = null;
             mData.messView = new MessageItemView(General.currentActivity, !(mData.isMe() || mData.isPresence()));
-
+        }
         MessageItemView item = mData.messView;
         CharSequence parsedText = mData.getText();
         String nick = mData.getNick();

@@ -1,8 +1,11 @@
 package sawim.comm;
 
+import sawim.modules.DebugLog;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.Vector;
 
 
@@ -300,6 +303,11 @@ public final class StringConvertor {
 
     public static byte[] stringToByteArrayUtf8(String val) {
         try {
+            return val.getBytes("UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            DebugLog.panic("Unsupported write Encoding", e);
+        }
+        /*try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             char ch;
             for (int i = 0; i < val.length(); ++i) {
@@ -321,8 +329,7 @@ public final class StringConvertor {
             }
             return baos.toByteArray();
         } catch (Exception e) {
-
-        }
+        }*/
         return null;
     }
 

@@ -12,7 +12,7 @@ import sawim.comm.Util;
 import sawim.modules.Answerer;
 import sawim.modules.Notify;
 
-public class OptionsForm implements FormListener, ControlStateListener {
+public class OptionsForm implements ControlStateListener {
 
     private Forms form;
     private int currentOptionsForm;
@@ -166,17 +166,9 @@ public class OptionsForm implements FormListener, ControlStateListener {
         General.updateOptions();
     }
 
-    public void formAction(Forms form, boolean apply) {
-        save(currentOptionsForm);
-        if (Scheme.isChangeTheme(Options.getInt(Options.OPTION_COLOR_SCHEME)))
-            ((SawimActivity) General.currentActivity).recreateActivity();
-        else
-            form.back();
-    }
-
     public void select(CharSequence name, int cmd) {
         currentOptionsForm = cmd;
-        form = new Forms(SawimApplication.getContext().getString(R.string.options), this, false);
+        form = new Forms(SawimApplication.getContext().getString(R.string.options), null, false);
         form.setBackPressedListener(new Forms.OnBackPressed() {
             @Override
             public boolean back() {

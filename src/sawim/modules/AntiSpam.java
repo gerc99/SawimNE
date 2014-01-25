@@ -112,10 +112,11 @@ public class AntiSpam {
     }
 
     public static boolean isSpam(Protocol protocol, Message message) {
-        if (antiSpam.containsKeywords(message.getText())) {
-            antiSpam.denyAuth(protocol, message);
-            return true;
-        }
+        if (Options.getBoolean(Options.OPTION_ANTISPAM_ENABLE))
+            if (antiSpam.containsKeywords(message.getText())) {
+                antiSpam.denyAuth(protocol, message);
+                return true;
+            }
         return antiSpam.isSpamMessage(protocol, message);
     }
 }

@@ -54,7 +54,6 @@ public class SendToView extends Fragment implements AdapterView.OnItemClickListe
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         horizontalScrollView = new IconTabPageIndicator(getActivity());
-
         ListView allListView = new ListView(getActivity());
         allListView.setCacheColorHint(0x00000000);
         allListView.setScrollingCacheEnabled(false);

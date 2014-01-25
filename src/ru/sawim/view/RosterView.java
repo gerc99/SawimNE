@@ -1,5 +1,6 @@
 package ru.sawim.view;
 
+import DrawControls.icons.Icon;
 import android.app.Activity;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
@@ -303,11 +304,15 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
             });
             for (int i = 0; i < protocolCount; ++i) {
                 Protocol protocol = roster.getProtocol(i);
-                Drawable icon = protocol.getCurrentStatusIcon().getImage();
+                Drawable icon = null;
+                Icon statusIcon = protocol.getCurrentStatusIcon();
                 Drawable messageIcon = ChatHistory.instance.getUnreadMessageIcon(protocol);
+                if (statusIcon != null)
+                    icon = statusIcon.getImage();
                 if (null != messageIcon)
                     icon = messageIcon;
-                horizontalScrollView.addTab(i, icon);
+                if (icon != null)
+                    horizontalScrollView.addTab(i, icon);
             }
             horizontalScrollView.setCurrentItem(roster.getCurrentItemProtocol());
         }

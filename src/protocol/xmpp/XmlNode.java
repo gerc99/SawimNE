@@ -1,5 +1,6 @@
 package protocol.xmpp;
 
+import android.util.Log;
 import sawim.SawimException;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
@@ -134,11 +135,6 @@ public final class XmlNode {
     }
 
     private void readEscapedChar(StringBuffer out, Socket socket) throws SawimException {
-        /*try {
-            Util.xmlUnescape(new String(out.toString().getBytes("ISO8859-1"), "UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-            DebugLog.panic("Unsupported Encoding", e);
-        }*/
         StringBuffer buffer = new StringBuffer(6);
         int limit = 6;
         char ch = socket.readChar();

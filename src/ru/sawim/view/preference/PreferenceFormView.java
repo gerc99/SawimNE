@@ -22,28 +22,16 @@ import java.util.List;
  * Time: 21:30
  * To change this template use File | Settings | File Templates.
  */
-public class PreferenceFormView extends PreferenceFragment implements Forms.OnUpdateForm {
+public class PreferenceFormView extends PreferenceFragment {
 
     public static final String TAG = "PreferenceFormView";
     PreferenceScreen rootScreen;
 
     @Override
-    public void onAttach(Activity a) {
-        super.onAttach(a);
-        Forms.getInstance().setUpdateFormListener(this);
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        Forms.getInstance().setUpdateFormListener(null);
-    }
-
-    @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         getActivity().setTitle(Forms.getInstance().getCaption());
-
+        General.actionBar.setDisplayHomeAsUpEnabled(true);
         rootScreen = getPreferenceManager().createPreferenceScreen(getActivity());
         setPreferenceScreen(rootScreen);
         buildList();
@@ -63,31 +51,6 @@ public class PreferenceFormView extends PreferenceFragment implements Forms.OnUp
                 transaction.replace(R.id.fragment_container, newFragment, PreferenceFormView.TAG);
                 transaction.addToBackStack(null);
                 transaction.commitAllowingStateLoss();
-            }
-        });
-    }
-
-    @Override
-    public void updateForm() {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                buildList();
-            }
-        });
-    }
-
-    @Override
-    public void back() {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (General.currentActivity.getSupportFragmentManager()
-                        .findFragmentById(R.id.chat_fragment) != null)
-                    ((SawimActivity) General.currentActivity).recreateActivity();
-                else
-                    getFragmentManager().popBackStack();
-                hideKeyboard();
             }
         });
     }

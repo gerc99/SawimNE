@@ -221,4 +221,5 @@
     <string name="put_down">Ниже</string>
     <string name="role_commands">Команды администратора</string>
     <string name="hide_chat_keyboard">Скрывать клавиатуру после отправки</string>
+    <string name="enter_id">Введите id, а не e-mail</string>
 </resources>

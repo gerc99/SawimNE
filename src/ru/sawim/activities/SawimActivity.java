@@ -49,10 +49,10 @@ import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
 import ru.sawim.view.*;
+import ru.sawim.view.preference.MainPreferenceView;
 import ru.sawim.view.preference.PreferenceFormView;
 import sawim.ExternalApi;
 import sawim.Options;
-import sawim.OptionsForm;
 import sawim.chat.Chat;
 import sawim.chat.ChatHistory;
 import sawim.forms.ManageContactListForm;
@@ -77,6 +77,7 @@ public class SawimActivity extends ActionBarActivity {
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
         ExternalApi.instance.setActivity(this);
         General.actionBar = getSupportActionBar();
+        General.currentActivity = null;
         General.currentActivity = this;
         setContentView(General.isManyPane() ? R.layout.main_twopane : R.layout.main);
 
@@ -360,14 +361,7 @@ public class SawimActivity extends ActionBarActivity {
         }
         menu.add(Menu.NONE, MENU_SOUND, Menu.NONE, Options.getBoolean(Options.OPTION_SILENT_MODE)
                 ? R.string.sound_on : R.string.sound_off);
-        SubMenu optionsMenu = menu.addSubMenu(Menu.NONE, MENU_OPTIONS, Menu.NONE, R.string.options);
-        optionsMenu.add(Menu.NONE, OptionsForm.OPTIONS_ACCOUNT, Menu.NONE, R.string.options_account);
-        optionsMenu.add(Menu.NONE, OptionsForm.OPTIONS_INTERFACE, Menu.NONE, R.string.options_interface);
-        optionsMenu.add(Menu.NONE, OptionsForm.OPTIONS_SIGNALING, Menu.NONE, R.string.options_signaling);
-        optionsMenu.add(Menu.NONE, OptionsForm.OPTIONS_ANTISPAM, Menu.NONE, R.string.antispam);
-        optionsMenu.add(Menu.NONE, OptionsForm.OPTIONS_ANSWERER, Menu.NONE, R.string.answerer);
-        optionsMenu.add(Menu.NONE, OptionsForm.OPTIONS_ABOUT, Menu.NONE, R.string.about_program);
-
+        menu.add(Menu.NONE, MENU_OPTIONS, Menu.NONE, R.string.options);
         menu.add(Menu.NONE, MENU_QUIT, Menu.NONE, R.string.quit);
         return super.onPrepareOptionsMenu(menu);
     }
@@ -413,6 +407,9 @@ public class SawimActivity extends ActionBarActivity {
             case MENU_SOUND:
                 Notify.getSound().changeSoundMode(false);
                 break;
+            case MENU_OPTIONS:
+                MainPreferenceView.show();
+                break;
             case MENU_DISCO:
                 ((Xmpp) p).getServiceDiscovery().showIt();
                 break;
@@ -428,26 +425,6 @@ public class SawimActivity extends ActionBarActivity {
             case MENU_MICROBLOG:
                 ((Mrim) p).getMicroBlog().activate();
                 break;
-
-            case OptionsForm.OPTIONS_ACCOUNT:
-                startActivity(new Intent(General.currentActivity, AccountsListActivity.class));
-                break;
-            case OptionsForm.OPTIONS_INTERFACE:
-                new OptionsForm().select(item.getTitle(), OptionsForm.OPTIONS_INTERFACE);
-                break;
-            case OptionsForm.OPTIONS_SIGNALING:
-                new OptionsForm().select(item.getTitle(), OptionsForm.OPTIONS_SIGNALING);
-                break;
-            case OptionsForm.OPTIONS_ANTISPAM:
-                new OptionsForm().select(item.getTitle(), OptionsForm.OPTIONS_ANTISPAM);
-                break;
-            case OptionsForm.OPTIONS_ANSWERER:
-                new OptionsForm().select(item.getTitle(), OptionsForm.OPTIONS_ANSWERER);
-                break;
-            case OptionsForm.OPTIONS_ABOUT:
-                new AboutProgramView().show(General.currentActivity.getSupportFragmentManager(), AboutProgramView.TAG);
-                break;
-
             case MENU_DEBUG_LOG:
                 DebugLog.instance.activate();
                 break;

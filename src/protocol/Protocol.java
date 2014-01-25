@@ -1,6 +1,7 @@
 package protocol;
 
 import DrawControls.icons.Icon;
+import android.util.Log;
 import protocol.xmpp.XmppContact;
 import ru.sawim.General;
 import ru.sawim.R;
@@ -676,6 +677,7 @@ abstract public class Protocol {
     public final void setStatus(int statusIndex, String msg) {
         boolean connected = StatusInfo.STATUS_OFFLINE != profile.statusIndex;
         boolean connecting = StatusInfo.STATUS_OFFLINE != statusIndex;
+        Log.e("setStatus", connected+"=="+connecting);
         if (connected && !connecting) {
             disconnect(true);
         }

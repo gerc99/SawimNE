@@ -9,6 +9,7 @@
 
 package protocol.xmpp;
 
+import android.util.Log;
 import com.jcraft.jzlib.JZlib;
 import com.jcraft.jzlib.ZInputStream;
 import com.jcraft.jzlib.ZOutputStream;
@@ -16,6 +17,7 @@ import protocol.net.TcpSocket;
 import sawim.SawimException;
 import sawim.modules.DebugLog;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Vector;
 
 /**
@@ -139,7 +141,8 @@ final class Socket implements Runnable {
 
             } else {
                 int seqLen = 0;
-                if ((bt & 0xF8) == 0xF0) seqLen = 3;
+                if ((bt & 0xf0) == 0xe0) seqLen = 2;
+                else if ((bt & 0xF8) == 0xF0) seqLen = 3;
                 else if ((bt & 0xFC) == 0xF8) seqLen = 4;
                 else if ((bt & 0xFE) == 0xFC) seqLen = 5;
                 for (; 0 < seqLen; --seqLen) {

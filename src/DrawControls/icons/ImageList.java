@@ -140,7 +140,7 @@ public class ImageList {
         for (int i = 0; i < smileyDrawables.length(); ++i) {
             BitmapDrawable smile = ((BitmapDrawable) General.getResources(SawimApplication.getContext())
                 .getDrawable(smileyDrawables.getResourceId(i, 0)));
-            smile.setBounds(0, 0, smile.getIntrinsicWidth(), smile.getIntrinsicHeight());
+            smile.setBounds(0, 0, smile.getBitmap().getWidth(), smile.getBitmap().getHeight());
             tmpIcons.addElement(new Icon(smile));
         }
         add(tmpIcons);

@@ -1,5 +1,6 @@
 package ru.sawim.config;
 
+import android.util.Log;
 import sawim.comm.Config;
 
 import java.lang.reflect.Field;
@@ -49,7 +50,7 @@ public class Options {
     }
 
     private void setupSystem() {
-        int timeZone = TimeZone.getDefault().getDSTSavings() / (1000 * 60 * 60) + TimeZone.getDefault().getRawOffset() / 3600000;
+        int timeZone = TimeZone.getDefault().getOffset(System.currentTimeMillis()) / 3600000;
         sawim.Options.setInt(sawim.Options.OPTION_GMT_OFFSET, timeZone);
         sawim.Options.setInt(sawim.Options.OPTION_LOCAL_OFFSET, 0);
     }

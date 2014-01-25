@@ -20,6 +20,7 @@ import sawim.util.JLocale;
 import javax.microedition.io.Connector;
 import javax.microedition.io.HttpsConnection;
 import java.io.DataInputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.Vector;
 
 
@@ -246,12 +247,6 @@ public final class XmppConnection extends ClientConnection {
     }
 
     private void write(String xml) throws SawimException {
-        /*byte[] data = new byte[0];
-        try {
-            data = xml.getBytes("UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            DebugLog.panic("Unsupported write Encoding", e);
-        }*/
         write(StringConvertor.stringToByteArrayUtf8(xml));
     }
 

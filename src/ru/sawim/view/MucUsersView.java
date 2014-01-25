@@ -24,7 +24,7 @@ import sawim.util.JLocale;
  */
 public class MucUsersView implements TextBoxView.TextBoxListener {
 
-    private MucUsersAdapter usersAdapter;
+    private MucUsersAdapter usersAdapter = new MucUsersAdapter();
     private String currMucNik = "";
     private TextBoxView banTextbox;
     private TextBoxView kikTextbox;
@@ -38,7 +38,6 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
 
     public void show(final ChatView chatView, ListView nickList) {
         final FragmentActivity activity = General.currentActivity;
-        usersAdapter = new MucUsersAdapter();
         usersAdapter.init(activity, (Xmpp) protocol, xmppServiceContact);
         nickList.setAdapter(usersAdapter);
         nickList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -86,6 +85,7 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
                                 chatView.pause(chatView.getCurrentChat());
                                 chatView.openChat(protocol, c);
                                 chatView.resume(chatView.getCurrentChat());
+                                activity.supportInvalidateOptionsMenu();
                                 break;
                             case ContactMenu.COMMAND_INFO:
                                 protocol.showUserInfo(xmppServiceContact.getPrivateContact(nick));
@@ -109,6 +109,12 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
                 return false;
             }
         });
+    }
+
+    public void destroy(ListView nickList) {
+        nickList.setAdapter(null);
+        nickList.setOnItemClickListener(null);
+        nickList.setOnItemLongClickListener(null);
     }
 
     private MyMenu getRoleConfigMenu(final String nick) {

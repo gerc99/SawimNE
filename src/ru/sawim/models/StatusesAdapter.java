@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import protocol.Protocol;
 import protocol.StatusInfo;
@@ -76,6 +77,12 @@ public class StatusesAdapter extends BaseAdapter {
             wr = (ItemWrapper) row.getTag();
         }
         int item = getItem(position);
+        LinearLayout activeItem = (LinearLayout) row;
+        if (item == selectedItem) {
+            activeItem.setBackgroundColor(Scheme.getInversColor(Scheme.THEME_BACKGROUND));
+        } else {
+            activeItem.setBackgroundColor(0);
+        }
         wr.populateFrom(item);
         return row;
     }
