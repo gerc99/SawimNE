@@ -25,7 +25,7 @@ public class OpenUriActivity extends ActionBarActivity {
         super.onStart();
         Intent intent = getIntent();
         if (Intent.ACTION_VIEW.equals(intent.getAction())) {
-            final boolean delay = null == General.currentActivity;
+            final boolean delay = null == General.getCurrentActivity();
             final Uri uri = intent.getData();
             startActivity(new Intent(this, SawimActivity.class));
             new Thread(new Runnable() {
@@ -88,7 +88,7 @@ public class OpenUriActivity extends ActionBarActivity {
     }
 
     private void alert() {
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(General.currentActivity);
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(General.getCurrentActivity());
         alertDialog.setCancelable(true);
         alertDialog.setTitle(getText(R.string.app_name));
         alertDialog.setMessage(getText(R.string.xmppAccountDontFound));

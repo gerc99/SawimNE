@@ -77,6 +77,17 @@ public final class ChatHistory {
         return null;
     }
 
+    public Chat getChatById(String id) {
+        int size = historyTable.size();
+        for (int i = 0; i < size; ++i) {
+            Chat chat = chatAt(i);
+            if (chat.getContact().getUserId() == id) {
+                return chat;
+            }
+        }
+        return null;
+    }
+
     public int getUnreadMessageCount() {
         int count = 0;
         for (int i = getTotal() - 1; 0 <= i; --i) {

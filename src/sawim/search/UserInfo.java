@@ -207,7 +207,7 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
                         break;
 
                     case INFO_MENU_TAKE_AVATAR:
-                        ExternalApi.instance.setActivity(General.currentActivity);
+                        ExternalApi.instance.setActivity(General.getCurrentActivity());
                         ExternalApi.instance.startCamera(UserInfo.this, 640, 480);
                         break;
 

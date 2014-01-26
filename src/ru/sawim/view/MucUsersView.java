@@ -37,7 +37,7 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
     }
 
     public void show(final ChatView chatView, ListView nickList) {
-        final FragmentActivity activity = General.currentActivity;
+        final FragmentActivity activity = General.getCurrentActivity();
         usersAdapter.init(activity, (Xmpp) protocol, xmppServiceContact);
         nickList.setAdapter(usersAdapter);
         nickList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -118,7 +118,7 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
     }
 
     private MyMenu getRoleConfigMenu(final String nick) {
-        final MyMenu menu = new MyMenu(General.currentActivity);
+        final MyMenu menu = new MyMenu(General.getCurrentActivity());
         int myAffiliation = usersAdapter.getAffiliation(xmppServiceContact.getMyName());
         int myRole = usersAdapter.getRole(xmppServiceContact.getMyName());
         final int role = usersAdapter.getRole(nick);
@@ -169,7 +169,7 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
     }
 
     private void showRoleConfig(final MyMenu menu, final String nick, final ChatView chatView) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(General.currentActivity);
+        AlertDialog.Builder builder = new AlertDialog.Builder(General.getCurrentActivity());
         builder.setCancelable(true);
         builder.setTitle(xmppServiceContact.getName());
         builder.setAdapter(menu, new DialogInterface.OnClickListener() {
@@ -180,14 +180,14 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
                         kikTextbox = new TextBoxView();
                         kikTextbox.setTextBoxListener(MucUsersView.this);
                         kikTextbox.setString("");
-                        kikTextbox.show(General.currentActivity.getSupportFragmentManager(), "message");
+                        kikTextbox.show(General.getCurrentActivity().getSupportFragmentManager(), "message");
                         break;
 
                     case ContactMenu.COMMAND_BAN:
                         banTextbox = new TextBoxView();
                         banTextbox.setTextBoxListener(MucUsersView.this);
                         banTextbox.setString("");
-                        banTextbox.show(General.currentActivity.getSupportFragmentManager(), "message");
+                        banTextbox.show(General.getCurrentActivity().getSupportFragmentManager(), "message");
                         break;
 
                     case ContactMenu.COMMAND_DEVOICE:

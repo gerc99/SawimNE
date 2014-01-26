@@ -29,20 +29,20 @@ public class AccountsListActivity extends ActionBarActivity implements XmppRegis
         setTheme(Scheme.isBlack() ? R.style.BaseTheme : R.style.BaseThemeLight);
         super.onCreate(savedInstanceState);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
-        if (General.currentActivity.getSupportFragmentManager()
+        if (General.getCurrentActivity().getSupportFragmentManager()
                 .findFragmentById(R.id.chat_fragment) != null)
             setContentView(R.layout.intercalation_layout);
         else
             setContentView(General.isManyPane() ? R.layout.main_twopane : R.layout.main);
-        if (General.actionBar == null)
-            General.actionBar = getSupportActionBar();
-        General.actionBar.setDisplayHomeAsUpEnabled(true);
-        General.actionBar.setDisplayShowTitleEnabled(true);
-        General.actionBar.setDisplayUseLogoEnabled(true);
-        General.actionBar.setDisplayShowHomeEnabled(true);
-        General.actionBar.setDisplayShowCustomEnabled(false);
-        General.actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-
+        if (General.getActionBar() == null)
+            General.setActionBar(getSupportActionBar());
+        General.getActionBar().setDisplayHomeAsUpEnabled(true);
+        General.getActionBar().setDisplayShowTitleEnabled(true);
+        General.getActionBar().setDisplayUseLogoEnabled(true);
+        General.getActionBar().setDisplayShowHomeEnabled(true);
+        General.getActionBar().setDisplayShowCustomEnabled(false);
+        General.getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+        General.setCurrentActivity(this);
         if (findViewById(R.id.fragment_container) != null) {
             if (savedInstanceState != null) return;
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();

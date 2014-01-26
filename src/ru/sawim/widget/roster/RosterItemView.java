@@ -200,7 +200,7 @@ public class RosterItemView extends View {
 
         boolean isLayer = itemName == null && itemDesc != null;
         if (isShowDivider) {
-            paintDivider.setStrokeWidth((isLayer ? 4 : 1) * General.getResources(getContext()).getDisplayMetrics().scaledDensity);
+            paintDivider.setStrokeWidth(Util.dipToPixels(getContext(), isLayer ? 4 : 1));
             paintDivider.setColor(Scheme.isBlack() ? Scheme.DIVIDER_BLACK : Scheme.DIVIDER_LIGHT);
             canvas.drawLine(getPaddingLeft(), getScrollY() + getHeight(), getWidth() - getPaddingRight(), getScrollY() + getHeight(), paintDivider);
         }

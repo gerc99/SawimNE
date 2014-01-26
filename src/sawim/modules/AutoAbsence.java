@@ -97,11 +97,7 @@ public final class AutoAbsence {
     }
 
     public final void userActivity() {
-        try {
-            if (!General.isPaused()) {
-                activityOutTime = General.getCurrentGmtTime() + TIME;
-            }
-        } catch (Exception e) {
-        }
+        if (!General.isPaused())
+            activityOutTime = General.getCurrentGmtTime() + TIME;
     }
 }

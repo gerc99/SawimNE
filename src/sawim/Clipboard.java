@@ -36,11 +36,11 @@ public final class Clipboard {
         try {
             if (Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
                 android.text.ClipboardManager clipboard = (android.text.ClipboardManager)
-                        General.currentActivity.getSystemService(SawimActivity.CLIPBOARD_SERVICE);
+                        General.getCurrentActivity().getSystemService(SawimActivity.CLIPBOARD_SERVICE);
                 clipboard.setText(text);
             } else {
                 ClipboardManager clipboard = (ClipboardManager)
-                        General.currentActivity.getSystemService(SawimActivity.CLIPBOARD_SERVICE);
+                        General.getCurrentActivity().getSystemService(SawimActivity.CLIPBOARD_SERVICE);
                 clipboard.setPrimaryClip(ClipData.newPlainText("", text));
             }
         } catch (Throwable e) {
@@ -52,7 +52,7 @@ public final class Clipboard {
         final AtomicReference<String> text = new AtomicReference<String>();
         text.set(null);
         try {
-            ClipboardManager clipboard = (ClipboardManager) General.currentActivity.getSystemService(SawimActivity.CLIPBOARD_SERVICE);
+            ClipboardManager clipboard = (ClipboardManager) General.getCurrentActivity().getSystemService(SawimActivity.CLIPBOARD_SERVICE);
             text.set(clipboard.hasText() ? clipboard.getText().toString() : null);
         } catch (Throwable e) {
             sawim.modules.DebugLog.panic("get clipboard", e);

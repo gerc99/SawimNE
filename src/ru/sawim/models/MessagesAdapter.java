@@ -32,7 +32,7 @@ public class MessagesAdapter extends BaseAdapter {
     private Protocol currentProtocol;
     private String currentContact;
 
-    public static boolean isRepaint;
+    public boolean isRepaint;
     private boolean isMultiQuote = false;
     private int position = -1;
 
@@ -82,7 +82,7 @@ public class MessagesAdapter extends BaseAdapter {
         final MessData mData = items.get(index);
         if (mData.messView == null || isRepaint) {
             if (isRepaint) mData.messView = null;
-            mData.messView = new MessageItemView(General.currentActivity, !(mData.isMe() || mData.isPresence()));
+            mData.messView = new MessageItemView(General.getCurrentActivity(), !(mData.isMe() || mData.isPresence()));
         }
         MessageItemView item = mData.messView;
         CharSequence parsedText = mData.getText();

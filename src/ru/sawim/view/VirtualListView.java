@@ -100,11 +100,11 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
 
     public static void show() {
         SawimActivity.resetBar();
-        if (General.currentActivity.getSupportFragmentManager()
+        if (General.getCurrentActivity().getSupportFragmentManager()
                 .findFragmentById(R.id.chat_fragment) != null)
-            General.currentActivity.setContentView(R.layout.intercalation_layout);
+            General.getCurrentActivity().setContentView(R.layout.intercalation_layout);
         VirtualListView newFragment = new VirtualListView();
-        FragmentTransaction transaction = General.currentActivity.getSupportFragmentManager().beginTransaction();
+        FragmentTransaction transaction = General.getCurrentActivity().getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment_container, newFragment, VirtualListView.TAG);
         transaction.addToBackStack(null);
         transaction.commit();
@@ -112,7 +112,7 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
 
     @Override
     public void update() {
-        General.currentActivity.runOnUiThread(new Runnable() {
+        General.getCurrentActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 adapter.refreshList(list.getModel().elements);
@@ -123,12 +123,12 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
 
     @Override
     public void back() {
-        if (General.currentActivity.getSupportFragmentManager()
+        if (General.getCurrentActivity().getSupportFragmentManager()
                 .findFragmentById(R.id.chat_fragment) != null)
-            ((SawimActivity) General.currentActivity).recreateActivity();
+            ((SawimActivity) General.getCurrentActivity()).recreateActivity();
         else
-            General.currentActivity.getSupportFragmentManager().popBackStack();
-        General.currentActivity.supportInvalidateOptionsMenu();
+            General.getCurrentActivity().getSupportFragmentManager().popBackStack();
+        General.getCurrentActivity().supportInvalidateOptionsMenu();
     }
 
     public boolean hasBack() {
@@ -154,7 +154,7 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
 
     @Override
     public void setCurrentItemIndex(final int i, final boolean isSelected) {
-        General.currentActivity.runOnUiThread(new Runnable() {
+        General.getCurrentActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 if (isSelected)

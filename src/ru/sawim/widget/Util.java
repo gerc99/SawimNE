@@ -26,7 +26,7 @@ public class Util {
     public static Bitmap avatarBitmap(byte[] buffer) {
         if (buffer == null) return null;
         DisplayMetrics metrics = new DisplayMetrics();
-        General.currentActivity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        General.getCurrentActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
         float scaleWidth = metrics.scaledDensity;
         float scaleHeight = metrics.scaledDensity;
 
@@ -65,8 +65,7 @@ public class Util {
 
     public static int dipToPixels(Context context, int dipValue) {
         Resources r = context.getResources();
-        int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                dipValue, r.getDisplayMetrics());
+        int px = (int) (dipValue * r.getDisplayMetrics().density);
         return px;
     }
 

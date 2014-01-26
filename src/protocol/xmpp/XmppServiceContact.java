@@ -133,7 +133,7 @@ public class XmppServiceContact extends XmppContact {
     @Override
     public Icon getLeftIcon(Protocol p) {
         if (isConference())
-            return new Icon(StatusInfo.STATUS_ONLINE == getStatusIndex() ? SawimResources.usersIconOn : SawimResources.usersIcon);
+            return new Icon(StatusInfo.STATUS_OFFLINE == getStatusIndex() ? SawimResources.usersIcon : SawimResources.usersIconOn);
         return super.getLeftIcon(p);
     }
 

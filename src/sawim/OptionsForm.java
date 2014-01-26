@@ -173,8 +173,6 @@ public class OptionsForm implements ControlStateListener {
             @Override
             public boolean back() {
                 save(currentOptionsForm);
-                if (Scheme.isChangeTheme(Options.getInt(Options.OPTION_COLOR_SCHEME)))
-                    ((SawimActivity) General.currentActivity).recreateActivity();
                 return true;
             }
         });

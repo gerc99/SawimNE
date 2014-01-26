@@ -109,7 +109,7 @@ public class ContactMenu implements TextBoxView.TextBoxListener {
     }
 
     public void doAction(int cmd) {
-        final FragmentActivity activity = General.currentActivity;
+        final FragmentActivity activity = General.getCurrentActivity();
         switch (cmd) {
             case USER_MENU_TRACK:
                 new sawim.modules.tracking.TrackingForm(contact.getUserId()).activate();

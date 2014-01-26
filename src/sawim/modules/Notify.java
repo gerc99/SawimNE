@@ -85,7 +85,7 @@ public class Notify implements Runnable {
     }
 
     public boolean vibrate(final int duration) {
-        if (General.currentActivity == null) return false;
+        if (General.getCurrentActivity() == null) return false;
         final Vibrator vibrator = (Vibrator) SawimApplication.getInstance().getSystemService(Context.VIBRATOR_SERVICE);
         if (null == vibrator) {
             return false;

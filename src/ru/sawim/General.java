@@ -34,8 +34,8 @@ public class General {
 
     private static General instance;
     public static boolean returnFromAcc = false;
-    public static ActionBarActivity currentActivity;
-    public static ActionBar actionBar;
+    private static ActionBarActivity currentActivity;
+    private static ActionBar actionBar;
     private static Resources resources;
     private boolean paused = true;
     private static int fontSize;
@@ -180,6 +180,26 @@ public class General {
 
     public float getDisplayDensity() {
         return displayDensity;
+    }
+
+    public static ActionBar getActionBar() {
+        return actionBar;
+    }
+
+    public static void setActionBar(ActionBar actionBar) {
+        if (General.actionBar != null)
+            General.actionBar = null;
+        General.actionBar = actionBar;
+    }
+
+    public static ActionBarActivity getCurrentActivity() {
+        return currentActivity;
+    }
+
+    public static void setCurrentActivity(ActionBarActivity a) {
+        if (General.currentActivity != null)
+            General.currentActivity = null;
+        General.currentActivity = a;
     }
 
     public interface OnConfigurationChanged {

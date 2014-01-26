@@ -154,7 +154,7 @@ public final class HistoryStorageList implements Runnable, FormListener {
                 items[0] = JLocale.getString("currect_contact");
                 items[1] = JLocale.getString("all_contact_except_this");
                 items[2] = JLocale.getString("all_contacts");
-                AlertDialog.Builder builder = new AlertDialog.Builder(General.currentActivity);
+                AlertDialog.Builder builder = new AlertDialog.Builder(General.getCurrentActivity());
                 builder.setCancelable(true);
                 builder.setTitle(JLocale.getString("history"));
                 builder.setItems(items, new DialogInterface.OnClickListener() {
@@ -192,7 +192,7 @@ public final class HistoryStorageList implements Runnable, FormListener {
                     String sb = JLocale.getString("hist_cur") + ": " + getSize() + "\n"
                             + JLocale.getString("hist_size") + ": " + (rs.getSize() / 1024) + "\n"
                             + JLocale.getString("hist_avail") + ": " + (rs.getSizeAvailable() / 1024) + "\n";
-                    Toast.makeText(General.currentActivity, sb, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(General.getCurrentActivity(), sb, Toast.LENGTH_SHORT).show();
                 } catch (Exception ignored) {
                 }
                 break;

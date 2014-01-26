@@ -1246,6 +1246,8 @@ public final class XmppConnection extends ClientConnection {
                 getXmpp().ui_changeContactStatus(conf);
             }
             updateConfPrivate(conf, fromRes);
+            if (RosterHelper.getInstance().getUpdateChatListener() != null)
+                RosterHelper.getInstance().getUpdateChatListener().updateMucList();
         } else {
             if (!("u" + "navailable").equals(type)) {
                 if ((XStatusInfo.XSTATUS_NONE == contact.getXStatusIndex())

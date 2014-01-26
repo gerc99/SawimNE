@@ -279,7 +279,7 @@ public final class TrackingForm implements TextBoxView.TextBoxListener {
         InputBox.setTextBoxListener(this);
         InputBox.setCaption(JLocale.getString("mass"));
         InputBox.setString(text);
-        InputBox.show(General.currentActivity.getSupportFragmentManager(), JLocale.getString("message"));
+        InputBox.show(General.getCurrentActivity().getSupportFragmentManager(), JLocale.getString("message"));
     }
 
     private void changeStatus(int index) {

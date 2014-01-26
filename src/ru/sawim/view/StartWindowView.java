@@ -60,14 +60,14 @@ public class StartWindowView extends Fragment {
         signInXmppButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                new LoginDialog(Profile.PROTOCOL_JABBER).show(General.currentActivity.getSupportFragmentManager(), "login");
+                new LoginDialog(Profile.PROTOCOL_JABBER).show(General.getCurrentActivity().getSupportFragmentManager(), "login");
             }
         });
         Button signIntoOtherNetworksButton = (Button) v.findViewById(R.id.sign_into_other_networks);
         signIntoOtherNetworksButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(General.currentActivity);
+                AlertDialog.Builder builder = new AlertDialog.Builder(General.getCurrentActivity());
                 builder.setCancelable(true);
                 builder.setTitle(R.string.acc_sel_protocol);
                 builder.setItems(Profile.protocolNames, new DialogInterface.OnClickListener() {
@@ -75,7 +75,7 @@ public class StartWindowView extends Fragment {
                     @Override
                     public void onClick(DialogInterface dialog, int item) {
                         new LoginDialog(Profile.protocolTypes[item])
-                                .show(General.currentActivity.getSupportFragmentManager(), "login");
+                                .show(General.getCurrentActivity().getSupportFragmentManager(), "login");
                     }
                 });
                 builder.create().show();
@@ -91,10 +91,10 @@ public class StartWindowView extends Fragment {
     }
 
     private void back() {
-        General.currentActivity.getSupportFragmentManager().popBackStack();
-        if (General.currentActivity.getSupportFragmentManager()
+        General.getCurrentActivity().getSupportFragmentManager().popBackStack();
+        if (General.getCurrentActivity().getSupportFragmentManager()
                 .findFragmentById(R.id.chat_fragment) != null)
-            General.currentActivity.getSupportFragmentManager()
+            General.getCurrentActivity().getSupportFragmentManager()
                     .findFragmentById(R.id.chat_fragment).getView().setVisibility(View.VISIBLE);
     }
 

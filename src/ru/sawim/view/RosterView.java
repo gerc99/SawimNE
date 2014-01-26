@@ -64,6 +64,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     private RosterHelper roster;
     private AdapterView.AdapterContextMenuInfo contextMenuInfo;
     private Handler handler;
+    private static final ChatView chatView = new ChatView();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -109,8 +110,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         handler = new Handler(this);
-        if (General.currentActivity == null)
-            General.currentActivity = (ActionBarActivity) activity;
+        General.setCurrentActivity((ActionBarActivity) activity);
         barLinearLayout = new LinearLayout(activity);
         horizontalScrollView = new IconTabPageIndicator(getActivity());
 
@@ -256,11 +256,11 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
 
     private void initBar() {
         boolean isShowTabs = roster.getProtocolCount() > 1;
-        General.actionBar.setDisplayShowTitleEnabled(!isShowTabs);
-        General.actionBar.setDisplayShowHomeEnabled(!isShowTabs);
-        General.actionBar.setDisplayUseLogoEnabled(!isShowTabs);
-        General.actionBar.setDisplayHomeAsUpEnabled(false);
-        General.actionBar.setDisplayShowCustomEnabled(isShowTabs);
+        General.getActionBar().setDisplayShowTitleEnabled(!isShowTabs);
+        General.getActionBar().setDisplayShowHomeEnabled(!isShowTabs);
+        General.getActionBar().setDisplayUseLogoEnabled(!isShowTabs);
+        General.getActionBar().setDisplayHomeAsUpEnabled(false);
+        General.getActionBar().setDisplayShowCustomEnabled(isShowTabs);
         getActivity().setTitle(R.string.app_name);
         if (General.isManyPane()) {
             ChatView chatView = (ChatView) getActivity().getSupportFragmentManager()
@@ -274,9 +274,9 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
             barLinearLayout.addView(horizontalScrollView);
             chatView.removeTitleBar();
             barLinearLayout.addView(chatView.getTitleBar());
-            General.actionBar.setCustomView(barLinearLayout);
+            General.getActionBar().setCustomView(barLinearLayout);
         } else {
-            General.actionBar.setCustomView(horizontalScrollView);
+            General.getActionBar().setCustomView(horizontalScrollView);
         }
     }
 
@@ -326,8 +326,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     }
 
     public void resume() {
-        if (General.currentActivity == null)
-            General.currentActivity = (ActionBarActivity) getActivity();
+        General.setCurrentActivity((ActionBarActivity) getActivity());
         initBar();
         if (roster.getProtocolCount() > 0) {
             roster.setCurrentContact(null);
@@ -348,13 +347,11 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         roster.setOnUpdateRoster(null);
     }
 
-    private static final ChatView chatView = new ChatView();
-
     private void openChat(Protocol p, Contact c, boolean allowingStateLoss) {
         c.activate(p);
         ChatView chatViewTablet = (ChatView) getActivity().getSupportFragmentManager()
                 .findFragmentById(R.id.chat_fragment);
-        if (chatViewTablet == null) {
+        if (!General.isManyPane()) {
             chatView.initChat(p, c);
             FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.fragment_container, chatView, ChatView.TAG);

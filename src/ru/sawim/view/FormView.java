@@ -72,15 +72,15 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
     }
 
     public static void show() {
-        General.currentActivity.runOnUiThread(new Runnable() {
+        General.getCurrentActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 SawimActivity.resetBar();
-                if (General.currentActivity.getSupportFragmentManager()
+                if (General.getCurrentActivity().getSupportFragmentManager()
                         .findFragmentById(R.id.chat_fragment) != null)
-                    General.currentActivity.setContentView(R.layout.intercalation_layout);
+                    General.getCurrentActivity().setContentView(R.layout.intercalation_layout);
                 FormView newFragment = new FormView();
-                FragmentTransaction transaction = General.currentActivity.getSupportFragmentManager().beginTransaction();
+                FragmentTransaction transaction = General.getCurrentActivity().getSupportFragmentManager().beginTransaction();
                 transaction.replace(R.id.fragment_container, newFragment, FormView.TAG);
                 transaction.addToBackStack(null);
                 transaction.commitAllowingStateLoss();
@@ -103,20 +103,20 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (General.currentActivity.getSupportFragmentManager()
+                if (General.getCurrentActivity().getSupportFragmentManager()
                         .findFragmentById(R.id.chat_fragment) != null)
-                    ((SawimActivity) General.currentActivity).recreateActivity();
+                    ((SawimActivity) General.getCurrentActivity()).recreateActivity();
                 else
                     getFragmentManager().popBackStack();
                 hideKeyboard();
-                General.currentActivity.supportInvalidateOptionsMenu();
+                General.getCurrentActivity().supportInvalidateOptionsMenu();
             }
         });
     }
 
     private void hideKeyboard() {
-        if (General.currentActivity.getCurrentFocus() != null)
-            ((InputMethodManager) General.currentActivity.getSystemService("input_method")).hideSoftInputFromWindow(General.currentActivity.getCurrentFocus().getWindowToken(), 0);
+        if (General.getCurrentActivity().getCurrentFocus() != null)
+            ((InputMethodManager) General.getCurrentActivity().getSystemService("input_method")).hideSoftInputFromWindow(General.getCurrentActivity().getCurrentFocus().getWindowToken(), 0);
     }
 
     @Override

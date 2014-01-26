@@ -106,7 +106,7 @@ public final class Answerer implements FormListener {
 
                     case MENU_CLEAR:
                         popupAction();
-                        Toast.makeText(General.currentActivity, "All removed", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(General.getCurrentActivity(), "All removed", Toast.LENGTH_SHORT).show();
                         break;
 
                     case MENU_ON_OFF:

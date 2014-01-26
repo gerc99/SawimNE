@@ -102,7 +102,7 @@ public final class FileTransfer implements FileBrowserListener,
     }
 
     public void startPhotoTransfer() {
-        ExternalApi.instance.setActivity(General.currentActivity);
+        ExternalApi.instance.setActivity(General.getCurrentActivity());
         ExternalApi.instance.startCamera(this, 1024, 768);
     }
 
@@ -272,7 +272,7 @@ public final class FileTransfer implements FileBrowserListener,
         } catch (Exception ignored) {
         }
         name_Desc.back();
-        if (isFinish) General.currentActivity.finish();
+        if (isFinish) General.getCurrentActivity().finish();
         fileProgressView = null;
     }
 

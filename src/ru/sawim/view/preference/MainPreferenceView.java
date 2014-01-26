@@ -12,6 +12,7 @@ import ru.sawim.R;
 import ru.sawim.activities.AccountsListActivity;
 import ru.sawim.activities.SawimActivity;
 import ru.sawim.view.AboutProgramView;
+import ru.sawim.view.SawimFragment;
 import sawim.OptionsForm;
 
 /**
@@ -25,8 +26,6 @@ public class MainPreferenceView extends PreferenceFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        getActivity().setTitle(R.string.options);
-        General.actionBar.setDisplayHomeAsUpEnabled(true);
         rootScreen = getPreferenceManager().createPreferenceScreen(getActivity());
         setPreferenceScreen(rootScreen);
         buildList();
@@ -34,20 +33,28 @@ public class MainPreferenceView extends PreferenceFragment {
     }
 
     public static void show() {
-        General.currentActivity.runOnUiThread(new Runnable() {
+        General.getCurrentActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 SawimActivity.resetBar();
-                if (General.currentActivity.getSupportFragmentManager()
+                if (General.getCurrentActivity().getSupportFragmentManager()
                         .findFragmentById(R.id.chat_fragment) != null)
-                    General.currentActivity.setContentView(R.layout.intercalation_layout);
+                    General.getCurrentActivity().setContentView(R.layout.intercalation_layout);
                 MainPreferenceView newFragment = new MainPreferenceView();
-                FragmentTransaction transaction = General.currentActivity.getSupportFragmentManager().beginTransaction();
+                FragmentTransaction transaction = General.getCurrentActivity().getSupportFragmentManager().beginTransaction();
                 transaction.replace(R.id.fragment_container, newFragment, MainPreferenceView.TAG);
                 transaction.addToBackStack(null);
                 transaction.commitAllowingStateLoss();
             }
         });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        SawimActivity.resetBar();
+        General.getActionBar().setDisplayHomeAsUpEnabled(true);
+        getActivity().setTitle(R.string.options);
     }
 
     private void buildList() {
@@ -59,7 +66,7 @@ public class MainPreferenceView extends PreferenceFragment {
         screen1.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                startActivity(new Intent(General.currentActivity, AccountsListActivity.class));
+                startActivity(new Intent(General.getCurrentActivity(), AccountsListActivity.class));
                 return false;
             }
         });
@@ -119,7 +126,7 @@ public class MainPreferenceView extends PreferenceFragment {
         screen6.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                new AboutProgramView().show(General.currentActivity.getSupportFragmentManager(), AboutProgramView.TAG);
+                new AboutProgramView().show(General.getCurrentActivity().getSupportFragmentManager(), AboutProgramView.TAG);
                 return false;
             }
         });
@@ -127,16 +134,7 @@ public class MainPreferenceView extends PreferenceFragment {
     }
 
     public boolean hasBack() {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (General.currentActivity.getSupportFragmentManager()
-                        .findFragmentById(R.id.chat_fragment) != null)
-                    ((SawimActivity) General.currentActivity).recreateActivity();
-                else
-                    getFragmentManager().popBackStack();
-            }
-        });
-        return true;
+        SawimFragment preferenceFormView = (SawimFragment) getActivity().getSupportFragmentManager().findFragmentByTag(PreferenceFormView.TAG);
+        return preferenceFormView == null ? true : preferenceFormView.hasBack();
     }
 }

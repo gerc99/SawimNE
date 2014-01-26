@@ -38,14 +38,14 @@ public class TextLinkClick implements TextLinkClickListener {
         if (clickedString.length() == 0) return;
         boolean isJuick = clickedString.substring(0, 1).equals("@") || clickedString.substring(0, 1).equals("#");
         if (isJuick) {
-            new JuickMenu((General.currentActivity), currentProtocol, currentContact, clickedString).show();
+            new JuickMenu((General.getCurrentActivity()), currentProtocol, currentContact, clickedString).show();
             return;
         }
         if (isLongTap) {
             CharSequence[] items = new CharSequence[2];
-            items[0] = General.currentActivity.getString(R.string.copy);
-            items[1] = General.currentActivity.getString(R.string.add_contact);
-            final AlertDialog.Builder builder = new AlertDialog.Builder(General.currentActivity);
+            items[0] = General.getCurrentActivity().getString(R.string.copy);
+            items[1] = General.getCurrentActivity().getString(R.string.add_contact);
+            final AlertDialog.Builder builder = new AlertDialog.Builder(General.getCurrentActivity());
             builder.setCancelable(true);
             builder.setTitle(R.string.url_menu);
             final String finalClickedString = clickedString;
@@ -79,12 +79,12 @@ public class TextLinkClick implements TextLinkClickListener {
                     || (url.endsWith(".bmp"))) {
                 PictureView pictureView = new PictureView();
                 pictureView.setLink(clickedString);
-                FragmentTransaction transaction = General.currentActivity.getSupportFragmentManager().beginTransaction();
+                FragmentTransaction transaction = General.getCurrentActivity().getSupportFragmentManager().beginTransaction();
                 transaction.add(pictureView, PictureView.TAG);
                 transaction.commitAllowingStateLoss();
             } else {
                 Uri uri = Uri.parse(clickedString);
-                Context context = General.currentActivity;
+                Context context = General.getCurrentActivity();
                 Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                 intent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
                 context.startActivity(intent);

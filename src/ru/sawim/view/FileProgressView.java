@@ -51,19 +51,19 @@ public class FileProgressView extends DialogFragment {
     }
 
     public void showProgress() {
-        FragmentTransaction transaction = General.currentActivity.getSupportFragmentManager().beginTransaction();
+        FragmentTransaction transaction = General.getCurrentActivity().getSupportFragmentManager().beginTransaction();
         transaction.add(this, "file_progress");
         transaction.commitAllowingStateLoss();
     }
 
     public void changeFileProgress(final int percent, final String caption, final String text) {
-        if (General.currentActivity == null) return;
+        if (General.getCurrentActivity() == null) return;
         if (percent == 100) {
             RosterHelper.getInstance().removeTransfer(true);
             dismiss();
         }
         final String strTime = Util.getLocalDateString(General.getCurrentGmtTime(), true);
-        Handler handler = new Handler(General.currentActivity.getMainLooper());
+        Handler handler = new Handler(General.getCurrentActivity().getMainLooper());
         handler.post(new Runnable() {
             @Override
             public void run() {

@@ -31,7 +31,7 @@ public class PreferenceFormView extends PreferenceFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         getActivity().setTitle(Forms.getInstance().getCaption());
-        General.actionBar.setDisplayHomeAsUpEnabled(true);
+        General.getActionBar().setDisplayHomeAsUpEnabled(true);
         rootScreen = getPreferenceManager().createPreferenceScreen(getActivity());
         setPreferenceScreen(rootScreen);
         buildList();
@@ -39,15 +39,15 @@ public class PreferenceFormView extends PreferenceFragment {
     }
 
     public static void show() {
-        General.currentActivity.runOnUiThread(new Runnable() {
+        General.getCurrentActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 SawimActivity.resetBar();
-                if (General.currentActivity.getSupportFragmentManager()
+                if (General.getCurrentActivity().getSupportFragmentManager()
                         .findFragmentById(R.id.chat_fragment) != null)
-                    General.currentActivity.setContentView(R.layout.intercalation_layout);
+                    General.getCurrentActivity().setContentView(R.layout.intercalation_layout);
                 PreferenceFormView newFragment = new PreferenceFormView();
-                FragmentTransaction transaction = General.currentActivity.getSupportFragmentManager().beginTransaction();
+                FragmentTransaction transaction = General.getCurrentActivity().getSupportFragmentManager().beginTransaction();
                 transaction.replace(R.id.fragment_container, newFragment, PreferenceFormView.TAG);
                 transaction.addToBackStack(null);
                 transaction.commitAllowingStateLoss();
@@ -56,8 +56,8 @@ public class PreferenceFormView extends PreferenceFragment {
     }
 
     private void hideKeyboard() {
-        if (General.currentActivity.getCurrentFocus() != null)
-            ((InputMethodManager) General.currentActivity.getSystemService("input_method")).hideSoftInputFromWindow(General.currentActivity.getCurrentFocus().getWindowToken(), 0);
+        if (General.getCurrentActivity().getCurrentFocus() != null)
+            ((InputMethodManager) General.getCurrentActivity().getSystemService("input_method")).hideSoftInputFromWindow(General.getCurrentActivity().getCurrentFocus().getWindowToken(), 0);
     }
 
     public boolean hasBack() {

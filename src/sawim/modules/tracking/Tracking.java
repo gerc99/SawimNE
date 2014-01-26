@@ -343,7 +343,7 @@ public final class Tracking {
         Chat chat_ = new Chat(protocol, item);
         switch (action) {
             case ACTION_CHAT:
-                ((SawimActivity) General.currentActivity).openChat(chat.getProtocol(), chat.getContact(), true);
+                ((SawimActivity) General.getCurrentActivity()).openChat(chat.getProtocol(), chat.getContact(), true);
                 break;
             case ACTION_NOTICE:
                 RosterHelper.getInstance().activateWithMsg(JLocale.getString("track_form_title")
