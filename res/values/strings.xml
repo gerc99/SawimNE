@@ -224,4 +224,5 @@
     <string name="role_commands">Role commands</string>
     <string name="hide_chat_keyboard">Hide chat keyboard</string>
     <string name="enter_id">It is not your email but ID</string>
+    <string name="options_pro">Options pro</string>
 </resources>

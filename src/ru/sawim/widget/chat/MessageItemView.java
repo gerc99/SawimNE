@@ -6,7 +6,7 @@ import android.graphics.Paint;
 import android.text.TextPaint;
 import android.widget.AbsListView;
 import android.widget.LinearLayout;
-import ru.sawim.General;
+import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
 import ru.sawim.widget.Util;
 
@@ -32,7 +32,7 @@ public class MessageItemView extends LinearLayout {
         if (textPaint == null)
             textPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         textPaint.setAntiAlias(true);
-        textPaint.setTextSize(General.getFontSize());
+        textPaint.setTextSize(SawimApplication.getFontSize());
         textPaint.setColor(Scheme.getColor(Scheme.THEME_TEXT));
         if (paintDivider == null)
             paintDivider = new Paint(Paint.ANTI_ALIAS_FLAG);

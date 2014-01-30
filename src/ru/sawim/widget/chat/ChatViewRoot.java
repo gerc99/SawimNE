@@ -5,7 +5,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import ru.sawim.General;
+import ru.sawim.SawimApplication;
 import ru.sawim.R;
 import ru.sawim.Scheme;
 import ru.sawim.widget.IcsLinearLayout;
@@ -37,7 +37,7 @@ public class ChatViewRoot extends IcsLinearLayout {
         hideHint();
         TextView hint = new TextView(getContext());
         hint.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
-        hint.setTextSize(General.getFontSize());
+        hint.setTextSize(SawimApplication.getFontSize());
         hint.setGravity(Gravity.CENTER);
         hint.setText(R.string.select_contact);
         addView(hint, 2);

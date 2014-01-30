@@ -89,6 +89,7 @@ public class Icq extends Protocol {
     protected void initStatusInfo() {
         info = new StatusInfo(statusIcons, statusIconIndex, statuses);
         xstatusInfo = Icq.xstatus.getInfo();
+        clientInfo = ClientDetector.instance.get();
     }
 
     public boolean isEmpty() {

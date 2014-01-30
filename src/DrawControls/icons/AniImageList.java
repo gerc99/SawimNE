@@ -1,6 +1,6 @@
 package DrawControls.icons;
 
-import ru.sawim.General;
+import ru.sawim.SawimApplication;
 
 import java.io.InputStream;
 
@@ -30,7 +30,7 @@ public class AniImageList extends ImageList {
 
     public void load(String resName, int w, int h) {
         try {
-            InputStream is = General.getResourceAsStream(resName + "/animate.bin");
+            InputStream is = SawimApplication.getResourceAsStream(resName + "/animate.bin");
             int smileCount = is.read() + 1;
             icons = new AniIcon[smileCount];
             ImageList imgs = new ImageList();

@@ -6,7 +6,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import ru.sawim.General;
+import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
 import ru.sawim.widget.IcsLinearLayout;
 import ru.sawim.widget.LabelView;
@@ -73,7 +73,7 @@ public class ChatBarView extends IcsLinearLayout {
 
     public void updateTextView(String text) {
         textView.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
-        textView.setTextSize(General.getFontSize());
+        textView.setTextSize(SawimApplication.getFontSize());
         textView.setText(text);
     }
 

@@ -1,7 +1,7 @@
 package protocol.net;
 
 import protocol.Protocol;
-import ru.sawim.General;
+import ru.sawim.SawimApplication;
 import sawim.SawimException;
 import sawim.chat.message.Message;
 import sawim.chat.message.PlainMessage;
@@ -24,7 +24,7 @@ public abstract class ClientConnection implements Runnable {
 
     protected final void setPingInterval(long interval) {
         keepAliveInterv = Math.min(keepAliveInterv, interval);
-        nextPingTime = General.getCurrentGmtTime() + keepAliveInterv;
+        nextPingTime = SawimApplication.getCurrentGmtTime() + keepAliveInterv;
     }
 
     protected final long getPingInterval() {
@@ -39,7 +39,7 @@ public abstract class ClientConnection implements Runnable {
     private void initPingValues() {
         usePong = false;
         keepAliveInterv = PING_INTERVAL;
-        nextPingTime = General.getCurrentGmtTime() + keepAliveInterv;
+        nextPingTime = SawimApplication.getCurrentGmtTime() + keepAliveInterv;
     }
 
     public final void start() {
@@ -104,7 +104,7 @@ public abstract class ClientConnection implements Runnable {
     }
 
     private void doPingIfNeeeded() throws SawimException {
-        long now = General.getCurrentGmtTime();
+        long now = SawimApplication.getCurrentGmtTime();
         if (usePong && (pongTime + PONG_TIMEOUT < now)) {
             throw new SawimException(120, 9);
         }
@@ -119,7 +119,7 @@ public abstract class ClientConnection implements Runnable {
     }
 
     protected final void updateTimeout() {
-        pongTime = General.getCurrentGmtTime();
+        pongTime = SawimApplication.getCurrentGmtTime();
     }
 
     public final boolean isConnected() {
@@ -158,7 +158,7 @@ public abstract class ClientConnection implements Runnable {
                 messages.removeElement(msg);
             }
         }
-        long date = General.getCurrentGmtTime() - 5 * 60;
+        long date = SawimApplication.getCurrentGmtTime() - 5 * 60;
         for (int i = messages.size() - 1; i >= 0; --i) {
             PlainMessage m = (PlainMessage) messages.elementAt(i);
             if (date > m.getNewDate()) {

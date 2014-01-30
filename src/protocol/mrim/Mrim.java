@@ -50,6 +50,7 @@ public class Mrim extends Protocol {
         info = new StatusInfo(statusIcons, statusIconIndex, statuses);
         microBlog = new MicroBlog(this);
         xstatusInfo = Mrim.xStatus.getInfo();
+        clientInfo = MrimClient.get();
     }
 
     protected String processUin(String uin) {

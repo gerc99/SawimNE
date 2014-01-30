@@ -7,7 +7,7 @@ import android.widget.Toast;
 import protocol.Contact;
 import protocol.Protocol;
 import protocol.xmpp.XmppContact;
-import ru.sawim.General;
+import ru.sawim.SawimApplication;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
 import ru.sawim.models.list.VirtualList;
@@ -106,7 +106,7 @@ public final class Answerer implements FormListener {
 
                     case MENU_CLEAR:
                         popupAction();
-                        Toast.makeText(General.getCurrentActivity(), "All removed", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(SawimApplication.getCurrentActivity(), "All removed", Toast.LENGTH_SHORT).show();
                         break;
 
                     case MENU_ON_OFF:

@@ -11,7 +11,7 @@ import android.widget.BaseAdapter;
 import protocol.Contact;
 import protocol.Protocol;
 import protocol.XStatusInfo;
-import ru.sawim.General;
+import ru.sawim.SawimApplication;
 import ru.sawim.SawimResources;
 import ru.sawim.Scheme;
 import ru.sawim.widget.roster.RosterItemView;
@@ -78,7 +78,7 @@ public class ChatsAdapter extends BaseAdapter {
         rosterItemView.itemNameFont = item.hasChat() ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT;
         rosterItemView.itemName = (item.subcontactsS() == 0) ?
                 item.getText() : item.getText() + " (" + item.subcontactsS() + ")";
-        if (General.showStatusLine) {
+        if (SawimApplication.showStatusLine) {
             String statusMessage = roster.getStatusMessage(item);
             rosterItemView.itemDescColor = Scheme.getColor(Scheme.THEME_CONTACT_STATUS);
             rosterItemView.itemDesc = statusMessage;

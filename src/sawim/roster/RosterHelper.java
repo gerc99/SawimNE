@@ -8,6 +8,7 @@ import protocol.icq.Icq;
 import protocol.mrim.Mrim;
 import protocol.xmpp.Xmpp;
 import ru.sawim.SawimApplication;
+import ru.sawim.SawimNotification;
 import sawim.FileTransfer;
 import sawim.Options;
 import sawim.comm.StringConvertor;
@@ -252,6 +253,12 @@ public final class RosterHelper {
         }
     }
 
+    public void setStatus() {
+        Protocol p = getCurrentProtocol();
+        p.setStatus((p.isConnected() || p.isConnecting())
+                ? StatusInfo.STATUS_OFFLINE : StatusInfo.STATUS_ONLINE, "");
+    }
+
     public void addTransfer(FileTransfer ft) {
         transfers.addElement(ft);
     }
@@ -324,7 +331,7 @@ public final class RosterHelper {
     }*/
 
     public final void markMessages(Contact contact) {
-        SawimApplication.getInstance().updateAppIcon();
+        SawimNotification.clear(SawimApplication.getContext());
         if (getUpdateChatListener() != null)
             getUpdateChatListener().updateChat(contact);
     }

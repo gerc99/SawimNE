@@ -12,7 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
-import ru.sawim.General;
+import ru.sawim.SawimApplication;
 import ru.sawim.R;
 import ru.sawim.Scheme;
 import ru.sawim.activities.SawimActivity;
@@ -72,15 +72,15 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
     }
 
     public static void show() {
-        General.getCurrentActivity().runOnUiThread(new Runnable() {
+        SawimApplication.getCurrentActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 SawimActivity.resetBar();
-                if (General.getCurrentActivity().getSupportFragmentManager()
+                if (SawimApplication.getCurrentActivity().getSupportFragmentManager()
                         .findFragmentById(R.id.chat_fragment) != null)
-                    General.getCurrentActivity().setContentView(R.layout.intercalation_layout);
+                    SawimApplication.getCurrentActivity().setContentView(R.layout.intercalation_layout);
                 FormView newFragment = new FormView();
-                FragmentTransaction transaction = General.getCurrentActivity().getSupportFragmentManager().beginTransaction();
+                FragmentTransaction transaction = SawimApplication.getCurrentActivity().getSupportFragmentManager().beginTransaction();
                 transaction.replace(R.id.fragment_container, newFragment, FormView.TAG);
                 transaction.addToBackStack(null);
                 transaction.commitAllowingStateLoss();
@@ -103,20 +103,20 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (General.getCurrentActivity().getSupportFragmentManager()
+                if (SawimApplication.getCurrentActivity().getSupportFragmentManager()
                         .findFragmentById(R.id.chat_fragment) != null)
-                    ((SawimActivity) General.getCurrentActivity()).recreateActivity();
+                    ((SawimActivity) SawimApplication.getCurrentActivity()).recreateActivity();
                 else
                     getFragmentManager().popBackStack();
                 hideKeyboard();
-                General.getCurrentActivity().supportInvalidateOptionsMenu();
+                SawimApplication.getCurrentActivity().supportInvalidateOptionsMenu();
             }
         });
     }
 
     private void hideKeyboard() {
-        if (General.getCurrentActivity().getCurrentFocus() != null)
-            ((InputMethodManager) General.getCurrentActivity().getSystemService("input_method")).hideSoftInputFromWindow(General.getCurrentActivity().getCurrentFocus().getWindowToken(), 0);
+        if (SawimApplication.getCurrentActivity().getCurrentFocus() != null)
+            ((InputMethodManager) SawimApplication.getCurrentActivity().getSystemService("input_method")).hideSoftInputFromWindow(SawimApplication.getCurrentActivity().getCurrentFocus().getWindowToken(), 0);
     }
 
     @Override
@@ -162,7 +162,7 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
             spinner.setVisibility(Spinner.GONE);
             seekBar.setVisibility(SeekBar.GONE);
             editText.setVisibility(EditText.GONE);
-            setAllTextSize(descView, labelView, checkBox, editText, General.getFontSize());
+            setAllTextSize(descView, labelView, checkBox, editText, SawimApplication.getFontSize());
 
             imageView.setPadding(0, padding, 0, padding);
             labelView.setPadding(0, padding, 0, padding);
@@ -350,7 +350,7 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
             if (string == null) return v;
             if (Scheme.isBlack() && Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN)
                 headerViewHolder.header.setTextColor(0xff000000);
-            headerViewHolder.header.setTextSize(General.getFontSize());
+            headerViewHolder.header.setTextSize(SawimApplication.getFontSize());
             headerViewHolder.header.setText(string);
             return v;
         }
@@ -371,7 +371,7 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
             if (string == null) return v;
             if (Scheme.isBlack() && Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN)
                 dropDownViewHolder.label.setTextColor(0xff000000);
-            dropDownViewHolder.label.setTextSize(General.getFontSize());
+            dropDownViewHolder.label.setTextSize(SawimApplication.getFontSize());
             dropDownViewHolder.label.setText(string);
             return v;
         }

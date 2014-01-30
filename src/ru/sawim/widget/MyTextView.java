@@ -7,9 +7,10 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.text.*;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import ru.sawim.General;
+import ru.sawim.SawimApplication;
 import ru.sawim.text.InternalURLSpan;
 import ru.sawim.text.TextLinkClickListener;
 
@@ -49,7 +50,7 @@ public class MyTextView extends View {
     public void initPaint() {
         textPaint = new TextPaint();
         textPaint.setAntiAlias(true);
-        textPaint.setTextSize(General.getFontSize());
+        textPaint.setTextSize(SawimApplication.getFontSize());
         textPaint.setColor(Color.BLACK);
     }
 
@@ -81,7 +82,7 @@ public class MyTextView extends View {
     }
 
     public void setTextSize(float textSize) {
-        textPaint.setTextSize(textSize * General.getResources(getContext()).getDisplayMetrics().scaledDensity);
+        textPaint.setTextSize(textSize * SawimApplication.getInstance().getResources().getDisplayMetrics().scaledDensity);
     }
 
     public void setGravity(boolean isRight) {
@@ -126,7 +127,10 @@ public class MyTextView extends View {
                 isSecondTap = true;
             }
             if (urlSpans.length != 0) {
-                final String link = urlSpans[0].clickedSpan;
+                InternalURLSpan urlSpan = urlSpans.length == 2 ? urlSpans[1] : null;
+                if (urlSpan == null) urlSpan = urlSpans[0];
+                final String link = urlSpan.clickedSpan;
+
                 Runnable longPressed = new Runnable() {
                     public void run() {
                         if (listener != null && !isSecondTap) {
@@ -138,9 +142,6 @@ public class MyTextView extends View {
                 if (action == MotionEvent.ACTION_DOWN) {
                     isSecondTap = false;
                     isLongTap = false;
-                    Selection.setSelection(buffer,
-                            buffer.getSpanStart(urlSpans[0]),
-                            buffer.getSpanEnd(urlSpans[0]));
                     postDelayed(longPressed, 700L);
                 }
                 if (action == MotionEvent.ACTION_UP) {

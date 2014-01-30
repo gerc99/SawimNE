@@ -4,7 +4,7 @@ import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import protocol.Contact;
-import ru.sawim.General;
+import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
 import ru.sawim.models.list.VirtualList;
 import ru.sawim.models.list.VirtualListItem;
@@ -166,7 +166,7 @@ public final class MicroBlog implements TextBoxView.TextBoxListener {
         replayTo = StringConvertor.notNull(to);
         postEditor = new TextBoxView();
         postEditor.setTextBoxListener(this);
-        postEditor.show(General.getCurrentActivity().getSupportFragmentManager(), StringConvertor.isEmpty(replayTo) ? "message" : "reply");
+        postEditor.show(SawimApplication.getCurrentActivity().getSupportFragmentManager(), StringConvertor.isEmpty(replayTo) ? "message" : "reply");
     }
 
     public void textboxAction(TextBoxView box, boolean ok) {

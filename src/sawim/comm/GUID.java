@@ -1,7 +1,7 @@
 package sawim.comm;
 
 
-import ru.sawim.General;
+import ru.sawim.SawimApplication;
 
 public final class GUID {
     public static final GUID CAP_AIM_SERVERRELAY = new GUID(new byte[]{(byte) 0x09, (byte) 0x46, (byte) 0x13, (byte) 0x49, (byte) 0x4C, (byte) 0x7F, (byte) 0x11, (byte) 0xD1, (byte) 0x82, (byte) 0x22, (byte) 0x44, (byte) 0x45, (byte) 0x53, (byte) 0x54, (byte) 0x00, (byte) 0x00});
@@ -23,7 +23,7 @@ public final class GUID {
 
     private static GUID getSawimGuid() {
         byte[] guid = new byte[]{'J', 'i', 'm', 'm', ' ', (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00};
-        byte[] ver = StringConvertor.stringToByteArray(General.VERSION);
+        byte[] ver = StringConvertor.stringToByteArray(SawimApplication.VERSION);
         System.arraycopy(ver, 0, guid, 5, Math.min(ver.length, 10));
         return new GUID(guid);
     }

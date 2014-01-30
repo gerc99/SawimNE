@@ -4,7 +4,7 @@ import protocol.Contact;
 import protocol.XStatusInfo;
 import protocol.icq.packet.*;
 import protocol.icq.plugin.XtrazMessagePlugin;
-import ru.sawim.General;
+import ru.sawim.SawimApplication;
 import sawim.Options;
 import sawim.SawimException;
 import sawim.chat.message.PlainMessage;
@@ -353,7 +353,7 @@ public final class IcqNetDefActions {
             return;
         }
         getIcq().addMessage(new PlainMessage(uin, getIcq(),
-                General.getCurrentGmtTime(), text, false));
+                SawimApplication.getCurrentGmtTime(), text, false));
     }
 
     private void addOfflineMessage(String uin, String text, long date) {
@@ -683,6 +683,7 @@ public final class IcqNetDefActions {
             capabilities_new = null;
 
             contact.setTimeOfChaingingStatus(signon);
+            ClientDetector.instance.execVM(contact, capa, new int[]{dwFT1, dwFT2, dwFT3}, protocolVersion);
             getIcq().ui_changeContactStatus(contact);
         } else {
             DebugLog.println("USER_ONLINE for " + uin + " (0x" + Integer.toHexString(status) + ")");

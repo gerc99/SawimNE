@@ -3,7 +3,7 @@ package sawim.modules;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
-import ru.sawim.General;
+import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
 import ru.sawim.models.list.VirtualList;
 import ru.sawim.models.list.VirtualListItem;
@@ -195,7 +195,7 @@ public final class DebugLog {
 
     private synchronized void print(String text) {
         VirtualListItem record = model.createNewParser(true);
-        String date = Util.getLocalDateString(General.getCurrentGmtTime(), true);
+        String date = Util.getLocalDateString(SawimApplication.getCurrentGmtTime(), true);
         record.addLabel(date + ": ", Scheme.THEME_MAGIC_EYE_NUMBER,
                 Scheme.FONT_STYLE_PLAIN);
         record.addDescription(_(text), Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
@@ -206,7 +206,7 @@ public final class DebugLog {
 
     private long freeMemory() {
         for (int i = 0; i < 10; ++i) {
-            General.gc();
+            SawimApplication.gc();
         }
         return Runtime.getRuntime().freeMemory();
     }

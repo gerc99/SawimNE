@@ -6,7 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import protocol.Protocol;
-import ru.sawim.General;
+import ru.sawim.SawimApplication;
 import ru.sawim.R;
 import ru.sawim.SawimResources;
 import ru.sawim.Scheme;
@@ -82,7 +82,7 @@ public class MessagesAdapter extends BaseAdapter {
         final MessData mData = items.get(index);
         if (mData.messView == null || isRepaint) {
             if (isRepaint) mData.messView = null;
-            mData.messView = new MessageItemView(General.getCurrentActivity(), !(mData.isMe() || mData.isPresence()));
+            mData.messView = new MessageItemView(SawimApplication.getCurrentActivity(), !(mData.isMe() || mData.isPresence()));
         }
         MessageItemView item = mData.messView;
         CharSequence parsedText = mData.getText();
@@ -95,7 +95,7 @@ public class MessagesAdapter extends BaseAdapter {
         item.msgText.setTypeface(Typeface.DEFAULT);
         item.setBackgroundColor(0);
         if (mData.isMe() || mData.isPresence()) {
-            item.msgText.setTextSize(General.getFontSize() - 2);
+            item.msgText.setTextSize(SawimApplication.getFontSize() - 2);
             if (mData.isMe()) {
                 SpannableStringBuilder text = new SpannableStringBuilder();
                 text.append("* ").append(nick).append(" ").append(parsedText);
@@ -111,7 +111,7 @@ public class MessagesAdapter extends BaseAdapter {
             item.setBackgroundResource(incoming ?
                     (Scheme.isBlack() ? R.drawable.msg_in_dark : R.drawable.msg_in)
                     : (Scheme.isBlack() ? R.drawable.msg_out_dark : R.drawable.msg_out));
-            float displayDensity = General.getInstance().getDisplayDensity();
+            float displayDensity = SawimApplication.getInstance().getDisplayDensity();
             if (incoming) {
                 item.setPadding((int) (19 * displayDensity), (int) (7 * displayDensity), (int) (9 * displayDensity), (int) (9 * displayDensity));
             } else {
@@ -122,12 +122,12 @@ public class MessagesAdapter extends BaseAdapter {
             }
 
             item.titleItemView.setNick(Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG),
-                    General.getFontSize(), Typeface.DEFAULT_BOLD, nick);
+                    SawimApplication.getFontSize(), Typeface.DEFAULT_BOLD, nick);
 
             item.titleItemView.setMsgTime(Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG),
-                    General.getFontSize() * 2 / 3, Typeface.DEFAULT, mData.strTime);
+                    SawimApplication.getFontSize() * 2 / 3, Typeface.DEFAULT, mData.strTime);
 
-            item.msgText.setTextSize(General.getFontSize());
+            item.msgText.setTextSize(SawimApplication.getFontSize());
             item.msgText.setTextColor(Scheme.getColor(mData.getMessColor()));
             item.msgText.setText(parsedText);
         }

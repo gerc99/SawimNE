@@ -6,8 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
-import ru.sawim.General;
 import ru.sawim.R;
+import ru.sawim.SawimApplication;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,7 +62,7 @@ public class MyMenu extends BaseAdapter {
             wr = (ItemWrapper) row.getTag();
         }
         wr.text = (TextView) row.findViewById(R.id.menuTextView);
-        wr.text.setTextSize(General.getFontSize());
+        wr.text.setTextSize(SawimApplication.getFontSize());
         wr.text.setText(getItem(i).nameItem);
         return row;
     }

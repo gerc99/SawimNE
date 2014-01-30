@@ -2,7 +2,7 @@ package sawim.modules.tracking;
 
 import DrawControls.icons.Icon;
 import android.graphics.drawable.Drawable;
-import ru.sawim.General;
+import ru.sawim.SawimApplication;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
@@ -279,7 +279,7 @@ public final class TrackingForm implements TextBoxView.TextBoxListener {
         InputBox.setTextBoxListener(this);
         InputBox.setCaption(JLocale.getString("mass"));
         InputBox.setString(text);
-        InputBox.show(General.getCurrentActivity().getSupportFragmentManager(), JLocale.getString("message"));
+        InputBox.show(SawimApplication.getCurrentActivity().getSupportFragmentManager(), JLocale.getString("message"));
     }
 
     private void changeStatus(int index) {

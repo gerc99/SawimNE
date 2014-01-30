@@ -4,8 +4,8 @@ import DrawControls.icons.Icon;
 import DrawControls.icons.ImageList;
 import android.view.ContextMenu;
 import android.view.Menu;
-import ru.sawim.General;
 import ru.sawim.R;
+import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
 import ru.sawim.view.menu.MyMenu;
 import sawim.chat.Chat;
@@ -25,6 +25,7 @@ abstract public class Contact extends TreeNode {
     private int booleanValues;
     private byte status = StatusInfo.STATUS_OFFLINE;
     private String statusText = null;
+    public short clientIndex = ClientInfo.CLI_NONE;
     private int xstatus = XStatusInfo.XSTATUS_NONE;
     private String xstatusText = null;
     String version = "";
@@ -113,13 +114,14 @@ abstract public class Contact extends TreeNode {
         return xstatusText;
     }
 
-    public void setClient(String ver) {
+    public void setClient(short clientNum, String ver) {
+        clientIndex = clientNum;
         version = StringConvertor.notNull(ver);
     }
 
     public void setOfflineStatus() {
         if (isOnline()) {
-            setTimeOfChaingingStatus(General.getCurrentGmtTime());
+            setTimeOfChaingingStatus(SawimApplication.getCurrentGmtTime());
 
             String id = getUserId();
             if (Tracking.isTrackingEvent(id, Tracking.GLOBAL) == Tracking.TRUE) {
@@ -144,7 +146,7 @@ abstract public class Contact extends TreeNode {
 
     protected final void setStatus(byte statusIndex, String text) {
         if (!isOnline() && (StatusInfo.STATUS_OFFLINE != statusIndex)) {
-            setTimeOfChaingingStatus(General.getCurrentGmtTime());
+            setTimeOfChaingingStatus(SawimApplication.getCurrentGmtTime());
         }
         status = statusIndex;
         statusText = (StatusInfo.STATUS_OFFLINE == status) ? null : text;
@@ -292,14 +294,14 @@ abstract public class Contact extends TreeNode {
         if (!isSingleUserContact()) {
             return isOnline() ? 9 : 50;
         }
-        //if (RosterHelper.SORT_BY_NAME == General.sortType) {
+        //if (RosterHelper.SORT_BY_NAME == SawimApplication.sortType) {
         //    return 20;
         //}
         if (isOnline()) {
             if (hasChat()) {
                 return 10;
             }
-            //switch (General.sortType) {
+            //switch (SawimApplication.sortType) {
             //    case RosterHelper.SORT_BY_STATUS:
             return 20 + StatusInfo.getWidth(getStatusIndex());
             //    case RosterHelper.SORT_BY_ONLINE:

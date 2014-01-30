@@ -6,7 +6,7 @@ import android.support.v4.app.FragmentActivity;
 import android.view.ContextMenu;
 import android.widget.Toast;
 import protocol.xmpp.Xmpp;
-import ru.sawim.General;
+import ru.sawim.SawimApplication;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.view.TextBoxView;
@@ -109,7 +109,7 @@ public class ContactMenu implements TextBoxView.TextBoxListener {
     }
 
     public void doAction(int cmd) {
-        final FragmentActivity activity = General.getCurrentActivity();
+        final FragmentActivity activity = SawimApplication.getCurrentActivity();
         switch (cmd) {
             case USER_MENU_TRACK:
                 new sawim.modules.tracking.TrackingForm(contact.getUserId()).activate();

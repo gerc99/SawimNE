@@ -13,7 +13,7 @@ import protocol.icq.Icq;
 import protocol.mrim.Mrim;
 import protocol.net.TcpSocket;
 import protocol.xmpp.Xmpp;
-import ru.sawim.General;
+import ru.sawim.SawimApplication;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.models.list.VirtualList;
@@ -207,7 +207,7 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
                         break;
 
                     case INFO_MENU_TAKE_AVATAR:
-                        ExternalApi.instance.setActivity(General.getCurrentActivity());
+                        ExternalApi.instance.setActivity(SawimApplication.getCurrentActivity());
                         ExternalApi.instance.startCamera(UserInfo.this, 640, 480);
                         break;
 

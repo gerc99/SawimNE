@@ -14,7 +14,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import protocol.Profile;
 import protocol.xmpp.XmppRegistration;
-import ru.sawim.General;
+import ru.sawim.SawimApplication;
 import ru.sawim.R;
 import sawim.Options;
 import sawim.comm.StringConvertor;
@@ -34,7 +34,7 @@ public class StartWindowView extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        General.returnFromAcc = true;
+        SawimApplication.returnFromAcc = true;
     }
 
     @Override
@@ -60,14 +60,14 @@ public class StartWindowView extends Fragment {
         signInXmppButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                new LoginDialog(Profile.PROTOCOL_JABBER).show(General.getCurrentActivity().getSupportFragmentManager(), "login");
+                new LoginDialog(Profile.PROTOCOL_JABBER).show(SawimApplication.getCurrentActivity().getSupportFragmentManager(), "login");
             }
         });
         Button signIntoOtherNetworksButton = (Button) v.findViewById(R.id.sign_into_other_networks);
         signIntoOtherNetworksButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(General.getCurrentActivity());
+                AlertDialog.Builder builder = new AlertDialog.Builder(SawimApplication.getCurrentActivity());
                 builder.setCancelable(true);
                 builder.setTitle(R.string.acc_sel_protocol);
                 builder.setItems(Profile.protocolNames, new DialogInterface.OnClickListener() {
@@ -75,7 +75,7 @@ public class StartWindowView extends Fragment {
                     @Override
                     public void onClick(DialogInterface dialog, int item) {
                         new LoginDialog(Profile.protocolTypes[item])
-                                .show(General.getCurrentActivity().getSupportFragmentManager(), "login");
+                                .show(SawimApplication.getCurrentActivity().getSupportFragmentManager(), "login");
                     }
                 });
                 builder.create().show();
@@ -91,10 +91,10 @@ public class StartWindowView extends Fragment {
     }
 
     private void back() {
-        General.getCurrentActivity().getSupportFragmentManager().popBackStack();
-        if (General.getCurrentActivity().getSupportFragmentManager()
+        SawimApplication.getCurrentActivity().getSupportFragmentManager().popBackStack();
+        if (SawimApplication.getCurrentActivity().getSupportFragmentManager()
                 .findFragmentById(R.id.chat_fragment) != null)
-            General.getCurrentActivity().getSupportFragmentManager()
+            SawimApplication.getCurrentActivity().getSupportFragmentManager()
                     .findFragmentById(R.id.chat_fragment).getView().setVisibility(View.VISIBLE);
     }
 
@@ -128,7 +128,7 @@ public class StartWindowView extends Fragment {
             if (isXmpp) {
                 serverText.setVisibility(TextView.VISIBLE);
                 editServer.setVisibility(EditText.VISIBLE);
-                editServer.setText(General.DEFAULT_SERVER);
+                editServer.setText(SawimApplication.DEFAULT_SERVER);
             } else {
                 serverText.setVisibility(TextView.GONE);
                 editServer.setVisibility(EditText.GONE);

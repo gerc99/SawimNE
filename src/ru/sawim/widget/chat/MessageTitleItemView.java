@@ -7,7 +7,7 @@ import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.text.TextPaint;
 import android.view.View;
-import ru.sawim.General;
+import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
 
 /**
@@ -43,7 +43,7 @@ public class MessageTitleItemView extends View {
     }
 
     private void setTextSize(int size) {
-        textPaint.setTextSize(size * General.getResources(getContext()).getDisplayMetrics().scaledDensity);
+        textPaint.setTextSize(size * SawimApplication.getInstance().getResources().getDisplayMetrics().scaledDensity);
     }
 
     @Override
@@ -103,7 +103,7 @@ public class MessageTitleItemView extends View {
     }
 
     public void repaint() {
-        setTextSize(General.getFontSize());
+        setTextSize(SawimApplication.getFontSize());
         requestLayout();
         invalidate();
     }

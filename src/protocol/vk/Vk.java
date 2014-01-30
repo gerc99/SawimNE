@@ -5,11 +5,7 @@ import protocol.Contact;
 import protocol.Group;
 import protocol.Protocol;
 import protocol.StatusInfo;
-import ru.sawim.General;
-import ru.sawim.R;
-import ru.sawim.SawimApplication;
 import sawim.chat.message.PlainMessage;
-import sawim.roster.RosterHelper;
 import sawim.search.Search;
 import sawim.search.UserInfo;
 

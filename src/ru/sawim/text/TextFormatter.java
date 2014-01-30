@@ -121,7 +121,7 @@ public class TextFormatter {
             int start = m.start();
             int end = m.end();
             Hyperlink spec = new Hyperlink();
-            spec.textSpan = m.group(0);
+            spec.textSpan = s.subSequence(start, end).toString();
             spec.span = new InternalURLSpan(spec.textSpan.toString());
             spec.start = start;
             spec.end = end;

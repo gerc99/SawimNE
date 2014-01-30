@@ -9,7 +9,7 @@ import android.widget.ListView;
 import protocol.ContactMenu;
 import protocol.Protocol;
 import protocol.xmpp.*;
-import ru.sawim.General;
+import ru.sawim.SawimApplication;
 import ru.sawim.R;
 import ru.sawim.models.MucUsersAdapter;
 import ru.sawim.view.menu.MyMenu;
@@ -37,7 +37,7 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
     }
 
     public void show(final ChatView chatView, ListView nickList) {
-        final FragmentActivity activity = General.getCurrentActivity();
+        final FragmentActivity activity = SawimApplication.getCurrentActivity();
         usersAdapter.init(activity, (Xmpp) protocol, xmppServiceContact);
         nickList.setAdapter(usersAdapter);
         nickList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -118,7 +118,7 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
     }
 
     private MyMenu getRoleConfigMenu(final String nick) {
-        final MyMenu menu = new MyMenu(General.getCurrentActivity());
+        final MyMenu menu = new MyMenu(SawimApplication.getCurrentActivity());
         int myAffiliation = usersAdapter.getAffiliation(xmppServiceContact.getMyName());
         int myRole = usersAdapter.getRole(xmppServiceContact.getMyName());
         final int role = usersAdapter.getRole(nick);
@@ -169,7 +169,7 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
     }
 
     private void showRoleConfig(final MyMenu menu, final String nick, final ChatView chatView) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(General.getCurrentActivity());
+        AlertDialog.Builder builder = new AlertDialog.Builder(SawimApplication.getCurrentActivity());
         builder.setCancelable(true);
         builder.setTitle(xmppServiceContact.getName());
         builder.setAdapter(menu, new DialogInterface.OnClickListener() {
@@ -180,14 +180,14 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
                         kikTextbox = new TextBoxView();
                         kikTextbox.setTextBoxListener(MucUsersView.this);
                         kikTextbox.setString("");
-                        kikTextbox.show(General.getCurrentActivity().getSupportFragmentManager(), "message");
+                        kikTextbox.show(SawimApplication.getCurrentActivity().getSupportFragmentManager(), "message");
                         break;
 
                     case ContactMenu.COMMAND_BAN:
                         banTextbox = new TextBoxView();
                         banTextbox.setTextBoxListener(MucUsersView.this);
                         banTextbox.setString("");
-                        banTextbox.show(General.getCurrentActivity().getSupportFragmentManager(), "message");
+                        banTextbox.show(SawimApplication.getCurrentActivity().getSupportFragmentManager(), "message");
                         break;
 
                     case ContactMenu.COMMAND_DEVOICE:

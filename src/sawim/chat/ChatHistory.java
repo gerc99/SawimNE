@@ -207,7 +207,7 @@ public final class ChatHistory {
     private void removeChat(Chat chat) {
         if (null != chat) {
             clearChat(chat);
-            //if (General.getSawim().getDisplay().remove(chat)) {
+            //if (SawimApplication.getSawim().getDisplay().remove(chat)) {
             //    RosterHelper.getSawimActivity()._setActiveContact(null);
             //}
             //setCurrentItemIndex(getCurrItem());
@@ -291,7 +291,7 @@ public final class ChatHistory {
         Chat current = chatAt(getPreferredItem());
         if (current != null) {
             MessData md = current.getMessageDataByIndex(current.getMessData().size() - 1);
-            return md.getNick() + ": " + md.getText();
+            return md.getNick() + "\n " + md.getText();
         }
         return defMess;
     }

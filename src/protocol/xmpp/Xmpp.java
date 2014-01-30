@@ -5,7 +5,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.widget.Toast;
 import protocol.*;
-import ru.sawim.General;
+import ru.sawim.SawimApplication;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.models.form.FormListener;
@@ -45,6 +45,7 @@ public final class Xmpp extends Protocol implements FormListener {
         final int[] statusIconIndex = {1, 0, 2, 0, -1, -1, -1, -1, -1, 2, -1, 3, -1, -1, 1};
         info = new StatusInfo(icons, statusIconIndex, statuses);
         xstatusInfo = Xmpp.xStatus.getInfo();
+        clientInfo = XmppClient.get();
     }
 
     private static final byte[] statuses = {
@@ -553,7 +554,7 @@ public final class Xmpp extends Protocol implements FormListener {
                         sendMessage(contact, box.getString(), true);
                     }
                 });
-                textbox.show(General.getCurrentActivity().getSupportFragmentManager(), "title_conf");
+                textbox.show(SawimApplication.getCurrentActivity().getSupportFragmentManager(), "title_conf");
                 break;
 
             case ContactMenu.CONFERENCE_CONNECT:
@@ -640,7 +641,7 @@ public final class Xmpp extends Protocol implements FormListener {
                 selected = i;
             }
         }
-        AlertDialog.Builder builder = new AlertDialog.Builder(General.getCurrentActivity());
+        AlertDialog.Builder builder = new AlertDialog.Builder(SawimApplication.getCurrentActivity());
         builder.setCancelable(true);
         builder.setTitle(c.getName());
         builder.setSingleChoiceItems(Util.vectorToArray(items), selected, new DialogInterface.OnClickListener() {

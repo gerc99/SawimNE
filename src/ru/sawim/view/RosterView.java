@@ -13,14 +13,15 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.PagerTitleStrip;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.*;
 import android.widget.*;
 import protocol.Contact;
 import protocol.ContactMenu;
 import protocol.Group;
 import protocol.Protocol;
-import ru.sawim.General;
 import ru.sawim.R;
+import ru.sawim.SawimApplication;
 import ru.sawim.models.ChatsAdapter;
 import ru.sawim.models.CustomPagerAdapter;
 import ru.sawim.models.RosterAdapter;
@@ -110,7 +111,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         handler = new Handler(this);
-        General.setCurrentActivity((ActionBarActivity) activity);
+        SawimApplication.setCurrentActivity((ActionBarActivity) activity);
         barLinearLayout = new LinearLayout(activity);
         horizontalScrollView = new IconTabPageIndicator(getActivity());
 
@@ -205,6 +206,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
                     } else {
                         progressBar.setVisibility(ProgressBar.GONE);
                     }
+                    getActivity().supportInvalidateOptionsMenu();
                 }
                 break;
             case UPDATE_ROSTER:
@@ -256,13 +258,13 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
 
     private void initBar() {
         boolean isShowTabs = roster.getProtocolCount() > 1;
-        General.getActionBar().setDisplayShowTitleEnabled(!isShowTabs);
-        General.getActionBar().setDisplayShowHomeEnabled(!isShowTabs);
-        General.getActionBar().setDisplayUseLogoEnabled(!isShowTabs);
-        General.getActionBar().setDisplayHomeAsUpEnabled(false);
-        General.getActionBar().setDisplayShowCustomEnabled(isShowTabs);
+        SawimApplication.getActionBar().setDisplayShowTitleEnabled(!isShowTabs);
+        SawimApplication.getActionBar().setDisplayShowHomeEnabled(!isShowTabs);
+        SawimApplication.getActionBar().setDisplayUseLogoEnabled(!isShowTabs);
+        SawimApplication.getActionBar().setDisplayHomeAsUpEnabled(false);
+        SawimApplication.getActionBar().setDisplayShowCustomEnabled(isShowTabs);
         getActivity().setTitle(R.string.app_name);
-        if (General.isManyPane()) {
+        if (SawimApplication.isManyPane()) {
             ChatView chatView = (ChatView) getActivity().getSupportFragmentManager()
                     .findFragmentById(R.id.chat_fragment);
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
@@ -274,9 +276,9 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
             barLinearLayout.addView(horizontalScrollView);
             chatView.removeTitleBar();
             barLinearLayout.addView(chatView.getTitleBar());
-            General.getActionBar().setCustomView(barLinearLayout);
+            SawimApplication.getActionBar().setCustomView(barLinearLayout);
         } else {
-            General.getActionBar().setCustomView(horizontalScrollView);
+            SawimApplication.getActionBar().setCustomView(horizontalScrollView);
         }
     }
 
@@ -326,13 +328,13 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     }
 
     public void resume() {
-        General.setCurrentActivity((ActionBarActivity) getActivity());
+        SawimApplication.setCurrentActivity((ActionBarActivity) getActivity());
         initBar();
         if (roster.getProtocolCount() > 0) {
             roster.setCurrentContact(null);
             roster.setOnUpdateRoster(this);
-            if (General.returnFromAcc) {
-                General.returnFromAcc = false;
+            if (SawimApplication.returnFromAcc) {
+                SawimApplication.returnFromAcc = false;
                 if (roster.getCurrentProtocol().getContactItems().size() == 0 && !roster.getCurrentProtocol().isConnecting())
                     Toast.makeText(getActivity(), R.string.press_menu_for_connect, Toast.LENGTH_LONG).show();
                 addProtocolsTabs();
@@ -351,7 +353,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         c.activate(p);
         ChatView chatViewTablet = (ChatView) getActivity().getSupportFragmentManager()
                 .findFragmentById(R.id.chat_fragment);
-        if (!General.isManyPane()) {
+        if (!SawimApplication.isManyPane()) {
             chatView.initChat(p, c);
             FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.fragment_container, chatView, ChatView.TAG);

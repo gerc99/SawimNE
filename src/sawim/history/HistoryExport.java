@@ -2,7 +2,7 @@ package sawim.history;
 
 
 import protocol.Contact;
-import ru.sawim.General;
+import ru.sawim.SawimApplication;
 import sawim.SawimException;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
@@ -100,7 +100,7 @@ class HistoryExport implements Runnable, FileBrowserListener {
         write(os, "\r\n\t" + JLocale.getString("message_history_with")
                 + nick + " (" + userId + ")\r\n\t"
                 + JLocale.getString("export_date")
-                + Util.getLocalDateString(General.getCurrentGmtTime(), false)
+                + Util.getLocalDateString(SawimApplication.getCurrentGmtTime(), false)
                 + "\r\n\r\n");
 
         String me = JLocale.getString("me");

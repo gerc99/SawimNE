@@ -2,7 +2,7 @@ package sawim.modules;
 
 import android.content.Context;
 import android.os.Vibrator;
-import ru.sawim.General;
+import ru.sawim.SawimApplication;
 import ru.sawim.SawimApplication;
 import ru.sawim.sound.SoundPlayer;
 import sawim.Options;
@@ -85,7 +85,7 @@ public class Notify implements Runnable {
     }
 
     public boolean vibrate(final int duration) {
-        if (General.getCurrentActivity() == null) return false;
+        if (SawimApplication.getCurrentActivity() == null) return false;
         final Vibrator vibrator = (Vibrator) SawimApplication.getInstance().getSystemService(Context.VIBRATOR_SERVICE);
         if (null == vibrator) {
             return false;
@@ -134,7 +134,7 @@ public class Notify implements Runnable {
             }
             if ((VIBRA_OFF != vibraKind)
                     && ((NOTIFY_MESSAGE == notType) || (NOTIFY_MULTIMESSAGE == notType))) {
-                vibrate = General.isPaused() ? 700 : 200;
+                vibrate = SawimApplication.isPaused() ? 700 : 200;
             }
         }
 

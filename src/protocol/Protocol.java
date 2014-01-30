@@ -3,7 +3,6 @@ package protocol;
 import DrawControls.icons.Icon;
 import android.util.Log;
 import protocol.xmpp.XmppContact;
-import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import sawim.FileTransfer;
@@ -34,6 +33,7 @@ import java.util.Vector;
 abstract public class Protocol {
     private static final int RECONNECT_COUNT = 20;
     private final Object rosterLockObject = new Object();
+    public ClientInfo clientInfo;
     protected Roster roster = new Roster();
     protected StatusInfo info;
     protected XStatusInfo xstatusInfo;
@@ -328,7 +328,7 @@ abstract public class Protocol {
             buf = cl.getRecord(1);
             bais = new ByteArrayInputStream(buf);
             dis = new DataInputStream(bais);
-            if (!dis.readUTF().equals(General.VERSION)) {
+            if (!dis.readUTF().equals(SawimApplication.VERSION)) {
                 throw new Exception();
             }
             loadProtocolData(cl.getRecord(2));
@@ -368,7 +368,7 @@ abstract public class Protocol {
         byte[] buf;
         baos = new ByteArrayOutputStream();
         dos = new DataOutputStream(baos);
-        dos.writeUTF(General.VERSION);
+        dos.writeUTF(SawimApplication.VERSION);
         buf = baos.toByteArray();
         cl.addRecord(buf, 0, buf.length);
         baos.reset();
@@ -677,7 +677,6 @@ abstract public class Protocol {
     public final void setStatus(int statusIndex, String msg) {
         boolean connected = StatusInfo.STATUS_OFFLINE != profile.statusIndex;
         boolean connecting = StatusInfo.STATUS_OFFLINE != statusIndex;
-        Log.e("setStatus", connected+"=="+connecting);
         if (connected && !connecting) {
             disconnect(true);
         }
@@ -831,7 +830,7 @@ abstract public class Protocol {
     }
 
     private void setLastStatusChangeTime() {
-        lastStatusChangeTime = General.getCurrentGmtTime();
+        lastStatusChangeTime = SawimApplication.getCurrentGmtTime();
     }
 
     private boolean isEmptyMessage(String text) {
@@ -886,7 +885,7 @@ abstract public class Protocol {
         if (chat.typeNewMessageIcon != chat.getNewMessageIcon() || chat.isVisibleChat()) {
             chat.typeNewMessageIcon = chat.getNewMessageIcon();
             if (contact != RosterHelper.getInstance().getCurrentContact() || !chat.isVisibleChat()) {
-                SawimApplication.getInstance().updateAppIcon();
+                SawimApplication.getInstance().sendNotify(contact.getUserId(), message.getText());
             }
             if (RosterHelper.getInstance().getUpdateChatListener() != null)
                 RosterHelper.getInstance().getUpdateChatListener().updateChat(contact);
@@ -1064,7 +1063,7 @@ abstract public class Protocol {
         if (StringConvertor.isEmpty(msg)) {
             return;
         }
-        PlainMessage plainMsg = new PlainMessage(this, to, General.getCurrentGmtTime(), msg);
+        PlainMessage plainMsg = new PlainMessage(this, to, SawimApplication.getCurrentGmtTime(), msg);
         if (isConnected()) {
             if (msg.startsWith("/") && !msg.startsWith("/me ") && !msg.startsWith("/wakeup") && (to instanceof XmppContact)) {
                 boolean cmdExecuted = ((XmppContact) to).execCommand(this, msg);

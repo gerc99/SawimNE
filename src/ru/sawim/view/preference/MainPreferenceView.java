@@ -1,14 +1,12 @@
 package ru.sawim.view.preference;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceScreen;
 import android.support.v4.app.FragmentTransaction;
-import android.view.inputmethod.InputMethodManager;
-import ru.sawim.General;
 import ru.sawim.R;
+import ru.sawim.SawimApplication;
 import ru.sawim.activities.AccountsListActivity;
 import ru.sawim.activities.SawimActivity;
 import ru.sawim.view.AboutProgramView;
@@ -33,15 +31,15 @@ public class MainPreferenceView extends PreferenceFragment {
     }
 
     public static void show() {
-        General.getCurrentActivity().runOnUiThread(new Runnable() {
+        SawimApplication.getCurrentActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 SawimActivity.resetBar();
-                if (General.getCurrentActivity().getSupportFragmentManager()
+                if (SawimApplication.getCurrentActivity().getSupportFragmentManager()
                         .findFragmentById(R.id.chat_fragment) != null)
-                    General.getCurrentActivity().setContentView(R.layout.intercalation_layout);
+                    SawimApplication.getCurrentActivity().setContentView(R.layout.intercalation_layout);
                 MainPreferenceView newFragment = new MainPreferenceView();
-                FragmentTransaction transaction = General.getCurrentActivity().getSupportFragmentManager().beginTransaction();
+                FragmentTransaction transaction = SawimApplication.getCurrentActivity().getSupportFragmentManager().beginTransaction();
                 transaction.replace(R.id.fragment_container, newFragment, MainPreferenceView.TAG);
                 transaction.addToBackStack(null);
                 transaction.commitAllowingStateLoss();
@@ -53,7 +51,7 @@ public class MainPreferenceView extends PreferenceFragment {
     public void onResume() {
         super.onResume();
         SawimActivity.resetBar();
-        General.getActionBar().setDisplayHomeAsUpEnabled(true);
+        SawimApplication.getActionBar().setDisplayHomeAsUpEnabled(true);
         getActivity().setTitle(R.string.options);
     }
 
@@ -66,7 +64,7 @@ public class MainPreferenceView extends PreferenceFragment {
         screen1.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                startActivity(new Intent(General.getCurrentActivity(), AccountsListActivity.class));
+                startActivity(new Intent(SawimApplication.getCurrentActivity(), AccountsListActivity.class));
                 return false;
             }
         });
@@ -119,18 +117,30 @@ public class MainPreferenceView extends PreferenceFragment {
             }
         });
         rootScreen.addPreference(screen5);
-        PreferenceScreen screen6 = getPreferenceManager().createPreferenceScreen(getActivity());
+        final PreferenceScreen screen6 = getPreferenceManager().createPreferenceScreen(getActivity());
         screen6.setKey("screen6");
-        screen6.setTitle(R.string.about_program);
-        //screen.setSummary("Description of screen");
+        screen6.setTitle(R.string.options_pro);
+        screen6.setSummary(R.string.options_pro);
         screen6.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                new AboutProgramView().show(General.getCurrentActivity().getSupportFragmentManager(), AboutProgramView.TAG);
+                new OptionsForm().select(screen6.getTitle(), OptionsForm.OPTIONS_PRO);
                 return false;
             }
         });
         rootScreen.addPreference(screen6);
+        final PreferenceScreen screen7 = getPreferenceManager().createPreferenceScreen(getActivity());
+        screen7.setKey("screen7");
+        screen7.setTitle(R.string.about_program);
+        //screen.setSummary("Description of screen");
+        screen7.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                new AboutProgramView().show(SawimApplication.getCurrentActivity().getSupportFragmentManager(), AboutProgramView.TAG);
+                return false;
+            }
+        });
+        rootScreen.addPreference(screen7);
     }
 
     public boolean hasBack() {

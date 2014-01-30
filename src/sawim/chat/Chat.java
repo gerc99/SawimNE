@@ -6,7 +6,7 @@ import protocol.xmpp.Jid;
 import protocol.xmpp.Xmpp;
 import protocol.xmpp.XmppContact;
 import protocol.xmpp.XmppServiceContact;
-import ru.sawim.General;
+import ru.sawim.SawimApplication;
 import sawim.Options;
 import sawim.chat.message.Message;
 import sawim.chat.message.PlainMessage;
@@ -83,7 +83,7 @@ public final class Chat {
     }
 
     public void addFileProgress(String caption, String text) {
-        addMessage(new MessData(contact, General.getCurrentGmtTime(), text, caption, MessData.PROGRESS, false));
+        addMessage(new MessData(contact, SawimApplication.getCurrentGmtTime(), text, caption, MessData.PROGRESS, false));
     }
 
     public String getMyName() {
@@ -109,7 +109,7 @@ public final class Chat {
         }
     }
 
-    private String getBlogPostId(String text) {
+    public String getBlogPostId(String text) {
         if (StringConvertor.isEmpty(text)) {
             return null;
         }
@@ -124,7 +124,7 @@ public final class Chat {
         if (-1 != numEnd) {
             lastLine = lastLine.substring(0, numEnd);
         }
-        return lastLine + " ";
+        return lastLine;
     }
 
     private String writeMessageTo(String nick) {
@@ -140,7 +140,7 @@ public final class Chat {
         return nick;
     }
 
-    private boolean isBlogBot() {
+    public boolean isBlogBot() {
         if (contact instanceof XmppContact) {
             return ((Xmpp) protocol).isBlogBot(contact.getUserId());
         }

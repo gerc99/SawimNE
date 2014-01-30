@@ -6,9 +6,8 @@ import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.LinearLayout;
-import ru.sawim.General;
-import ru.sawim.R;
 import ru.sawim.SawimApplication;
+import ru.sawim.R;
 
 /**
  * A simple extension of a regular linear layout that supports the divider API
@@ -61,7 +60,7 @@ public class IcsLinearLayout extends LinearLayout {
     }
 
     public void updateDivider(boolean isBlack) {
-        setDividerDrawable(General.getResources(SawimApplication.getContext()).
+        setDividerDrawable(SawimApplication.getInstance().getResources().
                 getDrawable(isBlack ? R.drawable.abc_list_divider_holo_dark : R.drawable.abc_list_divider_holo_light));
     }
 

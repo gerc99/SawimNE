@@ -6,7 +6,7 @@ import DrawControls.icons.Icon;
 import DrawControls.icons.ImageList;
 import android.util.Log;
 import protocol.net.TcpSocket;
-import ru.sawim.General;
+import ru.sawim.SawimApplication;
 import sawim.comm.StringConvertor;
 
 import java.io.DataInputStream;
@@ -185,13 +185,13 @@ public final class Emotions {
         Vector textCorr = new Vector();
         Vector selEmotions = new Vector();
 
-        General.gc();
+        SawimApplication.gc();
         long mem = Runtime.getRuntime().freeMemory();
 
-        InputStream stream = General.getResourceAsStream("/smiles/smiles.txt");
+        InputStream stream = SawimApplication.getResourceAsStream("/smiles/smiles.txt");
 
         if (null == stream) {
-            stream = General.getResourceAsStream("/smiles.txt");
+            stream = SawimApplication.getResourceAsStream("/smiles.txt");
         }
         if (null == stream) {
             return false;
@@ -238,9 +238,9 @@ public final class Emotions {
         selEmotions = null;
         textCorr.removeAllElements();
         textCorr = null;
-        General.gc();
+        SawimApplication.gc();
         DebugLog.println("Emotions used: " + (mem - Runtime.getRuntime().freeMemory()));
-        General.gc();
+        SawimApplication.gc();
         images = emoImages;
         return true;
     }

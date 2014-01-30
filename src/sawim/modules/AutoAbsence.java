@@ -4,7 +4,7 @@ import protocol.Profile;
 import protocol.Protocol;
 import protocol.StatusInfo;
 import protocol.XStatusInfo;
-import ru.sawim.General;
+import ru.sawim.SawimApplication;
 import sawim.roster.RosterHelper;
 
 public final class AutoAbsence {
@@ -14,7 +14,6 @@ public final class AutoAbsence {
     private Profile[] profiles;
     private long activityOutTime;
     private boolean absence;
-    private static final int TIME = 20 * 60;
 
     private AutoAbsence() {
         absence = false;
@@ -35,14 +34,14 @@ public final class AutoAbsence {
     }
 
     public final void updateTime() {
-        if (General.isPaused()) {
-            if (activityOutTime < General.getCurrentGmtTime()) {
+        if (SawimApplication.isPaused() && SawimApplication.autoAbsenceTime > 0) {
+            if (activityOutTime < SawimApplication.getCurrentGmtTime()) {
                 away();
             }
         }
     }
 
-    public final void away() {
+    private final void away() {
         if (absence) {
             return;
         }
@@ -97,7 +96,7 @@ public final class AutoAbsence {
     }
 
     public final void userActivity() {
-        if (!General.isPaused())
-            activityOutTime = General.getCurrentGmtTime() + TIME;
+        if (!SawimApplication.isPaused())
+            activityOutTime = SawimApplication.getCurrentGmtTime() + SawimApplication.autoAbsenceTime;
     }
 }

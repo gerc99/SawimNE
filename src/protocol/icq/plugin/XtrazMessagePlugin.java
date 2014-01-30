@@ -4,7 +4,7 @@ import protocol.icq.IcqContact;
 import protocol.icq.IcqNetDefActions;
 import protocol.icq.IcqStatusInfo;
 import protocol.icq.packet.SnacPacket;
-import ru.sawim.General;
+import ru.sawim.SawimApplication;
 import sawim.comm.ArrayReader;
 import sawim.comm.GUID;
 import sawim.comm.StringConvertor;
@@ -44,7 +44,7 @@ public class XtrazMessagePlugin {
     }
 
     public SnacPacket getPacket() {
-        time = General.getCurrentGmtTime() * 1000;
+        time = SawimApplication.getCurrentGmtTime() * 1000;
         if (!isRequest()) {
             return new SnacPacket(SnacPacket.CLI_ICBM_FAMILY,
                     SnacPacket.CLI_ACKMSG_COMMAND,

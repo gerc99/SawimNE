@@ -2,7 +2,7 @@ package protocol.xmpp;
 
 import android.view.Menu;
 import android.view.MenuItem;
-import ru.sawim.General;
+import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
@@ -68,7 +68,7 @@ public final class AffiliationListConf implements FormListener, TextBoxView.Text
 
                     case COMMAND_SEARCH:
                         searchBox.setTextBoxListener(AffiliationListConf.this);
-                        searchBox.show(General.getCurrentActivity().getSupportFragmentManager(), "service_discovery_search");
+                        searchBox.show(SawimApplication.getCurrentActivity().getSupportFragmentManager(), "service_discovery_search");
                         break;
                 }
             }

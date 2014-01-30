@@ -1,6 +1,6 @@
 package sawim.comm;
 
-import ru.sawim.General;
+import ru.sawim.SawimApplication;
 import sawim.Options;
 import sawim.roster.TreeNode;
 import sawim.util.JLocale;
@@ -353,7 +353,7 @@ public class Util {
     }
 
     public static long createCurrentLocalTime() {
-        return gmtTimeToLocalTime(General.getCurrentGmtTime());
+        return gmtTimeToLocalTime(SawimApplication.getCurrentGmtTime());
     }
 
     public static String getLocalDayOfWeek(long gmtTime) {
@@ -550,7 +550,7 @@ public class Util {
     }
 
     public static int uniqueValue() {
-        int time = (int) (General.getCurrentGmtTime() & 0x7FFF);
+        int time = (int) (SawimApplication.getCurrentGmtTime() & 0x7FFF);
         return (time << 16) | (rand.nextInt() & 0xFFFF);
     }
 

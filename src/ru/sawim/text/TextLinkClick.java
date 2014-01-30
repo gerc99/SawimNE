@@ -9,7 +9,7 @@ import android.provider.Browser;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import protocol.Protocol;
-import ru.sawim.General;
+import ru.sawim.SawimApplication;
 import ru.sawim.R;
 import ru.sawim.view.PictureView;
 import ru.sawim.view.menu.JuickMenu;
@@ -38,14 +38,14 @@ public class TextLinkClick implements TextLinkClickListener {
         if (clickedString.length() == 0) return;
         boolean isJuick = clickedString.substring(0, 1).equals("@") || clickedString.substring(0, 1).equals("#");
         if (isJuick) {
-            new JuickMenu((General.getCurrentActivity()), currentProtocol, currentContact, clickedString).show();
+            new JuickMenu(SawimApplication.getCurrentActivity(), currentProtocol, currentContact, clickedString).show();
             return;
         }
         if (isLongTap) {
             CharSequence[] items = new CharSequence[2];
-            items[0] = General.getCurrentActivity().getString(R.string.copy);
-            items[1] = General.getCurrentActivity().getString(R.string.add_contact);
-            final AlertDialog.Builder builder = new AlertDialog.Builder(General.getCurrentActivity());
+            items[0] = SawimApplication.getCurrentActivity().getString(R.string.copy);
+            items[1] = SawimApplication.getCurrentActivity().getString(R.string.add_contact);
+            final AlertDialog.Builder builder = new AlertDialog.Builder(SawimApplication.getCurrentActivity());
             builder.setCancelable(true);
             builder.setTitle(R.string.url_menu);
             final String finalClickedString = clickedString;
@@ -57,7 +57,7 @@ public class TextLinkClick implements TextLinkClickListener {
                             Clipboard.setClipBoardText(finalClickedString);
                             break;
                         case 1:
-                            General.openUrl(finalClickedString);
+                            SawimApplication.openUrl(finalClickedString);
                             break;
                     }
                 }
@@ -79,12 +79,12 @@ public class TextLinkClick implements TextLinkClickListener {
                     || (url.endsWith(".bmp"))) {
                 PictureView pictureView = new PictureView();
                 pictureView.setLink(clickedString);
-                FragmentTransaction transaction = General.getCurrentActivity().getSupportFragmentManager().beginTransaction();
+                FragmentTransaction transaction = SawimApplication.getCurrentActivity().getSupportFragmentManager().beginTransaction();
                 transaction.add(pictureView, PictureView.TAG);
                 transaction.commitAllowingStateLoss();
             } else {
                 Uri uri = Uri.parse(clickedString);
-                Context context = General.getCurrentActivity();
+                Context context = SawimApplication.getCurrentActivity();
                 Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                 intent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
                 context.startActivity(intent);

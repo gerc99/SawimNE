@@ -8,7 +8,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.inputmethod.InputMethodManager;
-import ru.sawim.General;
+import ru.sawim.SawimApplication;
 import ru.sawim.R;
 import ru.sawim.activities.SawimActivity;
 import ru.sawim.models.form.Forms;
@@ -31,7 +31,7 @@ public class PreferenceFormView extends PreferenceFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         getActivity().setTitle(Forms.getInstance().getCaption());
-        General.getActionBar().setDisplayHomeAsUpEnabled(true);
+        SawimApplication.getActionBar().setDisplayHomeAsUpEnabled(true);
         rootScreen = getPreferenceManager().createPreferenceScreen(getActivity());
         setPreferenceScreen(rootScreen);
         buildList();
@@ -39,15 +39,15 @@ public class PreferenceFormView extends PreferenceFragment {
     }
 
     public static void show() {
-        General.getCurrentActivity().runOnUiThread(new Runnable() {
+        SawimApplication.getCurrentActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 SawimActivity.resetBar();
-                if (General.getCurrentActivity().getSupportFragmentManager()
+                if (SawimApplication.getCurrentActivity().getSupportFragmentManager()
                         .findFragmentById(R.id.chat_fragment) != null)
-                    General.getCurrentActivity().setContentView(R.layout.intercalation_layout);
+                    SawimApplication.getCurrentActivity().setContentView(R.layout.intercalation_layout);
                 PreferenceFormView newFragment = new PreferenceFormView();
-                FragmentTransaction transaction = General.getCurrentActivity().getSupportFragmentManager().beginTransaction();
+                FragmentTransaction transaction = SawimApplication.getCurrentActivity().getSupportFragmentManager().beginTransaction();
                 transaction.replace(R.id.fragment_container, newFragment, PreferenceFormView.TAG);
                 transaction.addToBackStack(null);
                 transaction.commitAllowingStateLoss();
@@ -56,8 +56,8 @@ public class PreferenceFormView extends PreferenceFragment {
     }
 
     private void hideKeyboard() {
-        if (General.getCurrentActivity().getCurrentFocus() != null)
-            ((InputMethodManager) General.getCurrentActivity().getSystemService("input_method")).hideSoftInputFromWindow(General.getCurrentActivity().getCurrentFocus().getWindowToken(), 0);
+        if (SawimApplication.getCurrentActivity().getCurrentFocus() != null)
+            ((InputMethodManager) SawimApplication.getCurrentActivity().getSystemService("input_method")).hideSoftInputFromWindow(SawimApplication.getCurrentActivity().getCurrentFocus().getWindowToken(), 0);
     }
 
     public boolean hasBack() {
@@ -120,6 +120,7 @@ public class PreferenceFormView extends PreferenceFragment {
                 listPreference.setTitle(getText(c));
                 listPreference.setEntries(c.items);
                 listPreference.setEntryValues(c.items);
+                listPreference.setSummary(c.items[c.current]);
                 listPreference.setValueIndex(c.current);
                 listPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                     @Override
@@ -164,8 +165,8 @@ public class PreferenceFormView extends PreferenceFragment {
                         seekBarPreference.setTitleTextSize(c.level);
                         seekBarPreference.setTitleText(c.description + "(" + c.level + ")");
                         Forms.getInstance().controlUpdated(c);
-                        if (General.getInstance().getConfigurationChanged() != null)
-                            General.getInstance().getConfigurationChanged().onConfigurationChanged();
+                        if (SawimApplication.getInstance().getConfigurationChanged() != null)
+                            SawimApplication.getInstance().getConfigurationChanged().onConfigurationChanged();
                         return true;
                     }
                 });

@@ -8,7 +8,7 @@ import protocol.Contact;
 import protocol.Protocol;
 import protocol.xmpp.Jid;
 import protocol.xmpp.Xmpp;
-import ru.sawim.General;
+import ru.sawim.SawimApplication;
 import ru.sawim.R;
 import sawim.roster.RosterHelper;
 
@@ -25,7 +25,7 @@ public class OpenUriActivity extends ActionBarActivity {
         super.onStart();
         Intent intent = getIntent();
         if (Intent.ACTION_VIEW.equals(intent.getAction())) {
-            final boolean delay = null == General.getCurrentActivity();
+            final boolean delay = null == SawimApplication.getCurrentActivity();
             final Uri uri = intent.getData();
             startActivity(new Intent(this, SawimActivity.class));
             new Thread(new Runnable() {
@@ -88,7 +88,7 @@ public class OpenUriActivity extends ActionBarActivity {
     }
 
     private void alert() {
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(General.getCurrentActivity());
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(SawimApplication.getCurrentActivity());
         alertDialog.setCancelable(true);
         alertDialog.setTitle(getText(R.string.app_name));
         alertDialog.setMessage(getText(R.string.xmppAccountDontFound));

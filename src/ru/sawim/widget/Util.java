@@ -11,7 +11,7 @@ import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.LinearLayout;
-import ru.sawim.General;
+import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
 
 /**
@@ -26,7 +26,7 @@ public class Util {
     public static Bitmap avatarBitmap(byte[] buffer) {
         if (buffer == null) return null;
         DisplayMetrics metrics = new DisplayMetrics();
-        General.getCurrentActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        SawimApplication.getCurrentActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
         float scaleWidth = metrics.scaledDensity;
         float scaleHeight = metrics.scaledDensity;
 

@@ -5,7 +5,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 import protocol.Contact;
-import ru.sawim.General;
+import ru.sawim.SawimApplication;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
@@ -143,13 +143,13 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
                     case COMMAND_SEARCH:
                         searchBox.setString("");
                         searchBox.setTextBoxListener(ServiceDiscovery.this);
-                        searchBox.show(General.getCurrentActivity().getSupportFragmentManager(), JLocale.getString("service_discovery_search"));
+                        searchBox.show(SawimApplication.getCurrentActivity().getSupportFragmentManager(), JLocale.getString("service_discovery_search"));
                         break;
 
                     case COMMAND_SET_SERVER:
                         serverBox.setString(serverJid);
                         serverBox.setTextBoxListener(ServiceDiscovery.this);
-                        serverBox.show(General.getCurrentActivity().getSupportFragmentManager(), JLocale.getString("service_discovery_server"));
+                        serverBox.show(SawimApplication.getCurrentActivity().getSupportFragmentManager(), JLocale.getString("service_discovery_server"));
                         break;
 
                     case COMMAND_HOME:
@@ -287,7 +287,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
     }
 
     private void addBuildInList() {
-        //    addUnique(General.NAME, "jimm-sawim@conference.jabber.ru");
+        //    addUnique(SawimApplication.NAME, "jimm-sawim@conference.jabber.ru");
         VirtualListItem br = model.createNewParser(false);
         br.addBr();
         model.addPar(br);

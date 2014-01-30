@@ -222,4 +222,5 @@
     <string name="role_commands">Команды администратора</string>
     <string name="hide_chat_keyboard">Скрывать клавиатуру после отправки</string>
     <string name="enter_id">Введите id, а не e-mail</string>
+    <string name="options_pro">Для продвинутых пользователей</string>
 </resources>

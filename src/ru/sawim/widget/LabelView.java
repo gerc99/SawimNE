@@ -7,7 +7,7 @@ import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
-import ru.sawim.General;
+import ru.sawim.SawimApplication;
 
 /**
  * Created with IntelliJ IDEA.
@@ -57,7 +57,7 @@ public class LabelView extends View {
 
     public void setTextSize(int size) {
         textPaint.setTextSize(TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_SP, size, General.getResources(getContext()).getDisplayMetrics()));
+                TypedValue.COMPLEX_UNIT_SP, size, SawimApplication.getInstance().getResources().getDisplayMetrics()));
     }
 
     public void setTextColor(int color) {

@@ -56,7 +56,8 @@ public class ExternalApi {
         try {
             fileTransferListener = listener;
             Intent theIntent = new Intent(Intent.ACTION_GET_CONTENT);
-            theIntent.setType("file/*");
+            theIntent.setType("*/*");
+            theIntent.addCategory(Intent.CATEGORY_OPENABLE);
             theIntent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
             if (!isCallable(theIntent)) return false;
             activity.startActivityForResult(theIntent, RESULT_EXTERNAL_FILE);

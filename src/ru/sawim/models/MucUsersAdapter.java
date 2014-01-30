@@ -1,5 +1,6 @@
 package ru.sawim.models;
 
+import DrawControls.icons.Icon;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.text.TextUtils;
@@ -12,11 +13,12 @@ import android.widget.TextView;
 import protocol.xmpp.Xmpp;
 import protocol.xmpp.XmppContact;
 import protocol.xmpp.XmppServiceContact;
-import ru.sawim.General;
+import ru.sawim.SawimApplication;
 import ru.sawim.R;
 import ru.sawim.SawimResources;
 import ru.sawim.Scheme;
 import ru.sawim.widget.roster.RosterItemView;
+import sawim.Options;
 import sawim.chat.Chat;
 import sawim.util.JLocale;
 
@@ -222,6 +224,10 @@ public class MucUsersAdapter extends BaseAdapter {
         rosterItemView.itemNameColor = Scheme.getColor(Scheme.THEME_TEXT);
         rosterItemView.itemNameFont = Typeface.DEFAULT;
         rosterItemView.itemName = c.resource;
-        rosterItemView.itemFifthImage = SawimResources.affiliationIcons.iconAt(XmppServiceContact.getAffiliationName(c.priorityA)).getImage().getBitmap();
+        Icon ic = protocol.clientInfo.getIcon(c.client);
+        if (ic != null && !Options.getBoolean(Options.OPTION_HIDE_ICONS_CLIENTS)) {
+            rosterItemView.itemFifthImage = ic.getImage().getBitmap();
+        }
+        rosterItemView.itemFourthImage = SawimResources.affiliationIcons.iconAt(XmppServiceContact.getAffiliationName(c.priorityA)).getImage().getBitmap();
     }
 }

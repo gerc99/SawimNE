@@ -4,7 +4,7 @@ import DrawControls.icons.Icon;
 import android.view.ContextMenu;
 import android.view.Menu;
 import protocol.xmpp.XmppServiceContact;
-import ru.sawim.General;
+import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
 import ru.sawim.models.list.VirtualList;
 import ru.sawim.models.list.VirtualListItem;
@@ -32,9 +32,14 @@ public final class StatusView {
     }
 
     public void addClient() {
-        addPlain(null, userRole);
-        addPlain(null, contact.version.trim());
+        if ((ClientInfo.CLI_NONE != contact.clientIndex)
+                && (null != protocol.clientInfo)) {
+            addPlain(protocol.clientInfo.getIcon(contact.clientIndex),
+                    (protocol.clientInfo.getName(contact.clientIndex)
+                            + " " + contact.version).trim());
+        }
         addPlain(null, clientVersion);
+        addPlain(null, userRole);
     }
 
     public void setClientVersion(String version) {
@@ -54,7 +59,7 @@ public final class StatusView {
         }
         long signonTime = contact.chaingingStatusTime;
         if (0 < signonTime) {
-            long now = General.getCurrentGmtTime();
+            long now = SawimApplication.getCurrentGmtTime();
             boolean today = (now - 24 * 60 * 60) < signonTime;
             if (contact.isOnline()) {
                 addInfo("li_signon_time", Util.getLocalDateString(signonTime, today));

@@ -12,7 +12,7 @@ import android.widget.*;
 import protocol.Profile;
 import protocol.Protocol;
 import protocol.StatusInfo;
-import ru.sawim.General;
+import ru.sawim.SawimApplication;
 import ru.sawim.R;
 import ru.sawim.models.AccountsAdapter;
 import sawim.Options;
@@ -41,7 +41,7 @@ public class AccountsListView extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        General.returnFromAcc = true;
+        SawimApplication.returnFromAcc = true;
         ListView accountsList = (ListView) getActivity().findViewById(R.id.AccountsList);
         accountsListAdapter = new AccountsAdapter(getActivity());
         getActivity().setTitle(getString(R.string.options_account));
@@ -203,7 +203,7 @@ public class AccountsListView extends Fragment {
             } else {
                 getDialog().setTitle(getText(R.string.acc_add));
                 if (isXmpp) {
-                    editServer.setText(General.DEFAULT_SERVER);
+                    editServer.setText(SawimApplication.DEFAULT_SERVER);
                 }
             }
             if (type == Profile.PROTOCOL_ICQ) {

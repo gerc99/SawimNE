@@ -12,8 +12,8 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import ru.sawim.General;
 import ru.sawim.R;
+import ru.sawim.SawimApplication;
 import sawim.comm.Util;
 import sawim.roster.RosterHelper;
 
@@ -51,19 +51,19 @@ public class FileProgressView extends DialogFragment {
     }
 
     public void showProgress() {
-        FragmentTransaction transaction = General.getCurrentActivity().getSupportFragmentManager().beginTransaction();
+        FragmentTransaction transaction = SawimApplication.getCurrentActivity().getSupportFragmentManager().beginTransaction();
         transaction.add(this, "file_progress");
         transaction.commitAllowingStateLoss();
     }
 
     public void changeFileProgress(final int percent, final String caption, final String text) {
-        if (General.getCurrentActivity() == null) return;
+        if (SawimApplication.getCurrentActivity() == null) return;
         if (percent == 100) {
             RosterHelper.getInstance().removeTransfer(true);
             dismiss();
         }
-        final String strTime = Util.getLocalDateString(General.getCurrentGmtTime(), true);
-        Handler handler = new Handler(General.getCurrentActivity().getMainLooper());
+        final String strTime = Util.getLocalDateString(SawimApplication.getCurrentGmtTime(), true);
+        Handler handler = new Handler(SawimApplication.getCurrentActivity().getMainLooper());
         handler.post(new Runnable() {
             @Override
             public void run() {

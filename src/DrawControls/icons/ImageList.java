@@ -4,7 +4,6 @@ import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
-import ru.sawim.General;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 
@@ -46,13 +45,13 @@ public class ImageList {
         ImageList icons = new ImageList();
         if (resName.equals("/jabber-status.png")) {
             Vector tmpIcons = new Vector();
-            tmpIcons.addElement(new Icon((BitmapDrawable) General.getResources(SawimApplication.getContext()).
+            tmpIcons.addElement(new Icon((BitmapDrawable) SawimApplication.getInstance().getResources().
                     getDrawable(R.drawable.online)));
-            tmpIcons.addElement(new Icon((BitmapDrawable) General.getResources(SawimApplication.getContext()).
+            tmpIcons.addElement(new Icon((BitmapDrawable) SawimApplication.getInstance().getResources().
                     getDrawable(R.drawable.offline)));
-            tmpIcons.addElement(new Icon((BitmapDrawable) General.getResources(SawimApplication.getContext()).
+            tmpIcons.addElement(new Icon((BitmapDrawable) SawimApplication.getInstance().getResources().
                     getDrawable(R.drawable.away)));
-            tmpIcons.addElement(new Icon((BitmapDrawable) General.getResources(SawimApplication.getContext()).
+            tmpIcons.addElement(new Icon((BitmapDrawable) SawimApplication.getInstance().getResources().
                     getDrawable(R.drawable.dnd)));
             icons.add(tmpIcons);
         } else {
@@ -138,7 +137,7 @@ public class ImageList {
         TypedArray smileyDrawables = SawimApplication.getInstance().getResources().obtainTypedArray(R.array.default_smileys_images);
         Vector tmpIcons = new Vector();
         for (int i = 0; i < smileyDrawables.length(); ++i) {
-            BitmapDrawable smile = ((BitmapDrawable) General.getResources(SawimApplication.getContext())
+            BitmapDrawable smile = ((BitmapDrawable) SawimApplication.getInstance().getResources()
                 .getDrawable(smileyDrawables.getResourceId(i, 0)));
             smile.setBounds(0, 0, smile.getBitmap().getWidth(), smile.getBitmap().getHeight());
             tmpIcons.addElement(new Icon(smile));
@@ -189,7 +188,7 @@ public class ImageList {
     }
 
     public Image createImage(String name) throws IOException {
-        InputStream is = General.getResourceAsStream(name);
+        InputStream is = SawimApplication.getResourceAsStream(name);
         if (is == null) {
             throw new IOException(name + " could not be found.");
         }

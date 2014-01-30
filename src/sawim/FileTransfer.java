@@ -4,7 +4,7 @@ import android.util.Log;
 import protocol.Contact;
 import protocol.Protocol;
 import protocol.net.TcpSocket;
-import ru.sawim.General;
+import ru.sawim.SawimApplication;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
 import ru.sawim.view.FileProgressView;
@@ -102,7 +102,7 @@ public final class FileTransfer implements FileBrowserListener,
     }
 
     public void startPhotoTransfer() {
-        ExternalApi.instance.setActivity(General.getCurrentActivity());
+        ExternalApi.instance.setActivity(SawimApplication.getCurrentActivity());
         ExternalApi.instance.startCamera(this, 1024, 768);
     }
 
@@ -148,7 +148,7 @@ public final class FileTransfer implements FileBrowserListener,
 
     public void processPhoto(final byte[] data) {
         setData(new ByteArrayInputStream(data), data.length);
-        String timestamp = Util.getLocalDateString(General.getCurrentGmtTime(), false);
+        String timestamp = Util.getLocalDateString(SawimApplication.getCurrentGmtTime(), false);
         String photoName = "photo-"
                 + timestamp.replace('.', '-').replace(' ', '-')
                 + ".jpg";
@@ -268,11 +268,11 @@ public final class FileTransfer implements FileBrowserListener,
         try {
             closeFile();
             RosterHelper.getInstance().removeTransfer(false);
-            General.gc();
+            SawimApplication.gc();
         } catch (Exception ignored) {
         }
         name_Desc.back();
-        if (isFinish) General.getCurrentActivity().finish();
+        if (isFinish) SawimApplication.getCurrentActivity().finish();
         fileProgressView = null;
     }
 

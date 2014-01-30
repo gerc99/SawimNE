@@ -1,6 +1,7 @@
 package ru.sawim.models;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,7 +9,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import ru.sawim.General;
+import ru.sawim.SawimApplication;
 import ru.sawim.R;
 import ru.sawim.Scheme;
 import ru.sawim.models.list.VirtualListItem;
@@ -109,7 +110,7 @@ public class VirtualListAdapter extends BaseAdapter {
             if (element.getThemeTextLabel() > -1) {
                 holder.labelView.setTextColor(Scheme.getColor(element.getThemeTextLabel()));
             }
-            holder.labelView.setTextSize(General.getFontSize());
+            holder.labelView.setTextSize(SawimApplication.getFontSize());
             holder.labelView.setText(element.getLabel());
         }
         if (element.getDescStr() != null) {
@@ -118,7 +119,7 @@ public class VirtualListAdapter extends BaseAdapter {
                 holder.descView.setTextColor(Scheme.getColor(element.getThemeTextDesc()));
             }
             holder.descView.setLinkTextColor(Scheme.LINKS);
-            holder.descView.setTextSize(General.getFontSize());
+            holder.descView.setTextSize(SawimApplication.getFontSize());
             holder.descView.setText(element.getDescStr());
             holder.descView.repaint();
         }

@@ -12,7 +12,7 @@ import protocol.Contact;
 import protocol.Group;
 import protocol.Protocol;
 import protocol.XStatusInfo;
-import ru.sawim.General;
+import ru.sawim.SawimApplication;
 import ru.sawim.SawimResources;
 import ru.sawim.Scheme;
 import ru.sawim.widget.roster.RosterItemView;
@@ -122,7 +122,7 @@ public class RosterAdapter extends BaseAdapter {
         rosterItemView.itemNameFont = item.hasChat() ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT;
         rosterItemView.itemName = (item.subcontactsS() == 0) ?
                 item.getText() : item.getText() + " (" + item.subcontactsS() + ")";
-        if (General.showStatusLine) {
+        if (SawimApplication.showStatusLine) {
             String statusMessage = roster.getStatusMessage(item);
             rosterItemView.itemDescColor = Scheme.getColor(Scheme.THEME_CONTACT_STATUS);
             rosterItemView.itemDesc = statusMessage;
@@ -162,7 +162,9 @@ public class RosterAdapter extends BaseAdapter {
             }
         }
 
-        //rosterItemView.itemFourthImage
+        Icon icClient = (null != p.clientInfo) ? p.clientInfo.getIcon(item.clientIndex) : null;
+        if (icClient != null && !SawimApplication.hideIconsClient)
+            rosterItemView.itemFourthImage = icClient.getImage().getBitmap();
 
         String id = item.getUserId();
         if (Tracking.isTrackingEvent(id, Tracking.GLOBAL) == Tracking.TRUE)

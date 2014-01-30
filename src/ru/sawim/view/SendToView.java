@@ -15,7 +15,7 @@ import android.widget.Toast;
 import protocol.Contact;
 import protocol.Group;
 import protocol.Protocol;
-import ru.sawim.General;
+import ru.sawim.SawimApplication;
 import ru.sawim.R;
 import ru.sawim.Scheme;
 import ru.sawim.models.RosterAdapter;
@@ -118,13 +118,13 @@ public class SendToView extends Fragment implements AdapterView.OnItemClickListe
 
     private void initBar() {
         boolean isShowTabs = roster.getProtocolCount() > 1;
-        General.getActionBar().setDisplayShowTitleEnabled(!isShowTabs);
-        General.getActionBar().setDisplayShowHomeEnabled(!isShowTabs);
-        General.getActionBar().setDisplayUseLogoEnabled(!isShowTabs);
-        General.getActionBar().setDisplayHomeAsUpEnabled(!isShowTabs);
-        General.getActionBar().setDisplayShowCustomEnabled(isShowTabs);
+        SawimApplication.getActionBar().setDisplayShowTitleEnabled(!isShowTabs);
+        SawimApplication.getActionBar().setDisplayShowHomeEnabled(!isShowTabs);
+        SawimApplication.getActionBar().setDisplayUseLogoEnabled(!isShowTabs);
+        SawimApplication.getActionBar().setDisplayHomeAsUpEnabled(!isShowTabs);
+        SawimApplication.getActionBar().setDisplayShowCustomEnabled(isShowTabs);
         getActivity().setTitle(R.string.app_name);
-        General.getActionBar().setCustomView(horizontalScrollView);
+        SawimApplication.getActionBar().setCustomView(horizontalScrollView);
     }
 
     private void updateBarProtocols() {

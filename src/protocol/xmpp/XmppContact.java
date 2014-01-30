@@ -2,10 +2,7 @@ package protocol.xmpp;
 
 import android.view.ContextMenu;
 import android.view.Menu;
-import protocol.Contact;
-import protocol.ContactMenu;
-import protocol.Protocol;
-import protocol.StatusInfo;
+import protocol.*;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.view.menu.MyMenu;
@@ -164,7 +161,7 @@ public class XmppContact extends Contact {
         public String roleText;
         public String realJid;
 
-        public String client = "";
+        public short client = ClientInfo.CLI_NONE;
 
         public byte status;
         public byte priority;
@@ -281,14 +278,13 @@ public class XmppContact extends Contact {
         }
     }
 
-    public void setClient(String resource) {
+    public void setClient(String resource, String caps) {
         SubContact c = getExistSubContact(resource);
         if (null != c) {
-            c.client = resource;
+            c.client = XmppClient.createClient(caps);
         }
-        //SubContact cur = getCurrentSubContact();
-        //if (cur != null)
-        //    super.setClient(cur.client);
+        SubContact cur = getCurrentSubContact();
+        setClient((null == cur) ? ClientInfo.CLI_NONE : cur.client, null);
     }
 
     public void setXStatus(String id, String text) {
@@ -310,7 +306,7 @@ public class XmppContact extends Contact {
         } else {
             setStatus(cur.status, cur.statusText);
         }
-        setClient(cur.client);
+        setClient((null == cur) ? ClientInfo.CLI_NONE : cur.client, null);
     }
 
     public boolean isSingleUserContact() {

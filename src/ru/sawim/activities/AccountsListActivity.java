@@ -10,7 +10,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import protocol.Profile;
 import protocol.xmpp.XmppRegistration;
-import ru.sawim.General;
+import ru.sawim.SawimApplication;
 import ru.sawim.R;
 import ru.sawim.Scheme;
 import ru.sawim.view.AccountsListView;
@@ -29,20 +29,20 @@ public class AccountsListActivity extends ActionBarActivity implements XmppRegis
         setTheme(Scheme.isBlack() ? R.style.BaseTheme : R.style.BaseThemeLight);
         super.onCreate(savedInstanceState);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
-        if (General.getCurrentActivity().getSupportFragmentManager()
+        if (SawimApplication.getCurrentActivity().getSupportFragmentManager()
                 .findFragmentById(R.id.chat_fragment) != null)
             setContentView(R.layout.intercalation_layout);
         else
-            setContentView(General.isManyPane() ? R.layout.main_twopane : R.layout.main);
-        if (General.getActionBar() == null)
-            General.setActionBar(getSupportActionBar());
-        General.getActionBar().setDisplayHomeAsUpEnabled(true);
-        General.getActionBar().setDisplayShowTitleEnabled(true);
-        General.getActionBar().setDisplayUseLogoEnabled(true);
-        General.getActionBar().setDisplayShowHomeEnabled(true);
-        General.getActionBar().setDisplayShowCustomEnabled(false);
-        General.getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-        General.setCurrentActivity(this);
+            setContentView(SawimApplication.isManyPane() ? R.layout.main_twopane : R.layout.main);
+        if (SawimApplication.getActionBar() == null)
+            SawimApplication.setActionBar(getSupportActionBar());
+        SawimApplication.getActionBar().setDisplayHomeAsUpEnabled(true);
+        SawimApplication.getActionBar().setDisplayShowTitleEnabled(true);
+        SawimApplication.getActionBar().setDisplayUseLogoEnabled(true);
+        SawimApplication.getActionBar().setDisplayShowHomeEnabled(true);
+        SawimApplication.getActionBar().setDisplayShowCustomEnabled(false);
+        SawimApplication.getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+        SawimApplication.setCurrentActivity(this);
         if (findViewById(R.id.fragment_container) != null) {
             if (savedInstanceState != null) return;
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();

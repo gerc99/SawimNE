@@ -1,7 +1,7 @@
 package sawim.chat;
 
 import protocol.Contact;
-import ru.sawim.General;
+import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
 import ru.sawim.text.TextFormatter;
 import ru.sawim.widget.chat.MessageItemView;
@@ -34,7 +34,7 @@ public final class MessData {
         this.nick = nick;
         this.time = time;
         this.rowData = flags;
-        boolean today = (General.getCurrentGmtTime() - 24 * 60 * 60 < time);
+        boolean today = (SawimApplication.getCurrentGmtTime() - 24 * 60 * 60 < time);
         strTime = Util.getLocalDateString(time, today);
 
         confHighLight = (isIncoming() && !currentContact.isSingleUserContact() && isHighLight());

@@ -1,7 +1,7 @@
 package protocol.xmpp;
 
 import protocol.Profile;
-import ru.sawim.General;
+import ru.sawim.SawimApplication;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.models.form.FormListener;
@@ -34,8 +34,8 @@ public class XmppRegistration implements Runnable, FormListener {
         id = "reg0";
         form = new XForm();
         form.init("registration", this);
-        form.getForm().addTextField(FORM_SERVER, "domain", General.DEFAULT_SERVER);
-        form.getForm().addString(String.format(SawimApplication.getContext().getString(R.string.hint_registration_domen), General.DEFAULT_SERVER));
+        form.getForm().addTextField(FORM_SERVER, "domain", SawimApplication.DEFAULT_SERVER);
+        form.getForm().addString(String.format(SawimApplication.getContext().getString(R.string.hint_registration_domen), SawimApplication.DEFAULT_SERVER));
         return form.getForm();
     }
 
