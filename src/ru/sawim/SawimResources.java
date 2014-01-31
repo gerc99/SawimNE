@@ -12,8 +12,7 @@ public class SawimResources {
     public static BitmapDrawable groupDownIcon;
     public static BitmapDrawable groupRightIcons;
     public static BitmapDrawable usersIcon;
-    public static BitmapDrawable usersIconOn = (BitmapDrawable) SawimApplication.getInstance().getResources()
-            .getDrawable(R.drawable.ic_participants_on);
+    public static BitmapDrawable usersIconOn;
     public static BitmapDrawable typingIcon;
 
     public static BitmapDrawable authIcon = (BitmapDrawable) SawimApplication.getInstance().getResources()
@@ -31,9 +30,12 @@ public class SawimResources {
 
     public static void initIcons() {
         usersIcon = null;
+        usersIconOn = null;
         typingIcon = null;
         groupDownIcon = null;
         groupRightIcons = null;
+        usersIconOn = (BitmapDrawable) SawimApplication.getInstance().getResources()
+                .getDrawable(Scheme.isBlack() ? R.drawable.ic_participants_dark_on : R.drawable.ic_participants_on);
         usersIcon = (BitmapDrawable) SawimApplication.getInstance().getResources().
                 getDrawable(Scheme.isBlack() ? R.drawable.ic_participants_dark : R.drawable.ic_participants_light);
         typingIcon = (BitmapDrawable) SawimApplication.getInstance().getResources().

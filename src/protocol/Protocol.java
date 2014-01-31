@@ -711,7 +711,6 @@ abstract public class Protocol {
         if (null == group) {
             group = notInListGroup;
         }
-        //RosterHelper.getInstance().addToGroup(group, contact);
         RosterHelper.getInstance().updateGroup(this, group);
     }
 
