@@ -565,6 +565,7 @@ public final class RosterHelper {
     }
 
     public void removeFromGroup(Protocol protocol, Group g, Contact c) {
+        if (g == null) return;
         if (g.getContacts().removeElement(c))
             updateGroup(protocol, g);
     }

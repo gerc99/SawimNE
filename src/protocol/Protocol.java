@@ -1,7 +1,6 @@
 package protocol;
 
 import DrawControls.icons.Icon;
-import android.util.Log;
 import protocol.xmpp.XmppContact;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
@@ -82,11 +81,6 @@ abstract public class Protocol {
         String rawUin = StringConvertor.notNull(account.userId);
         if (!StringConvertor.isEmpty(rawUin)) {
             byte type = account.protocolType;
-    /*        if ((Profile.PROTOCOL_VK == type)
-                    && (0 < Util.strToIntDef(rawUin, 0))) {
-                rawUin = "id" + rawUin;
-                account.userId = rawUin;
-            }*/
             String domain = getDefaultDomain(type);
             if ((null != domain) && (-1 == rawUin.indexOf('@'))) {
                 rawUin += domain;
@@ -119,8 +113,6 @@ abstract public class Protocol {
                 return "@livejournal.com";
             case Profile.PROTOCOL_YANDEX:
                 return "@ya.ru";
-            //        case Profile.PROTOCOL_VK:
-            //            return "@vk.com";
             case Profile.PROTOCOL_QIP:
                 return "@qip.ru";
             case Profile.PROTOCOL_ODNOKLASSNIKI:
@@ -707,6 +699,9 @@ abstract public class Protocol {
 
     private void ui_removeFromAnyGroup(Contact c) {
         Group g = getGroup(c);
+        if (null == g) {
+            g = notInListGroup;
+        }
         RosterHelper.getInstance().removeFromGroup(this, g, c);
     }
 
@@ -716,6 +711,7 @@ abstract public class Protocol {
         if (null == group) {
             group = notInListGroup;
         }
+        //RosterHelper.getInstance().addToGroup(group, contact);
         RosterHelper.getInstance().updateGroup(this, group);
     }
 
