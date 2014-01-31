@@ -595,7 +595,6 @@ public final class Xmpp extends Protocol implements FormListener {
 
             case ContactMenu.CONFERENCE_DISCONNECT:
                 leave((XmppServiceContact) c);
-                RosterHelper.getInstance().updateRoster();
                 break;
 
             case ContactMenu.CONFERENCE_ADD:

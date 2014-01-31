@@ -39,7 +39,7 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
     @Override
     public void onDetach() {
         super.onDetach();
-        list.setVirtualListListener(null);
+        list.clearAll();
         adapter = null;
     }
 

@@ -391,7 +391,7 @@ public class ConnectAction extends IcqAction {
             newRosterLoaded = false;
             consumed = true;
             roster.useOld();
-            getIcq().setContactList(roster.getGroups(), roster.mergeContacts());
+            getIcq().setRoster(roster.getGroups(), roster.mergeContacts());
             getIcq().setContactListInfo(timestamp, count);
         } else if (SnacPacket.SRV_REPLYROSTER_COMMAND == snacPacket.getCommand()) {
             if (1 != snacPacket.getFlags()) {
@@ -494,7 +494,7 @@ public class ConnectAction extends IcqAction {
                 contact.setBooleanValue(Contact.SL_INVISIBLE, inList(invisibleList, userId));
             }
             getIcq().setPrivacyLists(ignoreList, invisibleList, visibleList);
-            getIcq().setContactList(roster.getGroups(), contactItems);
+            getIcq().setRoster(roster.getGroups(), contactItems);
             getIcq().setContactListInfo(timestamp, count);
         }
         if (srvReplyRosterRcvd) {

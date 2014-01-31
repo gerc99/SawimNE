@@ -164,11 +164,11 @@ abstract public class Protocol {
         }
     }
 
-    public final void setContactList(Vector<Group> groups, Vector<Contact> contacts) {
-        setContactList(new Roster(groups, contacts), false);
+    public final void setRoster(Vector<Group> groups, Vector<Contact> contacts) {
+        setRoster(new Roster(groups, contacts), false);
     }
 
-    public final void setContactList(Roster roster, boolean needSave) {
+    public final void setRoster(Roster roster, boolean needSave) {
         Roster oldRoster;
         synchronized (rosterLockObject) {
             oldRoster = this.roster;
@@ -270,6 +270,7 @@ abstract public class Protocol {
 
     public final void safeLoad() {
         if ("".equals(getUserId())) {
+            setRoster(new Roster(), false);
             return;
         }
         if (isConnected()) {
@@ -281,7 +282,7 @@ abstract public class Protocol {
             }
         } catch (Exception e) {
             DebugLog.panic("roster load", e);
-            setContactList(new Vector(), new Vector());
+            setRoster(new Roster(), false);
         }
     }
 
@@ -359,7 +360,7 @@ abstract public class Protocol {
         } finally {
             cl.closeRecordStore();
         }
-        setContactList(roster, false);
+        setRoster(roster, false);
     }
 
     private void save(RecordStore cl) throws Exception {
@@ -447,6 +448,7 @@ abstract public class Protocol {
             return;
         }
         removeLocalContact(contact);
+        RosterHelper.getInstance().updateRoster();
     }
 
     abstract protected void s_renameContact(Contact contact, String name);
@@ -704,24 +706,17 @@ abstract public class Protocol {
     }
 
     private void ui_removeFromAnyGroup(Contact c) {
-        Group g = getGroupById(c.getGroupId());
-        if (null == g) {
-            g = notInListGroup;
-        }
-        for (int i = 0; i < roster.getGroupItems().size(); ++i) {
-            Group group = roster.getGroupItems().elementAt(i);
-            RosterHelper.getInstance().removeFromGroup(group, c);
-        }
-        //RosterHelper.getInstance().removeFromGroup(g, c);
+        Group g = getGroup(c);
+        RosterHelper.getInstance().removeFromGroup(this, g, c);
     }
 
     private void ui_addContactToGroup(Contact contact, Group group) {
-        ui_removeFromAnyGroup(contact);
+        RosterHelper.getInstance().removeFromGroup(this, notInListGroup, contact);
         contact.setGroup(group);
         if (null == group) {
             group = notInListGroup;
         }
-        RosterHelper.getInstance().addToGroup(group, contact);
+        RosterHelper.getInstance().updateGroup(this, group);
     }
 
     private void ui_updateGroup(final Group group) {

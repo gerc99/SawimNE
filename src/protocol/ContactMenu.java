@@ -133,8 +133,6 @@ public class ContactMenu implements TextBoxView.TextBoxListener {
             case USER_MENU_USER_REMOVE:
                 HistoryStorage.getHistory(contact).removeHistory();
                 protocol.removeContact(contact);
-                RosterHelper.getInstance().updateRoster();
-                RosterHelper.getInstance().updateBarProtocols();
                 break;
 
             case USER_MENU_STATUSES:

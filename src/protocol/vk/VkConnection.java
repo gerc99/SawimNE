@@ -129,7 +129,7 @@ public class VkConnection implements Runnable {
         try {
             Vector<Contact> contacts = to(api.getFriends().getJSONArray("response"));
             Vector<Group> groups = groups();
-            vk.setContactList(new Roster(groups, contacts), false);
+            vk.setRoster(new Roster(groups, contacts), false);
         } catch (Exception e) {
             sawim.modules.DebugLog.panic("Vk processContacts", e);
         }

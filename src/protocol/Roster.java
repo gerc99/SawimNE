@@ -40,7 +40,7 @@ public class Roster {
 
     public final Group getGroupById(int id) {
         for (int i = groups.size() - 1; 0 <= i; --i) {
-            Group group = (Group) groups.elementAt(i);
+            Group group = groups.elementAt(i);
             if (group.getId() == id) {
                 return group;
             }

@@ -773,7 +773,7 @@ public final class MrimConnection extends ClientConnection {
             roster.addGroup(phoneGroup);
         }
         if (isConnected()) {
-            mrim.setContactList(roster.getGroups(), roster.mergeContacts());
+            mrim.setRoster(roster.getGroups(), roster.mergeContacts());
             setProgress(100);
         }
     }

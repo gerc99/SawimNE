@@ -1,6 +1,5 @@
 package protocol.xmpp;
 
-import android.util.Log;
 import protocol.*;
 import protocol.net.ClientConnection;
 import ru.sawim.SawimApplication;
@@ -20,7 +19,6 @@ import sawim.util.JLocale;
 import javax.microedition.io.Connector;
 import javax.microedition.io.HttpsConnection;
 import java.io.DataInputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.Vector;
 
 
@@ -634,7 +632,7 @@ public final class XmppConnection extends ClientConnection {
                     if (!isConnected()) {
                         return;
                     }
-                    xmpp.setContactList(roster.getGroups(), roster.mergeContacts());
+                    xmpp.setRoster(roster.getGroups(), roster.mergeContacts());
                     Contact selfContact = xmpp.getItemByUIN(xmpp.getUserId());
                     if (null != selfContact) {
                         selfContact.setBooleanValue(Contact.CONTACT_NO_AUTH, false);
@@ -2153,7 +2151,7 @@ public final class XmppConnection extends ClientConnection {
         if (contact.isConference()) {
             g = getXmpp().getOrCreateGroup(contact.getDefaultGroupName());
 
-        } else if (g.getName().equals(contact.getDefaultGroupName())) {
+        } else if (g != null && g.getName().equals(contact.getDefaultGroupName())) {
             g = null;
         }
 

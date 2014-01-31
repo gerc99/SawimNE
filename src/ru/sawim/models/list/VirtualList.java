@@ -14,10 +14,6 @@ public class VirtualList {
     private OnBuildContextMenu buildContextMenu;
     private OnClickListListener itemClickListListener;
 
-    private VirtualList() {
-        super();
-    }
-
     public static VirtualList getInstance() {
         if (instance == null) {
             synchronized (VirtualList.class) {
@@ -27,6 +23,11 @@ public class VirtualList {
             }
         }
         return instance;
+    }
+
+    public void show() {
+        VirtualListView.show();
+        updateModel();
     }
 
     public void setCaption(String caption) {
@@ -55,6 +56,8 @@ public class VirtualList {
     public void clearAll() {
         model.clear();
         clearListeners();
+        model = null;
+        caption = null;
     }
 
     public void setVirtualListListener(OnVirtualListListener l) {
@@ -132,10 +135,5 @@ public class VirtualList {
 
     public OnBuildContextMenu getBuildContextMenu() {
         return buildContextMenu;
-    }
-
-    public void show() {
-        VirtualListView.show();
-        updateModel();
     }
 }
