@@ -9,6 +9,7 @@ import android.provider.Browser;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import protocol.Protocol;
+import protocol.xmpp.Jid;
 import ru.sawim.SawimApplication;
 import ru.sawim.R;
 import ru.sawim.view.PictureView;
@@ -41,7 +42,7 @@ public class TextLinkClick implements TextLinkClickListener {
             new JuickMenu(SawimApplication.getCurrentActivity(), currentProtocol, currentContact, clickedString).show();
             return;
         }
-        if (isLongTap) {
+        if (isLongTap || Jid.isConference(clickedString)) {
             CharSequence[] items = new CharSequence[2];
             items[0] = SawimApplication.getCurrentActivity().getString(R.string.copy);
             items[1] = SawimApplication.getCurrentActivity().getString(R.string.add_contact);
