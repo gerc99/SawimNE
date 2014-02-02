@@ -94,6 +94,7 @@ public class HistoryStorage {
     }
 
     RecordStore getRS() {
+        if (historyStore == null) return null;
         return historyStore.getRS();
     }
 

@@ -1,7 +1,6 @@
 package sawim.search;
 
 import DrawControls.icons.Icon;
-import android.os.Environment;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,7 +14,6 @@ import protocol.net.TcpSocket;
 import protocol.xmpp.Xmpp;
 import ru.sawim.SawimApplication;
 import ru.sawim.R;
-import ru.sawim.SawimApplication;
 import ru.sawim.models.list.VirtualList;
 import ru.sawim.models.list.VirtualListItem;
 import ru.sawim.models.list.VirtualListModel;
@@ -25,7 +23,6 @@ import sawim.SawimException;
 import sawim.comm.Util;
 import sawim.forms.EditInfo;
 import sawim.modules.DebugLog;
-import sawim.modules.fs.FileBrowser;
 import sawim.modules.fs.FileBrowserListener;
 import sawim.modules.fs.FileSystem;
 import sawim.modules.fs.JSR75FileSystem;
@@ -34,6 +31,7 @@ import sawim.util.JLocale;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.util.List;
 
 public class UserInfo implements PhotoListener, FileBrowserListener {
@@ -218,9 +216,9 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
                         break;
 
                     case INFO_MENU_ADD_AVATAR:
-                        FileBrowser fsBrowser = new FileBrowser(false);
-                        fsBrowser.setListener(UserInfo.this);
-                        fsBrowser.activate();
+                        if (ExternalApi.instance.pickFile(UserInfo.this)) {
+                            return;
+                        }
                         break;
                 }
             }
@@ -261,29 +259,27 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
 
                     case INFO_MENU_SAVE_AVATAR:
                         byte[] buffer = avatar;
-                        File file = new File(PATH);
+                        File file = new File(SawimApplication.PATH_AVATARS);
                         if (!file.exists())
                             file.mkdirs();
 
                         try {
                             if (buffer != null) {
-                                String avatar = PATH + realUin.replace("/", "%") + ".png";
+                                String avatar = SawimApplication.PATH_AVATARS + realUin.replace("/", "%") + ".png";
                                 FileOutputStream fos = new FileOutputStream(avatar);
                                 fos.write(buffer);
                                 fos.close();
+                                Toast.makeText(SawimApplication.getContext(), R.string.saved_in + " " + avatar, Toast.LENGTH_SHORT).show();
                             }
                         } catch (Exception e) {
                             DebugLog.println("Save avatar exception " + e.getMessage());
                             e.printStackTrace();
                         }
-                        Toast.makeText(SawimApplication.getContext(), R.string.saved + " " + avatar, Toast.LENGTH_SHORT).show();
                         break;
                 }
             }
         });
     }
-
-    private static final String PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/sawimne/avatars/";
 
     public void setProfileViewToWait() {
         VirtualListModel profile = profileView.getModel();
@@ -384,12 +380,12 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
         }
     }
 
-    public void onFileSelect(String filename) throws SawimException {
+    public void onFileSelect(InputStream fis, String fileName) throws SawimException {
         try {
             JSR75FileSystem file = FileSystem.getInstance();
-            file.openFile(filename);
+            file.openFile(fileName);
 
-            java.io.InputStream fis = file.openInputStream();
+            //java.io.InputStream fis = file.openInputStream();
             int size = (int) file.fileSize();
             if (size <= 30 * 1024 * 1024) {
                 byte[] binAvatar = new byte[size];

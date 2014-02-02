@@ -17,40 +17,6 @@ public class JSR75FileSystem {
 
     private FileConnection fileConnection;
 
-    public Vector getDirectoryContents(String currDir, boolean onlyDirs)
-            throws SawimException {
-
-        Vector filelist = new Vector();
-        try {
-            if (currDir.equals(FileSystem.ROOT_DIRECTORY)) {
-                Enumeration roots = FileSystemRegistry.listRoots();
-                while (roots.hasMoreElements()) {
-                    filelist.addElement(new FileNode(currDir, (String) roots.nextElement()));
-                }
-
-            } else {
-                FileConnection fileconn = (FileConnection) Connector.open(
-                        "file://" + currDir, Connector.READ);
-
-                Enumeration list = fileconn.list();
-                filelist.addElement(new FileNode(currDir, FileSystem.PARENT_DIRECTORY));
-                while (list.hasMoreElements()) {
-                    String filename = (String) list.nextElement();
-                    if (onlyDirs && !filename.endsWith("/")) {
-                        continue;
-                    }
-                    filelist.addElement(new FileNode(currDir, filename));
-                }
-                fileconn.close();
-            }
-        } catch (SecurityException e) {
-            throw new SawimException(193, 0);
-        } catch (Exception e) {
-            throw new SawimException(191, 0);
-        }
-        return filelist;
-    }
-
     public long totalSize() throws Exception {
         return fileConnection.totalSize();
     }

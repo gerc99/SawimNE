@@ -198,6 +198,7 @@
     <string name="instant_reconnection">Мгновенно переподключать при потере сети</string>
     <string name="invitation_sent">Приглашение отправлено</string>
     <string name="save_avatar">Сохранить аватар</string>
+    <string name="saved_in">Сохранено в</string>
     <string name="saved">Сохранено</string>
     <string name="added">Добавлено</string>
     <string name="about_program">О программе</string>
@@ -223,4 +224,5 @@
     <string name="hide_chat_keyboard">Скрывать клавиатуру после отправки</string>
     <string name="enter_id">Введите id, а не e-mail</string>
     <string name="options_pro">Для продвинутых пользователей</string>
+    <string name="file_already_saved">Файл уже сохранен</string>
 </resources>

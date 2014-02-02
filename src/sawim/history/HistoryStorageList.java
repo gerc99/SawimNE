@@ -188,6 +188,7 @@ public final class HistoryStorageList implements Runnable, FormListener {
 
             case MENU_INFO:
                 RecordStore rs = history.getRS();
+                if (rs == null) break;
                 try {
                     String sb = JLocale.getString("hist_cur") + ": " + getSize() + "\n"
                             + JLocale.getString("hist_size") + ": " + (rs.getSize() / 1024) + "\n"

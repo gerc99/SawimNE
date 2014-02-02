@@ -12,7 +12,6 @@ import sawim.chat.Chat;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
 import sawim.modules.DebugLog;
-import sawim.modules.fs.FileBrowser;
 import sawim.modules.fs.FileBrowserListener;
 import sawim.modules.fs.FileSystem;
 import sawim.modules.fs.JSR75FileSystem;
@@ -27,8 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public final class FileTransfer implements FileBrowserListener,
-        PhotoListener, Runnable, FormListener {
+public final class FileTransfer implements FileBrowserListener, PhotoListener, Runnable, FormListener {
 
     private static final int descriptionField = 1000;
     private static final int transferMode = 1001;
@@ -96,9 +94,6 @@ public final class FileTransfer implements FileBrowserListener,
             return;
         }
         sawim.modules.DebugLog.panic("show file browser");
-        FileBrowser fsBrowser = new FileBrowser(false);
-        fsBrowser.setListener(this);
-        fsBrowser.activate();
     }
 
     public void startPhotoTransfer() {
@@ -115,8 +110,14 @@ public final class FileTransfer implements FileBrowserListener,
         } catch (IOException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
+        byte[] image = null;
+
+        if ((fileSize < MAX_IMAGE_SIZE) && isImageFile()) {
+            image = FileSystem.getInstance().getFileContent(filename);
+        }
         setData(in, fileSize);
         askForNameDesc();
+        showPreview(image);
         /*} catch (Exception e) {
             closeFile();
             handleException(new SawimException(191, 6));
@@ -155,9 +156,6 @@ public final class FileTransfer implements FileBrowserListener,
         setFileName(photoName);
         askForNameDesc();
         showPreview(data);
-    }
-
-    public void onDirectorySelect(String s0) {
     }
 
     private void askForNameDesc() {
@@ -302,6 +300,7 @@ public final class FileTransfer implements FileBrowserListener,
     }
 
     private void showPreview(final byte[] image) {
+        if (image == null) return;
         new Thread(new Runnable() {
             @Override
             public void run() {

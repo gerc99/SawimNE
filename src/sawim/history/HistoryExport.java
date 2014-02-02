@@ -1,14 +1,15 @@
 package sawim.history;
 
-
+import android.util.Log;
 import protocol.Contact;
+import ru.sawim.R;
 import ru.sawim.SawimApplication;
+import ru.sawim.config.HomeDirectory;
+
 import sawim.SawimException;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
 import sawim.modules.Notify;
-import sawim.modules.fs.FileBrowser;
-import sawim.modules.fs.FileBrowserListener;
 import sawim.modules.fs.FileSystem;
 import sawim.modules.fs.JSR75FileSystem;
 import sawim.roster.RosterHelper;
@@ -18,9 +19,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 
-class HistoryExport implements Runnable, FileBrowserListener {
+class HistoryExport implements Runnable {
     private HistoryStorage exportHistory;
-    private String directory;
 
     private HistoryStorageList screen;
     private JSR75FileSystem file;
@@ -34,29 +34,6 @@ class HistoryExport implements Runnable, FileBrowserListener {
 
     public void export(HistoryStorage storage) {
         exportHistory = storage;
-        FileBrowser fsBrowser = new FileBrowser(true);
-        fsBrowser.setListener(this);
-        fsBrowser.activate();
-    }
-
-    public void onFileSelect(String s0) throws SawimException {
-       /* file = FileSystem.getSawimActivity();
-        try {
-            file.openFile(filename);
-            setFileName(file.getName());
-
-            InputStream is = file.openInputStream();
-            int fileSize = (int) file.fileSize();
-            setData(is, fileSize);
-            askForNameDesc();
-        } catch (Exception e) {
-            closeFile();
-            throw new SawimException(191, 3);
-        }*/
-    }
-
-    public void onDirectorySelect(String dir) {
-        directory = dir;
         new Thread(this).start();
     }
 
@@ -68,11 +45,11 @@ class HistoryExport implements Runnable, FileBrowserListener {
     public void run() {
         try {
             exportContact(exportHistory);
-
             Notify.getSound().playSoundNotification(Notify.NOTIFY_MESSAGE);
-
-            //screen.exportDone();
+            screen.exportDone();
+            RosterHelper.getInstance().activateWithMsg(SawimApplication.getContext().getString(R.string.saved_in) + " " + getFile(exportHistory).getAbsolutePath());
         } catch (Exception ex) {
+            ex.printStackTrace();
             SawimException e = new SawimException(191, 5);
             if (ex instanceof SawimException) {
                 e = (SawimException) ex;
@@ -121,31 +98,18 @@ class HistoryExport implements Runnable, FileBrowserListener {
         os.flush();
     }
 
-    private JSR75FileSystem openFile(String userId) throws SawimException {
-        String timemark = Util.getDate("_%y%m", Util.createCurrentLocalTime());
-        for (int counter = 0; counter < 1000; ++counter) {
-            StringBuffer sb = new StringBuffer();
-            sb.append(directory).append("hist_").append(userId).append(timemark);
-            if (0 < counter) {
-                sb.append("_").append(counter);
-            }
-            sb.append(".txt");
-            JSR75FileSystem file = FileSystem.getInstance();
-            file.openFile(sb.toString());
-            if (!file.exists()) {
-                return file;
-            }
-            file.close();
-        }
-        return null;
+    private JSR75FileSystem getFile(HistoryStorage storage) {
+        return HomeDirectory.getFile(FileSystem.HISTORY + "/" + storage.getUniqueUserId() + ".txt");
     }
 
     private void exportContact(HistoryStorage storage) throws Exception {
-
         storage.openHistory();
         try {
             if (0 < storage.getHistorySize()) {
-                JSR75FileSystem file = openFile(storage.getUniqueUserId());
+                JSR75FileSystem file = getFile(storage);
+                if (file.exists()) {
+                    RosterHelper.getInstance().activateWithMsg(SawimApplication.getContext().getString(R.string.file_already_saved));
+                }
                 OutputStream out = file.openOutputStream();
                 try {
                     exportUinToStream(storage, out);

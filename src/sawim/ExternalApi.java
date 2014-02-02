@@ -10,6 +10,7 @@ import android.util.Log;
 import protocol.net.TcpSocket;
 import ru.sawim.photo.CameraActivity;
 import sawim.modules.DebugLog;
+import sawim.modules.fs.FileBrowserListener;
 import sawim.modules.photo.PhotoListener;
 
 import java.io.File;
@@ -27,7 +28,7 @@ public class ExternalApi {
     }
 
     private PhotoListener photoListener = null;
-    private FileTransfer fileTransferListener = null;
+    private FileBrowserListener fileTransferListener = null;
     private Uri imageUrl = null;
     private static final int RESULT_PHOTO = FragmentActivity.RESULT_FIRST_USER + 1;
     private static final int RESULT_EXTERNAL_PHOTO = FragmentActivity.RESULT_FIRST_USER + 2;
@@ -52,7 +53,7 @@ public class ExternalApi {
         activity.startActivityForResult(cameraIntent, RESULT_PHOTO);
     }
 
-    public boolean pickFile(FileTransfer listener) {
+    public boolean pickFile(FileBrowserListener listener) {
         try {
             fileTransferListener = listener;
             Intent theIntent = new Intent(Intent.ACTION_GET_CONTENT);

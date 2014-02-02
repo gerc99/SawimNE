@@ -199,6 +199,7 @@
     <string name="instant_reconnection">Instant reconnection</string>
     <string name="invitation_sent">Invitation sent</string>
     <string name="save_avatar">Save avatar</string>
+    <string name="saved_in">Saved in</string>
     <string name="saved">Saved</string>
     <string name="added">Added</string>
     <string name="about_program">About program</string>
@@ -225,4 +226,5 @@
     <string name="hide_chat_keyboard">Hide chat keyboard</string>
     <string name="enter_id">It is not your email but ID</string>
     <string name="options_pro">Options pro</string>
+    <string name="file_already_saved">File already saved</string>
 </resources>
