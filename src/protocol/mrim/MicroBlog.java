@@ -101,7 +101,8 @@ public final class MicroBlog implements TextBoxView.TextBoxListener {
                         break;
 
                     case MENU_COPY:
-                        Clipboard.setClipBoardText(model.elements.get(listItem).getLabel() + "\n" + model.elements.get(listItem).getDescStr());
+                        VirtualListItem item = list.getModel().elements.get(listItem);
+                        Clipboard.setClipBoardText(((item.getLabel() == null) ? "" : item.getLabel() + "\n") + item.getDescStr());
                         break;
 
                     /*case MENU_USER_MENU:

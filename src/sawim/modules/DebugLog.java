@@ -147,15 +147,19 @@ public final class DebugLog {
                 switch (itemMenuId) {
                     case MENU_COPY:
                         VirtualListItem item = list.getModel().elements.get(listItem);
-                        Clipboard.setClipBoardText(item.getLabel() + "\n" + item.getDescStr());
+                        Clipboard.setClipBoardText(((item.getLabel() == null) ? "" : item.getLabel() + "\n") + item.getDescStr());
                         break;
 
                     case MENU_COPY_ALL:
                         StringBuffer s = new StringBuffer();
                         List<VirtualListItem> listItems = list.getModel().elements;
                         for (int i = 0; i < listItems.size(); ++i) {
-                            s.append(listItems.get(i).getLabel()).append("\n")
-                                    .append(listItems.get(i).getDescStr()).append("\n");
+                            CharSequence label = listItems.get(i).getLabel();
+                            CharSequence descStr = listItems.get(i).getDescStr();
+                            if (label != null)
+                                s.append(label).append("\n");
+                            if (descStr != null)
+                                s.append(descStr).append("\n");
                         }
                         Clipboard.setClipBoardText(s.toString());
                         break;

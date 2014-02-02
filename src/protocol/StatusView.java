@@ -135,8 +135,12 @@ public final class StatusView {
                         StringBuffer s = new StringBuffer();
                         List<VirtualListItem> listItems = list.getModel().elements;
                         for (int i = 0; i < listItems.size(); ++i) {
-                            s.append(listItems.get(i).getLabel()).append("\n")
-                                    .append(listItems.get(i).getDescStr()).append("\n");
+                            CharSequence label = listItems.get(i).getLabel();
+                            CharSequence descStr = listItems.get(i).getDescStr();
+                            if (label != null)
+                                s.append(label).append("\n");
+                            if (descStr != null)
+                                s.append(descStr).append("\n");
                         }
                         Clipboard.setClipBoardText(s.toString());
                         break;
@@ -146,6 +150,7 @@ public final class StatusView {
         contact = c;
         protocol = p;
         clientVersion = null;
+        userRole = null;
     }
 
     public void initUI() {

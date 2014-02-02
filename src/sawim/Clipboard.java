@@ -32,6 +32,13 @@ public final class Clipboard {
         return sb.toString();
     }
 
+    public static String serialize(boolean isSubstring, boolean incoming, String header1, String header2, CharSequence text) {
+        StringBuffer sb = new StringBuffer();
+        sb.append('[').append(header1).append(" ").append(header2).append(']').append('\n');
+        insertQuotingChars(sb, text, isSubstring, incoming ? '\u00bb' : '\u00ab');
+        return sb.toString();
+    }
+
     public static void setClipBoardText(String text) {
         try {
             if (Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
@@ -52,8 +59,13 @@ public final class Clipboard {
         final AtomicReference<String> text = new AtomicReference<String>();
         text.set(null);
         try {
-            ClipboardManager clipboard = (ClipboardManager) SawimApplication.getCurrentActivity().getSystemService(SawimActivity.CLIPBOARD_SERVICE);
-            text.set(clipboard.hasText() ? clipboard.getText().toString() : null);
+            if (Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
+                android.text.ClipboardManager clipboard = (android.text.ClipboardManager) SawimApplication.getCurrentActivity().getSystemService(SawimActivity.CLIPBOARD_SERVICE);
+                text.set(clipboard.hasText() ? clipboard.getText().toString() : null);
+            } else {
+                ClipboardManager clipboard = (ClipboardManager) SawimApplication.getCurrentActivity().getSystemService(SawimActivity.CLIPBOARD_SERVICE);
+                text.set(clipboard.hasPrimaryClip() ? clipboard.getText().toString() : null);
+            }
         } catch (Throwable e) {
             sawim.modules.DebugLog.panic("get clipboard", e);
             // do nothing

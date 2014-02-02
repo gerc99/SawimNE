@@ -7,9 +7,11 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.os.Looper;
 import android.os.Message;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Surface;
 import android.view.WindowManager;
 import org.microemu.MIDletBridge;
@@ -55,7 +57,6 @@ public class SawimApplication extends Application {
     public static int sortType;
     public static boolean hideIconsClient;
     public static int autoAbsenceTime;
-    private float displayDensity;
 
     public static SawimApplication instance;
     private final SawimServiceConnection serviceConnection = new SawimServiceConnection();
@@ -171,7 +172,6 @@ public class SawimApplication extends Application {
             DebugLog.instance.activate();
         }
         DebugLog.startTests();
-        displayDensity = getResources().getDisplayMetrics().density;
     }
 
     public static void updateOptions() {
@@ -267,10 +267,6 @@ public class SawimApplication extends Application {
     public void setConfigurationChanged(OnConfigurationChanged cC) {
         if (configurationChanged == null)
             configurationChanged = cC;
-    }
-
-    public float getDisplayDensity() {
-        return displayDensity;
     }
 
     public static ActionBar getActionBar() {

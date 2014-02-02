@@ -111,7 +111,7 @@ public class MessagesAdapter extends BaseAdapter {
             item.setBackgroundResource(incoming ?
                     (Scheme.isBlack() ? R.drawable.msg_in_dark : R.drawable.msg_in)
                     : (Scheme.isBlack() ? R.drawable.msg_out_dark : R.drawable.msg_out));
-            float displayDensity = SawimApplication.getInstance().getDisplayDensity();
+            float displayDensity = SawimApplication.getInstance().getResources().getDisplayMetrics().density;
             if (incoming) {
                 item.setPadding((int) (19 * displayDensity), (int) (7 * displayDensity), (int) (9 * displayDensity), (int) (9 * displayDensity));
             } else {

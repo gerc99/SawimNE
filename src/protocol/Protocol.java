@@ -664,6 +664,7 @@ abstract public class Protocol {
         setLastStatusChangeTime();
         if (isConnected()) {
             s_updateOnlineStatus();
+            RosterHelper.getInstance().updateBarProtocols();
             RosterHelper.getInstance().updateProgressBar();
         }
     }
