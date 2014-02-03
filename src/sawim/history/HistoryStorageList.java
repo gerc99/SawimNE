@@ -164,6 +164,7 @@ public final class HistoryStorageList implements Runnable, FormListener {
                             case 0:
                                 history.removeHistory();
                                 clearCache();
+                                allMsg.back();
                                 break;
                             case 1:
                                 history.clearAll(true);
@@ -171,6 +172,7 @@ public final class HistoryStorageList implements Runnable, FormListener {
                             case 2:
                                 history.clearAll(false);
                                 clearCache();
+                                allMsg.back();
                                 break;
                         }
                     }

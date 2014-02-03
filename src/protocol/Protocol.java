@@ -859,7 +859,7 @@ abstract public class Protocol {
         }
         Chat chat = getChat(contact);
         boolean isHighlight = Chat.isHighlight(message.getProcessedText(), contact.getMyName());
-        chat.addMessage(message, !silent && !message.isWakeUp(), isHighlight);
+        chat.addMessage(message, !message.isWakeUp(), isHighlight);
         if (message instanceof SystemNotice) {
             SystemNotice notice = (SystemNotice) message;
             if (SystemNotice.SYS_NOTICE_AUTHREQ == notice.getSysnoteType()) {

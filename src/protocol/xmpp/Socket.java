@@ -126,30 +126,7 @@ final class Socket implements Runnable {
 
     char readChar() throws SawimException {
         try {
-            byte bt = readByte();
-            if (0 <= bt) {
-                return (char) bt;
-            }
-            if ((bt & 0xE0) == 0xC0) {
-                byte bt2 = readByte();
-                return (char) (((bt & 0x3F) << 6) | (bt2 & 0x3F));
-
-            } else if ((bt & 0xF0) == 0xE0) {
-                byte bt2 = readByte();
-                byte bt3 = readByte();
-                return (char) (((bt & 0x1F) << 12) | ((bt2 & 0x3F) << 6) | (bt3 & 0x3F));
-
-            } else {
-                int seqLen = 0;
-                if ((bt & 0xf0) == 0xe0) seqLen = 2;
-                else if ((bt & 0xF8) == 0xF0) seqLen = 3;
-                else if ((bt & 0xFC) == 0xF8) seqLen = 4;
-                else if ((bt & 0xFE) == 0xFC) seqLen = 5;
-                for (; 0 < seqLen; --seqLen) {
-                    readByte();
-                }
-                return '?';
-            }
+            return (char) (readByte() & 0xff);
         } catch (SawimException e) {
             DebugLog.panic("readChar je ", e);
             throw e;

@@ -358,7 +358,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
     }
 
     private void setPosition(int unreadMessageCount) {
-        boolean hasHistory = chat.getHistory() != null && chat.getHistory().getHistorySize() > 0;
+        boolean hasHistory = chat.getHistory() != null && chat.getHistory().getHistorySize() > 0 && !chat.isBlogBot();
         adapter.setPosition(chat.dividerPosition);
         if (oldChat != null) {
             if (oldChat.equals(chat.getContact().getUserId())) {
@@ -684,10 +684,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
 
             case ContactMenu.ACTION_CURRENT_DEL_CHAT:
                 ChatHistory.instance.unregisterChat(chat);
-                if (SawimApplication.isManyPane())
-                    chatViewLayout.setVisibility(LinearLayout.GONE);
-                else
-                    getFragmentManager().popBackStack();
+                getFragmentManager().popBackStack();
                 break;
 
             case ContactMenu.ACTION_DEL_ALL_CHATS_EXCEPT_CUR:
@@ -696,10 +693,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
 
             case ContactMenu.ACTION_DEL_ALL_CHATS:
                 ChatHistory.instance.removeAll(null);
-                if (SawimApplication.isManyPane())
-                    chatViewLayout.setVisibility(LinearLayout.GONE);
-                else
-                    getFragmentManager().popBackStack();
+                getFragmentManager().popBackStack();
                 break;
 
             default:

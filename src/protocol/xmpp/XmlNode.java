@@ -5,6 +5,7 @@ import sawim.SawimException;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
@@ -282,6 +283,12 @@ public final class XmlNode {
         }
         if (StringConvertor.isEmpty(value)) {
             value = null;
+        } else {
+            try {
+                value = new String(value.toString().getBytes("ISO8859-1"), "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
         }
         return true;
     }

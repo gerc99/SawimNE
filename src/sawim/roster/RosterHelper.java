@@ -137,7 +137,6 @@ public final class RosterHelper {
             case Profile.PROTOCOL_FACEBOOK:
             case Profile.PROTOCOL_LJ:
             case Profile.PROTOCOL_YANDEX:
-                //        case Profile.PROTOCOL_VK:
             case Profile.PROTOCOL_QIP:
             case Profile.PROTOCOL_ODNOKLASSNIKI:
                 return Profile.PROTOCOL_JABBER;
@@ -582,6 +581,8 @@ public final class RosterHelper {
     public String getStatusMessage(Contact contact) {
         String message = "";
         Protocol protocol = getCurrentProtocol();
+        if (getCurrPage() == RosterHelper.ACTIVE_CONTACTS)
+            protocol = contact.getProtocol();
         if (protocol == null || contact == null) return "";
         if (XStatusInfo.XSTATUS_NONE != contact.getXStatusIndex()) {
             message = contact.getXStatusText();

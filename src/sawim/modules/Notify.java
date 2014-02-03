@@ -134,7 +134,7 @@ public class Notify implements Runnable {
             }
             if ((VIBRA_OFF != vibraKind)
                     && ((NOTIFY_MESSAGE == notType) || (NOTIFY_MULTIMESSAGE == notType))) {
-                vibrate = SawimApplication.isPaused() ? 700 : 200;
+                vibrate = SawimApplication.isPaused() ? 500 : 200;
             }
         }
 

@@ -29,7 +29,6 @@ package org.microemu.cldc.file;
 import android.os.Environment;
 
 import javax.microedition.io.file.ConnectionClosedException;
-import javax.microedition.io.file.FileConnection;
 import java.io.*;
 import java.lang.reflect.Method;
 import java.security.AccessControlContext;
@@ -40,7 +39,7 @@ import java.util.Enumeration;
 import java.util.Vector;
 import java.util.regex.Pattern;
 
-public class FileSystemFileConnection implements FileConnection {
+public class FileSystemFileConnection {
 
     private File fsRoot;
 
