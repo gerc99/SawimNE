@@ -183,6 +183,7 @@ admin=админ
 moderator=модератор
 member=член
 none=никто
+outcast==забанен
 participant=участник
 visitor=гость
 owners=Владельцы

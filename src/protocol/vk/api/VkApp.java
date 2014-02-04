@@ -1,6 +1,8 @@
 package protocol.vk.api;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -58,7 +60,12 @@ public class VkApp {
 
     public void showLoginDialog(String email, String password) {
         new WebClient().oauth(OAUTH_AUTHORIZE_URL, email, password, _listener);
-        //new VkDialog(_context, OAUTH_AUTHORIZE_URL, _listener).show();
+        /*new Handler(Looper.getMainLooper()).post(new Runnable() {
+            public void run() {
+                new VkDialog(_context, OAUTH_AUTHORIZE_URL, _listener).show();
+            }
+        });*/
+
     }
 
     public JSONObject getFriends() {

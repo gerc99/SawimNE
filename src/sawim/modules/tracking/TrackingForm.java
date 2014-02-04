@@ -2,9 +2,9 @@ package sawim.modules.tracking;
 
 import DrawControls.icons.Icon;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import ru.sawim.SawimApplication;
 import ru.sawim.R;
-import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
 import ru.sawim.models.list.VirtualList;
 import ru.sawim.models.list.VirtualListItem;
@@ -28,7 +28,8 @@ public final class TrackingForm implements TextBoxView.TextBoxListener {
     private String uin;
     private VirtualList screen = VirtualList.getInstance();
     private VirtualListModel model = new VirtualListModel();
-    private TextBoxView InputBox;
+    private TextBoxView inputBox;
+    public static String editText = null;
 
     public TrackingForm(String uin) {
         this.uin = uin;
@@ -189,7 +190,8 @@ public final class TrackingForm implements TextBoxView.TextBoxListener {
             Line line = getLineByID(track.idEvent, track.idAction);
             if (line == null) continue;
             if (track.idAction == Tracking.ACTION_MESSAGE_TEXT) {
-                line.name = track.valueAction;
+                editText = track.valueAction;
+                Log.e("editText", "" + TrackingForm.editText);
                 if (line.name.length() > 0) {
                     line.status_flag = YES;
                 } else {
@@ -275,17 +277,19 @@ public final class TrackingForm implements TextBoxView.TextBoxListener {
     }
 
     private void activateInputBox(String text) {
-        InputBox = new TextBoxView();
-        InputBox.setTextBoxListener(this);
-        InputBox.setCaption(JLocale.getString("mass"));
-        InputBox.setString(text);
-        InputBox.show(SawimApplication.getCurrentActivity().getSupportFragmentManager(), JLocale.getString("message"));
+        if (inputBox == null) {
+            inputBox = new TextBoxView();
+            inputBox.setTextBoxListener(this);
+            inputBox.setCaption(null);
+        }
+        inputBox.setString(text);
+        inputBox.show(SawimApplication.getCurrentActivity().getSupportFragmentManager(), "tracking-message");
     }
 
     private void changeStatus(int index) {
         Line line = getLine(index);
         if (line.id_action == Tracking.ACTION_MESSAGE_TEXT) {
-            activateInputBox(line.name);
+            activateInputBox(editText);
         } else if (line.isAll) {
             if (line.status_flag == NO || line.status_flag == NOTHING) {
                 line.status_flag = YES;
@@ -377,8 +381,8 @@ public final class TrackingForm implements TextBoxView.TextBoxListener {
     }
 
     public void textboxAction(TextBoxView box, boolean ok) {
-        if ((box == InputBox) && ok) {
-            setLineText(InputBox.getString());
+        if ((box == inputBox) && ok) {
+            setLineText(inputBox.getString());
             //screen.back();
             return;
         }

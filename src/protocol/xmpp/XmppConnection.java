@@ -236,8 +236,10 @@ public final class XmppConnection extends ClientConnection {
             write("<presence type='unavailable'><status>Logged out</status></presence>");
         } catch (Exception ignored) {
         }
-        socket.close();
-        socket = null;
+        if (socket != null) {
+            socket.close();
+            socket = null;
+        }
     }
 
     protected Protocol getProtocol() {

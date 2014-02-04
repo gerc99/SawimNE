@@ -2,6 +2,7 @@ package sawim.modules.tracking;
 
 import DrawControls.icons.Icon;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import protocol.Contact;
 import protocol.Protocol;
 import protocol.icq.Icq;
@@ -110,7 +111,8 @@ public final class Tracking {
             track.idEvent = line.id_event;
             track.idAction = line.id_action;
             if (line.id_action == ACTION_MESSAGE_TEXT) {
-                track.valueAction = line.name;
+                Log.e("ee", ""+TrackingForm.editText);
+                track.valueAction = TrackingForm.editText;
             } else {
                 track.valueAction = "";
             }
@@ -192,7 +194,8 @@ public final class Tracking {
                 addValueToRMSRecord(rms, track.uin);
                 addValueToRMSRecord(rms, String.valueOf(track.idEvent));
                 addValueToRMSRecord(rms, String.valueOf(track.idAction));
-                addValueToRMSRecord(rms, track.valueAction);
+                if (track.valueAction != null)
+                    addValueToRMSRecord(rms, track.valueAction);
             }
             rms.closeRecordStore();
         } catch (RecordStoreException e) {
@@ -366,7 +369,7 @@ public final class Tracking {
                 if (track_prev != null) {
                     if (track_prev.idAction == ACTION_MESSAGE) {
                         String str = track.valueAction;
-                        if (str.length() != 0)
+                        if (str != null && str.length() != 0)
                             RosterHelper.getInstance().getCurrentProtocol().sendMessage(item, str, true);
                     }
                 }

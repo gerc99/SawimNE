@@ -20,6 +20,10 @@ import java.util.Vector;
 
 public final class RosterHelper {
 
+    final static public int SORT_BY_STATUS = 0;
+    final static public int SORT_BY_ONLINE = 1;
+    final static public int SORT_BY_NAME   = 2;
+
     public static final int ALL_CONTACTS = 0;
     public static final int ONLINE_CONTACTS = 1;
     public static final int ACTIVE_CONTACTS = 2;

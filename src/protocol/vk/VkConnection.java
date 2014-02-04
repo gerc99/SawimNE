@@ -30,7 +30,7 @@ public class VkConnection implements Runnable {
 
     VkConnection(Vk vk) {
         this.vk = vk;
-        api = new VkApp(SawimApplication.getInstance().getApplicationContext());
+        api = new VkApp(SawimApplication.getContext());
     }
 
     public void login() {

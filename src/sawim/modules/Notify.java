@@ -85,14 +85,10 @@ public class Notify implements Runnable {
     }
 
     public boolean vibrate(final int duration) {
-        if (SawimApplication.getCurrentActivity() == null) return false;
         final Vibrator vibrator = (Vibrator) SawimApplication.getInstance().getSystemService(Context.VIBRATOR_SERVICE);
         if (null == vibrator) {
             return false;
         }
-        //SawimApplication.getSawimActivity().runOnUiThread(new Runnable() {
-        //    @Override
-        //    public void run() {
         if (600 < duration) {
             vibrator.vibrate(pattern, -1);
         } else if (0 < duration) {
@@ -100,8 +96,6 @@ public class Notify implements Runnable {
         } else {
             vibrator.cancel();
         }
-        //    }
-        //});
         return true;
     }
 

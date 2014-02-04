@@ -198,7 +198,13 @@ public final class XmlNode {
             }
             ch = socket.readChar();
         }
-        return sb.toString();
+        String s = sb.toString();
+        try {
+            s = new String(s.getBytes("ISO8859-1"), "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return s;
     }
 
     private boolean parseNode(Socket socket, char ch0) throws SawimException {
@@ -283,12 +289,6 @@ public final class XmlNode {
         }
         if (StringConvertor.isEmpty(value)) {
             value = null;
-        } else {
-            try {
-                value = new String(value.toString().getBytes("ISO8859-1"), "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
         }
         return true;
     }

@@ -118,7 +118,9 @@ public class ChatsAdapter extends BaseAdapter {
             }
         }
 
-        //rosterItemView.itemFourthImage
+        Icon icClient = (null != p.clientInfo) ? p.clientInfo.getIcon(item.clientIndex) : null;
+        if (icClient != null && !SawimApplication.hideIconsClient)
+            rosterItemView.itemFourthImage = icClient.getImage().getBitmap();
 
         String id = item.getUserId();
         if (Tracking.isTrackingEvent(id, Tracking.GLOBAL) == Tracking.TRUE)

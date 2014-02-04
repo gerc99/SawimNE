@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
 import android.widget.EditText;
 import ru.sawim.R;
 import ru.sawim.widget.Util;
@@ -28,13 +29,15 @@ public class TextBoxView extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final Context context = getActivity();
-
         View dialogView = LayoutInflater.from(context).inflate(R.layout.text_box_view, null);
         editText = (EditText) dialogView.findViewById(R.id.editText);
         editText.setText(text);
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
-        dialogBuilder.setTitle(R.string.ms_status_menu);
-        dialogBuilder.setTitle(caption);
+        if (caption == null) {
+            super.onCreateDialog(savedInstanceState).requestWindowFeature(Window.FEATURE_NO_TITLE);
+        } else {
+            dialogBuilder.setTitle(caption);
+        }
         dialogBuilder.setView(dialogView);
         dialogBuilder.setInverseBackgroundForced(Util.isNeedToInverseDialogBackground());
         dialogBuilder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {

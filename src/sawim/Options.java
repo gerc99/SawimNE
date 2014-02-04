@@ -78,7 +78,7 @@ public class Options {
     public static final int OPTION_BRING_UP = 151;
     public static final int OPTION_ANTISPAM_ENABLE = 158;
     public static final int OPTION_HIDE_ICONS_CLIENTS = 160;
-    public static final int OPTION_SHOW_SOFTBAR = 167;
+    //public static final int OPTION_SHOW_SOFTBAR = 167;
     public static final int OPTION_TF_FLAGS = 169;
     public static final int OPTION_SORT_UP_WITH_MSG = 171;
     public static final int OPTION_ALARM = 176;
@@ -330,11 +330,11 @@ public class Options {
         //	setBoolean(Options.OPTION_SHOW_PLATFORM,      false);
         setBoolean(Options.OPTION_INSTANT_RECONNECTION, true);
         setInt(Options.OPTION_CL_SORT_BY, 0);
+        setBoolean(Options.OPTION_SORT_UP_WITH_MSG, true);
         setBoolean(Options.OPTION_TITLE_IN_CONFERENCE, true);
         setBoolean(Options.OPTION_CL_HIDE_OFFLINE, false);
         setBoolean(Options.OPTION_HIDE_ICONS_CLIENTS, true);
         setBoolean(Options.OPTION_HIDE_KEYBOARD, true);
-        setBoolean(Options.OPTION_SHOW_SOFTBAR, true);
         setInt(Options.OPTION_MESS_NOTIF_MODE, 0);
         setInt(Options.OPTION_ONLINE_NOTIF_MODE, 0);
         setInt(Options.OPTION_TYPING_MODE, 0);
@@ -352,6 +352,7 @@ public class Options {
         setBoolean(Options.OPTION_HISTORY, false);
         setInt(Options.OPTION_COLOR_SCHEME, 1);
         setInt(Options.OPTION_FONT_SCHEME, 16);
+        setInt(Options.OPTION_AA_TIME, 3);
         setInt(Options.OPTION_CHAT_PRESENSEFONT_SCHEME, 0);
         int minItemSize = 15;
         setInt(Options.OPTION_MIN_ITEM_SIZE, minItemSize);

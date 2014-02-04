@@ -130,11 +130,11 @@ public class OptionsForm implements ControlStateListener {
                 saveOptionBoolean(Options.OPTION_USER_GROUPS);
                 //saveOptionSelector(Options.OPTION_USER_ACCOUNTS);
                 //saveOptionBoolean(Options.OPTION_CL_HIDE_OFFLINE);
-                //        saveOptionBoolean(Options.OPTION_SAVE_TEMP_CONTACT);
-                //saveOptionBoolean(Options.OPTION_SORT_UP_WITH_MSG);
+                //saveOptionBoolean(Options.OPTION_SAVE_TEMP_CONTACT);
+                saveOptionBoolean(Options.OPTION_SORT_UP_WITH_MSG);
                 saveOptionBoolean(Options.OPTION_SHOW_STATUS_LINE);
-                //saveOptionSelector(Options.OPTION_CL_SORT_BY);
-                //        saveOptionBoolean(Options.OPTION_SHOW_PLATFORM);
+                saveOptionSelector(Options.OPTION_CL_SORT_BY);
+                //saveOptionBoolean(Options.OPTION_SHOW_PLATFORM);
                 saveOptionBoolean(Options.OPTION_HISTORY);
                 saveOptionBoolean(Options.OPTION_HIDE_KEYBOARD);
                 saveOptionBoolean(Options.OPTION_SIMPLE_INPUT);
@@ -210,14 +210,14 @@ public class OptionsForm implements ControlStateListener {
                 //setChecked("hide_offline", Options.OPTION_CL_HIDE_OFFLINE);
                 //        setChecked("save_temp_contacts", Options.OPTION_SAVE_TEMP_CONTACT);
                 setChecked("show_status_line", Options.OPTION_SHOW_STATUS_LINE);
-                //    setChecked("contacts_with_msg_at_top", Options.OPTION_SORT_UP_WITH_MSG);
+                setChecked("contacts_with_msg_at_top", Options.OPTION_SORT_UP_WITH_MSG);
 
-                //createSelector("sort_by",
-                //        "sort_by_status" + "|" + "sort_by_online" + "|" + "sort_by_name",
-                //        Options.OPTION_CL_SORT_BY);
+                createSelector("sort_by",
+                        "sort_by_status" + "|" + "sort_by_online" + "|" + "sort_by_name",
+                        Options.OPTION_CL_SORT_BY);
 
                 form.addString("chat", null);
-                //		setChecked("show_platform", Options.OPTION_SHOW_PLATFORM);
+                //setChecked("show_platform", Options.OPTION_SHOW_PLATFORM);
                 setChecked(SawimApplication.getContext().getString(R.string.hide_chat_keyboard), Options.OPTION_HIDE_KEYBOARD);
                 setChecked("use_simple_input", Options.OPTION_SIMPLE_INPUT);
                 setChecked("use_history", Options.OPTION_HISTORY);
@@ -225,6 +225,7 @@ public class OptionsForm implements ControlStateListener {
 
                 setChecked("title_in_conference", Options.OPTION_TITLE_IN_CONFERENCE);
                 loadOptionString(Options.UNAVAILABLE_NESSAGE, "post_outputs");
+                form.addString("options_network", null);
                 setChecked(SawimApplication.getContext().getString(R.string.instant_reconnection), Options.OPTION_INSTANT_RECONNECTION);
                 break;
 

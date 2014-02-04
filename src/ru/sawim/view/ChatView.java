@@ -225,11 +225,11 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         messageEditor.setHint(R.string.hint_message);
         messageEditor.addTextChangedListener(textWatcher);
         messageEditor.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
+        sendByEnter = Options.getBoolean(Options.OPTION_SIMPLE_INPUT);
         if (sendByEnter) {
             messageEditor.setImeOptions(EditorInfo.IME_ACTION_SEND);
             messageEditor.setOnEditorActionListener(enterListener);
         }
-        sendByEnter = Options.getBoolean(Options.OPTION_SIMPLE_INPUT);
         if (sendByEnter) {
             sendButton.setVisibility(ImageButton.GONE);
         } else {
@@ -265,6 +265,9 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         chatListView.setOnItemClickListener(null);
         chatListView.setOnCreateContextMenuListener(null);
         messageEditor.removeTextChangedListener(textWatcher);
+        if (sendByEnter) {
+            messageEditor.setOnEditorActionListener(null);
+        }
         chatListView.setAdapter(null);
         mucUsersView.destroy(nickList);
         sharingText = null;
@@ -377,7 +380,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
                 chatListView.setSelection(position);
             }
         } else {
-            chatListView.setSelectionFromTop(chat.scrollPosition + 1, chat.offset - (isLastPosition() ? 0 : chat.offset / 2));
+            chatListView.setSelectionFromTop(chat.scrollPosition + (isLastPosition() ? 1 : 2), chat.offset);
         }
         adapter.refreshList(chat.getMessData());
     }

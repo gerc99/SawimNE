@@ -57,6 +57,7 @@ public class RosterItemView extends View {
         if (textPaint == null) {
             textPaint = new TextPaint();
             paintDivider = new Paint(Paint.ANTI_ALIAS_FLAG);
+            paintDivider.setStyle(Paint.Style.STROKE);
         }
         textPaint.setAntiAlias(true);
     }
@@ -199,9 +200,9 @@ public class RosterItemView extends View {
 
         boolean isLayer = itemName == null && itemDesc != null;
         if (isShowDivider) {
-            paintDivider.setStrokeWidth(Util.dipToPixels(getContext(), isLayer ? 4 : 1));
             paintDivider.setColor(Scheme.isBlack() ? Scheme.DIVIDER_BLACK : Scheme.DIVIDER_LIGHT);
-            canvas.drawLine(getPaddingLeft(), getScrollY() + getHeight(), getWidth() - getPaddingRight(), getScrollY() + getHeight(), paintDivider);
+            paintDivider.setStrokeWidth((int) ((isLayer ? 4 : 2) * getResources().getDisplayMetrics().density + 0.5f));
+            canvas.drawLine(getPaddingLeft(), getScrollY() + getMeasuredHeight(), getWidth() - getPaddingRight(), getScrollY() + getMeasuredHeight(), paintDivider);
         }
     }
 }

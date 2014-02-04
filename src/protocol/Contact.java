@@ -294,19 +294,19 @@ abstract public class Contact extends TreeNode {
         if (!isSingleUserContact()) {
             return isOnline() ? 9 : 50;
         }
-        //if (RosterHelper.SORT_BY_NAME == SawimApplication.sortType) {
-        //    return 20;
-        //}
+        if (RosterHelper.SORT_BY_NAME == SawimApplication.sortType) {
+            return 20;
+        }
         if (isOnline()) {
             if (hasChat()) {
                 return 10;
             }
-            //switch (SawimApplication.sortType) {
-            //    case RosterHelper.SORT_BY_STATUS:
-            return 20 + StatusInfo.getWidth(getStatusIndex());
-            //    case RosterHelper.SORT_BY_ONLINE:
-            //        return 20;
-            //}
+            switch (SawimApplication.sortType) {
+                case RosterHelper.SORT_BY_STATUS:
+                    return 20 + StatusInfo.getWidth(getStatusIndex());
+                case RosterHelper.SORT_BY_ONLINE:
+                    return 20;
+            }
         }
         if (isTemp()) {
             return 60;
