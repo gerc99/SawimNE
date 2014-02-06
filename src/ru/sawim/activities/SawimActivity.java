@@ -399,8 +399,9 @@ public class SawimActivity extends ActionBarActivity {
         Protocol p = RosterHelper.getInstance().getCurrentProtocol();
         switch (item.getItemId()) {
             case MENU_CONNECT:
-                SawimApplication.getInstance().setStatus();
-                //Thread.yield();
+                //SawimApplication.getInstance().setStatus();
+                RosterHelper.getInstance().setStatus();
+                Thread.yield();
                 break;
             case MENU_STATUS:
                 new StatusesView(p, StatusesView.ADAPTER_STATUS).show(getSupportFragmentManager(), "change-status");

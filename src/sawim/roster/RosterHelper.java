@@ -2,6 +2,7 @@ package sawim.roster;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.widget.Toast;
 import protocol.*;
 import protocol.icq.Icq;
@@ -540,7 +541,8 @@ public final class RosterHelper {
         }
     }
 
-    public void updateGroup(Protocol protocol, Group group) {
+    public void updateGroup(Protocol protocol, Group group, Contact contact) {
+        if (group == null) return;
         Vector allItems = protocol.getContactItems();
         Vector groupItems = group.getContacts();
         groupItems.removeAllElements();
@@ -548,12 +550,16 @@ public final class RosterHelper {
         int groupId = group.getId();
         for (int i = 0; i < size; ++i) {
             Contact item = (Contact) allItems.elementAt(i);
-            if (item.getGroupId() == groupId) {
+            if (item.getGroupId() == groupId && contact != item) {
                 groupItems.addElement(item);
             }
         }
         group.updateGroupData();
-        group.sort();
+        //group.sort();
+    }
+
+    public void updateGroup(Protocol protocol, Group group) {
+        updateGroup(protocol, group, null);
     }
 
     public void updateGroup(Group group) {
@@ -570,7 +576,7 @@ public final class RosterHelper {
     public void removeFromGroup(Protocol protocol, Group g, Contact c) {
         if (g == null) return;
         if (g.getContacts().removeElement(c))
-            updateGroup(protocol, g);
+            updateGroup(protocol, g, c);
     }
 
     public void addToGroup(Group group, Contact contact) {

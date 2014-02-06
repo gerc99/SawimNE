@@ -1,6 +1,7 @@
 package protocol;
 
 import DrawControls.icons.Icon;
+import android.util.Log;
 import protocol.xmpp.XmppContact;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;

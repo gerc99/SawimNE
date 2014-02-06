@@ -3,6 +3,7 @@ package protocol.xmpp;
 import DrawControls.icons.ImageList;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.util.Log;
 import android.widget.Toast;
 import protocol.*;
 import ru.sawim.SawimApplication;
@@ -305,6 +306,8 @@ public final class Xmpp extends Protocol implements FormListener {
     }
 
     protected final void s_moveContact(Contact contact, Group to) {
+        Group fromGroup = getGroup(contact);
+        RosterHelper.getInstance().removeFromGroup(this, fromGroup, contact);
         contact.setGroup(to);
         connection.updateContact((XmppContact) contact);
     }
@@ -777,7 +780,7 @@ public final class Xmpp extends Protocol implements FormListener {
         return items.substring(1);
     }
 
-    final void showInviteForm(String jid) {
+    public final void showInviteForm(String jid) {
         enterDataInvite = new Forms("invite", this, true);
         enterDataInvite.addSelector(JID_MESS_TO, "conference", onlineConference(getContactItems()), 1);
         enterDataInvite.addTextField(JID_INVITE_TO, "jid", jid);

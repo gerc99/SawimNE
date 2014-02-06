@@ -84,12 +84,13 @@ public class Notify implements Runnable {
         return "audio/X-wav";
     }
 
+    private static final int LONG_DURATION = 500;
     public boolean vibrate(final int duration) {
         final Vibrator vibrator = (Vibrator) SawimApplication.getInstance().getSystemService(Context.VIBRATOR_SERVICE);
         if (null == vibrator) {
             return false;
         }
-        if (600 < duration) {
+        if (LONG_DURATION <= duration) {
             vibrator.vibrate(pattern, -1);
         } else if (0 < duration) {
             vibrator.vibrate(duration);
@@ -128,7 +129,7 @@ public class Notify implements Runnable {
             }
             if ((VIBRA_OFF != vibraKind)
                     && ((NOTIFY_MESSAGE == notType) || (NOTIFY_MULTIMESSAGE == notType))) {
-                vibrate = SawimApplication.isPaused() ? 500 : 200;
+                vibrate = SawimApplication.isPaused() ? LONG_DURATION : 200;
             }
         }
 

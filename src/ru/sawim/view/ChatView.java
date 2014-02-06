@@ -228,7 +228,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         sendByEnter = Options.getBoolean(Options.OPTION_SIMPLE_INPUT);
         if (sendByEnter) {
             messageEditor.setImeOptions(EditorInfo.IME_ACTION_SEND);
-            messageEditor.setOnEditorActionListener(enterListener);
+            //messageEditor.setOnEditorActionListener(enterListener);
         }
         if (sendByEnter) {
             sendButton.setVisibility(ImageButton.GONE);
@@ -265,9 +265,9 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         chatListView.setOnItemClickListener(null);
         chatListView.setOnCreateContextMenuListener(null);
         messageEditor.removeTextChangedListener(textWatcher);
-        if (sendByEnter) {
-            messageEditor.setOnEditorActionListener(null);
-        }
+        //if (sendByEnter) {
+        //    messageEditor.setOnEditorActionListener(null);
+        //}
         chatListView.setAdapter(null);
         mucUsersView.destroy(nickList);
         sharingText = null;

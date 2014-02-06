@@ -63,6 +63,7 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
                 menu.add(activity.getString(R.string.open_private), ContactMenu.COMMAND_PRIVATE);
                 menu.add(activity.getString(R.string.info), ContactMenu.COMMAND_INFO);
                 menu.add(activity.getString(R.string.user_statuses), ContactMenu.COMMAND_STATUS);
+                //menu.add(activity.getString(R.string.invite), ContactMenu.USER_INVITE);
                 menu.add(activity.getString(R.string.adhoc), ContactMenu.GATE_COMMANDS);
                 if (roleConfigMenu.getCount() > 0)
                     menu.add(activity.getString(R.string.role_commands), ContactMenu.ROLE_COMMANDS);
@@ -74,6 +75,7 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
                     public void onClick(DialogInterface dialog, int which) {
                         currMucNik = nick;
                         chatView.hasBack();
+                        XmppContact.SubContact subContact = xmppServiceContact.getExistSubContact(nick);
                         switch (menu.getItem(which).idItem) {
                             case ContactMenu.COMMAND_PRIVATE:
                                 String jid = Jid.realJidToSawimJid(xmppServiceContact.getUserId() + "/" + nick);
@@ -93,8 +95,13 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
                             case ContactMenu.COMMAND_STATUS:
                                 protocol.showStatus(xmppServiceContact.getPrivateContact(nick));
                                 break;
+                            case ContactMenu.USER_INVITE:
+                                try {
+                                    ((Xmpp) protocol).showInviteForm(xmppServiceContact.getUserId() + '/' + subContact.resource);
+                                } catch (Exception e) {
+                                }
+                                break;
                             case ContactMenu.GATE_COMMANDS:
-                                XmppContact.SubContact subContact = xmppServiceContact.getExistSubContact(nick);
                                 AdHoc adhoc = new AdHoc((Xmpp) protocol, xmppServiceContact);
                                 adhoc.setResource(subContact.resource);
                                 adhoc.show();
