@@ -44,13 +44,13 @@ public class SawimService extends Service {
     }
 
     private void updateLock() {
-        RosterHelper cl = RosterHelper.getInstance();
+        /*RosterHelper cl = RosterHelper.getInstance();
         boolean need = cl.isConnected() || cl.isConnecting();
         if (need) {
             if (!isHeld()) acquire();
         } else {
             if (isHeld()) release();
-        }
+        }*/
     }
 
     private void acquire() {

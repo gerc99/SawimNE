@@ -10,71 +10,112 @@ import java.util.HashMap;
 
 
 public class MrimXStatusInfo {
-    private String[] statusCodes;
     private XStatusInfo info;
-    private static HashMap<String, Integer> statusesMap = new HashMap<String, Integer>();
-    private void load() {
-            statusesMap.put("status_5", R.string.at_home);
-            statusesMap.put("status_18", R.string.at_work);
-            statusesMap.put("status_19", R.string.meeting);
-            statusesMap.put("status_7", R.string.where_i_am);
-            statusesMap.put("status_10", R.string.walking);
-            statusesMap.put("status_47", R.string.rocket);
-            statusesMap.put("status_22", R.string.working);
-            statusesMap.put("status_26", R.string.learning);
-            statusesMap.put("status_24", R.string.phone);
-            statusesMap.put("status_27", R.string.at_scool);
-            statusesMap.put("status_23", R.string.sleeping);
-            statusesMap.put("status_4", R.string.sick);
-            statusesMap.put("status_9", R.string.cooking);
-            statusesMap.put("status_6", R.string.eating);
-            statusesMap.put("status_21", R.string.drinking_coffee);
-            statusesMap.put("status_20", R.string.beer);
-            statusesMap.put("status_17", R.string.smoking);
-            statusesMap.put("status_8", R.string.wc);
-            statusesMap.put("status_15", R.string.duck);
-            statusesMap.put("status_16", R.string.playing);
-            statusesMap.put("status_28", R.string.wrong_number);
-            statusesMap.put("status_51", R.string.squirrel);
-            statusesMap.put("status_52", R.string.star);
-            statusesMap.put("status_46", R.string.skull);
-            statusesMap.put("status_12", R.string.i_am_shrimp);
-            statusesMap.put("status_13", R.string.lost);
-            statusesMap.put("status_11", R.string.alien);
-            statusesMap.put("status_14", R.string.in_love);
-            statusesMap.put("status_48", R.string.cthulhu);
-            statusesMap.put("status_53", R.string.listening_music);
-            statusesMap.put("status_29", R.string.happy);
-            statusesMap.put("status_30", R.string.teasing);
-            statusesMap.put("status_32", R.string.wide_smile);
-            statusesMap.put("status_33", R.string.foureyes);
-            statusesMap.put("status_40", R.string.heart);
-            statusesMap.put("status_41", R.string.drowsy);
-            statusesMap.put("status_34", R.string.sad);
-            statusesMap.put("status_35", R.string.crying);
-            statusesMap.put("status_36", R.string.ooooo);
-            statusesMap.put("status_37", R.string.angry);
-            statusesMap.put("status_38", R.string.hell);
-            statusesMap.put("status_39", R.string.ass);
-            statusesMap.put("status_42", R.string.great);
-            statusesMap.put("status_43", R.string.peace);
-            statusesMap.put("status_49", R.string.cool);
-            statusesMap.put("status_44", R.string.nuts_to_you);
-            statusesMap.put("status_45", R.string.fuck_you);
-            statusesMap.put("status_50", R.string.sucks);
-    }
+
+    private static final String[] statusCodes = {
+            "status_5",
+            "status_18",
+            "status_19",
+            "status_7",
+            "status_10",
+            "status_47",
+            "status_22",
+            "status_26",
+            "status_24",
+            "status_27",
+            "status_23",
+            "status_4",
+            "status_9",
+            "status_6",
+            "status_21",
+            "status_20",
+            "status_17",
+            "status_8",
+            "status_15",
+            "status_16",
+            "status_28",
+            "status_51",
+            "status_52",
+            "status_46",
+            "status_12",
+            "status_13",
+            "status_11",
+            "status_14",
+            "status_48",
+            "status_53",
+            "status_29",
+            "status_30",
+            "status_32",
+            "status_33",
+            "status_40",
+            "status_41",
+            "status_34",
+            "status_35",
+            "status_36",
+            "status_37",
+            "status_38",
+            "status_39",
+            "status_42",
+            "status_43",
+            "status_49",
+            "status_44",
+            "status_45",
+            "status_50",
+    };
+
+    private static final int[] statusesNames = {
+        R.string.at_home,
+        R.string.at_work,
+        R.string.meeting,
+        R.string.where_i_am,
+        R.string.walking,
+        R.string.rocket,
+        R.string.working,
+        R.string.learning,
+        R.string.phone,
+        R.string.at_scool,
+        R.string.sleeping,
+        R.string.sick,
+        R.string.cooking,
+        R.string.eating,
+        R.string.drinking_coffee,
+        R.string.beer,
+        R.string.smoking,
+        R.string.wc,
+        R.string.duck,
+        R.string.playing,
+        R.string.wrong_number,
+        R.string.squirrel,
+        R.string.star,
+        R.string.skull,
+        R.string.i_am_shrimp,
+        R.string.lost,
+        R.string.alien,
+        R.string.in_love,
+        R.string.cthulhu,
+        R.string.listening_music,
+        R.string.happy,
+        R.string.teasing,
+        R.string.wide_smile,
+        R.string.foureyes,
+        R.string.heart,
+        R.string.drowsy,
+        R.string.sad,
+        R.string.crying,
+        R.string.ooooo,
+        R.string.angry,
+        R.string.hell,
+        R.string.ass,
+        R.string.great,
+        R.string.peace,
+        R.string.cool,
+        R.string.nuts_to_you,
+        R.string.fuck_you,
+        R.string.sucks
+    };
 
     public MrimXStatusInfo() {
         ImageList xstatusIcons = ImageList.createImageList("/mrim-xstatus.png");
-        load();
-        int size = statusesMap.size();
-        int[] statusesNames = new int[size];
-        statusCodes = new String[size];
-        for (int i = 0; i < size; ++i) {
-            String code = (String)statusesMap.keySet().toArray()[i];
-            statusesNames[i] = statusesMap.get(code);
-            statusCodes[i] = code;
-        }
         info = new XStatusInfo(xstatusIcons, statusesNames);
     }
 
