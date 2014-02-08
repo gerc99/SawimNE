@@ -18,14 +18,14 @@ public final class XmlNode {
 
     private static final int MAX_BIN_VALUE_SIZE = 54 * 1024;
     private static final int MAX_VALUE_SIZE = 10 * 1024;
-    public final static String S_ID = "i" + "d";
-    public static final String S_JID = "j" + "i" + "d";
-    public static final String S_NICK = "n" + "ick";
-    public static final String S_NAME = "n" + "ame";
-    public static final String S_ROLE = "ro" + "le";
+    public final static String S_ID = "id";
+    public static final String S_JID = "jid";
+    public static final String S_NICK = "nick";
+    public static final String S_NAME = "name";
+    public static final String S_ROLE = "role";
     public static final String S_AFFILIATION = "affiliation";
     private static final String S_BINVAL = "BINVAL";
-    public static final String S_XMLNS = "x" + "mlns";
+    public static final String S_XMLNS = "xmlns";
 
     private XmlNode() {
     }
@@ -583,7 +583,7 @@ public final class XmlNode {
     public static XmlNode getEmptyVCard() {
         XmlNode vCard = new XmlNode("vCard");
         vCard.putAttribute(S_XMLNS, "vcard-temp");
-        vCard.putAttribute("v" + "ersion", "2.0");
+        vCard.putAttribute("version", "2.0");
         vCard.putAttribute("prodid", "-/" + "/HandGen/" + "/NONSGML vGen v1.0/" + "/EN");
         return vCard;
     }

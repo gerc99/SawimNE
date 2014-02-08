@@ -115,8 +115,8 @@ public class XmppContact extends Contact {
             newMessage = param.substring(endNick + 1);
         }
         String xml = null;
-        final String on = "o" + "n";
-        final String off = "o" + "f" + "f";
+        final String on = "on";
+        final String off = "off";
         if (on.equals(param) || off.equals(param)) {
             xml = Config.getConfigValue(cmd + ' ' + param, "/jabber-commands.txt");
         }

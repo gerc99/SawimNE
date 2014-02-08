@@ -113,16 +113,16 @@ public class XmppXStatus {
     }
 
     private int getType(String type) {
-        if (type.startsWith("q" + "ip")) {
+        if (type.startsWith("qip")) {
             return TYPE_X;
         }
-        if (type.startsWith("m" + "ood")) {
+        if (type.startsWith("mood")) {
             return TYPE_MOOD;
         }
-        if (type.startsWith("a" + "ctivity")) {
+        if (type.startsWith("activity")) {
             return TYPE_ACTIVITY;
         }
-        if (type.startsWith("t" + "une")) {
+        if (type.startsWith("tune")) {
             return TYPE_TUNE;
         }
         return 0;

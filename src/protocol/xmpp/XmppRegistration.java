@@ -73,7 +73,7 @@ public class XmppRegistration implements Runnable, FormListener {
                 throw new SawimException(0, 0);
             }
             XmlNode n = connection.newAccountRegister(xml);
-            if (("r" + "esult").equals(n.getAttribute("t" + "ype"))) {
+            if (("result").equals(n.getAttribute("type"))) {
                 Profile account = new Profile();
                 account.protocolType = Profile.PROTOCOL_JABBER;
                 account.userId = username + "@" + domain;
@@ -83,7 +83,7 @@ public class XmppRegistration implements Runnable, FormListener {
                 listener.addAccount(Options.getAccountCount(), account);
 
             } else {
-                error = connection.getError(n.getFirstNode("e" + "rror"));
+                error = connection.getError(n.getFirstNode("error"));
             }
 
         } catch (SawimException ex) {

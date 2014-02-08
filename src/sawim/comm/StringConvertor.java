@@ -16,7 +16,7 @@ public final class StringConvertor {
 
     private static StringConvertor[] converters;
 
-    public static final String DETRANSLITERATE = "detrans" + "literate";
+    public static final String DETRANSLITERATE = "detransliterate";
     public static final String MRIM2Sawim = "mrim2Sawim";
     public static final String Sawim2MRIM = "Sawim2mrim";
     public static final String JABBER2Sawim = "jabber2Sawim";

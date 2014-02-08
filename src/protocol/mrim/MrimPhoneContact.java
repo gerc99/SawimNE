@@ -10,7 +10,7 @@ import ru.sawim.R;
 import sawim.util.JLocale;
 
 public class MrimPhoneContact extends MrimContact {
-    static final String PHONE_UIN = "pho" + "ne";
+    static final String PHONE_UIN = "phone";
 
     public MrimPhoneContact(String phones) {
         super(PHONE_UIN, PHONE_UIN);

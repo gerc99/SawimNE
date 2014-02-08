@@ -11,7 +11,7 @@ public abstract class FileSystem {
     public static final String ROOT_DIRECTORY = "/";
     public static final String PARENT_DIRECTORY = "../";
     static private final boolean supports_JSR75 = supportJSR75();
-    public static final String HISTORY = "h" + "istory";
+    public static final String HISTORY = "history";
     public static final String RES = "res";
 
     static private boolean supportJSR75() {

@@ -76,7 +76,7 @@ public final class Xmpp extends Protocol implements FormListener {
                 file = "qip";
                 break;
             case Profile.PROTOCOL_ODNOKLASSNIKI:
-                file = "o" + "k";
+                file = "ok";
                 break;
         }
         ImageList icons = ImageList.createImageList("/" + file + "-status.png");

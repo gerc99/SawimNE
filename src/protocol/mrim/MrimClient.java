@@ -43,8 +43,8 @@ public final class MrimClient {
             return;
         }
 
-        String clientClient = getValue(caps, "roster" + "ient");
-        String clientName = getValue(caps, "n" + "ame");
+        String clientClient = getValue(caps, "rosterient");
+        String clientName = getValue(caps, "name");
         short clientIndex = ClientInfo.CLI_NONE;
         for (short idIndex = 0; idIndex < clientIds.length; ++idIndex) {
             if (-1 != clientName.indexOf(clientIds[idIndex])) {
@@ -63,6 +63,6 @@ public final class MrimClient {
             contact.setClient(ClientInfo.CLI_NONE, null);
             return;
         }
-        contact.setClient(clientIndex, getValue(caps, "v" + "ersion"));
+        contact.setClient(clientIndex, getValue(caps, "version"));
     }
 }
