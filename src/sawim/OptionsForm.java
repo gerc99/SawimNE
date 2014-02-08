@@ -138,6 +138,7 @@ public class OptionsForm implements ControlStateListener {
                 saveOptionBoolean(Options.OPTION_TITLE_IN_CONFERENCE);
                 saveOptionString(Options.UNAVAILABLE_NESSAGE);
                 saveOptionBoolean(Options.OPTION_INSTANT_RECONNECTION);
+                saveOptionBoolean(Options.OPTION_WAKE_LOCK);
                 break;
 
             case OPTIONS_SIGNALING:
@@ -211,6 +212,7 @@ public class OptionsForm implements ControlStateListener {
                 loadOptionString(Options.UNAVAILABLE_NESSAGE, R.string.post_outputs);
                 form.addString(R.string.options_network, null);
                 setChecked(R.string.instant_reconnection, Options.OPTION_INSTANT_RECONNECTION);
+                setChecked(R.string.wake_lock, Options.OPTION_WAKE_LOCK);
                 break;
 
             case OPTIONS_SIGNALING:

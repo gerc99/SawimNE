@@ -7,6 +7,7 @@ import android.os.*;
 import android.util.Log;
 import ru.sawim.R;
 import ru.sawim.SawimNotification;
+import sawim.Options;
 import sawim.roster.RosterHelper;
 
 public class SawimService extends Service {
@@ -44,13 +45,14 @@ public class SawimService extends Service {
     }
 
     private void updateLock() {
-        /*RosterHelper cl = RosterHelper.getInstance();
+        if (!Options.getBoolean(Options.OPTION_WAKE_LOCK)) return;
+        RosterHelper cl = RosterHelper.getInstance();
         boolean need = cl.isConnected() || cl.isConnecting();
         if (need) {
             if (!isHeld()) acquire();
         } else {
             if (isHeld()) release();
-        }*/
+        }
     }
 
     private void acquire() {

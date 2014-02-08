@@ -54,7 +54,7 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
         getActivity().setTitle(Forms.getInstance().getCaption());
         okButton = (Button) getActivity().findViewById(R.id.data_form_ok);
         okButton.setOnClickListener(this);
-        buildList(listLayout);
+        buildList();
         cancelButton = (Button) getActivity().findViewById(R.id.data_form_cancel);
         cancelButton.setOnClickListener(this);
         getActivity().supportInvalidateOptionsMenu();
@@ -93,7 +93,7 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                buildList(listLayout);
+                buildList();
             }
         });
     }
@@ -132,8 +132,8 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
         return Forms.getInstance().getBackPressedListener().back();
     }
 
-    private void buildList(final LinearLayout convertView) {
-        convertView.removeAllViews();
+    private void buildList() {
+        listLayout.removeAllViews();
         List<Forms.Control> controls = Forms.getInstance().controls;
         int padding = Util.dipToPixels(getActivity(), 15);
         for (int position = 0; position < controls.size(); ++position) {
@@ -170,9 +170,9 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
             seekBar.setPadding(0, padding, 0, padding);
 
             if (Forms.CONTROL_TEXT == c.type) {
-                drawText(c, labelView, descView, convertView);
+                drawText(c, labelView, descView, listLayout);
             } else if (Forms.CONTROL_INPUT == c.type) {
-                drawText(c, labelView, descView, convertView);
+                drawText(c, labelView, descView, listLayout);
                 editText.setVisibility(EditText.VISIBLE);
                 editText.setHint(R.string.enter_the);
                 editText.setText(c.text);
@@ -189,7 +189,7 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
                         Forms.getInstance().controlUpdated(c);
                     }
                 });
-                convertView.addView(editText);
+                listLayout.addView(editText);
             } else if (Forms.CONTROL_CHECKBOX == c.type) {
                 checkBox.setVisibility(CheckBox.VISIBLE);
                 checkBox.setText(c.description);
@@ -201,9 +201,9 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
                         Forms.getInstance().controlUpdated(c);
                     }
                 });
-                convertView.addView(checkBox);
+                listLayout.addView(checkBox);
             } else if (Forms.CONTROL_SELECT == c.type) {
-                drawText(c, labelView, descView, convertView);
+                drawText(c, labelView, descView, listLayout);
                 spinner.setVisibility(Spinner.VISIBLE);
                 MySpinnerAdapter adapter = new MySpinnerAdapter(getActivity(), c.items);
                 spinner.setAdapter(adapter);
@@ -220,9 +220,9 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
                     public void onNothingSelected(AdapterView<?> adapterView) {
                     }
                 });
-                convertView.addView(spinner);
+                listLayout.addView(spinner);
             } else if (Forms.CONTROL_GAUGE == c.type) {
-                drawText(c, labelView, descView, convertView);
+                drawText(c, labelView, descView, listLayout);
                 seekBar.setVisibility(SeekBar.VISIBLE);
                 seekBar.setProgress(c.level);
                 seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -240,7 +240,7 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
                     public void onStopTrackingTouch(SeekBar seekBar) {
                     }
                 });
-                convertView.addView(seekBar);
+                listLayout.addView(seekBar);
             } else if (Forms.CONTROL_GAUGE_FONT == c.type) {
                 descView.setVisibility(TextView.VISIBLE);
                 descView.setText(c.description + "(" + c.level + ")");
@@ -264,15 +264,15 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
                     public void onStopTrackingTouch(SeekBar seekBar) {
                     }
                 });
-                convertView.addView(descView);
-                convertView.addView(seekBar);
+                listLayout.addView(descView);
+                listLayout.addView(seekBar);
             } else if (Forms.CONTROL_IMAGE == c.type) {
-                drawText(c, labelView, descView, convertView);
+                drawText(c, labelView, descView, listLayout);
                 imageView.setVisibility(ImageView.VISIBLE);
                 imageView.setImageDrawable(c.image);
-                convertView.addView(imageView);
+                listLayout.addView(imageView);
             } else if (Forms.CONTROL_LINK == c.type) {
-                drawText(c, labelView, descView, convertView);
+                drawText(c, labelView, descView, listLayout);
             }
         }
     }

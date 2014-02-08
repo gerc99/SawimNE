@@ -130,6 +130,7 @@ public class PreferenceFormView extends PreferenceFragment {
                         int index = listPreference.findIndexOfValue(textValue);
                         c.current = index;
                         Forms.getInstance().controlUpdated(c);
+                        buildList();
                         return true;
                     }
                 });

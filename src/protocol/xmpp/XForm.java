@@ -62,7 +62,6 @@ final class XForm {
     public void setErrorMessage(String error) {
         form.clearForm();
         form.addString(error);
-        //    form.restore();
     }
 
     public String getField(String name) {
@@ -84,15 +83,15 @@ final class XForm {
         if (!isXData) {
             return;
         }
-        addInfo(xForm.getFirstNodeValue("ti" + "tle"),
-                xForm.getFirstNodeValue("instruct" + "ions"));
+        addInfo(xForm.getFirstNodeValue("title"),
+                xForm.getFirstNodeValue("instructions"));
         for (int i = 0; i < xForm.childrenCount(); ++i) {
             XmlNode item = xForm.childAt(i);
-            if (!item.is("fie" + "ld")) {
+            if (!item.is("field")) {
                 continue;
             }
-            if (item.contains("m" + "edia")) {
-                String bs64img = baseXml.getFirstNodeValueRecursive("d" + "ata");
+            if (item.contains("media")) {
+                String bs64img = baseXml.getFirstNodeValueRecursive("data");
                 if (null != bs64img) {
                     byte[] imgBytes = Util.base64decode(bs64img);
                     bs64img = null;
@@ -100,7 +99,7 @@ final class XForm {
                     form.addBitmap(ImageList.scalingCaptchaIconForDPI(bitmap));
                 }
             }
-            addField(item, item.getAttribute("ty" + "pe"));
+            addField(item, item.getAttribute("type"));
         }
     }
 
@@ -114,8 +113,8 @@ final class XForm {
             loadXFromXml(xml, baseXml);
             return;
         }
-        addInfo(xml.getFirstNodeValue("ti" + "tle"),
-                xml.getFirstNodeValue("instruct" + "ions"));
+        addInfo(xml.getFirstNodeValue("title"),
+                xml.getFirstNodeValue("instructions"));
 
         for (int i = 0; i < xml.childrenCount(); ++i) {
             XmlNode item = xml.childAt(i);
@@ -190,9 +189,9 @@ final class XForm {
     }
 
     private void addField(XmlNode field, String type) {
-        final String S_VALUE = "va" + "lue";
-        final String S_OPTION = "o" + "ption";
-        final String S_LABEL = "la" + "bel";
+        final String S_VALUE = "value";
+        final String S_OPTION = "option";
+        final String S_LABEL = "label";
         String name = StringConvertor.notNull(field.getAttribute("var"));
         String label = StringConvertor.notNull(field.getAttribute(S_LABEL));
         String value = StringConvertor.notNull(field.getFirstNodeValue(S_VALUE));
@@ -281,18 +280,18 @@ final class XForm {
         }
     }
 
-    private final static String S_EMAIL = "emai" + "l";
-    public final static String S_USERNAME = "u" + "sername";
-    public final static String S_PASSWORD = "p" + "assword";
-    private final static String S_KEY = "k" + "e" + "y";
+    private final static String S_EMAIL = "email";
+    public final static String S_USERNAME = "username";
+    public final static String S_PASSWORD = "password";
+    private final static String S_KEY = "key";
     private static final String S_TEXT_SINGLE = "text-single";
     private static final String S_LIST_SINGLE = "list-single";
     private static final String S_TEXT_PRIVATE = "text-private";
     private static final String S_JID_SINGLE = "jid-single";
     private static final String S_JID_MULTI = "jid-multi";
-    private static final String S_HIDDEN = "hid" + "den";
-    private static final String S_BOOLEAN = "bo" + "olean";
-    private static final String S_FIXED = "f" + "ixed";
+    private static final String S_HIDDEN = "hidden";
+    private static final String S_BOOLEAN = "boolean";
+    private static final String S_FIXED = "fixed";
     private static final String S_TEXT_MULTI = "text-multi";
 }
 

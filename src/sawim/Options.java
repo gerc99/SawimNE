@@ -78,7 +78,7 @@ public class Options {
     public static final int OPTION_BRING_UP = 151;
     public static final int OPTION_ANTISPAM_ENABLE = 158;
     public static final int OPTION_HIDE_ICONS_CLIENTS = 160;
-    //public static final int OPTION_SHOW_SOFTBAR = 167;
+    public static final int OPTION_WAKE_LOCK = 167;
     public static final int OPTION_TF_FLAGS = 169;
     public static final int OPTION_SORT_UP_WITH_MSG = 171;
     public static final int OPTION_ALARM = 176;
@@ -329,6 +329,7 @@ public class Options {
         //    setString (Options.OPTION_UI_LANGUAGE,        JLocale.getSystemLanguage());
         //	setBoolean(Options.OPTION_SHOW_PLATFORM,      false);
         setBoolean(Options.OPTION_INSTANT_RECONNECTION, true);
+        setBoolean(Options.OPTION_WAKE_LOCK, false);
         setInt(Options.OPTION_CL_SORT_BY, 0);
         setBoolean(Options.OPTION_SORT_UP_WITH_MSG, true);
         setBoolean(Options.OPTION_TITLE_IN_CONFERENCE, true);

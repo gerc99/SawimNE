@@ -863,4 +863,5 @@
     <string name="nuts_to_you">Nuts to you</string>
     <string name="fuck_you">Fuck you</string>
     <string name="sucks">Sucks</string>
+    <string name="wake_lock">Support the work when the screen is off</string>
 </resources>

@@ -876,5 +876,6 @@
     <string name="nuts_to_you">Фига</string>
     <string name="fuck_you">Отвали!</string>
     <string name="sucks">Отстой</string>
+    <string name="wake_lock">Не дать устройству заснуть и продолжать работу в фоновом режиме</string>
 
 </resources>
