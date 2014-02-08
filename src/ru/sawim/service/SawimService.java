@@ -1,11 +1,9 @@
 package ru.sawim.service;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
-import android.os.Handler;
-import android.os.IBinder;
-import android.os.Message;
-import android.os.Messenger;
+import android.os.*;
 import android.util.Log;
 import ru.sawim.R;
 import ru.sawim.SawimNotification;
@@ -15,11 +13,12 @@ public class SawimService extends Service {
 
     private static final String LOG_TAG = "SawimService";
     private final Messenger messenger = new Messenger(new IncomingHandler());
+    private PowerManager.WakeLock wakeLock;
 
-    public static final int UPDATE_APP_ICON = 1;
-    public static final int SEND_NOTIFY = 2;
-    public static final int SET_STATUS = 3;
-
+    public static final int UPDATE_CONNECTION_STATUS = 1;
+    public static final int UPDATE_APP_ICON = 2;
+    public static final int SEND_NOTIFY = 3;
+    public static final int SET_STATUS = 4;
 
     @Override
     public void onCreate() {
@@ -35,6 +34,7 @@ public class SawimService extends Service {
     public void onDestroy() {
         Log.i(LOG_TAG, "onDestroy();");
         //this.unregisterReceiver(musicReceiver);
+        release();
         stopForeground(true);
     }
 
@@ -43,13 +43,41 @@ public class SawimService extends Service {
         return messenger.getBinder();
     }
 
+    private void updateLock() {
+        RosterHelper cl = RosterHelper.getInstance();
+        boolean need = cl.isConnected() || cl.isConnecting();
+        if (need) {
+            if (!isHeld()) acquire();
+        } else {
+            if (isHeld()) release();
+        }
+    }
 
+    private void acquire() {
+        PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK | PowerManager.ON_AFTER_RELEASE, LOG_TAG);
+        if (null != wakeLock) {
+            wakeLock.acquire();
+        }
+    }
+
+    private void release() {
+        if (isHeld()) wakeLock.release();
+        wakeLock = null;
+    }
+
+    private boolean isHeld() {
+        return (null != wakeLock) && wakeLock.isHeld();
+    }
 
     private class IncomingHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
             try {
                 switch (msg.what) {
+                    case UPDATE_CONNECTION_STATUS:
+                        updateLock();
+                        break;
                     case UPDATE_APP_ICON:
                         SawimService.this.startForeground(R.string.app_name, SawimNotification.get(SawimService.this));
                         break;

@@ -7,6 +7,7 @@ import protocol.Contact;
 import protocol.Protocol;
 import protocol.icq.Icq;
 import protocol.mrim.Mrim;
+import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.activities.SawimActivity;
 import sawim.chat.Chat;
@@ -110,8 +111,7 @@ public final class Tracking {
             track.uin = uin;
             track.idEvent = line.id_event;
             track.idAction = line.id_action;
-            if (line.id_action == ACTION_MESSAGE_TEXT) {
-                Log.e("ee", ""+TrackingForm.editText);
+            if (TrackingForm.editText != null) {
                 track.valueAction = TrackingForm.editText;
             } else {
                 track.valueAction = "";
@@ -349,11 +349,11 @@ public final class Tracking {
                 ((SawimActivity) SawimApplication.getCurrentActivity()).openChat(chat.getProtocol(), chat.getContact(), true);
                 break;
             case ACTION_NOTICE:
-                RosterHelper.getInstance().activateWithMsg(JLocale.getString("track_form_title")
-                        + " " + item.getName() + "\n" + item.getName() + " [" + item.getUserId() + "] " + JLocale.getString("track_action_online"));
+                RosterHelper.getInstance().activateWithMsg(JLocale.getString(R.string.track_form_title)
+                        + " " + item.getName() + "\n" + item.getName() + " [" + item.getUserId() + "] " + JLocale.getString(R.string.track_action_online));
                 break;
             case ACTION_INCHAT:
-                String notice = JLocale.getString("track_action_online");
+                String notice = JLocale.getString(R.string.track_action_online);
                 PlainMessage plainMsg = new PlainMessage(item.getUserId(), protocol, SawimApplication.getCurrentGmtTime(), notice, true);
                 //plainMsg.setSendingState(Message.ICON_MSG_TRACK);
                 chat.addMyMessage(plainMsg);
@@ -383,11 +383,11 @@ public final class Tracking {
         Chat chat_ = new Chat(protocol, item);
         switch (action) {
             case ACTION_NOTICE:
-                RosterHelper.getInstance().activateWithMsg(JLocale.getString("track_form_title")
-                        + " " + item.getName() + "\n" + item.getName() + " [" + item.getUserId() + "] " + JLocale.getString("track_action_offline"));
+                RosterHelper.getInstance().activateWithMsg(JLocale.getString(R.string.track_form_title)
+                        + " " + item.getName() + "\n" + item.getName() + " [" + item.getUserId() + "] " + JLocale.getString(R.string.track_action_offline));
                 break;
             case ACTION_INCHAT:
-                String notice = JLocale.getString("track_action_offline");
+                String notice = JLocale.getString(R.string.track_action_offline);
                 PlainMessage plainMsg = new PlainMessage(item.getUserId(), protocol, SawimApplication.getCurrentGmtTime(), notice, true);
                 //plainMsg.setSendingState(Message.ICON_MSG_TRACK);
                 chat.addMyMessage(plainMsg);
@@ -408,28 +408,28 @@ public final class Tracking {
         Chat chat_ = new Chat(protocol, item);
         if (protocol instanceof Icq) {
             if (event == EVENT_STATUS) {
-                status_comm = JLocale.getString("track_action_status") + " ";
+                status_comm = JLocale.getString(R.string.track_action_status) + " ";
                 icon_status = protocol.getStatusInfo().getIcon(item.getStatusIndex());
                 status_name = " [" + protocol.getStatusInfo().getName(item.getStatusIndex()) + "]";
             }
 
             if (event == EVENT_XSTATUS) {
-                status_comm = JLocale.getString("track_action_xstatus") + " ";
+                status_comm = JLocale.getString(R.string.track_action_xstatus) + " ";
                 icon_status = protocol.getXStatusInfo().getIcon(item.getXStatusIndex());
-                status_name = " [" + protocol.getXStatusInfo().getName(item.getXStatusIndex()) + "]";
+                status_name = " [" + JLocale.getString(protocol.getXStatusInfo().getName(item.getXStatusIndex())) + "]";
             }
         }
 
         if (protocol instanceof Mrim) {
             if (event == EVENT_STATUS) {
-                status_comm = JLocale.getString("track_action_status") + " ";
+                status_comm = JLocale.getString(R.string.track_action_status) + " ";
                 icon_status = protocol.getStatusInfo().getIcon(item.getStatusIndex());
                 status_name = " [" + protocol.getStatusInfo().getName(item.getStatusIndex()) + "]";
             }
             if (event == EVENT_XSTATUS) {
-                status_comm = JLocale.getString("track_action_xstatus") + " ";
+                status_comm = JLocale.getString(R.string.track_action_xstatus) + " ";
                 icon_status = protocol.getStatusInfo().getIcon(item.getStatusIndex());
-                status_name = " [" + protocol.getXStatusInfo().getName(item.getXStatusIndex()) + "]";
+                status_name = " [" + JLocale.getString(protocol.getXStatusInfo().getName(item.getXStatusIndex())) + "]";
             }
         }
 

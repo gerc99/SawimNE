@@ -7,6 +7,7 @@ import android.widget.Toast;
 import protocol.Contact;
 import protocol.Protocol;
 import protocol.xmpp.XmppContact;
+import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
@@ -48,14 +49,14 @@ public final class Answerer implements FormListener {
 
     public void activate() {
         list = VirtualList.getInstance();
-        list.setCaption(JLocale.getString("answerer"));
-        refreshList();
+        list.setCaption(JLocale.getString(R.string.answerer));
+                refreshList();
         list.setOnBuildContextMenu(new VirtualList.OnBuildContextMenu() {
             @Override
             public void onCreateContextMenu(ContextMenu menu, int listItem) {
                 if (dictionary.size() > 0) {
-                    menu.add(Menu.FIRST, MENU_EDIT, 2, JLocale.getString("edit"));
-                    menu.add(Menu.FIRST, MENU_DELETE, 2, JLocale.getString("delete"));
+                    menu.add(Menu.FIRST, MENU_EDIT, 2, JLocale.getString(R.string.edit));
+                    menu.add(Menu.FIRST, MENU_DELETE, 2, JLocale.getString(R.string.delete));
                 }
             }
 
@@ -63,11 +64,11 @@ public final class Answerer implements FormListener {
             public void onContextItemSelected(int listItem, int itemMenuId) {
                 switch (itemMenuId) {
                     case MENU_EDIT:
-                        form = new Forms("answerer_dictionary", Answerer.this, false);
+                        form = new Forms(R.string.answerer_dictionary, Answerer.this, false);
                         selItem = listItem;
                         form.clearForm();
-                        form.addTextField(FORM_EDIT_QUESTION, JLocale.getString("answerer_question"), getItemQuestion(listItem));
-                        form.addTextField(FORM_EDIT_ANSWER, JLocale.getString("answerer_answer"), getItemAnswer(listItem));
+                        form.addTextField(FORM_EDIT_QUESTION, JLocale.getString(R.string.answerer_question), getItemQuestion(listItem));
+                        form.addTextField(FORM_EDIT_ANSWER, JLocale.getString(R.string.answerer_answer), getItemAnswer(listItem));
                         form.show();
                         break;
 
@@ -82,12 +83,12 @@ public final class Answerer implements FormListener {
         list.setBuildOptionsMenu(new VirtualList.OnBuildOptionsMenu() {
             @Override
             public void onCreateOptionsMenu(Menu menu) {
-                menu.add(Menu.FIRST, MENU_ADD, 2, JLocale.getString("add_new"));
-                menu.add(Menu.FIRST, MENU_CLEAR, 2, JLocale.getString("delete_all"));
+                menu.add(Menu.FIRST, MENU_ADD, 2, JLocale.getString(R.string.add_new));
+                menu.add(Menu.FIRST, MENU_CLEAR, 2, JLocale.getString(R.string.delete_all));
                 if (Options.getBoolean(Options.OPTION_ANSWERER)) {
-                    menu.add(Menu.FIRST, MENU_ON_OFF, 2, JLocale.getString("answerer_off"));
+                    menu.add(Menu.FIRST, MENU_ON_OFF, 2, JLocale.getString(R.string.answerer_off));
                 } else {
-                    menu.add(Menu.FIRST, MENU_ON_OFF, 2, JLocale.getString("answerer_on"));
+                    menu.add(Menu.FIRST, MENU_ON_OFF, 2, JLocale.getString(R.string.answerer_on));
                 }
             }
 
@@ -95,12 +96,12 @@ public final class Answerer implements FormListener {
             public void onOptionsItemSelected(MenuItem item) {
                 switch (item.getItemId()) {
                     case MENU_ADD:
-                        form = new Forms("answerer_dictionary", Answerer.this, false);
+                        form = new Forms(R.string.answerer_dictionary, Answerer.this, false);
                         dictionary.addElement(" = ");
                         selItem = dictionary.size() - 1;
                         form.clearForm();
-                        form.addTextField(FORM_EDIT_QUESTION, JLocale.getString("answerer_question"), "");
-                        form.addTextField(FORM_EDIT_ANSWER, JLocale.getString("answerer_answer"), "");
+                        form.addTextField(FORM_EDIT_QUESTION, JLocale.getString(R.string.answerer_question), "");
+                        form.addTextField(FORM_EDIT_ANSWER, JLocale.getString(R.string.answerer_answer), "");
                         form.show();
                         break;
 

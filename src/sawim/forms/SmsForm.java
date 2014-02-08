@@ -2,6 +2,7 @@ package sawim.forms;
 
 import protocol.Protocol;
 import protocol.mrim.Mrim;
+import ru.sawim.R;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
 import sawim.roster.RosterHelper;
@@ -51,21 +52,21 @@ public class SmsForm implements FormListener {
         if (0 == agents.length()) {
             return;
         }
-        form = new Forms("send_sms", this, true);
+        form = new Forms(R.string.send_sms, this, true);
         if (null == phones) {
-            form.addTextField(PHONE, "phone", "");
+            form.addTextField(PHONE, R.string.phone, "");
 
         } else {
             form.addSelector(PHONE, "phone", phones.replace(',', '|'), 0);
         }
 
         if (0 < agents.indexOf('|')) {
-            form.addSelector(AGENT, "send_via", agents, 0);
+            form.addSelector(AGENT, R.string.send_via, agents, 0);
         } else {
-            form.addString("send_via", JLocale.getString(agents));
+            form.addString(R.string.send_via, agents);
         }
-        form.addTextField(TEXT, "message", "");
-        form.show();
+        form.addTextField(TEXT, R.string.message, " ");
+                form.show();
     }
 
     private void sendSms(Protocol p, String phone, String text) {

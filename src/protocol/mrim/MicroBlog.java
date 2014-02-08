@@ -4,6 +4,7 @@ import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import protocol.Contact;
+import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
 import ru.sawim.models.list.VirtualList;
@@ -36,8 +37,8 @@ public final class MicroBlog implements TextBoxView.TextBoxListener {
 
     public void activate() {
         list = VirtualList.getInstance();
-        list.setCaption(JLocale.getString("microblog"));
-        list.setModel(model);
+        list.setCaption(JLocale.getString(R.string.microblog));
+                list.setModel(model);
         list.setClickListListener(new VirtualList.OnClickListListener() {
             @Override
             public void itemSelected(int position) {
@@ -58,8 +59,8 @@ public final class MicroBlog implements TextBoxView.TextBoxListener {
         list.setBuildOptionsMenu(new VirtualList.OnBuildOptionsMenu() {
             @Override
             public void onCreateOptionsMenu(Menu menu) {
-                menu.add(Menu.FIRST, MENU_WRITE, 2, JLocale.getString("message"));
-                menu.add(Menu.FIRST, MENU_CLEAN, 2, JLocale.getString("clear"));
+                menu.add(Menu.FIRST, MENU_WRITE, 2, R.string.message);
+                menu.add(Menu.FIRST, MENU_CLEAN, 2, R.string.clean);
             }
 
             @Override
@@ -83,8 +84,8 @@ public final class MicroBlog implements TextBoxView.TextBoxListener {
         list.setOnBuildContextMenu(new VirtualList.OnBuildContextMenu() {
             @Override
             public void onCreateContextMenu(ContextMenu menu, int listItem) {
-                menu.add(Menu.FIRST, MENU_USER_MENU, 2, JLocale.getString("reply"));
-                menu.add(Menu.FIRST, MENU_COPY, 2, JLocale.getString("copy_text"));
+                menu.add(Menu.FIRST, MENU_USER_MENU, 2, JLocale.getString(R.string.reply));
+                menu.add(Menu.FIRST, MENU_COPY, 2, JLocale.getString(R.string.copy_text));
                 //menu.add(Menu.FIRST, MENU_USER_MENU, 2, JLocale.getString("user_menu"));
             }
 

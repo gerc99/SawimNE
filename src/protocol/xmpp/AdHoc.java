@@ -1,5 +1,6 @@
 package protocol.xmpp;
 
+import ru.sawim.R;
 import ru.sawim.models.form.ControlStateListener;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
@@ -38,7 +39,7 @@ public final class AdHoc implements FormListener, ControlStateListener {
     }
 
     public void show() {
-        commandsListForm = new Forms(JLocale.getString("adhoc"), this, true);
+        commandsListForm = new Forms(R.string.adhoc, this, true);
         updateForm(false);
         commandsListForm.setControlStateListener(this);
         commandsListForm.show();
@@ -68,12 +69,12 @@ public final class AdHoc implements FormListener, ControlStateListener {
         }
         commandsListForm.clearForm();
         if (1 < resources.length) {
-            commandsListForm.addSelector(FORM_RESOURCE, "resource", resources, selectedResource);
+            commandsListForm.addSelector(FORM_RESOURCE, R.string.resource, resources, selectedResource);
         }
         if (0 < names.length) {
-            commandsListForm.addSelector(FORM_COMMAND, "commands", names, 0);
+            commandsListForm.addSelector(FORM_COMMAND, R.string.commands, names, 0);
         } else {
-            String label = loaded ? "commands_not_found" : "receiving_commands";
+            int label = loaded ? R.string.commands_not_found : R.string.receiving_commands;
             commandsListForm.addString(JLocale.getString(label));
         }
     }
@@ -112,7 +113,7 @@ public final class AdHoc implements FormListener, ControlStateListener {
         names = new String[count];
         for (int i = 0; i < count; ++i) {
             XmlNode item = query.childAt(i);
-            nodes[i] = StringConvertor.notNull(item.getAttribute("n" + "ode"));
+            nodes[i] = StringConvertor.notNull(item.getAttribute("node"));
             names[i] = StringConvertor.notNull(item.getAttribute(XmlNode.S_NAME));
         }
         updateForm(true);
@@ -160,7 +161,7 @@ public final class AdHoc implements FormListener, ControlStateListener {
     }
 
     void loadCommandXml(XmlNode iqXml, String id) {
-        XmlNode commandXml = iqXml.getFirstNode("c" + "ommand");
+        XmlNode commandXml = iqXml.getFirstNode("command");
         if (null == commandXml) {
             return;
         }
@@ -168,7 +169,7 @@ public final class AdHoc implements FormListener, ControlStateListener {
         if (!"http://jabber.org/protocol/commands".equals(xmlns)) {
             return;
         }
-        if (!getCurrentNode().equals(commandXml.getAttribute("n" + "ode"))) {
+        if (!getCurrentNode().equals(commandXml.getAttribute("node"))) {
             return;
         }
         commandId = id;
@@ -179,9 +180,9 @@ public final class AdHoc implements FormListener, ControlStateListener {
         commandForm = form;
 
         boolean showForm = (0 < commandForm.getForm().getSize());
-        String status = commandXml.getAttribute("s" + "tatus");
-        if (("c" + "anceled").equals(status) || ("co" + "mpleted").equals(status)) {
-            String text = commandXml.getFirstNodeValue("n" + "ote");
+        String status = commandXml.getAttribute("status");
+        if (("canceled").equals(status) || ("completed").equals(status)) {
+            String text = commandXml.getFirstNodeValue("note");
             protocol.getConnection().resetAdhoc();
             commandForm = null;
             if (!StringConvertor.isEmpty(text)) {

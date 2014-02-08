@@ -42,6 +42,10 @@ public final class VirtualListModel {
         this.header = header;
     }
 
+    public final void setHeader(int header) {
+        this.header = JLocale.getString(header);
+    }
+
     public final void setInfoMessage(String text) {
         VirtualListItem par = createNewParser(false);
         par.addDescription(text, Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
@@ -51,22 +55,29 @@ public final class VirtualListModel {
     private void addHeader() {
         if (null != header) {
             VirtualListItem line = createNewParser(false);
-            line.addLabel(JLocale.getString(header),
+            line.addLabel(header,
                     Scheme.THEME_TEXT, Scheme.FONT_STYLE_BOLD);
             addPar(line);
             header = null;
         }
+    }
+    public void addParam(int langStr, String str) {
+        addParam(JLocale.getString(langStr), str);
     }
 
     public void addParam(String langStr, String str) {
         if (!StringConvertor.isEmpty(str)) {
             addHeader();
             VirtualListItem line = createNewParser(true);
-            line.addLabel(JLocale.getString(langStr) + ": ",
+            line.addLabel(langStr + ": ",
                     Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
             line.addDescription(str, Scheme.THEME_PARAM_VALUE, Scheme.FONT_STYLE_PLAIN);
             addPar(line);
         }
+    }
+
+    public void addParamImage(int langStr, Icon img) {
+        addParamImage(JLocale.getString(langStr), img);
     }
 
     public void addParamImage(String langStr, Icon img) {
@@ -74,7 +85,7 @@ public final class VirtualListModel {
             addHeader();
             VirtualListItem line = createNewParser(true);
             if (!StringConvertor.isEmpty(langStr)) {
-                line.addLabel(JLocale.getString(langStr) + ": ",
+                line.addLabel(langStr + ": ",
                         Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
             }
             line.addImage(img.getImage());
@@ -87,7 +98,7 @@ public final class VirtualListModel {
             addHeader();
             VirtualListItem line = createNewParser(false);
             if (!StringConvertor.isEmpty(langStr)) {
-                line.addLabel(JLocale.getString(langStr) + ": ",
+                line.addLabel(langStr + ": ",
                         Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
             }
             line.addBitmap(img);

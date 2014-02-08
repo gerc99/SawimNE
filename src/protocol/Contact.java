@@ -235,12 +235,12 @@ abstract public class Contact extends TreeNode {
 
     protected final void initPrivacyMenu(MyMenu menu) {
         if (!isTemp()) {
-            String visibleList = inVisibleList()
-                    ? "rem_visible_list" : "add_visible_list";
-            String invisibleList = inInvisibleList()
-                    ? "rem_invisible_list" : "add_invisible_list";
-            String ignoreList = inIgnoreList()
-                    ? "rem_ignore_list" : "add_ignore_list";
+            int visibleList = inVisibleList()
+                    ? R.string.rem_visible_list : R.string.add_visible_list;
+            int invisibleList = inInvisibleList()
+                    ? R.string.rem_invisible_list : R.string.add_invisible_list;
+            int ignoreList = inIgnoreList()
+                    ? R.string.rem_ignore_list : R.string.add_ignore_list;
 
             menu.add(JLocale.getString(visibleList), ContactMenu.USER_MENU_PS_VISIBLE);
             menu.add(JLocale.getString(invisibleList), ContactMenu.USER_MENU_PS_INVISIBLE);

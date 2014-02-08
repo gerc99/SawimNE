@@ -4,15 +4,16 @@ package protocol;
 
 import DrawControls.icons.Icon;
 import DrawControls.icons.ImageList;
+import ru.sawim.R;
 import sawim.util.JLocale;
 
 
 public class XStatusInfo {
     public static final int XSTATUS_NONE = -1;
     private final ImageList icons;
-    private final String[] names;
+    private final int[] names;
 
-    public XStatusInfo(ImageList icons, String[] names) {
+    public XStatusInfo(ImageList icons, int[] names) {
         this.icons = icons;
         this.names = names;
     }
@@ -22,12 +23,12 @@ public class XStatusInfo {
         return icons.iconAt(index);
     }
 
-    public String getName(int index) {
+    public int getName(int index) {
         index = (index < 0) ? index : (index & 0xFF);
         if ((0 <= index) && (index < names.length)) {
             return names[index];
         }
-        return JLocale.getString("xstatus_none");
+        return R.string.xstatus_none;
     }
 
     public int getXStatusCount() {

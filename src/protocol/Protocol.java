@@ -70,7 +70,7 @@ abstract public class Protocol {
 
     public final String getNick() {
         String nick = profile.nick;
-        return (nick.length() == 0) ? JLocale.getString("me") : nick;
+        return (nick.length() == 0) ? JLocale.getString(R.string.me) : nick;
     }
 
     public final Profile getProfile() {
@@ -220,6 +220,12 @@ abstract public class Protocol {
         progress = (byte) ((percent < 0) ? 100 : percent);
         if (100 == percent) {
             reconnect_attempts = RECONNECT_COUNT;
+            SawimApplication.getInstance().updateConnectionState();
+            RosterHelper.getInstance().updateConnectionStatus();
+            RosterHelper.getInstance().updateBarProtocols();
+            RosterHelper.getInstance().updateRoster();
+        } else if (0 == percent) {
+            SawimApplication.getInstance().updateConnectionState();
             RosterHelper.getInstance().updateConnectionStatus();
             RosterHelper.getInstance().updateBarProtocols();
             RosterHelper.getInstance().updateRoster();
@@ -534,6 +540,7 @@ abstract public class Protocol {
         RosterHelper.getInstance().updateBarProtocols();
         RosterHelper.getInstance().updateProgressBar();
         RosterHelper.getInstance().updateRoster();
+        SawimApplication.getInstance().updateConnectionState();
         RosterHelper.getInstance().updateConnectionStatus();
         if (user) {
             DebugLog.println("disconnect " + getUserId());
@@ -1060,7 +1067,7 @@ abstract public class Protocol {
             if (msg.startsWith("/") && !msg.startsWith("/me ") && !msg.startsWith("/wakeup") && (to instanceof XmppContact)) {
                 boolean cmdExecuted = ((XmppContact) to).execCommand(this, msg);
                 if (!cmdExecuted) {
-                    String text = JLocale.getString("jabber_command_not_found");
+                    String text = JLocale.getString(R.string.jabber_command_not_found);
                     SystemNotice notice = new SystemNotice(this, SystemNotice.SYS_NOTICE_MESSAGE, to.getUserId(), text);
                     getChat(to).addMessage(notice, false, false);
                 }

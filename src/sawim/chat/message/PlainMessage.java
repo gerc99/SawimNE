@@ -3,6 +3,7 @@ package sawim.chat.message;
 
 import protocol.Contact;
 import protocol.Protocol;
+import ru.sawim.R;
 import sawim.comm.StringConvertor;
 import sawim.util.JLocale;
 
@@ -20,7 +21,7 @@ public class PlainMessage extends Message {
 
     public PlainMessage(String contactUin, Protocol protocol, long date, String text, boolean offline) {
         super(date, protocol, contactUin, true);
-        if ('\n' == text.charAt(0)) {
+        if (text.length() > 0 && '\n' == text.charAt(0)) {
             text = text.substring(1);
         }
         this.text = text;
@@ -50,9 +51,9 @@ public class PlainMessage extends Message {
         String messageText = text;
         if (isWakeUp()) {
             if (isIncoming()) {
-                messageText = PlainMessage.CMD_ME + JLocale.getString("wake_you_up");
+                messageText = PlainMessage.CMD_ME + JLocale.getString(R.string.wake_you_up);
             } else {
-                messageText = PlainMessage.CMD_ME + JLocale.getString("wake_up");
+                messageText = PlainMessage.CMD_ME + JLocale.getString(R.string.wake_up);
             }
         }
         return messageText;

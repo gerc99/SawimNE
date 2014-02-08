@@ -2,6 +2,7 @@ package protocol.xmpp;
 
 import protocol.*;
 import protocol.net.ClientConnection;
+import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import sawim.Options;
 import sawim.SawimException;
@@ -1181,33 +1182,33 @@ public final class XmppConnection extends ClientConnection {
 
             if (null != item) {
                 String affiliation = item.getAttribute(XmlNode.S_AFFILIATION);
-                if (("m" + "ember").equals(affiliation)) {
+                if (("member").equals(affiliation)) {
                     priorityA = XmppServiceContact.AFFILIATION_MEMBER;
                     //rangVoice = JLocale.getString("member");
-                } else if (("o" + "wner").equals(affiliation)) {
+                } else if (("owner").equals(affiliation)) {
                     priorityA = XmppServiceContact.AFFILIATION_OWNER;
-                    rangVoice = JLocale.getString("owner");
-                } else if (("a" + "dmin").equals(affiliation)) {
+                    rangVoice = JLocale.getString(R.string.owner);
+                } else if (("admin").equals(affiliation)) {
                     priorityA = XmppServiceContact.AFFILIATION_ADMIN;
-                    rangVoice = JLocale.getString("admin");
+                    rangVoice = JLocale.getString(R.string.admin);
                 } else {
                     priorityA = XmppServiceContact.AFFILIATION_NONE;
-                    rangVoice = JLocale.getString("none");
+                    rangVoice = JLocale.getString(R.string.none);
                 }
                 String role = item.getAttribute(XmlNode.S_ROLE);
-                if (("m" + "oderator").equals(role)) {
+                if (("moderator").equals(role)) {
                     priority = XmppServiceContact.ROLE_MODERATOR;
-                    roleVoice = JLocale.getString("moderator");
-                } else if (("p" + "articipant").equals(role)) {
+                    roleVoice = JLocale.getString(R.string.moderator);
+                } else if (("participant").equals(role)) {
                     priority = XmppServiceContact.ROLE_PARTICIPANT;
-                    roleVoice = JLocale.getString("participant");
+                    roleVoice = JLocale.getString(R.string.participant);
                 } else if (S_NONE.equals(role)) {
-                    reasone = item.getFirstNodeValue("r" + "eason");
+                    reasone = item.getFirstNodeValue("reason");
                     item = null;
-                    roleVoice = JLocale.getString("reason");
+                    roleVoice = JLocale.getString(R.string.reason);
                 } else {
                     priority = XmppServiceContact.ROLE_VISITOR;
-                    roleVoice = JLocale.getString("visitor");
+                    roleVoice = JLocale.getString(R.string.visitor);
                 }
             }
             if (rangVoice != null) rangVoice += "/" + roleVoice;
@@ -1237,7 +1238,7 @@ public final class XmppConnection extends ClientConnection {
                 }
                 contact.setClient(fromRes, x.getFirstNodeAttribute("c", S_NODE));
                 if (303 == code) {
-                    conf.addPresence(getXmpp(), fromRes, ": " + JLocale.getString("change_nick") + " " + StringConvertor.notNull(newNick));
+                    conf.addPresence(getXmpp(), fromRes, ": " + JLocale.getString(R.string.change_nick) + " " + StringConvertor.notNull(newNick));
                 }
             } else {
                 conf.nickOffline(getXmpp(), fromRes, code, StringConvertor.notNull(reasone), StringConvertor.notNull(statusString));
@@ -2190,7 +2191,7 @@ public final class XmppConnection extends ClientConnection {
                 + "xmlns:stream='http:/" + "/etherx.jabber.org/streams' "
                 + "version='1.0' "
                 + "to='" + server + "'"
-                + " xml:lang='" + sawim.util.JLocale.getLanguageCode() + "'>";
+                + " xml:lang='" + sawim.util.JLocale.getSystemLanguage() + "'>";
     }
 
     private void getVCard(String jid) {
@@ -2210,7 +2211,7 @@ public final class XmppConnection extends ClientConnection {
             if (!getXmpp().isContactOverGate(to)) {
                 msg = msg.substring(PlainMessage.CMD_WAKEUP.length()).trim();
                 if (StringConvertor.isEmpty(msg)) {
-                    msg = "/me " + JLocale.getString("wake_you_up");
+                    msg = "/me " + JLocale.getString(R.string.wake_you_up);
                 }
             }
         }

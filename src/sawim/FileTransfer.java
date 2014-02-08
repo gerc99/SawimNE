@@ -4,6 +4,7 @@ import android.util.Log;
 import protocol.Contact;
 import protocol.Protocol;
 import protocol.net.TcpSocket;
+import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
@@ -159,17 +160,17 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
     }
 
     private void askForNameDesc() {
-        name_Desc = new Forms("name_desc", this, true);
-        name_Desc.addString("filename", filename);
-        name_Desc.addTextField(descriptionField, "description", "");
+        name_Desc = new Forms(R.string.name_desc, this, true);
+        name_Desc.addString(R.string.filename, filename);
+        name_Desc.addTextField(descriptionField, R.string.description, "");
         String items = "jimm.net.ru|www.jimm.net.ru|jimm.org";
         if (cItem instanceof protocol.xmpp.XmppContact) {
             if (cItem.isSingleUserContact() && cItem.isOnline()) {
                 items += "|ibb";
             }
         }
-        name_Desc.addSelector(transferMode, "send_via", items, 0);
-        name_Desc.addString(JLocale.getString("size") + ": ", String.valueOf(getFileSize() / 1024) + " kb");
+        name_Desc.addSelector(transferMode, R.string.send_via, items, 0);
+        name_Desc.addString(JLocale.getString(R.string.size) + ": ", String.valueOf(getFileSize() / 1024) + " kb");
         name_Desc.show();
     }
 
@@ -197,15 +198,15 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
         return filename + " - " + StringConvertor.bytesToSizeString(getFileSize(), false);
     }
 
-    private void changeFileProgress(int percent, String message) {
-        changeFileProgress(percent, JLocale.getEllipsisString("sending_file"),
+    private void changeFileProgress(int percent, int message) {
+        changeFileProgress(percent, JLocale.getString(R.string.sending_file),
                 getProgressText() + "\n"
                         + JLocale.getString(message));
     }
 
     public void cancel() {
         canceled = true;
-        changeFileProgress(0, "canceled");
+        changeFileProgress(0, R.string.canceled);
         if (0 < sendMode) {
             closeFile();
         }
@@ -219,7 +220,7 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
         chat = protocol.getChat(cItem);
         chat.activate();
         addFileProgress();
-        chat.addFileProgress(JLocale.getEllipsisString("sending_file"), getProgressText());
+        chat.addFileProgress(JLocale.getString(R.string.sending_file), getProgressText());
         RosterHelper.getInstance().addTransfer(this);
     }
 
@@ -234,10 +235,10 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
             if ((0 == percent)) {
                 return;
             }
-            changeFileProgress(percent, JLocale.getEllipsisString("sending_file"));
+            changeFileProgress(percent, R.string.sending_file);
             if (100 == percent) {
                 RosterHelper.getInstance().removeTransfer(false);
-                changeFileProgress(percent, "complete");
+                changeFileProgress(percent, R.string.complete);
                 return;
             }
         } catch (Exception ignored) {
@@ -249,8 +250,8 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
         if (isCanceled()) {
             return;
         }
-        changeFileProgress(0, JLocale.getString("error") + "\n" + e.getMessage());
-        Log.e("FileTransfer", JLocale.getString("error") + "\n" + e.getMessage());
+        changeFileProgress(0, R.string.error);
+        Log.e("FileTransfer", JLocale.getString(R.string.error) + "\n" + e.getMessage());
     }
 
     private void closeFile() {

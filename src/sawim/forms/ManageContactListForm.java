@@ -92,29 +92,29 @@ public final class ManageContactListForm implements FormListener, TextBoxView.Te
         boolean canAdd = !protocol.getGroupItems().isEmpty()
                 && ((null == group) || group.hasMode(Group.MODE_NEW_CONTACTS));
         if (canAdd) {
-            menu.add(SawimApplication.getContext().getString(R.string.add_user), ADD_USER);
+            menu.add(R.string.add_user, ADD_USER);
             if ((protocol instanceof protocol.xmpp.Xmpp)) {
-                menu.add(SawimApplication.getContext().getString(R.string.add_conference), ADD_CONFERENCE);
+                menu.add(R.string.add_conference, ADD_CONFERENCE);
             } else {
-                menu.add(SawimApplication.getContext().getString(R.string.search_user), SEARCH_USER);
+                menu.add(R.string.search_user, SEARCH_USER);
             }
         }
-        menu.add(SawimApplication.getContext().getString(R.string.add_group), ADD_GROUP);
+        menu.add(R.string.add_group, ADD_GROUP);
         if (null != group) {
             if (group.hasMode(Group.MODE_EDITABLE)) {
-                menu.add(SawimApplication.getContext().getString(R.string.rename_group), RENAME_GROUP);
+                menu.add(R.string.rename_group, RENAME_GROUP);
             }
             if (group.getContacts().isEmpty() && group.hasMode(Group.MODE_REMOVABLE)) {
-                menu.add(SawimApplication.getContext().getString(R.string.del_group), DEL_GROUP);
+                menu.add(R.string.del_group, DEL_GROUP);
             }
         } else {
-            menu.add(SawimApplication.getContext().getString(R.string.rename_group), RENAME_GROUP);
-            menu.add(SawimApplication.getContext().getString(R.string.del_group), DEL_GROUP);
+            menu.add(R.string.rename_group, RENAME_GROUP);
+            menu.add(R.string.del_group, DEL_GROUP);
         }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(a);
         builder.setCancelable(true);
-        builder.setTitle(SawimApplication.getContext().getString(R.string.manage_contact_list));
+        builder.setTitle(R.string.manage_contact_list);
         builder.setAdapter(menu, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -144,23 +144,23 @@ public final class ManageContactListForm implements FormListener, TextBoxView.Te
                 break;
 
             case ADD_GROUP:
-                showTextBox(a, "add_group", null);
+                showTextBox(a, R.string.add_group, null);
                 break;
 
             case RENAME_GROUP:
                 if (null == group) {
-                    Forms form = new Forms("rename_group", this, true);
+                    Forms form = new Forms(R.string.rename_group, this, true);
                     addGroup(form, getGroups(Group.MODE_EDITABLE));
-                    form.addTextField(GROUP_NEW_NAME, "new_group_name", "");
+                    form.addTextField(GROUP_NEW_NAME, R.string.new_group_name, "");
                     form.show();
                 } else {
-                    showTextBox(a, "rename_group", group.getName());
+                    showTextBox(a, R.string.rename_group, group.getName());
                 }
                 break;
 
             case DEL_GROUP:
                 if (null == group) {
-                    Forms form = new Forms("del_group", this, true);
+                    Forms form = new Forms(R.string.del_group, this, true);
                     addGroup(form, getGroups(Group.MODE_REMOVABLE));
                     form.show();
                 } else {
@@ -194,13 +194,13 @@ public final class ManageContactListForm implements FormListener, TextBoxView.Te
                     def = i;
                 }
             }
-            form.addSelector(GROUP, "group", list, def);
+            form.addSelector(GROUP, R.string.group, list, def);
         } else {
-            form.addString(JLocale.getString("no_groups_available"));
+            form.addString(JLocale.getString(R.string.no_groups_available));
         }
     }
 
-    private void showTextBox(FragmentActivity a, String caption, String text) {
+    private void showTextBox(FragmentActivity a, int caption, String text) {
         groupName = new TextBoxView();
         groupName.setCaption(JLocale.getString(caption));
         groupName.setString(text);
@@ -275,7 +275,7 @@ public final class ManageContactListForm implements FormListener, TextBoxView.Te
                 } else if (isMyName) {
                     form.back();
                 } else if (isExist) {
-                    form.addString(JLocale.getString("group_already_exist"));
+                    form.addString(JLocale.getString(R.string.group_already_exist));
                 } else {
                     protocol.renameGroup(g, newGroupName);
                     form.back();

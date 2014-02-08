@@ -48,7 +48,7 @@ import java.util.List;
  */
 public class RosterView extends Fragment implements ListView.OnItemClickListener, RosterHelper.OnUpdateRoster, Handler.Callback {
 
-    public static final String TAG = "RosterView";
+    public static final String TAG = RosterView.class.getSimpleName();
 
     private static final int UPDATE_BAR_PROTOCOLS = 0;
     private static final int UPDATE_PROGRESS_BAR = 1;

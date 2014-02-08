@@ -33,7 +33,7 @@ public final class TrackingForm implements TextBoxView.TextBoxListener {
 
     public TrackingForm(String uin) {
         this.uin = uin;
-        screen.setCaption(JLocale.getString("extra_settings"));
+        screen.setCaption(JLocale.getString(R.string.extra_settings));
         screen.setModel(model);
         screen.setClickListListener(new VirtualList.OnClickListListener() {
             @Override
@@ -58,7 +58,7 @@ public final class TrackingForm implements TextBoxView.TextBoxListener {
         return list;
     }
 
-    private String getName(String key) {
+    private String getName(int key) {
         return JLocale.getString(key);
     }
 
@@ -119,47 +119,47 @@ public final class TrackingForm implements TextBoxView.TextBoxListener {
 
     private void createListForConf() {
         list.removeAllElements();
-        list.addElement(createLine(Tracking.GLOBAL, Tracking.GLOBAL, No, null, getName("extra_settings"), true, false));
-        list.addElement(createLine(Tracking.EVENT_ENTER, Tracking.EVENT_ENTER, No, null, getName("track_event_enter"), true));
-        list.addElement(createLine(Tracking.EVENT_ENTER, Tracking.ACTION_HISTORY, No, null, getName("use_history")
+        list.addElement(createLine(Tracking.GLOBAL, Tracking.GLOBAL, No, null, getName(R.string.extra_settings), true, false));
+        list.addElement(createLine(Tracking.EVENT_ENTER, Tracking.EVENT_ENTER, No, null, getName(R.string.track_event_enter), true));
+        list.addElement(createLine(Tracking.EVENT_ENTER, Tracking.ACTION_HISTORY, No, null, getName(R.string.use_history)
                 + " (" + SawimApplication.getInstance().getResources().getString(R.string.include_setting_the_story) + ")", false));
-        list.addElement(createLine(Tracking.EVENT_ENTER, Tracking.ACTION_PRESENCE, No, null, getName("notice_presence"), false));
-        list.addElement(createLine(Tracking.EVENT_MESSAGE, Tracking.EVENT_MESSAGE, No, null, getName("track_event_message"), true));
-        list.addElement(createLine(Tracking.EVENT_MESSAGE, Tracking.ACTION_SOUND, No, null, getName("track_action_sound"), false));
-        list.addElement(createLine(Tracking.EVENT_MESSAGE, Tracking.ACTION_VIBRA, No, null, getName("track_action_vibra"), false));
+        list.addElement(createLine(Tracking.EVENT_ENTER, Tracking.ACTION_PRESENCE, No, null, getName(R.string.notice_presence), false));
+        list.addElement(createLine(Tracking.EVENT_MESSAGE, Tracking.EVENT_MESSAGE, No, null, getName(R.string.track_event_message), true));
+        list.addElement(createLine(Tracking.EVENT_MESSAGE, Tracking.ACTION_SOUND, No, null, getName(R.string.track_action_sound), false));
+        list.addElement(createLine(Tracking.EVENT_MESSAGE, Tracking.ACTION_VIBRA, No, null, getName(R.string.track_action_vibra), false));
     }
 
     private void createList() {
         list.removeAllElements();
-        list.addElement(createLine(Tracking.GLOBAL, Tracking.GLOBAL, No, null, getName("extra_settings"), true, false));
+        list.addElement(createLine(Tracking.GLOBAL, Tracking.GLOBAL, No, null, getName(R.string.extra_settings), true, false));
 
-        list.addElement(createLine(Tracking.EVENT_ENTER, Tracking.EVENT_ENTER, No, null, getName("track_event_enter"), true));
-        list.addElement(createLine(Tracking.EVENT_ENTER, Tracking.ACTION_HISTORY, No, null, getName("use_history"), false));
-        list.addElement(createLine(Tracking.EVENT_ENTER, Tracking.ACTION_CHAT, No, null, getName("track_action_chat"), false));
-        list.addElement(createLine(Tracking.EVENT_ENTER, Tracking.ACTION_NOTICE, No, null, getName("track_action_notice"), false));
-        list.addElement(createLine(Tracking.EVENT_ENTER, Tracking.ACTION_ICON, No, null, getName("track_action_icon"), false));
-        list.addElement(createLine(Tracking.EVENT_ENTER, Tracking.ACTION_INCHAT, No, null, getName("track_action_inchat"), false));
+        list.addElement(createLine(Tracking.EVENT_ENTER, Tracking.EVENT_ENTER, No, null, getName(R.string.track_event_enter), true));
+        list.addElement(createLine(Tracking.EVENT_ENTER, Tracking.ACTION_HISTORY, No, null, getName(R.string.use_history), false));
+        list.addElement(createLine(Tracking.EVENT_ENTER, Tracking.ACTION_CHAT, No, null, getName(R.string.track_action_chat), false));
+        list.addElement(createLine(Tracking.EVENT_ENTER, Tracking.ACTION_NOTICE, No, null, getName(R.string.track_action_notice), false));
+        list.addElement(createLine(Tracking.EVENT_ENTER, Tracking.ACTION_ICON, No, null, getName(R.string.track_action_icon), false));
+        list.addElement(createLine(Tracking.EVENT_ENTER, Tracking.ACTION_INCHAT, No, null, getName(R.string.track_action_inchat), false));
 
-        list.addElement(createLine(Tracking.EVENT_ENTER, Tracking.ACTION_SOUND, No, null, getName("track_action_sound"), false));
-        list.addElement(createLine(Tracking.EVENT_ENTER, Tracking.ACTION_VIBRA, No, null, getName("track_action_vibra"), false));
-        list.addElement(createLine(Tracking.EVENT_ENTER, Tracking.ACTION_MESSAGE, No, null, getName("track_action_message"), false));
-        list.addElement(createLine(Tracking.EVENT_ENTER, Tracking.ACTION_MESSAGE_TEXT, null, null, JLocale.getString("message"), false));
+        list.addElement(createLine(Tracking.EVENT_ENTER, Tracking.ACTION_SOUND, No, null, getName(R.string.track_action_sound), false));
+        list.addElement(createLine(Tracking.EVENT_ENTER, Tracking.ACTION_VIBRA, No, null, getName(R.string.track_action_vibra), false));
+        list.addElement(createLine(Tracking.EVENT_ENTER, Tracking.ACTION_MESSAGE, No, null, getName(R.string.track_action_message), false));
+        list.addElement(createLine(Tracking.EVENT_ENTER, Tracking.ACTION_MESSAGE_TEXT, null, null, getName(R.string.message), false));
 
-        list.addElement(createLine(Tracking.EVENT_EXIT, Tracking.EVENT_EXIT, No, null, getName("track_event_exit"), true));
-        list.addElement(createLine(Tracking.EVENT_EXIT, Tracking.ACTION_NOTICE, No, null, getName("track_action_notice"), false));
-        list.addElement(createLine(Tracking.EVENT_EXIT, Tracking.ACTION_ICON, No, null, getName("track_action_icon"), false));
-        list.addElement(createLine(Tracking.EVENT_EXIT, Tracking.ACTION_INCHAT, No, null, getName("track_action_inchat"), false));
+        list.addElement(createLine(Tracking.EVENT_EXIT, Tracking.EVENT_EXIT, No, null, getName(R.string.track_event_exit), true));
+        list.addElement(createLine(Tracking.EVENT_EXIT, Tracking.ACTION_NOTICE, No, null, getName(R.string.track_action_notice), false));
+        list.addElement(createLine(Tracking.EVENT_EXIT, Tracking.ACTION_ICON, No, null, getName(R.string.track_action_icon), false));
+        list.addElement(createLine(Tracking.EVENT_EXIT, Tracking.ACTION_INCHAT, No, null, getName(R.string.track_action_inchat), false));
 
-        list.addElement(createLine(Tracking.EVENT_EXIT, Tracking.ACTION_SOUND, No, null, getName("track_action_sound"), false));
-        list.addElement(createLine(Tracking.EVENT_EXIT, Tracking.ACTION_VIBRA, No, null, getName("track_action_vibra"), false));
+        list.addElement(createLine(Tracking.EVENT_EXIT, Tracking.ACTION_SOUND, No, null, getName(R.string.track_action_sound), false));
+        list.addElement(createLine(Tracking.EVENT_EXIT, Tracking.ACTION_VIBRA, No, null, getName(R.string.track_action_vibra), false));
 
-        list.addElement(createLine(Tracking.EVENT_MESSAGE, Tracking.EVENT_MESSAGE, No, null, getName("track_event_message"), true));
-        list.addElement(createLine(Tracking.EVENT_MESSAGE, Tracking.ACTION_SOUND, No, null, getName("track_action_sound"), false));
-        list.addElement(createLine(Tracking.EVENT_MESSAGE, Tracking.ACTION_VIBRA, No, null, getName("track_action_vibra"), false));
+        list.addElement(createLine(Tracking.EVENT_MESSAGE, Tracking.EVENT_MESSAGE, No, null, getName(R.string.track_event_message), true));
+        list.addElement(createLine(Tracking.EVENT_MESSAGE, Tracking.ACTION_SOUND, No, null, getName(R.string.track_action_sound), false));
+        list.addElement(createLine(Tracking.EVENT_MESSAGE, Tracking.ACTION_VIBRA, No, null, getName(R.string.track_action_vibra), false));
 
-        list.addElement(createLine(Tracking.EVENT_TYPING, Tracking.EVENT_TYPING, No, null, getName("track_event_typing"), true));
-        list.addElement(createLine(Tracking.EVENT_TYPING, Tracking.ACTION_SOUND, No, null, getName("track_action_sound"), false));
-        list.addElement(createLine(Tracking.EVENT_TYPING, Tracking.ACTION_VIBRA, No, null, getName("track_action_vibra"), false));
+        list.addElement(createLine(Tracking.EVENT_TYPING, Tracking.EVENT_TYPING, No, null, getName(R.string.track_event_typing), true));
+        list.addElement(createLine(Tracking.EVENT_TYPING, Tracking.ACTION_SOUND, No, null, getName(R.string.track_action_sound), false));
+        list.addElement(createLine(Tracking.EVENT_TYPING, Tracking.ACTION_VIBRA, No, null, getName(R.string.track_action_vibra), false));
     }
 
     private void updateMassMenu() {
@@ -189,10 +189,9 @@ public final class TrackingForm implements TextBoxView.TextBoxListener {
             Tracking.Track track = (Tracking.Track) actions.elementAt(i);
             Line line = getLineByID(track.idEvent, track.idAction);
             if (line == null) continue;
-            if (track.idAction == Tracking.ACTION_MESSAGE_TEXT) {
-                editText = track.valueAction;
-                Log.e("editText", "" + TrackingForm.editText);
-                if (line.name.length() > 0) {
+            editText = track.valueAction;
+            if (editText != null) {
+                if (editText.length() > 0) {
                     line.status_flag = YES;
                 } else {
                     line.status_flag = NO;
@@ -383,7 +382,6 @@ public final class TrackingForm implements TextBoxView.TextBoxListener {
     public void textboxAction(TextBoxView box, boolean ok) {
         if ((box == inputBox) && ok) {
             setLineText(inputBox.getString());
-            //screen.back();
             return;
         }
     }
@@ -391,11 +389,11 @@ public final class TrackingForm implements TextBoxView.TextBoxListener {
     private void setLineText(String text) {
         int index = screen.getCurrItem();
         Line line = getLine(index);
-        if (line.id_action != Tracking.ACTION_MESSAGE_TEXT) {
-            return;
-        }
-        line.name = text;
-        setLine(line, index);
+        //if (line.id_action != Tracking.ACTION_MESSAGE_TEXT) {
+        //    return;
+        //}
+        editText = text;
+        /*setLine(line, index);
         index--;
         Line prev_line = getLine(index);
         if (text.length() > 0) {
@@ -406,7 +404,7 @@ public final class TrackingForm implements TextBoxView.TextBoxListener {
             line.status_flag = NO;
         }
         prev_line.status_icon = convertStatusToIcon(prev_line.status_flag);
-        setLine(prev_line, index);
+        setLine(prev_line, index);*/
         showList();
 
         updateMassMenu();

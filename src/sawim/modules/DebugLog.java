@@ -3,6 +3,7 @@ package sawim.modules;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
+import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
 import ru.sawim.models.list.VirtualList;
@@ -35,7 +36,7 @@ public final class DebugLog {
             return "";
         }
         try {
-            String text1 = JLocale.getString(text);
+            String text1 = text;
             if (!text1.equals(text)) {
                 return "[l] " + text1;
             }
@@ -133,13 +134,13 @@ public final class DebugLog {
 
     private void init() {
         list = VirtualList.getInstance();
-        list.setCaption(JLocale.getString("debug log"));
-        list.setModel(model);
+        list.setCaption(JLocale.getString(R.string.debug_log));
+                list.setModel(model);
         list.setOnBuildContextMenu(new VirtualList.OnBuildContextMenu() {
             @Override
             public void onCreateContextMenu(ContextMenu menu, int listItem) {
-                menu.add(Menu.FIRST, MENU_COPY, 2, JLocale.getString("copy_text"));
-                menu.add(Menu.FIRST, MENU_COPY_ALL, 2, JLocale.getString("copy_all_text"));
+                menu.add(Menu.FIRST, MENU_COPY, 2, JLocale.getString(R.string.copy_text));
+                menu.add(Menu.FIRST, MENU_COPY_ALL, 2, JLocale.getString(R.string.copy_all_text));
             }
 
             @Override
@@ -169,7 +170,7 @@ public final class DebugLog {
         list.setBuildOptionsMenu(new VirtualList.OnBuildOptionsMenu() {
             @Override
             public void onCreateOptionsMenu(Menu menu) {
-                menu.add(Menu.FIRST, MENU_CLEAN, 2, JLocale.getString("clear"));
+                menu.add(Menu.FIRST, MENU_CLEAN, 2, JLocale.getString(R.string.clear));
             }
 
             @Override

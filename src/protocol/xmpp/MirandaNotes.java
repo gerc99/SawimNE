@@ -3,6 +3,7 @@ package protocol.xmpp;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
+import ru.sawim.R;
 import ru.sawim.Scheme;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
@@ -34,13 +35,13 @@ public final class MirandaNotes {
     void init(Xmpp protocol) {
         screen = VirtualList.getInstance();
         model = new VirtualListModel();
-        screen.setCaption(JLocale.getString("notes"));
+        screen.setCaption(JLocale.getString(R.string.notes));
         xmpp = protocol;
         screen.setModel(model);
         screen.setBuildOptionsMenu(new VirtualList.OnBuildOptionsMenu() {
             @Override
             public void onCreateOptionsMenu(Menu menu) {
-                menu.add(Menu.NONE, COMMAND_ADD, Menu.NONE, JLocale.getString("add_to_list"));
+                menu.add(Menu.NONE, COMMAND_ADD, Menu.NONE, R.string.add_to_list);
             }
 
             @Override
@@ -56,10 +57,10 @@ public final class MirandaNotes {
         screen.setOnBuildContextMenu(new VirtualList.OnBuildContextMenu() {
             @Override
             public void onCreateContextMenu(ContextMenu menu, int listItem) {
-                menu.add(Menu.FIRST, COMMAND_EDIT, 2, JLocale.getString("edit"));
-                menu.add(Menu.FIRST, COMMAND_DEL, 2, JLocale.getString("delete"));
-                menu.add(Menu.FIRST, MENU_COPY, 2, JLocale.getString("copy_text"));
-                menu.add(Menu.FIRST, MENU_COPY_ALL, 2, JLocale.getString("copy_all_text"));
+                menu.add(Menu.FIRST, COMMAND_EDIT, 2, R.string.edit);
+                menu.add(Menu.FIRST, COMMAND_DEL, 2, R.string.delete);
+                menu.add(Menu.FIRST, MENU_COPY, 2, R.string.copy_text);
+                menu.add(Menu.FIRST, MENU_COPY_ALL, 2, R.string.copy_all_text);
             }
 
             @Override
@@ -121,7 +122,7 @@ public final class MirandaNotes {
         clear();
         notes.removeAllElements();
         VirtualListItem wait = model.createNewParser(true);
-        wait.addDescription(JLocale.getString("wait"),
+        wait.addDescription(JLocale.getString(R.string.wait),
                 Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
         model.addPar(wait);
         xmpp.getConnection().requestMirandaNotes();
@@ -206,10 +207,10 @@ public final class MirandaNotes {
         }
 
         private void showIt() {
-            Forms form = new Forms("notes", this, false);
-            form.addTextField(FIELD_TITLE, "title", note.title);
-            form.addTextField(FIELD_TAGS, "tags", note.tags);
-            form.addTextField(FIELD_TEXT, "text", note.text == null ? "" : note.text.toString());
+            Forms form = new Forms(R.string.notes, this, false);
+            form.addTextField(FIELD_TITLE, R.string.title, note.title);
+            form.addTextField(FIELD_TAGS, R.string.tags, note.tags);
+            form.addTextField(FIELD_TEXT, R.string.text, note.text == null ? "" : note.text.toString());
             form.show();
         }
 

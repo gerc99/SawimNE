@@ -233,16 +233,16 @@ public class XmppServiceContact extends XmppContact {
             if (isOnline()) {
                 xmpp.removeRejoin(getUserId());
             }
-            String text = null;
+            int errorText = 0;
             if (301 == code) {
-                text = "you_was_baned";
+                errorText = R.string.you_was_baned;
             } else if (307 == code) {
-                text = "you_was_kicked";
+                errorText = R.string.you_was_kicked;
             } else if (404 == code) {
-                text = "error";
+                errorText = R.string.error;
             }
-            if (null != text) {
-                text = JLocale.getString(text);
+            if (0 != errorText) {
+                String text = JLocale.getString(errorText);
                 if (!StringConvertor.isEmpty(reasone)) {
                     text += " (" + reasone + ")";
                 }
@@ -267,16 +267,16 @@ public class XmppServiceContact extends XmppContact {
             setOfflineStatus();
             xmpp.ui_changeContactStatus(this);
         } else {
-            String event = null;
+            int eventCode = 0;
             if (301 == code) {
-                event = "was_baned";
+                eventCode = R.string.was_baned;
                 playSoundEye();
             } else if (307 == code) {
-                event = "was_kicked";
+                eventCode = R.string.was_kicked;
                 playSoundEye();
             }
-            if (null != event) {
-                event = JLocale.getString(event);
+            if (0 != eventCode) {
+                String event = JLocale.getString(eventCode);
                 textPresence.append(event).append(" ").append(reasone);
                 //sawim.modules.MagicEye.addAction(xmpp, getUserId(), nick + " " + event, reasone);
             }
@@ -294,10 +294,10 @@ public class XmppServiceContact extends XmppContact {
 
     public final String getDefaultGroupName() {
         if (isConference) {
-            return Xmpp.CONFERENCE_GROUP;
+            return JLocale.getString(Xmpp.CONFERENCE_GROUP);
         }
         if (isGate) {
-            return Xmpp.GATE_GROUP;
+            return JLocale.getString(Xmpp.GATE_GROUP);
         }
         return null;
     }

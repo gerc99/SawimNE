@@ -55,7 +55,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
         screen = VirtualList.getInstance();
         xmpp = protocol;
         screen.setModel(model);
-        screen.setCaption(JLocale.getString("service_discovery"));
+        screen.setCaption(JLocale.getString(R.string.service_discovery));
         groupItem = model.createNewParser(true);
         screen.setClickListListener(new VirtualList.OnClickListListener() {
             @Override
@@ -94,15 +94,15 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
                 menu.clear();
                 String jid = getCurrentJid(listItem);
                 if (Jid.isConference(jid)) {
-                    menu.add(Menu.FIRST, COMMAND_ADD, 2, JLocale.getString("service_discovery_add"));
+                    menu.add(Menu.FIRST, COMMAND_ADD, 2, JLocale.getString(R.string.service_discovery_add));
 
                 } else if (Jid.isKnownGate(jid)) {
-                    menu.add(Menu.FIRST, COMMAND_REGISTER, 2, JLocale.getString("register"));
+                    menu.add(Menu.FIRST, COMMAND_REGISTER, 2, JLocale.getString(R.string.register));
 
                 } else {
-                    menu.add(Menu.FIRST, COMMAND_SET, 2, JLocale.getString("select"));
+                    menu.add(Menu.FIRST, COMMAND_SET, 2, JLocale.getString(R.string.select));
                     if (Jid.isGate(jid)) {
-                        menu.add(Menu.FIRST, COMMAND_REGISTER, 2, JLocale.getString("register"));
+                        menu.add(Menu.FIRST, COMMAND_REGISTER, 2, JLocale.getString(R.string.register));
                     }
                 }
             }
@@ -132,9 +132,9 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
         screen.setBuildOptionsMenu(new VirtualList.OnBuildOptionsMenu() {
             @Override
             public void onCreateOptionsMenu(Menu menu) {
-                menu.add(Menu.FIRST, COMMAND_SEARCH, 2, JLocale.getString("service_discovery_search"));
-                menu.add(Menu.FIRST, COMMAND_SET_SERVER, 2, JLocale.getString("service_discovery_server"));
-                menu.add(Menu.FIRST, COMMAND_HOME, 2, JLocale.getString("service_discovery_home"));
+                menu.add(Menu.FIRST, COMMAND_SEARCH, 2, JLocale.getString(R.string.service_discovery_search));
+                menu.add(Menu.FIRST, COMMAND_SET_SERVER, 2, JLocale.getString(R.string.service_discovery_server));
+                menu.add(Menu.FIRST, COMMAND_HOME, 2, JLocale.getString(R.string.service_discovery_home));
             }
 
             @Override
@@ -143,13 +143,13 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
                     case COMMAND_SEARCH:
                         searchBox.setString("");
                         searchBox.setTextBoxListener(ServiceDiscovery.this);
-                        searchBox.show(SawimApplication.getCurrentActivity().getSupportFragmentManager(), JLocale.getString("service_discovery_search"));
+                        searchBox.show(SawimApplication.getCurrentActivity().getSupportFragmentManager(), JLocale.getString(R.string.service_discovery_search));
                         break;
 
                     case COMMAND_SET_SERVER:
                         serverBox.setString(serverJid);
                         serverBox.setTextBoxListener(ServiceDiscovery.this);
-                        serverBox.show(SawimApplication.getCurrentActivity().getSupportFragmentManager(), JLocale.getString("service_discovery_server"));
+                        serverBox.show(SawimApplication.getCurrentActivity().getSupportFragmentManager(), JLocale.getString(R.string.service_discovery_server));
                         break;
 
                     case COMMAND_HOME:
@@ -294,8 +294,8 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
         screen.updateModel();
 
         String domain = Jid.getDomain(xmpp.getUserId());
-        addUnique(JLocale.getString("my_server"), domain);
-        addUnique(JLocale.getString("conferences_on_") + domain, "conference." + domain);
+        addUnique(JLocale.getString(R.string.my_server), domain);
+        addUnique(JLocale.getString(R.string.conferences_on_) + domain, "conference." + domain);
     }
 
     public void isMucUsers(boolean isMucUsers) {
@@ -325,7 +325,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
             shortView = true;
         }
         VirtualListItem wait = model.createNewParser(false);
-        wait.addDescription(JLocale.getString("wait"),
+        wait.addDescription(JLocale.getString(R.string.wait),
                 Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
         model.addPar(wait);
         screen.updateModel();

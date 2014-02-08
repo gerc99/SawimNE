@@ -66,7 +66,7 @@ import java.io.PrintStream;
 
 public class SawimActivity extends ActionBarActivity {
 
-    public static final String LOG_TAG = "SawimActivity";
+    public static final String LOG_TAG = SawimActivity.class.getSimpleName();
     public static final String NOTIFY = "ru.sawim.notify";
     public static final String NOTIFY_REPLY = "ru.sawim.notify.reply";
     private boolean isOpenNewChat = false;

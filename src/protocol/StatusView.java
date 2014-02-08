@@ -4,6 +4,7 @@ import DrawControls.icons.Icon;
 import android.view.ContextMenu;
 import android.view.Menu;
 import protocol.xmpp.XmppServiceContact;
+import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
 import ru.sawim.models.list.VirtualList;
@@ -62,10 +63,10 @@ public final class StatusView {
             long now = SawimApplication.getCurrentGmtTime();
             boolean today = (now - 24 * 60 * 60) < signonTime;
             if (contact.isOnline()) {
-                addInfo("li_signon_time", Util.getLocalDateString(signonTime, today));
-                addInfo("li_online_time", Util.longitudeToString(now - signonTime));
+                addInfo(R.string.li_signon_time, Util.getLocalDateString(signonTime, today));
+                addInfo(R.string.li_online_time, Util.longitudeToString(now - signonTime));
             } else {
-                addInfo("li_signoff_time", Util.getLocalDateString(signonTime, today));
+                addInfo(R.string.li_signoff_time, Util.getLocalDateString(signonTime, today));
             }
         }
     }
@@ -96,6 +97,11 @@ public final class StatusView {
         list.updateModel();
     }
 
+    public void addInfo(int key, String value) {
+        model.addParam(key, value);
+        list.updateModel();
+    }
+
     public void addContactStatus() {
         byte status = contact.getStatusIndex();
         StatusInfo info = protocol.getStatusInfo();
@@ -105,7 +111,7 @@ public final class StatusView {
     public void addXStatus() {
         XStatusInfo info = protocol.getXStatusInfo();
         int x = contact.getXStatusIndex();
-        addStatus(info.getIcon(x), info.getName(x));
+        addStatus(info.getIcon(x), JLocale.getString(info.getName(x)));
     }
 
     public void addStatus(Icon icon, String name) {
@@ -119,8 +125,8 @@ public final class StatusView {
         list.setOnBuildContextMenu(new VirtualList.OnBuildContextMenu() {
             @Override
             public void onCreateContextMenu(ContextMenu menu, int listItem) {
-                menu.add(Menu.FIRST, INFO_MENU_COPY, 2, JLocale.getString("copy_text"));
-                menu.add(Menu.FIRST, INFO_MENU_COPY_ALL, 2, JLocale.getString("copy_all_text"));
+                menu.add(Menu.FIRST, INFO_MENU_COPY, 2, R.string.copy_text);
+                menu.add(Menu.FIRST, INFO_MENU_COPY_ALL, 2, R.string.copy_all_text);
             }
 
             @Override

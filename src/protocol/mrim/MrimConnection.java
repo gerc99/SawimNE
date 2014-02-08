@@ -6,6 +6,7 @@ import protocol.StatusInfo;
 import protocol.TemporaryRoster;
 import protocol.net.ClientConnection;
 import protocol.net.TcpSocket;
+import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import sawim.Options;
 import sawim.SawimException;
@@ -766,8 +767,8 @@ public final class MrimConnection extends ClientConnection {
             }
         }
         if (hasPhones) {
-            MrimGroup phoneGroup = (MrimGroup) roster.makeGroup(JLocale.getString("phone_contacts"));
-            phoneGroup.setName(JLocale.getString("phone_contacts"));
+            MrimGroup phoneGroup = (MrimGroup) roster.makeGroup(JLocale.getString(R.string.phone_contacts));
+            phoneGroup.setName(JLocale.getString(R.string.phone_contacts));
             phoneGroup.setFlags(0);
             phoneGroup.setGroupId(MrimGroup.PHONE_CONTACTS_GROUP);
             roster.addGroup(phoneGroup);

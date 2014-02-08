@@ -55,9 +55,13 @@ public class Forms {
         public Drawable image;
     }
 
+    public Forms(int caption_, FormListener l, boolean isAccept) {
+        this(JLocale.getString(caption_), l, isAccept);
+    }
+
     public Forms(String caption_, FormListener l, boolean isAccept) {
         instance = this;
-        caption = JLocale.getString(caption_);
+        caption = caption_;
         formListener = l;
         this.isAccept = isAccept;
     }
@@ -154,63 +158,82 @@ public class Forms {
         controls.clear();
     }
 
-    public void addSelector(int controlId, String label, String items, int index) {
+    public void addSelector(int controlId, int label, String items, int index) {
         String[] all = Util.explode(items, '|');
         for (int i = 0; i < all.length; ++i) {
-            all[i] = JLocale.getString(all[i]);
+            all[i] = all[i];
         }
         addSelector(controlId, label, all, index);
     }
 
-    public void addSelector(int controlId, String label, String[] items, int index) {
-        label = (null == label) ? " " : label;
+    public void addSelector(int controlId, String label, String items, int index) {
+        String[] all = Util.explode(items, '|');
+        for (int i = 0; i < all.length; ++i) {
+            all[i] = all[i];
+        }
+        Control c = create(controlId, CONTROL_SELECT, null, label);
+        c.items = all;
+        c.current = index % c.items.length;
+        add(c);
+    }
+
+    public void addSelector(int controlId, int label, int[] items, int index) {
+        String[] all = new String[items.length];
+        for (int i = 0; i < all.length; ++i) {
+            all[i] = JLocale.getString(items[i]);
+        }
+        addSelector(controlId, label, all, index);
+    }
+
+    public void addSelector(int controlId, int label, String[] items, int index) {////////////////
         Control c = create(controlId, CONTROL_SELECT, null, JLocale.getString(label));
         c.items = items;
         c.current = index % c.items.length;
         add(c);
     }
 
-    public void addVolumeControl(int controlId, String label, int current) {
-        label = (null == label) ? " " : label;
+    public void addVolumeControl_(int controlId, int label, int current) {
         Control c = create(controlId, CONTROL_GAUGE, null, JLocale.getString(label));
         c.level = current / 10;
         add(c);
     }
 
-    public void addFontVolumeControl(int controlId, String label, int current) {
-        label = (null == label) ? " " : label;
+    public void addFontVolumeControl(int controlId, int label, int current) {
         Control c = create(controlId, CONTROL_GAUGE_FONT, null, JLocale.getString(label));
         c.level = current;
         add(c);
     }
 
-    public void addCheckBox(int controlId, String label, boolean selected) {
-        label = (null == label) ? " " : label;
+    public void addCheckBox(int controlId, int label, boolean selected) {
         Control c = create(controlId, CONTROL_CHECKBOX, null, JLocale.getString(label));
         c.selected = selected;
         add(c);
     }
 
-    public void addCheckBox_(int controlId, String label, boolean selected) {
+    public void addCheckBox(int controlId, String label, boolean selected) {
         label = (null == label) ? " " : label;
         Control c = create(controlId, CONTROL_CHECKBOX, null, label);
         c.selected = selected;
         add(c);
     }
 
-    public void addHeader(String label) {
+    public void addHeader(int label) {
         add(create(-1, CONTROL_TEXT, JLocale.getString(label), null));
     }
 
-    public void addString(String label, String text) {
+    public void addString(int label, String text) {
         add(create(-1, CONTROL_TEXT, JLocale.getString(label), text));
     }
 
-    public void addString(String text) {
-        addString(null, text);
+    public void addString(String label, String text) {
+        add(create(-1, CONTROL_TEXT, label, text));
     }
 
-    public void addString(int controlId, String text) {
+    public void addString(String text) {
+        addString(-1, text);
+    }
+
+    public void addString_(int controlId, String text) {
         add(create(controlId, CONTROL_TEXT, null, text));
     }
 
@@ -218,7 +241,15 @@ public class Forms {
         add(create(controlId, CONTROL_LINK, null, text));
     }
 
+    public void addTextField(int controlId, int label, String text) {
+        addTextField_(controlId, label, text);
+    }
+
     public void addTextField(int controlId, String label, String text) {
+        addTextField_(controlId, label, text);
+    }
+
+    public void addPasswordField(int controlId, int label, String text) {
         addTextField_(controlId, label, text);
     }
 
@@ -226,9 +257,12 @@ public class Forms {
         addTextField_(controlId, label, text);
     }
 
+    private void addTextField_(int controlId, int label, String text) {
+        addTextField_(controlId, JLocale.getString(label), text);
+    }
+
     private void addTextField_(int controlId, String label, String text) {
-        label = (null == label) ? " " : label;
-        Control c = create(controlId, CONTROL_INPUT, null, JLocale.getString(label));
+        Control c = create(controlId, CONTROL_INPUT, null, label);
         text = StringConvertor.notNull(text);
         c.text = text;
         add(c);

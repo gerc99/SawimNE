@@ -10,6 +10,7 @@ import sawim.Options;
 import sawim.comm.Config;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
+import sawim.util.JLocale;
 
 import java.util.Vector;
 
@@ -29,7 +30,7 @@ public class XmppContact extends Contact {
     }
 
     public String getDefaultGroupName() {
-        return Xmpp.GENERAL_GROUP;
+        return JLocale.getString(Xmpp.GENERAL_GROUP);
     }
 
     public void addChatMenuItems(ContextMenu model) {

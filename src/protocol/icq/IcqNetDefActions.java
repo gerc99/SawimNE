@@ -4,6 +4,7 @@ import protocol.Contact;
 import protocol.XStatusInfo;
 import protocol.icq.packet.*;
 import protocol.icq.plugin.XtrazMessagePlugin;
+import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import sawim.Options;
 import sawim.SawimException;
@@ -194,7 +195,7 @@ public final class IcqNetDefActions {
                         Contact c = getIcq().getItemByUIN(uin);
                         if ((null != c) && !c.isTemp()) {
                             c.setTempFlag(true);
-                            String message = JLocale.getString("contact_has_been_removed");
+                            String message = JLocale.getString(R.string.contact_has_been_removed);
                             if (c.hasChat()) {
                                 getIcq().addMessage(new SystemNotice(getIcq(),
                                         SystemNotice.SYS_NOTICE_MESSAGE, uin, message));

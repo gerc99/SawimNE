@@ -138,45 +138,45 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
     private void updateProfileView(VirtualListModel profile) {
         profile.clear();
 
-        profile.setHeader("main_info");
+        profile.setHeader(R.string.main_info);
         profile.addParam(protocol.getUserIdName(), uin);
 
-        profile.addParamImage("user_statuses", getStatusAsIcon());
+        profile.addParamImage(R.string.user_statuses, getStatusAsIcon());
 
-        profile.addParam("nick", nick);
-        profile.addParam("name", getName());
-        profile.addParam("gender", getGenderAsString());
+        profile.addParam(R.string.nick, nick);
+        profile.addParam(R.string.name, getName());
+        profile.addParam(R.string.gender, getGenderAsString());
         if (0 < age) {
-            profile.addParam("age", Integer.toString(age));
+            profile.addParam(R.string.age, Integer.toString(age));
         }
-        profile.addParam("email", email);
+        profile.addParam(R.string.email, email);
         if (auth) {
-            profile.addParam("auth", JLocale.getString("yes"));
+            profile.addParam(R.string.auth, JLocale.getString(R.string.yes));
         }
-        profile.addParam("birth_day", birthDay);
-        profile.addParam("cell_phone", cellPhone);
-        profile.addParam("home_page", homePage);
-        profile.addParam("interests", interests);
-        profile.addParam("notes", about);
+        profile.addParam(R.string.birth_day, birthDay);
+        profile.addParam(R.string.cell_phone, cellPhone);
+        profile.addParam(R.string.home_page, homePage);
+        profile.addParam(R.string.interests, interests);
+        profile.addParam(R.string.notes, about);
 
-        profile.setHeader("home_info");
-        profile.addParam("addr", homeAddress);
-        profile.addParam("city", homeCity);
-        profile.addParam("state", homeState);
-        profile.addParam("phone", homePhones);
-        profile.addParam("fax", homeFax);
+        profile.setHeader(R.string.home_info);
+        profile.addParam(R.string.addr, homeAddress);
+        profile.addParam(R.string.city, homeCity);
+        profile.addParam(R.string.state, homeState);
+        profile.addParam(R.string.phone, homePhones);
+        profile.addParam(R.string.fax, homeFax);
 
-        profile.setHeader("work_info");
-        profile.addParam("title", workCompany);
-        profile.addParam("depart", workDepartment);
-        profile.addParam("position", workPosition);
-        profile.addParam("addr", workAddress);
-        profile.addParam("city", workCity);
-        profile.addParam("state", workState);
-        profile.addParam("phone", workPhone);
-        profile.addParam("fax", workFax);
+        profile.setHeader(R.string.work_info);
+        profile.addParam(R.string.title, workCompany);
+        profile.addParam(R.string.depart, workDepartment);
+        profile.addParam(R.string.position, workPosition);
+        profile.addParam(R.string.addr, workAddress);
+        profile.addParam(R.string.city, workCity);
+        profile.addParam(R.string.state, workState);
+        profile.addParam(R.string.phone, workPhone);
+        profile.addParam(R.string.fax, workFax);
 
-        profile.setHeader("avatar");
+        profile.setHeader(R.string.avatar);
         profile.addAvatar(null, ru.sawim.widget.Util.avatarBitmap(avatar));
     }
 
@@ -186,13 +186,13 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
             @Override
             public void onCreateOptionsMenu(Menu menu) {
                 if (isEditable()) {
-                    menu.add(Menu.FIRST, INFO_MENU_EDIT, 2, JLocale.getString("edit"));
+                    menu.add(Menu.FIRST, INFO_MENU_EDIT, 2, R.string.edit);
                     if (protocol instanceof Xmpp) {
-                        menu.add(Menu.FIRST, INFO_MENU_TAKE_AVATAR, 2, JLocale.getString("take_photo"));
+                        menu.add(Menu.FIRST, INFO_MENU_TAKE_AVATAR, 2, R.string.take_photo);
                         if (sawim.modules.fs.FileSystem.isSupported()) {
-                            menu.add(Menu.FIRST, INFO_MENU_ADD_AVATAR, 2, JLocale.getString("add_from_fs"));
+                            menu.add(Menu.FIRST, INFO_MENU_ADD_AVATAR, 2, R.string.add_from_fs);
                         }
-                        menu.add(Menu.FIRST, INFO_MENU_REMOVE_AVATAR, 2, JLocale.getString("remove"));
+                        menu.add(Menu.FIRST, INFO_MENU_REMOVE_AVATAR, 2, R.string.remove);
                     }
                 }
             }
@@ -229,8 +229,8 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
         profileView.setOnBuildContextMenu(new VirtualList.OnBuildContextMenu() {
             @Override
             public void onCreateContextMenu(ContextMenu menu, int listItem) {
-                menu.add(Menu.FIRST, INFO_MENU_COPY, 2, JLocale.getString("copy_text"));
-                menu.add(Menu.FIRST, INFO_MENU_COPY_ALL, 2, JLocale.getString("copy_all_text"));
+                menu.add(Menu.FIRST, INFO_MENU_COPY, 2, R.string.copy_text);
+                menu.add(Menu.FIRST, INFO_MENU_COPY_ALL, 2, R.string.copy_all_text);
                 if (avatar != null)
                     menu.add(Menu.FIRST, INFO_MENU_SAVE_AVATAR, 2, SawimApplication.getInstance().getString(R.string.save_avatar));
             }
@@ -286,7 +286,7 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
         profile.clear();
         profile.addParam(protocol.getUserIdName(), uin);
         profileView.updateModel();
-        profile.setInfoMessage(JLocale.getString("wait"));
+        profile.setInfoMessage(JLocale.getString(R.string.wait));
         addContextMenu();
         profileView.setModel(profile);
         profileView.updateModel();
@@ -323,7 +323,7 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
 
 
     public String getGenderAsString() {
-        String[] g = {"", "female", "male"};
+        int[] g = {-1, R.string.female, R.string.male};
         return JLocale.getString(g[gender % 3]);
     }
 

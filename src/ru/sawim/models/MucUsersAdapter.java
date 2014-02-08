@@ -56,9 +56,9 @@ public class MucUsersAdapter extends BaseAdapter {
         final int participants = getContactCount(XmppServiceContact.ROLE_PARTICIPANT);
         final int visitors = getContactCount(XmppServiceContact.ROLE_VISITOR);
 
-        addLayerToListOfSubcontacts("list_of_moderators", moderators, XmppServiceContact.ROLE_MODERATOR);
-        addLayerToListOfSubcontacts("list_of_participants", participants, XmppServiceContact.ROLE_PARTICIPANT);
-        addLayerToListOfSubcontacts("list_of_visitors", visitors, XmppServiceContact.ROLE_VISITOR);
+        addLayerToListOfSubcontacts(R.string.list_of_moderators, moderators, XmppServiceContact.ROLE_MODERATOR);
+        addLayerToListOfSubcontacts(R.string.list_of_participants, participants, XmppServiceContact.ROLE_PARTICIPANT);
+        addLayerToListOfSubcontacts(R.string.list_of_visitors, visitors, XmppServiceContact.ROLE_VISITOR);
     }
 
     @Override
@@ -142,7 +142,7 @@ public class MucUsersAdapter extends BaseAdapter {
         return null;
     }
 
-    private void addLayerToListOfSubcontacts(String layer, int size, byte priority) {
+    private void addLayerToListOfSubcontacts(int layer, int size, byte priority) {
         boolean hasLayer = false;
         items.add(JLocale.getString(layer)/* + "(" + size + ")"*/);
         Vector subcontacts = conference.subcontacts;

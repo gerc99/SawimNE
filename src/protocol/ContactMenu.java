@@ -200,10 +200,10 @@ public class ContactMenu implements TextBoxView.TextBoxListener {
 
             case CONFERENCE_AFFILIATION_LIST:
                 CharSequence[] items = new CharSequence[4];
-                items[0] = JLocale.getString("owners");
-                items[1] = JLocale.getString("admins");
-                items[2] = JLocale.getString("members");
-                items[3] = JLocale.getString("inban");
+                items[0] = JLocale.getString(R.string.owners);
+                items[1] = JLocale.getString(R.string.admins);
+                items[2] = JLocale.getString(R.string.members);
+                items[3] = JLocale.getString(R.string.inban);
                 AlertDialog.Builder b = new AlertDialog.Builder(activity);
                 b.setTitle(contact.getName());
                 b.setCancelable(true);

@@ -6,6 +6,7 @@ import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
+import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
 import ru.sawim.models.form.FormListener;
@@ -40,12 +41,12 @@ public final class HistoryStorageList implements Runnable, FormListener {
 
     public void show(HistoryStorage storage) {
         allMsg = VirtualList.getInstance();
-        allMsg.setCaption(JLocale.getString("history"));
+        allMsg.setCaption(JLocale.getString(R.string.history));
         allMsg.setOnBuildContextMenu(new VirtualList.OnBuildContextMenu() {
             @Override
             public void onCreateContextMenu(ContextMenu menu, int listItem) {
                 if (getSize() > 0) {
-                    menu.add(Menu.FIRST, MENU_COPY_TEXT, 2, JLocale.getString("copy_text"));
+                    menu.add(Menu.FIRST, MENU_COPY_TEXT, 2, JLocale.getString(R.string.copy_text));
                 }
             }
 
@@ -57,12 +58,12 @@ public final class HistoryStorageList implements Runnable, FormListener {
         allMsg.setBuildOptionsMenu(new VirtualList.OnBuildOptionsMenu() {
             @Override
             public void onCreateOptionsMenu(Menu menu) {
-                menu.add(Menu.FIRST, MENU_FIND, 2, JLocale.getString("find"));
-                menu.add(Menu.FIRST, MENU_CLEAR, 2, JLocale.getString("clear"));
-                menu.add(Menu.FIRST, MENU_INFO, 2, JLocale.getString("history_info"));
+                menu.add(Menu.FIRST, MENU_FIND, 2, JLocale.getString(R.string.find));
+                menu.add(Menu.FIRST, MENU_CLEAR, 2, JLocale.getString(R.string.clear));
+                menu.add(Menu.FIRST, MENU_INFO, 2, JLocale.getString(R.string.history_info));
 
                 if (sawim.modules.fs.FileSystem.isSupported()) {
-                    menu.add(Menu.FIRST, MENU_EXPORT, 2, JLocale.getString("export"));
+                    menu.add(Menu.FIRST, MENU_EXPORT, 2, JLocale.getString(R.string.export));
                 }
             }
 
@@ -140,10 +141,10 @@ public final class HistoryStorageList implements Runnable, FormListener {
         switch (action) {
             case MENU_FIND:
                 if (null == frmFind) {
-                    frmFind = new Forms("find", this, true);
-                    frmFind.addTextField(tfldFind, "text_to_find", "");
-                    frmFind.addCheckBox(find_backwards, "find_backwards", true);
-                    frmFind.addCheckBox(find_case_sensitiv, "find_case_sensitiv", false);
+                    frmFind = new Forms(R.string.find, this, true);
+                    frmFind.addTextField(tfldFind, R.string.text_to_find, "");
+                    frmFind.addCheckBox(find_backwards, R.string.find_backwards, true);
+                    frmFind.addCheckBox(find_case_sensitiv, R.string.find_case_sensitiv, false);
                 }
                 frmFind.remove(NOT_FOUND);
                 frmFind.show();
@@ -151,12 +152,12 @@ public final class HistoryStorageList implements Runnable, FormListener {
 
             case MENU_CLEAR:
                 CharSequence[] items = new CharSequence[3];
-                items[0] = JLocale.getString("currect_contact");
-                items[1] = JLocale.getString("all_contact_except_this");
-                items[2] = JLocale.getString("all_contacts");
+                items[0] = JLocale.getString(R.string.currect_contact);
+                items[1] = JLocale.getString(R.string.all_contact_except_this);
+                items[2] = JLocale.getString(R.string.clear_all_contacts);
                 AlertDialog.Builder builder = new AlertDialog.Builder(SawimApplication.getCurrentActivity());
                 builder.setCancelable(true);
-                builder.setTitle(JLocale.getString("history"));
+                builder.setTitle(JLocale.getString(R.string.history));
                 builder.setItems(items, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -192,9 +193,9 @@ public final class HistoryStorageList implements Runnable, FormListener {
                 RecordStore rs = history.getRS();
                 if (rs == null) break;
                 try {
-                    String sb = JLocale.getString("hist_cur") + ": " + getSize() + "\n"
-                            + JLocale.getString("hist_size") + ": " + (rs.getSize() / 1024) + "\n"
-                            + JLocale.getString("hist_avail") + ": " + (rs.getSizeAvailable() / 1024) + "\n";
+                    String sb = JLocale.getString(R.string.hist_cur) + ": " + getSize() + "\n"
+                            + JLocale.getString(R.string.hist_size) + ": " + (rs.getSize() / 1024) + "\n"
+                            + JLocale.getString(R.string.hist_avail) + ": " + (rs.getSizeAvailable() / 1024) + "\n";
                     Toast.makeText(SawimApplication.getCurrentActivity(), sb, Toast.LENGTH_SHORT).show();
                 } catch (Exception ignored) {
                 }
@@ -242,7 +243,7 @@ public final class HistoryStorageList implements Runnable, FormListener {
             onCursorMove(textIndex);
 
         } else if (searching == it) {
-            frmFind.addString(NOT_FOUND, text + "\n" + JLocale.getString("not_found"));
+            frmFind.addString_(NOT_FOUND, text + "\n" + JLocale.getString(R.string.not_found));
         }
     }
 

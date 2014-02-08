@@ -119,6 +119,10 @@ public class SawimApplication extends Application {
         ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).cancelAll();
     }
 
+    public void updateConnectionState() {
+        serviceConnection.send(Message.obtain(null, SawimService.UPDATE_CONNECTION_STATUS));
+    }
+
     public void updateAppIcon() {
         serviceConnection.send(Message.obtain(null, SawimService.UPDATE_APP_ICON));
     }
@@ -152,7 +156,6 @@ public class SawimApplication extends Application {
         ru.sawim.config.HomeDirectory.init();
         Options.loadOptions();
         new ru.sawim.config.Options().load();
-        JLocale.loadLanguageList();
         Scheme.load();
         Scheme.setColorScheme(Options.getInt(Options.OPTION_COLOR_SCHEME));
         updateOptions();

@@ -1,6 +1,7 @@
 package sawim.forms;
 
 import protocol.Protocol;
+import ru.sawim.R;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
 import sawim.search.UserInfo;
@@ -34,42 +35,43 @@ public class EditInfo implements FormListener {
 
     public EditInfo init() {
         final boolean isXmpp = (protocol instanceof protocol.xmpp.Xmpp);
-        form = new Forms("editform", this, false);
+        form = new Forms(R.string.editform, this, false);
 
-        form.addTextField(_NickNameItem, "nick", userInfo.nick);
-        form.addTextField(_FirstNameItem, "firstname", userInfo.firstName);
-        form.addTextField(_LastNameItem, "lastname", userInfo.lastName);
+        form.addTextField(_NickNameItem, R.string.nick, userInfo.nick);
+        form.addTextField(_FirstNameItem, R.string.firstname, userInfo.firstName);
+        form.addTextField(_LastNameItem, R.string.lastname, userInfo.lastName);
 
         if (!isXmpp) {
-            form.addSelector(_SexItem, "gender", "-" + "|" + "female" + "|" + "male", userInfo.gender);
+            int[] sexItem = {-1, R.string.female, R.string.male};
+            form.addSelector(_SexItem, R.string.gender, sexItem, userInfo.gender);
         }
 
-        form.addTextField(_BdayItem, "birth_day", userInfo.birthDay);
+        form.addTextField(_BdayItem, R.string.birth_day, userInfo.birthDay);
 
         if (isXmpp) {
-            form.addTextField(_EmailItem, "email", userInfo.email);
-            form.addTextField(_CellPhoneItem, "cell_phone", userInfo.cellPhone);
+            form.addTextField(_EmailItem, R.string.email, userInfo.email);
+            form.addTextField(_CellPhoneItem, R.string.cell_phone, userInfo.cellPhone);
         }
 
-        form.addTextField(_HomePageItem, "home_page", userInfo.homePage);
+        form.addTextField(_HomePageItem, R.string.home_page, userInfo.homePage);
 
-        form.addHeader("home_info");
+        form.addHeader(R.string.home_info);
 
         if (isXmpp) {
-            form.addTextField(_AddrItem, "addr", userInfo.homeAddress);
+            form.addTextField(_AddrItem, R.string.addr, userInfo.homeAddress);
         }
 
-        form.addTextField(_CityItem, "city", userInfo.homeCity);
-        form.addTextField(_StateItem, "state", userInfo.homeState);
+        form.addTextField(_CityItem, R.string.city, userInfo.homeCity);
+        form.addTextField(_StateItem, R.string.state, userInfo.homeState);
 
-        form.addHeader("work_info");
-        form.addTextField(_WorkCompanyItem, "title", userInfo.workCompany);
-        form.addTextField(_WorkDepartmentItem, "depart", userInfo.workDepartment);
-        form.addTextField(_WorkPositionItem, "position", userInfo.workPosition);
+        form.addHeader(R.string.work_info);
+        form.addTextField(_WorkCompanyItem, R.string.title, userInfo.workCompany);
+        form.addTextField(_WorkDepartmentItem, R.string.depart, userInfo.workDepartment);
+        form.addTextField(_WorkPositionItem, R.string.position, userInfo.workPosition);
 
         if (isXmpp) {
-            form.addTextField(_WorkPhoneItem, "phone", userInfo.workPhone);
-            form.addTextField(_AboutItem, "notes", userInfo.about);
+            form.addTextField(_WorkPhoneItem, R.string.phone, userInfo.workPhone);
+            form.addTextField(_AboutItem, R.string.notes, userInfo.about);
         }
 
         return this;
@@ -92,8 +94,7 @@ public class EditInfo implements FormListener {
             destroy();
 
         } else {
-            boolean isXmpp = false;
-            isXmpp = (protocol instanceof protocol.xmpp.Xmpp);
+            boolean isXmpp = (protocol instanceof protocol.xmpp.Xmpp);
             userInfo.nick = form.getTextFieldValue(_NickNameItem);
             userInfo.birthDay = form.getTextFieldValue(_BdayItem);
             if (isXmpp) {

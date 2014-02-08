@@ -8,6 +8,7 @@ import DrawControls.icons.ImageList;
 import protocol.Protocol;
 import protocol.icq.Icq;
 import protocol.mrim.Mrim;
+import ru.sawim.R;
 
 
 public final class PrivateStatusForm {
@@ -30,12 +31,12 @@ public final class PrivateStatusForm {
         return privateStatusIcons.iconAt(protocol.getPrivateStatus());
     }
 
-    private static final String[] statusNames = {
-            "ps_all",
-            "ps_visible_list",
-            "ps_exclude_invisible",
-            "ps_contact_list",
-            "ps_none"
+    private static final int[] statusNames = {
+            R.string.ps_all,
+            R.string.ps_visible_list,
+            R.string.ps_exclude_invisible,
+            R.string.ps_contact_list,
+            R.string.ps_none
     };
 
     private static final int[] statusIds = {
@@ -46,7 +47,7 @@ public final class PrivateStatusForm {
             PSTATUS_NONE
     };
 
-    public static String[] statusNames() {
+    public static int[] statusNames() {
         return statusNames;
     }
 

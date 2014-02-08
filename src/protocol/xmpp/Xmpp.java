@@ -19,6 +19,7 @@ import sawim.comm.Util;
 import sawim.roster.RosterHelper;
 import sawim.search.Search;
 import sawim.search.UserInfo;
+import sawim.util.JLocale;
 
 import java.util.Vector;
 
@@ -175,18 +176,18 @@ public final class Xmpp extends Protocol implements FormListener {
         }
     }
 
-    public static final String GENERAL_GROUP = SawimApplication.getContext().getString(R.string.group_general);
-    public static final String GATE_GROUP = SawimApplication.getContext().getString(R.string.group_transports);
-    public static final String CONFERENCE_GROUP = SawimApplication.getContext().getString(R.string.group_conferences);
+    public static final int GENERAL_GROUP = R.string.group_general;
+    public static final int GATE_GROUP = R.string.group_transports;
+    public static final int CONFERENCE_GROUP = R.string.group_conferences;
 
     public final Group createGroup(String name) {
         Group group = new Group(name);
         group.setGroupId(getNextGroupId());
         int mode = Group.MODE_FULL_ACCESS;
-        if (Xmpp.CONFERENCE_GROUP.equals(name)) {
+        if (JLocale.getString(Xmpp.CONFERENCE_GROUP).equals(name)) {
             mode &= ~Group.MODE_EDITABLE;
             mode |= Group.MODE_TOP;
-        } else if (Xmpp.GATE_GROUP.equals(name)) {
+        } else if (JLocale.getString(Xmpp.GATE_GROUP).equals(name)) {
             mode &= ~Group.MODE_EDITABLE;
             mode |= Group.MODE_BOTTOM;
         }
@@ -540,7 +541,6 @@ public final class Xmpp extends Protocol implements FormListener {
 
             case ContactMenu.USER_MENU_USERS_LIST:
                 if (contact.isOnline() || !isConnected()) {
-                    //new ConferenceParticipants(this, (XmppServiceContact) c).show();
                 } else {
                     ServiceDiscovery sd = getServiceDiscovery();
                     sd.setServer(contact.getUserId());
@@ -574,25 +574,25 @@ public final class Xmpp extends Protocol implements FormListener {
             case ContactMenu.CONFERENCE_OWNERS:
                 AffiliationListConf alc = getAffiliationListConf();
                 alc.setServer(c.getUserId(), c.getMyName());
-                getConnection().requestAffiliationListConf(c.getUserId(), "ow" + "ner");
+                getConnection().requestAffiliationListConf(c.getUserId(), "owner");
                 alc.showIt();
                 break;
             case ContactMenu.CONFERENCE_ADMINS:
                 AffiliationListConf al = getAffiliationListConf();
                 al.setServer(c.getUserId(), c.getMyName());
-                getConnection().requestAffiliationListConf(c.getUserId(), "ad" + "min");
+                getConnection().requestAffiliationListConf(c.getUserId(), "admin");
                 al.showIt();
                 break;
             case ContactMenu.CONFERENCE_MEMBERS:
                 AffiliationListConf affiliationListConf = getAffiliationListConf();
                 affiliationListConf.setServer(c.getUserId(), c.getMyName());
-                getConnection().requestAffiliationListConf(c.getUserId(), "mem" + "ber");
+                getConnection().requestAffiliationListConf(c.getUserId(), "member");
                 affiliationListConf.showIt();
                 break;
             case ContactMenu.CONFERENCE_INBAN:
                 AffiliationListConf aff = getAffiliationListConf();
                 aff.setServer(c.getUserId(), c.getMyName());
-                getConnection().requestAffiliationListConf(c.getUserId(), "ou" + "tcast");
+                getConnection().requestAffiliationListConf(c.getUserId(), "outcast");
                 aff.showIt();
                 break;
 
@@ -781,20 +781,20 @@ public final class Xmpp extends Protocol implements FormListener {
     }
 
     public final void showInviteForm(String jid) {
-        enterDataInvite = new Forms("invite", this, true);
-        enterDataInvite.addSelector(JID_MESS_TO, "conference", onlineConference(getContactItems()), 1);
-        enterDataInvite.addTextField(JID_INVITE_TO, "jid", jid);
-        enterDataInvite.addTextField(REASON_INVITE, "reason", "");
+        enterDataInvite = new Forms(R.string.invite, this, true);
+        enterDataInvite.addSelector(JID_MESS_TO, R.string.conference, onlineConference(getContactItems()), 1);
+        enterDataInvite.addTextField(JID_INVITE_TO, R.string.jid, jid);
+        enterDataInvite.addTextField(REASON_INVITE, R.string.reason, "");
         enterDataInvite.show();
     }
 
     void showOptionsForm(XmppServiceContact c) {
         enterConf = c;
-        enterData = new Forms("conference", this, false);
-        enterData.addTextField(NICK, "nick", c.getMyName());
-        enterData.addTextField(PASSWORD, "password", c.getPassword());
+        enterData = new Forms(R.string.conference, this, false);
+        enterData.addTextField(NICK, R.string.nick, c.getMyName());
+        enterData.addTextField(PASSWORD, R.string.password, c.getPassword());
         if (!c.isTemp()) {
-            enterData.addCheckBox(AUTOJOIN, "autojoin", c.isAutoJoin());
+            enterData.addCheckBox(AUTOJOIN, R.string.autojoin, c.isAutoJoin());
         }
         enterData.show();
         if (!Jid.isIrcConference(c.getUserId())) {
@@ -804,7 +804,7 @@ public final class Xmpp extends Protocol implements FormListener {
 
     void setConferenceInfo(String jid, String description) {
         if ((null != enterData) && enterConf.getUserId().equals(jid)) {
-            enterData.addString("description", description);
+            enterData.addString(R.string.description, description);
         }
     }
 

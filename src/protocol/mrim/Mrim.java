@@ -3,6 +3,7 @@ package protocol.mrim;
 import DrawControls.icons.Icon;
 import DrawControls.icons.ImageList;
 import protocol.*;
+import ru.sawim.R;
 import ru.sawim.models.list.VirtualList;
 import ru.sawim.models.list.VirtualListModel;
 import sawim.chat.message.PlainMessage;
@@ -87,7 +88,7 @@ public class Mrim extends Protocol {
         if (null != phoneGroup) {
             return phoneGroup;
         }
-        phoneGroup = (MrimGroup) createGroup(JLocale.getString("phone_contacts"));
+        phoneGroup = (MrimGroup) createGroup(JLocale.getString(R.string.phone_contacts));
         phoneGroup.setFlags(0);
         phoneGroup.setGroupId(MrimGroup.PHONE_CONTACTS_GROUP);
         addGroup(phoneGroup);
@@ -313,8 +314,8 @@ public class Mrim extends Protocol {
                 list.addItem((String) members.elementAt(i), false);
             }
             VirtualList tl = VirtualList.getInstance();
-            tl.setCaption(JLocale.getString("list_of_users"));
-            tl.setModel(list);
+            tl.setCaption(JLocale.getString(R.string.list_of_users));
+                    tl.setModel(list);
             tl.show();
             tl.updateModel();
 

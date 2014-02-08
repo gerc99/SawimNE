@@ -1,5 +1,6 @@
 package protocol.xmpp;
 
+import ru.sawim.R;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
 import sawim.comm.Util;
@@ -25,16 +26,16 @@ final class XmppForm implements FormListener {
         form = new XForm();
     }
 
-    private String typeToTitle(byte type) {
+    private int typeToTitle(byte type) {
         switch (type) {
             case TYPE_CAPTCHA:
-                return "captcha";
+                return R.string.captcha;
             case TYPE_REGISTER:
-                return "registration";
+                return R.string.registration;
             case TYPE_OWNER:
-                return "options";
+                return R.string.options;
         }
-        return null;
+        return -1;
     }
 
     private String newId() {
@@ -62,9 +63,9 @@ final class XmppForm implements FormListener {
 
     public void showCaptcha(XmlNode baseNode) {
         form.init(typeToTitle(type), this);
-        final String S_CAPTCHA = "c" + "aptcha";
+        final String S_CAPTCHA = "captcha";
         XmlNode captcha = baseNode.getFirstNode(S_CAPTCHA);
-        id = baseNode.getAttribute("i" + "d");
+        id = baseNode.getAttribute("id");
         form.loadXFromXml(captcha, baseNode);
         form.getForm().show();
     }

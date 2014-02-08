@@ -3,6 +3,7 @@ package protocol.xmpp;
 
 import DrawControls.icons.ImageList;
 import android.graphics.Bitmap;
+import ru.sawim.R;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
 import sawim.comm.StringConvertor;
@@ -22,6 +23,10 @@ final class XForm {
 
     XForm() {
         this.waitingForm = true;
+    }
+
+    void init(int caption, FormListener listener) {
+        form = new Forms(caption, listener, true);
     }
 
     void init(String caption, FormListener listener) {
@@ -51,7 +56,7 @@ final class XForm {
     public void setWainting() {
         waitingForm = true;
         form.clearForm();
-        form.addString(JLocale.getString("wait"));
+        form.addString(JLocale.getString(R.string.wait));
     }
 
     public void setErrorMessage(String error) {
@@ -216,7 +221,7 @@ final class XForm {
             fields.addElement(name);
             types.addElement(type);
             values.addElement(items.toString());
-            form.addSelector(num, label, Util.explode(labels.toString(), '|'), selectedIndex);
+            form.addSelector(num, label, labels.toString(), selectedIndex);
 
         } else if (S_JID_MULTI.equals(type) || S_TEXT_MULTI.equals(type)) {
             StringBuffer all = new StringBuffer();

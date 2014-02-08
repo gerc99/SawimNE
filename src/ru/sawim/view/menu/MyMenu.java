@@ -8,6 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
+import sawim.util.JLocale;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +32,12 @@ public class MyMenu extends BaseAdapter {
     public void add(String name, int id) {
         MyMenuItem myMenuItem = new MyMenuItem();
         myMenuItem.addItem(name, id);
+        myMenuItems.add(myMenuItem);
+    }
+
+    public void add(int name, int id) {
+        MyMenuItem myMenuItem = new MyMenuItem();
+        myMenuItem.addItem(JLocale.getString(name), id);
         myMenuItems.add(myMenuItem);
     }
 

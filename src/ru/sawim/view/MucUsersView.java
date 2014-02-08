@@ -134,42 +134,42 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
             myAffiliation++;
         if (XmppServiceContact.ROLE_MODERATOR == myRole) {
             if (XmppServiceContact.ROLE_MODERATOR > role) {
-                menu.add(JLocale.getString("to_kick"), ContactMenu.COMMAND_KICK);
+                menu.add(R.string.to_kick, ContactMenu.COMMAND_KICK);
             }
             if (myAffiliation >= XmppServiceContact.AFFILIATION_ADMIN && affiliation < myAffiliation) {
-                menu.add(JLocale.getString("to_ban"), ContactMenu.COMMAND_BAN);
+                menu.add(R.string.to_ban, ContactMenu.COMMAND_BAN);
             }
             if (affiliation < XmppServiceContact.AFFILIATION_ADMIN) {
                 if (role == XmppServiceContact.ROLE_VISITOR) {
-                    menu.add(JLocale.getString("to_voice"), ContactMenu.COMMAND_VOICE);
+                    menu.add(R.string.to_voice, ContactMenu.COMMAND_VOICE);
                 } else {
-                    menu.add(JLocale.getString("to_devoice"), ContactMenu.COMMAND_DEVOICE);
+                    menu.add(R.string.to_devoice, ContactMenu.COMMAND_DEVOICE);
                 }
             }
         }
         if (myAffiliation >= XmppServiceContact.AFFILIATION_ADMIN) {
             if (affiliation < XmppServiceContact.AFFILIATION_ADMIN) {
                 if (role == XmppServiceContact.ROLE_MODERATOR) {
-                    menu.add(JLocale.getString("to_voice"), ContactMenu.COMMAND_VOICE);
+                    menu.add(R.string.to_voice, ContactMenu.COMMAND_VOICE);
                 } else {
-                    menu.add(JLocale.getString("to_moder"), ContactMenu.COMMAND_MODER);
+                    menu.add(R.string.to_moder, ContactMenu.COMMAND_MODER);
                 }
             }
             if (affiliation < myAffiliation) {
                 if (affiliation != XmppServiceContact.AFFILIATION_NONE) {
-                    menu.add(JLocale.getString("to_none"), ContactMenu.COMMAND_NONE);
+                    menu.add(R.string.to_none, ContactMenu.COMMAND_NONE);
                 }
                 if (affiliation != XmppServiceContact.AFFILIATION_MEMBER) {
-                    menu.add(JLocale.getString("to_member"), ContactMenu.COMMAND_MEMBER);
+                    menu.add(R.string.to_member, ContactMenu.COMMAND_MEMBER);
                 }
             }
         }
         if (myAffiliation >= XmppServiceContact.AFFILIATION_OWNER) {
             if (affiliation != XmppServiceContact.AFFILIATION_ADMIN) {
-                menu.add(JLocale.getString("to_admin"), ContactMenu.COMMAND_ADMIN);
+                menu.add(R.string.to_admin, ContactMenu.COMMAND_ADMIN);
             }
             if (affiliation != XmppServiceContact.AFFILIATION_OWNER) {
-                menu.add(JLocale.getString("to_owner"), ContactMenu.COMMAND_OWNER);
+                menu.add(R.string.to_owner, ContactMenu.COMMAND_OWNER);
             }
         }
         return menu;
@@ -198,36 +198,36 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
                         break;
 
                     case ContactMenu.COMMAND_DEVOICE:
-                        usersAdapter.setMucRole(nick, "v" + "isitor");
+                        usersAdapter.setMucRole(nick, "visitor");
                         chatView.updateMucList();
                         break;
 
                     case ContactMenu.COMMAND_VOICE:
-                        usersAdapter.setMucRole(nick, "partic" + "ipant");
+                        usersAdapter.setMucRole(nick, "participant");
                         chatView.updateMucList();
                         break;
                     case ContactMenu.COMMAND_MEMBER:
-                        usersAdapter.setMucAffiliation(nick, "m" + "ember");
+                        usersAdapter.setMucAffiliation(nick, "member");
                         chatView.updateMucList();
                         break;
 
                     case ContactMenu.COMMAND_MODER:
-                        usersAdapter.setMucRole(nick, "m" + "oderator");
+                        usersAdapter.setMucRole(nick, "moderator");
                         chatView.updateMucList();
                         break;
 
                     case ContactMenu.COMMAND_ADMIN:
-                        usersAdapter.setMucAffiliation(nick, "a" + "dmin");
+                        usersAdapter.setMucAffiliation(nick, "admin");
                         chatView.updateMucList();
                         break;
 
                     case ContactMenu.COMMAND_OWNER:
-                        usersAdapter.setMucAffiliation(nick, "o" + "wner");
+                        usersAdapter.setMucAffiliation(nick, "owner");
                         chatView.updateMucList();
                         break;
 
                     case ContactMenu.COMMAND_NONE:
-                        usersAdapter.setMucAffiliation(nick, "n" + "o" + "ne");
+                        usersAdapter.setMucAffiliation(nick, "none");
                         chatView.updateMucList();
                         break;
                 }
@@ -252,12 +252,12 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
             reason = Nick;
         }
         if ((box == banTextbox)) {
-            usersAdapter.setMucAffiliationR(currMucNik, "o" + "utcast", reason);
+            usersAdapter.setMucAffiliationR(currMucNik, "outcast", reason);
             banTextbox.back();
             return;
         }
         if ((box == kikTextbox)) {
-            usersAdapter.setMucRoleR(currMucNik, "n" + "o" + "ne", reason);
+            usersAdapter.setMucRoleR(currMucNik, "none", reason);
             kikTextbox.back();
             return;
         }

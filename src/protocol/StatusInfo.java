@@ -2,6 +2,7 @@ package protocol;
 
 import DrawControls.icons.Icon;
 import DrawControls.icons.ImageList;
+import ru.sawim.R;
 import sawim.util.JLocale;
 
 
@@ -34,22 +35,22 @@ public final class StatusInfo {
     public final int[] statusIconIndex;
     public final byte[] applicableStatuses;
     private static final int[] statusWidth = {29, 1, 7, 0, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 14};
-    private static final String[] statusNames = {
-            "status_offline",
-            "status_online",
-            "status_away",
-            "status_chat",
-            "status_home",
-            "status_work",
-            "status_evil",
-            "status_depression",
-            "status_lunch",
-            "status_na",
-            "status_occupied",
-            "status_dnd",
-            "status_invisible",
-            "status_invis_all",
-            "status_not_in_list"
+    private static final int[] statusNames = {
+            R.string.status_offline,
+            R.string.status_online,
+            R.string.status_away,
+            R.string.status_chat,
+            R.string.status_home,
+            R.string.status_work,
+            R.string.status_evil,
+            R.string.status_depression,
+            R.string.status_lunch,
+            R.string.status_na,
+            R.string.status_occupied,
+            R.string.status_dnd,
+            R.string.status_invisible,
+            R.string.status_invis_all,
+            R.string.status_not_in_list
     };
 
 

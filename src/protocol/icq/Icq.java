@@ -8,6 +8,7 @@ import protocol.icq.packet.Packet;
 import protocol.icq.packet.SnacPacket;
 import protocol.icq.packet.ToIcqSrvPacket;
 import protocol.icq.plugin.XtrazMessagePlugin;
+import ru.sawim.R;
 import sawim.Options;
 import sawim.chat.message.PlainMessage;
 import sawim.comm.GUID;
@@ -947,7 +948,7 @@ public class Icq extends Protocol {
             Icon happy = ((IcqContact) contact).getHappyIcon();
             if (null != happy) {
                 statusView.addPlain(happy,
-                        JLocale.getString("status_happy_flag"));
+                        JLocale.getString(R.string.status_happy_flag));
             }
             String statusText = contact.getStatusText();
             if (!StringConvertor.isEmpty(statusText)) {

@@ -2,6 +2,7 @@ package protocol.xmpp;
 
 import android.view.Menu;
 import android.view.MenuItem;
+import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
 import ru.sawim.models.form.FormListener;
@@ -36,8 +37,8 @@ public final class AffiliationListConf implements FormListener, TextBoxView.Text
     public void init(Xmpp protocol) {
         xmpp = protocol;
         searchBox = new TextBoxView();
-        screen.setCaption(JLocale.getString("conf_aff_list"));
-        screen.setModel(model);
+        screen.setCaption(JLocale.getString(R.string.conf_aff_list));
+                screen.setModel(model);
         screen.setClickListListener(new VirtualList.OnClickListListener() {
             @Override
             public void itemSelected(int position) {
@@ -55,8 +56,8 @@ public final class AffiliationListConf implements FormListener, TextBoxView.Text
         screen.setBuildOptionsMenu(new VirtualList.OnBuildOptionsMenu() {
             @Override
             public void onCreateOptionsMenu(Menu menu) {
-                menu.add(Menu.FIRST, COMMAND_ADD, 2, "service_discovery_add");
-                menu.add(Menu.FIRST, COMMAND_SEARCH, 2, "service_discovery_search");
+                menu.add(Menu.FIRST, COMMAND_ADD, 2, R.string.service_discovery_add);
+                menu.add(Menu.FIRST, COMMAND_SEARCH, 2, R.string.service_discovery_search);
             }
 
             @Override
@@ -167,7 +168,7 @@ public final class AffiliationListConf implements FormListener, TextBoxView.Text
         serverJid = jid;
         clear();
         VirtualListItem wait = model.createNewParser(false);
-        wait.addDescription(JLocale.getString("wait"),
+        wait.addDescription(JLocale.getString(R.string.wait),
                 Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
         model.addPar(wait);
         screen.updateModel();
@@ -207,8 +208,6 @@ public final class AffiliationListConf implements FormListener, TextBoxView.Text
     private static final int JID = 0;
     private static final int AFFILIATION = 1;
     private static final int REASON = 2;
-    private static final String affiliationList = "ow" + "ner" + "|" + "ad" + "min" + "|" + "mem" + "ber" + "|" + "ou" + "tcast" + "|" + "n" + "o" + "ne";
-    private static final String[] affiliationI = Util.explode(affiliationList, '|');
     private String affiliation;
 
     public void setAffiliation(String affil) {
@@ -216,11 +215,11 @@ public final class AffiliationListConf implements FormListener, TextBoxView.Text
     }
 
     private final int getAffiliation() {
-        if (("o" + "wner").equals(affiliation)) {
+        if (("owner").equals(affiliation)) {
             return 0;
-        } else if (("a" + "dmin").equals(affiliation)) {
+        } else if (("admin").equals(affiliation)) {
             return 1;
-        } else if (("m" + "ember").equals(affiliation)) {
+        } else if (("member").equals(affiliation)) {
             return 2;
         } else {
             return 3;
@@ -228,10 +227,11 @@ public final class AffiliationListConf implements FormListener, TextBoxView.Text
     }
 
     private void showOptionsForm(String jid, String reason) {
-        enterData = new Forms("conf_aff_list", this, true);
-        enterData.addTextField(JID, "jid", jid);
-        enterData.addSelector(AFFILIATION, "affiliation", affiliationList, getAffiliation());
-        enterData.addTextField(REASON, "reason", reason);
+        int[] affiliationsList = {R.string.owner, R.string.admin, R.string.member, R.string.outcast, R.string.none};
+        enterData = new Forms(R.string.conf_aff_list, this, true);
+        enterData.addTextField(JID, R.string.jid, jid);
+        enterData.addSelector(AFFILIATION, R.string.affiliation, affiliationsList, getAffiliation());
+        enterData.addTextField(REASON, R.string.reason, reason);
         enterData.show();
     }
 
@@ -239,10 +239,11 @@ public final class AffiliationListConf implements FormListener, TextBoxView.Text
         if (enterData == form) {
             if (apply) {
                 try {
+                    String affiliationsList = "owner" + "|" + "admin" + "|" + "member" + "|" + "outcast" + "|" + "none";
                     String reason = enterData.getTextFieldValue(REASON);
                     xmpp.getConnection().setAffiliationListConf(serverJid,
                             enterData.getTextFieldValue(JID),
-                            affiliationI[enterData.getSelectorValue(AFFILIATION)],
+                            Util.explode(affiliationsList, '|')[enterData.getSelectorValue(AFFILIATION)],
                             reason);
                 } catch (Exception e) {
                 }

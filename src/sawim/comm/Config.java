@@ -30,7 +30,7 @@ public final class Config {
     }
 
     private String loadLocateResource(String path) {
-        String lang = JLocale.getCurrUiLanguage();
+        String lang = JLocale.getSystemLanguage().toUpperCase();
         int index = path.lastIndexOf('.');
         if (-1 == index) {
             index = path.length();

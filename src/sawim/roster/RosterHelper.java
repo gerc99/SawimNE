@@ -15,6 +15,7 @@ import sawim.Options;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
 import sawim.modules.AutoAbsence;
+import sawim.util.JLocale;
 
 import java.util.List;
 import java.util.Vector;
@@ -601,7 +602,7 @@ public final class RosterHelper {
             }
             XStatusInfo xStatusInfo = protocol.getXStatusInfo();
             if (xStatusInfo != null)
-                return xStatusInfo.getName(contact.getXStatusIndex());
+                return JLocale.getString(xStatusInfo.getName(contact.getXStatusIndex()));
         }
         message = contact.getStatusText();
         if (!StringConvertor.isEmpty(message)) {

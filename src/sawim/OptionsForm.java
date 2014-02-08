@@ -2,15 +2,11 @@ package sawim;
 
 import ru.sawim.SawimApplication;
 import ru.sawim.R;
-import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
-import ru.sawim.activities.SawimActivity;
 import ru.sawim.models.form.ControlStateListener;
-import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
 import sawim.comm.Util;
 import sawim.modules.Answerer;
-import sawim.modules.AutoAbsence;
 import sawim.modules.Notify;
 import sawim.util.JLocale;
 
@@ -25,15 +21,15 @@ public class OptionsForm implements ControlStateListener {
     public static final int OPTIONS_ANSWERER = 3;
     public static final int OPTIONS_PRO = 4;
 
-    private void setChecked(String lngStr, int optValue) {
+    private void setChecked(int lngStr, int optValue) {
         form.addCheckBox(optValue, lngStr, Options.getBoolean(optValue));
     }
 
-    private void setChecked_(String lngStr, int optValue) {
+    private void setChecked_(int lngStr, int optValue) {
         form.addCheckBox(optValue, lngStr, Options.getBoolean(optValue));
     }
 
-    private void createNotifyControls(int modeOpt, String title) {
+    private void createNotifyControls(int modeOpt, int title) {
         form.addCheckBox(modeOpt, title, 0 < Options.getInt(modeOpt));
     }
 
@@ -41,11 +37,11 @@ public class OptionsForm implements ControlStateListener {
         Options.setInt(opt, form.getCheckBoxValue(opt) ? 2 : 0);
     }
 
-    private void createSelector(String cap, String items, int opt) {
+    private void createSelector(int cap, int[] items, int opt) {
         form.addSelector(opt, cap, items, Options.getInt(opt));
     }
 
-    private void loadOptionString(int opt, String label) {
+    private void loadOptionString(int opt, int label) {
         form.addTextField(opt, label, Options.getString(opt));
     }
 
@@ -61,11 +57,11 @@ public class OptionsForm implements ControlStateListener {
         Options.setInt(opt, form.getSelectorValue(opt));
     }
 
-    private void loadOptionGauge(int opt, String label) {
-        form.addVolumeControl(opt, label, Options.getInt(opt));
+    private void loadOptionGauge(int opt, int label) {
+        form.addVolumeControl_(opt, label, Options.getInt(opt));
     }
 
-    private void loadOptionFontGauge(int opt, String label) {
+    private void loadOptionFontGauge(int opt, int label) {
         form.addFontVolumeControl(opt, label, Options.getInt(opt));
     }
 
@@ -77,7 +73,7 @@ public class OptionsForm implements ControlStateListener {
         Options.setInt(opt, form.getGaugeValue(opt));
     }
 
-    private void loadOptionInt(int opt, String label, String variants) {
+    private void loadOptionInt(int opt, int label, String variants) {
         String current = String.valueOf(Options.getInt(opt));
         String[] alts = Util.explode(variants, '|');
         int selected = 0;
@@ -94,7 +90,7 @@ public class OptionsForm implements ControlStateListener {
         Options.setInt(opt, val);
     }
 
-    private void loadOptionInt(int opt, String label, String[] variants, short[] alts) {
+    private void loadOptionInt(int opt, int label, String[] variants, short[] alts) {
         int current = Options.getInt(opt);
         int selected = 0;
         for (int i = 0; i < alts.length; ++i) {
@@ -174,7 +170,7 @@ public class OptionsForm implements ControlStateListener {
 
     public void select(CharSequence name, int cmd) {
         currentOptionsForm = cmd;
-        form = new Forms(SawimApplication.getContext().getString(R.string.options), null, false);
+        form = new Forms(R.string.options, null, false);
         form.setBackPressedListener(new Forms.OnBackPressed() {
             @Override
             public boolean back() {
@@ -187,82 +183,67 @@ public class OptionsForm implements ControlStateListener {
             case OPTIONS_INTERFACE:
                 String[] colorSchemes = Scheme.getSchemeNames();
                 if (colorSchemes.length > 1) {
-                    form.addSelector(Options.OPTION_COLOR_SCHEME, "color_scheme", colorSchemes, Options.getInt(Options.OPTION_COLOR_SCHEME));
+                    form.addSelector(Options.OPTION_COLOR_SCHEME, R.string.color_scheme, colorSchemes, Options.getInt(Options.OPTION_COLOR_SCHEME));
                 }
-            /*    if (JLocale.langAvailable.length > 1) {
-                    int cur = 0;
-                    String curLang = Options.getString(Options.OPTION_UI_LANGUAGE);
-                    for (int j = 0; j < JLocale.langAvailable.length; ++j) {
-                        if (JLocale.langAvailable[j].equals(curLang)) {
-                            cur = j;
-                        }
-                    }
-                    form.addSelector(Options.OPTION_UI_LANGUAGE, "language", JLocale.langAvailableName, cur);
-                }*/
-                loadOptionFontGauge(Options.OPTION_FONT_SCHEME, "fonts");
+                loadOptionFontGauge(Options.OPTION_FONT_SCHEME, R.string.fonts);
 
-                form.addString("contact_list", null);
-                setChecked("show_user_groups", Options.OPTION_USER_GROUPS);
+                form.addString(R.string.contact_list, null);
+                setChecked(R.string.show_user_groups, Options.OPTION_USER_GROUPS);
 
                 //createSelector("show_user_accounts",
                 //        "no" + "|" + "by_groups" + "|" + "by_windows", Options.OPTION_USER_ACCOUNTS);
 
                 //setChecked("hide_offline", Options.OPTION_CL_HIDE_OFFLINE);
-                //        setChecked("save_temp_contacts", Options.OPTION_SAVE_TEMP_CONTACT);
-                setChecked("show_status_line", Options.OPTION_SHOW_STATUS_LINE);
-                setChecked("contacts_with_msg_at_top", Options.OPTION_SORT_UP_WITH_MSG);
+                //setChecked("save_temp_contacts", Options.OPTION_SAVE_TEMP_CONTACT);
+                setChecked(R.string.show_status_line, Options.OPTION_SHOW_STATUS_LINE);
+                setChecked(R.string.contacts_with_msg_at_top, Options.OPTION_SORT_UP_WITH_MSG);
+                int[] sort = {R.string.sort_by_status, R.string.sort_by_online, R.string.sort_by_name};
+                createSelector(R.string.sort_by, sort, Options.OPTION_CL_SORT_BY);
 
-                createSelector("sort_by",
-                        "sort_by_status" + "|" + "sort_by_online" + "|" + "sort_by_name",
-                        Options.OPTION_CL_SORT_BY);
-
-                form.addString("chat", null);
+                form.addString(R.string.chat, null);
                 //setChecked("show_platform", Options.OPTION_SHOW_PLATFORM);
-                setChecked(SawimApplication.getContext().getString(R.string.hide_chat_keyboard), Options.OPTION_HIDE_KEYBOARD);
-                setChecked("use_simple_input", Options.OPTION_SIMPLE_INPUT);
-                setChecked("use_history", Options.OPTION_HISTORY);
-                loadOptionInt(Options.OPTION_MAX_MSG_COUNT, "max_message_count", "10|50|100|250|500|1000");
+                setChecked(R.string.hide_chat_keyboard, Options.OPTION_HIDE_KEYBOARD);
+                setChecked(R.string.use_simple_input, Options.OPTION_SIMPLE_INPUT);
+                setChecked(R.string.use_history, Options.OPTION_HISTORY);
+                loadOptionInt(Options.OPTION_MAX_MSG_COUNT, R.string.max_message_count, "10|50|100|250|500|1000");
 
-                setChecked("title_in_conference", Options.OPTION_TITLE_IN_CONFERENCE);
-                loadOptionString(Options.UNAVAILABLE_NESSAGE, "post_outputs");
-                form.addString("options_network", null);
-                setChecked(SawimApplication.getContext().getString(R.string.instant_reconnection), Options.OPTION_INSTANT_RECONNECTION);
+                setChecked(R.string.title_in_conference, Options.OPTION_TITLE_IN_CONFERENCE);
+                loadOptionString(Options.UNAVAILABLE_NESSAGE, R.string.post_outputs);
+                form.addString(R.string.options_network, null);
+                setChecked(R.string.instant_reconnection, Options.OPTION_INSTANT_RECONNECTION);
                 break;
 
             case OPTIONS_SIGNALING:
                 if (Notify.getSound().hasAnySound()) {
-                    loadOptionGauge(Options.OPTION_NOTIFY_VOLUME, "volume");
+                    loadOptionGauge(Options.OPTION_NOTIFY_VOLUME, R.string.volume);
                 }
 
                 createNotifyControls(Options.OPTION_MESS_NOTIF_MODE,
-                        "message_notification");
+                        R.string.message_notification);
                 createNotifyControls(Options.OPTION_ONLINE_NOTIF_MODE,
-                        "onl_notification");
-                setChecked("alarm", Options.OPTION_ALARM);
-                setChecked("blog_notify", Options.OPTION_BLOG_NOTIFY);
+                        R.string.onl_notification);
+                setChecked(R.string.alarm, Options.OPTION_ALARM);
+                setChecked(R.string.blog_notify, Options.OPTION_BLOG_NOTIFY);
 
-                createSelector("typing_notify",
-                        "no" + "|" + "typing_incoming" + "|" + "typing_both",
-                        Options.OPTION_TYPING_MODE);
-                createSelector(
-                        "vibration",
-                        "no" + "|" + "yes" + "|" + "when_locked",
-                        Options.OPTION_VIBRATOR);
-                setChecked("notify_in_away", Options.OPTION_NOTIFY_IN_AWAY);
+                int[] typingItems = {R.string.no, R.string.typing_incoming, R.string.typing_both};
+                createSelector(R.string.typing_notify, typingItems, Options.OPTION_TYPING_MODE);
+                int[] vibrationItems = {R.string.no, R.string.yes, R.string.when_locked};
+                createSelector(R.string.vibration, vibrationItems, Options.OPTION_VIBRATOR);
+                setChecked(R.string.notify_in_away, Options.OPTION_NOTIFY_IN_AWAY);
                 break;
 
             case OPTIONS_ANTISPAM:
-                setChecked("on", Options.OPTION_ANTISPAM_ENABLE);
-                loadOptionString(Options.OPTION_ANTISPAM_MSG, "antispam_msg");
-                loadOptionString(Options.OPTION_ANTISPAM_ANSWER, "antispam_answer");
-                loadOptionString(Options.OPTION_ANTISPAM_HELLO, "antispam_hello");
-                loadOptionString(Options.OPTION_ANTISPAM_KEYWORDS, "antispam_keywords");
+                setChecked(R.string.on, Options.OPTION_ANTISPAM_ENABLE);
+                loadOptionString(Options.OPTION_ANTISPAM_MSG, R.string.antispam_msg);
+                loadOptionString(Options.OPTION_ANTISPAM_ANSWER, R.string.antispam_answer);
+                loadOptionString(Options.OPTION_ANTISPAM_HELLO, R.string.antispam_hello);
+                loadOptionString(Options.OPTION_ANTISPAM_KEYWORDS, R.string.antispam_keywords);
                 break;
 
             case OPTIONS_PRO:
-                setChecked_(SawimApplication.getContext().getString(R.string.hide_icons_clients), Options.OPTION_HIDE_ICONS_CLIENTS);
-                form.addSelector(Options.OPTION_AA_TIME, SawimApplication.getContext().getString(R.string.absence)
-                        + " " + JLocale.getString("after_time"), "off" + "|5 |10 |15 ", Options.getInt(Options.OPTION_AA_TIME) / 5);
+                setChecked_(R.string.hide_icons_clients, Options.OPTION_HIDE_ICONS_CLIENTS);
+                form.addSelector(Options.OPTION_AA_TIME, JLocale.getString(R.string.absence)
+                        + " " + JLocale.getString(R.string.after_time), JLocale.getString(R.string.off) + "|5 |10 |15 ", Options.getInt(Options.OPTION_AA_TIME) / 5);
                 break;
 
             case OPTIONS_ANSWERER:

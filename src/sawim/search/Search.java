@@ -179,11 +179,11 @@ public final class Search implements FormListener, ControlStateListener {
 
     private void createSearchForm(boolean isConference) {
         screen = VirtualList.getInstance();
-        searchForm = new Forms((TYPE_LITE == type) ? "add_user" : "search_user", this, true);
+        searchForm = new Forms((TYPE_LITE == type) ? R.string.add_user : R.string.search_user, this, true);
         if (TYPE_LITE == type) {
             addUserIdItem();
             if (null != xmppGate) {
-                searchForm.addString("transport", xmppGate);
+                searchForm.addString(R.string.transport, xmppGate);
             }
             Vector groups = getGroups();
             if (!groups.isEmpty()) {
@@ -196,7 +196,7 @@ public final class Search implements FormListener, ControlStateListener {
                         def = i;
                     }
                 }
-                searchForm.addSelector(GROUP, "group", list, def);
+                searchForm.addSelector(GROUP, R.string.group, list, def);
             }
             boolean request_auth = !isConference;
 
@@ -205,24 +205,25 @@ public final class Search implements FormListener, ControlStateListener {
             }
 
             if (request_auth) {
-                searchForm.addCheckBox(REQ_AUTH, "requauth", true);
+                searchForm.addCheckBox(REQ_AUTH, R.string.requauth, true);
             }
-            searchForm.addLink(PROFILE, JLocale.getString("info"));
+            searchForm.addLink(PROFILE, JLocale.getString(R.string.info));
             searchForm.setControlStateListener(this);
             return;
         }
-        searchForm.addCheckBox(Search.ONLY_ONLINE, "only_online", false);
+        searchForm.addCheckBox(Search.ONLY_ONLINE, R.string.only_online, false);
         addUserIdItem();
-        searchForm.addTextField(Search.NICK, "nick", "");
-        searchForm.addTextField(Search.FIRST_NAME, "firstname", "");
-        searchForm.addTextField(Search.FIRST_NAME, "lastname", "");
-        searchForm.addTextField(Search.CITY, "city", "");
-        searchForm.addSelector(Search.GENDER, "gender", "female_male" + "|" + "female" + "|" + "male", 0);
+        searchForm.addTextField(Search.NICK, R.string.nick, "");
+        searchForm.addTextField(Search.FIRST_NAME, R.string.firstname, "");
+        searchForm.addTextField(Search.FIRST_NAME, R.string.lastname, "");
+        searchForm.addTextField(Search.CITY, R.string.city, "");
+        int[] genderItems = {R.string.female_male, R.string.female, R.string.male};
+        searchForm.addSelector(Search.GENDER, R.string.gender, genderItems, 0);
 
         if (icqFields) {
-            searchForm.addTextField(Search.EMAIL, "email", "");
+            searchForm.addTextField(Search.EMAIL, R.string.email, "");
         }
-        searchForm.addSelector(Search.AGE, "age", ageList, 0);
+        searchForm.addSelector(Search.AGE, R.string.age, ageList, 0);
     }
 
     private void activate() {
@@ -230,9 +231,9 @@ public final class Search implements FormListener, ControlStateListener {
     }
 
     private void showWaitScreen() {
-        screen.setCaption(JLocale.getString("search_user"));
+        screen.setCaption(JLocale.getString(R.string.search_user));
         VirtualListModel model = new VirtualListModel();
-        model.setInfoMessage(JLocale.getString("wait"));
+        model.setInfoMessage(JLocale.getString(R.string.wait));
         screen.updateModel();
         screen.setModel(model);
         screen.show();
@@ -242,7 +243,7 @@ public final class Search implements FormListener, ControlStateListener {
         int resultCount = getResultCount();
 
         if (0 < resultCount) {
-            screen.setCaption(JLocale.getString("results")
+            screen.setCaption(JLocale.getString(R.string.results)
                     + " " + (currentResultIndex + 1) + "/" + resultCount);
             UserInfo userInfo = getCurrentResult();
             userInfo.setSeachResultFlag();
@@ -250,9 +251,9 @@ public final class Search implements FormListener, ControlStateListener {
             userInfo.updateProfileView();
 
         } else {
-            screen.setCaption(JLocale.getString("results") + " 0/0");
+            screen.setCaption(JLocale.getString(R.string.results) + " 0/0");
             VirtualListModel model = new VirtualListModel();
-            model.setInfoMessage(JLocale.getString("no_results"));
+            model.setInfoMessage(JLocale.getString(R.string.no_results));
             screen.updateModel();
             screen.setModel(model);
         }
@@ -280,8 +281,8 @@ public final class Search implements FormListener, ControlStateListener {
         screen.setOnBuildContextMenu(new VirtualList.OnBuildContextMenu() {
             @Override
             public void onCreateContextMenu(ContextMenu menu, int listItem) {
-                menu.add(Menu.FIRST, MENU_ADD, 2, "add_to_list");
-                menu.add(Menu.FIRST, MENU_MESSAGE, 2, "send_message");
+                menu.add(Menu.FIRST, MENU_ADD, 2, R.string.add_to_list);
+                menu.add(Menu.FIRST, MENU_MESSAGE, 2, R.string.send_message);
             }
 
             @Override

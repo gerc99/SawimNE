@@ -1,5 +1,6 @@
 package sawim.comm;
 
+import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import sawim.Options;
 import sawim.roster.TreeNode;
@@ -356,12 +357,12 @@ public class Util {
         return gmtTimeToLocalTime(SawimApplication.getCurrentGmtTime());
     }
 
-    public static String getLocalDayOfWeek(long gmtTime) {
+    public static String getLocalDayOfWeek_(long gmtTime) {
         Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
         cal.setTime(new Date(Util.gmtTimeToLocalTime(gmtTime) * 1000));
         String[] days = {"", "sunday", "monday", "tuesday", "wednesday",
                 "thursday", "friday", "saturday"};
-        return JLocale.getString(days[cal.get(Calendar.DAY_OF_WEEK)]);
+        return days[cal.get(Calendar.DAY_OF_WEEK)];
     }
 
     public static String getLocalDateString(long gmtDate, boolean onlyTime) {
@@ -491,13 +492,13 @@ public class Util {
 
         StringBuffer buf = new StringBuffer();
         if (days != 0) {
-            buf.append(days).append(' ').append(JLocale.getString("days")).append(' ');
+            buf.append(days).append(' ').append(JLocale.getString(R.string.days)).append(' ');
         }
         if (hours != 0) {
-            buf.append(hours).append(' ').append(JLocale.getString("hours")).append(' ');
+            buf.append(hours).append(' ').append(JLocale.getString(R.string.hours)).append(' ');
         }
         if (minutes != 0) {
-            buf.append(minutes).append(' ').append(JLocale.getString("minutes"));
+            buf.append(minutes).append(' ').append(JLocale.getString(R.string.minutes));
         }
 
         return buf.toString();
@@ -541,12 +542,8 @@ public class Util {
     }
 
     public static String goodWordForm(int d, int field) {
-        String[] suf = {
-
-                "sec", "minutes", "hours", "days"
-        };
-
-        return JLocale.getString(suf[field]);
+        String[] suf = {"sec", "minutes", "hours", "days"};
+        return suf[field];
     }
 
     public static int uniqueValue() {

@@ -74,13 +74,13 @@ class HistoryExport implements Runnable {
         String nick = (c.getName().length() > 0) ? c.getName() : userId;
         contact = nick;
         setProgress(0);
-        write(os, "\r\n\t" + JLocale.getString("message_history_with")
+        write(os, "\r\n\t" + JLocale.getString(R.string.message_history_with)
                 + nick + " (" + userId + ")\r\n\t"
-                + JLocale.getString("export_date")
+                + JLocale.getString(R.string.export_date)
                 + Util.getLocalDateString(SawimApplication.getCurrentGmtTime(), false)
                 + "\r\n\r\n");
 
-        String me = JLocale.getString("me");
+        String me = JLocale.getString(R.string.me);
         int guiStep = Math.max(messageCount / 100, 1) * 5;
         for (int i = 0, curStep = 0; i < messageCount; ++i) {
             CachedRecord record = storage.getRecord(i);

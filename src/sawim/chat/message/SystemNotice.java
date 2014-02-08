@@ -2,6 +2,7 @@
 package sawim.chat.message;
 
 import protocol.Protocol;
+import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import sawim.comm.StringConvertor;
 import sawim.util.JLocale;
@@ -35,7 +36,7 @@ public class SystemNotice extends Message {
         if (SYS_NOTICE_PRESENCE == getSysnoteType()) {
             return nick;
         }
-        return JLocale.getString("sysnotice");
+        return JLocale.getString(R.string.sysnotice);
     }
 
     public int getSysnoteType() {
@@ -51,14 +52,14 @@ public class SystemNotice extends Message {
             return reason;
         }
         if (SYS_NOTICE_AUTHREQ == getSysnoteType()) {
-            text = getSndrUin() + JLocale.getString("wantsyourauth");
+            text = getSndrUin() + JLocale.getString(R.string.wantsyourauth);
         }
         if (StringConvertor.isEmpty(text)) {
             return reason;
         }
         text += ".";
         if (!StringConvertor.isEmpty(reason)) {
-            text += "\n" + JLocale.getString("reason") + ": " + reason;
+            text += "\n" + JLocale.getString(R.string.reason) + ": " + reason;
         }
         return text;
     }
