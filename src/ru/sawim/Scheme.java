@@ -32,7 +32,7 @@ public class Scheme {
     public static final byte THEME_CONTACT_STATUS = 16;
     public static final byte THEME_PROTOCOL_BACKGROUND = 17;
 
-    public static final int LINKS = 0xff35B6E5;
+    public static final int LINKS = 0xff0099CB;
     public static final int DIVIDER_BLACK = 0xff303133;
     public static final int DIVIDER_LIGHT = 0xffafafaf;
 
@@ -50,20 +50,20 @@ public class Scheme {
             0x000000,
             0xb0b0b0,
             0x000000,
-            0x804040,
-            0x1E2858,
-            0x804040,
+            0xCB0000,
+            0xCB0000,
+            0x0099CB,
             0x000000,
-            0x804040,
+            0xCB0000,
             0x000000,
-            0x666666,
+            0x777777,
             0xA00000,
-            0x1E2858,
+            0x0099CB,
             0x000000,
             0x000000,
             0xA00000,
             0x777777,
-            0x168686};
+            0x000000};
 
     private static int[] currentTheme = new int[baseTheme.length];
     private static int[][] themeColors;
