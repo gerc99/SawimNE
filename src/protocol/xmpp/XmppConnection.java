@@ -562,8 +562,7 @@ public final class XmppConnection extends ClientConnection {
     }
 
     private boolean isMy(String from) {
-        if (StringConvertor.isEmpty(from) || getXmpp().getUserId().equals(Jid.getBareJid(from))) return true;
-        return false;
+        return StringConvertor.isEmpty(from) || getXmpp().getUserId().equals(Jid.getBareJid(from));
     }
 
     private void processEmptyId(String id, byte iqType, String from) {
@@ -686,7 +685,7 @@ public final class XmppConnection extends ClientConnection {
 
             } else if ("http://jabber.org/protocol/disco#info".equals(xmlns)) {
                 if (IQ_TYPE_GET == iqType) {
-                    StringBuffer sb = new StringBuffer();
+                    StringBuilder sb = new StringBuilder();
                     sb.append("<iq type='result' to='")
                             .append(Util.xmlEscape(from))
                             .append("' id='").append(Util.xmlEscape(id)).append("'>");
@@ -925,7 +924,7 @@ public final class XmppConnection extends ClientConnection {
     }
 
     void saveMirandaNotes(String storage) {
-        StringBuffer xml = new StringBuffer();
+        StringBuilder xml = new StringBuilder();
         xml.append("<iq type='set'><query xmlns='jabber:iq:private'>");
         xml.append("<storage xmlns='http://miranda-im.org/storage#notes'>");
         xml.append(storage);
@@ -1223,7 +1222,7 @@ public final class XmppConnection extends ClientConnection {
                             nativeStatus2StatusIndex(""), "", priority, priorityA, rangVoice);
                     conf.nickChainged(getXmpp(), fromRes, newNick);
                 } else {
-                    StringBuffer s = new StringBuffer(0);
+                    StringBuilder s = new StringBuilder(0);
                     if (statusString != null) {
                         s.append('(').append(statusString).append(") ");
                     }
@@ -1364,7 +1363,7 @@ public final class XmppConnection extends ClientConnection {
         }
         String text = statusNode.getFirstNodeValue(S_TEXT);
         statusNode.removeNode(S_TEXT);
-        StringBuffer status = new StringBuffer();
+        StringBuilder status = new StringBuilder();
         while (null != statusNode) {
             status.append(':').append(statusNode.name);
             statusNode = statusNode.childAt(0);
@@ -1940,7 +1939,7 @@ public final class XmppConnection extends ClientConnection {
 
 
     private String readLine(DataInputStream dis) {
-        StringBuffer s = new StringBuffer();
+        StringBuilder s = new StringBuilder();
         try {
             for (byte ch = dis.readByte(); ch != -1; ch = dis.readByte()) {
                 if (ch == '\n') {
@@ -1963,7 +1962,7 @@ public final class XmppConnection extends ClientConnection {
     }
 
     public void updateContacts(Vector contacts) {
-        StringBuffer xml = new StringBuffer();
+        StringBuilder xml = new StringBuilder();
 
         int itemCount = 0;
         xml.append("<iq type='set' id='").append(generateId())
@@ -2065,7 +2064,7 @@ public final class XmppConnection extends ClientConnection {
 
 
     public String getConferenceStorage() {
-        StringBuffer xml = new StringBuffer();
+        StringBuilder xml = new StringBuilder();
         Vector contacts = getXmpp().getContactItems();
         xml.append("<storage xmlns='storage:bookmarks'>");
         for (int i = 0; i < contacts.size(); ++i) {
@@ -2095,7 +2094,7 @@ public final class XmppConnection extends ClientConnection {
     }
 
     public void saveConferences() {
-        StringBuffer xml = new StringBuffer();
+        StringBuilder xml = new StringBuilder();
 
         String storage = getConferenceStorage();
         xml.append("<iq type='set'><query xmlns='jabber:iq:private'>");
@@ -2120,7 +2119,7 @@ public final class XmppConnection extends ClientConnection {
         }
         gate = "@" + gate;
         Vector contacts = getXmpp().getContactItems();
-        StringBuffer xml = new StringBuffer();
+        StringBuilder xml = new StringBuilder();
 
         xml.append("<iq type='set' id='").append(generateId())
                 .append("'><query xmlns='jabber:iq:roster'>");
@@ -2503,7 +2502,7 @@ public final class XmppConnection extends ClientConnection {
 
     private void sendXStatus(String xstatus, String text) {
         String[] path = Util.explode(Util.xmlEscape(xstatus), ':');
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         String typeUrl = "http://jabber.org/protocol/" + path[0];
 
         sb.append("<iq type='set' id='").append(generateId());
@@ -2610,7 +2609,7 @@ public final class XmppConnection extends ClientConnection {
 
 
     private String getVerHash(Vector features) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append("client/phone/" + "/" + SawimApplication.NAME + "<");
         for (int i = 0; i < features.size(); ++i) {
             sb.append(features.elementAt(i)).append('<');
@@ -2619,7 +2618,7 @@ public final class XmppConnection extends ClientConnection {
     }
 
     private String getFeatures(Vector features) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append("<identity category='client' type='phone' name='" + SawimApplication.NAME + "'/>");
         for (int i = 0; i < features.size(); ++i) {
             sb.append("<feature var='").append(features.elementAt(i)).append("'/>");

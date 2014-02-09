@@ -409,7 +409,6 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
             if (o instanceof Chat) {
                 Chat chat = (Chat) o;
                 new ContactMenu(chat.getProtocol(), chat.getContact()).getContextMenu(menu);
-                return;
             }
         } else {
             TreeNode node = ((RosterAdapter) ((ListView) v).getAdapter()).getItem(contextMenuInfo.position);
@@ -421,7 +420,6 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
             if (node.isGroup()) {
                 if (p.isConnected()) {
                     new ManageContactListForm(p, (Group) node).showMenu(getActivity());
-                    return;
                 }
             }
         }

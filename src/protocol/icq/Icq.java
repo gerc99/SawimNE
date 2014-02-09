@@ -277,7 +277,7 @@ public class Icq extends Protocol {
     }
 
     public void requestXStatusMessage(Contact c) {
-        StringBuffer str = new StringBuffer();
+        StringBuilder str = new StringBuilder();
         str.append("<N><QUERY>");
         str.append(Util.xmlEscape("<Q><PluginID>srvMng</PluginID></Q>"));
         str.append("</QUERY><NOTIFY>");

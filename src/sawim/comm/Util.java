@@ -368,7 +368,7 @@ public class Util {
     public static String getLocalDateString(long gmtDate, boolean onlyTime) {
         if (0 == gmtDate) return "***error***";
         int[] localDate = createDate(gmtTimeToLocalTime(gmtDate));
-        StringBuffer sb = new StringBuffer(16);
+        StringBuilder sb = new StringBuilder(16);
         if (!onlyTime) {
             sb.append(Util.makeTwo(localDate[TIME_DAY]))
                     .append('.')
@@ -403,7 +403,7 @@ public class Util {
     public static String xep0082UtcTime(long date) {
         int[] loclaDate = createDate(date);
 
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         sb.append(loclaDate[TIME_YEAR]);
 
@@ -490,7 +490,7 @@ public class Util {
         seconds %= 3600;
         int minutes = (int) (seconds / 60);
 
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         if (days != 0) {
             buf.append(days).append(' ').append(JLocale.getString(R.string.days)).append(' ');
         }
@@ -757,7 +757,7 @@ public class Util {
         int fromSize = from.length();
         int start = 0;
         int pos = 0;
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (; ; ) {
             pos = text.indexOf(from, pos);
             if (-1 == pos) break;
@@ -772,7 +772,7 @@ public class Util {
     }
 
     public static String replace(String text, String[] from, String[] to, String keys) {
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         int pos = 0;
         while (pos < text.length()) {
             char ch = text.charAt(pos);
@@ -812,7 +812,7 @@ public class Util {
     }
 
     static public String implode(String[] text, String separator) {
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         for (int i = 0; i < text.length; ++i) {
             if (null != text[i]) {
                 if (0 != result.length()) {

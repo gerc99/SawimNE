@@ -234,7 +234,7 @@ public final class MD5 {
         if (!digestValid) {
             return null;
         }
-        StringBuffer out = new StringBuffer();
+        StringBuilder out = new StringBuilder();
 
         for (int i = 0; i < digestBits.length; ++i) {
             char c = (char) ((digestBits[i] >> 4) & 0xf);

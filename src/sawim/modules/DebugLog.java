@@ -120,7 +120,7 @@ public final class DebugLog {
     }
 
     public static void dump(String comment, byte[] data) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append("dump: ").append(comment).append(":\n");
         for (int i = 0; i < data.length; ++i) {
             String hex = Integer.toHexString(((int) data[i]) & 0xFF);
@@ -152,7 +152,7 @@ public final class DebugLog {
                         break;
 
                     case MENU_COPY_ALL:
-                        StringBuffer s = new StringBuffer();
+                        StringBuilder s = new StringBuilder();
                         List<VirtualListItem> listItems = list.getModel().elements;
                         for (int i = 0; i < listItems.size(); ++i) {
                             CharSequence label = listItems.get(i).getLabel();

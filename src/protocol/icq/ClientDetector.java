@@ -202,7 +202,7 @@ public class ClientDetector {
             return StringConvertor.byteArrayToString(guids, guidOffset + offset, length).trim();
         }
         if (1 == versionType) {
-            StringBuffer version = new StringBuffer();
+            StringBuilder version = new StringBuilder();
             offset += guidOffset;
             for (int i = 0; i < length; ++i) {
                 if (0 < i) version.append('.');

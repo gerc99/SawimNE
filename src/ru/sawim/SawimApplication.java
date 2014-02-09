@@ -191,9 +191,7 @@ public class SawimApplication extends Application {
     public static boolean isManyPane() {
         int rotation = ((WindowManager) SawimApplication.getContext()
                 .getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getRotation();
-        if ((rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_180) && isTablet())
-            return false;
-        return isTablet();
+        return !(rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_180) && isTablet();
     }
 
     public static boolean isTablet() {

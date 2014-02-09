@@ -41,7 +41,7 @@ public final class StringConvertor {
 
 
     public static String byteArrayToHexString(byte[] buf) {
-        StringBuffer hexString = new StringBuffer(buf.length * 2);
+        StringBuilder hexString = new StringBuilder(buf.length * 2);
         for (int i = 0; i < buf.length; ++i) {
             String hex = Integer.toHexString(buf[i] & 0x00FF);
             if (hex.length() < 2) {
@@ -178,7 +178,7 @@ public final class StringConvertor {
             }
         }
         int end = pos + len;
-        StringBuffer stringbuffer = new StringBuffer(len);
+        StringBuilder stringbuffer = new StringBuilder(len);
         for (int i = pos; i < end; ++i) {
             int ch = buf[i] & 0xff;
             switch (ch) {
@@ -260,7 +260,7 @@ public final class StringConvertor {
         if ((off + len > buf.length) || (len % 2 != 0)) {
             return "";
         }
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         int end = off + len;
         for (int i = off; i < end; i += 2) {
             sb.append((char) Util.getWordBE(buf, i));
@@ -276,7 +276,7 @@ public final class StringConvertor {
             return val.replace('\r', '\n');
         }
 
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         int size = val.length();
         for (int i = 0; i < size; ++i) {
             char chr = val.charAt(i);
@@ -287,7 +287,7 @@ public final class StringConvertor {
     }
 
     public static String restoreCrLf(String val) {
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         int size = val.length();
         for (int i = 0; i < size; ++i) {
             char chr = val.charAt(i);
@@ -495,7 +495,7 @@ public final class StringConvertor {
     }
 
     private String convertTextCaseInsensitive(String str) {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         int pos = 0;
         int skipLength = -1;
         if (str.startsWith("/")) {

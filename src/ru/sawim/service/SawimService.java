@@ -45,7 +45,10 @@ public class SawimService extends Service {
     }
 
     private void updateLock() {
-        if (!Options.getBoolean(Options.OPTION_WAKE_LOCK)) return;
+        if (!Options.getBoolean(Options.OPTION_WAKE_LOCK)) {
+            release();
+            return;
+        }
         RosterHelper cl = RosterHelper.getInstance();
         boolean need = cl.isConnected() || cl.isConnecting();
         if (need) {
@@ -56,9 +59,10 @@ public class SawimService extends Service {
     }
 
     private void acquire() {
-        PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
-        wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK | PowerManager.ON_AFTER_RELEASE, LOG_TAG);
-        if (null != wakeLock) {
+        if (wakeLock == null) {
+            PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+            wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK | PowerManager.ON_AFTER_RELEASE, LOG_TAG);
+        } else {
             wakeLock.acquire();
         }
     }

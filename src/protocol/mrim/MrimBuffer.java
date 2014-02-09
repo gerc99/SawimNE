@@ -190,7 +190,7 @@ class MrimBuffer {
     }
 
     public String getUcs2StringZ(int dataLength) {
-        StringBuffer sb = new StringBuffer(dataLength / 2);
+        StringBuilder sb = new StringBuilder(dataLength / 2);
         int pos = position;
         for (int i = 0; i < dataLength; i += 2) {
             int ch = 0xFF & data[pos++];

@@ -59,11 +59,7 @@ public final class RosterHelper {
 
     private boolean is(Protocol protocol, Profile profile) {
         Profile exist = protocol.getProfile();
-        if (exist == profile) {
-            return true;
-        }
-        return (exist.protocolType == profile.protocolType)
-                && exist.userId.equals(profile.userId);
+        return exist == profile || (exist.protocolType == profile.protocolType) && exist.userId.equals(profile.userId);
     }
 
     public void addProtocols(Vector accounts) {

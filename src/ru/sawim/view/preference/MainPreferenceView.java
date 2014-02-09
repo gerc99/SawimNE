@@ -145,6 +145,6 @@ public class MainPreferenceView extends PreferenceFragment {
 
     public boolean hasBack() {
         SawimFragment preferenceFormView = (SawimFragment) getActivity().getSupportFragmentManager().findFragmentByTag(PreferenceFormView.TAG);
-        return preferenceFormView == null ? true : preferenceFormView.hasBack();
+        return preferenceFormView == null || preferenceFormView.hasBack();
     }
 }

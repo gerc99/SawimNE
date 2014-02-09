@@ -367,7 +367,7 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
                 throw new SawimException(194, 1);
             }
 
-            StringBuffer messText = new StringBuffer();
+            StringBuilder messText = new StringBuilder();
             if (!StringConvertor.isEmpty(description)) {
                 messText.append(description).append("\n");
             }
@@ -406,7 +406,7 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
             sc.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
             os = sc.openOutputStream();
 
-            StringBuffer headers = new StringBuffer();
+            StringBuilder headers = new StringBuilder();
             headers.append("--").append(boundary).append("\r\n");
             headers.append("Content-Disposition: form-data; name=\"filedesc\"\r\n");
             headers.append("\r\n");
@@ -442,7 +442,7 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
                 throw new SawimException(194, respCode);
             }
 
-            StringBuffer response = new StringBuffer();
+            StringBuilder response = new StringBuilder();
             for (; ; ) {
                 int read = is.read();
                 if (read == -1) break;
@@ -462,7 +462,7 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
             respString = Util.replace(respString, "\r", "");
             respString = Util.replace(respString, "\n", "");
 
-            StringBuffer messText = new StringBuffer();
+            StringBuilder messText = new StringBuilder();
             if (!StringConvertor.isEmpty(description)) {
                 messText.append(description).append("\n");
             }

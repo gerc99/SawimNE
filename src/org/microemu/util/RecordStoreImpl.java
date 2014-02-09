@@ -109,7 +109,7 @@ public class RecordStoreImpl extends RecordStore {
         dis.readInt(); // TODO Tag
         byte[] data = new byte[dis.readInt()];
         dis.read(data, 0, data.length);
-        this.records.put(new Integer(recordId), data);
+        this.records.put(recordId, data);
     }
 
 
@@ -305,7 +305,7 @@ public class RecordStoreImpl extends RecordStore {
 
         int nextRecordID = getNextRecordID();
         synchronized (this) {
-            records.put(new Integer(nextRecordID), recordData);
+            records.put(nextRecordID, recordData);
             version++;
             lastModified = System.currentTimeMillis();
             lastRecordId++;
@@ -410,7 +410,7 @@ public class RecordStoreImpl extends RecordStore {
         synchronized (this) {
             // throws InvalidRecordIDException when no record found
             getRecord(recordId);
-            records.put(new Integer(recordId), recordData);
+            records.put(recordId, recordData);
             version++;
             lastModified = System.currentTimeMillis();
         }

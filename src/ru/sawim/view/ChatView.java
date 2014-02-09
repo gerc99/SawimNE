@@ -379,7 +379,11 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         adapter.setPosition(chat.dividerPosition);
         if (oldChat != null) {
             if (oldChat.equals(chat.getContact().getUserId())) {
-                chatListView.setSelectionFromTop(chat.scrollPosition, - chat.offset);
+                if (isLastPosition()) {
+                    chatListView.setSelection(chat.getMessData().size());
+                } else {
+                    chatListView.setSelectionFromTop(chat.scrollPosition, - chat.offset);
+                }
                 return;
             }
         }
@@ -399,8 +403,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
     }
 
     public boolean isLastPosition() {
-        if (chat == null) return false;
-        return chat.dividerPosition == chat.getMessCount();
+        return chat != null && chat.dividerPosition == chat.getMessCount();
     }
 
     public void setSharingText(String sharingText) {
@@ -757,7 +760,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
                 break;
 
             case ContactMenu.ACTION_QUOTE:
-                StringBuffer sb = new StringBuffer();
+                StringBuilder sb = new StringBuilder();
                 if (md.isMe()) {
                     msg = "*" + md.getNick() + " " + msg;
                 }

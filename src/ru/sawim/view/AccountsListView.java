@@ -239,11 +239,7 @@ public class AccountsListView extends Fragment {
                     account.nick = nick;
 
                     int editAccountNum = Options.getAccountIndex(account);
-                    if (Options.getAccountCount() <= editAccountNum) {
-                        account.isActive = true;
-                    } else {
-                        account.isActive = Options.getAccount(editAccountNum).isActive;
-                    }
+                    account.isActive = Options.getAccountCount() <= editAccountNum || Options.getAccount(editAccountNum).isActive;
 
                     if (isEdit) {
                         addAccount(id, account);

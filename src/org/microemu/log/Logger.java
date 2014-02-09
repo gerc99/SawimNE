@@ -200,7 +200,7 @@ public class Logger {
             return;
         }
         Class klass;
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append(message).append(" ");
         if (obj instanceof Class) {
             klass = (Class) obj;
@@ -317,7 +317,7 @@ public class Logger {
 
     public static void threadDumpToConsole() {
         try {
-            StringBuffer out = new StringBuffer("Full ThreadDump\n");
+            StringBuilder out = new StringBuilder("Full ThreadDump\n");
             Map traces = Thread.getAllStackTraces();
             for (Iterator iterator = traces.entrySet().iterator(); iterator.hasNext(); ) {
                 Map.Entry entry = (Map.Entry) iterator.next();

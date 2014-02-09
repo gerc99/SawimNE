@@ -683,7 +683,7 @@ public class FileSystemFileConnection {
                     }
                 }
             });
-            return rc.longValue();
+            return rc;
         } catch (IOException e) {
             throw new SecurityException(e.getMessage());
         } catch (NoSuchMethodException e) {

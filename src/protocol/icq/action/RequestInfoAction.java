@@ -172,7 +172,7 @@ public class RequestInfoAction extends IcqAction {
                     }
 
                     case 0x00F0: {
-                        StringBuffer sb = new StringBuffer();
+                        StringBuilder sb = new StringBuilder();
                         int counter = stream.getByte();
                         for (int i = 0; i < counter; ++i) {
                             stream.getWordLE();

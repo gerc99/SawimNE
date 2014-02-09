@@ -447,12 +447,12 @@ public class Options {
 
     public static int getInt(int key) {
         Integer value = (Integer) options[key];
-        return (null == value) ? 0 : value.intValue();
+        return (null == value) ? 0 : value;
     }
 
     public static boolean getBoolean(int key) {
         Boolean value = (Boolean) options[key];
-        return (null == value) ? false : value.booleanValue();
+        return (null != value) && value;
     }
 
     public static long getLong(int key) {

@@ -133,8 +133,7 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
     }
 
     public boolean hasBack() {
-        if (list.getClickListListener() == null) return true;
-        return list.getClickListListener().back();
+        return list.getClickListListener() == null || list.getClickListListener().back();
     }
 
     public void onPrepareOptionsMenu_(Menu menu) {

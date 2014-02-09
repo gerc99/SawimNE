@@ -111,7 +111,7 @@ public final class XmlNode {
     }
 
     private String readCdata(Socket socket) throws SawimException {
-        StringBuffer out = new StringBuffer();
+        StringBuilder out = new StringBuilder();
         char ch = socket.readChar();
         int maxSize = getMaxDataSize(name);
         int size = 0;
@@ -136,7 +136,7 @@ public final class XmlNode {
     }
 
     private void readEscapedChar(StringBuffer out, Socket socket) throws SawimException {
-        StringBuffer buffer = new StringBuffer(6);
+        StringBuilder buffer = new StringBuilder(6);
         int limit = 6;
         char ch = socket.readChar();
         while (';' != ch) {
@@ -246,7 +246,7 @@ public final class XmlNode {
             if ('>' == ch) {
                 break;
             }
-            StringBuffer attrName = new StringBuffer();
+            StringBuilder attrName = new StringBuilder();
             while ('=' != ch) {
                 attrName.append((char) ch);
                 ch = socket.readChar();

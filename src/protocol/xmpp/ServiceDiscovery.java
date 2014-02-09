@@ -79,7 +79,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
                     setServer("");
                     return true;
                 }
-                if (serverJid == "") {
+                if (serverJid.equals("")) {
                     screen.updateModel();
                     return true;
                 }

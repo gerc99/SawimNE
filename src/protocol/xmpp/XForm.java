@@ -149,7 +149,7 @@ final class XForm {
                 values.setElementAt(form.getTextFieldValue(i), i);
             }
         }
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         if (!isXData) {
             for (int i = 0; i < fields.size(); ++i) {
                 sb.append("<").append((String) fields.elementAt(i)).append(">");
@@ -198,8 +198,8 @@ final class XForm {
         if (S_LIST_SINGLE.equals(type)) {
             int selectedIndex = 0;
             int totalCount = 0;
-            StringBuffer items = new StringBuffer();
-            StringBuffer labels = new StringBuffer();
+            StringBuilder items = new StringBuilder();
+            StringBuilder labels = new StringBuilder();
             field.removeNode(S_VALUE);
             for (int i = 0; i < field.childrenCount(); ++i) {
                 XmlNode opt = field.childAt(i);
@@ -223,7 +223,7 @@ final class XForm {
             form.addSelector(num, label, labels.toString(), selectedIndex);
 
         } else if (S_JID_MULTI.equals(type) || S_TEXT_MULTI.equals(type)) {
-            StringBuffer all = new StringBuffer();
+            StringBuilder all = new StringBuilder();
             for (int i = 0; i < field.childrenCount(); ++i) {
                 XmlNode opt = field.childAt(i);
                 if (opt.is(S_VALUE)) {

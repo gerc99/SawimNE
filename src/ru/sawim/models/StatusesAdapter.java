@@ -51,7 +51,7 @@ public class StatusesAdapter extends BaseAdapter {
     @Override
     public Integer getItem(int i) {
         if (type == StatusesView.ADAPTER_STATUS)
-            return Integer.valueOf(statusInfo.applicableStatuses[i]);
+            return (int) statusInfo.applicableStatuses[i];
         else return PrivateStatusForm.statusIds(protocol)[i];
     }
 

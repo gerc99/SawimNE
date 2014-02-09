@@ -112,7 +112,7 @@ public class ChatsAdapter extends BaseAdapter {
                     privacyList = 2;
                 }
                 if (privacyList != -1)
-                    rosterItemView.itemThirdImage = item.serverListsIcons.iconAt(privacyList).getImage().getBitmap();
+                    rosterItemView.itemThirdImage = Contact.serverListsIcons.iconAt(privacyList).getImage().getBitmap();
             } else {
                 rosterItemView.itemThirdImage = SawimResources.authIcon.getBitmap();
             }

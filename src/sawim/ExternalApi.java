@@ -120,6 +120,7 @@ public class ExternalApi {
 
     public static String getFileName(Uri fileUri, FragmentActivity activity) {
         String file = getRealPathFromUri(fileUri, activity);
+        Log.e("Sawim", file+" ");
         return file.substring(file.lastIndexOf('/') + 1);
     }
 
@@ -130,7 +131,8 @@ public class ExternalApi {
                 Cursor cursor = activity.managedQuery(uri, proj, null, null, null);
                 int columnIndex = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
                 cursor.moveToFirst();
-                return cursor.getString(columnIndex);
+                String path = cursor.getString(columnIndex);
+                return path == null ? uri.getPath() : path;
             }
             if ("file".equals(uri.getScheme())) {
                 return uri.getPath();

@@ -187,7 +187,7 @@ public final class Config {
         if (-1 == str.indexOf('\\')) {
             return str;
         }
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         boolean escape = false;
         for (int i = 0; i < str.length(); ++i) {
             char ch = str.charAt(i);

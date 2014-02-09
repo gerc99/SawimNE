@@ -54,7 +54,6 @@ public final class ChatHistory {
         }
         if (!hasLayer) {
             items.remove(items.size() - 1);
-            return;
         }
     }
 

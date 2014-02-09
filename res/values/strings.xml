@@ -202,7 +202,6 @@
     <string name="options_interface">Interface</string>
     <string name="options_signaling">Notifications</string>
     <string name="absence">Absence</string>
-    <string name="answerer">Answerer</string>
     <string name="register_new">Register new JID</string>
     <string name="more">More</string>
     <string name="service_discovery">Service discovery</string>

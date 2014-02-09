@@ -168,8 +168,8 @@ public final class Tracking {
             for (int i = 1; i <= record_count; i = i + TRACK_PARAM_COUNT) {
                 Track track = new Track();
                 track.uin = getRMSRecordValue(rms, i + TRACK_PARAM_UIN);
-                track.idEvent = Integer.valueOf(getRMSRecordValue(rms, i + TRACK_PARAM_EVENT_ID)).intValue();
-                track.idAction = Integer.valueOf(getRMSRecordValue(rms, i + TRACK_PARAM_ACTION_ID)).intValue();
+                track.idEvent = Integer.valueOf(getRMSRecordValue(rms, i + TRACK_PARAM_EVENT_ID));
+                track.idAction = Integer.valueOf(getRMSRecordValue(rms, i + TRACK_PARAM_ACTION_ID));
 
                 track.valueAction = getRMSRecordValue(rms, i + TRACK_PARAM_ACTION_VALUE);
                 addTracking(track);

@@ -40,7 +40,7 @@ public final class Emotions {
     private static final int PARSER_SMILE = 6;
 
     private void smileParser(String content, Vector textCorr, Vector selEmotions) {
-        Integer curIndex = new Integer(0);
+        Integer curIndex = 0;
         String smileName = "";
         String word = "";
         int beginPos = 0;
@@ -126,7 +126,7 @@ public final class Emotions {
                                     smileName = word;
                                 }
                             }
-                            curIndex = new Integer(curIndex.intValue() + 1);
+                            curIndex = curIndex.intValue() + 1;
                             break;
                     }
                     break;
@@ -146,7 +146,7 @@ public final class Emotions {
                             if ((0 < word.length()) && (word.length() < 30)) {
                                 textCorr.addElement(new Object[]{word, curIndex});
                             }
-                            curIndex = new Integer(curIndex.intValue() + 1);
+                            curIndex = curIndex.intValue() + 1;
                             break;
                     }
                     break;

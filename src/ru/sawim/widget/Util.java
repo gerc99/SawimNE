@@ -80,9 +80,6 @@ public class Util {
 
     public static boolean isNeedToInverseDialogBackground() {
         // workaround for buggy GingerBread AlertDialog
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-            return !Scheme.isBlack();
-        }
-        return false;
+        return Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB && !Scheme.isBlack();
     }
 }

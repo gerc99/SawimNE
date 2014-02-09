@@ -244,7 +244,7 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
                         break;
 
                     case INFO_MENU_COPY_ALL:
-                        StringBuffer s = new StringBuffer();
+                        StringBuilder s = new StringBuilder();
                         List<VirtualListItem> listItems = profileView.getModel().elements;
                         for (int i = 0; i < listItems.size(); ++i) {
                             CharSequence label = listItems.get(i).getLabel();

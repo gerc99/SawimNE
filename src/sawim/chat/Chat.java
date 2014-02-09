@@ -141,10 +141,7 @@ public final class Chat {
     }
 
     public boolean isBlogBot() {
-        if (contact instanceof XmppContact) {
-            return ((Xmpp) protocol).isBlogBot(contact.getUserId());
-        }
-        return false;
+        return contact instanceof XmppContact && ((Xmpp) protocol).isBlogBot(contact.getUserId());
     }
 
     public boolean isHuman() {

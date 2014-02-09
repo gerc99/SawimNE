@@ -107,7 +107,7 @@ public final class HistoryStorageList implements Runnable, FormListener {
     }
 
     private CachedRecord getCachedRecord(int num) {
-        Integer key = new Integer(num);
+        Integer key = num;
         CachedRecord cachedRec = (CachedRecord) cachedRecords.get(key);
         if (null == cachedRec) {
             //trimCache();

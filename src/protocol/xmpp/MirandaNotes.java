@@ -84,7 +84,7 @@ public final class MirandaNotes {
                         break;
 
                     case MENU_COPY_ALL:
-                        StringBuffer s = new StringBuffer();
+                        StringBuilder s = new StringBuilder();
                         List<VirtualListItem> listItems = screen.getModel().elements;
                         for (int i = 0; i < listItems.size(); ++i) {
                             CharSequence label = listItems.get(i).getLabel();
@@ -148,7 +148,7 @@ public final class MirandaNotes {
     }
 
     String getNotesStorage() {
-        StringBuffer storage = new StringBuffer();
+        StringBuilder storage = new StringBuilder();
         int size = notes.size();
         for (int i = 0; i < size; ++i) {
             Note note = (Note) notes.elementAt(i);

@@ -62,8 +62,7 @@ public class PreferenceFormView extends PreferenceFragment {
 
     public boolean hasBack() {
         hideKeyboard();
-        if (Forms.getInstance().getBackPressedListener() == null) return true;
-        return Forms.getInstance().getBackPressedListener().back();
+        return Forms.getInstance().getBackPressedListener() == null || Forms.getInstance().getBackPressedListener().back();
     }
 
     private void buildList() {

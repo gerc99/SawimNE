@@ -376,7 +376,7 @@
     <string name="apl_priority">Приоритет приложения</string>
     <string name="bars_from_skin">Софт-бар и заголовки из скина</string>
     <string name="other_notification">Уведомление о прочих сообщениях в конференции</string>
-    <string name="others">Еще...</string>
+    <string name="others">Еще…</string>
     <string name="by_groups">по группам</string>
     <string name="by_windows">по окнам</string>
     <string name="vibration_time">Время вибрации</string>
@@ -523,7 +523,7 @@
     <string name="home_info">Дом</string>
     <string name="hours">ч</string>
     <string name="icons">Иконки</string>
-    <string name="init_ft">Инициализация...</string>
+    <string name="init_ft">Инициализация…</string>
     <string name="input_mode">Язык ввода</string>
     <string name="insert_emotion">Смайлики</string>
     <string name="interests">Интересы</string>
