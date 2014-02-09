@@ -314,11 +314,9 @@
     <string name="gender">Gender</string>
     <string name="grant">Grant auth</string>
     <string name="group">Group</string>
-    <string name="group_name">Group name</string>
     <string name="home_page">Home page</string>
     <string name="home_info">Home</string>
     <string name="hours">h</string>
-    <string name="insert_emotion">Insert emotion</string>
     <string name="interests">Interests</string>
     <string name="jabber_command_not_found">Command not found</string>
     <string name="lastname">Last name</string>
@@ -353,7 +351,6 @@
     <string name="receiving_commands">Receiving commands</string>
     <string name="registration">Registration</string>
     <string name="results">Results</string>
-    <string name="send_img">Send image</string>
     <string name="send_message">New Message</string>
     <string name="send_via">Send via</string>
     <string name="sending_file">Sending file</string>
@@ -390,7 +387,9 @@
     <string name="error_182">Viewfinder start error</string>
     <string name="error_183">Snapshot error</string>
     <string name="error_185">Taking pictures not supported</string>
+    <string name="error_190">File transfer not supported with ICQ clients below version 8</string>
     <string name="error_191">Error reading the file. Possibly not supported</string>
+    <string name="error_192">Bad file name. File access possibly not supported</string>
     <string name="error_193">Error accessing file system for browsing. Security error</string>
     <string name="error_194">Error during file transfer</string>
     <string name="add_to_history">Add to history</string>
@@ -430,6 +429,7 @@
     <string name="error_112">Non-existant UIN</string>
     <string name="error_113">Too many clients from same IP</string>
     <string name="error_114">Rate exceeded</string>
+    <string name="error_116">Offline message could not be processed</string>
     <string name="error_118">No response from server</string>
     <string name="error_120">An I/O error occured</string>
     <string name="error_121">Requested TCP connection cannot be made</string>
@@ -440,8 +440,13 @@
     <string name="error_126">Requested TCP connection cannot be made</string>
     <string name="error_127">Specified server host and/or port is invalid</string>
     <string name="error_128">Connection has not been established</string>
-    <string name="error_132">Connect channel packet  could not be parsed</string>
+    <string name="error_130">FLAP header could not be parsed</string>
+    <string name="error_131">Unknown FLAP channel</string>
+    <string name="error_132">Connect channel packet could not be parsed</string>
+    <string name="error_134">Connect channel packet error could not be parsed</string>
     <string name="error_135">Disconnect channel packet could not be parsed</string>
+    <string name="error_136">Ping channel packet could not be parsed</string>
+    <string name="error_137">Old ICQ header could not be parsed</string>
     <string name="error_140">Requested action cannot be queued for execution at this time</string>
     <string name="error_154">Error updating your contact list</string>
     <string name="error_155">Object is already in your server list</string>
@@ -450,9 +455,13 @@
     <string name="error_158">You did try to add an ICQ contact to an AIM list</string>
     <string name="error_159">Server did not answer on search request. Try again</string>
     <string name="error_160">Error while searching</string>
+    <string name="error_161">You does not have any groups, please, create one</string>
     <string name="error_170">Possibly not enough heap memory available</string>
     <string name="error_171">Could not fetch meta info</string>
     <string name="error_172">Error while saving the options</string>
+    <string name="error_220">Server does not accept HTTP request</string>
+    <string name="error_221">HTTP proxy connection was terminated</string>
+
 
     <string name="transport">Transport</string>
     <string name="conference">Conference</string>
