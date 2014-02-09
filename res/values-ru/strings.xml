@@ -304,7 +304,6 @@
     <string name="inban">Забаненные</string>
     <string name="tags">Теги</string>
     <string name="text">Текст</string>
-    <string name="ticker_system">Бегущая строка</string>
     <string name="birth_day">День рождения</string>
     <string name="cancel">Отмена</string>
     <string name="canceled">Отменено</string>
@@ -321,7 +320,6 @@
     <string name="copy_all_text">Копировать всё</string>
     <string name="commands_not_found">Команды отсутствуют</string>
     <string name="conferences_on_">Конференции на</string>
-    <string name="cp1251">Win1251 кодировка</string>
     <string name="currect_contact">Этого контакта</string>
     <string name="delete_all">Удалить всё</string>
     <string name="delete_chat">Очистить чат</string>
@@ -375,7 +373,6 @@
     <string name="max_message_count">Число сообщений в чате</string>
     <string name="message">Сообщение</string>
     <string name="message_notification">Уведомление о сообщениях</string>
-    <string name="minimize">Свернуть Sawim</string>
     <string name="my_server">Мой сервер</string>
     <string name="name">Имя</string>
     <string name="name_desc">Имя файла и описание</string>
@@ -397,7 +394,6 @@
     <string name="results">Результаты</string>
     <string name="send_message">Сообщение</string>
     <string name="send_via">Отправить через</string>
-    <string name="sending_file">Отправка файла</string>
     <string name="service_discovery_add">Добавить</string>
     <string name="service_discovery_home">На главную</string>
     <string name="service_discovery_search">Найти</string>
@@ -461,8 +457,8 @@
     <string name="error_170">Возможно, недостаточно памяти</string>
     <string name="error_171">Невозможно получить мета информацию</string>
     <string name="error_172">Ошибка при сохранении настроек</string>
-    <string name="error_220">Сервер не прининял HTTP-запрос</string>
-    <string name="error_221">Соединение серез HTTP-прокси было неожиданно завершено</string>
+    <string name="error_220">Сервер не принял HTTP-запрос</string>
+    <string name="error_221">Соединение через HTTP-прокси было неожиданно завершено</string>
 
 
 
