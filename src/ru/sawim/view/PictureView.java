@@ -26,6 +26,7 @@ public class PictureView extends DialogFragment {
 
     public static final String TAG = "PictureView";
     private String link;
+    private WebView webView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -36,7 +37,7 @@ public class PictureView extends DialogFragment {
         textView.setText(link);
         final ProgressBar progressBar = (ProgressBar) v.findViewById(R.id.progressBar);
 
-        WebView webView = (WebView) v.findViewById(R.id.webView);
+        webView = (WebView) v.findViewById(R.id.webView);
         webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setLoadWithOverviewMode(true);
         webView.getSettings().setUseWideViewPort(true);
@@ -64,5 +65,11 @@ public class PictureView extends DialogFragment {
 
     public void setLink(String link) {
         this.link = link;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (webView != null) webView.destroy();
     }
 }

@@ -27,16 +27,16 @@ public class MessageItemView extends LinearLayout {
 
     public MessageItemView(Context context, boolean isAddTitleView) {
         super(context);
+        int padding = Util.dipToPixels(context, 5);
         titleItemView = new MessageTitleItemView(context);
         msgText = new MessageTextView(context);
+        if (paintDivider == null)
+            paintDivider = new Paint(Paint.ANTI_ALIAS_FLAG);
         if (textPaint == null)
             textPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         textPaint.setAntiAlias(true);
         textPaint.setTextSize(SawimApplication.getFontSize());
         textPaint.setColor(Scheme.getColor(Scheme.THEME_TEXT));
-        if (paintDivider == null)
-            paintDivider = new Paint(Paint.ANTI_ALIAS_FLAG);
-        int padding = Util.dipToPixels(context, 5);
         setOrientation(VERTICAL);
         setPadding(padding, padding, padding, padding);
         titleItemView.setPadding(0, 0, padding, padding);
@@ -51,11 +51,12 @@ public class MessageItemView extends LinearLayout {
     protected void dispatchDraw(Canvas canvas) {
         super.dispatchDraw(canvas);
         if (isShowDivider)
-            canvas.drawLine(getLeft(), getScrollY(), getWidth(), getScrollY(), paintDivider);
+            canvas.drawLine(getPaddingLeft(), getScrollY() - 2, getWidth() - getPaddingRight(), getScrollY() - 2, paintDivider);
     }
 
-    public void setShowDivider(int color, boolean showDivider) {
+    public void setShowDivider(boolean showDivider) {
         isShowDivider = showDivider;
-        paintDivider.setColor(color);
+        paintDivider.setStrokeWidth((int) (4 * getResources().getDisplayMetrics().density + 0.5f));
+        paintDivider.setColor(Scheme.getColor(Scheme.THEME_TEXT));
     }
 }

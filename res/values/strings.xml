@@ -137,7 +137,6 @@
     <string name="ms_status_menu">Status</string>
     <string name="adhoc">Adhoc</string>
     <string name="add_user">Add user</string>
-    <string name="move_to_group">Move to group</string>
     <string name="notes">Notes</string>
     <string name="invite">Invite</string>
     <string name="wake">Wake</string>
@@ -167,7 +166,6 @@
     <string name="absence">Absence</string>
     <string name="answerer">Answerer</string>
     <string name="register_new">Register new JID</string>
-    <string name="service_discovery">Service discovery</string>
     <string name="manage_contact_list">Manage contact list</string>
     <string name="myself">My profile</string>
     <string name="microblog">Microblog</string>
@@ -275,14 +273,12 @@
     <string name="commands">Commands</string>
     <string name="complete">Complete</string>
     <string name="contacts_with_msg_at_top">Contacts with messages at top</string>
-    <string name="context_menu">CM</string>
     <string name="copy_text">Copy text</string>
     <string name="copy_all_text">Copy all</string>
     <string name="commands_not_found">Commands not found</string>
     <string name="conferences_on_">Conferences on</string>
     <string name="currect_contact">Current contact</string>
     <string name="days">d</string>
-    <string name="delete">Delete</string>
     <string name="delete_all">Delete all</string>
     <string name="delete_chat">Clear this chat</string>
     <string name="deny">Deny Auth</string>
@@ -325,7 +321,6 @@
     <string name="insert_emotion">Insert emotion</string>
     <string name="interests">Interests</string>
     <string name="jabber_command_not_found">Command not found</string>
-    <string name="keylock">Keylock</string>
     <string name="lastname">Last name</string>
     <string name="li_signon_time">Login</string>
     <string name="li_signoff_time">Logout</string>
@@ -339,7 +334,6 @@
     <string name="message">Message</string>
     <string name="message_notification">Message Notice</string>
     <string name="minutes">m</string>
-    <string name="move_to_group">Move to group</string>
     <string name="my_server">My server</string>
     <string name="name">Name</string>
     <string name="name_desc">File name and description</string>
@@ -363,6 +357,7 @@
     <string name="send_message">New Message</string>
     <string name="send_via">Send via</string>
     <string name="sending_file">Sending file</string>
+    <string name="service_discovery">Service discovery</string>
     <string name="service_discovery_add">Add</string>
     <string name="service_discovery_home">Homepage</string>
     <string name="service_discovery_search">Search</string>

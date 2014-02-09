@@ -151,8 +151,8 @@ public final class MicroBlog implements TextBoxView.TextBoxListener {
         if (reply) {
             label = " (reply)";
         }
-        par.addLabel(label + " " + date + ":", Scheme.THEME_MAGIC_EYE_NUMBER, Scheme.FONT_STYLE_PLAIN);
-        par.addDescription(post, Scheme.THEME_MAGIC_EYE_TEXT, Scheme.FONT_STYLE_PLAIN);
+        par.addLabel(label + " " + date + ":", Scheme.THEME_NUMBER, Scheme.FONT_STYLE_PLAIN);
+        par.addDescription(post, Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
 
         model.addPar(par);
         if (list != null)

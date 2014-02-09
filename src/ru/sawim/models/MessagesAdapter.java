@@ -91,7 +91,7 @@ public class MessagesAdapter extends BaseAdapter {
 
         item.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
         item.msgText.setOnTextLinkClickListener(new TextLinkClick(currentProtocol, currentContact));
-        item.msgText.setLinkTextColor(Scheme.LINKS);
+        item.msgText.setLinkTextColor(Scheme.getColor(Scheme.THEME_LINKS));
         item.msgText.setTypeface(Typeface.DEFAULT);
         item.setBackgroundColor(0);
         if (mData.isMe() || mData.isPresence()) {
@@ -133,9 +133,9 @@ public class MessagesAdapter extends BaseAdapter {
         }
         if (mData.isMarked() && isMultiQuote) {
             item.msgText.setTypeface(Typeface.DEFAULT_BOLD);
-            item.setBackgroundColor(Scheme.getColor(Scheme.THEME_MARKED_BACKGROUND));
+            item.setBackgroundColor(Scheme.getColor(Scheme.THEME_ITEM_SELECTED));
         }
-        item.setShowDivider(Scheme.getColor(Scheme.THEME_TEXT), position == index && index > 0 && position != getCount());
+        item.setShowDivider(position == index && index > 0 && position != getCount());
         item.titleItemView.repaint();
         return item;
     }

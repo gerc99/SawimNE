@@ -15,11 +15,12 @@ public class OptionsForm implements ControlStateListener {
     private Forms form;
     private int currentOptionsForm;
 
-    public static final int OPTIONS_INTERFACE = 0;
-    public static final int OPTIONS_SIGNALING = 1;
-    public static final int OPTIONS_ANTISPAM = 2;
-    public static final int OPTIONS_ANSWERER = 3;
-    public static final int OPTIONS_PRO = 4;
+    public static final int OPTIONS_NETWORK = 0;
+    public static final int OPTIONS_INTERFACE = 1;
+    public static final int OPTIONS_SIGNALING = 2;
+    public static final int OPTIONS_ANTISPAM = 3;
+    public static final int OPTIONS_ANSWERER = 4;
+    public static final int OPTIONS_PRO = 5;
 
     private void setChecked(int lngStr, int optValue) {
         form.addCheckBox(optValue, lngStr, Options.getBoolean(optValue));
@@ -107,6 +108,11 @@ public class OptionsForm implements ControlStateListener {
 
     private void save(int currentOptionsForm) {
         switch (currentOptionsForm) {
+            case OPTIONS_NETWORK:
+                saveOptionBoolean(Options.OPTION_INSTANT_RECONNECTION);
+                saveOptionBoolean(Options.OPTION_WAKE_LOCK);
+                break;
+
             case OPTIONS_INTERFACE:
                 String[] colorSchemes = Scheme.getSchemeNames();
                 if (1 < colorSchemes.length) {
@@ -137,8 +143,6 @@ public class OptionsForm implements ControlStateListener {
                 saveOptionInt(Options.OPTION_MAX_MSG_COUNT);
                 saveOptionBoolean(Options.OPTION_TITLE_IN_CONFERENCE);
                 saveOptionString(Options.UNAVAILABLE_NESSAGE);
-                saveOptionBoolean(Options.OPTION_INSTANT_RECONNECTION);
-                saveOptionBoolean(Options.OPTION_WAKE_LOCK);
                 break;
 
             case OPTIONS_SIGNALING:
@@ -181,6 +185,11 @@ public class OptionsForm implements ControlStateListener {
         });
         form.setCaption(name.toString());
         switch (currentOptionsForm) {
+            case OPTIONS_NETWORK:
+                setChecked(R.string.instant_reconnection, Options.OPTION_INSTANT_RECONNECTION);
+                setChecked(R.string.wake_lock, Options.OPTION_WAKE_LOCK);
+                break;
+
             case OPTIONS_INTERFACE:
                 String[] colorSchemes = Scheme.getSchemeNames();
                 if (colorSchemes.length > 1) {
@@ -210,9 +219,6 @@ public class OptionsForm implements ControlStateListener {
 
                 setChecked(R.string.title_in_conference, Options.OPTION_TITLE_IN_CONFERENCE);
                 loadOptionString(Options.UNAVAILABLE_NESSAGE, R.string.post_outputs);
-                form.addString(R.string.options_network, null);
-                setChecked(R.string.instant_reconnection, Options.OPTION_INSTANT_RECONNECTION);
-                setChecked(R.string.wake_lock, Options.OPTION_WAKE_LOCK);
                 break;
 
             case OPTIONS_SIGNALING:

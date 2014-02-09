@@ -43,7 +43,7 @@ public class TextFormatter {
 
 
     public CharSequence parsedText(final Contact contact, final CharSequence text) {
-        final int linkColor = Scheme.LINKS;
+        final int linkColor = Scheme.getColor(Scheme.THEME_LINKS);
         SpannableStringBuilder builder = new SpannableStringBuilder(text);
         if (contact != null)
             if (contact.getUserId().equals(JuickMenu.JUICK) || contact.getUserId().equals(JuickMenu.JUBO))

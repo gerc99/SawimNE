@@ -11,30 +11,25 @@ public class Scheme {
 
     public static final byte THEME_BACKGROUND = 0;
     public static final byte THEME_TEXT = 1;
-    public static final byte THEME_MARKED_BACKGROUND = 2;
-    public static final byte THEME_CAP_TEXT = 3;
-    public static final byte THEME_PARAM_VALUE = 4;
+    public static final byte THEME_ITEM_SELECTED = 2;
+    public static final byte THEME_PARAM_VALUE = 3;
 
-    public static final byte THEME_CHAT_INMSG = 5;
-    public static final byte THEME_CHAT_OUTMSG = 6;
+    public static final byte THEME_CHAT_INMSG = 4;
+    public static final byte THEME_CHAT_OUTMSG = 5;
 
-    public static final byte THEME_CONTACT_ONLINE = 7;
-    public static final byte THEME_CONTACT_WITH_CHAT = 8;
-    public static final byte THEME_CONTACT_OFFLINE = 9;
-    public static final byte THEME_CONTACT_TEMP = 10;
+    public static final byte THEME_CONTACT_ONLINE = 6;
+    public static final byte THEME_CONTACT_WITH_CHAT = 7;
+    public static final byte THEME_CONTACT_OFFLINE = 8;
+    public static final byte THEME_CONTACT_TEMP = 9;
 
-    public static final byte THEME_MAGIC_EYE_NUMBER = 11;
-    public static final byte THEME_MAGIC_EYE_USER = 12;
-    public static final byte THEME_MAGIC_EYE_TEXT = 13;
+    public static final byte THEME_NUMBER = 10;
 
-    public static final byte THEME_GROUP = 14;
-    public static final byte THEME_CHAT_HIGHLIGHT_MSG = 15;
-    public static final byte THEME_CONTACT_STATUS = 16;
-    public static final byte THEME_PROTOCOL_BACKGROUND = 17;
-
-    public static final int LINKS = 0xff0099CB;
-    public static final int DIVIDER_BLACK = 0xff303133;
-    public static final int DIVIDER_LIGHT = 0xffafafaf;
+    public static final byte THEME_GROUP = 11;
+    public static final byte THEME_CHAT_HIGHLIGHT_MSG = 12;
+    public static final byte THEME_CONTACT_STATUS = 13;
+    public static final byte THEME_PROTOCOL_BACKGROUND = 14;
+    public static final byte THEME_LINKS = 15;
+    public static final byte THEME_DIVIDER = 16;
 
     public static final byte FONT_STYLE_PLAIN = 0;
     public static final byte FONT_STYLE_BOLD = 1;
@@ -49,7 +44,6 @@ public class Scheme {
             0xE4E4E4,
             0x000000,
             0xb0b0b0,
-            0x000000,
             0xCB0000,
             0xCB0000,
             0x0099CB,
@@ -58,12 +52,12 @@ public class Scheme {
             0x000000,
             0x777777,
             0xA00000,
-            0x0099CB,
-            0x000000,
             0x000000,
             0xA00000,
             0x777777,
-            0x000000};
+            0x000000,
+            0x0099CB,
+            0xafafaf};
 
     private static int[] currentTheme = new int[baseTheme.length];
     private static int[][] themeColors;
@@ -115,9 +109,9 @@ public class Scheme {
                 if ((0 <= index) && (index < theme.length)) {
                     theme[index] = Integer.parseInt(values[keyIndex].substring(2), 16);
                     if (1 == index) {
-                        theme[15] = theme[14] = theme[1];
-                    } else if (9 == index) {
-                        theme[16] = theme[9];
+                        theme[12] = theme[11] = theme[1];
+                    } else if (8 == index) {
+                        theme[13] = theme[8];
                     }
                 }
             }

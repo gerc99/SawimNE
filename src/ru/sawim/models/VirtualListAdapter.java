@@ -118,7 +118,7 @@ public class VirtualListAdapter extends BaseAdapter {
             if (element.getThemeTextDesc() > -1) {
                 holder.descView.setTextColor(Scheme.getColor(element.getThemeTextDesc()));
             }
-            holder.descView.setLinkTextColor(Scheme.LINKS);
+            holder.descView.setLinkTextColor(Scheme.getColor(Scheme.THEME_LINKS));
             holder.descView.setTextSize(SawimApplication.getFontSize());
             holder.descView.setText(element.getDescStr());
             holder.descView.repaint();
@@ -129,7 +129,7 @@ public class VirtualListAdapter extends BaseAdapter {
         }
         LinearLayout activeItem = (LinearLayout) convertView;
         if (i == selectedItem && selectedItem != -1) {
-            activeItem.setBackgroundColor(Scheme.getInversColor(Scheme.THEME_BACKGROUND));
+            activeItem.setBackgroundColor(Scheme.getColor(Scheme.THEME_ITEM_SELECTED));
         } else {
             activeItem.setBackgroundColor(0);
         }

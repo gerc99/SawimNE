@@ -69,78 +69,97 @@ public class MainPreferenceView extends PreferenceFragment {
             }
         });
         rootScreen.addPreference(screen1);
+
         final PreferenceScreen screen2 = getPreferenceManager().createPreferenceScreen(getActivity());
         screen2.setKey("screen2");
-        screen2.setTitle(R.string.options_interface);
+        screen2.setTitle(R.string.options_network);
         //screen.setSummary("Description of screen");
         screen2.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                new OptionsForm().select(screen2.getTitle(), OptionsForm.OPTIONS_INTERFACE);
+                new OptionsForm().select(screen2.getTitle(), OptionsForm.OPTIONS_NETWORK);
                 return false;
             }
         });
         rootScreen.addPreference(screen2);
+
         final PreferenceScreen screen3 = getPreferenceManager().createPreferenceScreen(getActivity());
         screen3.setKey("screen3");
-        screen3.setTitle(R.string.options_signaling);
+        screen3.setTitle(R.string.options_interface);
         //screen.setSummary("Description of screen");
         screen3.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                new OptionsForm().select(screen3.getTitle(), OptionsForm.OPTIONS_SIGNALING);
+                new OptionsForm().select(screen3.getTitle(), OptionsForm.OPTIONS_INTERFACE);
                 return false;
             }
         });
         rootScreen.addPreference(screen3);
+
         final PreferenceScreen screen4 = getPreferenceManager().createPreferenceScreen(getActivity());
         screen4.setKey("screen4");
-        screen4.setTitle(R.string.antispam);
+        screen4.setTitle(R.string.options_signaling);
         //screen.setSummary("Description of screen");
         screen4.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                new OptionsForm().select(screen4.getTitle(), OptionsForm.OPTIONS_ANTISPAM);
+                new OptionsForm().select(screen4.getTitle(), OptionsForm.OPTIONS_SIGNALING);
                 return false;
             }
         });
         rootScreen.addPreference(screen4);
+
         final PreferenceScreen screen5 = getPreferenceManager().createPreferenceScreen(getActivity());
         screen5.setKey("screen5");
-        screen5.setTitle(R.string.answerer);
+        screen5.setTitle(R.string.antispam);
         //screen.setSummary("Description of screen");
         screen5.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                new OptionsForm().select(screen5.getTitle(), OptionsForm.OPTIONS_ANSWERER);
+                new OptionsForm().select(screen5.getTitle(), OptionsForm.OPTIONS_ANTISPAM);
                 return false;
             }
         });
         rootScreen.addPreference(screen5);
+
         final PreferenceScreen screen6 = getPreferenceManager().createPreferenceScreen(getActivity());
         screen6.setKey("screen6");
-        screen6.setTitle(R.string.options_pro);
-        screen6.setSummary(R.string.options_pro);
+        screen6.setTitle(R.string.answerer);
+        //screen.setSummary("Description of screen");
         screen6.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                new OptionsForm().select(screen6.getTitle(), OptionsForm.OPTIONS_PRO);
+                new OptionsForm().select(screen6.getTitle(), OptionsForm.OPTIONS_ANSWERER);
                 return false;
             }
         });
         rootScreen.addPreference(screen6);
+
         final PreferenceScreen screen7 = getPreferenceManager().createPreferenceScreen(getActivity());
         screen7.setKey("screen7");
-        screen7.setTitle(R.string.about_program);
-        //screen.setSummary("Description of screen");
+        screen7.setTitle(R.string.options_pro);
+        screen7.setSummary(R.string.options_pro);
         screen7.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                new OptionsForm().select(screen7.getTitle(), OptionsForm.OPTIONS_PRO);
+                return false;
+            }
+        });
+        rootScreen.addPreference(screen7);
+
+        final PreferenceScreen screen8 = getPreferenceManager().createPreferenceScreen(getActivity());
+        screen8.setKey("screen8");
+        screen8.setTitle(R.string.about_program);
+        //screen.setSummary("Description of screen");
+        screen8.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 new AboutProgramView().show(SawimApplication.getCurrentActivity().getSupportFragmentManager(), AboutProgramView.TAG);
                 return false;
             }
         });
-        rootScreen.addPreference(screen7);
+        rootScreen.addPreference(screen8);
     }
 
     public boolean hasBack() {

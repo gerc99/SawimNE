@@ -64,7 +64,6 @@ public class Options {
     public static final int OPTION_MAX_MSG_COUNT = 94;
     public static final int OPTION_AA_TIME  = 106;
     public static final int OPTION_FONT_SCHEME = 107;
-    public static final int OPTION_MIN_ITEM_SIZE = 110;
 
     ////////////////////// BOOLEAN
     public static final int OPTION_ANSWERER = 128;
@@ -73,12 +72,11 @@ public class Options {
     public static final int OPTION_USER_GROUPS = 136;
     public static final int OPTION_HISTORY = 137;
     public static final int OPTION_TITLE_IN_CONFERENCE = 140;
-    public static final int OPTION_CLASSIC_CHAT = 143;
+    public static final int OPTION_WAKE_LOCK = 143;
     public static final int OPTION_SILENT_MODE = 150;
     public static final int OPTION_BRING_UP = 151;
     public static final int OPTION_ANTISPAM_ENABLE = 158;
     public static final int OPTION_HIDE_ICONS_CLIENTS = 160;
-    public static final int OPTION_WAKE_LOCK = 167;
     public static final int OPTION_TF_FLAGS = 169;
     public static final int OPTION_SORT_UP_WITH_MSG = 171;
     public static final int OPTION_ALARM = 176;
@@ -87,7 +85,6 @@ public class Options {
     public static final int OPTION_BLOG_NOTIFY = 180;
     public static final int OPTION_INSTANT_RECONNECTION = 181;
     public static final int OPTION_SIMPLE_INPUT = 182;
-    public static final int OPTION_ONLINE_STATUS = 192;
 
     ////////////////////// SHORT, BYTE-ARRAY (scrambled String)
     static final int OPTION_PASSWORD1 = 228;
@@ -326,8 +323,6 @@ public class Options {
 
     private static void setDefaults() {
         setString(Options.UNAVAILABLE_NESSAGE, "I'll be back");
-        //    setString (Options.OPTION_UI_LANGUAGE,        JLocale.getSystemLanguage());
-        //	setBoolean(Options.OPTION_SHOW_PLATFORM,      false);
         setBoolean(Options.OPTION_INSTANT_RECONNECTION, true);
         setBoolean(Options.OPTION_WAKE_LOCK, false);
         setInt(Options.OPTION_CL_SORT_BY, 0);
@@ -346,7 +341,6 @@ public class Options {
         setInt(Options.OPTION_MAX_MSG_COUNT, 100);
         setInt(Options.OPTION_VIBRATOR, 1);
         setString(Options.OPTION_ANTISPAM_KEYWORDS, "http sms www @conf");
-        setLong(Options.OPTION_ONLINE_STATUS, StatusInfo.STATUS_ONLINE);
         setInt(Options.OPTION_PRIVATE_STATUS, PrivateStatusForm.PSTATUS_NOT_INVISIBLE);
         setBoolean(Options.OPTION_ANSWERER, false);
         setBoolean(Options.OPTION_USER_GROUPS, true);
@@ -355,13 +349,10 @@ public class Options {
         setInt(Options.OPTION_FONT_SCHEME, 16);
         setInt(Options.OPTION_AA_TIME, 3);
         setInt(Options.OPTION_CHAT_PRESENSEFONT_SCHEME, 0);
-        int minItemSize = 15;
-        setInt(Options.OPTION_MIN_ITEM_SIZE, minItemSize);
         setBoolean(Options.OPTION_SHOW_STATUS_LINE, false);
         setInt(Options.OPTION_VISIBILITY_ID, 0);
 
         setBoolean(Options.OPTION_SILENT_MODE, false);
-        setBoolean(Options.OPTION_CLASSIC_CHAT, false);
         setBoolean(Options.OPTION_BRING_UP, false);
         int time = TimeZone.getDefault().getOffset(System.currentTimeMillis()) / (1000 * 60 * 60);
         setInt(Options.OPTION_GMT_OFFSET, time);

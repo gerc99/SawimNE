@@ -67,7 +67,7 @@ public class XStatusesAdapter extends BaseAdapter {
         int item = getItem(position);
         LinearLayout activeItem = (LinearLayout) row;
         if (item == selectedItem) {
-            activeItem.setBackgroundColor(Scheme.getInversColor(Scheme.THEME_BACKGROUND));
+            activeItem.setBackgroundColor(Scheme.getColor(Scheme.THEME_ITEM_SELECTED));
         } else {
             activeItem.setBackgroundColor(0);
         }

@@ -201,7 +201,7 @@ public final class DebugLog {
     private synchronized void print(String text) {
         VirtualListItem record = model.createNewParser(true);
         String date = Util.getLocalDateString(SawimApplication.getCurrentGmtTime(), true);
-        record.addLabel(date + ": ", Scheme.THEME_MAGIC_EYE_NUMBER,
+        record.addLabel(date + ": ", Scheme.THEME_NUMBER,
                 Scheme.FONT_STYLE_PLAIN);
         record.addDescription(_(text), Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
 
