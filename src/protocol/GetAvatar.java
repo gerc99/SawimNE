@@ -1,5 +1,6 @@
 package protocol;
 
+import org.microemu.cldc.http.Connection;
 import protocol.net.TcpSocket;
 import sawim.search.UserInfo;
 
@@ -68,10 +69,10 @@ public class GetAvatar implements Runnable {
     }
 
     private byte[] getAvatar() {
-        HttpConnection httemp = null;
+        Connection httemp = null;
         InputStream istemp = null;
         try {
-            httemp = (HttpConnection) Connector.open(url);
+            httemp = (Connection) Connector.open(url);
             if (HttpConnection.HTTP_OK != httemp.getResponseCode()) {
                 throw new IOException();
             }

@@ -26,7 +26,7 @@
  */
 package org.microemu.microedition;
 
-import org.microemu.microedition.io.ConnectorDelegate;
+import org.microemu.microedition.io.ConnectorAdapter;
 
 import java.security.AccessControlContext;
 import java.security.AccessController;
@@ -89,7 +89,7 @@ public class ImplFactory {
      * @param scheme
      */
     public static void registerGCF(String scheme, Object implementation) {
-        if (!ConnectorDelegate.class.isAssignableFrom(implementation.getClass())) {
+        if (!ConnectorAdapter.class.isAssignableFrom(implementation.getClass())) {
             throw new IllegalArgumentException();
         }
         if (scheme == null) {
@@ -103,7 +103,7 @@ public class ImplFactory {
     }
 
     public static void unregistedGCF(String scheme, Object implementation) {
-        if (!ConnectorDelegate.class.isAssignableFrom(implementation.getClass())) {
+        if (!ConnectorAdapter.class.isAssignableFrom(implementation.getClass())) {
             throw new IllegalArgumentException();
         }
         if (scheme == null) {
@@ -162,17 +162,17 @@ public class ImplFactory {
      * @param name The URL for the connection.
      * @return
      */
-    public static ConnectorDelegate getCGFImplementation(String name) {
+    public static ConnectorAdapter getCGFImplementation(String name) {
         String scheme = getCGFScheme(name);
-        ConnectorDelegate impl = (ConnectorDelegate) instance().implementationsGCF.get(scheme);
+        ConnectorAdapter impl = (ConnectorAdapter) instance().implementationsGCF.get(scheme);
         if (impl != null) {
             return impl;
         }
-        impl = (ConnectorDelegate) instance().implementationsGCF.get(DEFAULT);
+        impl = (ConnectorAdapter) instance().implementationsGCF.get(DEFAULT);
         if (impl != null) {
             return impl;
         }
-        return (ConnectorDelegate) instance().getDefaultImplementation(ConnectorDelegate.class);
+        return (ConnectorAdapter) instance().getDefaultImplementation(ConnectorAdapter.class);
     }
 
     // public static Implementation getImplementation(Class origClass, Object[]

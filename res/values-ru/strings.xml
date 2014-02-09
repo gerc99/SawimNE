@@ -398,6 +398,7 @@
     <string name="send_message">Сообщение</string>
     <string name="send_via">Отправить через</string>
     <string name="sending_file">Отправка файла</string>
+    <string name="service_discovery">Обзор сервисов</string>
     <string name="service_discovery_add">Добавить</string>
     <string name="service_discovery_home">На главную</string>
     <string name="service_discovery_search">Найти</string>

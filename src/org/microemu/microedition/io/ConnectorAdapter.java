@@ -26,6 +26,8 @@
  */
 package org.microemu.microedition.io;
 
+import org.microemu.microedition.Implementation;
+
 import javax.microedition.io.Connection;
 import javax.microedition.io.Connector;
 import javax.microedition.io.InputConnection;
@@ -37,7 +39,7 @@ import java.io.*;
  *         <p/>
  *         Default Connector
  */
-public abstract class ConnectorAdapter implements ConnectorDelegate {
+public abstract class ConnectorAdapter implements Implementation {
 
     public abstract Connection open(String name, int mode, boolean timeouts) throws IOException;
 

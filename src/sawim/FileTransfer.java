@@ -1,6 +1,7 @@
 package sawim;
 
 import android.util.Log;
+import org.microemu.cldc.http.Connection;
 import protocol.Contact;
 import protocol.Protocol;
 import protocol.net.TcpSocket;
@@ -396,11 +397,11 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
     private void sendFileThroughWeb(String host, InputStream fis, int fsize) throws SawimException {
         InputStream is;
         OutputStream os;
-        HttpConnection sc = null;
+        Connection sc = null;
 
         final String url = "http://" + host + "/__receive_file.php";
         try {
-            sc = (HttpConnection) Connector.open(url, Connector.READ_WRITE);
+            sc = (Connection) Connector.open(url, Connector.READ_WRITE);
             sc.setRequestMethod(HttpConnection.POST);
             String boundary = "a9f843c9b8a736e53c40f598d434d283e4d9ff72";
             sc.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
