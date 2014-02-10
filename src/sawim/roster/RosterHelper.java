@@ -90,7 +90,7 @@ public final class RosterHelper {
         for (int i = 0; i < protocols.length; ++i) {
             Protocol protocol = protocols[i];
             if (null != protocol) {
-                protocol.disconnect(true);
+                protocol.setStatus(StatusInfo.STATUS_OFFLINE, "");
                 protocol.needSave();
                 protocol.dismiss();
             }
@@ -181,9 +181,9 @@ public final class RosterHelper {
         int count = getProtocolCount();
         for (int i = 0; i < count; ++i) {
             Protocol p = getProtocol(i);
-            if (p.getProfile().protocolType == profile.protocolType) {
-                return p;
-            }
+            if (p.getProfile() != null)
+                if (p.getProfile().protocolType == profile.protocolType)
+                    return p;
         }
         return null;
     }

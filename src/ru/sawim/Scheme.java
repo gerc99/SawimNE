@@ -46,7 +46,7 @@ public class Scheme {
             0xb0b0b0,
             0xCB0000,
             0xCB0000,
-            0x0099CB,
+            0x33B5E5,
             0x000000,
             0xCB0000,
             0x000000,

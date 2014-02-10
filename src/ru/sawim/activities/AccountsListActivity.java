@@ -34,15 +34,14 @@ public class AccountsListActivity extends ActionBarActivity implements XmppRegis
             setContentView(R.layout.intercalation_layout);
         else
             setContentView(SawimApplication.isManyPane() ? R.layout.main_twopane : R.layout.main);
-        if (SawimApplication.getActionBar() == null)
-            SawimApplication.setActionBar(getSupportActionBar());
+        SawimApplication.setCurrentActivity(this);
+        SawimApplication.setActionBar(getSupportActionBar());
         SawimApplication.getActionBar().setDisplayHomeAsUpEnabled(true);
         SawimApplication.getActionBar().setDisplayShowTitleEnabled(true);
         SawimApplication.getActionBar().setDisplayUseLogoEnabled(true);
         SawimApplication.getActionBar().setDisplayShowHomeEnabled(true);
         SawimApplication.getActionBar().setDisplayShowCustomEnabled(false);
         SawimApplication.getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-        SawimApplication.setCurrentActivity(this);
         if (findViewById(R.id.fragment_container) != null) {
             if (savedInstanceState != null) return;
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();

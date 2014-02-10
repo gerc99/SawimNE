@@ -224,8 +224,7 @@ public class SawimApplication extends Application {
     }
 
     public static java.io.InputStream getResourceAsStream(String name) {
-        InputStream in;
-        in = sawim.modules.fs.FileSystem.openSawimFile(name);
+        InputStream in = sawim.modules.fs.FileSystem.openSawimFile(name);
         if (null == in) {
             try {
                 in = SawimApplication.getInstance().getAssets().open(name.substring(1));

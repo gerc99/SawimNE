@@ -22,6 +22,8 @@ import protocol.Group;
 import protocol.Protocol;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
+import ru.sawim.Scheme;
+import ru.sawim.activities.SawimActivity;
 import ru.sawim.models.ChatsAdapter;
 import ru.sawim.models.CustomPagerAdapter;
 import ru.sawim.models.RosterAdapter;
@@ -29,6 +31,7 @@ import ru.sawim.widget.IconTabPageIndicator;
 import ru.sawim.widget.MyListView;
 import ru.sawim.widget.Util;
 import ru.sawim.widget.roster.RosterViewRoot;
+import sawim.Options;
 import sawim.chat.Chat;
 import sawim.chat.ChatHistory;
 import sawim.forms.ManageContactListForm;
@@ -325,6 +328,9 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         super.onResume();
         resume();
         getActivity().supportInvalidateOptionsMenu();
+        if (!SawimApplication.isManyPane() && Scheme.isChangeTheme(Options.getInt(Options.OPTION_COLOR_SCHEME))) {
+            ((SawimActivity)SawimApplication.getCurrentActivity()).recreateActivity();
+        }
     }
 
     public void resume() {

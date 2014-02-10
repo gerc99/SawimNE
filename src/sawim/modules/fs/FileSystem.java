@@ -1,6 +1,7 @@
 
 package sawim.modules.fs;
 
+import android.util.Log;
 import protocol.net.TcpSocket;
 
 import java.io.ByteArrayInputStream;
@@ -44,6 +45,7 @@ public abstract class FileSystem {
             in.read(buffer);
             TcpSocket.close(in);
         } catch (Exception e) {
+            e.printStackTrace();
             buffer = null;
         }
 

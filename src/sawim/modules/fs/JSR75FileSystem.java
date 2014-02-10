@@ -6,13 +6,14 @@ import protocol.net.TcpSocket;
 import sawim.SawimException;
 
 import javax.microedition.io.Connector;
+import javax.microedition.io.file.FileConnection;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
 public class JSR75FileSystem {
 
-    private FileSystemFileConnection fileConnection;
+    private FileConnection fileConnection;
 
     public long totalSize() throws Exception {
         return fileConnection.totalSize();
@@ -20,19 +21,20 @@ public class JSR75FileSystem {
 
     public void openFile(String file) throws SawimException {
         try {
-            fileConnection = (FileSystemFileConnection) Connector.open("file://" + file);
+            fileConnection = (FileConnection) Connector.open("file://" + file);
         } catch (SecurityException e) {
             fileConnection = null;
             throw new SawimException(193, 1);
         } catch (Exception e) {
             fileConnection = null;
+            e.printStackTrace();
             throw new SawimException(191, 1);
         }
     }
 
     public void mkdir(String path) {
         try {
-            FileSystemFileConnection fc = (FileSystemFileConnection) Connector.open("file://" + path);
+            FileConnection fc = (FileConnection) Connector.open("file://" + path);
             try {
                 fc.mkdir();
             } finally {

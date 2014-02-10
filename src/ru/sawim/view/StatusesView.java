@@ -53,7 +53,6 @@ public class StatusesView extends DialogFragment {
                     Options.setInt(Options.OPTION_PRIVATE_STATUS, i);
                     Options.safeSave();
                 }
-                //statusesAdapter.setSelectedItem(i);
                 dismiss();
             }
         });

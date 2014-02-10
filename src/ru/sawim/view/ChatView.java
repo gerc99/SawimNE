@@ -179,6 +179,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
                         drawerLayout.closeDrawer(nickList);
                     } else {
                         drawerLayout.openDrawer(nickList);
+                        mucUsersView.update();
                     }
                 }
             });
@@ -379,7 +380,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         adapter.setPosition(chat.dividerPosition);
         if (oldChat != null) {
             if (oldChat.equals(chat.getContact().getUserId())) {
-                if (isLastPosition()) {
+                if (unreadMessageCount == 0) {
                     chatListView.setSelection(chat.getMessData().size());
                 } else {
                     chatListView.setSelectionFromTop(chat.scrollPosition, - chat.offset);
@@ -546,8 +547,9 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
             case UPDATE_MUC_LIST:
                 if (contact != null && contact.isPresence() == (byte) 1)
                     adapter.refreshList(chat.getMessData());
-                if (isConference)
+                if (isConference && ((drawerLayout != null && nickList != null && drawerLayout.isDrawerOpen(nickList)) || SawimApplication.isManyPane())) {
                     mucUsersView.update();
+                }
                 break;
         }
         return false;
@@ -691,9 +693,8 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
     public void onOptionsItemSelected_(MenuItem item) {
         switch (item.getItemId()) {
             case ContactMenu.MENU_MULTI_CITATION:
-                if (adapter.isMultiQuote()) {
-                    destroyMultiCitation();
-                } else {
+                destroyMultiCitation();
+                if (!adapter.isMultiQuote()) {
                     adapter.setMultiQuote(true);
                     Toast.makeText(SawimApplication.getCurrentActivity(), R.string.hint_multi_citation, Toast.LENGTH_LONG).show();
                 }
@@ -743,7 +744,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-        MessData md = adapter.getItem(info.position);
+        final MessData md = adapter.getItem(info.position);
         if (md == null) return super.onContextItemSelected(item);
         String nick = md.getNick();
         CharSequence msg = md.getText();
@@ -790,7 +791,12 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
                 break;
 
             case ContactMenu.ACTION_ADD_TO_HISTORY:
-                chat.addTextToHistory(md);
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        chat.addTextToHistory(md);
+                    }
+                }).start();
                 break;
 
             case ContactMenu.ACTION_TO_NOTES:
@@ -830,7 +836,12 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
     private void send() {
         if (chat == null) return;
         hideKeyboard(messageEditor);
-        chat.sendMessage(getText());
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                chat.sendMessage(getText());
+            }
+        }).start();
         resetText();
         adapter.setPosition(-1);
         updateChat(contact);
