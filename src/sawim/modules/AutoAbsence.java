@@ -34,8 +34,9 @@ public final class AutoAbsence {
     }
 
     public final void updateTime() {
-        if (SawimApplication.isPaused() && SawimApplication.autoAbsenceTime > 0) {
+        if (0 < activityOutTime && SawimApplication.isPaused() && SawimApplication.autoAbsenceTime > 0) {
             if (activityOutTime < SawimApplication.getCurrentGmtTime()) {
+                activityOutTime = -1;
                 away();
             }
         }
@@ -65,7 +66,6 @@ public final class AutoAbsence {
                     p.getProfile().xstatusTitle = "";
                     p.getProfile().xstatusDescription = "";
                 }
-
                 p.setOnlineStatus(StatusInfo.STATUS_AWAY, pr.statusMessage, false);
             } else {
                 protos[i] = null;
@@ -96,7 +96,10 @@ public final class AutoAbsence {
     }
 
     public final void userActivity() {
-        if (!SawimApplication.isPaused())
-            activityOutTime = SawimApplication.getCurrentGmtTime() + SawimApplication.autoAbsenceTime;
+        if (!SawimApplication.isPaused()) {
+            activityOutTime = SawimApplication.autoAbsenceTime > 0
+                    ? SawimApplication.getCurrentGmtTime() + SawimApplication.autoAbsenceTime
+                    : -1;
+        }
     }
 }

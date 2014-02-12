@@ -1,5 +1,6 @@
 package protocol.xmpp;
 
+import android.util.Log;
 import protocol.*;
 import protocol.net.ClientConnection;
 import ru.sawim.R;
@@ -306,16 +307,17 @@ public final class XmppConnection extends ClientConnection {
             socketUrl[0] = url[0];
             socketUrl[1] = url[1];
             socketUrl[2] = url[2];
-
+            return socketUrl[0] + "://" + socketUrl[1] + ":" + socketUrl[2];
         } else if (2 == url.length) {
             socketUrl[0] = url[1].equals(S_5222) ? S_SOCKET : S_SSL;
             socketUrl[1] = url[0];
             socketUrl[2] = url[1];
-
+            return socketUrl[0] + "://" + socketUrl[1] + ":" + socketUrl[2];
         } else if (1 == url.length) {
             socketUrl[0] = S_SOCKET;
             socketUrl[1] = url[0];
             socketUrl[2] = S_5222;
+            return socketUrl[0] + "://" + socketUrl[1] + ":" + socketUrl[2];
         }
         if (null != defaultServer) {
             socketUrl[1] = defaultServer;

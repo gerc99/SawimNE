@@ -3,12 +3,10 @@ package protocol.xmpp;
 import DrawControls.icons.ImageList;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.util.Log;
 import android.widget.Toast;
 import protocol.*;
 import ru.sawim.SawimApplication;
 import ru.sawim.R;
-import ru.sawim.SawimApplication;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
 import ru.sawim.view.TextBoxView;
@@ -45,7 +43,9 @@ public final class Xmpp extends Protocol implements FormListener {
         byte type = getProfile().protocolType;
         ImageList icons = createStatusIcons(type);
         final int[] statusIconIndex = {1, 0, 2, 0, -1, -1, -1, -1, -1, 2, -1, 3, -1, -1, 1};
-        info = new StatusInfo(icons, statusIconIndex, statuses);
+        final int[] statusOtherIconIndex = {1, 0, 3, 4, -1, -1, -1, -1, -1, 6, -1, 5, -1, -1, 1};
+        info = new StatusInfo(icons, type == Profile.PROTOCOL_JABBER ? statusIconIndex : statusOtherIconIndex,
+                type == Profile.PROTOCOL_JABBER ? statuses : statusesOther);
         xstatusInfo = Xmpp.xStatus.getInfo();
         clientInfo = XmppClient.get();
     }
@@ -54,6 +54,15 @@ public final class Xmpp extends Protocol implements FormListener {
             StatusInfo.STATUS_OFFLINE,
             StatusInfo.STATUS_ONLINE,
             StatusInfo.STATUS_AWAY,
+            StatusInfo.STATUS_DND
+    };
+
+    private static final byte[] statusesOther = {
+            StatusInfo.STATUS_OFFLINE,
+            StatusInfo.STATUS_CHAT,
+            StatusInfo.STATUS_ONLINE,
+            StatusInfo.STATUS_AWAY,
+            StatusInfo.STATUS_XA,
             StatusInfo.STATUS_DND
     };
 

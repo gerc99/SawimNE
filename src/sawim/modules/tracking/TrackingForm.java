@@ -189,9 +189,9 @@ public final class TrackingForm implements TextBoxView.TextBoxListener {
             Tracking.Track track = (Tracking.Track) actions.elementAt(i);
             Line line = getLineByID(track.idEvent, track.idAction);
             if (line == null) continue;
-            editText = track.valueAction;
-            if (editText != null) {
-                if (editText.length() > 0) {
+            if (track.idAction == Tracking.ACTION_MESSAGE_TEXT) {
+                editText = track.valueAction;
+                if (line.name.length() > 0) {
                     line.status_flag = YES;
                 } else {
                     line.status_flag = NO;

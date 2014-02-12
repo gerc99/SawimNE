@@ -791,12 +791,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
                 break;
 
             case ContactMenu.ACTION_ADD_TO_HISTORY:
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        chat.addTextToHistory(md);
-                    }
-                }).start();
+                chat.addTextToHistory(md);
                 break;
 
             case ContactMenu.ACTION_TO_NOTES:
@@ -836,12 +831,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
     private void send() {
         if (chat == null) return;
         hideKeyboard(messageEditor);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                chat.sendMessage(getText());
-            }
-        }).start();
+        chat.sendMessage(getText());
         resetText();
         adapter.setPosition(-1);
         updateChat(contact);
