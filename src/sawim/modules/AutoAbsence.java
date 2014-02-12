@@ -14,6 +14,7 @@ public final class AutoAbsence {
     private Profile[] profiles;
     private long activityOutTime;
     private boolean absence;
+    private boolean isChangeStatus = false;
 
     private AutoAbsence() {
         absence = false;
@@ -66,7 +67,9 @@ public final class AutoAbsence {
                     p.getProfile().xstatusTitle = "";
                     p.getProfile().xstatusDescription = "";
                 }
+                isChangeStatus = true;
                 p.setOnlineStatus(StatusInfo.STATUS_AWAY, pr.statusMessage, false);
+                isChangeStatus = false;
             } else {
                 protos[i] = null;
             }
@@ -89,8 +92,9 @@ public final class AutoAbsence {
                     p.xstatusTitle = pr.xstatusTitle;
                     p.xstatusDescription = pr.xstatusDescription;
                 }
-
+                isChangeStatus = true;
                 protos[i].setOnlineStatus(pr.statusIndex, pr.statusMessage, false);
+                isChangeStatus = false;
             }
         }
     }
@@ -101,5 +105,9 @@ public final class AutoAbsence {
                     ? SawimApplication.getCurrentGmtTime() + SawimApplication.autoAbsenceTime
                     : -1;
         }
+    }
+
+    public boolean isChangeStatus() {
+        return isChangeStatus;
     }
 }

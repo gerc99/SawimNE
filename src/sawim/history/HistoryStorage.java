@@ -69,28 +69,34 @@ public class HistoryStorage {
         closeHistory();
     }
 
-    public synchronized void addText(String text, boolean incoming,
-                                     String from, long gmtTime) {
-        boolean isOpened = openHistory(true);
-        if (!isOpened) {
-            return;
-        }
-        byte type = (byte) (incoming ? 0 : 1);
-        try {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            DataOutputStream das = new DataOutputStream(baos);
-            das.writeByte(type);
-            das.writeUTF(from);
-            das.writeUTF(text);
-            das.writeUTF(Util.getLocalDateString(gmtTime, false));
-            byte[] buffer = baos.toByteArray();
-            historyStore.addRecord(buffer);
-        } catch (Exception e) {
-            // do nothing
-        }
-        closeHistory();
-        currRecordCount = -1;
-        //androidStorage.addText(text, incoming, from, gmtTime);
+    public synchronized void addText(final String text, final boolean incoming,
+                                     final String from, final long gmtTime) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                boolean isOpened = openHistory(true);
+                if (!isOpened) {
+                    return;
+                }
+                byte type = (byte) (incoming ? 0 : 1);
+                try {
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    DataOutputStream das = new DataOutputStream(baos);
+                    das.writeByte(type);
+                    das.writeUTF(from);
+                    das.writeUTF(text);
+                    das.writeUTF(Util.getLocalDateString(gmtTime, false));
+                    byte[] buffer = baos.toByteArray();
+                    historyStore.addRecord(buffer);
+                } catch (Exception e) {
+                    // do nothing
+                }
+                closeHistory();
+                currRecordCount = -1;
+                //androidStorage.addText(text, incoming, from, gmtTime);
+            }
+        }).start();
+
     }
 
     RecordStore getRS() {

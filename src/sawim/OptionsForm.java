@@ -141,7 +141,6 @@ public class OptionsForm implements ControlStateListener {
                 saveOptionBoolean(Options.OPTION_HIDE_KEYBOARD);
                 saveOptionBoolean(Options.OPTION_SIMPLE_INPUT);
                 saveOptionInt(Options.OPTION_MAX_MSG_COUNT);
-                saveOptionBoolean(Options.OPTION_TITLE_IN_CONFERENCE);
                 saveOptionString(Options.UNAVAILABLE_NESSAGE);
                 break;
 
@@ -217,7 +216,6 @@ public class OptionsForm implements ControlStateListener {
                 setChecked(R.string.use_history, Options.OPTION_HISTORY);
                 loadOptionInt(Options.OPTION_MAX_MSG_COUNT, R.string.max_message_count, "10|50|100|250|500|1000");
 
-                setChecked(R.string.title_in_conference, Options.OPTION_TITLE_IN_CONFERENCE);
                 loadOptionString(Options.UNAVAILABLE_NESSAGE, R.string.post_outputs);
                 break;
 

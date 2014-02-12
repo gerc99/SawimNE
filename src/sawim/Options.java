@@ -71,7 +71,6 @@ public class Options {
     public static final int OPTION_CL_HIDE_OFFLINE = 130;
     public static final int OPTION_USER_GROUPS = 136;
     public static final int OPTION_HISTORY = 137;
-    public static final int OPTION_TITLE_IN_CONFERENCE = 140;
     public static final int OPTION_WAKE_LOCK = 143;
     public static final int OPTION_SILENT_MODE = 150;
     public static final int OPTION_BRING_UP = 151;
@@ -327,7 +326,6 @@ public class Options {
         setBoolean(Options.OPTION_WAKE_LOCK, false);
         setInt(Options.OPTION_CL_SORT_BY, 0);
         setBoolean(Options.OPTION_SORT_UP_WITH_MSG, true);
-        setBoolean(Options.OPTION_TITLE_IN_CONFERENCE, true);
         setBoolean(Options.OPTION_CL_HIDE_OFFLINE, false);
         setBoolean(Options.OPTION_HIDE_ICONS_CLIENTS, true);
         setBoolean(Options.OPTION_HIDE_KEYBOARD, true);

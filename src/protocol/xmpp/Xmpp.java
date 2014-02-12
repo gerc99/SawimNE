@@ -266,11 +266,13 @@ public final class Xmpp extends Protocol implements FormListener {
 
     protected void s_updateOnlineStatus() {
         connection.setStatus(getProfile().statusIndex, "", PRIORITY);
-        for (int i = 0; i < rejoinList.size(); ++i) {
-            String jid = (String) rejoinList.elementAt(i);
-            XmppServiceContact c = (XmppServiceContact) getItemByUIN(jid);
-            if (null != c) {
-                connection.sendPresence(c);
+        if (isReconnect()) {
+            for (int i = 0; i < rejoinList.size(); ++i) {
+                String jid = (String) rejoinList.elementAt(i);
+                XmppServiceContact c = (XmppServiceContact) getItemByUIN(jid);
+                if (null != c) {
+                    connection.sendPresence(c);
+                }
             }
         }
     }

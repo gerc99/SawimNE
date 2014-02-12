@@ -13,6 +13,7 @@ import sawim.comm.Config;
 import sawim.comm.MD5;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
+import sawim.modules.AutoAbsence;
 import sawim.modules.DebugLog;
 import sawim.roster.RosterHelper;
 import sawim.search.UserInfo;
@@ -1053,7 +1054,6 @@ public final class XmppConnection extends ClientConnection {
         }
         Xmpp xmpp = getXmpp();
         Group group = xmpp.getOrCreateGroup(JLocale.getString(Xmpp.CONFERENCE_GROUP));
-        int autoJoinCount = xmpp.isReconnect() ? 0 : 27;
         Vector groups = xmpp.getGroupItems();
         Vector contacts = xmpp.getContactItems();
         while (0 < storage.childrenCount()) {
@@ -1078,9 +1078,8 @@ public final class XmppConnection extends ClientConnection {
             if (-1 == Util.getIndex(contacts, conference)) {
                 contacts.addElement(conference);
             }
-            if (conference.isAutoJoin() && (0 < autoJoinCount)) {
+            if (conference.isAutoJoin()) {
                 xmpp.join(conference);
-                autoJoinCount--;
             }
         }
         xmpp.setContactListAddition(group);
@@ -2296,10 +2295,12 @@ public final class XmppConnection extends ClientConnection {
             xml += "<show>" + status + "</show>";
         }
 
-        if (Options.getBoolean(Options.OPTION_TITLE_IN_CONFERENCE)) {
-            String xstatusTitle = getXmpp().getProfile().xstatusTitle;
-            xml += (StringConvertor.isEmpty(xstatusTitle) ? "" : "<status>" + Util.xmlEscape(xstatusTitle) + "</status>");
+        String xstatusTitle = getXmpp().getProfile().xstatusTitle;
+        String descr = getXmpp().getProfile().xstatusDescription;
+        if (!StringConvertor.isEmpty(descr)) {
+            xstatusTitle += " " + descr;
         }
+        xml += (StringConvertor.isEmpty(xstatusTitle) ? "" : "<status>" + Util.xmlEscape(xstatusTitle) + "</status>");
 
         xml = "<presence to='" + Util.xmlEscape(to) + "'>" + xml
                 + getCaps() + "</presence>";
@@ -2323,7 +2324,7 @@ public final class XmppConnection extends ClientConnection {
             msg = getXmpp().getProfile().xstatusTitle;
             String descr = getXmpp().getProfile().xstatusDescription;
             if (!StringConvertor.isEmpty(descr)) {
-                msg = msg + " " + descr;
+                msg += " " + descr;
             }
         }
 
@@ -2332,13 +2333,11 @@ public final class XmppConnection extends ClientConnection {
                 + (StringConvertor.isEmpty(msg) ? "" : "<status>" + Util.xmlEscape(msg) + "</status>")
                 + (0 < priority ? "<priority>" + priority + "</priority>" : "")
                 + getCaps()
-
                 + xXml
                 + "</presence>";
         putPacketIntoQueue(xml);
-        if (Options.getBoolean(Options.OPTION_TITLE_IN_CONFERENCE)) {
+        if (!AutoAbsence.getInstance().isChangeStatus())
             setConferencesXStatus(status, msg, priority);
-        }
     }
 
     void setConferencesXStatus(String status, String msg, int priority) {
