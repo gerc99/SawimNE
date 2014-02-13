@@ -1002,6 +1002,7 @@ abstract public class Protocol {
             if (0 < reconnect_attempts) {
                 if (isConnected() && !isConnecting()) {
                     isReconnect = true;
+                    RosterHelper.getInstance().updateProgressBar();
                 }
                 try {
                     int iter = RECONNECT_COUNT - reconnect_attempts;

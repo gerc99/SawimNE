@@ -92,7 +92,7 @@ public class MessagesAdapter extends BaseAdapter {
         item.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
         item.msgText.setOnTextLinkClickListener(new TextLinkClick(currentProtocol, currentContact));
         item.msgText.setLinkTextColor(Scheme.getColor(Scheme.THEME_LINKS));
-        item.msgText.setTypeface(Typeface.DEFAULT);
+        item.msgText.setTypeface(mData.isConfHighLight() && !Scheme.isBlack() ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT);
         item.setBackgroundColor(0);
         if (mData.isMe() || mData.isPresence()) {
             item.msgText.setTextSize(SawimApplication.getFontSize() - 2);

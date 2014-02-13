@@ -120,6 +120,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
 
         progressBar = new ProgressBar(activity, null, android.R.attr.progressBarStyleHorizontal);
         progressBar.setMax(100);
+        progressBar.getProgressDrawable().setBounds(progressBar.getProgressDrawable().getBounds());
         LinearLayout.LayoutParams ProgressBarLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         ProgressBarLP.setMargins(30, 0, 30, 1);
         progressBar.setLayoutParams(ProgressBarLP);
@@ -200,16 +201,16 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
             case UPDATE_PROGRESS_BAR:
                 final Protocol p = roster.getCurrentProtocol();
                 if (p != null) {
-                    if (p.isConnecting()) {
+                    byte percent = p.getConnectingProgress();
+                    if (percent == 0) {
                         progressBar.setVisibility(ProgressBar.VISIBLE);
-                        byte percent = p.getConnectingProgress();
-                        Rect bounds = progressBar.getProgressDrawable().getBounds();
-                        progressBar.getProgressDrawable().setBounds(bounds);
-                        progressBar.setProgress(percent);
-                    } else {
+                        getActivity().supportInvalidateOptionsMenu();
+                    } else if (percent == 100) {
                         progressBar.setVisibility(ProgressBar.GONE);
+                        getActivity().supportInvalidateOptionsMenu();
+                    } else {
+                        progressBar.setProgress(percent);
                     }
-                    getActivity().supportInvalidateOptionsMenu();
                 }
                 break;
             case UPDATE_ROSTER:

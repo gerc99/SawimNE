@@ -99,4 +99,8 @@ public final class MessData {
     public void setIconIndex(byte iconIndex) {
         this.iconIndex = iconIndex;
     }
+
+    public boolean isConfHighLight() {
+        return confHighLight;
+    }
 }

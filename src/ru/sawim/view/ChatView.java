@@ -205,14 +205,14 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         chatsImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (contact.isAuth()) {
+                if (0 < chat.getAuthRequestCounter()) {
                     new DialogFragment() {
                         @Override
                         public Dialog onCreateDialog(Bundle savedInstanceState) {
                             final Context context = getActivity();
                             AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
                             dialogBuilder.setInverseBackgroundForced(Util.isNeedToInverseDialogBackground());
-                            dialogBuilder.setMessage(JLocale.getString(R.string.grant) + "?") ;
+                            dialogBuilder.setMessage(JLocale.getString(R.string.grant) + " " + contact.getName() + "?");
                             dialogBuilder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
@@ -318,7 +318,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         }
         chatListView.setAdapter(null);
         mucUsersView.destroy(nickList);
-        handler = new Handler(this);
+        handler = null;
         usersImage = null;
         chatsImage = null;
         menuButton = null;
@@ -427,9 +427,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         adapter.setPosition(chat.dividerPosition);
         if (oldChat != null) {
             if (oldChat.equals(chat.getContact().getUserId())) {
-                if (unreadMessageCount == 0) {
-                    chatListView.setSelection(chat.getMessData().size());
-                } else {
+                if (unreadMessageCount > 0) {
                     chatListView.setSelectionFromTop(chat.scrollPosition, - chat.offset);
                 }
                 return;
@@ -881,6 +879,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         hideKeyboard(messageEditor);
         chat.sendMessage(getText());
         resetText();
+        chat.message = null;
         adapter.setPosition(-1);
         updateChat(contact);
     }

@@ -147,7 +147,6 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
                         break;
 
                     case COMMAND_SET_SERVER:
-                        serverBox.setString(serverJid);
                         serverBox.setTextBoxListener(ServiceDiscovery.this);
                         serverBox.show(SawimApplication.getCurrentActivity().getSupportFragmentManager(), JLocale.getString(R.string.service_discovery_server));
                         break;
@@ -379,6 +378,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
         }
         if (serverBox == box) {
             setServer(serverBox.getString());
+            serverBox.setString(serverBox.getString());
 
         } else if (searchBox == box) {
             String text = searchBox.getString();

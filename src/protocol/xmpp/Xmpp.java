@@ -158,7 +158,7 @@ public final class Xmpp extends Protocol implements FormListener {
     }
 
     protected final void userCloseConnection() {
-        rejoinList.removeAllElements();
+        //rejoinList.removeAllElements();
     }
 
     protected final void closeConnection() {
