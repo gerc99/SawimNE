@@ -1,10 +1,9 @@
 package sawim.io;
 
+import org.microemu.util.RecordStoreImpl;
 import ru.sawim.SawimApplication;
 import sawim.comm.StringConvertor;
 
-import javax.microedition.rms.RecordStore;
-import javax.microedition.rms.RecordStoreException;
 import java.io.*;
 import java.util.Vector;
 
@@ -13,7 +12,7 @@ public final class Storage {
     public static final int SLOT_VERSION = 1;
     public static final int SLOT_OPTIONS = 2;
 
-    private RecordStore rs = null;
+    private RecordStoreImpl rs = null;
     private String name;
 
     public Storage(String name) {
@@ -21,7 +20,7 @@ public final class Storage {
     }
 
     public static String[] getList() {
-        String[] recordStores = RecordStore.listRecordStores();
+        String[] recordStores = SawimApplication.getInstance().recordStoreManager.listRecordStores();
         if (null == recordStores) {
             recordStores = new String[0];
         }
@@ -44,7 +43,7 @@ public final class Storage {
 
     public void delete() {
         try {
-            RecordStore.deleteRecordStore(name);
+            SawimApplication.getInstance().recordStoreManager.deleteRecordStore(name);
         } catch (Exception ignored) {
         }
     }
@@ -53,9 +52,9 @@ public final class Storage {
         return null != rs;
     }
 
-    public void open(boolean create) throws IOException, RecordStoreException {
+    public void open(boolean create) throws IOException, Exception {
         if (null == rs) {
-            rs = RecordStore.openRecordStore(name, create);
+            rs = SawimApplication.getInstance().recordStoreManager.openRecordStore(name, create);
         }
     }
 
@@ -78,7 +77,7 @@ public final class Storage {
         rs = null;
     }
 
-    public void initRecords(int count) throws RecordStoreException {
+    public void initRecords(int count) throws Exception {
 
         if (rs.getNumRecords() < count) {
             if ((1 < count) && (0 == rs.getNumRecords())) {
@@ -91,11 +90,11 @@ public final class Storage {
         }
     }
 
-    public void addRecord(byte[] data) throws RecordStoreException {
+    public void addRecord(byte[] data) throws Exception {
         rs.addRecord(data, 0, data.length);
     }
 
-    public void setRecord(int num, byte[] data) throws RecordStoreException {
+    public void setRecord(int num, byte[] data) throws Exception {
         rs.setRecord(num, data, 0, data.length);
     }
 
@@ -106,16 +105,16 @@ public final class Storage {
         }
     }
 
-    private void putRecord(int num, byte[] data) throws RecordStoreException {
+    private void putRecord(int num, byte[] data) throws Exception {
         initRecords(num);
         setRecord(num, data);
     }
 
-    public int getNumRecords() throws RecordStoreException {
+    public int getNumRecords() throws Exception {
         return rs.getNumRecords();
     }
 
-    public RecordStore getRS() {
+    public RecordStoreImpl getRS() {
         return rs;
     }
 

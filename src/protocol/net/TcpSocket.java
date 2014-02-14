@@ -4,7 +4,6 @@ import android.net.SSLCertificateSocketFactory;
 import sawim.SawimException;
 import sawim.modules.DebugLog;
 
-import javax.microedition.io.*;
 import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
@@ -33,8 +32,6 @@ public final class TcpSocket {
             //socket.setSocketOption(SocketConnection.SNDBUF, 10*1024);
             os = socket.getOutputStream();
             is = socket.getInputStream();
-        } catch (ConnectionNotFoundException e) {
-            throw new SawimException(121, 0);
         } catch (IllegalArgumentException e) {
             throw new SawimException(122, 0);
         } catch (SecurityException e) {
@@ -50,8 +47,6 @@ public final class TcpSocket {
         try {
             socket = new Socket(host, port);
             is = socket.getInputStream();
-        } catch (ConnectionNotFoundException e) {
-            throw new SawimException(121, 0);
         } catch (IllegalArgumentException e) {
             throw new SawimException(122, 0);
         } catch (SecurityException e) {
@@ -173,6 +168,7 @@ public final class TcpSocket {
             os = socket.getOutputStream();
             DebugLog.println("startTls done " + socket + os + is);
         } catch (Exception e) {
+            e.printStackTrace();
             DebugLog.panic("startTls error", e);
         }
     }

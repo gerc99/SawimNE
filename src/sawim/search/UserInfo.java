@@ -189,9 +189,7 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
                     menu.add(Menu.FIRST, INFO_MENU_EDIT, 2, R.string.edit);
                     if (protocol instanceof Xmpp) {
                         menu.add(Menu.FIRST, INFO_MENU_TAKE_AVATAR, 2, R.string.take_photo);
-                        if (sawim.modules.fs.FileSystem.isSupported()) {
-                            menu.add(Menu.FIRST, INFO_MENU_ADD_AVATAR, 2, R.string.add_from_fs);
-                        }
+                        menu.add(Menu.FIRST, INFO_MENU_ADD_AVATAR, 2, R.string.add_from_fs);
                         menu.add(Menu.FIRST, INFO_MENU_REMOVE_AVATAR, 2, R.string.remove);
                     }
                 }

@@ -6,18 +6,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.os.Environment;
-import android.os.Looper;
 import android.os.Message;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.Surface;
 import android.view.WindowManager;
-import org.microemu.MIDletBridge;
-import org.microemu.app.Common;
-import org.microemu.cldc.file.FileSystem;
 import org.microemu.util.AndroidRecordStoreManager;
 import ru.sawim.service.SawimService;
 import ru.sawim.service.SawimServiceConnection;
@@ -30,7 +24,6 @@ import sawim.comm.Util;
 import sawim.modules.*;
 import sawim.roster.RosterHelper;
 import sawim.search.Search;
-import sawim.util.JLocale;
 
 import java.io.InputStream;
 
@@ -61,6 +54,7 @@ public class SawimApplication extends Application {
     public static int autoAbsenceTime;
 
     public static SawimApplication instance;
+    public AndroidRecordStoreManager recordStoreManager;
     private final SawimServiceConnection serviceConnection = new SawimServiceConnection();
     private NetworkStateReceiver networkStateReceiver = new NetworkStateReceiver();
 
@@ -79,7 +73,10 @@ public class SawimApplication extends Application {
         VERSION = getVersion();
         Thread.setDefaultUncaughtExceptionHandler(ExceptionHandler.inContext(getContext()));
         super.onCreate();
-        MIDletInit();
+        recordStoreManager = new AndroidRecordStoreManager(getContext());
+        startService();
+        networkStateReceiver.updateNetworkState(this);
+
         startApp();
         TextFormatter.init();
         new Thread(new Runnable() {
@@ -93,17 +90,6 @@ public class SawimApplication extends Application {
             Thread.yield();
         }
         updateAppIcon();
-    }
-
-    private void MIDletInit() {
-        Common common = new Common();
-        MIDletBridge.setMicroEmulator(common);
-        common.setRecordStoreManager(new AndroidRecordStoreManager(getContext()));
-        FileSystem fs = new FileSystem();
-        fs.registerImplementation();
-        startService();
-        networkStateReceiver.updateNetworkState(this);
-        common.initMIDlet();
     }
 
     private void startService() {

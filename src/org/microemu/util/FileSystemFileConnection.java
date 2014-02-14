@@ -24,23 +24,18 @@
  *
  *  @version $Id: FileSystemFileConnection.java 2198 2009-11-09 11:28:41Z barteo $
  */
-package org.microemu.cldc.file;
+package org.microemu.util;
 
 import android.os.Environment;
 
-import javax.microedition.io.file.ConnectionClosedException;
-import javax.microedition.io.file.FileConnection;
 import java.io.*;
 import java.lang.reflect.Method;
-import java.security.AccessControlContext;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-import java.security.PrivilegedExceptionAction;
+import java.security.*;
 import java.util.Enumeration;
 import java.util.Vector;
 import java.util.regex.Pattern;
 
-public class FileSystemFileConnection implements FileConnection {
+public class FileSystemFileConnection {
 
     private File fsRoot;
 
@@ -56,8 +51,6 @@ public class FileSystemFileConnection implements FileConnection {
 
     private Throwable locationClosedFrom = null;
 
-    private FileSystemConnectorImpl notifyClosed;
-
     private InputStream opendInputStream;
 
     private OutputStream opendOutputStream;
@@ -67,17 +60,16 @@ public class FileSystemFileConnection implements FileConnection {
     private final static String DIR_SEP_STR = "/";
 
     /* The context to be used when acessing filesystem */
-    private AccessControlContext acc;
+    private final AccessControlContext acc;
 
     private static boolean java15 = false;
 
-    FileSystemFileConnection(String name, FileSystemConnectorImpl notifyClosed) throws IOException {
+    FileSystemFileConnection(String name) throws IOException {
         // <host>/<path>
         int hostEnd = name.indexOf(DIR_SEP);
         if (hostEnd == -1) {
             throw new IOException("Invalid path " + name);
         }
-        this.notifyClosed = notifyClosed;
 
         host = name.substring(0, hostEnd);
         fullPath = name.substring(hostEnd + 1);
@@ -118,6 +110,63 @@ public class FileSystemFileConnection implements FileConnection {
         });
     }
 
+    public static final String PROTOCOL = "file://";
+
+    public static FileSystemFileConnection open(final String name, int mode, boolean timeouts) throws IOException {
+        // file://<host>/<path>
+        if (!name.startsWith(PROTOCOL)) {
+            throw new IOException("Invalid Protocol " + name);
+        }
+        final String path = name.substring(PROTOCOL.length());
+        FileSystemFileConnection con = (FileSystemFileConnection) doPrivilegedIO(new PrivilegedExceptionAction() {
+            public Object run() throws IOException {
+                return new FileSystemFileConnection(path);
+            }
+        }, AccessController.getContext());
+        return con;
+    }
+
+    static <T> T doPrivilegedIO(PrivilegedExceptionAction<T> action, AccessControlContext context) throws IOException {
+        try {
+            return AccessController.doPrivileged(action, context);
+        } catch (PrivilegedActionException e) {
+            if (e.getCause() instanceof IOException) {
+                throw (IOException) e.getCause();
+            }
+            throw new IOException(e.toString());
+        }
+    }
+
+    public static FileSystemFileConnection open(String name) throws IOException {
+        return open(name, READ_WRITE, false);
+    }
+
+    public static FileSystemFileConnection open(String name, int mode) throws IOException {
+        return open(name, mode, false);
+    }
+
+    public static DataInputStream openDataInputStream(String name) throws IOException {
+        return open(name).openDataInputStream();
+    }
+
+    public static DataOutputStream openDataOutputStream(String name) throws IOException {
+        return open(name).openDataOutputStream();
+    }
+
+    public static InputStream openInputStream(String name) throws IOException {
+        return open(name).openInputStream();
+    }
+
+    public static OutputStream openOutputStream(String name) throws IOException {
+        return open(name).openOutputStream();
+    }
+
+    public static final int READ = 1;
+
+    public static final int WRITE = 2;
+
+    public static final int READ_WRITE = 3;
+
     private File getRoot(String dir) {
         for (File file : lsRoot()) {
             if (file.getName().equals(dir)) {
@@ -156,14 +205,13 @@ public class FileSystemFileConnection implements FileConnection {
     }
 
     private <T> T doPrivilegedIO(PrivilegedExceptionAction<T> action) throws IOException {
-        return FileSystemConnectorImpl.doPrivilegedIO(action, acc);
+        return doPrivilegedIO(action, acc);
     }
 
     private abstract class PrivilegedBooleanAction implements PrivilegedAction {
         public Object run() {
             return getBoolean();
         }
-
         abstract boolean getBoolean();
     }
 
@@ -411,7 +459,7 @@ public class FileSystemFileConnection implements FileConnection {
         // file://<host>/<root>/<directory>/<filename.extension>
         // or
         // file://<host>/<root>/<directory>/<directoryname>/
-        return FileSystem.PROTOCOL + this.host + DIR_SEP + fullPath + ((this.isDirectory) ? DIR_SEP_STR : "");
+        return PROTOCOL + this.host + DIR_SEP + fullPath + ((this.isDirectory) ? DIR_SEP_STR : "");
     }
 
     public boolean isDirectory() {
@@ -737,21 +785,22 @@ public class FileSystemFileConnection implements FileConnection {
 
     public void close() throws IOException {
         if (this.file != null) {
-            if (this.notifyClosed != null) {
-                this.notifyClosed.notifyClosed(this);
-            }
             locationClosedFrom = new Throwable();
             locationClosedFrom.fillInStackTrace();
             this.file = null;
         }
     }
 
-    private void throwClosed() throws ConnectionClosedException {
+    private void throwClosed() {
         if (this.file == null) {
             if (locationClosedFrom != null) {
                 locationClosedFrom.printStackTrace();
             }
-            throw new ConnectionClosedException("Connection already closed");
+            try {
+                throw new IOException("Connection already closed");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

@@ -6,6 +6,7 @@ import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
+import org.microemu.util.RecordStoreImpl;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
@@ -18,7 +19,6 @@ import sawim.Clipboard;
 import sawim.comm.StringConvertor;
 import sawim.util.JLocale;
 
-import javax.microedition.rms.RecordStore;
 import java.util.Hashtable;
 
 
@@ -61,10 +61,7 @@ public final class HistoryStorageList implements Runnable, FormListener {
                 menu.add(Menu.FIRST, MENU_FIND, 2, JLocale.getString(R.string.find));
                 menu.add(Menu.FIRST, MENU_CLEAR, 2, JLocale.getString(R.string.clear));
                 menu.add(Menu.FIRST, MENU_INFO, 2, JLocale.getString(R.string.history_info));
-
-                if (sawim.modules.fs.FileSystem.isSupported()) {
-                    menu.add(Menu.FIRST, MENU_EXPORT, 2, JLocale.getString(R.string.export));
-                }
+                menu.add(Menu.FIRST, MENU_EXPORT, 2, JLocale.getString(R.string.export));
             }
 
             @Override
@@ -190,7 +187,7 @@ public final class HistoryStorageList implements Runnable, FormListener {
                 break;
 
             case MENU_INFO:
-                RecordStore rs = history.getRS();
+                RecordStoreImpl rs = history.getRS();
                 if (rs == null) break;
                 try {
                     String sb = JLocale.getString(R.string.hist_cur) + ": " + getSize() + "\n"

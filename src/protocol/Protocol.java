@@ -1,7 +1,7 @@
 package protocol;
 
 import DrawControls.icons.Icon;
-import android.util.Log;
+import org.microemu.util.RecordStoreImpl;
 import protocol.xmpp.XmppContact;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
@@ -26,7 +26,6 @@ import sawim.search.Search;
 import sawim.search.UserInfo;
 import sawim.util.JLocale;
 
-import javax.microedition.rms.RecordStore;
 import java.io.*;
 import java.util.Vector;
 
@@ -300,12 +299,12 @@ abstract public class Protocol {
         synchronized (this) {
             String storage = getContactListRS();
             try {
-                RecordStore.deleteRecordStore(storage);
+                SawimApplication.getInstance().recordStoreManager.deleteRecordStore(storage);
             } catch (Exception e) {
             }
-            RecordStore cl = null;
+            RecordStoreImpl cl = null;
             try {
-                cl = RecordStore.openRecordStore(storage, true);
+                cl = SawimApplication.getInstance().recordStoreManager.openRecordStore(storage, true);
                 save(cl);
             } catch (Exception e) {
                 DebugLog.panic("roster save", e);
@@ -320,7 +319,7 @@ abstract public class Protocol {
 
     private void load() throws Exception {
         Roster roster = new Roster();
-        RecordStore cl = RecordStore.openRecordStore(getContactListRS(), false);
+        RecordStoreImpl cl = SawimApplication.getInstance().recordStoreManager.openRecordStore(getContactListRS(), false);
         try {
             byte[] buf;
             ByteArrayInputStream bais;
@@ -362,7 +361,7 @@ abstract public class Protocol {
         setRoster(roster, false);
     }
 
-    private void save(RecordStore cl) throws Exception {
+    private void save(RecordStoreImpl cl) throws Exception {
         ByteArrayOutputStream baos;
         DataOutputStream dos;
         byte[] buf;

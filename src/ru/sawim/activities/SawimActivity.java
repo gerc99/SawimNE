@@ -29,19 +29,14 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.media.AudioManager;
 import android.os.Bundle;
-import android.os.Looper;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import org.microemu.log.Logger;
-import org.microemu.util.AndroidLoggerAppender;
 import protocol.Contact;
 import protocol.Protocol;
-import protocol.StatusInfo;
 import protocol.icq.Icq;
 import protocol.mrim.Mrim;
 import protocol.xmpp.Xmpp;
@@ -60,10 +55,6 @@ import sawim.modules.DebugLog;
 import sawim.modules.Notify;
 import sawim.roster.RosterHelper;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
-
 public class SawimActivity extends ActionBarActivity {
 
     public static final String LOG_TAG = SawimActivity.class.getSimpleName();
@@ -81,40 +72,6 @@ public class SawimActivity extends ActionBarActivity {
         SawimApplication.setCurrentActivity(this);
         setContentView(SawimApplication.isManyPane() ? R.layout.main_twopane : R.layout.main);
 
-        Logger.removeAllAppenders();
-        Logger.setLocationEnabled(false);
-        Logger.addAppender(new AndroidLoggerAppender());
-
-        System.setOut(new PrintStream(new OutputStream() {
-            StringBuffer line = new StringBuffer();
-
-            @Override
-            public void write(int oneByte) throws IOException {
-                if (((char) oneByte) == '\n') {
-                    Logger.debug(line.toString());
-                    if (line.length() > 0) {
-                        line.delete(0, line.length() - 1);
-                    }
-                } else {
-                    line.append((char) oneByte);
-                }
-            }
-        }));
-        System.setErr(new PrintStream(new OutputStream() {
-            StringBuffer line = new StringBuffer();
-
-            @Override
-            public void write(int oneByte) throws IOException {
-                if (((char) oneByte) == '\n') {
-                    Logger.debug(line.toString());
-                    if (line.length() > 0) {
-                        line.delete(0, line.length() - 1);
-                    }
-                } else {
-                    line.append((char) oneByte);
-                }
-            }
-        }));
         if (savedInstanceState == null && !SawimApplication.isManyPane()) {
             RosterView rosterView = new RosterView();
             rosterView.setArguments(getIntent().getExtras());

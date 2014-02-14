@@ -1,7 +1,6 @@
 
 package sawim.modules.fs;
 
-import android.util.Log;
 import protocol.net.TcpSocket;
 
 import java.io.ByteArrayInputStream;
@@ -9,23 +8,8 @@ import java.io.InputStream;
 
 public abstract class FileSystem {
 
-    public static final String ROOT_DIRECTORY = "/";
-    public static final String PARENT_DIRECTORY = "../";
-    static private final boolean supports_JSR75 = supportJSR75();
     public static final String HISTORY = "history";
     public static final String RES = "res";
-
-    static private boolean supportJSR75() {
-        try {
-            return Class.forName("javax.microedition.io.file.FileConnection") != null;
-        } catch (ClassNotFoundException e) {
-        }
-        return false;
-    }
-
-    public static boolean isSupported() {
-        return supports_JSR75;
-    }
 
     public static JSR75FileSystem getInstance() {
         return new JSR75FileSystem();

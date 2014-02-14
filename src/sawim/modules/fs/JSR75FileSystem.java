@@ -1,19 +1,17 @@
 
 package sawim.modules.fs;
 
-import org.microemu.cldc.file.FileSystemFileConnection;
+import org.microemu.util.FileSystemFileConnection;
 import protocol.net.TcpSocket;
 import sawim.SawimException;
 
-import javax.microedition.io.Connector;
-import javax.microedition.io.file.FileConnection;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
 public class JSR75FileSystem {
 
-    private FileConnection fileConnection;
+    private FileSystemFileConnection fileConnection;
 
     public long totalSize() throws Exception {
         return fileConnection.totalSize();
@@ -21,7 +19,7 @@ public class JSR75FileSystem {
 
     public void openFile(String file) throws SawimException {
         try {
-            fileConnection = (FileConnection) Connector.open("file://" + file);
+            fileConnection = FileSystemFileConnection.open("file://" + file);
         } catch (SecurityException e) {
             fileConnection = null;
             throw new SawimException(193, 1);
@@ -34,7 +32,7 @@ public class JSR75FileSystem {
 
     public void mkdir(String path) {
         try {
-            FileConnection fc = (FileConnection) Connector.open("file://" + path);
+            FileSystemFileConnection fc = FileSystemFileConnection.open("file://" + path);
             try {
                 fc.mkdir();
             } finally {

@@ -3,6 +3,7 @@ package sawim.modules.tracking;
 import DrawControls.icons.Icon;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
+import org.microemu.util.RecordStoreImpl;
 import protocol.Contact;
 import protocol.Protocol;
 import protocol.icq.Icq;
@@ -16,8 +17,6 @@ import sawim.modules.Notify;
 import sawim.roster.RosterHelper;
 import sawim.util.JLocale;
 
-import javax.microedition.rms.RecordStore;
-import javax.microedition.rms.RecordStoreException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -141,27 +140,27 @@ public final class Tracking {
         }
     }
 
-    private static boolean existsTrackingRMS(RecordStore rms) {
+    private static boolean existsTrackingRMS(RecordStoreImpl rms) {
         boolean ret = false;
 
         try {
-            rms = RecordStore.openRecordStore(track_rms_name, false);
+            rms = SawimApplication.getInstance().recordStoreManager.openRecordStore(track_rms_name, false);
             if (rms.getNumRecords() == 0) {
                 ret = false;
             } else {
                 ret = true;
             }
             rms.closeRecordStore();
-        } catch (RecordStoreException e) {
+        } catch (Exception e) {
         }
         return ret;
     }
 
     public static void loadTrackingFromRMS() {
-        RecordStore rms = null;
+        RecordStoreImpl rms = null;
         try {
 
-            rms = RecordStore.openRecordStore(track_rms_name, false);
+            rms = SawimApplication.getInstance().recordStoreManager.openRecordStore(track_rms_name, false);
             if (!existsTrackingRMS(rms)) return;
             int record_count = rms.getNumRecords();
             if (record_count == 0) return;
@@ -180,15 +179,15 @@ public final class Tracking {
     }
 
     public static void saveTrackingToRMS() {
-        RecordStore rms = null;
+        RecordStoreImpl rms = null;
         try {
-            RecordStore.deleteRecordStore(track_rms_name);
-        } catch (RecordStoreException e) {
+            SawimApplication.getInstance().recordStoreManager.deleteRecordStore(track_rms_name);
+        } catch (Exception e) {
         }
         try {
             int record_count = actions.size();
             if (record_count == 0) return;
-            rms = RecordStore.openRecordStore(track_rms_name, true);
+            rms = SawimApplication.getInstance().recordStoreManager.openRecordStore(track_rms_name, true);
             for (int i = 0; i < record_count; i++) {
                 Track track = getTracking(i);
                 addValueToRMSRecord(rms, track.uin);
@@ -198,18 +197,18 @@ public final class Tracking {
                     addValueToRMSRecord(rms, track.valueAction);
             }
             rms.closeRecordStore();
-        } catch (RecordStoreException e) {
+        } catch (Exception e) {
         }
     }
 
-    private static String getRMSRecordValue(RecordStore rms, int index) {
+    private static String getRMSRecordValue(RecordStoreImpl rms, int index) {
         String ret = "";
         try {
             byte[] data = rms.getRecord(index);
             if (data != null) {
                 ret = utf8beByteArrayToString(data, 0, data.length);
             }
-        } catch (RecordStoreException e) {
+        } catch (Exception e) {
         }
         return ret;
     }
@@ -232,12 +231,12 @@ public final class Tracking {
         buf[++off] = (byte) ((val) & 0x000000FF);
     }
 
-    private static void addValueToRMSRecord(RecordStore rms, String value) {
+    private static void addValueToRMSRecord(RecordStoreImpl rms, String value) {
         try {
             byte[] buffer;
             buffer = stringToByteArray(value);
             rms.addRecord(buffer, 0, buffer.length);
-        } catch (RecordStoreException e) {
+        } catch (Exception e) {
         }
     }
 

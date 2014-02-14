@@ -1,10 +1,10 @@
 package sawim.history;
 
+import org.microemu.util.RecordStoreImpl;
 import protocol.Contact;
 import sawim.comm.Util;
 import sawim.io.Storage;
 
-import javax.microedition.rms.RecordStore;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -99,7 +99,7 @@ public class HistoryStorage {
 
     }
 
-    RecordStore getRS() {
+    RecordStoreImpl getRS() {
         if (historyStore == null) return null;
         return historyStore.getRS();
     }

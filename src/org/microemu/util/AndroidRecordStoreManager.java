@@ -27,18 +27,15 @@
 package org.microemu.util;
 
 import android.content.Context;
-import org.microemu.MicroEmulator;
-import org.microemu.RecordStoreManager;
-import org.microemu.log.Logger;
+import android.util.Log;
 
-import javax.microedition.rms.*;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class AndroidRecordStoreManager implements RecordStoreManager {
+public class AndroidRecordStoreManager {
 
     private final static String RECORD_STORE_HEADER_SUFFIX = ".rsh";
 
@@ -50,13 +47,10 @@ public class AndroidRecordStoreManager implements RecordStoreManager {
 
     private ConcurrentHashMap<String, Object> recordStores = null;
 
-    private ExtendedRecordListener recordListener = null;
+    private RecordListener recordListener = null;
 
     public AndroidRecordStoreManager(Context context) {
         this.activity = context;
-    }
-
-    public void init(MicroEmulator emulator) {
     }
 
     public String getName() {
@@ -80,15 +74,15 @@ public class AndroidRecordStoreManager implements RecordStoreManager {
     }
 
     public void deleteRecordStore(final String recordStoreName)
-            throws RecordStoreNotFoundException, RecordStoreException {
+            throws Exception, Exception {
         initializeIfNecessary();
 
         Object value = recordStores.get(recordStoreName);
         if (value == null) {
-            throw new RecordStoreNotFoundException(recordStoreName);
+            throw new Exception(recordStoreName);
         }
         if (value instanceof RecordStoreImpl && ((RecordStoreImpl) value).isOpen()) {
-            throw new RecordStoreException();
+            throw new Exception();
         }
 
         RecordStoreImpl recordStoreImpl;
@@ -98,12 +92,12 @@ public class AndroidRecordStoreManager implements RecordStoreManager {
             recordStoreImpl.readHeader(dis);
             dis.close();
         } catch (IOException e) {
-            Logger.error("RecordStore.deleteRecordStore: ERROR reading " + getHeaderFileName(recordStoreName), e);
-            throw new RecordStoreException();
+            Log.e("RecordStore.deleteRecordStore: ERROR reading ", getHeaderFileName(recordStoreName), e);
+            throw new Exception();
         }
 
         recordStoreImpl.setOpen(true);
-        RecordEnumeration re = recordStoreImpl.enumerateRecords(null, null, false);
+        RecordEnumerationImpl re = recordStoreImpl.enumerateRecords(false);
         while (re.hasNextElement()) {
             activity.deleteFile(getRecordFileName(recordStoreName, re.nextRecordId()));
         }
@@ -111,12 +105,10 @@ public class AndroidRecordStoreManager implements RecordStoreManager {
         activity.deleteFile(getHeaderFileName(recordStoreName));
 
         recordStores.remove(recordStoreName);
-
-        fireRecordStoreListener(ExtendedRecordListener.RECORDSTORE_DELETE, recordStoreName);
     }
 
-    public RecordStore openRecordStore(String recordStoreName, boolean createIfNecessary)
-            throws RecordStoreException {
+    public RecordStoreImpl openRecordStore(String recordStoreName, boolean createIfNecessary)
+            throws Exception {
         initializeIfNecessary();
 
         RecordStoreImpl recordStoreImpl;
@@ -129,21 +121,19 @@ public class AndroidRecordStoreManager implements RecordStoreManager {
             dis.close();
         } catch (FileNotFoundException e) {
             if (!createIfNecessary) {
-                throw new RecordStoreNotFoundException(recordStoreName);
+                throw new Exception(recordStoreName);
             }
             recordStoreImpl = new RecordStoreImpl(this, recordStoreName);
             recordStoreImpl.setOpen(true);
             saveToDisk(recordStoreImpl, -1);
         } catch (IOException e) {
-            throw new RecordStoreException();
+            throw new Exception();
         }
         if (recordListener != null) {
             recordStoreImpl.addRecordListener(recordListener);
         }
 
         recordStores.put(recordStoreName, recordStoreImpl);
-
-        fireRecordStoreListener(ExtendedRecordListener.RECORDSTORE_OPEN, recordStoreName);
 
         return recordStoreImpl;
     }
@@ -161,27 +151,27 @@ public class AndroidRecordStoreManager implements RecordStoreManager {
     }
 
     public void deleteRecord(RecordStoreImpl recordStoreImpl, int recordId)
-            throws RecordStoreNotOpenException, RecordStoreException {
+            throws Exception, Exception {
         deleteFromDisk(recordStoreImpl, recordId);
     }
 
     public void loadRecord(RecordStoreImpl recordStoreImpl, int recordId)
-            throws RecordStoreNotOpenException, InvalidRecordIDException, RecordStoreException {
+            throws Exception, Exception, Exception {
         try {
             DataInputStream dis = new DataInputStream(
                     activity.openFileInput(getRecordFileName(recordStoreImpl.getName(), recordId)));
             recordStoreImpl.readRecord(dis);
             dis.close();
         } catch (FileNotFoundException e) {
-            throw new InvalidRecordIDException();
+            throw new Exception();
         } catch (IOException e) {
-            Logger.error("RecordStore.loadFromDisk: ERROR reading " + getRecordFileName(recordStoreImpl.getName(), recordId), e);
+            Log.e("RecordStore.loadFromDisk: ERROR reading ", getRecordFileName(recordStoreImpl.getName(), recordId), e);
         }
     }
 
 
     public void saveRecord(RecordStoreImpl recordStoreImpl, int recordId)
-            throws RecordStoreNotOpenException, RecordStoreException {
+            throws Exception, Exception {
         saveToDisk(recordStoreImpl, recordId);
     }
 
@@ -194,22 +184,22 @@ public class AndroidRecordStoreManager implements RecordStoreManager {
             String store = stores[i];
             try {
                 deleteRecordStore(store);
-            } catch (RecordStoreException e) {
-                Logger.debug("deleteRecordStore", e);
+            } catch (Exception e) {
+                Log.d("deleteRecordStore", "", e);
             }
         }
     }
 
     private synchronized void deleteFromDisk(RecordStoreImpl recordStore, int recordId)
-            throws RecordStoreException {
+            throws Exception {
         try {
             DataOutputStream dos = new DataOutputStream(
                     activity.openFileOutput(getHeaderFileName(recordStore.getName()), Context.MODE_PRIVATE));
             recordStore.writeHeader(dos);
             dos.close();
         } catch (IOException e) {
-            Logger.error("RecordStore.saveToDisk: ERROR writting object to " + getHeaderFileName(recordStore.getName()), e);
-            throw new RecordStoreException(e.getMessage());
+            Log.e("RecordStore.saveToDisk: ERROR writting object to ", getHeaderFileName(recordStore.getName()), e);
+            throw new Exception(e.getMessage());
         }
 
         activity.deleteFile(getRecordFileName(recordStore.getName(), recordId));
@@ -219,15 +209,15 @@ public class AndroidRecordStoreManager implements RecordStoreManager {
      * @param recordId -1 for storing only header
      */
     private synchronized void saveToDisk(RecordStoreImpl recordStore, int recordId)
-            throws RecordStoreException {
+            throws Exception {
         try {
             DataOutputStream dos = new DataOutputStream(
                     activity.openFileOutput(getHeaderFileName(recordStore.getName()), Context.MODE_PRIVATE));
             recordStore.writeHeader(dos);
             dos.close();
         } catch (IOException e) {
-            Logger.error("RecordStore.saveToDisk: ERROR writting object to " + getHeaderFileName(recordStore.getName()), e);
-            throw new RecordStoreException(e.getMessage());
+            Log.e("RecordStore.saveToDisk: ERROR writting object to ", getHeaderFileName(recordStore.getName()), e);
+            throw new Exception(e.getMessage());
         }
 
         if (recordId != -1) {
@@ -237,8 +227,8 @@ public class AndroidRecordStoreManager implements RecordStoreManager {
                 recordStore.writeRecord(dos, recordId);
                 dos.close();
             } catch (IOException e) {
-                Logger.error("RecordStore.saveToDisk: ERROR writting object to " + getRecordFileName(recordStore.getName(), recordId), e);
-                throw new RecordStoreException(e.getMessage());
+                Log.e("RecordStore.saveToDisk: ERROR writting object to ", getRecordFileName(recordStore.getName(), recordId), e);
+                throw new Exception(e.getMessage());
             }
         }
     }
@@ -246,16 +236,6 @@ public class AndroidRecordStoreManager implements RecordStoreManager {
     public int getSizeAvailable(RecordStoreImpl recordStoreImpl) {
         // FIXME should return free space on device
         return 1024 * 1024;
-    }
-
-    public void setRecordListener(ExtendedRecordListener recordListener) {
-        this.recordListener = recordListener;
-    }
-
-    public void fireRecordStoreListener(int type, String recordStoreName) {
-        if (recordListener != null) {
-            recordListener.recordStoreEvent(type, System.currentTimeMillis(), recordStoreName);
-        }
     }
 
     private String getHeaderFileName(String recordStoreName) {

@@ -1,4 +1,4 @@
-/**
+/*
  *  MicroEmulator
  *  Copyright (C) 2001 Bartek Teodorczyk <barteo@barteo.net>
  *
@@ -20,20 +20,32 @@
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *  See the LGPL or the AL for the specific language governing permissions and
  *  limitations.
- *
- *  @version $Id: InputConnection.java 1605 2008-02-25 21:07:14Z barteo $  
  */
 
-package javax.microedition.io;
+package org.microemu.util;
 
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 
-public interface InputConnection extends Connection {
+public interface RecordListener {
 
-    InputStream openInputStream() throws IOException;
+    int RECORD_ADD = 1;
 
-    DataInputStream openDataInputStream() throws IOException;
+    int RECORD_READ = 2;
+
+    int RECORD_CHANGE = 3;
+
+    int RECORD_DELETE = 4;
+
+    int RECORDSTORE_OPEN = 8;
+
+    int RECORDSTORE_CLOSE = 9;
+
+    int RECORDSTORE_DELETE = 10;
+
+    void recordAdded(RecordStoreImpl recordStore, int recordId);
+
+    void recordChanged(RecordStoreImpl recordStore, int recordId);
+
+    void recordDeleted(RecordStoreImpl recordStore, int recordId);
 
 }
+
