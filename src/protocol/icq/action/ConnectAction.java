@@ -80,11 +80,11 @@ public class ConnectAction extends IcqAction {
 
     private int state;
     private volatile boolean active;
-    private String server;
+    private String[] server;
     private byte[] cookie;
 
-    private String getServerHostAndPort() {
-        return "login.icq.com:5190";
+    private String[] getServerHostAndPort() {
+        return new String[] {"login.icq.com" , "5190"};
     }
 
     private boolean md5login;
@@ -109,7 +109,7 @@ public class ConnectAction extends IcqAction {
         this.active = true;
         this.state = ConnectAction.STATE_INIT;
         active();
-        getConnection().connectTo(server);
+        getConnection().connectTo(server[0], Integer.parseInt(server[1]));
         state = ConnectAction.STATE_INIT_DONE;
         this.active = false;
         active();
@@ -202,7 +202,7 @@ public class ConnectAction extends IcqAction {
                                         errcode = Util.getWordBE(tlvData, 0);
                                         break;
                                     case 0x0005:
-                                        this.server = StringConvertor.byteArrayToAsciiString(tlvData);
+                                        this.server = Util.explode(StringConvertor.byteArrayToAsciiString(tlvData), ':');
                                         break;
                                     case 0x0006:
                                         this.cookie = tlvData;
@@ -221,7 +221,7 @@ public class ConnectAction extends IcqAction {
                             getIcq().setRealUin(disconnectPacket.getUin());
                             this.uin = getIcq().getUserId();
                             this.cookie = disconnectPacket.getCookie();
-                            this.server = disconnectPacket.getServer();
+                            this.server = Util.explode(disconnectPacket.getServer(), ':');
 
                         } else if (DisconnectPacket.TYPE_SRV_GOODBYE == disconnectPacket.getType()) {
                             errcode = disconnectPacket.getError();
@@ -265,7 +265,7 @@ public class ConnectAction extends IcqAction {
                 }
 
                 if (consumed & (null != this.server) & (null != this.cookie)) {
-                    getConnection().connectTo(server);
+                    getConnection().connectTo(server[0], Integer.parseInt(server[1]));
                     this.state = ConnectAction.STATE_CLI_DISCONNECT_SENT;
                 }
             } else if (STATE_CLI_DISCONNECT_SENT == state) {

@@ -66,7 +66,7 @@ public final class IcqNetWorking extends ClientConnection {
         return icq;
     }
 
-    public final void connectTo(String server) throws SawimException {
+    public final void connectTo(String server, int port) throws SawimException {
         if (null != socket) {
             socket.close();
         }
@@ -74,7 +74,7 @@ public final class IcqNetWorking extends ClientConnection {
             return;
         }
         socket = new TcpSocket();
-        socket.connectTo("socket://" + server);
+        socket.connectTo(server, port);
     }
 
     private int getFlapSequence() {

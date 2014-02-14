@@ -1,14 +1,13 @@
 package protocol;
 
-import org.microemu.cldc.http.Connection;
 import protocol.net.TcpSocket;
 import sawim.search.UserInfo;
 
-import javax.microedition.io.Connector;
-import javax.microedition.io.HttpConnection;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 /**
  * Created with IntelliJ IDEA.
@@ -69,19 +68,19 @@ public class GetAvatar implements Runnable {
     }
 
     private byte[] getAvatar() {
-        Connection httemp = null;
+        HttpURLConnection httemp = null;
         InputStream istemp = null;
         try {
-            httemp = (Connection) Connector.open(url);
-            if (HttpConnection.HTTP_OK != httemp.getResponseCode()) {
+            httemp = (HttpURLConnection) new URL(url).openConnection();
+            if (HttpURLConnection.HTTP_OK != httemp.getResponseCode()) {
                 throw new IOException();
             }
-            istemp = httemp.openInputStream();
-            byte[] avatarBytes = read(istemp, (int) httemp.getLength());
+            istemp = httemp.getInputStream();
+            byte[] avatarBytes = read(istemp, httemp.getContentLength());
             return avatarBytes;
         } catch (Exception ignored) {
         }
-        TcpSocket.close(httemp);
+        httemp.disconnect();
         TcpSocket.close(istemp);
         return null;
     }

@@ -1,7 +1,6 @@
 package sawim;
 
 import android.util.Log;
-import org.microemu.cldc.http.Connection;
 import protocol.Contact;
 import protocol.Protocol;
 import protocol.net.TcpSocket;
@@ -21,12 +20,12 @@ import sawim.modules.photo.PhotoListener;
 import sawim.roster.RosterHelper;
 import sawim.util.JLocale;
 
-import javax.microedition.io.Connector;
-import javax.microedition.io.HttpConnection;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 public final class FileTransfer implements FileBrowserListener, PhotoListener, Runnable, FormListener {
 
@@ -329,7 +328,7 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
     private void sendFileThroughServer(InputStream fis, int fileSize) throws SawimException {
         TcpSocket socket = new TcpSocket();
         try {
-            socket.connectTo("socket://files.jimm.net.ru:2000");
+            socket.connectTo("files.jimm.net.ru", 2000);
 
             final int version = 1;
             Util header = new Util();
@@ -397,15 +396,15 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
     private void sendFileThroughWeb(String host, InputStream fis, int fsize) throws SawimException {
         InputStream is;
         OutputStream os;
-        Connection sc = null;
+        HttpURLConnection sc = null;
 
         final String url = "http://" + host + "/__receive_file.php";
         try {
-            sc = (Connection) Connector.open(url, Connector.READ_WRITE);
-            sc.setRequestMethod(HttpConnection.POST);
+            sc = (HttpURLConnection) new URL(url).openConnection();
+            sc.setRequestMethod("POST");
             String boundary = "a9f843c9b8a736e53c40f598d434d283e4d9ff72";
             sc.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
-            os = sc.openOutputStream();
+            os = sc.getOutputStream();
 
             StringBuilder headers = new StringBuilder();
             headers.append("--").append(boundary).append("\r\n");
@@ -437,9 +436,9 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
             String end = "\r\n--" + boundary + "--\r\n";
             os.write(StringConvertor.stringToByteArrayUtf8(end));
 
-            is = sc.openInputStream();
+            is = sc.getInputStream();
             int respCode = sc.getResponseCode();
-            if (HttpConnection.HTTP_OK != respCode) {
+            if (HttpURLConnection.HTTP_OK != respCode) {
                 throw new SawimException(194, respCode);
             }
 
@@ -474,11 +473,11 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
             messText.append("Link: ").append(respString);
             protocol.sendMessage(cItem, messText.toString(), true);
             setProgress(100);
-            TcpSocket.close(sc);
-            TcpSocket.close(os);
-            TcpSocket.close(is);
+            sc.disconnect();
+            os.close();
+            is.close();
         } catch (IOException e) {
-            TcpSocket.close(sc);
+            sc.disconnect();
             DebugLog.panic("send file", e);
             throw new SawimException(194, 0);
         }

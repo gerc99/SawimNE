@@ -1,15 +1,22 @@
 package protocol.net;
 
+import android.net.SSLCertificateSocketFactory;
 import sawim.SawimException;
 import sawim.modules.DebugLog;
 
 import javax.microedition.io.*;
+import javax.net.ssl.SSLPeerUnverifiedException;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.Socket;
+import java.security.cert.X509Certificate;
 
 public final class TcpSocket {
-    private StreamConnection sc;
+    private Socket socket;
     private InputStream is;
     private OutputStream os;
 
@@ -17,20 +24,15 @@ public final class TcpSocket {
     }
 
     public void connectTo(String host, int port) throws SawimException {
-        connectTo("socket://" + host + ":" + port);
-    }
-
-    public void connectTo(String url) throws SawimException {
         try {
-            sc = (StreamConnection) Connector.open(url, Connector.READ_WRITE);
-            SocketConnection socket = (SocketConnection) sc;
-            socket.setSocketOption(SocketConnection.DELAY, 0);
+            socket = new Socket(host, port);
+            socket.setTcpNoDelay(true);
             //socket.setSocketOption(SocketConnection.KEEPALIVE, 2*60);
             //socket.setSocketOption(SocketConnection.LINGER, 0);
             //socket.setSocketOption(SocketConnection.RCVBUF, 10*1024);
             //socket.setSocketOption(SocketConnection.SNDBUF, 10*1024);
-            os = sc.openOutputStream();
-            is = sc.openInputStream();
+            os = socket.getOutputStream();
+            is = socket.getInputStream();
         } catch (ConnectionNotFoundException e) {
             throw new SawimException(121, 0);
         } catch (IllegalArgumentException e) {
@@ -44,10 +46,10 @@ public final class TcpSocket {
         }
     }
 
-    public void connectForReadingTo(String url) throws SawimException {
+    public void connectForReadingTo(String host, int port) throws SawimException {
         try {
-            sc = (StreamConnection) Connector.open(url, Connector.READ);
-            is = sc.openInputStream();
+            socket = new Socket(host, port);
+            is = socket.getInputStream();
         } catch (ConnectionNotFoundException e) {
             throw new SawimException(121, 0);
         } catch (IllegalArgumentException e) {
@@ -161,25 +163,45 @@ public final class TcpSocket {
 
     public void startTls(String host) {
         try {
-            DebugLog.println("startTls start " + sc + os + is);
-            ((org.microemu.cldc.socket.SocketConnection) sc).startTls(host);
-            is = sc.openInputStream();
-            os = sc.openOutputStream();
-            DebugLog.println("startTls done " + sc + os + is);
+            DebugLog.println("startTls start " + socket + os + is);
+            SSLSocketFactory sslFactory = SSLCertificateSocketFactory.getInsecure(0, null);
+            socket = sslFactory.createSocket(socket, host, socket.getPort(), true);
+            ((SSLSocket) socket).setUseClientMode(true);
+            dump();
+
+            is = socket.getInputStream();
+            os = socket.getOutputStream();
+            DebugLog.println("startTls done " + socket + os + is);
         } catch (Exception e) {
             DebugLog.panic("startTls error", e);
         }
     }
 
+    private void dump() throws SSLPeerUnverifiedException {
+        SSLSession session = ((SSLSocket) socket).getSession();
+        java.security.cert.Certificate[] cchain = session.getPeerCertificates();
+        System.out.println("The Certificates used by peer");
+        for (int i = 0; i < cchain.length; i++) {
+            System.out.println(((X509Certificate) cchain[i]).getSubjectDN());
+        }
+        System.out.println("Peer host is " + session.getPeerHost());
+        System.out.println("Cipher is " + session.getCipherSuite());
+        System.out.println("Protocol is " + session.getProtocol());
+        System.out.println("ID is " + session.getId().length);
+        System.out.println("Session created in " + session.getCreationTime());
+        System.out.println("Session accessed in " + session.getLastAccessedTime());
+        System.out.println("Session valid in " + session.isValid());
+    }
+
     public void close() {
         close(is);
         close(os);
-        close(sc);
+        close(socket);
     }
 
-    public static void close(Connection c) {
+    public static void close(Socket s) {
         try {
-            c.close();
+            s.close();
         } catch (Exception ignored) {
         }
     }

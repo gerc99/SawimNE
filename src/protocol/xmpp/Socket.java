@@ -58,9 +58,9 @@ final class Socket implements Runnable {
         return connected;
     }
 
-    public void connectTo(String url) throws SawimException {
-        System.out.println("url: " + url);
-        socket.connectTo(url);
+    public void connectTo(String host, int port) throws SawimException {
+        System.out.println("host: " + host);
+        socket.connectTo(host, port);
         connected = true;
     }
 
