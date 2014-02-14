@@ -394,7 +394,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         chat.scrollPosition = chatListView.getFirstVisiblePosition();
         chat.offset = (item == null) ? 0 : Math.abs(item.getBottom());
         chat.dividerPosition = chat.getMessCount();
-        chat.message = getText();
+        chat.message = getText().length() == 0 ? null : getText();
 
         chat.setVisibleChat(false);
         RosterHelper.getInstance().setOnUpdateChat(null);
@@ -726,12 +726,13 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
             menu.add(Menu.FIRST, ContactMenu.USER_MENU_CAM_TRANS, 2, R.string.ft_cam);
         }
         menu.add(Menu.FIRST, ContactMenu.USER_MENU_STATUSES, 2, R.string.user_statuses);
-        if (!contact.isSingleUserContact() && contact.isOnline()) {
-            menu.add(Menu.FIRST, ContactMenu.CONFERENCE_DISCONNECT, 2, R.string.leave_chat);
-        }
+
         menu.add(Menu.FIRST, ContactMenu.ACTION_CURRENT_DEL_CHAT, 2, R.string.delete_chat);
         menu.add(Menu.FIRST, ContactMenu.ACTION_DEL_ALL_CHATS_EXCEPT_CUR, 2, R.string.all_contact_except_this);
         menu.add(Menu.FIRST, ContactMenu.ACTION_DEL_ALL_CHATS, 2, R.string.clear_all_contacts);
+        if (!contact.isSingleUserContact() && contact.isOnline()) {
+            menu.add(Menu.FIRST, ContactMenu.CONFERENCE_DISCONNECT, 2, R.string.leave_chat);
+        }
         super.onPrepareOptionsMenu(menu);
     }
 

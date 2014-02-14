@@ -29,7 +29,7 @@ public final class Chat {
     public static final String ADDRESS = ", ";
     private boolean visibleChat;
 
-    public String message = "";
+    public String message;
     public int scrollPosition;
     public int offset;
     public int dividerPosition;

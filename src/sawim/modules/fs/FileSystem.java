@@ -45,7 +45,6 @@ public abstract class FileSystem {
             in.read(buffer);
             TcpSocket.close(in);
         } catch (Exception e) {
-            e.printStackTrace();
             buffer = null;
         }
 

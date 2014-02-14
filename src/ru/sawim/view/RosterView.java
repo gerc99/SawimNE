@@ -209,6 +209,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
                         progressBar.setVisibility(ProgressBar.GONE);
                         getActivity().supportInvalidateOptionsMenu();
                     } else {
+                        progressBar.setVisibility(ProgressBar.VISIBLE);
                         progressBar.setProgress(percent);
                     }
                 }
@@ -328,7 +329,6 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     public void onResume() {
         super.onResume();
         resume();
-        getActivity().supportInvalidateOptionsMenu();
         if (!SawimApplication.isManyPane() && Scheme.isChangeTheme(Options.getInt(Options.OPTION_COLOR_SCHEME))) {
             ((SawimActivity)SawimApplication.getCurrentActivity()).recreateActivity();
         }

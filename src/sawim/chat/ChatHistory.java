@@ -180,7 +180,7 @@ public final class ChatHistory {
 
     public void unregisterChat(Chat item) {
         if (null == item) return;
-        if (!item.message.equals("")) return;
+        if (item.message != null) return;
         historyTable.remove(item);
         item.clear();
         Contact c = item.getContact();

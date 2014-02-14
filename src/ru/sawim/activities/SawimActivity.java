@@ -322,18 +322,18 @@ public class SawimActivity extends ActionBarActivity {
         SawimFragment mainPreferenceView = (SawimFragment) getSupportFragmentManager().findFragmentByTag(MainPreferenceView.TAG);
         SawimFragment preferenceView = (SawimFragment) getSupportFragmentManager().findFragmentByTag(MainPreferenceView.TAG);
         menu.clear();
-        if (chatView != null) {
+        if (virtualListView != null) {
+            virtualListView.onPrepareOptionsMenu_(menu);
+            return true;
+        } else if (preferenceView != null || mainPreferenceView != null) {
+            return false;
+        } else if (chatView != null) {
             chatView.onPrepareOptionsMenu_(menu);
             return true;
         } else if (tabletChatView != null && tabletChatView.isOpenMenu()) {
             tabletChatView.onPrepareOptionsMenu_(menu);
             tabletChatView.setOpenMenu(false);
             return true;
-        } else if (virtualListView != null) {
-            virtualListView.onPrepareOptionsMenu_(menu);
-            return true;
-        } else if (preferenceView != null || mainPreferenceView != null) {
-            return false;
         }
         Protocol p = RosterHelper.getInstance().getCurrentProtocol();
         if (p != null) {
