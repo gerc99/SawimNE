@@ -9,15 +9,14 @@
 
 package protocol.xmpp;
 
-import android.util.Log;
-import com.jcraft.jzlib.JZlib;
-import com.jcraft.jzlib.ZInputStream;
-import com.jcraft.jzlib.ZOutputStream;
 import protocol.net.TcpSocket;
+import ru.sawim.connection.zlib.ZLibInputStream;
+import ru.sawim.connection.zlib.ZLibOutputStream;
 import sawim.SawimException;
 import sawim.modules.DebugLog;
 
-import java.io.UnsupportedEncodingException;
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Vector;
 
 /**
@@ -29,8 +28,8 @@ final class Socket implements Runnable {
     private byte[] inputBuffer = new byte[1024];
     private int inputBufferLength = 0;
     public int inputBufferIndex = 0;
-    private ZInputStream zIn;
-    private ZOutputStream zOut;
+    private ZLibInputStream zIn;
+    private ZLibOutputStream zOut;
     private boolean compressed;
     private boolean secured;
     private final Vector<Object> read = new Vector<Object>();
@@ -41,10 +40,9 @@ final class Socket implements Runnable {
     public Socket() {
     }
 
-    public void startCompression() {
-        zIn = new ZInputStream(socket);
-        zOut = new ZOutputStream(socket, JZlib.Z_DEFAULT_COMPRESSION);
-        zOut.setFlushMode(JZlib.Z_SYNC_FLUSH);
+    public void startCompression() throws IOException, NoSuchAlgorithmException {
+        zIn = new ZLibInputStream(socket.getIs());
+        zOut = new ZLibOutputStream(socket.getOs());
         compressed = true;
         DebugLog.println("zlib is working");
     }
@@ -66,7 +64,12 @@ final class Socket implements Runnable {
 
     private int read(byte[] data) throws SawimException {
         if (compressed) {
-            int bRead = zIn.read(data);
+            int bRead = 0;
+            try {
+                bRead = zIn.read(data);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             if (-1 == bRead) {
                 throw new SawimException(120, 13);
             }
@@ -79,7 +82,7 @@ final class Socket implements Runnable {
         return bRead;
     }
 
-    public void write(byte[] data) throws SawimException {
+    public void write(byte[] data) throws SawimException, IOException {
         if (compressed) {
             zOut.write(data);
             zOut.flush();
@@ -127,6 +130,29 @@ final class Socket implements Runnable {
     char readChar() throws SawimException {
         try {
             return (char) (readByte() & 0xff);
+            /*byte bt = readByte();
+            if (0 <= bt) {
+                return (char) bt;
+            }
+            if ((bt & 0xE0) == 0xC0) {
+                byte bt2 = readByte();
+                return (char) (((bt & 0x3F) << 6) | (bt2 & 0x3F));
+
+            } else if ((bt & 0xF0) == 0xE0) {
+                byte bt2 = readByte();
+                byte bt3 = readByte();
+                return (char) (((bt & 0x1F) << 12) | ((bt2 & 0x3F) << 6) | (bt3 & 0x3F));
+
+            } else {
+                int seqLen = 0;
+                if ((bt & 0xF8) == 0xF0) seqLen = 3;
+                else if ((bt & 0xFC) == 0xF8) seqLen = 4;
+                else if ((bt & 0xFE) == 0xFC) seqLen = 5;
+                for (; 0 < seqLen; --seqLen) {
+                    readByte();
+                }
+                return '?';
+            }*/
         } catch (SawimException e) {
             DebugLog.panic("readChar je ", e);
             throw e;

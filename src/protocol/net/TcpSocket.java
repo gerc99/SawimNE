@@ -58,6 +58,14 @@ public final class TcpSocket {
         }
     }
 
+    public InputStream getIs() {
+        return is;
+    }
+
+    public OutputStream getOs() {
+        return os;
+    }
+
     public final int read() throws SawimException {
         try {
             return is.read();

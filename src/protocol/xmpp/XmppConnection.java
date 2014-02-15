@@ -1,5 +1,6 @@
 package protocol.xmpp;
 
+import android.net.TrafficStats;
 import android.util.Log;
 import protocol.*;
 import protocol.net.ClientConnection;
@@ -20,10 +21,12 @@ import sawim.search.UserInfo;
 import sawim.util.JLocale;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.security.NoSuchAlgorithmException;
 import java.util.Vector;
 
 
@@ -161,7 +164,13 @@ public final class XmppConnection extends ClientConnection {
 
     private void setStreamCompression() throws SawimException {
         setProgress(20);
-        socket.startCompression();
+        try {
+            socket.startCompression();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
         write(getOpenStreamXml(domain_));
         readXmlNode(true);
         parseAuth(readXmlNode(true));
@@ -182,7 +191,11 @@ public final class XmppConnection extends ClientConnection {
     }
 
     private void write(byte[] data) throws SawimException {
-        socket.write(data);
+        try {
+            socket.write(data);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void connectTo(String host, int port) throws SawimException {

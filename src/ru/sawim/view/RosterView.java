@@ -202,15 +202,14 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
                 final Protocol p = roster.getCurrentProtocol();
                 if (p != null) {
                     byte percent = p.getConnectingProgress();
-                    if (percent == 0) {
-                        progressBar.setVisibility(ProgressBar.VISIBLE);
-                        getActivity().supportInvalidateOptionsMenu();
-                    } else if (percent == 100) {
-                        progressBar.setVisibility(ProgressBar.GONE);
-                        getActivity().supportInvalidateOptionsMenu();
-                    } else {
+                    if (100 != percent) {
                         progressBar.setVisibility(ProgressBar.VISIBLE);
                         progressBar.setProgress(percent);
+                    } else {
+                        progressBar.setVisibility(ProgressBar.GONE);
+                    }
+                    if (100 == percent || 0 == percent) {
+                        getActivity().supportInvalidateOptionsMenu();
                     }
                 }
                 break;

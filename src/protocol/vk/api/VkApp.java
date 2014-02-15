@@ -11,6 +11,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
+import ru.sawim.SawimApplication;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -59,12 +60,12 @@ public class VkApp {
     }
 
     public void showLoginDialog(String email, String password) {
-        new WebClient().oauth(OAUTH_AUTHORIZE_URL, email, password, _listener);
-        /*new Handler(Looper.getMainLooper()).post(new Runnable() {
+        //new WebClient().oauth(OAUTH_AUTHORIZE_URL, email, password, _listener);
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
             public void run() {
-                new VkDialog(_context, OAUTH_AUTHORIZE_URL, _listener).show();
+                new VkDialog(SawimApplication.getCurrentActivity(), OAUTH_AUTHORIZE_URL, _listener).show();
             }
-        });*/
+        });
 
     }
 

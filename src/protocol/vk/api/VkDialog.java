@@ -18,8 +18,6 @@ public class VkDialog extends Dialog {
     public static final float[] DIMENSIONS_PORTRAIT = {40, 60};
     static final FrameLayout.LayoutParams FILL = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT,
             ViewGroup.LayoutParams.FILL_PARENT);
-    static final int MARGIN = 4;
-    static final int PADDING = 2;
 
     private String mUrl;
     private VkApp.VkDialogListener mListener;

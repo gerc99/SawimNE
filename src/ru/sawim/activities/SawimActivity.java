@@ -295,11 +295,7 @@ public class SawimActivity extends ActionBarActivity {
         Protocol p = RosterHelper.getInstance().getCurrentProtocol();
         if (p != null) {
             menu.add(Menu.NONE, MENU_CONNECT, Menu.NONE, R.string.connect);
-            if (p.isReconnect()) {
-                menu.findItem(MENU_CONNECT).setTitle(R.string.connect);
-            } else {
-                menu.findItem(MENU_CONNECT).setTitle((p.isConnected() || p.isConnecting()) ? R.string.disconnect : R.string.connect);
-            }
+            menu.findItem(MENU_CONNECT).setTitle((p.isConnected() || p.isConnecting()) ? R.string.disconnect : R.string.connect);
             menu.add(Menu.NONE, MENU_STATUS, Menu.NONE, R.string.status);
             if (p.getXStatusInfo() != null)
                 menu.add(Menu.NONE, MENU_XSTATUS, Menu.NONE, R.string.xstatus);
