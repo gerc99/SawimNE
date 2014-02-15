@@ -59,6 +59,7 @@ public class FileSystemFileConnection {
 
     private final static String DIR_SEP_STR = "/";
 
+
     /* The context to be used when acessing filesystem */
     private final AccessControlContext acc;
 

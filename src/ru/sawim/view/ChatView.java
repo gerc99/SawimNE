@@ -749,7 +749,8 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
 
             case ContactMenu.ACTION_CURRENT_DEL_CHAT:
                 ChatHistory.instance.unregisterChat(chat);
-                getFragmentManager().popBackStack();
+                if (!SawimApplication.isManyPane())
+                    getFragmentManager().popBackStack();
                 break;
 
             case ContactMenu.ACTION_DEL_ALL_CHATS_EXCEPT_CUR:
@@ -758,7 +759,14 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
 
             case ContactMenu.ACTION_DEL_ALL_CHATS:
                 ChatHistory.instance.removeAll(null);
-                getFragmentManager().popBackStack();
+                if (!SawimApplication.isManyPane())
+                    getFragmentManager().popBackStack();
+                break;
+
+            case ContactMenu.CONFERENCE_DISCONNECT:
+                new ContactMenu(protocol, contact).doAction(ContactMenu.CONFERENCE_DISCONNECT);
+                if (!SawimApplication.isManyPane())
+                    getFragmentManager().popBackStack();
                 break;
 
             default:
