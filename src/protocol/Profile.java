@@ -10,12 +10,9 @@ public final class Profile {
     public static final int PROTOCOL_ICQ = 0;
     public static final int PROTOCOL_MRIM = 1;
     public static final int PROTOCOL_JABBER = 2;
-    //public static final int PROTOCOL_MSN = 4;
-    //public static final int PROTOCOL_OBIMP = 9;
     public static final int PROTOCOL_FACEBOOK = 10;
     public static final int PROTOCOL_LJ = 11;
     public static final int PROTOCOL_YANDEX = 12;
-    //public static final int PROTOCOL_VK = 13;
     public static final int PROTOCOL_GTALK = 14;
     public static final int PROTOCOL_QIP = 15;
     public static final int PROTOCOL_ODNOKLASSNIKI = 16;
@@ -27,7 +24,6 @@ public final class Profile {
             + "|Mail.ru Agent"
             + "|Facebook"
             + "|" + SawimApplication.getContext().getString(R.string.classmates)
-            //        + "|VKontakte"
             + "|LiveJournal"
             + "|GTalk"
             + "|Ya.Online"
@@ -40,7 +36,6 @@ public final class Profile {
             PROTOCOL_MRIM,
             PROTOCOL_FACEBOOK,
             PROTOCOL_ODNOKLASSNIKI,
-            //        PROTOCOL_VK,
             PROTOCOL_LJ,
             PROTOCOL_GTALK,
             PROTOCOL_YANDEX,
@@ -53,7 +48,6 @@ public final class Profile {
             "E-mail",
             SawimApplication.getContext().getString(R.string.acc_login),
             "ID",
-            //        "ID",
             SawimApplication.getContext().getString(R.string.acc_login),
             SawimApplication.getContext().getString(R.string.acc_login),
             SawimApplication.getContext().getString(R.string.acc_login),

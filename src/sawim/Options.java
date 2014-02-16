@@ -52,6 +52,7 @@ public class Options {
     public static final int OPTION_MESS_NOTIF_MODE = 66;
     public static final int OPTION_NOTIFY_VOLUME = 67;
     public static final int OPTION_ONLINE_NOTIF_MODE = 68;
+    public static final int OPTION_CURRENT_PAGE = 69;
     public static final int OPTION_VIBRATOR = 75;
     public static final int OPTION_COLOR_SCHEME = 73;
     public static final int OPTION_VISIBILITY_ID = 85;
@@ -322,6 +323,7 @@ public class Options {
 
     private static void setDefaults() {
         setString(Options.UNAVAILABLE_NESSAGE, "I'll be back");
+        setInt(Options.OPTION_CURRENT_PAGE, 0);
         setBoolean(Options.OPTION_INSTANT_RECONNECTION, true);
         setBoolean(Options.OPTION_WAKE_LOCK, false);
         setInt(Options.OPTION_CL_SORT_BY, 0);

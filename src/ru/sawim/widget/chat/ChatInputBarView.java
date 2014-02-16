@@ -6,6 +6,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import ru.sawim.R;
+import ru.sawim.SawimResources;
 import ru.sawim.Scheme;
 import ru.sawim.widget.IcsLinearLayout;
 import ru.sawim.widget.Util;
@@ -48,6 +49,6 @@ public class ChatInputBarView extends IcsLinearLayout {
         menuButton.setImageResource(android.R.drawable.ic_menu_sort_by_size);
         smileButton.setImageResource(Scheme.isBlack() ? R.drawable.ic_emoji_dark : R.drawable.ic_emoji_light);
         sendButton.setImageResource(Scheme.isBlack() ? R.drawable.ic_send_dark : R.drawable.ic_send_light);
-        updateDivider(Scheme.isBlack());
+        setDividerDrawable(SawimResources.listDivider);
     }
 }

@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import ru.sawim.SawimApplication;
+import ru.sawim.SawimResources;
 import ru.sawim.Scheme;
 import ru.sawim.widget.IcsLinearLayout;
 import ru.sawim.widget.LabelView;
@@ -56,7 +57,7 @@ public class ChatBarView extends IcsLinearLayout {
     }
 
     public void update() {
-        updateDivider(Scheme.isBlack());
+        setDividerDrawable(SawimResources.listDivider);
     }
 
     public void setVisibilityUsersImage(int visibility) {

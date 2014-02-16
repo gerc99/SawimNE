@@ -38,10 +38,15 @@ public class PictureView extends DialogFragment {
         final ProgressBar progressBar = (ProgressBar) v.findViewById(R.id.progressBar);
 
         webView = (WebView) v.findViewById(R.id.webView);
-        webView.getSettings().setJavaScriptEnabled(true);
-        webView.getSettings().setLoadWithOverviewMode(true);
-        webView.getSettings().setUseWideViewPort(true);
-        webView.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
+        WebSettings settings = webView.getSettings();
+        webView.setInitialScale(1);
+        settings.setLoadsImagesAutomatically(true);
+        settings.setLightTouchEnabled(true);
+        settings.setJavaScriptCanOpenWindowsAutomatically(true);
+        settings.setJavaScriptEnabled(true);
+        settings.setLoadWithOverviewMode(true);
+        settings.setUseWideViewPort(true);
+        settings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
         //webView.getSettings().setSupportZoom(true);
         //webView.getSettings().setBuiltInZoomControls(true);
         webView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);

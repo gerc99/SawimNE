@@ -39,6 +39,7 @@ public final class Xmpp extends Protocol implements FormListener {
     protected void initStatusInfo() {
         bots.addElement("juick@juick.com");
         bots.addElement("psto@psto.net");
+		bots.addElement("p@point.im");
 
         byte type = getProfile().protocolType;
         ImageList icons = createStatusIcons(type);

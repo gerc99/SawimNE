@@ -3,6 +3,7 @@ package ru.sawim.widget.chat;
 import android.content.Context;
 import android.view.View;
 import android.widget.LinearLayout;
+import ru.sawim.SawimResources;
 import ru.sawim.widget.IcsLinearLayout;
 
 /**
@@ -31,5 +32,9 @@ public class ChatListsView extends IcsLinearLayout {
             lp.weight = 3;
             addViewInLayout(nickList, 1, lp);
         }
+    }
+
+    public void update() {
+        setDividerDrawable(SawimResources.listDivider);
     }
 }

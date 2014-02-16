@@ -107,7 +107,7 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
                         .findFragmentById(R.id.chat_fragment) != null)
                     ((SawimActivity) SawimApplication.getCurrentActivity()).recreateActivity();
                 else
-                    getFragmentManager().popBackStack();
+                    SawimApplication.getCurrentActivity().getSupportFragmentManager().popBackStack();
                 hideKeyboard();
                 SawimApplication.getCurrentActivity().supportInvalidateOptionsMenu();
             }

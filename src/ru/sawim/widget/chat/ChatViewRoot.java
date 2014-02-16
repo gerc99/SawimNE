@@ -7,6 +7,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import ru.sawim.SawimApplication;
 import ru.sawim.R;
+import ru.sawim.SawimResources;
 import ru.sawim.Scheme;
 import ru.sawim.widget.IcsLinearLayout;
 
@@ -30,7 +31,7 @@ public class ChatViewRoot extends IcsLinearLayout {
     }
 
     public void update() {
-        updateDivider(Scheme.isBlack());
+        setDividerDrawable(SawimResources.listDivider);
     }
 
     public void showHint() {

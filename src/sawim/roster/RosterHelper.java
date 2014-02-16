@@ -37,7 +37,6 @@ public final class RosterHelper {
     private Vector transfers = new Vector();
     private OnUpdateRoster onUpdateRoster;
     private int currentItemProtocol = 0;
-    private int currPage = 0;
     private TreeNode selectedItem = null;
     public boolean useGroups;
     private boolean hideOffline;
@@ -413,11 +412,12 @@ public final class RosterHelper {
     }
 
     public void setCurrPage(int curr) {
-        currPage = curr;
+        Options.setInt(Options.OPTION_CURRENT_PAGE, curr);
+        Options.safeSave();
     }
 
     public int getCurrPage() {
-        return currPage;
+        return Options.getInt(Options.OPTION_CURRENT_PAGE);
     }
 
     public void removeAllProtocols() {
@@ -467,7 +467,7 @@ public final class RosterHelper {
         return null;
     }
 
-    public void rebuildFlatItemsWG(Protocol p, List<TreeNode> list) {
+    public void rebuildFlatItemsWG(Protocol p, List<Object> list) {
         Vector contacts;
         Group g;
         Contact c;
@@ -525,7 +525,7 @@ public final class RosterHelper {
         g.updateGroupData(contactsSize, onlineContactCounter);
     }
 
-    public void rebuildFlatItemsWOG(Protocol p, List<TreeNode> list) {
+    public void rebuildFlatItemsWOG(Protocol p, List<Object> list) {
         boolean all = !hideOffline;
         Contact c;
         Vector contacts = p.getContactItems();

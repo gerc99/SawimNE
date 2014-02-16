@@ -62,7 +62,8 @@ public class SendToView extends Fragment implements AdapterView.OnItemClickListe
         allListView.setDividerHeight(0);
         allListView.setOnItemClickListener(this);
 
-        allRosterAdapter = new RosterAdapter(getActivity(), RosterHelper.ALL_CONTACTS);
+        allRosterAdapter = new RosterAdapter(getActivity());
+        allRosterAdapter.setType(RosterHelper.ALL_CONTACTS);
         allListView.setAdapter(allRosterAdapter);
 
         if (!Scheme.isSystemBackground())
@@ -72,7 +73,7 @@ public class SendToView extends Fragment implements AdapterView.OnItemClickListe
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-        TreeNode item = allRosterAdapter.getItem(position);
+        TreeNode item = (TreeNode) allRosterAdapter.getItem(position);
         if (item.isContact()) {
             Protocol p = roster.getCurrentProtocol();
             Contact c = ((Contact) item);
@@ -165,7 +166,7 @@ public class SendToView extends Fragment implements AdapterView.OnItemClickListe
         roster.updateOptions();
         updateBarProtocols();
         if (allRosterAdapter != null)
-            allRosterAdapter.buildFlatItems();
+            allRosterAdapter.refreshList();
     }
 
 }

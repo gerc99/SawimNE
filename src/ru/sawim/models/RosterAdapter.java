@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.DataSetObserver;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,7 @@ import ru.sawim.SawimApplication;
 import ru.sawim.SawimResources;
 import ru.sawim.Scheme;
 import ru.sawim.widget.roster.RosterItemView;
+import sawim.chat.Chat;
 import sawim.chat.ChatHistory;
 import sawim.chat.message.Message;
 import sawim.comm.Util;
@@ -39,11 +41,14 @@ public class RosterAdapter extends BaseAdapter {
 
     private final Context context;
     private int type;
-    private List<TreeNode> items = new ArrayList<TreeNode>();
+    private List<Object> items = new ArrayList<Object>();
     private Vector updateQueue = new Vector();
 
-    public RosterAdapter(Context context, int type) {
+    public RosterAdapter(Context context) {
         this.context = context;
+    }
+
+    public void setType(int type) {
         this.type = type;
     }
 
@@ -58,7 +63,7 @@ public class RosterAdapter extends BaseAdapter {
     }
 
     @Override
-    public TreeNode getItem(int i) {
+    public Object getItem(int i) {
         if ((items.size() > i) && (i >= 0))
             return items.get(i);
         return null;
@@ -70,28 +75,37 @@ public class RosterAdapter extends BaseAdapter {
     }
 
     public void putIntoQueue(Group g) {
+        if (type == RosterHelper.ACTIVE_CONTACTS) return;
         if (-1 == Util.getIndex(updateQueue, g)) {
             updateQueue.addElement(g);
         }
     }
 
-    public void buildFlatItems() {
+    public void refreshList() {
         RosterHelper roster = RosterHelper.getInstance();
         Protocol p = roster.getCurrentProtocol();
-        if (p == null) return;
-        while (!updateQueue.isEmpty()) {
-            Group group = (Group) updateQueue.firstElement();
-            updateQueue.removeElementAt(0);
-            synchronized (p.getRosterLockObject()) {
-                roster.updateGroup(group);
+        if (type == RosterHelper.ACTIVE_CONTACTS) {
+            items.clear();
+            ChatHistory.instance.sort();
+            for (int i = 0; i < roster.getProtocolCount(); ++i) {
+                ChatHistory.instance.addLayerToListOfChats(roster.getProtocol(i), items);
             }
-        }
-        items.clear();
-        synchronized (p.getRosterLockObject()) {
-            if (roster.useGroups) {
-                roster.rebuildFlatItemsWG(p, items);
-            } else {
-                roster.rebuildFlatItemsWOG(p, items);
+        } else {
+            if (p == null) return;
+            while (!updateQueue.isEmpty()) {
+                Group group = (Group) updateQueue.firstElement();
+                updateQueue.removeElementAt(0);
+                synchronized (p.getRosterLockObject()) {
+                    roster.updateGroup(group);
+                }
+            }
+            items.clear();
+            synchronized (p.getRosterLockObject()) {
+                if (roster.useGroups) {
+                    roster.rebuildFlatItemsWG(p, items);
+                } else {
+                    roster.rebuildFlatItemsWOG(p, items);
+                }
             }
         }
         notifyDataSetChanged();
@@ -172,6 +186,16 @@ public class RosterAdapter extends BaseAdapter {
             rosterItemView.itemFifthImage = ((BitmapDrawable) Tracking.getTrackIcon(id)).getBitmap();
     }
 
+    public Drawable getImageChat(Chat chat, boolean showMess) {
+        if (chat.getContact().isTyping()) {
+            return Message.getIcon(Message.ICON_TYPE);
+        } else {
+            Icon icStatus = chat.getContact().getLeftIcon(chat.getProtocol());
+            Drawable icMess = Message.getIcon((byte) chat.getContact().getUnreadMessageIcon());
+            return icMess == null || !showMess ? icStatus.getImage() : icMess;
+        }
+    }
+
     void setShowDivider(RosterItemView rosterItemView, boolean value) {
         rosterItemView.isShowDivider = value;
     }
@@ -183,25 +207,37 @@ public class RosterAdapter extends BaseAdapter {
         }
         RosterHelper roster = RosterHelper.getInstance();
         Protocol protocol = roster.getCurrentProtocol();
-        TreeNode o = getItem(i);
+        Object o = getItem(i);
         RosterItemView rosterItemView = (RosterItemView) convertView;
         rosterItemView.setNull();
         if (o != null)
-            if (type != RosterHelper.ALL_CONTACTS) {
-                if (type != RosterHelper.ACTIVE_CONTACTS)
-                    if (o.isGroup()) {
+            if (type == RosterHelper.ACTIVE_CONTACTS) {
+                if (o instanceof String) {
+                    rosterItemView.addLayer((String) o);
+                }
+                if (o instanceof Chat) {
+                    Chat chat = (Chat) o;
+                    populateFromContact(rosterItemView, RosterHelper.getInstance(), chat.getProtocol(), chat.getContact());
+                }
+                setShowDivider(rosterItemView, getItem(i + 1) instanceof Chat);
+            } else {
+                TreeNode treeNode = (TreeNode) o;
+                if (type != RosterHelper.ALL_CONTACTS) {
+                    if (type != RosterHelper.ACTIVE_CONTACTS)
+                        if (treeNode.isGroup()) {
+                            populateFromGroup(rosterItemView, (Group) o);
+                        } else if (treeNode.isContact()) {
+                            populateFromContact(rosterItemView, roster, protocol, (Contact) o);
+                        }
+                } else {
+                    if (treeNode.isGroup()) {
                         populateFromGroup(rosterItemView, (Group) o);
-                    } else if (o.isContact()) {
+                    } else if (treeNode.isContact()) {
                         populateFromContact(rosterItemView, roster, protocol, (Contact) o);
                     }
-            } else {
-                if (o.isGroup()) {
-                    populateFromGroup(rosterItemView, (Group) o);
-                } else if (o.isContact()) {
-                    populateFromContact(rosterItemView, roster, protocol, (Contact) o);
                 }
+                setShowDivider(rosterItemView, true);
             }
-        setShowDivider(rosterItemView, true);
         rosterItemView.repaint();
         return convertView;
     }

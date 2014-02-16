@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.View;
 import android.widget.LinearLayout;
 import ru.sawim.Scheme;
+import ru.sawim.widget.MyListView;
 
 /**
  * Created with IntelliJ IDEA.
@@ -14,7 +15,7 @@ import ru.sawim.Scheme;
  */
 public class RosterViewRoot extends LinearLayout {
 
-    public RosterViewRoot(Context context, View progressBar, View viewPager) {
+    public RosterViewRoot(Context context, View progressBar, MyListView rosterListView) {
         super(context);
         setOrientation(LinearLayout.VERTICAL);
         setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.FILL_PARENT));
@@ -22,6 +23,6 @@ public class RosterViewRoot extends LinearLayout {
             setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
 
         addViewInLayout(progressBar, 0, progressBar.getLayoutParams(), true);
-        addViewInLayout(viewPager, 1, viewPager.getLayoutParams(), true);
+        addViewInLayout(rosterListView, 1, rosterListView.getLayoutParams(), true);
     }
 }

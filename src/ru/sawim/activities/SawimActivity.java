@@ -171,9 +171,9 @@ public class SawimActivity extends ActionBarActivity {
         SawimApplication.maximize();
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         if (RosterHelper.getInstance().getProtocolCount() == 0) {
-            if (SawimApplication.getCurrentActivity().getSupportFragmentManager()
+            if (getSupportFragmentManager()
                     .findFragmentById(R.id.chat_fragment) != null)
-                SawimApplication.getCurrentActivity().setContentView(R.layout.intercalation_layout);
+                setContentView(R.layout.intercalation_layout);
             StartWindowView newFragment = new StartWindowView();
             transaction.replace(R.id.fragment_container, newFragment, StartWindowView.TAG);
             transaction.addToBackStack(null);
@@ -217,7 +217,7 @@ public class SawimActivity extends ActionBarActivity {
                 }
             }
         } else super.onBackPressed();
-        if (getSupportFragmentManager().findFragmentById(R.id.roster_fragment) != null)
+        if (SawimApplication.isManyPane())
             ((RosterView) getSupportFragmentManager().findFragmentById(R.id.roster_fragment)).resume();
     }
 
@@ -260,9 +260,10 @@ public class SawimActivity extends ActionBarActivity {
     private static final int MENU_STATUS = 1;
     private static final int MENU_XSTATUS = 2;
     private static final int MENU_PRIVATE_STATUS = 3;
-    private static final int MENU_SEND_SMS = 4;
-    private static final int MENU_SOUND = 5;
-    private static final int MENU_OPTIONS = 6;
+    private static final int MENU_CONTACTS = 4;
+    private static final int MENU_SEND_SMS = 5;
+    private static final int MENU_SOUND = 6;
+    private static final int MENU_OPTIONS = 7;
     private static final int MENU_QUIT = 14; //OptionsForm
     private static final int MENU_DISCO = 16;
     private static final int MENU_NOTES = 17;
@@ -294,14 +295,16 @@ public class SawimActivity extends ActionBarActivity {
         }
         Protocol p = RosterHelper.getInstance().getCurrentProtocol();
         if (p != null) {
-            menu.add(Menu.NONE, MENU_CONNECT, Menu.NONE, R.string.connect);
-            menu.findItem(MENU_CONNECT).setTitle((p.isConnected() || p.isConnecting()) ? R.string.disconnect : R.string.connect);
+            menu.add(Menu.NONE, MENU_CONNECT, Menu.NONE, R.string.connect)
+                    .setTitle((p.isConnected() || p.isConnecting()) ? R.string.disconnect : R.string.connect);
             menu.add(Menu.NONE, MENU_STATUS, Menu.NONE, R.string.status);
             if (p.getXStatusInfo() != null)
                 menu.add(Menu.NONE, MENU_XSTATUS, Menu.NONE, R.string.xstatus);
             if ((p instanceof Icq) || (p instanceof Mrim))
                 menu.add(Menu.NONE, MENU_PRIVATE_STATUS, Menu.NONE, R.string.private_status);
 
+            menu.add(Menu.NONE, MENU_CONTACTS, Menu.NONE, R.string.all_contacts);
+            menu.findItem(MENU_CONTACTS).setTitle((RosterHelper.ALL_CONTACTS != RosterHelper.getInstance().getCurrPage()) ? R.string.all_contacts : R.string.active_contacts);
             int count = RosterHelper.getInstance().getProtocolCount();
             for (int i = 0; i < count; ++i) {
                 Protocol pr = RosterHelper.getInstance().getProtocol(i);
@@ -367,6 +370,14 @@ public class SawimActivity extends ActionBarActivity {
                 break;
             case MENU_PRIVATE_STATUS:
                 new StatusesView(p, StatusesView.ADAPTER_PRIVATESTATUS).show(getSupportFragmentManager(), "change-private-status");
+                break;
+            case MENU_CONTACTS:
+                RosterHelper.getInstance().setCurrPage((RosterHelper.ALL_CONTACTS == RosterHelper.getInstance().getCurrPage()) ? RosterHelper.ACTIVE_CONTACTS : RosterHelper.ALL_CONTACTS);
+                RosterView rosterView = (RosterView) getSupportFragmentManager().findFragmentByTag(RosterView.TAG);
+                if (rosterView == null) rosterView = (RosterView) getSupportFragmentManager().findFragmentById(R.id.roster_fragment);
+                rosterView.getRosterAdapter().setType(RosterHelper.getInstance().getCurrPage());
+                rosterView.update();
+                supportInvalidateOptionsMenu();
                 break;
             case MENU_SEND_SMS:
                 new SmsForm(null, null).show();

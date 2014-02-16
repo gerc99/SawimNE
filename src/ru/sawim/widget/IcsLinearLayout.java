@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import ru.sawim.SawimApplication;
@@ -27,16 +28,19 @@ public class IcsLinearLayout extends LinearLayout {
     private static final int LL_DIVIDER_PADDING = 2;
 
     private Drawable mDivider;
+    private static Drawable mDefDivider;
     private int mDividerWidth;
     private int mDividerHeight;
     private int mShowDividers;
     private int mDividerPadding;
-    private Drawable mOldDivider;
 
     public IcsLinearLayout(Context context, int themeAttr) {
         super(context);
         TypedArray a = context.obtainStyledAttributes(null, LL, themeAttr, 0);
-        setDividerDrawable(a.getDrawable(IcsLinearLayout.LL_DIVIDER));
+        if (mDefDivider == null) {
+            mDefDivider = a.getDrawable(IcsLinearLayout.LL_DIVIDER);
+        }
+        setDividerDrawable(mDefDivider);
         mDividerPadding = a.getDimensionPixelSize(LL_DIVIDER_PADDING, 0);
         mShowDividers = a.getInteger(LL_SHOW_DIVIDER, SHOW_DIVIDER_NONE);
         a.recycle();
@@ -57,11 +61,6 @@ public class IcsLinearLayout extends LinearLayout {
         }
         setWillNotDraw(divider == null);
         requestLayout();
-    }
-
-    public void updateDivider(boolean isBlack) {
-        setDividerDrawable(SawimApplication.getInstance().getResources().
-                getDrawable(isBlack ? R.drawable.abc_list_divider_holo_dark : R.drawable.abc_list_divider_holo_light));
     }
 
     @Override

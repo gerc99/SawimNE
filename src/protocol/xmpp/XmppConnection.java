@@ -1,6 +1,5 @@
 package protocol.xmpp;
 
-import android.net.TrafficStats;
 import android.util.Log;
 import protocol.*;
 import protocol.net.ClientConnection;
