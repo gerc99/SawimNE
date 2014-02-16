@@ -15,7 +15,6 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="android-support-v4" level="project" />
     <orderEntry type="module" module-name="appcompat" />
-    <orderEntry type="module" module-name="ViewPagerIndicator" />
   </component>
 </module>
 
