@@ -39,16 +39,16 @@ public class PictureView extends DialogFragment {
 
         webView = (WebView) v.findViewById(R.id.webView);
         WebSettings settings = webView.getSettings();
+        settings.setUseWideViewPort(true);
         webView.setInitialScale(1);
         settings.setLoadsImagesAutomatically(true);
         settings.setLightTouchEnabled(true);
         settings.setJavaScriptCanOpenWindowsAutomatically(true);
         settings.setJavaScriptEnabled(true);
         settings.setLoadWithOverviewMode(true);
-        settings.setUseWideViewPort(true);
         settings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
-        //webView.getSettings().setSupportZoom(true);
-        //webView.getSettings().setBuiltInZoomControls(true);
+        settings.setSupportZoom(true);
+        settings.setBuiltInZoomControls(true);
         webView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
         webView.setScrollbarFadingEnabled(true);
         webView.setWebChromeClient(new WebChromeClient() {
@@ -75,6 +75,9 @@ public class PictureView extends DialogFragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (webView != null) webView.destroy();
+        if (webView != null) {
+            webView.destroy();
+            webView = null;
+        }
     }
 }

@@ -51,22 +51,41 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     private static final int UPDATE_ROSTER = 2;
     private static final int PUT_INTO_QUEUE = 3;
 
-    private static LinearLayout barLinearLayout;
-    private static IconTabPageIndicator horizontalScrollView;
-    private static RosterViewRoot rosterViewLayout;
+    private LinearLayout barLinearLayout;
+    private IconTabPageIndicator horizontalScrollView;
+    private RosterViewRoot rosterViewLayout;
     private static ProgressBar progressBar;
-    private RosterAdapter rosterAdapter;
     private MyListView rosterListView;
     private AdapterView.AdapterContextMenuInfo contextMenuInfo;
-    private static Handler handler;
-    //GestureDetector gestureDetector;
+    private Handler handler;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final FragmentActivity activity = getActivity();
+        addProtocolsTabs();
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        SawimApplication.setCurrentActivity((ActionBarActivity) activity);
+        handler = new Handler(this);
+
+        barLinearLayout = new LinearLayout(activity);
+        horizontalScrollView = new IconTabPageIndicator(SawimApplication.getCurrentActivity());
+
+        if (progressBar == null) {
+            progressBar = new ProgressBar(activity, null, android.R.attr.progressBarStyleHorizontal);
+            progressBar.setMax(100);
+            progressBar.getProgressDrawable().setBounds(progressBar.getProgressDrawable().getBounds());
+            LinearLayout.LayoutParams ProgressBarLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            ProgressBarLP.setMargins(30, 0, 30, 1);
+            progressBar.setLayoutParams(ProgressBarLP);
+        }
+
         rosterListView = new MyListView(activity);
-        rosterAdapter = new RosterAdapter(activity);
+        RosterAdapter rosterAdapter = new RosterAdapter(activity);
         LinearLayout.LayoutParams rosterListViewLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         rosterListView.setLayoutParams(rosterListViewLayoutParams);
         rosterListView.setAdapter(rosterAdapter);
@@ -84,28 +103,6 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
                 changeTab(true);
             }
         });*/
-        addProtocolsTabs();
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        SawimApplication.setCurrentActivity((ActionBarActivity) activity);
-        if (handler == null)
-            handler = new Handler(this);
-        if (barLinearLayout == null)
-            barLinearLayout = new LinearLayout(activity);
-        if (horizontalScrollView == null)
-            horizontalScrollView = new IconTabPageIndicator(SawimApplication.getCurrentActivity());
-
-        if (progressBar == null) {
-            progressBar = new ProgressBar(activity, null, android.R.attr.progressBarStyleHorizontal);
-            progressBar.setMax(100);
-            progressBar.getProgressDrawable().setBounds(progressBar.getProgressDrawable().getBounds());
-            LinearLayout.LayoutParams ProgressBarLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            ProgressBarLP.setMargins(30, 0, 30, 1);
-            progressBar.setLayoutParams(ProgressBarLP);
-        }
     }
 
     @Override
@@ -115,19 +112,8 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
             rosterViewLayout = new RosterViewRoot(SawimApplication.getCurrentActivity(), progressBar, rosterListView);
         else
             ((ViewGroup) rosterViewLayout.getParent()).removeView(rosterViewLayout);
-        rosterAdapter.setType(RosterHelper.getInstance().getCurrPage());
+        ((RosterAdapter) rosterListView.getAdapter()).setType(RosterHelper.getInstance().getCurrPage());
         return rosterViewLayout;
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        rosterAdapter = null;
-        rosterListView.setAdapter(null);
-        rosterListView.setOnCreateContextMenuListener(null);
-        rosterListView.setOnItemClickListener(null);
-        rosterListView = null;
-        contextMenuInfo = null;
     }
 
     @Override
@@ -163,13 +149,13 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
                 break;
             case UPDATE_ROSTER:
                 RosterHelper.getInstance().updateOptions();
-                if (rosterAdapter != null) {
-                    rosterAdapter.refreshList();
+                if (rosterListView.getAdapter() != null) {
+                    ((RosterAdapter) rosterListView.getAdapter()).refreshList();
                 }
                 break;
             case PUT_INTO_QUEUE:
-                if (rosterAdapter != null) {
-                    rosterAdapter.putIntoQueue((Group) msg.obj);
+                if (rosterListView.getAdapter() != null) {
+                    ((RosterAdapter) rosterListView.getAdapter()).putIntoQueue((Group) msg.obj);
                 }
                 break;
         }
@@ -228,8 +214,6 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
             barLinearLayout.addView(chatView.getTitleBar());
             SawimApplication.getActionBar().setCustomView(barLinearLayout);
         } else {
-            if (horizontalScrollView.getParent() != null)
-                ((ViewGroup) horizontalScrollView.getParent()).removeView(horizontalScrollView);
             SawimApplication.getActionBar().setCustomView(horizontalScrollView);
         }
     }
@@ -316,7 +300,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     }
 
     public RosterAdapter getRosterAdapter() {
-        return rosterAdapter;
+        return ((RosterAdapter) rosterListView.getAdapter());
     }
 
     private void openChat(Protocol p, Contact c, boolean allowingStateLoss) {
@@ -345,20 +329,18 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
         if (RosterHelper.getInstance().getCurrPage() == RosterHelper.ACTIVE_CONTACTS) {
-            Object o = rosterAdapter.getItem(position);
+            Object o = rosterListView.getAdapter().getItem(position);
             if (o instanceof Chat) {
                 Chat chat = (Chat) o;
                 openChat(chat.getProtocol(), chat.getContact(), false);
-                if (SawimApplication.getCurrentActivity().getSupportFragmentManager()
-                        .findFragmentById(R.id.chat_fragment) != null)
+                if (SawimApplication.isManyPane())
                     update();
             }
         } else {
-            TreeNode item = (TreeNode) rosterAdapter.getItem(position);
+            TreeNode item = (TreeNode) rosterListView.getAdapter().getItem(position);
             if (item.isContact()) {
                 openChat(RosterHelper.getInstance().getCurrentProtocol(), ((Contact) item), false);
-                if (SawimApplication.getCurrentActivity().getSupportFragmentManager()
-                        .findFragmentById(R.id.chat_fragment) != null)
+                if (SawimApplication.isManyPane())
                     update();
             } else if (item.isGroup()) {
                 Group group = (Group) item;
@@ -374,13 +356,13 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         super.onCreateContextMenu(menu, v, menuInfo);
         contextMenuInfo = (AdapterView.AdapterContextMenuInfo) menuInfo;
         if (RosterHelper.getInstance().getCurrPage() == RosterHelper.ACTIVE_CONTACTS) {
-            Object o = rosterAdapter.getItem(contextMenuInfo.position);
+            Object o = rosterListView.getAdapter().getItem(contextMenuInfo.position);
             if (o instanceof Chat) {
                 Chat chat = (Chat) o;
                 new ContactMenu(chat.getProtocol(), chat.getContact()).getContextMenu(menu);
             }
         } else {
-            TreeNode node = (TreeNode) rosterAdapter.getItem(contextMenuInfo.position);
+            TreeNode node = (TreeNode) rosterListView.getAdapter().getItem(contextMenuInfo.position);
             Protocol p = RosterHelper.getInstance().getCurrentProtocol();
             if (node.isContact()) {
                 new ContactMenu(p, (Contact) node).getContextMenu(menu);
@@ -400,13 +382,13 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         if (menuInfo == null)
             menuInfo = contextMenuInfo;
         if (RosterHelper.getInstance().getCurrPage() == RosterHelper.ACTIVE_CONTACTS) {
-            Object o = rosterAdapter.getItem(menuInfo.position);
+            Object o = rosterListView.getAdapter().getItem(menuInfo.position);
             if (o instanceof Chat) {
                 Chat chat = (Chat) o;
                 contactMenuItemSelected(chat.getContact(), item);
             }
         } else {
-            TreeNode node = (TreeNode) rosterAdapter.getItem(menuInfo.position);
+            TreeNode node = (TreeNode) rosterListView.getAdapter().getItem(menuInfo.position);
             if (node == null) return false;
             if (node.isContact()) {
                 contactMenuItemSelected((Contact) node, item);

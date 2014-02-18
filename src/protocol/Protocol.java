@@ -1011,7 +1011,7 @@ abstract public class Protocol {
                 }
                 if (isConnected() || isConnecting()) {
                     disconnect(false);
-                    playNotification(Notify.NOTIFY_RECONNECT);
+                    //playNotification(Notify.NOTIFY_RECONNECT);
                     startConnection();
                 }
                 return;

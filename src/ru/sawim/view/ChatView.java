@@ -279,7 +279,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         sendByEnter = Options.getBoolean(Options.OPTION_SIMPLE_INPUT);
         if (sendByEnter) {
             messageEditor.setImeOptions(EditorInfo.IME_ACTION_SEND);
-            messageEditor.setOnEditorActionListener(enterListener);
+            //messageEditor.setOnEditorActionListener(enterListener);
         }
         if (sendByEnter) {
             sendButton.setVisibility(ImageButton.GONE);
@@ -308,36 +308,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
     @Override
     public void onDetach() {
         super.onDetach();
-        chatsImage.setOnClickListener(null);
-        menuButton.setOnClickListener(null);
-        usersImage.setOnClickListener(null);
-        smileButton.setOnClickListener(null);
-        chatBarLayout.setOnClickListener(null);
-        chatListView.setOnItemClickListener(null);
-        chatListView.setOnCreateContextMenuListener(null);
-        messageEditor.removeTextChangedListener(textWatcher);
-        if (sendByEnter) {
-            messageEditor.setOnEditorActionListener(null);
-        }
-        chatListView.setAdapter(null);
-        mucUsersView.destroy(nickList);
-        handler = null;
-        usersImage = null;
-        chatsImage = null;
-        menuButton = null;
-        smileButton = null;
-        sendButton = null;
-        messageEditor = null;
-        chatBarLayout = null;
-        chatListView = null;
-        nickList = null;
-        chatListsView = null;
-        chatInputBarView = null;
-        chatViewLayout = null;
-        drawerLayout = null;
         sharingText = null;
-        chatDialogFragment = null;
-        chatsSpinnerAdapter = null;
         chat = null;
         oldChat = null;
         contact = null;
@@ -428,14 +399,6 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
     private void setPosition(int unreadMessageCount) {
         boolean hasHistory = chat.getHistory() != null && chat.getHistory().getHistorySize() > 0 && !chat.isBlogBot();
         adapter.setPosition(chat.dividerPosition);
-        /*if (oldChat != null) {
-            if (oldChat.equals(chat.getContact().getUserId())) {
-                if (unreadMessageCount > 0) {
-                    chatListView.setSelectionFromTop(chat.scrollPosition, - chat.offset);
-                }
-                return;
-            }
-        }*/
         if (chat.dividerPosition == 0) {
             if (contact.isConference() || (!contact.isConference() && !hasHistory)) {
                 chatListView.setSelection(0);
@@ -449,6 +412,12 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
             chatListView.setSelectionFromTop(chat.scrollPosition + (isLastPosition() ? 1 : 2), chat.offset);
         }
         adapter.refreshList(chat.getMessData());
+        chatListView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                chatListView.setTranscriptMode(ListView.TRANSCRIPT_MODE_NORMAL);
+            }
+        }, 700L);
     }
 
     public boolean isLastPosition() {

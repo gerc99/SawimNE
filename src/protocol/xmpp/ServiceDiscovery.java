@@ -294,7 +294,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
 
         String domain = Jid.getDomain(xmpp.getUserId());
         addUnique(JLocale.getString(R.string.my_server), domain);
-        addUnique(JLocale.getString(R.string.conferences_on_) + domain, "conference." + domain);
+        addUnique(JLocale.getString(R.string.conferences_on_) + " " + domain, "conference." + domain);
     }
 
     public void isMucUsers(boolean isMucUsers) {
