@@ -426,34 +426,10 @@ public final class StringConvertor {
     }
 
     public static char toLowerCase(char c) {
-        /*if (c >= 'A' && c <= 'Z' || c >= '\300'
-                && c <= '\326' || c >= '\330'
-                && c <= '\336' || c >= '\u0400'
-                && c <= '\u042F') {
-            if (c <= 'Z' || c >= '\u0410' && c <= '\u042F') {
-                return (char)(c + 32);
-            }
-            if(c < '\u0410') {
-                return (char)(c + 80);
-            }
-            return (char)(c + 32);
-        }*/
         return Character.toLowerCase(c);
     }
 
     public static char toUpperCase(char c) {
-        /*if (c >= 'a' && c <= 'z' || c >= '\337'
-                && c <= '\366' || c >= '\370'
-                && c <= '\377' || c >= '\u0430'
-                && c <= '\u045F') {
-            if (c <= 'z' || c >= '\u0430' && c <= '\u044F') {
-                return (char)(c - 32);
-            }
-            if (c > '\u042F') {
-                return (char)(c - 80);
-            }
-            return (char)(c - 32);
-        }*/
         return Character.toUpperCase(c);
     }
 

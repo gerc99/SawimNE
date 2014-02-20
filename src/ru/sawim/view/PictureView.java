@@ -46,7 +46,7 @@ public class PictureView extends DialogFragment {
         settings.setJavaScriptCanOpenWindowsAutomatically(true);
         settings.setJavaScriptEnabled(true);
         settings.setLoadWithOverviewMode(true);
-        settings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
+    //    settings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
         settings.setSupportZoom(true);
         settings.setBuiltInZoomControls(true);
         webView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
@@ -63,7 +63,9 @@ public class PictureView extends DialogFragment {
                 }
             }
         });
-        webView.loadUrl(link);
+        String str = "<html><head><meta charset=\"utf-8\"><style>.block{max-width:100%;}body {margin: 0}</style></head><body><img class=\"block\" src=\""+ link + "\"></body></html>";
+        webView.loadDataWithBaseURL(null,str,"text/html", "en_US", null);
+        //webView.loadUrl(link);
         webView.setWebViewClient(new WebViewClient());
         return v;
     }

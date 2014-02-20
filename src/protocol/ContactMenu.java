@@ -3,6 +3,7 @@ package protocol;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.widget.Toast;
 import protocol.xmpp.Xmpp;
@@ -262,7 +263,7 @@ public class ContactMenu implements TextBoxView.TextBoxListener {
             synchronized (contacts) {
                 for (int i = 0; i < size; i++) {
                     find = (Contact) contacts.elementAt(i);
-                    if (find.annotations.equals("")) find.annotations = null;
+                    //if (find.annotations.equals("")) find.annotations = null;
                     if (find.annotations != null) {
                         xml.append("<note jid='").append(Util.xmlEscape(find.getUserId()));
                         xml.append("'>").append(Util.xmlEscape(find.annotations)).append("</note>");
