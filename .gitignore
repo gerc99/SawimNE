@@ -1,4 +1,5 @@
 out/*
 gen/*
-.idea/workspace.xml
+.idea/*
+SawimNE.iml
 SawimNE.apk
