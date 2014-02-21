@@ -5,14 +5,12 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
+import android.view.*;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -32,7 +30,7 @@ import java.net.URL;
  */
 public class PictureView extends DialogFragment {
 
-    private static final String TAG = PictureView.class.getSimpleName();
+    public static final String TAG = PictureView.class.getSimpleName();
     private String link;
     private boolean hide = false;
     private WebView webView;
@@ -51,6 +49,15 @@ public class PictureView extends DialogFragment {
                              Bundle savedInstanceState) {
         getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
         View v = inflater.inflate(R.layout.picture_view, container, false);
+        Display display = getDialog().getWindow().getWindowManager().getDefaultDisplay();
+        final float scale = getResources().getDisplayMetrics().density;
+        float[] DIMENSIONS_LANDSCAPE = {20, 60};
+        float[] DIMENSIONS_PORTRAIT = {40, 60};
+        float[] dimensions = (display.getWidth() < display.getHeight()) ? DIMENSIONS_PORTRAIT : DIMENSIONS_LANDSCAPE;
+        v.setLayoutParams(new FrameLayout.LayoutParams(
+                display.getWidth() - (int) (dimensions[0] * scale + 0.5f),
+                display.getHeight() - (int) (dimensions[1] * scale + 0.5f)));
+
         TextView textView = (TextView) v.findViewById(R.id.textView);
         textView.setText(link);
         progressBar = (ProgressBar) v.findViewById(R.id.progressBar);
@@ -63,7 +70,6 @@ public class PictureView extends DialogFragment {
         settings.setJavaScriptCanOpenWindowsAutomatically(true);
         settings.setJavaScriptEnabled(true);
         settings.setLoadWithOverviewMode(true);
-        //settings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
         settings.setSupportZoom(true);
         settings.setBuiltInZoomControls(true);
         webView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);

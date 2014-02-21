@@ -304,7 +304,7 @@ public class SawimActivity extends ActionBarActivity {
                 menu.add(Menu.NONE, MENU_PRIVATE_STATUS, Menu.NONE, R.string.private_status);
 
             menu.add(Menu.NONE, MENU_CONTACTS, Menu.NONE, R.string.all_contacts);
-            menu.findItem(MENU_CONTACTS).setTitle((RosterHelper.ALL_CONTACTS != RosterHelper.getInstance().getCurrPage()) ? R.string.all_contacts : R.string.active_contacts);
+            menu.findItem(MENU_CONTACTS).setTitle((RosterHelper.ALL_CONTACTS != RosterHelper.getInstance().getCurrPage()) ? R.string.all_contacts : R.string.only_online);
             int count = RosterHelper.getInstance().getProtocolCount();
             for (int i = 0; i < count; ++i) {
                 Protocol pr = RosterHelper.getInstance().getProtocol(i);
@@ -372,7 +372,7 @@ public class SawimActivity extends ActionBarActivity {
                 new StatusesView(p, StatusesView.ADAPTER_PRIVATESTATUS).show(getSupportFragmentManager(), "change-private-status");
                 break;
             case MENU_CONTACTS:
-                RosterHelper.getInstance().setCurrPage((RosterHelper.ALL_CONTACTS == RosterHelper.getInstance().getCurrPage()) ? RosterHelper.ACTIVE_CONTACTS : RosterHelper.ALL_CONTACTS);
+                RosterHelper.getInstance().setCurrPage((RosterHelper.ALL_CONTACTS == RosterHelper.getInstance().getCurrPage()) ? RosterHelper.ONLINE_CONTACTS : RosterHelper.ALL_CONTACTS);
                 RosterView rosterView = (RosterView) getSupportFragmentManager().findFragmentByTag(RosterView.TAG);
                 if (rosterView == null) rosterView = (RosterView) getSupportFragmentManager().findFragmentById(R.id.roster_fragment);
                 rosterView.getRosterAdapter().setType(RosterHelper.getInstance().getCurrPage());

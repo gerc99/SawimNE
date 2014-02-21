@@ -109,7 +109,9 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         chatListsView = new ChatListsView(activity, SawimApplication.isManyPane(), chatListView, nickList);
         chatInputBarView = new ChatInputBarView(activity, menuButton, smileButton, messageEditor, sendButton);
         chatViewLayout = new ChatViewRoot(activity, chatListsView, chatInputBarView);
-        drawerLayout = new DrawerLayout(activity);
+        if (!SawimApplication.isManyPane()) {
+            drawerLayout = new DrawerLayout(activity);
+        }
         SawimApplication.getInstance().setConfigurationChanged(new SawimApplication.OnConfigurationChanged() {
             @Override
             public void onConfigurationChanged() {

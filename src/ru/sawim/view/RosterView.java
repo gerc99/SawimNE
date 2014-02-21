@@ -9,6 +9,7 @@ import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -26,6 +27,7 @@ import ru.sawim.models.RosterAdapter;
 import ru.sawim.widget.IconTabPageIndicator;
 import ru.sawim.widget.MyListView;
 import ru.sawim.widget.SwipeGestureListener;
+import ru.sawim.widget.Util;
 import ru.sawim.widget.roster.RosterViewRoot;
 import sawim.Options;
 import sawim.chat.Chat;
@@ -51,11 +53,13 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     private static final int UPDATE_ROSTER = 2;
     private static final int PUT_INTO_QUEUE = 3;
 
+    private DrawerLayout drawerLayout;
     private LinearLayout barLinearLayout;
     private IconTabPageIndicator horizontalScrollView;
     private RosterViewRoot rosterViewLayout;
     private static ProgressBar progressBar;
     private MyListView rosterListView;
+    private MyListView chatsListView;
     private AdapterView.AdapterContextMenuInfo contextMenuInfo;
     private Handler handler;
 
@@ -68,11 +72,11 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-
         SawimApplication.setCurrentActivity((ActionBarActivity) activity);
         handler = new Handler(this);
-
-        barLinearLayout = new LinearLayout(activity);
+        if (SawimApplication.isManyPane()) {
+            barLinearLayout = new LinearLayout(activity);
+        }
         horizontalScrollView = new IconTabPageIndicator(SawimApplication.getCurrentActivity());
 
         if (progressBar == null) {
@@ -84,15 +88,70 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
             progressBar.setLayoutParams(ProgressBarLP);
         }
 
+        drawerLayout = new DrawerLayout(activity);
+        chatsListView = new MyListView(activity);
+        RosterAdapter chatsAdapter = new RosterAdapter(activity);
+        chatsAdapter.setType(RosterHelper.ACTIVE_CONTACTS);
+        DrawerLayout.LayoutParams nickListLP = new DrawerLayout.LayoutParams(Util.dipToPixels(getActivity(), 240), DrawerLayout.LayoutParams.MATCH_PARENT);
+        DrawerLayout.LayoutParams drawerLayoutLP = new DrawerLayout.LayoutParams(DrawerLayout.LayoutParams.MATCH_PARENT, DrawerLayout.LayoutParams.MATCH_PARENT);
+        drawerLayout.setDrawerShadow(R.drawable.drawer_shadow, Gravity.START);
+        drawerLayout.setScrimColor(Scheme.isBlack() ? 0x55FFFFFF : 0x99000000);
+        nickListLP.gravity = Gravity.START;
+        drawerLayout.setLayoutParams(drawerLayoutLP);
+        chatsListView.setBackgroundResource(Util.getSystemBackground(getActivity()));
+        chatsListView.setLayoutParams(nickListLP);
+        chatsListView.setAdapter(chatsAdapter);
+        chatsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Object o = chatsListView.getAdapter().getItem(position);
+                if (o instanceof Chat) {
+                    Chat chat = (Chat) o;
+                    openChat(chat.getProtocol(), chat.getContact(), false);
+                    if (SawimApplication.isManyPane())
+                        update();
+                }
+            }
+        });
+        drawerLayout.setDrawerListener(new DrawerLayout.DrawerListener() {
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {}
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                if (RosterHelper.getInstance().getProtocolCount() > 1 && !SawimApplication.isManyPane()) {
+                    initBar(false);
+                }
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                if (RosterHelper.getInstance().getProtocolCount() > 1 && !SawimApplication.isManyPane()) {
+                    initBar(true);
+                }
+            }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
+                if (newState == DrawerLayout.STATE_SETTLING) {
+                    if (chatsListView.getAdapter() != null) {
+                        ((RosterAdapter) chatsListView.getAdapter()).refreshList();
+                    }
+                }
+            }
+        });
+
         rosterListView = new MyListView(activity);
         RosterAdapter rosterAdapter = new RosterAdapter(activity);
+        rosterAdapter.setType(RosterHelper.getInstance().getCurrPage());
         LinearLayout.LayoutParams rosterListViewLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         rosterListView.setLayoutParams(rosterListViewLayoutParams);
         rosterListView.setAdapter(rosterAdapter);
         activity.registerForContextMenu(rosterListView);
         rosterListView.setOnCreateContextMenuListener(this);
         rosterListView.setOnItemClickListener(this);
-        /*gestureDetector = new GestureDetector(activity, new SwipeGestureListener(activity) {
+        rosterViewLayout = new RosterViewRoot(SawimApplication.getCurrentActivity(), progressBar, rosterListView);
+        /*final GestureDetector gestureDetector = new GestureDetector(activity, new SwipeGestureListener(activity) {
             @Override
             protected void onSwipeToRight() {
                 changeTab(false);
@@ -102,18 +161,29 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
             protected void onSwipeToLeft() {
                 changeTab(true);
             }
+        });
+        rosterViewLayout.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return gestureDetector.onTouchEvent(event);
+            }
         });*/
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        if (rosterViewLayout == null)
-            rosterViewLayout = new RosterViewRoot(SawimApplication.getCurrentActivity(), progressBar, rosterListView);
-        else
+        if (drawerLayout.getParent() != null) {
+            ((ViewGroup) drawerLayout.getParent()).removeView(drawerLayout);
+        }
+        if (rosterViewLayout.getParent() != null)
             ((ViewGroup) rosterViewLayout.getParent()).removeView(rosterViewLayout);
-        ((RosterAdapter) rosterListView.getAdapter()).setType(RosterHelper.getInstance().getCurrPage());
-        return rosterViewLayout;
+        if (chatsListView.getParent() != null) {
+            ((ViewGroup) chatsListView.getParent()).removeView(chatsListView);
+        }
+        drawerLayout.addView(rosterViewLayout);
+        drawerLayout.addView(chatsListView);
+        return drawerLayout;
     }
 
     @Override
@@ -192,8 +262,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         updateProgressBar();
     }
 
-    private void initBar() {
-        boolean isShowTabs = RosterHelper.getInstance().getProtocolCount() > 1;
+    private void initBar(boolean isShowTabs) {
         SawimApplication.getActionBar().setDisplayShowTitleEnabled(!isShowTabs);
         SawimApplication.getActionBar().setDisplayShowHomeEnabled(!isShowTabs);
         SawimApplication.getActionBar().setDisplayUseLogoEnabled(!isShowTabs);
@@ -203,17 +272,20 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         if (SawimApplication.isManyPane()) {
             ChatView chatView = (ChatView) SawimApplication.getCurrentActivity().getSupportFragmentManager()
                     .findFragmentById(R.id.chat_fragment);
-            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-            LinearLayout.LayoutParams horizontalScrollViewLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-            horizontalScrollViewLP.weight = 2;
-            horizontalScrollView.setLayoutParams(horizontalScrollViewLP);
             barLinearLayout.removeAllViews();
-            barLinearLayout.setLayoutParams(layoutParams);
-            barLinearLayout.addView(horizontalScrollView);
+            if (isShowTabs) {
+                LinearLayout.LayoutParams horizontalScrollViewLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+                horizontalScrollViewLP.weight = 2;
+                horizontalScrollView.setLayoutParams(horizontalScrollViewLP);
+                barLinearLayout.addView(horizontalScrollView);
+            }
             chatView.removeTitleBar();
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+            barLinearLayout.setLayoutParams(layoutParams);
             barLinearLayout.addView(chatView.getTitleBar());
             SawimApplication.getActionBar().setCustomView(barLinearLayout);
-        } else {
+        }
+        if (isShowTabs && !SawimApplication.isManyPane()) {
             SawimApplication.getActionBar().setCustomView(horizontalScrollView);
         }
     }
@@ -265,6 +337,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
                 : (position > 0 ? position - 1 : tabCount - 1);
         if (position >= 0 && position < tabCount) {
             actionBar.setSelectedNavigationItem(position);
+
         }
     }
 
@@ -279,7 +352,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
 
     public void resume() {
         SawimApplication.setCurrentActivity((ActionBarActivity) getActivity());
-        initBar();
+        initBar(RosterHelper.getInstance().getProtocolCount() > 1);
         if (RosterHelper.getInstance().getProtocolCount() > 0) {
             RosterHelper.getInstance().setCurrentContact(null);
             RosterHelper.getInstance().setOnUpdateRoster(this);
