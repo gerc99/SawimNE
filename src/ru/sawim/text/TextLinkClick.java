@@ -73,7 +73,8 @@ public class TextLinkClick implements TextLinkClickListener {
             if (!clickedString.startsWith("http://") && !clickedString.startsWith("https://"))
                 clickedString = "http://" + clickedString;
             String url = clickedString.toLowerCase();
-            if ((url.endsWith(".jpg"))
+            if (url.startsWith("http://pic4u.ru/")
+                    || (url.endsWith(".jpg"))
                     || (url.endsWith(".jpeg"))
                     || (url.endsWith(".png"))
                     || (url.endsWith(".gif"))

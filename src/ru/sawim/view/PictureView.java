@@ -74,8 +74,9 @@ public class PictureView extends DialogFragment {
         settings.setBuiltInZoomControls(true);
         webView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
         webView.setScrollbarFadingEnabled(true);
+
         progressBar.setVisibility(ProgressBar.VISIBLE);
-        RetreiveHtmlTask htmlTask = new RetreiveHtmlTask();
+        HtmlTask htmlTask = new HtmlTask();
         htmlTask.execute(link);
         webView.setWebChromeClient(new WebChromeClient() {
 
@@ -97,14 +98,11 @@ public class PictureView extends DialogFragment {
         try {
             if (link.startsWith("http://pic4u.ru/") && htmlTask.get() != null) {
                 webView.loadDataWithBaseURL(null, html1 + htmlTask.get() + html2, "text/html", "en_US", null);
-            } else if (link.startsWith("http://pic4u.ru/")) {
-                hide = true;
-                Intent i = new Intent(Intent.ACTION_VIEW);
-                i.setData(Uri.parse(link));
-                startActivity(i);
+            } else {
+                webView.loadDataWithBaseURL(null, html1 + link + html2, "text/html", "en_US", null);
             }
         } catch (Exception e) {
-            //hide = true;
+            hide = true;
             Intent i = new Intent(Intent.ACTION_VIEW);
             i.setData(Uri.parse(link));
             startActivity(i);
@@ -125,7 +123,7 @@ public class PictureView extends DialogFragment {
         }
     }
 
-    class RetreiveHtmlTask extends AsyncTask<String, Void, String> {
+    class HtmlTask extends AsyncTask<String, Void, String> {
 
         @Override
         protected String doInBackground(String... urls) {
