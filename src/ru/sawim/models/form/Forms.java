@@ -24,6 +24,7 @@ import java.util.List;
 public class Forms {
 
 
+
     public List<Control> controls = new ArrayList<Control>();
     public static final byte CONTROL_TEXT = 0;
     public static final byte CONTROL_INPUT = 1;
@@ -33,6 +34,7 @@ public class Forms {
     public static final byte CONTROL_IMAGE = 5;
     public static final byte CONTROL_LINK = 6;
     public static final byte CONTROL_GAUGE_FONT = 7;
+    public static final byte CONTROL_BUTTON = 8;
     private OnUpdateForm updateFormListener;
     private FormListener formListener;
     private OnBackPressed backPressedListener;
@@ -239,6 +241,10 @@ public class Forms {
 
     public void addLink(int controlId, String text) {
         add(create(controlId, CONTROL_LINK, null, text));
+    }
+
+    public void addButton(int controlId, String text) {
+        add(create(controlId, CONTROL_BUTTON, null, text));
     }
 
     public void addTextField(int controlId, int label, String text) {

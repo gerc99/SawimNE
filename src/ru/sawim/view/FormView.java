@@ -145,6 +145,7 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
             holder.spinner = new MySpinner(getActivity());
             holder.seekBar = new SeekBar(getActivity());
             holder.editText = new EditText(getActivity());
+            holder.button = new Button(getActivity());
 
             final ImageView imageView = holder.imageView;
             final TextView descView = holder.descView;
@@ -153,6 +154,7 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
             final MySpinner spinner = holder.spinner;
             final SeekBar seekBar = holder.seekBar;
             final EditText editText = holder.editText;
+            final Button button = holder.button;
 
             descView.setVisibility(TextView.GONE);
             labelView.setVisibility(TextView.GONE);
@@ -272,6 +274,16 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
                 listLayout.addView(imageView);
             } else if (Forms.CONTROL_LINK == c.type) {
                 drawText(c, labelView, descView, listLayout);
+            } else if (Forms.CONTROL_BUTTON == c.type) {
+                button.setText(getText(c));
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        hideKeyboard();
+                        Forms.getInstance().controlUpdated(c);
+                    }
+                });
+                listLayout.addView(button);
             }
         }
     }
@@ -296,6 +308,14 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
         }
     }
 
+    private String getText(Forms.Control c) {
+        String s = "";
+        if (c.label != null) s = c.label;
+        if (c.label != null && c.description != null) s += "\n";
+        if (c.description != null) s += c.description;
+        return s;
+    }
+
     static class ViewHolder {
         ImageView imageView;
         TextView descView;
@@ -304,6 +324,7 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
         MySpinner spinner;
         SeekBar seekBar;
         EditText editText;
+        Button button;
     }
 
     static class MySpinnerAdapter extends BaseAdapter implements SpinnerAdapter {

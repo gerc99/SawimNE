@@ -207,7 +207,7 @@ public final class Search implements FormListener, ControlStateListener {
             if (request_auth) {
                 searchForm.addCheckBox(REQ_AUTH, R.string.requauth, true);
             }
-            searchForm.addLink(PROFILE, JLocale.getString(R.string.info));
+            searchForm.addButton(PROFILE, JLocale.getString(R.string.info));
             searchForm.setControlStateListener(this);
             return;
         }

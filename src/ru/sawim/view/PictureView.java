@@ -5,12 +5,14 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.view.*;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -49,15 +51,6 @@ public class PictureView extends DialogFragment {
                              Bundle savedInstanceState) {
         getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
         View v = inflater.inflate(R.layout.picture_view, container, false);
-        Display display = getDialog().getWindow().getWindowManager().getDefaultDisplay();
-        final float scale = getResources().getDisplayMetrics().density;
-        float[] DIMENSIONS_LANDSCAPE = {20, 60};
-        float[] DIMENSIONS_PORTRAIT = {40, 60};
-        float[] dimensions = (display.getWidth() < display.getHeight()) ? DIMENSIONS_PORTRAIT : DIMENSIONS_LANDSCAPE;
-        v.setLayoutParams(new FrameLayout.LayoutParams(
-                display.getWidth() - (int) (dimensions[0] * scale + 0.5f),
-                display.getHeight() - (int) (dimensions[1] * scale + 0.5f)));
-
         TextView textView = (TextView) v.findViewById(R.id.textView);
         textView.setText(link);
         progressBar = (ProgressBar) v.findViewById(R.id.progressBar);
@@ -67,15 +60,15 @@ public class PictureView extends DialogFragment {
         webView.setInitialScale(1);
         settings.setLoadsImagesAutomatically(true);
         settings.setLightTouchEnabled(true);
-        settings.setJavaScriptCanOpenWindowsAutomatically(true);
-        settings.setJavaScriptEnabled(true);
+        //settings.setJavaScriptCanOpenWindowsAutomatically(true);
+        //settings.setJavaScriptEnabled(true);
         settings.setLoadWithOverviewMode(true);
         settings.setSupportZoom(true);
         settings.setBuiltInZoomControls(true);
         webView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
         webView.setScrollbarFadingEnabled(true);
-
         progressBar.setVisibility(ProgressBar.VISIBLE);
+
         HtmlTask htmlTask = new HtmlTask();
         htmlTask.execute(link);
         webView.setWebChromeClient(new WebChromeClient() {
@@ -91,22 +84,6 @@ public class PictureView extends DialogFragment {
                 }
             }
         });
-        String html1 = "<html><head><meta charset=\"utf-8\"><style>.block{max-width:100%;}" +
-                "body {margin: 0}</style></head><body><img class=\"block\" src=\"";
-        String html2 = "\"></body></html>";
-        webView.setWebViewClient(new WebViewClient());
-        try {
-            if (link.startsWith("http://pic4u.ru/") && htmlTask.get() != null) {
-                webView.loadDataWithBaseURL(null, html1 + htmlTask.get() + html2, "text/html", "en_US", null);
-            } else {
-                webView.loadDataWithBaseURL(null, html1 + link + html2, "text/html", "en_US", null);
-            }
-        } catch (Exception e) {
-            hide = true;
-            Intent i = new Intent(Intent.ACTION_VIEW);
-            i.setData(Uri.parse(link));
-            startActivity(i);
-        }
         return v;
     }
 
@@ -123,38 +100,62 @@ public class PictureView extends DialogFragment {
         }
     }
 
-    class HtmlTask extends AsyncTask<String, Void, String> {
+    class HtmlTask extends AsyncTask<String, Void, String[]> {
 
         @Override
-        protected String doInBackground(String... urls) {
-            String result;
+        protected String[] doInBackground(String... urls) {
+            String[] result = {null, null};
             try {
                 URL url = new URL(urls[0]);
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                result[1] = urlConnection.getContentType();
                 BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
                 StringBuilder total = new StringBuilder();
                 String line;
                 while ((line = reader.readLine()) != null) {
                     total.append(line);
                 }
-                result = total.toString();
-                int start = result.indexOf("<div class='img-preview'>") + 36;
+                result[0] = total.toString();
+                int start = result[0].indexOf("<div class='img-preview'>") + 36;
                 if (start == -1) {
-                    return null;
+                    result[0] = null;
+                    return result;
                 }
-                int end = result.indexOf("'><img src='", start);
-                result = result.substring(start, end);
-                result = url.getProtocol() + "://" + url.getHost() + result;
+                int end = result[0].indexOf("'><img src='", start);
+                result[0] = result[0].substring(start, end);
+                result[0] = url.getProtocol() + "://" + url.getHost() + result[0];
             } catch (Exception e) {
-                return null;
+                return result;
             }
             return result;
         }
 
         @Override
-        protected void onPostExecute(String s) {
+        protected void onPostExecute(String[] s) {
             super.onPostExecute(s);
             progressBar.setVisibility(ProgressBar.GONE);
+
+            String html1 = "<html><head><meta charset=\"utf-8\"><style>.block{max-width:100%;}" +
+                    "body {margin: 0}</style></head><body><img class=\"block\" src=\"";
+            String html2 = "\"></body></html>";
+            webView.setWebViewClient(new WebViewClient());
+            try {
+                if (link.startsWith("http://pic4u.ru/") && s[0] != null) {
+                    webView.loadDataWithBaseURL(null, html1 + s[0] + html2, "text/html", "en_US", null);
+                } else if (link.startsWith("http://pic4u.ru/") && !s[1].startsWith("image/") || !s[1].startsWith("image/")) {
+                    hide = true;
+                    Intent i = new Intent(Intent.ACTION_VIEW);
+                    i.setData(Uri.parse(link));
+                    startActivity(i);
+                } else {
+                    webView.loadDataWithBaseURL(null, html1 + link + html2, "text/html", "en_US", null);
+                }
+            } catch (Exception e) {
+                hide = true;
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(link));
+                startActivity(i);
+            }
         }
     }
 }

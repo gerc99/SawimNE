@@ -336,10 +336,9 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         position = next
                 ? (position < tabCount - 1 ? position + 1 : 0)
                 : (position > 0 ? position - 1 : tabCount - 1);
-        //if (position >= 0 && position < tabCount) {
+        if (position >= 0 && position < tabCount) {
             actionBar.setSelectedNavigationItem(1);
-              Log.e(TAG, "jjjjjjjjjj");
-        //}
+        }
     }
 
     @Override
@@ -352,14 +351,17 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     }
 
     public void resume() {
+        boolean drawerVisible = drawerLayout != null && !drawerLayout.isDrawerOpen(chatsListView);
         SawimApplication.setCurrentActivity((ActionBarActivity) getActivity());
-        initBar(RosterHelper.getInstance().getProtocolCount() > 1, R.string.app_name);
+        initBar(RosterHelper.getInstance().getProtocolCount() > 1
+                && drawerVisible, drawerVisible ? R.string.active_contacts : R.string.app_name);
         if (RosterHelper.getInstance().getProtocolCount() > 0) {
             RosterHelper.getInstance().setCurrentContact(null);
             RosterHelper.getInstance().setOnUpdateRoster(this);
             if (SawimApplication.returnFromAcc) {
                 SawimApplication.returnFromAcc = false;
-                if (RosterHelper.getInstance().getCurrentProtocol().getContactItems().size() == 0 && !RosterHelper.getInstance().getCurrentProtocol().isConnecting())
+                if (RosterHelper.getInstance().getCurrentProtocol().getContactItems().size() == 0
+                        && !RosterHelper.getInstance().getCurrentProtocol().isConnecting())
                     Toast.makeText(SawimApplication.getCurrentActivity(), R.string.press_menu_for_connect, Toast.LENGTH_LONG).show();
                 addProtocolsTabs();
             }
