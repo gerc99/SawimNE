@@ -67,8 +67,12 @@ public class PictureView extends DialogFragment {
         settings.setBuiltInZoomControls(true);
         webView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
         webView.setScrollbarFadingEnabled(true);
-        progressBar.setVisibility(ProgressBar.VISIBLE);
+        webView.setWebViewClient(new WebViewClient());
 
+        if (-1 != link.indexOf("https://www.dropbox.com")) {
+            link = link.replace("https://www.dropbox", "http://dl.dropboxusercontent");
+        }
+        progressBar.setVisibility(ProgressBar.VISIBLE);
         HtmlTask htmlTask = new HtmlTask();
         htmlTask.execute(link);
         webView.setWebChromeClient(new WebChromeClient() {
@@ -109,6 +113,9 @@ public class PictureView extends DialogFragment {
                 URL url = new URL(urls[0]);
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
                 result[1] = urlConnection.getContentType();
+                if (result[1].startsWith("image/")) {
+                    return result;
+                }
                 BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
                 StringBuilder total = new StringBuilder();
                 String line;
@@ -116,13 +123,15 @@ public class PictureView extends DialogFragment {
                     total.append(line);
                 }
                 result[0] = total.toString();
-                int start = result[0].indexOf("<div class='img-preview'>") + 36;
-                if (start == -1) {
-                    result[0] = null;
-                    return result;
+                if (link.startsWith("http://pic4u.ru/")) {
+                    int start = result[0].indexOf("<div class='img-preview'>") + 36;
+                    if (start == -1) {
+                        result[0] = null;
+                        return result;
+                    }
+                    int end = result[0].indexOf("'><img src='", start);
+                    result[0] = result[0].substring(start, end);
                 }
-                int end = result[0].indexOf("'><img src='", start);
-                result[0] = result[0].substring(start, end);
                 result[0] = url.getProtocol() + "://" + url.getHost() + result[0];
             } catch (Exception e) {
                 return result;
@@ -132,15 +141,13 @@ public class PictureView extends DialogFragment {
 
         @Override
         protected void onPostExecute(String[] s) {
-            super.onPostExecute(s);
             progressBar.setVisibility(ProgressBar.GONE);
 
             String html1 = "<html><head><meta charset=\"utf-8\"><style>.block{max-width:100%;}" +
                     "body {margin: 0}</style></head><body><img class=\"block\" src=\"";
             String html2 = "\"></body></html>";
-            webView.setWebViewClient(new WebViewClient());
             try {
-                if (link.startsWith("http://pic4u.ru/") && s[0] != null) {
+                if (s[0] != null) {
                     webView.loadDataWithBaseURL(null, html1 + s[0] + html2, "text/html", "en_US", null);
                 } else if (link.startsWith("http://pic4u.ru/") && !s[1].startsWith("image/") || !s[1].startsWith("image/")) {
                     hide = true;

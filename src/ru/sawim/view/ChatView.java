@@ -114,6 +114,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
             @Override
             public void onConfigurationChanged() {
                 adapter.isRepaint = true;
+                hideKeyboard();
             }
         });
     }
@@ -260,7 +261,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         smileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                hideKeyboard(view);
+                hideKeyboard();
                 new SmilesView().show(SawimApplication.getCurrentActivity().getSupportFragmentManager(), "show-smiles");
             }
         });
@@ -836,18 +837,18 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
     }
 
     public void showKeyboard() {
-        Configuration conf = Resources.getSystem().getConfiguration();
+        if (messageEditor == null) return;
         messageEditor.requestFocus();
-        if (conf.hardKeyboardHidden != Configuration.HARDKEYBOARDHIDDEN_NO) {
+        if (Resources.getSystem().getConfiguration().hardKeyboardHidden != Configuration.HARDKEYBOARDHIDDEN_NO) {
             InputMethodManager keyboard = (InputMethodManager) SawimApplication.getCurrentActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
             keyboard.showSoftInput(messageEditor, InputMethodManager.SHOW_FORCED);
         }
     }
 
-    private void hideKeyboard(View view) {
-        if (Options.getBoolean(Options.OPTION_HIDE_KEYBOARD)) {
+    private void hideKeyboard() {
+        if (Options.getBoolean(Options.OPTION_HIDE_KEYBOARD) && messageEditor != null) {
             InputMethodManager imm = (InputMethodManager) SawimApplication.getCurrentActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            imm.hideSoftInputFromWindow(messageEditor.getWindowToken(), 0);
         }
     }
 
@@ -859,7 +860,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
 
     private void send() {
         if (chat == null) return;
-        hideKeyboard(messageEditor);
+        hideKeyboard();
         chat.sendMessage(getText());
         resetText();
         chat.message = null;
