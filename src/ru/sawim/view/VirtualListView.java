@@ -3,6 +3,7 @@ package ru.sawim.view;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.*;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -24,7 +25,7 @@ import ru.sawim.widget.MyListView;
  */
 public class VirtualListView extends SawimFragment implements VirtualList.OnVirtualListListener {
 
-    public static final String TAG = "VirtualListView";
+    public static final String TAG = VirtualListView.class.getSimpleName();
     private VirtualListAdapter adapter;
     private VirtualList list = VirtualList.getInstance();
     private MyListView lv;
@@ -39,8 +40,10 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
     @Override
     public void onDetach() {
         super.onDetach();
-        list.clearAll();
-        adapter = null;
+        if (getFragmentManager().getBackStackEntryCount() == 1) {
+            list.clearAll();
+            adapter = null;
+        }
     }
 
     @Override

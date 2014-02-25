@@ -1,6 +1,10 @@
 package sawim;
 
+import android.os.Build;
 import android.util.Log;
+
+import org.json.JSONObject;
+
 import protocol.Contact;
 import protocol.Protocol;
 import protocol.net.TcpSocket;
@@ -21,13 +25,16 @@ import sawim.roster.RosterHelper;
 import sawim.util.JLocale;
 
 import java.io.ByteArrayInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Scanner;
 
 public final class FileTransfer implements FileBrowserListener, PhotoListener, Runnable, FormListener {
+    private static final String TAG = FileTransfer.class.getSimpleName();
 
     private static final int descriptionField = 1000;
     private static final int transferMode = 1001;
@@ -103,48 +110,22 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
     }
 
     public void onFileSelect(InputStream in, String fileName) {
-        //try {
-        setFileName(fileName);
-        int fileSize = 0;
         try {
+            setFileName(fileName);
+            int fileSize = 0;
             fileSize = in.available();
-        } catch (IOException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-        byte[] image = null;
-
-        if ((fileSize < MAX_IMAGE_SIZE) && isImageFile()) {
-            image = FileSystem.getInstance().getFileContent(filename);
-        }
-        setData(in, fileSize);
-        askForNameDesc();
-        showPreview(image);
-        /*} catch (Exception e) {
-            closeFile();
-            handleException(new SawimException(191, 6));
-            Log.e("Send", e.getMessage());
-        }*/
-    }
-
-    public void onFileSelect(String filename) throws SawimException {
-        file = FileSystem.getInstance();
-        try {
-            file.openFile(filename);
-            setFileName(file.getName());
-
-            InputStream is = file.openInputStream();
-            int fileSize = (int) file.fileSize();
             byte[] image = null;
 
             if ((fileSize < MAX_IMAGE_SIZE) && isImageFile()) {
                 image = FileSystem.getInstance().getFileContent(filename);
             }
-            setData(is, fileSize);
+            setData(in, fileSize);
             askForNameDesc();
             showPreview(image);
         } catch (Exception e) {
             closeFile();
-            throw new SawimException(191, 3);
+            handleException(new SawimException(191, 6));
+            Log.e("Send", e.getMessage());
         }
     }
 
@@ -251,7 +232,6 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
             return;
         }
         changeFileProgress(0, R.string.error);
-        Log.e("FileTransfer", JLocale.getString(R.string.error) + "\n" + e.getMessage());
     }
 
     private void closeFile() {
@@ -327,70 +307,127 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
 
     private void sendFileThroughServer(InputStream fis, int fileSize) throws SawimException {
         TcpSocket socket = new TcpSocket();
-        try {
-            socket.connectTo("files.jimm.net.ru", 2000);
+        final String UPLOAD_URL = "https://api.imgur.com/3/image";
+        String url = null;
+        HttpURLConnection conn = null;
+        InputStream responseIn = null;
 
-            final int version = 1;
-            Util header = new Util();
-            header.writeWordBE(version);
-            header.writeLenAndUtf8String(filename);
-            header.writeLenAndUtf8String(description);
-            header.writeLenAndUtf8String(getTransferClient());
-            header.writeDWordBE(fileSize);
-            socket.write(header.toByteArray());
-            socket.flush();
+        if (isImageFile()) {
+            try {
+                conn = (HttpURLConnection) new URL(UPLOAD_URL).openConnection();
+                conn.setDoOutput(true);
+                if (Build.VERSION.SDK != null && Build.VERSION.SDK_INT > 13) { conn.setRequestProperty("Connection", "close"); }
 
-            byte[] buffer = new byte[4 * 1024];
-            int counter = fileSize;
-            while (counter > 0) {
-                int read = fis.read(buffer);
-                socket.write(buffer, 0, read);
-                counter -= read;
-                if (fileSize != 0) {
-                    if (isCanceled()) {
-                        throw new SawimException(194, 1);
-                    }
-                    socket.flush();
-                    setProgress((100 - 2) * (fileSize - counter) / fileSize);
+                conn.setRequestProperty("Authorization", "Client-ID c90472da1a4d000"); // get on site
+
+                OutputStream out = conn.getOutputStream();
+                byte[] buffer = new byte[8192];
+                int count = 0;
+                int n = 0;
+
+                while (-1 != (n = fis.read(buffer))) {
+                    out.write(buffer, 0, n);
+                    count += n;
+                    setProgress((int)(100.0-2) * count/fileSize);
                 }
+                out.flush();
+                out.close();
+
+                if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                    responseIn = conn.getInputStream();
+                    StringBuilder sb = new StringBuilder();
+                    Scanner scanner = new Scanner(responseIn);
+                    while (scanner.hasNext()) {
+                        sb.append(scanner.next());
+                    }
+
+                    JSONObject root = new JSONObject(sb.toString());
+                    url = root.getJSONObject("data").getString("link");
+                } else {
+                    Log.i(TAG, "responseCode=" + conn.getResponseCode());
+                    responseIn = conn.getErrorStream();
+                    StringBuilder sb = new StringBuilder();
+                    Scanner scanner = new Scanner(responseIn);
+                    while (scanner.hasNext()) {
+                        sb.append(scanner.next());
+                    }
+                    Log.i(TAG, "error response: " + sb.toString());
+                }
+            } catch (Exception ex) {
+                Log.e(TAG, "Error during POST", ex);
+            } finally {
+                try {
+                    responseIn.close();
+                } catch (Exception ignore) {}
+                try {
+                    conn.disconnect();
+                } catch (Exception ignore) {}
             }
-            socket.flush();
+        } else {
+            try {
+                socket.connectTo("files.jimm.net.ru", 2000);
 
-            int length = socket.read();
-            if (-1 == length) {
-                throw new SawimException(120, 13);
+                final int version = 1;
+                Util header = new Util();
+                header.writeWordBE(version);
+                header.writeLenAndUtf8String(filename);
+                header.writeLenAndUtf8String(description);
+                header.writeLenAndUtf8String(getTransferClient());
+                header.writeDWordBE(fileSize);
+                socket.write(header.toByteArray());
+                socket.flush();
+
+                byte[] buffer = new byte[4 * 1024];
+                int counter = fileSize;
+                while (counter > 0) {
+                    int read = fis.read(buffer);
+                    socket.write(buffer, 0, read);
+                    counter -= read;
+                    if (fileSize != 0) {
+                        if (isCanceled()) {
+                            throw new SawimException(194, 1);
+                        }
+                        socket.flush();
+                        setProgress((100 - 2) * (fileSize - counter) / fileSize);
+                    }
+                }
+                socket.flush();
+
+                int length = socket.read();
+                if (-1 == length) {
+                    throw new SawimException(120, 13);
+                }
+                socket.read(buffer, 0, length);
+                url = StringConvertor.utf8beByteArrayToString(buffer, 0, length);
+
+                if (isCanceled()) {
+                    throw new SawimException(194, 1);
+                }
+                socket.close();
+
+            } catch (SawimException e) {
+                DebugLog.panic("send file", e);
+                socket.close();
+                throw e;
+
+            } catch (Exception e) {
+                DebugLog.panic("send file", e);
+                socket.close();
+                throw new SawimException(194, 0);
             }
-            socket.read(buffer, 0, length);
-            String url = StringConvertor.utf8beByteArrayToString(buffer, 0, length);
-
-            if (isCanceled()) {
-                throw new SawimException(194, 1);
-            }
-
-            StringBuilder messText = new StringBuilder();
-            if (!StringConvertor.isEmpty(description)) {
-                messText.append(description).append("\n");
-            }
-            messText.append("File: ").append(filename).append("\n");
-            messText.append("Size: ")
-                    .append(StringConvertor.bytesToSizeString(fileSize, false))
-                    .append("\n");
-            messText.append("Link: ").append(url);
-
-            protocol.sendMessage(cItem, messText.toString(), true);
-            setProgress(100);
-            socket.close();
-
-        } catch (SawimException e) {
-            DebugLog.panic("send file", e);
-            socket.close();
-            throw e;
-
-        } catch (Exception e) {
-            DebugLog.panic("send file", e);
-            socket.close();
-            throw new SawimException(194, 0);
         }
+        StringBuilder messText = new StringBuilder();
+        if (!StringConvertor.isEmpty(description)) {
+            messText.append(description).append("\n");
+        }
+        messText.append("File: ").append(filename).append("\n");
+        messText.append("Size: ")
+                .append(StringConvertor.bytesToSizeString(fileSize, false))
+                .append("\n");
+        messText.append("Link: ").append(url);
+
+        protocol.sendMessage(cItem, messText.toString(), true);
+        setProgress(100);
     }
 
     private void sendFileThroughWeb(String host, InputStream fis, int fsize) throws SawimException {
@@ -484,6 +521,6 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
     }
 
     private boolean isImageFile() {
-        return filename.endsWith(".jpg") || filename.endsWith(".jpeg") || filename.endsWith(".png");
+        return filename.endsWith(".bmp") || filename.endsWith(".gif") || filename.endsWith(".jpg") || filename.endsWith(".jpeg") || filename.endsWith(".png");
     }
 }

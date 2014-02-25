@@ -54,9 +54,11 @@ public class VirtualList {
     }
 
     public void clearAll() {
-        model.clear();
         clearListeners();
-        model = null;
+        if (model != null) {
+            model.clear();
+            model = null;
+        }
         caption = null;
     }
 

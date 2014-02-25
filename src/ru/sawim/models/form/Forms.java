@@ -23,8 +23,6 @@ import java.util.List;
  */
 public class Forms {
 
-
-
     public List<Control> controls = new ArrayList<Control>();
     public static final byte CONTROL_TEXT = 0;
     public static final byte CONTROL_INPUT = 1;

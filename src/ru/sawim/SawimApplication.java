@@ -253,8 +253,8 @@ public class SawimApplication extends Application {
     }
 
     public void setConfigurationChanged(OnConfigurationChanged cC) {
-        if (configurationChanged == null)
-            configurationChanged = cC;
+        configurationChanged = null;
+        configurationChanged = cC;
     }
 
     public static ActionBar getActionBar() {

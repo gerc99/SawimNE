@@ -156,36 +156,13 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
                 changeTab(true);
             }
         });*/
-        final GestureDetector gestureDetector = new GestureDetector(activity, new swipeGestureListener());
         rosterViewLayout = new RosterViewRoot(SawimApplication.getCurrentActivity(), progressBar, rosterListView);
-        Log.e(TAG, "That's ");
-        rosterViewLayout.setOnTouchListener(new View.OnTouchListener() {
+        /*rosterViewLayout.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 return gestureDetector.onTouchEvent(event);
             }
-        });
-    }
-
-    private class swipeGestureListener extends GestureDetector.SimpleOnGestureListener {
-
-        @Override
-        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-            Log.e("jpedal", "That's ");
-            final int neededDistance = 30;
-            if (e1.getRawX() > e2.getRawX() && Math.abs(e1.getRawX() - e2.getRawX()) > neededDistance) {
-                float distance = Math.abs(e1.getRawX() - e2.getRawX());
-                Log.e("jpedal", "That's a left swipe! " + distance);
-
-                return true;
-            } else if (e2.getRawX() > e1.getRawX() && Math.abs(e2.getRawX() - e1.getRawX()) > neededDistance) {
-                float distance = Math.abs(e2.getRawX() - e1.getRawX());
-                Log.e("jpedal", "That's a right swipe! " + distance);
-
-                return true;
-            }
-            return false;
-        }
+        });*/
     }
 
     @Override
@@ -373,6 +350,9 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     public void resume() {
         boolean drawerVisible = drawerLayout != null && drawerLayout.isDrawerOpen(chatsListView);
         SawimApplication.setCurrentActivity((ActionBarActivity) getActivity());
+        if (!drawerVisible && chatsListView.getAdapter().getCount() > 0) {
+            drawerLayout.openDrawer(chatsListView);
+        }
         initBar(RosterHelper.getInstance().getProtocolCount() > 1
                 && !drawerVisible, drawerVisible ? R.string.active_contacts : R.string.app_name);
         if (RosterHelper.getInstance().getProtocolCount() > 0) {

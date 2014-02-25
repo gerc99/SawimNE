@@ -5,14 +5,13 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
+import android.util.Log;
+import android.view.*;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -51,6 +50,16 @@ public class PictureView extends DialogFragment {
                              Bundle savedInstanceState) {
         getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
         View v = inflater.inflate(R.layout.picture_view, container, false);
+
+        Display display = getDialog().getWindow().getWindowManager().getDefaultDisplay();
+        final float scale = getResources().getDisplayMetrics().density;
+        float[] DIMENSIONS_LANDSCAPE = {20, 60};
+        float[] DIMENSIONS_PORTRAIT = {40, 60};
+        float[] dimensions = (display.getWidth() < display.getHeight()) ? DIMENSIONS_PORTRAIT : DIMENSIONS_LANDSCAPE;
+        v.setLayoutParams(new FrameLayout.LayoutParams(
+                display.getWidth() - (int) (dimensions[0] * scale + 0.5f),
+                display.getHeight() - (int) (dimensions[1] * scale + 0.5f)));
+
         TextView textView = (TextView) v.findViewById(R.id.textView);
         textView.setText(link);
         progressBar = (ProgressBar) v.findViewById(R.id.progressBar);
@@ -95,15 +104,6 @@ public class PictureView extends DialogFragment {
         this.link = link;
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (webView != null) {
-            webView.destroy();
-            webView = null;
-        }
-    }
-
     class HtmlTask extends AsyncTask<String, Void, String[]> {
 
         @Override
@@ -134,6 +134,8 @@ public class PictureView extends DialogFragment {
                 }
                 result[0] = url.getProtocol() + "://" + url.getHost() + result[0];
             } catch (Exception e) {
+                e.printStackTrace();
+                result[0] = null;
                 return result;
             }
             return result;
@@ -147,7 +149,7 @@ public class PictureView extends DialogFragment {
                     "body {margin: 0}</style></head><body><img class=\"block\" src=\"";
             String html2 = "\"></body></html>";
             try {
-                if (s[0] != null) {
+                if (link.startsWith("http://pic4u.ru/") && s[0] != null) {
                     webView.loadDataWithBaseURL(null, html1 + s[0] + html2, "text/html", "en_US", null);
                 } else if (link.startsWith("http://pic4u.ru/") && !s[1].startsWith("image/") || !s[1].startsWith("image/")) {
                     hide = true;

@@ -388,6 +388,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         removeMessages(Options.getInt(Options.OPTION_MAX_MSG_COUNT));
         if (sharingText != null) chat.message += " " + sharingText;
         messageEditor.setText(chat.message);
+        messageEditor.setSelection(messageEditor.getText().length());
         updateChatIcon();
         if (SawimApplication.isManyPane()) adapter.isRepaint = true;
         else drawerLayout.setDrawerLockMode(contact.isConference() ?
@@ -598,7 +599,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
             chatBarLayout.setVisibilityChatsImage(View.VISIBLE);
             chatsImage.setImageDrawable(icMess);
         }
-        if (chatsSpinnerAdapter != null)
+        if (chatsSpinnerAdapter != null && chat != null)
             chatBarLayout.updateLabelIcon(chatsSpinnerAdapter.getImageChat(chat, false));
     }
 

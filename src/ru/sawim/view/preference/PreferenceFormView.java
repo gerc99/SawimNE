@@ -24,7 +24,7 @@ import java.util.List;
  */
 public class PreferenceFormView extends PreferenceFragment {
 
-    public static final String TAG = "PreferenceFormView";
+    public static final String TAG = PreferenceFormView.class.getSimpleName();
     PreferenceScreen rootScreen;
 
     @Override

@@ -53,7 +53,7 @@ public class FileProgressView extends DialogFragment {
     public void showProgress() {
         FragmentTransaction transaction = SawimApplication.getCurrentActivity().getSupportFragmentManager().beginTransaction();
         transaction.add(this, "file_progress");
-        transaction.commitAllowingStateLoss();
+        transaction.commit();
     }
 
     public void changeFileProgress(final int percent, final String caption, final String text) {

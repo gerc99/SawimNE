@@ -31,7 +31,7 @@ import java.util.List;
  */
 public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.OnClickListener {
 
-    public static final String TAG = "FormView";
+    public static final String TAG = FormView.class.getSimpleName();
     private LinearLayout listLayout;
     private Button okButton;
     private Button cancelButton;
