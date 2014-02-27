@@ -43,6 +43,7 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
     private static final int JO_HTTP = 2;
     private static final int IBB_MODE = 3;
     private static final int MAX_IMAGE_SIZE = 2 * 1024 * 1024;
+    private String real_filename;
     private String filename;
     private String description;
     private int sendMode;
@@ -142,7 +143,7 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
 
     private void askForNameDesc() {
         name_Desc = new Forms(R.string.name_desc, this, true);
-        name_Desc.addString(R.string.filename, filename);
+        name_Desc.addString(R.string.filename, real_filename);
         name_Desc.addTextField(descriptionField, R.string.description, "");
         String items = "jimm.net.ru|www.jimm.net.ru|jimm.org";
         if (cItem instanceof protocol.xmpp.XmppContact) {
@@ -294,11 +295,13 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
     }
 
     private void setFileName(String name) {
+        real_filename = name;
         name = name.replace(':', '.');
         name = name.replace('/', '_');
         name = name.replace('\\', '_');
         name = name.replace('%', '_');
-        filename = name;
+        filename = name.toLowerCase();
+
     }
 
     private String getTransferClient() {
@@ -420,7 +423,7 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
         if (!StringConvertor.isEmpty(description)) {
             messText.append(description).append("\n");
         }
-        messText.append("File: ").append(filename).append("\n");
+        messText.append("File: ").append(real_filename).append("\n");
         messText.append("Size: ")
                 .append(StringConvertor.bytesToSizeString(fileSize, false))
                 .append("\n");
