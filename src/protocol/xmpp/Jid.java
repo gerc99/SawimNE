@@ -59,9 +59,14 @@ public class Jid {
                 || jid.startsWith("irc.", start);
     }
 
+    public static boolean isJID(String jid)
+    {
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(jid).matches();
+    }
+
     public static boolean isConference(String jid) {
         int index = jid.indexOf('@');
-        if (-1 < index) {
+        if ((-1 < index) && isJID(jid)) {
             if (isConferenceDomain(jid, index + 1)) {
                 return true;
             }
