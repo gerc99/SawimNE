@@ -43,6 +43,12 @@ public final class XmppConnection extends ClientConnection {
     private boolean authorized_ = false;
     private boolean rosterLoaded = false;
 
+    private boolean smSupported = false;
+    private boolean smEnabled = false;
+    private String smSessionID = "";
+    private long packetsIn;
+    private long packetsOut;
+
     private UserInfo singleUserInfo;
     private String autoSubscribeDomain;
     private XmppForm xmppForm;
@@ -464,12 +470,21 @@ public final class XmppConnection extends ClientConnection {
 
     private void parse(XmlNode x) throws SawimException {
         if (x.is("iq")) {
+            if (smEnabled) {
+                packetsIn++;
+            }
             parseIq(x);
 
         } else if (x.is("presence")) {
+            if (smEnabled) {
+                packetsIn++;
+            }
             parsePresence(x);
 
-        } else if (x.is("m" + "essage")) {
+        } else if (x.is("message")) {
+            if (smEnabled) {
+                packetsIn++;
+            }
             parseMessage(x);
 
         } else if (x.is("stream:error")) {
@@ -478,6 +493,12 @@ public final class XmppConnection extends ClientConnection {
             XmlNode err = (null == x.childAt(0)) ? x : x.childAt(0);
             DebugLog.systemPrintln("[INFO-JABBER] Stream error!: " + err.name + "," + err.value);
 
+        } else if (x.is("r")) {
+            sendAck();
+        } else if (x.is("enabled")) {
+            smEnabled = true;
+            smSessionID = x.getAttribute("id");
+            DebugLog.systemPrintln("[INFO-JABBER] Session management enabled with ID=" + smSessionID);
         }
     }
 
@@ -558,6 +579,10 @@ public final class XmppConnection extends ClientConnection {
                 + "<feature-not-implemented xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/>"
                 + "</error>"
                 + "</iq>");
+    }
+
+    private void sendAck() {
+        putPacketIntoQueue("<a xmlns='urn:xmpp:sm:3' h='" + String.valueOf(packetsIn) + "'/>");
     }
 
     private boolean isMy(String from) {
@@ -650,6 +675,9 @@ public final class XmppConnection extends ClientConnection {
                     getBookmarks();
                     putPacketIntoQueue("<iq type='get' id='getnotes'><query xmlns='jabber:iq:private'><storage xmlns='storage:rosternotes'/></query></iq>");
                     setProgress(100);
+                    if (smSupported) {
+                        putPacketIntoQueue("<enable xmlns='urn:xmpp:sm:3' resume='true' />");
+                    }
 
                 } else if (IQ_TYPE_SET == iqType) {
                     while (0 < iqQuery.childrenCount()) {
@@ -1705,6 +1733,11 @@ public final class XmppConnection extends ClientConnection {
         if (0 == x.childrenCount()) {
             nonSaslLogin();
             return;
+        }
+
+        x2 = x.getFirstNode("sm", "urn:xmpp:sm:3");
+        if (null != x2) {
+            smSupported = true;
         }
 
         x2 = x.getFirstNode("starttls");
