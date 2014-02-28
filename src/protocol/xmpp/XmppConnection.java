@@ -26,7 +26,7 @@ public final class XmppConnection extends ClientConnection {
     private Socket socket;
     private Xmpp protocol;
 
-    private String fullJid_;
+    String fullJid_;
     private String domain_ = "";
     private String resource;
     private final boolean xep0048 = false;
@@ -44,10 +44,11 @@ public final class XmppConnection extends ClientConnection {
     private boolean rosterLoaded = false;
 
     private boolean smSupported = false;
-    private boolean smEnabled = false;
-    private String smSessionID = "";
-    private long packetsIn;
-    private long packetsOut;
+    boolean smEnabled = false;
+    String smSessionID = "";
+    long packetsIn;
+    long packetsOut;
+    XmppSession session;
 
     private UserInfo singleUserInfo;
     private String autoSubscribeDomain;
@@ -147,6 +148,7 @@ public final class XmppConnection extends ClientConnection {
     }
 
     public XmppConnection() {
+        session = new XmppSession(SawimApplication.getContext(), this);
     }
 
     public void setXmpp(Xmpp xmpp) {
@@ -198,10 +200,16 @@ public final class XmppConnection extends ClientConnection {
 
     protected final void ping() throws SawimException {
         write(pingPacket);
+        if (smEnabled) {
+            session.save();
+        }
     }
 
     protected final void pingForPong() throws SawimException {
         write(forPongPacket);
+        if (smEnabled) {
+            session.save();
+        }
     }
 
     private void putPacketIntoQueue(Object packet) {
@@ -411,7 +419,20 @@ public final class XmppConnection extends ClientConnection {
         if (x.is("stream:features")) {
             parseStreamFeatures(x);
             return;
-        } else if (x.is("compressed")) {
+        } else if (x.is("resumed")) {
+            session.save();
+            setAuthStatus(true);
+            DebugLog.systemPrintln("[INFO-JABBER] Resumed session ID=" + smSessionID);
+        } else if (x.is("failed")) {
+            // expired session
+            DebugLog.systemPrintln("[INFO-JABBER] Failed to resume session ID=" + smSessionID);
+            smEnabled = false;
+            smSessionID = "";
+            packetsIn = 0;
+            packetsOut = 0;
+            session.save();
+        }
+          else if (x.is("compressed")) {
             setStreamCompression();
             return;
         } else if (x.is("proceed")) {
@@ -484,6 +505,7 @@ public final class XmppConnection extends ClientConnection {
         } else if (x.is("message")) {
             if (smEnabled) {
                 packetsIn++;
+                session.save();
             }
             parseMessage(x);
 
@@ -498,6 +520,7 @@ public final class XmppConnection extends ClientConnection {
         } else if (x.is("enabled")) {
             smEnabled = true;
             smSessionID = x.getAttribute("id");
+            session.save();
             DebugLog.systemPrintln("[INFO-JABBER] Session management enabled with ID=" + smSessionID);
         }
     }
@@ -675,7 +698,7 @@ public final class XmppConnection extends ClientConnection {
                     getBookmarks();
                     putPacketIntoQueue("<iq type='get' id='getnotes'><query xmlns='jabber:iq:private'><storage xmlns='storage:rosternotes'/></query></iq>");
                     setProgress(100);
-                    if (smSupported) {
+                    if (smSupported && !smEnabled) {
                         putPacketIntoQueue("<enable xmlns='urn:xmpp:sm:3' resume='true' />");
                     }
 
@@ -1811,7 +1834,13 @@ public final class XmppConnection extends ClientConnection {
             sendRequest(auth);
             return;
         }
-
+        if (smSupported) {
+            session.load();
+            if (smSessionID != "") {
+                sendRequest("<resume xmlns='urn:xmpp:sm:3' previd='" + smSessionID + "' h='" + packetsIn + "' />");
+                return;
+            }
+        }
         if (x.contains("bind")) {
             DebugLog.systemPrintln("[INFO-JABBER] Send bind request");
             sendRequest("<iq type='set' id='bind'>"
