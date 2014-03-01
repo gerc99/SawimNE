@@ -15,7 +15,6 @@ import ru.sawim.R;
 import ru.sawim.view.PictureView;
 import ru.sawim.view.menu.JuickMenu;
 import sawim.Clipboard;
-import sawim.comm.Util;
 import sawim.modules.DebugLog;
 
 /**
@@ -36,30 +35,30 @@ public class TextLinkClick implements TextLinkClickListener {
     }
 
     @Override
-    public void onTextLinkClick(View textView, final String clickedString, boolean isLongTap) {
+    public void onTextLinkClick(View textView, String clickedString, boolean isLongTap) {
         if (clickedString.length() == 0) return;
         boolean isJuick = clickedString.substring(0, 1).equals("@") || clickedString.substring(0, 1).equals("#");
         if (isJuick) {
             new JuickMenu(SawimApplication.getCurrentActivity(), currentProtocol, currentContact, clickedString).show();
             return;
         }
-        if (isLongTap || Jid.isConference(clickedString) && !(Util.isUrl(clickedString))) {
+        if (isLongTap || Jid.isJID(clickedString)) {
             CharSequence[] items = new CharSequence[2];
             items[0] = SawimApplication.getCurrentActivity().getString(R.string.copy);
-            if (clickedString.indexOf('@') != -1)
-                items[1] = SawimApplication.getCurrentActivity().getString(R.string.add_contact);
+            items[1] = SawimApplication.getCurrentActivity().getString(R.string.add_contact);
             final AlertDialog.Builder builder = new AlertDialog.Builder(SawimApplication.getCurrentActivity());
             builder.setCancelable(true);
             builder.setTitle(R.string.url_menu);
+            final String finalClickedString = clickedString;
             builder.setItems(items, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     switch (which) {
                         case 0:
-                            Clipboard.setClipBoardText(clickedString);
+                            Clipboard.setClipBoardText(finalClickedString);
                             break;
                         case 1:
-                            SawimApplication.openUrl(clickedString);
+                            SawimApplication.openUrl(finalClickedString);
                             break;
                     }
                 }
@@ -71,10 +70,9 @@ public class TextLinkClick implements TextLinkClickListener {
                 DebugLog.panic("onTextLinkClick", e);
             }
         } else {
-            String url = clickedString;
-            if (!Util.isUrl(clickedString))
-                url = "http://" + url;
-            url = url.toLowerCase();
+            if (!clickedString.startsWith("http://") && !clickedString.startsWith("https://"))
+                clickedString = "http://" + clickedString;
+            String url = clickedString.toLowerCase();
             if (url.startsWith("http://pic4u.ru/")
                     || (url.startsWith("https://db.tt/"))
                     || (url.endsWith(".jpg"))
