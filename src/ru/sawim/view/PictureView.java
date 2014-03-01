@@ -73,9 +73,7 @@ public class PictureView extends DialogFragment {
         webView.setScrollbarFadingEnabled(true);
         webView.setWebViewClient(new WebViewClient());
 
-        if (-1 != link.indexOf("https://www.dropbox.com")) {
-            link = link.replace("https://www.dropbox", "http://dl.dropboxusercontent");
-        }
+        link = parseDb(link);
         progressBar.setVisibility(ProgressBar.VISIBLE);
         HtmlTask htmlTask = new HtmlTask();
         htmlTask.execute(link);
@@ -99,6 +97,13 @@ public class PictureView extends DialogFragment {
         this.link = link;
     }
 
+    private String parseDb(String link) {
+        if (-1 != link.indexOf("https://www.dropbox.com")) {
+            link = link.replace("https://www.dropbox", "http://dl.dropboxusercontent");
+        }
+        return link;
+    }
+
     class HtmlTask extends AsyncTask<String, Void, String[]> {
 
         @Override
@@ -107,6 +112,11 @@ public class PictureView extends DialogFragment {
             try {
                 URL url = new URL(urls[0]);
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setInstanceFollowRedirects(false);
+                String newUrl = urlConnection.getHeaderField("Location");
+                newUrl = parseDb(newUrl);
+                link = newUrl;
+                urlConnection = (HttpURLConnection) new URL(newUrl).openConnection();
                 result[1] = urlConnection.getContentType();
                 if (result[1].startsWith("image/")) {
                     return result;
@@ -155,6 +165,7 @@ public class PictureView extends DialogFragment {
                     webView.loadDataWithBaseURL(null, html1 + link + html2, "text/html", "en_US", null);
                 }
             } catch (Exception e) {
+                e.printStackTrace();
                 hide = true;
                 Intent i = new Intent(Intent.ACTION_VIEW);
                 i.setData(Uri.parse(link));

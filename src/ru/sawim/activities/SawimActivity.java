@@ -245,6 +245,7 @@ public class SawimActivity extends ActionBarActivity {
 
     public void recreateActivity() {
         finish();
+        SawimApplication.setActionBar(null);
         startActivity(new Intent(this, SawimActivity.class));
     }
 

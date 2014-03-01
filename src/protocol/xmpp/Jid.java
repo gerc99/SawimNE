@@ -59,8 +59,7 @@ public class Jid {
                 || jid.startsWith("irc.", start);
     }
 
-    public static boolean isJID(String jid)
-    {
+    public static boolean isJID(String jid) {
         return android.util.Patterns.EMAIL_ADDRESS.matcher(jid).matches();
     }
 
