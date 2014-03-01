@@ -350,9 +350,8 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     public void resume() {
         boolean drawerVisible = drawerLayout != null && drawerLayout.isDrawerOpen(chatsListView);
         SawimApplication.setCurrentActivity((ActionBarActivity) getActivity());
-        if (!drawerVisible && chatsListView.getAdapter().getCount() > 0) {
-            drawerLayout.openDrawer(chatsListView);
-        }
+        if (SawimApplication.getActionBar() == null)
+            SawimApplication.setActionBar(SawimApplication.getCurrentActivity().getSupportActionBar());
         initBar(RosterHelper.getInstance().getProtocolCount() > 1
                 && !drawerVisible, drawerVisible ? R.string.active_contacts : R.string.app_name);
         if (RosterHelper.getInstance().getProtocolCount() > 0) {

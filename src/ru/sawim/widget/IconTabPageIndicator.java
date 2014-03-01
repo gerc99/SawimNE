@@ -9,6 +9,7 @@ import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import com.viewpagerindicator.R;
+import ru.sawim.SawimResources;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
@@ -75,6 +76,7 @@ public class IconTabPageIndicator extends HorizontalScrollView {
 
         mTabLayout = new IcsLinearLayout(context,
                 R.attr.vpiTabPageIndicatorStyle);
+        mTabLayout.setDividerDrawable(SawimResources.listDivider);
         addView(mTabLayout, new ViewGroup.LayoutParams(WRAP_CONTENT,
                 MATCH_PARENT));
     }

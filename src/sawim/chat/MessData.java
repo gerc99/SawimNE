@@ -21,7 +21,6 @@ public final class MessData {
     private CharSequence parsedText;
     public MessageItemView messView;
 
-    public static final short URLS = 1;
     public static final short INCOMING = 2;
     public static final short ME = 4;
     public static final short PROGRESS = 8;

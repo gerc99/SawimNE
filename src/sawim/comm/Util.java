@@ -3,6 +3,7 @@ package sawim.comm;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import sawim.Options;
+import sawim.chat.Chat;
 import sawim.roster.TreeNode;
 import sawim.util.JLocale;
 
@@ -577,127 +578,6 @@ public class Util {
         return true;
     }
 
-    private static void putUrl(Vector urls, String url) {
-        final String skip = "?!;:,.";
-        final String openDelemiters = "{[(В«";
-        final String delemiters = "}])В»";
-        int cutIndex = url.length() - 1;
-        for (; cutIndex >= 0; --cutIndex) {
-            char lastChar = url.charAt(cutIndex);
-            if (-1 != skip.indexOf(lastChar)) {
-                continue;
-            }
-            int delemiterIndex = delemiters.indexOf(lastChar);
-            if (-1 != delemiterIndex) {
-                if (-1 == url.indexOf(openDelemiters.charAt(delemiterIndex))) {
-                    continue;
-                }
-            }
-            break;
-        }
-
-        if (cutIndex <= 0) {
-            return;
-
-        } else if (cutIndex != url.length() - 1) {
-            url = url.substring(0, cutIndex + 1);
-        }
-
-        if (-1 == url.indexOf(':')) {
-            boolean isPhone = ('+' == url.charAt(0));
-            boolean hasDot = false;
-            boolean nonDigit = false;
-            for (int i = isPhone ? 1 : 0; i < url.length(); ++i) {
-                char ch = url.charAt(i);
-                if ('.' == ch) {
-                    hasDot = true;
-                } else if (!Character.isDigit(ch)) {
-                    nonDigit = true;
-                    break;
-                }
-            }
-            if (isPhone) {
-                if (!nonDigit && !hasDot && (7 <= url.length())) {
-                    url = "tel:" + url;
-                } else {
-                    return;
-                }
-            } else {
-                if (nonDigit) {
-                    if (-1 == url.indexOf('/')) {
-                        if (-1 == url.indexOf('@')) return;
-
-                    } else {
-                        url = "http:\57\57" + url;
-                    }
-                } else {
-                    return;
-                }
-            }
-        }
-        int protoEnd = url.indexOf(':');
-        if (-1 != protoEnd) {
-            if (url.length() <= protoEnd + 5) {
-                return;
-            }
-            for (int i = 0; i < protoEnd; ++i) {
-                if (!isURLChar(url.charAt(i), URL_CHAR_PROTOCOL)) {
-                    return;
-                }
-            }
-        }
-        if (!urls.contains(url)) {
-            urls.addElement(url);
-        }
-    }
-
-    private static void parseForUrl(Vector result, String msg, char ch, int before, int after, int limit) {
-        if (limit <= result.size()) {
-            return;
-        }
-        int size = msg.length();
-        int findIndex = 0;
-        int beginIdx;
-        int endIdx;
-        for (; ; ) {
-            if (findIndex >= size) break;
-            int ptIndex = msg.indexOf(ch, findIndex);
-            if (ptIndex == -1) break;
-
-            for (endIdx = ptIndex + 1; endIdx < size; ++endIdx) {
-                if (!isURLChar(msg.charAt(endIdx), after)) {
-                    break;
-                }
-            }
-
-            findIndex = endIdx;
-            if (endIdx - ptIndex < 2) continue;
-
-            if (URL_CHAR_NONE != before) {
-                for (beginIdx = ptIndex - 1; beginIdx >= 0; --beginIdx) {
-                    if (!isURLChar(msg.charAt(beginIdx), before)) {
-                        break;
-                    }
-                }
-                if ((beginIdx == -1) || !isURLChar(msg.charAt(beginIdx), before)) {
-                    beginIdx++;
-                }
-                if (ptIndex == beginIdx) continue;
-
-            } else {
-                beginIdx = ptIndex;
-                if ((0 < beginIdx) && !isURLChar(msg.charAt(beginIdx - 1), before)) {
-                    continue;
-                }
-            }
-            if (endIdx - beginIdx < 5) continue;
-            putUrl(result, msg.substring(beginIdx, endIdx));
-            if (limit < result.size()) {
-                return;
-            }
-        }
-    }
-
     public static String getUrlWithoutProtocol(String url) {
         int index = url.indexOf(':');
         if (-1 != index) {
@@ -717,25 +597,8 @@ public class Util {
         return (-1 != str.indexOf("http://")) ? "" : str;
     }
 
-    public static boolean hasURL(String msg) {
-        if (null == msg) return false;
-        Vector result = new Vector();
-        parseForUrl(result, msg, '.', URL_CHAR_PREV, URL_CHAR_OTHER, 1);
-        parseForUrl(result, msg, ':', URL_CHAR_PROTOCOL, URL_CHAR_OTHER, 1);
-        parseForUrl(result, msg, '+', URL_CHAR_NONE, URL_CHAR_DIGIT, 1);
-        parseForUrl(result, msg, '@', URL_CHAR_PREV, URL_CHAR_OTHER, 1);
-        return !result.isEmpty();
-    }
-
-    public static Vector parseMessageForURL(String msg) {
-        if (null == msg) return null;
-        final int MAX_LINK_COUNT = 100;
-        Vector result = new Vector();
-        parseForUrl(result, msg, '.', URL_CHAR_PREV, URL_CHAR_OTHER, MAX_LINK_COUNT);
-        parseForUrl(result, msg, ':', URL_CHAR_PROTOCOL, URL_CHAR_OTHER, MAX_LINK_COUNT);
-        parseForUrl(result, msg, '+', URL_CHAR_NONE, URL_CHAR_DIGIT, MAX_LINK_COUNT);
-        parseForUrl(result, msg, '@', URL_CHAR_PREV, URL_CHAR_OTHER, MAX_LINK_COUNT);
-        return result.isEmpty() ? null : result;
+    public static boolean isUrl(String text) {
+        return text.startsWith("http://") || text.startsWith("https://");
     }
 
     public static int strToIntDef(String str, int defValue) {
@@ -952,12 +815,12 @@ public class Util {
         return result;
     }
 
-    public static void sort(Vector subnodes) {
+    public static void sort(Vector<TreeNode> subnodes) {
         for (int i = 1; i < subnodes.size(); ++i) {
-            TreeNode currNode = (TreeNode) subnodes.elementAt(i);
+            TreeNode currNode = subnodes.elementAt(i);
             int j = i - 1;
             for (; j >= 0; --j) {
-                TreeNode itemJ = (TreeNode) subnodes.elementAt(j);
+                TreeNode itemJ = subnodes.elementAt(j);
                 if (compareNodes(itemJ, currNode) <= 0) {
                     break;
                 }
@@ -965,6 +828,23 @@ public class Util {
             }
             if (j + 1 != i) {
                 subnodes.setElementAt(currNode, j + 1);
+            }
+        }
+    }
+
+    public static void sortChats(List<Chat> subnodes) {
+        for (int i = 1; i < subnodes.size(); ++i) {
+            Chat currNode = subnodes.get(i);
+            int j = i - 1;
+            for (; j >= 0; --j) {
+                Chat itemJ = subnodes.get(j);
+                if (compareNodes(itemJ.getContact(), currNode.getContact()) <= 0) {
+                    break;
+                }
+                subnodes.set(j + 1, itemJ);
+            }
+            if (j + 1 != i) {
+                subnodes.set(j + 1, currNode);
             }
         }
     }

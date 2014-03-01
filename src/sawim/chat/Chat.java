@@ -372,9 +372,6 @@ public final class Chat {
         if (isMe) {
             flags |= MessData.ME;
         }
-        if (Util.hasURL(messageText)) {
-            flags |= MessData.URLS;
-        }
         if (message instanceof SystemNotice) {
             flags |= MessData.SERVICE;
         }

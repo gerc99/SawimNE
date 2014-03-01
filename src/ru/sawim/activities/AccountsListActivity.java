@@ -53,6 +53,12 @@ public class AccountsListActivity extends ActionBarActivity implements XmppRegis
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        SawimApplication.setActionBar(null);
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.accounts_editor, menu);

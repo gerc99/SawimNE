@@ -7,7 +7,6 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.text.*;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import ru.sawim.SawimApplication;
@@ -127,10 +126,7 @@ public class MyTextView extends View {
                 isSecondTap = true;
             }
             if (urlSpans.length != 0) {
-                InternalURLSpan urlSpan = urlSpans.length == 2 ? urlSpans[1] : null;
-                if (urlSpan == null) urlSpan = urlSpans[0];
-                final String link = urlSpan.clickedSpan;
-
+                final String link = urlSpans[0].clickedSpan;
                 Runnable longPressed = new Runnable() {
                     public void run() {
                         if (listener != null && !isSecondTap) {

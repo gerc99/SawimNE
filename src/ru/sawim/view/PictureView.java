@@ -11,10 +11,7 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
+import android.widget.*;
 import ru.sawim.R;
 
 import java.io.BufferedReader;
@@ -51,14 +48,12 @@ public class PictureView extends DialogFragment {
         getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
         View v = inflater.inflate(R.layout.picture_view, container, false);
 
-        Display display = getDialog().getWindow().getWindowManager().getDefaultDisplay();
-        final float scale = getResources().getDisplayMetrics().density;
-        float[] DIMENSIONS_LANDSCAPE = {20, 60};
-        float[] DIMENSIONS_PORTRAIT = {40, 60};
-        float[] dimensions = (display.getWidth() < display.getHeight()) ? DIMENSIONS_PORTRAIT : DIMENSIONS_LANDSCAPE;
-        v.setLayoutParams(new FrameLayout.LayoutParams(
-                display.getWidth() - (int) (dimensions[0] * scale + 0.5f),
-                display.getHeight() - (int) (dimensions[1] * scale + 0.5f)));
+        final RelativeLayout root = new RelativeLayout(getActivity());
+        root.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+        getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getDialog().setContentView(root);
+        getDialog().getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 
         TextView textView = (TextView) v.findViewById(R.id.textView);
         textView.setText(link);
@@ -145,7 +140,7 @@ public class PictureView extends DialogFragment {
         protected void onPostExecute(String[] s) {
             progressBar.setVisibility(ProgressBar.GONE);
 
-            String html1 = "<html><head><meta charset=\"utf-8\"><style>.block{max-width:100%;}" +
+            String html1 = "<html><head><meta charset=\"utf-8\"><style>.block{width:100%;}" +
                     "body {margin: 0}</style></head><body><img class=\"block\" src=\"";
             String html2 = "\"></body></html>";
             try {

@@ -38,6 +38,12 @@ public class SendToActivity extends ActionBarActivity {
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        SawimApplication.setActionBar(null);
+    }
+
     int oldOrientation;
 
     @Override

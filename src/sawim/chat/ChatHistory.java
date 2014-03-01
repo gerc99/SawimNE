@@ -30,12 +30,7 @@ public final class ChatHistory {
     }
 
     public void sort() {
-        Collections.sort(historyTable, new Comparator<Chat>() {
-            @Override
-            public int compare(Chat c1, Chat c2) {
-                return Util.compareNodes(c1.getContact(), c2.getContact());
-            }
-        });
+        Util.sortChats(historyTable);
     }
 
     public void addLayerToListOfChats(Protocol p, List<Object> items) {

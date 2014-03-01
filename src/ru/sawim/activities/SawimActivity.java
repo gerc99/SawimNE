@@ -68,11 +68,11 @@ public class SawimActivity extends ActionBarActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Log.e(LOG_TAG, "onCreate");
         setTheme(Scheme.isBlack() ? R.style.BaseTheme : R.style.BaseThemeLight);
         super.onCreate(savedInstanceState);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
         ExternalApi.instance.setActivity(this);
-        SawimApplication.setActionBar(getSupportActionBar());
         SawimApplication.setCurrentActivity(this);
         setContentView(SawimApplication.isManyPane() ? R.layout.main_twopane : R.layout.main);
 
@@ -171,7 +171,8 @@ public class SawimActivity extends ActionBarActivity {
     public void onResume() {
         super.onResume();
         SawimApplication.setCurrentActivity(this);
-        SawimApplication.setActionBar(getSupportActionBar());
+        if (SawimApplication.getActionBar() == null)
+            SawimApplication.setActionBar(getSupportActionBar());
         SawimApplication.maximize();
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         if (RosterHelper.getInstance().getProtocolCount() == 0) {
@@ -220,7 +221,7 @@ public class SawimActivity extends ActionBarActivity {
                     super.onBackPressed();
                 }
             }
-        } else super.onBackPressed();
+        } else moveTaskToBack(true);
         if (SawimApplication.isManyPane())
             ((RosterView) getSupportFragmentManager().findFragmentById(R.id.roster_fragment)).resume();
     }
