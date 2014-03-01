@@ -130,16 +130,16 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
     }
 
     private void resetBar() {
-        SawimApplication.getActionBar().setDisplayShowTitleEnabled(false);
-        SawimApplication.getActionBar().setDisplayHomeAsUpEnabled(false);
-        SawimApplication.getActionBar().setDisplayShowHomeEnabled(false);
-        SawimApplication.getActionBar().setDisplayUseLogoEnabled(false);
-        SawimApplication.getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-        if (!SawimApplication.isManyPane()) {
-            removeTitleBar();
-            SawimApplication.getActionBar().setDisplayShowCustomEnabled(true);
-            SawimApplication.getActionBar().setCustomView(chatBarLayout);
-        }
+        SawimApplication.getActionBar().setDisplayShowTitleEnabled(SawimApplication.isManyPane());
+        SawimApplication.getActionBar().setDisplayHomeAsUpEnabled(SawimApplication.isManyPane());
+        SawimApplication.getActionBar().setDisplayShowHomeEnabled(SawimApplication.isManyPane());
+        SawimApplication.getActionBar().setDisplayUseLogoEnabled(SawimApplication.isManyPane());
+
+        if (!SawimApplication.isManyPane())
+            SawimApplication.getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+        removeTitleBar();
+        SawimApplication.getActionBar().setDisplayShowCustomEnabled(true);
+        SawimApplication.getActionBar().setCustomView(chatBarLayout);
     }
 
     @Override
@@ -254,6 +254,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
                 public void onClick(View view) {
                     if (contact == null) return;
                     isOpenMenu = true;
+                    getActivity().supportInvalidateOptionsMenu();
                     getActivity().openOptionsMenu();
                 }
             });
@@ -573,8 +574,10 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
             case UPDATE_MUC_LIST:
                 if (contact != null && contact.isPresence() == (byte) 1)
                     adapter.refreshList(chat.getMessData());
-                if (isConference && ((drawerLayout != null && nickList != null && drawerLayout.isDrawerOpen(nickList)) || SawimApplication.isManyPane())) {
-                    mucUsersView.update();
+                if (drawerLayout != null) {
+                    if (SawimApplication.isManyPane() || isConference && (nickList != null && drawerLayout.isDrawerOpen(nickList))) {
+                        mucUsersView.update();
+                    }
                 }
                 break;
         }
@@ -716,6 +719,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
     }
 
     public void onOptionsItemSelected_(MenuItem item) {
+        Log.e(TAG, "onOptionsItemSelected_"+item.getItemId());
         switch (item.getItemId()) {
             case ContactMenu.MENU_MULTI_CITATION:
                 if (adapter.isMultiQuote()) {

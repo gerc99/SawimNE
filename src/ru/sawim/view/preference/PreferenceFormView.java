@@ -42,6 +42,8 @@ public class PreferenceFormView extends PreferenceFragment {
         SawimApplication.getCurrentActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                if (SawimApplication.getActionBar() == null)
+                    SawimApplication.setActionBar(SawimApplication.getCurrentActivity().getSupportActionBar());
                 SawimActivity.resetBar();
                 if (SawimApplication.getCurrentActivity().getSupportFragmentManager()
                         .findFragmentById(R.id.chat_fragment) != null)

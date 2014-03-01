@@ -32,12 +32,10 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
-import android.view.GestureDetector;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.MotionEvent;
+import android.view.*;
 import protocol.Contact;
 import protocol.Protocol;
 import protocol.icq.Icq;
@@ -94,6 +92,9 @@ public class SawimActivity extends ActionBarActivity {
         SawimApplication.getActionBar().setDisplayUseLogoEnabled(true);
         SawimApplication.getActionBar().setDisplayShowHomeEnabled(true);
         SawimApplication.getActionBar().setDisplayShowCustomEnabled(false);
+        SawimApplication.getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+        if (((SawimActivity)SawimApplication.getCurrentActivity()).getRosterView() != null)
+            ((SawimActivity)SawimApplication.getCurrentActivity()).getRosterView().getDrawerToggle().setDrawerIndicatorEnabled(false);
         SawimApplication.getCurrentActivity().setTitle(R.string.app_name);
     }
 
@@ -221,8 +222,8 @@ public class SawimActivity extends ActionBarActivity {
                 }
             }
         } else moveTaskToBack(true);
-        if (SawimApplication.isManyPane())
-            ((RosterView) getSupportFragmentManager().findFragmentById(R.id.roster_fragment)).resume();
+        //if (SawimApplication.isManyPane())
+        //    ((RosterView) getSupportFragmentManager().findFragmentById(R.id.roster_fragment)).resume();
     }
 
     private void back() {
@@ -259,9 +260,24 @@ public class SawimActivity extends ActionBarActivity {
             if (SawimApplication.getInstance().getConfigurationChanged() != null)
                 SawimApplication.getInstance().getConfigurationChanged().onConfigurationChanged();
         }
+
+        getRosterView().getDrawerToggle().onConfigurationChanged(newConfig);
+    }
+
+    private RosterView getRosterView() {
         RosterView rosterView = (RosterView) getSupportFragmentManager().findFragmentByTag(RosterView.TAG);
         if (rosterView == null) rosterView = (RosterView) getSupportFragmentManager().findFragmentById(R.id.roster_fragment);
-        rosterView.getDrawerToggle().onConfigurationChanged(newConfig);
+        return rosterView;
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if ( keyCode == KeyEvent.KEYCODE_MENU ) {
+            Log.e(LOG_TAG, "MENU pressed");
+
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     private static final int MENU_CONNECT = 0;
@@ -287,6 +303,7 @@ public class SawimActivity extends ActionBarActivity {
         SawimFragment mainPreferenceView = (SawimFragment) getSupportFragmentManager().findFragmentByTag(MainPreferenceView.TAG);
         SawimFragment preferenceView = (SawimFragment) getSupportFragmentManager().findFragmentByTag(MainPreferenceView.TAG);
         menu.clear();
+        Log.e(LOG_TAG, "" + (tabletChatView != null && tabletChatView.isOpenMenu()));
         if (virtualListView != null) {
             virtualListView.onPrepareOptionsMenu_(menu);
             return true;
@@ -296,8 +313,9 @@ public class SawimActivity extends ActionBarActivity {
             chatView.onPrepareOptionsMenu_(menu);
             return true;
         } else if (tabletChatView != null && tabletChatView.isOpenMenu()) {
-            tabletChatView.onPrepareOptionsMenu_(menu);
             tabletChatView.setOpenMenu(false);
+            supportInvalidateOptionsMenu();
+            tabletChatView.onPrepareOptionsMenu_(menu);
             return true;
         }
         Protocol p = RosterHelper.getInstance().getCurrentProtocol();
@@ -346,9 +364,7 @@ public class SawimActivity extends ActionBarActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        RosterView rosterView = (RosterView) getSupportFragmentManager().findFragmentByTag(RosterView.TAG);
-        if (rosterView == null) rosterView = (RosterView) getSupportFragmentManager().findFragmentById(R.id.roster_fragment);
-        if (rosterView.getDrawerToggle().onOptionsItemSelected(item)) {
+        if (getRosterView().getDrawerToggle().onOptionsItemSelected(item)) {
             return true;
         }
         if (item.getItemId() == android.R.id.home) back();
@@ -361,7 +377,6 @@ public class SawimActivity extends ActionBarActivity {
             return true;
         } else if (tabletChatView != null && tabletChatView.isOpenMenu()) {
             tabletChatView.onOptionsItemSelected_(item);
-            tabletChatView.setOpenMenu(false);
             return true;
         } else if (chatView != null) {
             chatView.onOptionsItemSelected_(item);

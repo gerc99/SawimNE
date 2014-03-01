@@ -13,6 +13,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.*;
 import android.widget.*;
 import protocol.Contact;
@@ -148,8 +149,6 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
                 }
             }
         };
-        drawerLayout.setDrawerListener(drawerToggle);
-        drawerToggle.syncState();
 
         rosterListView = new MyListView(activity);
         RosterAdapter rosterAdapter = new RosterAdapter(activity);
@@ -170,6 +169,9 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        drawerLayout.setDrawerListener(drawerToggle);
+        drawerToggle.setDrawerIndicatorEnabled(true);
+        drawerToggle.syncState();
         if (drawerLayout.getParent() != null) {
             ((ViewGroup) drawerLayout.getParent()).removeView(drawerLayout);
         }
@@ -181,6 +183,13 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         drawerLayout.addView(rosterViewLayout);
         drawerLayout.addView(protocolsListView);
         return drawerLayout;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        drawerLayout.setDrawerListener(null);
+        drawerToggle.setDrawerIndicatorEnabled(false);
     }
 
     @Override
