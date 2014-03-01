@@ -11,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.os.*;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.InputType;
@@ -133,6 +134,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         SawimApplication.getActionBar().setDisplayHomeAsUpEnabled(false);
         SawimApplication.getActionBar().setDisplayShowHomeEnabled(false);
         SawimApplication.getActionBar().setDisplayUseLogoEnabled(false);
+        SawimApplication.getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         if (!SawimApplication.isManyPane()) {
             removeTitleBar();
             SawimApplication.getActionBar().setDisplayShowCustomEnabled(true);
@@ -450,6 +452,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         chatListView.stopScroll();
         openChat(current.getProtocol(), current.getContact());
         resume(current);
+        getActivity().supportInvalidateOptionsMenu();
     }
 
     public void initChat(Protocol p, Contact c) {

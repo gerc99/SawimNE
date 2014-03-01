@@ -68,7 +68,6 @@ public class SawimActivity extends ActionBarActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Log.e(LOG_TAG, "onCreate");
         setTheme(Scheme.isBlack() ? R.style.BaseTheme : R.style.BaseThemeLight);
         super.onCreate(savedInstanceState);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
@@ -260,13 +259,15 @@ public class SawimActivity extends ActionBarActivity {
             if (SawimApplication.getInstance().getConfigurationChanged() != null)
                 SawimApplication.getInstance().getConfigurationChanged().onConfigurationChanged();
         }
+        RosterView rosterView = (RosterView) getSupportFragmentManager().findFragmentByTag(RosterView.TAG);
+        if (rosterView == null) rosterView = (RosterView) getSupportFragmentManager().findFragmentById(R.id.roster_fragment);
+        rosterView.getDrawerToggle().onConfigurationChanged(newConfig);
     }
 
     private static final int MENU_CONNECT = 0;
     private static final int MENU_STATUS = 1;
     private static final int MENU_XSTATUS = 2;
     private static final int MENU_PRIVATE_STATUS = 3;
-    private static final int MENU_CONTACTS = 4;
     private static final int MENU_SEND_SMS = 5;
     private static final int MENU_SOUND = 6;
     private static final int MENU_OPTIONS = 7;
@@ -309,8 +310,6 @@ public class SawimActivity extends ActionBarActivity {
             if ((p instanceof Icq) || (p instanceof Mrim))
                 menu.add(Menu.NONE, MENU_PRIVATE_STATUS, Menu.NONE, R.string.private_status);
 
-            menu.add(Menu.NONE, MENU_CONTACTS, Menu.NONE, R.string.all_contacts);
-            menu.findItem(MENU_CONTACTS).setTitle((RosterHelper.ALL_CONTACTS != RosterHelper.getInstance().getCurrPage()) ? R.string.all_contacts : R.string.only_online);
             int count = RosterHelper.getInstance().getProtocolCount();
             for (int i = 0; i < count; ++i) {
                 Protocol pr = RosterHelper.getInstance().getProtocol(i);
@@ -347,6 +346,11 @@ public class SawimActivity extends ActionBarActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        RosterView rosterView = (RosterView) getSupportFragmentManager().findFragmentByTag(RosterView.TAG);
+        if (rosterView == null) rosterView = (RosterView) getSupportFragmentManager().findFragmentById(R.id.roster_fragment);
+        if (rosterView.getDrawerToggle().onOptionsItemSelected(item)) {
+            return true;
+        }
         if (item.getItemId() == android.R.id.home) back();
 
         ChatView chatView = (ChatView) getSupportFragmentManager().findFragmentByTag(ChatView.TAG);
@@ -376,14 +380,6 @@ public class SawimActivity extends ActionBarActivity {
                 break;
             case MENU_PRIVATE_STATUS:
                 new StatusesView(p, StatusesView.ADAPTER_PRIVATESTATUS).show(getSupportFragmentManager(), "change-private-status");
-                break;
-            case MENU_CONTACTS:
-                RosterHelper.getInstance().setCurrPage((RosterHelper.ALL_CONTACTS == RosterHelper.getInstance().getCurrPage()) ? RosterHelper.ONLINE_CONTACTS : RosterHelper.ALL_CONTACTS);
-                RosterView rosterView = (RosterView) getSupportFragmentManager().findFragmentByTag(RosterView.TAG);
-                if (rosterView == null) rosterView = (RosterView) getSupportFragmentManager().findFragmentById(R.id.roster_fragment);
-                rosterView.getRosterAdapter().setType(RosterHelper.getInstance().getCurrPage());
-                rosterView.update();
-                supportInvalidateOptionsMenu();
                 break;
             case MENU_SEND_SMS:
                 new SmsForm(null, null).show();

@@ -14,6 +14,7 @@ import ru.sawim.SawimApplication;
 import ru.sawim.R;
 import ru.sawim.view.PictureView;
 import ru.sawim.view.menu.JuickMenu;
+import ru.sawim.view.tasks.HtmlTask;
 import sawim.Clipboard;
 import sawim.comm.Util;
 import sawim.modules.DebugLog;
@@ -73,7 +74,7 @@ public class TextLinkClick implements TextLinkClickListener {
         } else {
             if (!Util.isUrl(clickedString))
                 clickedString = "http://" + clickedString;
-            if (clickedString.toLowerCase().startsWith("http://pic4u.ru/")
+            if (clickedString.toLowerCase().startsWith(HtmlTask.PIK4U)
                     || (clickedString.toLowerCase().startsWith("https://db.tt/"))
                     || Util.isImageFile(clickedString)) {
                 PictureView pictureView = new PictureView();

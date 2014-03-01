@@ -5,6 +5,7 @@ import android.text.SpannableStringBuilder;
 import android.text.style.ImageSpan;
 import android.util.Patterns;
 import protocol.Contact;
+import protocol.xmpp.Jid;
 import ru.sawim.Scheme;
 import ru.sawim.view.menu.JuickMenu;
 import sawim.modules.Emotions;
@@ -58,11 +59,11 @@ public class TextFormatter {
     public CharSequence detectEmotions(CharSequence text, SpannableStringBuilder builder) {
         Matcher matcher = smilesPattern.matcher(text);
         while (matcher.find()) {
-            if (!isThereLinks(builder, new int[]{matcher.start(), matcher.end()})) {
+            //if (!isThereLinks(builder, new int[]{matcher.start(), matcher.end()})) {
                 builder.setSpan(new ImageSpan(smiles.getSmileIcon(smiles.buildSmileyToId().get(matcher.group())).getImage()),
                         matcher.start(), matcher.end(),
                         Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            }
+            //}
         }
         return builder;
     }
@@ -104,7 +105,8 @@ public class TextFormatter {
         else if (mode == JuickMenu.MODE_PSTO)
             addLinks(msgList, ssb, pstoPattern);
         addLinks(linkList, ssb, Patterns.WEB_URL);
-        addLinks(linkList, ssb, Patterns.EMAIL_ADDRESS);
+        addLinks(linkList, ssb, Jid.pattern);
+        //addLinks(linkList, ssb, Patterns.EMAIL_ADDRESS);
         for (Hyperlink link : msgList) {
             ssb.setSpan(link.span, link.start, link.end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             //ssb.setSpan(new ForegroundColorSpan(linkColor), link.start, link.end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
