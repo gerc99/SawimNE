@@ -42,7 +42,7 @@ public class TextLinkClick implements TextLinkClickListener {
             new JuickMenu(SawimApplication.getCurrentActivity(), currentProtocol, currentContact, clickedString).show();
             return;
         }
-        if (isLongTap || Jid.isConference(clickedString) && !clickedString.startsWith("http://")) {
+        if (isLongTap || Jid.isJID(clickedString)) {
             CharSequence[] items = new CharSequence[2];
             items[0] = SawimApplication.getCurrentActivity().getString(R.string.copy);
             items[1] = SawimApplication.getCurrentActivity().getString(R.string.add_contact);
