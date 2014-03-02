@@ -19,7 +19,7 @@ public class XmppSession {
 
     public void save() {
         _editor.putString("JID", connection.fullJid_);
-        _editor.putBoolean("Enabled", connection.smEnabled);
+        _editor.putBoolean("Enabled", connection.isSessionManagementEnabled());
         _editor.putLong("PacketsIn", connection.packetsIn);
         _editor.putLong("PacketsOut", connection.packetsOut);
         _editor.putString("SessionID", connection.smSessionID);
@@ -29,7 +29,7 @@ public class XmppSession {
     public void load() {
         String jid = _prefs.getString("JID", "");
         if (jid.equals(connection.fullJid_)) {
-            connection.smEnabled = _prefs.getBoolean("Enabled", false);
+            connection.setSessionManagementEnabled( _prefs.getBoolean("Enabled", false));
             connection.packetsIn = _prefs.getLong("PacketsIn", 0);
             connection.packetsOut = _prefs.getLong("PacketsOut", 0);
             connection.smSessionID = _prefs.getString("SessionID", "");

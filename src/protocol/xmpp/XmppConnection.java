@@ -44,11 +44,12 @@ public final class XmppConnection extends ClientConnection {
     private boolean rosterLoaded = false;
 
     private boolean smSupported = false;
-    boolean smEnabled = false;
+    private boolean smEnabled = false;
     String smSessionID = "";
     long packetsIn;
     long packetsOut;
     XmppSession session;
+    SessionManagementListener smListener;
 
     private UserInfo singleUserInfo;
     private String autoSubscribeDomain;
@@ -200,19 +201,19 @@ public final class XmppConnection extends ClientConnection {
 
     protected final void ping() throws SawimException {
         write(pingPacket);
-        if (smEnabled) {
+        if (isSessionManagementEnabled()) {
             session.save();
         }
     }
 
     protected final void pingForPong() throws SawimException {
         write(forPongPacket);
-        if (smEnabled) {
+        if (isSessionManagementEnabled()) {
             session.save();
         }
     }
 
-    private void putPacketIntoQueue(Object packet) {
+    public void putPacketIntoQueue(Object packet) {
         synchronized (packets) {
             packets.addElement(packet);
         }
@@ -426,7 +427,7 @@ public final class XmppConnection extends ClientConnection {
         } else if (x.is("failed")) {
             // expired session
             DebugLog.systemPrintln("[INFO-JABBER] Failed to resume session ID=" + smSessionID);
-            smEnabled = false;
+            setSessionManagementEnabled(false);
             smSessionID = "";
             packetsIn = 0;
             packetsOut = 0;
@@ -492,19 +493,19 @@ public final class XmppConnection extends ClientConnection {
 
     private void parse(XmlNode x) throws SawimException {
         if (x.is("iq")) {
-            if (smEnabled) {
+            if (isSessionManagementEnabled()) {
                 packetsIn++;
             }
             parseIq(x);
 
         } else if (x.is("presence")) {
-            if (smEnabled) {
+            if (isSessionManagementEnabled()) {
                 packetsIn++;
             }
             parsePresence(x);
 
         } else if (x.is("message")) {
-            if (smEnabled) {
+            if (isSessionManagementEnabled()) {
                 packetsIn++;
                 session.save();
             }
@@ -519,7 +520,7 @@ public final class XmppConnection extends ClientConnection {
         } else if (x.is("r")) {
             sendAck();
         } else if (x.is("enabled")) {
-            smEnabled = true;
+            setSessionManagementEnabled(true);
             smSessionID = x.getAttribute("id");
             session.save();
             DebugLog.systemPrintln("[INFO-JABBER] Session management enabled with ID=" + smSessionID);
@@ -699,7 +700,7 @@ public final class XmppConnection extends ClientConnection {
                     getBookmarks();
                     putPacketIntoQueue("<iq type='get' id='getnotes'><query xmlns='jabber:iq:private'><storage xmlns='storage:rosternotes'/></query></iq>");
                     setProgress(100);
-                    if (smSupported && !smEnabled) {
+                    if (smSupported && !isSessionManagementEnabled()) {
                         putPacketIntoQueue("<enable xmlns='urn:xmpp:sm:3' resume='true' />");
                     }
 
@@ -2798,6 +2799,22 @@ public final class XmppConnection extends ClientConnection {
         return true;
     }
 
+    public boolean isSessionManagementEnabled() {
+        return smEnabled;
+    }
+
+    public void setSessionManagementEnabled(boolean smEnabled) {
+        this.smEnabled = smEnabled;
+        if (smListener != null) {
+            smListener.enabled(this);
+        }
+    }
+    public void setSessionManagementListener(SessionManagementListener listener) {
+        this.smListener = listener;
+    }
+    public interface SessionManagementListener {
+        void enabled(XmppConnection connection);
+    }
 }
 
 
