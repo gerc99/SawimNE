@@ -93,21 +93,14 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         protocolsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                RosterHelper.getInstance().setCurrentItemProtocol(position);
-                RosterHelper.getInstance().setCurrPage(RosterHelper.ALL_CONTACTS);
-                getRosterAdapter().setType(RosterHelper.ALL_CONTACTS);
-                update();
-                SawimApplication.getActionBar().setSelectedNavigationItem(position);
-                final Toast toast = Toast.makeText(SawimApplication.getCurrentActivity(), RosterHelper.getInstance().getProtocol(position).getUserId(), Toast.LENGTH_SHORT);
-                toast.show();
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        toast.cancel();
-                    }
-                }, 500);
-                SawimApplication.getCurrentActivity().supportInvalidateOptionsMenu();
+                if (RosterHelper.getInstance().getCurrentItemProtocol() != position) {
+                    RosterHelper.getInstance().setCurrentItemProtocol(position);
+                    RosterHelper.getInstance().setCurrPage(RosterHelper.ALL_CONTACTS);
+                    getRosterAdapter().setType(RosterHelper.ALL_CONTACTS);
+                    SawimApplication.getActionBar().setSelectedNavigationItem(RosterHelper.ALL_CONTACTS);
+                    update();
+                    SawimApplication.getCurrentActivity().supportInvalidateOptionsMenu();
+                }
                 drawerLayout.closeDrawer(protocolsListView);
             }
         });
@@ -172,6 +165,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         drawerLayout.setDrawerListener(drawerToggle);
         drawerToggle.setDrawerIndicatorEnabled(true);
         drawerToggle.syncState();
+
         if (drawerLayout.getParent() != null) {
             ((ViewGroup) drawerLayout.getParent()).removeView(drawerLayout);
         }
@@ -318,6 +312,11 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         if (SawimApplication.getActionBar() == null)
             SawimApplication.setActionBar(SawimApplication.getCurrentActivity().getSupportActionBar());
         initBar(drawerVisible ? R.string.options_account : R.string.app_name);
+
+        RosterHelper.getInstance().setCurrPage(RosterHelper.getInstance().getCurrPage());
+        getRosterAdapter().setType(RosterHelper.getInstance().getCurrPage());
+        SawimApplication.getActionBar().setSelectedNavigationItem(RosterHelper.getInstance().getCurrPage());
+
         if (RosterHelper.getInstance().getProtocolCount() > 0) {
             RosterHelper.getInstance().setCurrentContact(null);
             RosterHelper.getInstance().setOnUpdateRoster(this);

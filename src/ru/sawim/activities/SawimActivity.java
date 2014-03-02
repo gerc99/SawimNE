@@ -270,16 +270,6 @@ public class SawimActivity extends ActionBarActivity {
         return rosterView;
     }
 
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if ( keyCode == KeyEvent.KEYCODE_MENU ) {
-            Log.e(LOG_TAG, "MENU pressed");
-
-            return true;
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-
     private static final int MENU_CONNECT = 0;
     private static final int MENU_STATUS = 1;
     private static final int MENU_XSTATUS = 2;
