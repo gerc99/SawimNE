@@ -92,13 +92,13 @@ public class RosterAdapter extends BaseAdapter {
             }
         } else {
             if (p == null) return;
-            while (!updateQueue.isEmpty()) {
+            /*while (!updateQueue.isEmpty()) {
                 Group group = (Group) updateQueue.firstElement();
                 updateQueue.removeElementAt(0);
                 synchronized (p.getRosterLockObject()) {
                     roster.updateGroup(group);
                 }
-            }
+            }*/
             items.clear();
             synchronized (p.getRosterLockObject()) {
                 if (roster.useGroups) {

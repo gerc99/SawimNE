@@ -29,6 +29,7 @@ public class SawimResources {
             getDrawable(R.drawable.ic_new_message);
     public static final BitmapDrawable personalMessageIcon = (BitmapDrawable) SawimApplication.getInstance().getResources().
             getDrawable(R.drawable.ic_new_personal_message);
+    public static Drawable appIcon = SawimApplication.getInstance().getResources().getDrawable(R.drawable.ic_launcher);
 
     public static void initIcons() {
         usersIcon = null;

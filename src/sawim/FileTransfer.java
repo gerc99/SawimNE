@@ -1,5 +1,6 @@
 package sawim;
 
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.util.Log;
 
@@ -18,14 +19,12 @@ import sawim.comm.StringConvertor;
 import sawim.comm.Util;
 import sawim.modules.DebugLog;
 import sawim.modules.fs.FileBrowserListener;
-import sawim.modules.fs.FileSystem;
 import sawim.modules.fs.JSR75FileSystem;
 import sawim.modules.photo.PhotoListener;
 import sawim.roster.RosterHelper;
 import sawim.util.JLocale;
 
 import java.io.ByteArrayInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -117,15 +116,16 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
             byte[] image = null;
 
             if ((fileSize < MAX_IMAGE_SIZE) && Util.isImageFile(filename)) {
-                image = FileSystem.getInstance().getFileContent(filename);
+                image = new byte[fileSize];
+                TcpSocket.readFully(in, image, 0, image.length);
             }
+
             setData(in, fileSize);
             askForNameDesc();
             showPreview(image);
         } catch (Exception e) {
             closeFile();
             handleException(new SawimException(191, 6));
-            Log.e("Send", e.getMessage());
         }
     }
 
@@ -286,7 +286,7 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
             @Override
             public void run() {
                 try {
-                    name_Desc.addBitmap(ru.sawim.widget.Util.avatarBitmap(image));
+                    name_Desc.addBitmap(BitmapFactory.decodeByteArray(image, 0, image.length));
                 } catch (Throwable ignored) {
                 }
             }

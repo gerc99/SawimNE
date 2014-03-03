@@ -43,10 +43,10 @@ import protocol.mrim.Mrim;
 import protocol.xmpp.Xmpp;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
+import ru.sawim.SawimResources;
 import ru.sawim.Scheme;
 import ru.sawim.view.*;
 import ru.sawim.view.preference.MainPreferenceView;
-import ru.sawim.widget.SwipeGestureListener;
 import sawim.ExternalApi;
 import sawim.Options;
 import sawim.chat.Chat;
@@ -70,6 +70,7 @@ public class SawimActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
         ExternalApi.instance.setActivity(this);
+        SawimApplication.setActionBar(null);
         SawimApplication.setCurrentActivity(this);
         setContentView(SawimApplication.isManyPane() ? R.layout.main_twopane : R.layout.main);
 
@@ -83,7 +84,6 @@ public class SawimActivity extends ActionBarActivity {
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        //super.onSaveInstanceState(outState);
     }
 
     public static void resetBar() {
@@ -93,8 +93,9 @@ public class SawimActivity extends ActionBarActivity {
         SawimApplication.getActionBar().setDisplayShowHomeEnabled(true);
         SawimApplication.getActionBar().setDisplayShowCustomEnabled(false);
         SawimApplication.getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-        if (((SawimActivity)SawimApplication.getCurrentActivity()).getRosterView() != null)
-            ((SawimActivity)SawimApplication.getCurrentActivity()).getRosterView().getDrawerToggle().setDrawerIndicatorEnabled(false);
+        SawimApplication.getActionBar().setIcon(SawimResources.appIcon);
+        //if (((SawimActivity)SawimApplication.getCurrentActivity()).getRosterView() != null)
+        //    ((SawimActivity)SawimApplication.getCurrentActivity()).getRosterView().getDrawerToggle().setDrawerIndicatorEnabled(false);
         SawimApplication.getCurrentActivity().setTitle(R.string.app_name);
     }
 
@@ -221,7 +222,7 @@ public class SawimActivity extends ActionBarActivity {
                     super.onBackPressed();
                 }
             }
-        } else moveTaskToBack(true);
+        } else super.onBackPressed();
         //if (SawimApplication.isManyPane())
         //    ((RosterView) getSupportFragmentManager().findFragmentById(R.id.roster_fragment)).resume();
     }
@@ -245,7 +246,6 @@ public class SawimActivity extends ActionBarActivity {
 
     public void recreateActivity() {
         finish();
-        SawimApplication.setActionBar(null);
         startActivity(new Intent(this, SawimActivity.class));
     }
 
@@ -260,14 +260,22 @@ public class SawimActivity extends ActionBarActivity {
             if (SawimApplication.getInstance().getConfigurationChanged() != null)
                 SawimApplication.getInstance().getConfigurationChanged().onConfigurationChanged();
         }
-
-        getRosterView().getDrawerToggle().onConfigurationChanged(newConfig);
+        if (getRosterView() != null && getRosterView().getDrawerToggle() != null)
+            getRosterView().getDrawerToggle().onConfigurationChanged(newConfig);
+        if (getChatView() != null && getChatView().getDrawerToggle() != null)
+            getChatView().getDrawerToggle().onConfigurationChanged(newConfig);
     }
 
     private RosterView getRosterView() {
         RosterView rosterView = (RosterView) getSupportFragmentManager().findFragmentByTag(RosterView.TAG);
         if (rosterView == null) rosterView = (RosterView) getSupportFragmentManager().findFragmentById(R.id.roster_fragment);
         return rosterView;
+    }
+
+    private ChatView getChatView() {
+        ChatView chatView = (ChatView) getSupportFragmentManager().findFragmentByTag(ChatView.TAG);
+        if (chatView == null) chatView = (ChatView) getSupportFragmentManager().findFragmentById(R.id.chat_fragment);
+        return chatView;
     }
 
     private static final int MENU_CONNECT = 0;
@@ -293,7 +301,6 @@ public class SawimActivity extends ActionBarActivity {
         SawimFragment mainPreferenceView = (SawimFragment) getSupportFragmentManager().findFragmentByTag(MainPreferenceView.TAG);
         SawimFragment preferenceView = (SawimFragment) getSupportFragmentManager().findFragmentByTag(MainPreferenceView.TAG);
         menu.clear();
-        Log.e(LOG_TAG, "" + (tabletChatView != null && tabletChatView.isOpenMenu()));
         if (virtualListView != null) {
             virtualListView.onPrepareOptionsMenu_(menu);
             return true;
@@ -354,19 +361,19 @@ public class SawimActivity extends ActionBarActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        ChatView chatView = getChatView();
+        VirtualListView virtualListView = (VirtualListView) getSupportFragmentManager().findFragmentByTag(VirtualListView.TAG);
         if (getRosterView().getDrawerToggle().onOptionsItemSelected(item)) {
+            return true;
+        } else if (!SawimApplication.isManyPane()
+                && chatView != null
+                && chatView.getDrawerToggle().onOptionsItemSelected(item) ) {
             return true;
         }
         if (item.getItemId() == android.R.id.home) back();
 
-        ChatView chatView = (ChatView) getSupportFragmentManager().findFragmentByTag(ChatView.TAG);
-        ChatView tabletChatView = (ChatView) getSupportFragmentManager().findFragmentById(R.id.chat_fragment);
-        VirtualListView virtualListView = (VirtualListView) getSupportFragmentManager().findFragmentByTag(VirtualListView.TAG);
         if (virtualListView != null) {
             virtualListView.onOptionsItemSelected_(item);
-            return true;
-        } else if (tabletChatView != null && tabletChatView.isOpenMenu()) {
-            tabletChatView.onOptionsItemSelected_(item);
             return true;
         } else if (chatView != null) {
             chatView.onOptionsItemSelected_(item);

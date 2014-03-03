@@ -31,11 +31,10 @@ import sawim.roster.RosterHelper;
 public class ProtocolsAdapter extends BaseAdapter {
 
     private Context context;
-    private LayoutInflater inf;
+    private int activeProtocol;
 
     public ProtocolsAdapter(Context context) {
         this.context = context;
-        inf = LayoutInflater.from(this.context);
     }
 
     @Override
@@ -61,6 +60,11 @@ public class ProtocolsAdapter extends BaseAdapter {
         RosterItemView rosterItemView = (RosterItemView) convertView;
         populateFrom(rosterItemView, getItem(position));
         rosterItemView.isShowDivider = true;
+        if (position == activeProtocol) {
+            rosterItemView.setBackgroundColor(Scheme.getColor(Scheme.THEME_ITEM_SELECTED));
+        } else {
+            rosterItemView.setBackgroundColor(0);
+        }
         rosterItemView.repaint();
         return convertView;
     }
@@ -77,5 +81,9 @@ public class ProtocolsAdapter extends BaseAdapter {
         rosterItemView.itemNameColor = Scheme.getColor(Scheme.THEME_TEXT);
         rosterItemView.itemNameFont = Typeface.DEFAULT;
         rosterItemView.itemName = protocol.getUserId();
+    }
+
+    public void setActiveProtocol(int activeProtocol) {
+        this.activeProtocol = activeProtocol;
     }
 }

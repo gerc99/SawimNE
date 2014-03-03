@@ -234,6 +234,8 @@ public final class MirandaNotes {
                 selectNote(note);
                 xmpp.getConnection().saveMirandaNotes(getNotesStorage());
                 form.back();
+            } else {
+                form.back();
             }
         }
     }

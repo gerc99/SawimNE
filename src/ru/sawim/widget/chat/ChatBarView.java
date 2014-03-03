@@ -24,18 +24,13 @@ public class ChatBarView extends IcsLinearLayout {
     ImageView imageView;
     LabelView textView;
 
-    public ChatBarView(Context context, View usersImage, View chatsImage) {
+    public ChatBarView(Context context, View chatsImage) {
         super(context,
                 com.viewpagerindicator.R.attr.vpiTabPageIndicatorStyle);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
         setOrientation(HORIZONTAL);
         setLayoutParams(layoutParams);
         setDividerPadding(10);
-
-        LinearLayout.LayoutParams usersImageLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
-        usersImageLP.gravity = Gravity.CENTER_VERTICAL;
-        usersImage.setMinimumWidth(76);
-        addViewInLayout(usersImage, 0, usersImageLP);
 
         LinearLayout.LayoutParams labelLayoutParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
         setOrientation(HORIZONTAL);
@@ -48,24 +43,20 @@ public class ChatBarView extends IcsLinearLayout {
         linearLayout.addView(imageView);
         textView = new LabelView(context);
         linearLayout.addView(textView);
-        addViewInLayout(linearLayout, 1, labelLayoutParams);
+        addViewInLayout(linearLayout, 0, labelLayoutParams);
 
         LinearLayout.LayoutParams chatsImageLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
         chatsImageLP.gravity = Gravity.CENTER_VERTICAL;
         chatsImage.setMinimumWidth(76);
-        addViewInLayout(chatsImage, 2, chatsImageLP);
+        addViewInLayout(chatsImage, 1, chatsImageLP);
     }
 
     public void update() {
         setDividerDrawable(SawimResources.listDivider);
     }
 
-    public void setVisibilityUsersImage(int visibility) {
-        getChildAt(0).setVisibility(visibility);
-    }
-
     public void setVisibilityChatsImage(int visibility) {
-        getChildAt(2).setVisibility(visibility);
+        getChildAt(1).setVisibility(visibility);
     }
 
     public void setVisibilityLabelImage(int visibility) {

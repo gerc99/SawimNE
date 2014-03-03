@@ -1,9 +1,6 @@
 package ru.sawim.view;
 
-import DrawControls.icons.Icon;
 import android.app.Activity;
-import android.content.res.Configuration;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -22,6 +19,7 @@ import protocol.Group;
 import protocol.Protocol;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
+import ru.sawim.SawimResources;
 import ru.sawim.Scheme;
 import ru.sawim.activities.SawimActivity;
 import ru.sawim.models.ProtocolsAdapter;
@@ -95,40 +93,16 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (RosterHelper.getInstance().getCurrentItemProtocol() != position) {
                     RosterHelper.getInstance().setCurrentItemProtocol(position);
-                    RosterHelper.getInstance().setCurrPage(RosterHelper.ALL_CONTACTS);
-                    getRosterAdapter().setType(RosterHelper.ALL_CONTACTS);
-                    SawimApplication.getActionBar().setSelectedNavigationItem(RosterHelper.ALL_CONTACTS);
+                    if (RosterHelper.getInstance().getCurrPage() == RosterHelper.ACTIVE_CONTACTS) {
+                        RosterHelper.getInstance().setCurrPage(RosterHelper.ALL_CONTACTS);
+                        getRosterAdapter().setType(RosterHelper.ALL_CONTACTS);
+                        SawimApplication.getActionBar().setSelectedNavigationItem(RosterHelper.ALL_CONTACTS);
+                    }
+                    ((ProtocolsAdapter)parent.getAdapter()).setActiveProtocol(position);
                     update();
                     SawimApplication.getCurrentActivity().supportInvalidateOptionsMenu();
                 }
                 drawerLayout.closeDrawer(protocolsListView);
-            }
-        });
-        drawerLayout.setDrawerListener(new DrawerLayout.DrawerListener() {
-            @Override
-            public void onDrawerSlide(View drawerView, float slideOffset) {}
-
-            @Override
-            public void onDrawerOpened(View drawerView) {
-                if (RosterHelper.getInstance().getProtocolCount() > 1 && !SawimApplication.isManyPane()) {
-                    initBar(R.string.options_account);
-                }
-            }
-
-            @Override
-            public void onDrawerClosed(View drawerView) {
-                if (RosterHelper.getInstance().getProtocolCount() > 1 && !SawimApplication.isManyPane()) {
-                    initBar(R.string.options_account);
-                }
-            }
-
-            @Override
-            public void onDrawerStateChanged(int newState) {
-                if (newState == DrawerLayout.STATE_SETTLING) {
-                    if (protocolsListView.getAdapter() != null) {
-                        ((ProtocolsAdapter) protocolsListView.getAdapter()).notifyDataSetChanged();
-                    }
-                }
             }
         });
 
@@ -268,6 +242,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         SawimApplication.getActionBar().setHomeButtonEnabled(true);
         SawimApplication.getActionBar().setDisplayShowCustomEnabled(false);
         SawimApplication.getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+        SawimApplication.getActionBar().setIcon(SawimResources.appIcon);
         SawimApplication.getCurrentActivity().setTitle(title);
 
         String[] data = new String[] {JLocale.getString(R.string.all_contacts), JLocale.getString(R.string.online_contacts), JLocale.getString(R.string.active_contacts) };
@@ -311,7 +286,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         SawimApplication.setCurrentActivity((ActionBarActivity) getActivity());
         if (SawimApplication.getActionBar() == null)
             SawimApplication.setActionBar(SawimApplication.getCurrentActivity().getSupportActionBar());
-        initBar(drawerVisible ? R.string.options_account : R.string.app_name);
+        initBar(R.string.app_name);
 
         RosterHelper.getInstance().setCurrPage(RosterHelper.getInstance().getCurrPage());
         getRosterAdapter().setType(RosterHelper.getInstance().getCurrPage());

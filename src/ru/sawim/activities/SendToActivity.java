@@ -4,6 +4,7 @@ import android.content.res.Configuration;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import ru.sawim.SawimApplication;
 import ru.sawim.R;
 import ru.sawim.Scheme;
@@ -22,7 +23,7 @@ public class SendToActivity extends ActionBarActivity {
     public void onCreate(Bundle savedInstanceState) {
         setTheme(Scheme.isBlack() ? R.style.BaseTheme : R.style.BaseThemeLight);
         super.onCreate(savedInstanceState);
-        SawimApplication.setActionBar(getSupportActionBar());
+
         SawimApplication.setCurrentActivity(this);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
         setContentView(R.layout.intercalation_layout);
@@ -39,8 +40,14 @@ public class SendToActivity extends ActionBarActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onResume() {
+        super.onResume();
+        SawimApplication.setActionBar(getSupportActionBar());
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
         SawimApplication.setActionBar(null);
     }
 
