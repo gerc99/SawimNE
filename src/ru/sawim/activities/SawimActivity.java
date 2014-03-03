@@ -295,8 +295,7 @@ public class SawimActivity extends ActionBarActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        ChatView chatView = (ChatView) getSupportFragmentManager().findFragmentByTag(ChatView.TAG);
-        ChatView tabletChatView = (ChatView) getSupportFragmentManager().findFragmentById(R.id.chat_fragment);
+        ChatView chatView = getChatView();
         VirtualListView virtualListView = (VirtualListView) getSupportFragmentManager().findFragmentByTag(VirtualListView.TAG);
         SawimFragment mainPreferenceView = (SawimFragment) getSupportFragmentManager().findFragmentByTag(MainPreferenceView.TAG);
         SawimFragment preferenceView = (SawimFragment) getSupportFragmentManager().findFragmentByTag(MainPreferenceView.TAG);
@@ -306,13 +305,8 @@ public class SawimActivity extends ActionBarActivity {
             return true;
         } else if (preferenceView != null || mainPreferenceView != null) {
             return false;
-        } else if (chatView != null) {
+        } else if (chatView != null && !SawimApplication.isManyPane()) {
             chatView.onPrepareOptionsMenu_(menu);
-            return true;
-        } else if (tabletChatView != null && tabletChatView.isOpenMenu()) {
-            tabletChatView.setOpenMenu(false);
-            supportInvalidateOptionsMenu();
-            tabletChatView.onPrepareOptionsMenu_(menu);
             return true;
         }
         Protocol p = RosterHelper.getInstance().getCurrentProtocol();

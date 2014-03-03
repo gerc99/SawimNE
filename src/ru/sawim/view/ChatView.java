@@ -38,6 +38,7 @@ import ru.sawim.models.MessagesAdapter;
 import ru.sawim.models.ProtocolsAdapter;
 import ru.sawim.models.RosterAdapter;
 import ru.sawim.view.menu.JuickMenu;
+import ru.sawim.view.menu.MyMenu;
 import ru.sawim.widget.MyListView;
 import ru.sawim.widget.Util;
 import ru.sawim.widget.chat.ChatBarView;
@@ -70,7 +71,6 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
     private Contact contact;
     private String sharingText;
     private boolean sendByEnter;
-    private boolean isOpenMenu = false;
     private boolean isConference;
 
     private RosterAdapter chatsSpinnerAdapter;
@@ -239,9 +239,39 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
                 @Override
                 public void onClick(View view) {
                     if (contact == null) return;
-                    isOpenMenu = true;
-                    getActivity().supportInvalidateOptionsMenu();
-                    getActivity().openOptionsMenu();
+                    final MyMenu menu = new MyMenu(getActivity());
+                    boolean accessible = chat.getWritable() && (contact.isSingleUserContact() || contact.isOnline());
+                    menu.add(getString(adapter.isMultiQuote() ?
+                            R.string.disable_multi_citation : R.string.include_multi_citation), ContactMenu.MENU_MULTI_CITATION);
+                    if (0 < chat.getAuthRequestCounter()) {
+                        menu.add(R.string.grant, ContactMenu.USER_MENU_GRANT_AUTH);
+                        menu.add(R.string.deny, ContactMenu.USER_MENU_DENY_AUTH);
+                    }
+                    if (!contact.isAuth()) {
+                        menu.add(R.string.requauth, ContactMenu.USER_MENU_REQU_AUTH);
+                    }
+                    if (accessible) {
+                        menu.add(R.string.ft_name, ContactMenu.USER_MENU_FILE_TRANS);
+                        menu.add(R.string.ft_cam, ContactMenu.USER_MENU_CAM_TRANS);
+                    }
+                    menu.add(R.string.user_statuses, ContactMenu.USER_MENU_STATUSES);
+
+                    menu.add(R.string.delete_chat, ContactMenu.ACTION_CURRENT_DEL_CHAT);
+                    menu.add(R.string.all_contact_except_this, ContactMenu.ACTION_DEL_ALL_CHATS_EXCEPT_CUR);
+                    menu.add(R.string.clear_all_contacts, ContactMenu.ACTION_DEL_ALL_CHATS);
+                    if (!contact.isSingleUserContact() && contact.isOnline()) {
+                        menu.add(R.string.leave_chat, ContactMenu.CONFERENCE_DISCONNECT);
+                    }
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setCancelable(true);
+                    builder.setTitle(null);
+                    builder.setAdapter(menu, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            onOptionsItemSelected(menu.getItem(which).idItem);
+                        }
+                    });
+                    builder.create().show();
                 }
             });
         } else
@@ -590,7 +620,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
     private void updateChatIcon() {
         if (chatBarLayout == null) return;
         Drawable icMess = ChatHistory.instance.getUnreadMessageIcon();
-        if (contact != null)
+        if (contact != null && !SawimApplication.isManyPane())
             SawimApplication.getActionBar().setIcon(StatusInfo.STATUS_OFFLINE == contact.getStatusIndex() ? SawimResources.usersIcon : SawimResources.usersIconOn);
         if (icMess == null) {
             chatBarLayout.setVisibilityChatsImage(View.GONE);
@@ -675,14 +705,6 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         }
     };
 
-    public boolean isOpenMenu() {
-        return isOpenMenu;
-    }
-
-    public void setOpenMenu(boolean openMenu) {
-        isOpenMenu = openMenu;
-    }
-
     public void onPrepareOptionsMenu_(Menu menu) {
         if (chat == null) return;
         menu.clear();
@@ -712,7 +734,11 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
     }
 
     public void onOptionsItemSelected_(MenuItem item) {
-        switch (item.getItemId()) {
+        onOptionsItemSelected(item.getItemId());
+    }
+
+    private void onOptionsItemSelected(int id) {
+        switch (id) {
             case ContactMenu.MENU_MULTI_CITATION:
                 if (adapter.isMultiQuote()) {
                     destroyMultiCitation();
@@ -747,7 +773,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
                 break;
 
             default:
-                new ContactMenu(protocol, contact).doAction(item.getItemId());
+                new ContactMenu(protocol, contact).doAction(id);
                 getActivity().supportInvalidateOptionsMenu();
         }
     }
