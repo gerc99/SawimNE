@@ -369,7 +369,7 @@ public class SawimActivity extends ActionBarActivity {
         if (virtualListView != null) {
             virtualListView.onOptionsItemSelected_(item);
             return true;
-        } else if (chatView != null) {
+        } else if (!SawimApplication.isManyPane() && chatView != null) {
             chatView.onOptionsItemSelected_(item);
             return true;
         }
