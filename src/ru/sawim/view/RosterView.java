@@ -234,8 +234,8 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         updateProgressBar();
     }
 
-    private void initBar(int title) {
-        SawimApplication.getActionBar().setDisplayShowTitleEnabled(true);
+    private void initBar() {
+        SawimApplication.getActionBar().setDisplayShowTitleEnabled(false);
         SawimApplication.getActionBar().setDisplayShowHomeEnabled(true);
         SawimApplication.getActionBar().setDisplayUseLogoEnabled(true);
         SawimApplication.getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -243,7 +243,6 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         SawimApplication.getActionBar().setDisplayShowCustomEnabled(false);
         SawimApplication.getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
         SawimApplication.getActionBar().setIcon(SawimResources.appIcon);
-        SawimApplication.getCurrentActivity().setTitle(title);
 
         String[] data = new String[] {JLocale.getString(R.string.all_contacts), JLocale.getString(R.string.online_contacts), JLocale.getString(R.string.active_contacts) };
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(SawimApplication.getCurrentActivity(),
@@ -273,6 +272,12 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        RosterHelper.getInstance().setOnUpdateRoster(null);
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         resume();
@@ -282,15 +287,15 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     }
 
     public void resume() {
-        boolean drawerVisible = drawerLayout != null && drawerLayout.isDrawerOpen(protocolsListView);
         SawimApplication.setCurrentActivity((ActionBarActivity) getActivity());
         if (SawimApplication.getActionBar() == null)
             SawimApplication.setActionBar(SawimApplication.getCurrentActivity().getSupportActionBar());
-        initBar(R.string.app_name);
+        initBar();
 
         RosterHelper.getInstance().setCurrPage(RosterHelper.getInstance().getCurrPage());
         getRosterAdapter().setType(RosterHelper.getInstance().getCurrPage());
         SawimApplication.getActionBar().setSelectedNavigationItem(RosterHelper.getInstance().getCurrPage());
+        ((ProtocolsAdapter)protocolsListView.getAdapter()).setActiveProtocol(RosterHelper.getInstance().getCurrentItemProtocol());
 
         if (RosterHelper.getInstance().getProtocolCount() > 0) {
             RosterHelper.getInstance().setCurrentContact(null);
@@ -306,12 +311,6 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
             }
             update();
         }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        RosterHelper.getInstance().setOnUpdateRoster(null);
     }
 
     public RosterAdapter getRosterAdapter() {

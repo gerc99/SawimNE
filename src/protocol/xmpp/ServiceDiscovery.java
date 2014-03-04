@@ -383,7 +383,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
         } else if (searchBox == box) {
             String text = searchBox.getString();
             if (isConferenceList) {
-                text = StringConvertor.toLowerCase(text);
+                text = text.toLowerCase();
             }
             int currentIndex = getJidIndex(screen.getCurrItem()) + 1;
             for (int i = currentIndex; i < jids.size(); ++i) {

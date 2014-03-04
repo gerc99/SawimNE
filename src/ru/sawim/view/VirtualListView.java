@@ -103,8 +103,7 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
 
     public static void show() {
         SawimActivity.resetBar();
-        if (SawimApplication.getCurrentActivity().getSupportFragmentManager()
-                .findFragmentById(R.id.chat_fragment) != null)
+        if (SawimApplication.isManyPane())
             SawimApplication.getCurrentActivity().setContentView(R.layout.intercalation_layout);
         VirtualListView newFragment = new VirtualListView();
         FragmentTransaction transaction = SawimApplication.getCurrentActivity().getSupportFragmentManager().beginTransaction();
@@ -127,8 +126,7 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
 
     @Override
     public void back() {
-        if (SawimApplication.getCurrentActivity().getSupportFragmentManager()
-                .findFragmentById(R.id.chat_fragment) != null)
+        if (SawimApplication.isManyPane())
             ((SawimActivity) SawimApplication.getCurrentActivity()).recreateActivity();
         else
             SawimApplication.getCurrentActivity().getSupportFragmentManager().popBackStack();

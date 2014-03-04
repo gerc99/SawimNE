@@ -136,15 +136,15 @@ public class XmppContact extends Contact {
             fullJid = Jid.SawimJidToRealJid(getUserId() + '/' + nick);
         }
 
-        xml = Util.replace(xml, "${sawim.caps}", xmppConnection.getCaps());
-        xml = Util.replace(xml, "${c.jid}", Util.xmlEscape(jid));
-        xml = Util.replace(xml, "${c.fulljid}", Util.xmlEscape(fullJid));
-        xml = Util.replace(xml, "${param.full}", Util.xmlEscape(param));
-        xml = Util.replace(xml, "${param.res}", Util.xmlEscape(resource));
-        xml = Util.replace(xml, "${param.msg}", Util.xmlEscape(newMessage));
-        xml = Util.replace(xml, "${param.res.realjid}",
+        xml = xml.replace("${sawim.caps}", xmppConnection.getCaps());
+        xml = xml.replace("${c.jid}", Util.xmlEscape(jid));
+        xml = xml.replace("${c.fulljid}", Util.xmlEscape(fullJid));
+        xml = xml.replace("${param.full}", Util.xmlEscape(param));
+        xml = xml.replace("${param.res}", Util.xmlEscape(resource));
+        xml = xml.replace("${param.msg}", Util.xmlEscape(newMessage));
+        xml = xml.replace("${param.res.realjid}",
                 Util.xmlEscape(getSubContactRealJid(resource)));
-        xml = Util.replace(xml, "${param.full.realjid}",
+        xml = xml.replace("${param.full.realjid}",
                 Util.xmlEscape(getSubContactRealJid(param)));
 
         xmppConnection.requestRawXml(xml);

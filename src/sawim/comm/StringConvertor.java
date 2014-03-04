@@ -10,16 +10,7 @@ import java.util.Vector;
 
 
 public final class StringConvertor {
-    private final String name;
-    private final String[] from;
-    private final String[] to;
 
-    private static StringConvertor[] converters;
-
-    public static final String DETRANSLITERATE = "detransliterate";
-    public static final String MRIM2Sawim = "mrim2Sawim";
-    public static final String Sawim2MRIM = "Sawim2mrim";
-    public static final String JABBER2Sawim = "jabber2Sawim";
     public static final char DELEMITER = ' ';
 
     private static boolean systemWin1251 = true;
@@ -242,7 +233,6 @@ public final class StringConvertor {
             DataInputStream dis = new DataInputStream(bais);
             return removeCr(dis.readUTF());
         } catch (Exception e) {
-
         }
         return "";
     }
@@ -307,29 +297,6 @@ public final class StringConvertor {
         } catch (UnsupportedEncodingException e) {
             DebugLog.panic("Unsupported write Encoding", e);
         }
-        /*try {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            char ch;
-            for (int i = 0; i < val.length(); ++i) {
-                ch = val.charAt(i);
-                if ((ch & 0x7F) == ch) {
-                    if ((0x20 <= ch) || ('\r' == ch) || ('\n' == ch) || ('\t' == ch)) {
-                        baos.write(ch);
-                    }
-
-                } else if ((ch & 0x7FF) == ch) {
-                    baos.write(0xC0 | ((ch >>> 6) & 0x1F));
-                    baos.write(0x80 | ((ch) & 0x3F));
-
-                } else if ((ch & 0xFFFF) == ch) {
-                    baos.write(0xE0 | ((ch >>> 12) & 0x0F));
-                    baos.write(0x80 | ((ch >>> 6) & 0x3F));
-                    baos.write(0x80 | ((ch) & 0x3F));
-                }
-            }
-            return baos.toByteArray();
-        } catch (Exception e) {
-        }*/
         return null;
     }
 
@@ -382,251 +349,12 @@ public final class StringConvertor {
         return new String(buf, offset, length);
     }
 
-    public static boolean stringEquals(String s1, String s2) {
-        if (s1.length() != s2.length()) {
-            return false;
-        }
-        int size = s1.length();
-        for (int i = 0; i < size; ++i) {
-            if (toLowerCase(s1.charAt(i)) != toLowerCase(s2.charAt(i))) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public static int stringCompare(String s1, String s2) {
-        int size = Math.min(s1.length(), s2.length());
-        int result = 0;
-        for (int i = 0; i < size; ++i) {
-            result = toLowerCase(s1.charAt(i)) - toLowerCase(s2.charAt(i));
-            if (result != 0) {
-                return result;
-            }
-        }
-        return s1.length() - s2.length();
-    }
-
-    public static String toLowerCase(String s) {
-        char[] chars = s.toCharArray();
-        for (int i = s.length() - 1; i >= 0; i--) {
-            chars[i] = toLowerCase(chars[i]);
-        }
-        String res = new String(chars);
-        return res.equals(s) ? s : res;
-    }
-
-    public static String toUpperCase(String s) {
-        char[] chars = s.toCharArray();
-        for (int i = s.length() - 1; i >= 0; i--) {
-            chars[i] = toUpperCase(chars[i]);
-        }
-        String res = new String(chars);
-        return res.equals(s) ? s : res;
-    }
-
-    public static char toLowerCase(char c) {
-        return Character.toLowerCase(c);
-    }
-
-    public static char toUpperCase(char c) {
-        return Character.toUpperCase(c);
-    }
-
-    private boolean equalsSubstring(String s1, int pos, String s2) {
-        if (s1.length() - pos < s2.length()) {
-            return false;
-        }
-        int length = s2.length();
-        for (int i = 0; i < length; ++i) {
-            if (toLowerCase(s1.charAt(i + pos)) != toLowerCase(s2.charAt(i))) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private int convertCharIndex(String str, int pos) {
-        for (int i = 0; i < from.length; ++i) {
-            if (equalsSubstring(str, pos, from[i])) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    private String convertChar(String str, int pos, int wordIndex) {
-        char ch = str.charAt(pos);
-        if (toLowerCase(ch) == ch) {
-            return to[wordIndex];
-        }
-        if ((1 != from[wordIndex].length()) && (1 != to[wordIndex].length())) {
-            ch = str.charAt(pos + 1);
-            if (toLowerCase(ch) == ch) {
-                return toUpperCase(to[wordIndex].substring(0, 1))
-                        + to[wordIndex].substring(1);
-            }
-        }
-        return toUpperCase(to[wordIndex]);
-    }
-
-    private String convertTextCaseInsensitive(String str) {
-        StringBuilder buf = new StringBuilder();
-        int pos = 0;
-        int skipLength = -1;
-        if (str.startsWith("/")) {
-            skipLength = str.indexOf(' ');
-            if (-1 == skipLength) {
-                return str;
-            }
-        }
-        if (-1 == skipLength) {
-            for (int i = 0; i < Math.min(str.length(), 32); ++i) {
-                char ch = str.charAt(i);
-                if (',' == ch) {
-                    skipLength = i;
-                    break;
-                }
-                if (' ' == ch) {
-                    break;
-                }
-            }
-        }
-        if (-1 < skipLength) {
-            while (pos <= skipLength) {
-                buf.append(str.charAt(pos));
-                pos++;
-            }
-        }
-        boolean convert = true;
-        while (pos < str.length()) {
-            if (convert) {
-                int wordIndex = convertCharIndex(str, pos);
-                if (-1 != wordIndex) {
-                    buf.append(convertChar(str, pos, wordIndex));
-                    pos += from[wordIndex].length();
-                    continue;
-                }
-            }
-            if (str.startsWith("  ", pos)) {
-                convert = !convert;
-                buf.append(' ');
-                pos += 2;
-                continue;
-            }
-            buf.append(str.charAt(pos));
-            pos++;
-        }
-        return buf.toString();
-    }
-
-    private String convertText(String text) {
-        String result = text;
-        for (int i = 0; i < from.length; ++i) {
-            result = Util.replace(result, from[i], to[i]);
-        }
-        return result;
-    }
-
-    private StringConvertor(String name, String[] from, String[] to) {
-        this.name = name;
-        this.from = from;
-        this.to = to;
-        for (int i = 0; i < from.length; ++i) {
-            if (from[i].equals(to[i])) {
-                from[i] = to[i];
-            }
-        }
-    }
-
-    public static void load() {
-        Vector configs = new Vector();
-        String content = Config.loadResource("/replaces.txt");
-        Config.parseIniConfig(content, configs);
-
-        String mrimContent = Config.loadResource("/mrim-replaces.txt");
-        Config.parseIniConfig(mrimContent, configs);
-
-        String xmppContent = Config.loadResource("/jabber-replaces.txt");
-        Config.parseIniConfig(xmppContent, configs);
-
-        StringConvertor.converters = new StringConvertor[configs.size()];
-        for (int i = 0; i < configs.size(); ++i) {
-            Config config = (Config) configs.elementAt(i);
-            StringConvertor.converters[i] = new StringConvertor(config.getName(),
-                    config.getKeys(), config.getValues());
-        }
-    }
-
-    private static StringConvertor getConvertor(String scheme) {
-        for (int i = 0; i < converters.length; ++i) {
-            if (scheme.equals(converters[i].name)) {
-                return converters[i];
-            }
-        }
-        return null;
-    }
-
-    public static boolean hasConverter(String scheme) {
-        return null != getConvertor(scheme);
-    }
-
-    public static String convert(String scheme, String str) {
-        StringConvertor convertor = getConvertor(scheme);
-        return (null == convertor) ? str : convertor.convertText(str);
-    }
-
-    public static String detransliterate(String str) {
-        StringConvertor convertor = getConvertor(DETRANSLITERATE);
-        return (null == convertor) ? str : convertor.convertTextCaseInsensitive(str);
-    }
-
     public static boolean isEmpty(String value) {
         return (null == value) || (0 == value.length());
     }
 
     public static String notNull(String value) {
         return (null == value) ? "" : value;
-    }
-
-    public static String trim(String msg) {
-        if (StringConvertor.isEmpty(msg)) {
-            return "";
-        }
-        if (-1 == "\n ".indexOf(msg.charAt(msg.length() - 1))) {
-            return msg;
-        }
-
-        for (int i = msg.length() - 1; 0 <= i; --i) {
-            char ch = msg.charAt(i);
-            if (('\n' != ch) && (' ' != ch)) {
-                return msg.substring(0, i + 1);
-            }
-        }
-        return "";
-    }
-
-    private static int cutIndex(String str, char ch, int cutIndex, int length) {
-        int chIndex = str.lastIndexOf(ch, length);
-        if (-1 != chIndex) {
-            return Math.max(cutIndex, chIndex);
-        }
-        return cutIndex;
-    }
-
-    public static String cut(String str, int length) {
-        if (str.length() < length) {
-            return str;
-        }
-        int cutIndex = 0;
-        final char[] cutChars = {' ', '\n'};
-        for (int i = 0; i < cutChars.length; ++i) {
-            cutIndex = cutIndex(str, cutChars[i], cutIndex, length);
-        }
-        if (0 == cutIndex) {
-            cutIndex = length;
-        }
-        return str.substring(0, cutIndex) + "...";
     }
 }
 

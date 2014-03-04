@@ -496,8 +496,8 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
             if (isCanceled()) {
                 throw new SawimException(194, 1);
             }
-            respString = Util.replace(respString, "\r", "");
-            respString = Util.replace(respString, "\n", "");
+            respString = respString.replace("\r", "");
+            respString = respString.replace("\n", "");
 
             StringBuilder messText = new StringBuilder();
             if (!StringConvertor.isEmpty(description)) {

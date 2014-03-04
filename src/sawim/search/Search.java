@@ -341,7 +341,7 @@ public final class Search implements FormListener, ControlStateListener {
 
             } else if (TYPE_LITE == type) {
                 String userid = searchForm.getTextFieldValue(USERID).trim();
-                userid = StringConvertor.toLowerCase(userid);
+                userid = userid.toLowerCase();
                 if (StringConvertor.isEmpty(userid)) {
                     return;
                 }
@@ -380,7 +380,7 @@ public final class Search implements FormListener, ControlStateListener {
     }
 
     private Contact createContact(UserInfo resultData) {
-        String uin = StringConvertor.toLowerCase(resultData.uin.trim());
+        String uin = resultData.uin.trim().toLowerCase();
 
         if ((null != xmppGate) && !uin.endsWith(xmppGate)) {
             uin = uin.replace('@', '%') + '@' + xmppGate;

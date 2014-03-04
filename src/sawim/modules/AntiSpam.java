@@ -66,8 +66,8 @@ public class AntiSpam {
         if (5000 < msg.length()) {
             return true;
         }
-        String[] keywords = Util.explode(StringConvertor.toLowerCase(opt), ' ');
-        msg = StringConvertor.toLowerCase(msg);
+        String[] keywords = Util.explode(opt.toLowerCase(), ' ');
+        msg = msg.toLowerCase();
         for (int i = 0; i < keywords.length; ++i) {
             if (-1 != msg.indexOf(keywords[i])) {
                 return true;
@@ -102,7 +102,7 @@ public class AntiSpam {
 
         String[] msgs = Util.explode(Options.getString(Options.OPTION_ANTISPAM_ANSWER), '\n');
         for (int i = 0; i < msgs.length; ++i) {
-            if (StringConvertor.stringEquals(msg, msgs[i])) {
+            if (msg.equalsIgnoreCase(msgs[i])) {
                 sendHelloMessage(protocol, contact);
                 return true;
             }

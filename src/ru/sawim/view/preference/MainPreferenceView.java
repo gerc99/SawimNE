@@ -35,8 +35,7 @@ public class MainPreferenceView extends PreferenceFragment {
             @Override
             public void run() {
                 SawimActivity.resetBar();
-                if (SawimApplication.getCurrentActivity().getSupportFragmentManager()
-                        .findFragmentById(R.id.chat_fragment) != null)
+                if (SawimApplication.isManyPane())
                     SawimApplication.getCurrentActivity().setContentView(R.layout.intercalation_layout);
                 MainPreferenceView newFragment = new MainPreferenceView();
                 FragmentTransaction transaction = SawimApplication.getCurrentActivity().getSupportFragmentManager().beginTransaction();
@@ -50,7 +49,6 @@ public class MainPreferenceView extends PreferenceFragment {
     @Override
     public void onResume() {
         super.onResume();
-        SawimActivity.resetBar();
         SawimApplication.getActionBar().setDisplayHomeAsUpEnabled(true);
         getActivity().setTitle(R.string.options);
     }

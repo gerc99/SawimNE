@@ -248,7 +248,7 @@ public final class HistoryStorageList implements Runnable, FormListener {
         Thread it = Thread.currentThread();
         int size = history.getHistorySize();
         if ((fromIndex < 0) || (fromIndex >= size)) return -1;
-        if (!caseSens) text = StringConvertor.toLowerCase(text);
+        if (!caseSens) text = text.toLowerCase();
 
         int step = back ? -1 : +1;
         int updater = 100;
@@ -257,7 +257,7 @@ public final class HistoryStorageList implements Runnable, FormListener {
             CachedRecord record = history.getRecord(index);
             String searchText = caseSens
                     ? record.text
-                    : StringConvertor.toLowerCase(record.text);
+                    : record.text.toLowerCase();
             if (searchText.indexOf(text) != -1) {
                 return index;
             }

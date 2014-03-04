@@ -236,7 +236,7 @@ public final class Config {
                     if ('=' == ch) {
                         currentKey = content.substring(beginPos, i).trim();
                         beginPos = i + 1;
-                        if (StringConvertor.stringEquals(key, currentKey)) {
+                        if (key.equalsIgnoreCase(currentKey)) {
                             state = PARSER_TO;
                         } else {
                             state = PARSER_COMMENT;

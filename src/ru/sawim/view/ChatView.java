@@ -135,13 +135,12 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
     }
 
     private void resetBar() {
-        SawimApplication.getActionBar().setDisplayShowTitleEnabled(false);
         if (!SawimApplication.isManyPane()) {
-            SawimApplication.getActionBar().setDisplayShowTitleEnabled(true);
-            SawimApplication.getActionBar().setDisplayShowHomeEnabled(true);
-            SawimApplication.getActionBar().setDisplayUseLogoEnabled(true);
-            SawimApplication.getActionBar().setDisplayHomeAsUpEnabled(true);
-            SawimApplication.getActionBar().setHomeButtonEnabled(true);
+            SawimApplication.getActionBar().setDisplayShowTitleEnabled(false);
+            SawimApplication.getActionBar().setDisplayShowHomeEnabled(contact.isConference());
+            SawimApplication.getActionBar().setDisplayUseLogoEnabled(contact.isConference());
+            SawimApplication.getActionBar().setDisplayHomeAsUpEnabled(contact.isConference());
+            SawimApplication.getActionBar().setHomeButtonEnabled(contact.isConference());
             SawimApplication.getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         }
 
@@ -240,7 +239,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
             menuButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (contact == null) return;
+                    if (contact == null || chat == null) return;
                     final MyMenu menu = new MyMenu(getActivity());
                     boolean accessible = chat.getWritable() && (contact.isSingleUserContact() || contact.isOnline());
                     menu.add(getString(adapter.isMultiQuote() ?
@@ -301,7 +300,6 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         sendByEnter = Options.getBoolean(Options.OPTION_SIMPLE_INPUT);
         if (sendByEnter) {
             messageEditor.setImeOptions(EditorInfo.IME_ACTION_SEND);
-            //messageEditor.setOnEditorActionListener(enterListener);
         }
         if (sendByEnter) {
             sendButton.setVisibility(ImageButton.GONE);
@@ -886,7 +884,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         showKeyboard();
     }
 
-    private void send() {
+    public void send() {
         if (chat == null) return;
         hideKeyboard();
         chat.sendMessage(getText());
@@ -930,12 +928,6 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         int end = messageEditor.getSelectionEnd();
         messageEditor.getText().replace(Math.min(start, end), Math.max(start, end),
                 text, 0, text.length());
-    }
-
-    private boolean isDone(int actionId) {
-        return (EditorInfo.IME_NULL == actionId)
-                || (EditorInfo.IME_ACTION_DONE == actionId)
-                || (EditorInfo.IME_ACTION_SEND == actionId);
     }
 
     private boolean compose = false;
@@ -990,19 +982,6 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
                     getActivity().supportInvalidateOptionsMenu();
                 }
             }
-        }
-    };
-
-    private final TextView.OnEditorActionListener enterListener = new android.widget.TextView.OnEditorActionListener() {
-        @Override
-        public boolean onEditorAction(android.widget.TextView textView, int actionId, KeyEvent event) {
-            if (isDone(actionId)) {
-                if ((null == event) || (event.getAction() == KeyEvent.ACTION_DOWN)) {
-                    send();
-                    return true;
-                }
-            }
-            return false;
         }
     };
 }

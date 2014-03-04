@@ -388,13 +388,13 @@ public class Util {
     public static String getDate(String format, long anyDate) {
         if (0 == anyDate) return "error";
         int[] localDate = createDate(anyDate);
-        format = Util.replace(format, "%H", Util.makeTwo(localDate[TIME_HOUR]));
-        format = Util.replace(format, "%M", Util.makeTwo(localDate[TIME_MINUTE]));
-        format = Util.replace(format, "%S", Util.makeTwo(localDate[TIME_SECOND]));
-        format = Util.replace(format, "%Y", "" + localDate[TIME_YEAR]);
-        format = Util.replace(format, "%y", Util.makeTwo(localDate[TIME_YEAR] % 100));
-        format = Util.replace(format, "%m", Util.makeTwo(localDate[TIME_MON]));
-        format = Util.replace(format, "%d", Util.makeTwo(localDate[TIME_DAY]));
+        format = format.replace("%H", Util.makeTwo(localDate[TIME_HOUR]));
+        format = format.replace("%M", Util.makeTwo(localDate[TIME_MINUTE]));
+        format = format.replace("%S", Util.makeTwo(localDate[TIME_SECOND]));
+        format = format.replace("%Y", "" + localDate[TIME_YEAR]);
+        format = format.replace("%y", Util.makeTwo(localDate[TIME_YEAR] % 100));
+        format = format.replace("%m", Util.makeTwo(localDate[TIME_MON]));
+        format = format.replace("%d", Util.makeTwo(localDate[TIME_DAY]));
         return format;
     }
 
@@ -553,32 +553,6 @@ public class Util {
         return (time << 16) | (rand.nextInt() & 0xFFFF);
     }
 
-    private static final int URL_CHAR_PROTOCOL = 0;
-    private static final int URL_CHAR_PREV = 1;
-    private static final int URL_CHAR_OTHER = 2;
-    private static final int URL_CHAR_DIGIT = 3;
-    private static final int URL_CHAR_NONE = 4;
-
-    private static boolean isURLChar(char chr, int mode) {
-        if (mode == URL_CHAR_PROTOCOL) {
-            return ((chr >= 'A') && (chr <= 'Z')) ||
-                    ((chr >= 'a') && (chr <= 'z'));
-        }
-
-        if (mode == URL_CHAR_PREV) {
-            return ((chr >= 'A') && (chr <= 'Z'))
-                    || ((chr >= 'a') && (chr <= 'z'))
-                    || ((chr >= '0') && (chr <= '9'))
-                    || ('@' == chr) || ('-' == chr)
-                    || ('_' == chr) || ('%' == chr);
-        }
-        if (URL_CHAR_DIGIT == mode) return Character.isDigit(chr);
-        if (URL_CHAR_NONE == mode) return (' ' == chr) || ('\n' == chr);
-
-        if ((chr <= ' ') || (chr == '\n')) return false;
-        return true;
-    }
-
     public static String getUrlWithoutProtocol(String url) {
         int index = url.indexOf(':');
         if (-1 != index) {
@@ -623,25 +597,6 @@ public class Util {
         } catch (Exception ignored) {
         }
         return defValue;
-    }
-
-
-    public static String replace(String text, String from, String to) {
-        int fromSize = from.length();
-        int start = 0;
-        int pos = 0;
-        StringBuilder sb = new StringBuilder();
-        for (; ; ) {
-            pos = text.indexOf(from, pos);
-            if (-1 == pos) break;
-            sb.append(text.substring(start, pos)).append(to);
-            pos += fromSize;
-            start = pos;
-        }
-        if (start < text.length()) {
-            sb.append(text.substring(start));
-        }
-        return sb.toString();
     }
 
     public static String replace(String text, String[] from, String[] to, String keys) {
@@ -820,7 +775,7 @@ public class Util {
     public static int compareNodes(TreeNode node1, TreeNode node2) {
         int result = node1.getNodeWeight() - node2.getNodeWeight();
         if (0 == result) {
-            result = StringConvertor.stringCompare(node1.getText(), node2.getText());
+            result = node1.getText().compareTo(node2.getText());
         }
         return result;
     }

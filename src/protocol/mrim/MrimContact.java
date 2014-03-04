@@ -104,7 +104,8 @@ public class MrimContact extends Contact {
         if (!StringConvertor.isEmpty(moodCode)) {
             DebugLog.println("mrim: mood " + getUserId() + " " + moodCode + " " + title);
         }
-        String message = StringConvertor.trim(title + " " + desc);
+        String message = title + " " + desc;
+        message = message.trim();
         int x = Mrim.xStatus.createStatus(moodCode);
 
         setXStatus(x, message);

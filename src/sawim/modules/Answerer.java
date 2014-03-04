@@ -176,12 +176,12 @@ public final class Answerer implements FormListener {
             String getItemAnswer = getItemAnswer(i);
 
             if (contact.isConference()) {
-                if (StringConvertor.stringEquals(msgOfConf, getItemQuestion)) {
+                if (msgOfConf.equalsIgnoreCase(getItemQuestion)) {
                     XmppContact toContact = (XmppContact) contact;
                     protocol.sendMessage(toContact, message.getName() + sawim.chat.Chat.ADDRESS + getItemAnswer, true);
                 }
             } else {
-                if (StringConvertor.stringEquals(msg, getItemQuestion)) {
+                if (msg.equalsIgnoreCase(getItemQuestion)) {
                     protocol.sendMessage(contact, getItemAnswer, true);
                 }
             }

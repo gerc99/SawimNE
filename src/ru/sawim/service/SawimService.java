@@ -8,6 +8,7 @@ import android.util.Log;
 import ru.sawim.R;
 import ru.sawim.SawimNotification;
 import sawim.Options;
+import sawim.chat.ChatHistory;
 import sawim.roster.RosterHelper;
 
 public class SawimService extends Service {
@@ -26,6 +27,17 @@ public class SawimService extends Service {
         super.onCreate();
         Log.i(LOG_TAG, "onStart();");
         startForeground(R.string.app_name, SawimNotification.get(this));
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                ChatHistory.instance.loadUnreadMessages();
+            }
+        }).start();
+        if (RosterHelper.getInstance() != null) {
+            RosterHelper.getInstance().autoConnect();
+            Thread.yield();
+        }
         //musicReceiver = new MusicReceiver(this);
         //this.registerReceiver(musicReceiver, musicReceiver.getIntentFilter());
         //scrobbling finished
@@ -37,6 +49,11 @@ public class SawimService extends Service {
         //this.unregisterReceiver(musicReceiver);
         release();
         stopForeground(true);
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        return START_STICKY;
     }
 
     @Override

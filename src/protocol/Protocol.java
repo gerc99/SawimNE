@@ -1057,7 +1057,7 @@ abstract public class Protocol {
     protected abstract void sendSomeMessage(PlainMessage msg);
 
     public final void sendMessage(Contact to, String msg, boolean addToChat) {
-        msg = StringConvertor.trim(msg);
+        msg = msg.trim();
         if (StringConvertor.isEmpty(msg)) {
             return;
         }

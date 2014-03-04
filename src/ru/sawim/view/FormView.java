@@ -76,8 +76,7 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
             @Override
             public void run() {
                 SawimActivity.resetBar();
-                if (SawimApplication.getCurrentActivity().getSupportFragmentManager()
-                        .findFragmentById(R.id.chat_fragment) != null)
+                if (SawimApplication.isManyPane())
                     SawimApplication.getCurrentActivity().setContentView(R.layout.intercalation_layout);
                 FormView newFragment = new FormView();
                 FragmentTransaction transaction = SawimApplication.getCurrentActivity().getSupportFragmentManager().beginTransaction();
@@ -103,8 +102,7 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (SawimApplication.getCurrentActivity().getSupportFragmentManager()
-                        .findFragmentById(R.id.chat_fragment) != null)
+                if (SawimApplication.isManyPane())
                     ((SawimActivity) SawimApplication.getCurrentActivity()).recreateActivity();
                 else
                     SawimApplication.getCurrentActivity().getSupportFragmentManager().popBackStack();

@@ -1541,7 +1541,7 @@ public final class XmppConnection extends ClientConnection {
         if ((null != subject) && (-1 == text.indexOf(subject))) {
             text = subject + "\n\n" + text;
         }
-        text = StringConvertor.trim(text);
+        text = text.trim();
 
         final XmppContact c = (XmppContact) getXmpp().getItemByUIN(from);
 
@@ -1615,10 +1615,6 @@ public final class XmppConnection extends ClientConnection {
             return;
         }
 
-        text = StringConvertor.convert(Jid.isMrim(from)
-                ? StringConvertor.MRIM2Sawim : StringConvertor.JABBER2Sawim,
-                text);
-
         final String date = getDate(msg);
         final boolean isOnlineMessage = (null == date);
         long time = isOnlineMessage ? SawimApplication.getCurrentGmtTime() : Util.createGmtDate(date);
@@ -1676,8 +1672,7 @@ public final class XmppConnection extends ClientConnection {
             }
         }
 
-        text = StringConvertor.convert(StringConvertor.JABBER2Sawim, text);
-        text = StringConvertor.trim(text);
+        text = text.trim();
         if (StringConvertor.isEmpty(text)) {
             return;
         }
@@ -2219,9 +2214,7 @@ public final class XmppConnection extends ClientConnection {
                 }
             }
         }
-        if (Jid.isMrim(to)) {
-            msg = StringConvertor.convert(StringConvertor.Sawim2MRIM, msg);
-        }
+
         String chatState = "";
         if ((1 < Options.getInt(Options.OPTION_TYPING_MODE)) && S_CHAT.equals(type)) {
             chatState = getChatStateTag(S_ACTIVE);

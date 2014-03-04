@@ -94,8 +94,8 @@ public class SawimActivity extends ActionBarActivity {
         SawimApplication.getActionBar().setDisplayShowCustomEnabled(false);
         SawimApplication.getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         SawimApplication.getActionBar().setIcon(SawimResources.appIcon);
-        //if (((SawimActivity)SawimApplication.getCurrentActivity()).getRosterView() != null)
-        //    ((SawimActivity)SawimApplication.getCurrentActivity()).getRosterView().getDrawerToggle().setDrawerIndicatorEnabled(false);
+        if (SawimApplication.isManyPane())
+            ((SawimActivity)SawimApplication.getCurrentActivity()).getRosterView().getDrawerToggle().setDrawerIndicatorEnabled(false);
         SawimApplication.getCurrentActivity().setTitle(R.string.app_name);
     }
 
@@ -232,6 +232,16 @@ public class SawimActivity extends ActionBarActivity {
             recreateActivity();
         else
             super.onBackPressed();
+    }
+
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_ENTER) {
+            if (getChatView() != null)
+                getChatView().send();
+            return true;
+        }
+        return super.onKeyUp(keyCode, event);
     }
 
     @Override

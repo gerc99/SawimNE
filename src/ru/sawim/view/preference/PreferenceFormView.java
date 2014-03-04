@@ -45,8 +45,7 @@ public class PreferenceFormView extends PreferenceFragment {
                 if (SawimApplication.getActionBar() == null)
                     SawimApplication.setActionBar(SawimApplication.getCurrentActivity().getSupportActionBar());
                 SawimActivity.resetBar();
-                if (SawimApplication.getCurrentActivity().getSupportFragmentManager()
-                        .findFragmentById(R.id.chat_fragment) != null)
+                if (SawimApplication.isManyPane())
                     SawimApplication.getCurrentActivity().setContentView(R.layout.intercalation_layout);
                 PreferenceFormView newFragment = new PreferenceFormView();
                 FragmentTransaction transaction = SawimApplication.getCurrentActivity().getSupportFragmentManager().beginTransaction();

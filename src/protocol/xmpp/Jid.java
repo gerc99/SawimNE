@@ -80,8 +80,8 @@ public class Jid {
     }
 
     public static String makeReadableJid(String jid) {
-        jid = Util.replace(jid, "@conference.jabber.ru", "@c.j.ru");
-        return Util.replace(jid, "@conference.", "@c.");
+        jid = jid.replace("@conference.jabber.ru", "@c.j.ru");
+        return jid.replace("@conference.", "@c.");
     }
 
     public static boolean isGate(String jid) {
@@ -122,9 +122,9 @@ public class Jid {
     public static String getBareJid(String fullJid) {
         int resourceStart = fullJid.indexOf('/');
         if (-1 != resourceStart) {
-            return StringConvertor.toLowerCase(fullJid.substring(0, resourceStart));
+            return fullJid.substring(0, resourceStart).toLowerCase();
         }
-        return StringConvertor.toLowerCase(fullJid);
+        return fullJid.toLowerCase();
     }
 
     public static String getNick(String jid) {

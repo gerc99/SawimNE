@@ -1,5 +1,6 @@
 package ru.sawim;
 
+import android.app.ActivityManager;
 import android.app.Application;
 import android.app.NotificationManager;
 import android.content.Context;
@@ -10,6 +11,7 @@ import android.os.Environment;
 import android.os.Message;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Surface;
 import android.view.WindowManager;
 import org.microemu.util.AndroidRecordStoreManager;
@@ -26,6 +28,7 @@ import sawim.roster.RosterHelper;
 import sawim.search.Search;
 
 import java.io.InputStream;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -79,20 +82,11 @@ public class SawimApplication extends Application {
 
         startApp();
         TextFormatter.init();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                ChatHistory.instance.loadUnreadMessages();
-            }
-        }).start();
-        if (RosterHelper.getInstance() != null) {
-            RosterHelper.getInstance().autoConnect();
-            Thread.yield();
-        }
         updateAppIcon();
     }
 
     private void startService() {
+        if (isRunService()) return;
         startService(new Intent(this, SawimService.class));
         registerReceiver(networkStateReceiver, networkStateReceiver.getFilter());
         bindService(new Intent(this, SawimService.class), serviceConnection, BIND_AUTO_CREATE);
@@ -150,7 +144,6 @@ public class SawimApplication extends Application {
             Notify.getSound().initSounds();
             gc();
             Emotions.instance.load();
-            StringConvertor.load();
             Answerer.getInstance().load();
             gc();
 
@@ -218,6 +211,19 @@ public class SawimApplication extends Application {
             }
         }
         return in;
+    }
+
+    private boolean isRunService() {
+        ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+        List<ActivityManager.RunningServiceInfo> runningServiceInfoList = manager.getRunningServices(Integer.MAX_VALUE);
+        if (runningServiceInfoList != null) {
+            for (ActivityManager.RunningServiceInfo service : runningServiceInfoList) {
+                if (SawimService.class.getCanonicalName().equals(service.service.getClassName())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public static boolean isPaused() {

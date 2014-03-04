@@ -343,13 +343,11 @@ public final class IcqNetDefActions {
             return;
         }
         if (isMrim(uin)) {
-
             text = Util.xmlUnescape(text);
-            text = StringConvertor.convert(StringConvertor.MRIM2Sawim, text);
         }
         text = removeHtml(text);
         text = StringConvertor.removeCr(text);
-        text = StringConvertor.trim(text);
+        text = text.trim();
         if (StringConvertor.isEmpty(text)) {
             return;
         }
@@ -362,7 +360,7 @@ public final class IcqNetDefActions {
             return;
         }
         text = StringConvertor.removeCr(text);
-        text = StringConvertor.trim(text);
+        text = text.trim();
         if (StringConvertor.isEmpty(text)) {
             return;
         }
@@ -665,7 +663,7 @@ public final class IcqNetDefActions {
         if (contact != null) {
             int flags = (status >> 16) & 0xFFFF;
             contact.setXStatus(Icq.xstatus.createXStatus(capabilities_old, mood), null);
-            statusText = StringConvertor.trim(statusText);
+            statusText = statusText.trim();
             if (!StringConvertor.isEmpty(statusText)) {
 
                 if (XStatusInfo.XSTATUS_NONE != contact.getXStatusIndex()) {
@@ -764,7 +762,7 @@ public final class IcqNetDefActions {
                     + "<title>" + makeXPromt(title) + "</title>"
                     + "<desc>" + makeXPromt(desc) + "</desc>"
                     + "</Root></val></srv></ret>";
-            str = Util.replace(makeXPromt(str), "&apos;", "'");
+            str = makeXPromt(str).replace("&apos;", "'");
             return new XtrazMessagePlugin(contact, "<NR><RES>" + str + "</RES></NR>");
         }
         return null;

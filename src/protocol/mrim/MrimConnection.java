@@ -223,7 +223,7 @@ public final class MrimConnection extends ClientConnection {
     }
 
     private void addMessage(String from, String msg, long flags, String date, boolean offline) {
-        msg = StringConvertor.trim(msg);
+        msg = msg.trim();
         boolean isAuth = (0 != (MrimPacket.MESSAGE_FLAG_AUTHORIZE & flags));
         if (!isAuth && StringConvertor.isEmpty(msg)) {
             return;
@@ -242,7 +242,6 @@ public final class MrimConnection extends ClientConnection {
         } catch (Exception e) {
             msg = "";
         }
-        msg = StringConvertor.convert(StringConvertor.MRIM2Sawim, msg);
         if (-1 == from.indexOf('@')) {
             MrimContact contact = mrim.getContactByPhone(from);
             String fromEmail = from;
@@ -306,11 +305,10 @@ public final class MrimConnection extends ClientConnection {
         switch (type) {
             case MULTICHAT_MESSAGE:
                 email = packetData.getString();
-                msg = StringConvertor.trim(msg);
+                msg = msg.trim();
                 if (StringConvertor.isEmpty(msg)) {
                     return;
                 }
-                msg = StringConvertor.convert(StringConvertor.MRIM2Sawim, msg);
                 if ((MrimPacket.MESSAGE_FLAG_ALARM & flags) != 0) {
                     msg = PlainMessage.CMD_WAKEUP;
                 }
@@ -790,7 +788,6 @@ public final class MrimConnection extends ClientConnection {
 
         String text = message.getText();
         String to = message.getRcvrUin();
-        text = StringConvertor.convert(StringConvertor.Sawim2MRIM, text);
         int flags = 0;
 
         if (text.startsWith(PlainMessage.CMD_WAKEUP)) {
