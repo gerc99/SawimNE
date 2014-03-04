@@ -35,7 +35,6 @@ import ru.sawim.SawimApplication;
 import ru.sawim.SawimResources;
 import ru.sawim.Scheme;
 import ru.sawim.models.MessagesAdapter;
-import ru.sawim.models.ProtocolsAdapter;
 import ru.sawim.models.RosterAdapter;
 import ru.sawim.view.menu.JuickMenu;
 import ru.sawim.view.menu.MyMenu;
@@ -179,6 +178,9 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
             drawerLayout.setLayoutParams(drawerLayoutLP);
             nickList.setBackgroundResource(Util.getSystemBackground(getActivity()));
             nickList.setLayoutParams(nickListLP);
+            if (nickList.getParent() != null) {
+                ((ViewGroup) nickList.getParent()).removeView(nickList);
+            }
             drawerLayout.addView(chatViewLayout);
             drawerLayout.addView(nickList);
             drawerToggle = new ActionBarDrawerToggle(getActivity(), drawerLayout, R.drawable.ic_drawer, 0, 0) {
