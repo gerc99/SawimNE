@@ -93,6 +93,7 @@ public class SawimApplication extends Application {
     }
 
     public void stopService() {
+        if (!isRunService()) return;
         unbindService(serviceConnection);
         unregisterReceiver(networkStateReceiver);
         stopService(new Intent(this, SawimService.class));

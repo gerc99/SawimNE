@@ -457,7 +457,7 @@ public final class RosterHelper {
 
     public final Protocol getProtocol(Group g) {
         for (int i = 0; i < getProtocolCount(); ++i) {
-            if (-1 < Util.getIndex(getProtocol(i).getGroupItems(), g)) {
+            if (-1 < getProtocol(i).getGroupItems().indexOf(g)) {
                 return getProtocol(i);
             }
             if (getProtocol(i).getNotInListGroup() == g) {

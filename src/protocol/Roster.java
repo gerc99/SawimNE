@@ -63,7 +63,7 @@ public class Roster {
     }
 
     public boolean hasContact(Contact contact) {
-        return -1 != Util.getIndex(contacts, contact);
+        return -1 != contacts.indexOf(contact);
     }
 
     public void setNull() {

@@ -223,7 +223,7 @@ public final class MrimConnection extends ClientConnection {
     }
 
     private void addMessage(String from, String msg, long flags, String date, boolean offline) {
-        msg = msg.trim();
+        msg = StringConvertor.trim(msg);
         boolean isAuth = (0 != (MrimPacket.MESSAGE_FLAG_AUTHORIZE & flags));
         if (!isAuth && StringConvertor.isEmpty(msg)) {
             return;
@@ -305,7 +305,7 @@ public final class MrimConnection extends ClientConnection {
         switch (type) {
             case MULTICHAT_MESSAGE:
                 email = packetData.getString();
-                msg = msg.trim();
+                msg = StringConvertor.trim(msg);
                 if (StringConvertor.isEmpty(msg)) {
                     return;
                 }

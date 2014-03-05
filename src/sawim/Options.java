@@ -119,7 +119,7 @@ public class Options {
 
     public static int getAccountIndex(Profile profile) {
         synchronized (listOfProfiles) {
-            return Math.max(0, Util.getIndex(listOfProfiles, profile));
+            return Math.max(0, listOfProfiles.indexOf(profile));
         }
     }
 

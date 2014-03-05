@@ -291,6 +291,22 @@ public final class StringConvertor {
         return result.toString();
     }
 
+    public static String trim(String msg) {
+        if (StringConvertor.isEmpty(msg)) {
+            return "";
+        }
+        /*if (-1 == "\n ".indexOf(msg.charAt(msg.length() - 1))) {
+            return msg;
+        }
+        for (int i = msg.length() - 1; 0 <= i; --i) {
+            char ch = msg.charAt(i);
+            if (('\n' != ch) && (' ' != ch)) {
+                return msg.substring(0, i + 1);
+            }
+        }*/
+        return msg.trim();
+    }
+
     public static byte[] stringToByteArrayUtf8(String val) {
         try {
             return val.getBytes("UTF-8");

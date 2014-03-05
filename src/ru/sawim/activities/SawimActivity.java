@@ -235,16 +235,6 @@ public class SawimActivity extends ActionBarActivity {
     }
 
     @Override
-    public boolean onKeyUp(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_ENTER) {
-            if (getChatView() != null)
-                getChatView().send();
-            return true;
-        }
-        return super.onKeyUp(keyCode, event);
-    }
-
-    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         ChatView view = (ChatView) getSupportFragmentManager().findFragmentByTag(ChatView.TAG);
         if (view != null) {
@@ -367,7 +357,8 @@ public class SawimActivity extends ActionBarActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         ChatView chatView = getChatView();
         VirtualListView virtualListView = (VirtualListView) getSupportFragmentManager().findFragmentByTag(VirtualListView.TAG);
-        if (getRosterView().getDrawerToggle().onOptionsItemSelected(item)) {
+        if (getRosterView() != null && getRosterView().getDrawerToggle() != null
+                && getRosterView().getDrawerToggle().onOptionsItemSelected(item)) {
             return true;
         } else if (!SawimApplication.isManyPane()
                 && chatView != null

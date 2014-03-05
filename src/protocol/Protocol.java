@@ -194,7 +194,7 @@ abstract public class Protocol {
             updateContacts(notInListGroup);
             Vector groupItems = group.getContacts();
             for (int i = 0; i < groupItems.size(); ++i) {
-                if (-1 == Util.getIndex(roster.getContactItems(), groupItems.elementAt(i))) {
+                if (-1 == roster.getContactItems().indexOf(groupItems.elementAt(i))) {
                     roster.getContactItems().addElement((Contact) groupItems.elementAt(i));
                 }
             }
@@ -781,7 +781,7 @@ abstract public class Protocol {
     }
 
     private void cl_addGroup(Group group) {
-        if (-1 != Util.getIndex(roster.getGroupItems(), group)) {
+        if (-1 != roster.getGroupItems().indexOf(group)) {
             DebugLog.panic("Group '" + group.getName() + "' already added");
         }
         synchronized (rosterLockObject) {
@@ -1057,7 +1057,7 @@ abstract public class Protocol {
     protected abstract void sendSomeMessage(PlainMessage msg);
 
     public final void sendMessage(Contact to, String msg, boolean addToChat) {
-        msg = msg.trim();
+        msg = StringConvertor.trim(msg);
         if (StringConvertor.isEmpty(msg)) {
             return;
         }

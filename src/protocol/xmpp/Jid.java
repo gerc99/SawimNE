@@ -1,7 +1,5 @@
 package protocol.xmpp;
 
-import sawim.comm.StringConvertor;
-import sawim.comm.Util;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -67,8 +65,8 @@ public class Jid {
 
     public static boolean isConference(String jid) {
         int index = jid.indexOf('@');
-        if ((-1 < index) && isJID(jid)) {
-            if (isConferenceDomain(jid, index + 1)) {
+        if ((-1 < index)) {
+            if (isConferenceDomain(jid, index + 1) && isJID(jid)) {
                 return true;
             }
             int index1 = jid.lastIndexOf('%', index);

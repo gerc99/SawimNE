@@ -347,7 +347,7 @@ public final class IcqNetDefActions {
         }
         text = removeHtml(text);
         text = StringConvertor.removeCr(text);
-        text = text.trim();
+        text = StringConvertor.trim(text);
         if (StringConvertor.isEmpty(text)) {
             return;
         }
@@ -360,7 +360,7 @@ public final class IcqNetDefActions {
             return;
         }
         text = StringConvertor.removeCr(text);
-        text = text.trim();
+        text = StringConvertor.trim(text);
         if (StringConvertor.isEmpty(text)) {
             return;
         }
@@ -663,7 +663,7 @@ public final class IcqNetDefActions {
         if (contact != null) {
             int flags = (status >> 16) & 0xFFFF;
             contact.setXStatus(Icq.xstatus.createXStatus(capabilities_old, mood), null);
-            statusText = statusText.trim();
+            statusText = StringConvertor.trim(statusText);
             if (!StringConvertor.isEmpty(statusText)) {
 
                 if (XStatusInfo.XSTATUS_NONE != contact.getXStatusIndex()) {

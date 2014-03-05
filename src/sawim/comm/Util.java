@@ -764,14 +764,6 @@ public class Util {
         return stringArray;
     }
 
-    public static int stringsToInt(String[] mass, String s) {
-        for (int i = 0; i < mass.length; ++i) {
-            if (mass[i].equals(s))
-                return i;
-        }
-        return 0;
-    }
-
     public static int compareNodes(TreeNode node1, TreeNode node2) {
         int result = node1.getNodeWeight() - node2.getNodeWeight();
         if (0 == result) {
@@ -848,21 +840,11 @@ public class Util {
         return sb.toString();
     }
 
-    public static int getIndex(List v, Object o) {
-        int size = v.size();
-        for (int i = 0; i < size; ++i) {
-            if (v.get(i) == o) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
     public static void removeAll(Vector to, Vector all) {
         synchronized (to) {
             int current = 0;
             for (int index = 0; index < to.size(); ++index) {
-                if (0 <= Util.getIndex(all, to.elementAt(index))) continue;
+                if (0 <= all.indexOf(to.elementAt(index))) continue;
                 if (current < index) {
                     to.setElementAt(to.elementAt(index), current);
                     current++;

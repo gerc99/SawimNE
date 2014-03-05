@@ -76,7 +76,7 @@ public class RosterAdapter extends BaseAdapter {
 
     public void putIntoQueue(Group g) {
         if (type == RosterHelper.ACTIVE_CONTACTS) return;
-        if (-1 == Util.getIndex(updateQueue, g)) {
+        if (-1 == updateQueue.indexOf(g)) {
             updateQueue.addElement(g);
         }
     }

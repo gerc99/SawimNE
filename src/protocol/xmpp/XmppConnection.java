@@ -1092,7 +1092,7 @@ public final class XmppConnection extends ClientConnection {
             conference.setAutoJoin(autojoin);
             conference.setPassword(password);
             conference.setGroup(group);
-            if (-1 == Util.getIndex(contacts, conference)) {
+            if (-1 == contacts.indexOf(conference)) {
                 contacts.addElement(conference);
             }
             if (conference.isAutoJoin()) {
@@ -1541,7 +1541,7 @@ public final class XmppConnection extends ClientConnection {
         if ((null != subject) && (-1 == text.indexOf(subject))) {
             text = subject + "\n\n" + text;
         }
-        text = text.trim();
+        text = StringConvertor.trim(text);
 
         final XmppContact c = (XmppContact) getXmpp().getItemByUIN(from);
 
@@ -1672,7 +1672,7 @@ public final class XmppConnection extends ClientConnection {
             }
         }
 
-        text = text.trim();
+        text = StringConvertor.trim(text);
         if (StringConvertor.isEmpty(text)) {
             return;
         }
