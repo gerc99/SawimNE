@@ -38,7 +38,7 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
 
     public void show(final ChatView chatView, ListView nickList) {
         final FragmentActivity activity = SawimApplication.getCurrentActivity();
-        usersAdapter.init(activity, (Xmpp) protocol, xmppServiceContact);
+        usersAdapter.init((Xmpp) protocol, xmppServiceContact);
         nickList.setAdapter(usersAdapter);
         nickList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

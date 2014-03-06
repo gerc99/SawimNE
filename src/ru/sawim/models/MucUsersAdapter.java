@@ -41,10 +41,8 @@ public class MucUsersAdapter extends BaseAdapter {
     private XmppServiceContact conference;
     private List<Object> items = new ArrayList<Object>();
     private Xmpp protocol;
-    Context context;
 
-    public void init(Context context, Xmpp xmpp, XmppServiceContact conf) {
-        this.context = context;
+    public void init(Xmpp xmpp, XmppServiceContact conf) {
         protocol = xmpp;
         conference = conf;
         update();
@@ -202,7 +200,7 @@ public class MucUsersAdapter extends BaseAdapter {
     public View getView(int i, View convertView, ViewGroup viewGroup) {
         Object o = items.get(i);
         if (convertView == null) {
-            convertView = new RosterItemView(context);
+            convertView = new RosterItemView(viewGroup.getContext());
         }
         RosterItemView rosterItemView = (RosterItemView) convertView;
         rosterItemView.setNull();

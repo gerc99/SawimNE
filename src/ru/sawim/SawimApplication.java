@@ -11,7 +11,6 @@ import android.os.Environment;
 import android.os.Message;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.Surface;
 import android.view.WindowManager;
 import org.microemu.util.AndroidRecordStoreManager;
@@ -21,7 +20,6 @@ import ru.sawim.text.TextFormatter;
 import sawim.Options;
 import sawim.Updater;
 import sawim.chat.ChatHistory;
-import sawim.comm.StringConvertor;
 import sawim.comm.Util;
 import sawim.modules.*;
 import sawim.roster.RosterHelper;
@@ -161,7 +159,7 @@ public class SawimApplication extends Application {
 
     public static void updateOptions() {
         SawimResources.initIcons();
-        fontSize = Options.getInt(Options.OPTION_FONT_SCHEME);
+        fontSize = Math.max(Options.getInt(Options.OPTION_FONT_SCHEME), 16);
         showStatusLine = Options.getBoolean(Options.OPTION_SHOW_STATUS_LINE);
         hideIconsClient = Options.getBoolean(Options.OPTION_HIDE_ICONS_CLIENTS);
         sortType = Options.getInt(Options.OPTION_CL_SORT_BY);

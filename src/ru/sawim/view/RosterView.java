@@ -118,7 +118,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         };
 
         rosterListView = new MyListView(activity);
-        RosterAdapter rosterAdapter = new RosterAdapter(activity);
+        RosterAdapter rosterAdapter = new RosterAdapter();
         rosterAdapter.setType(RosterHelper.getInstance().getCurrPage());
         LinearLayout.LayoutParams rosterListViewLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         rosterListView.setLayoutParams(rosterListViewLayoutParams);

@@ -82,7 +82,7 @@ public class MessagesAdapter extends BaseAdapter {
         final MessData mData = items.get(index);
         if (mData.messView == null || isRepaint) {
             if (isRepaint) mData.messView = null;
-            mData.messView = new MessageItemView(SawimApplication.getCurrentActivity(), !(mData.isMe() || mData.isPresence()));
+            mData.messView = new MessageItemView(viewGroup.getContext(), !(mData.isMe() || mData.isPresence()));
         }
         MessageItemView item = mData.messView;
         CharSequence parsedText = mData.getText();

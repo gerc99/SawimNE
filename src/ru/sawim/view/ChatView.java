@@ -80,6 +80,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
     private ChatListsView chatListsView;
     private ChatInputBarView chatInputBarView;
     private ChatViewRoot chatViewLayout;
+    private SmileysPopup smileysPopup;
     private MucUsersView mucUsersView = new MucUsersView();
     private ActionBarDrawerToggle drawerToggle;
     private DrawerLayout drawerLayout;
@@ -110,6 +111,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         chatListsView = new ChatListsView(activity, SawimApplication.isManyPane(), chatListView, nickList);
         chatInputBarView = new ChatInputBarView(activity, menuButton, smileButton, messageEditor, sendButton);
         chatViewLayout = new ChatViewRoot(activity, chatListsView, chatInputBarView);
+        smileysPopup = new SmileysPopup(activity, chatViewLayout);
         drawerLayout = new DrawerLayout(activity);
 
         SawimApplication.getInstance().setConfigurationChanged(new SawimApplication.OnConfigurationChanged() {
@@ -281,8 +283,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         smileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                hideKeyboard();
-                new SmilesView().show(SawimApplication.getCurrentActivity().getSupportFragmentManager(), "show-smiles");
+                smileysPopup.show(messageEditor);
             }
         });
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
@@ -345,20 +346,20 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
     }
 
     public boolean hasBack() {
-        if (nickList != null && !SawimApplication.isManyPane())
-            if (drawerLayout.isDrawerOpen(nickList)) {
-                drawerLayout.closeDrawer(nickList);
-                return false;
-            }
-        adapter.isRepaint = false;
-        return true;
+        return !closePane();
     }
 
-    private void closePane() {
+    private boolean closePane() {
+        Log.e(TAG, ""+smileysPopup.isShown());
+        if (smileysPopup != null)
+            smileysPopup.hide();
         if (nickList != null && !SawimApplication.isManyPane())
             if (drawerLayout.isDrawerOpen(nickList)) {
                 drawerLayout.closeDrawer(nickList);
+                return true;
             }
+        adapter.isRepaint = false;
+        return false;
     }
 
     @Override
@@ -512,7 +513,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
 
     DialogFragment chatDialogFragment;
     private void initLabel() {
-        chatsSpinnerAdapter = new RosterAdapter(getActivity());
+        chatsSpinnerAdapter = new RosterAdapter();
         chatsSpinnerAdapter.setType(RosterHelper.ACTIVE_CONTACTS);
         chatBarLayout.updateLabelIcon(chatsSpinnerAdapter.getImageChat(chat, false));
         chatBarLayout.updateTextView(contact.getName());

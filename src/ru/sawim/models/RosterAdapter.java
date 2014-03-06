@@ -39,14 +39,9 @@ import java.util.Vector;
  */
 public class RosterAdapter extends BaseAdapter {
 
-    private final Context context;
     private int type;
     private List<Object> items = new ArrayList<Object>();
     private Vector updateQueue = new Vector();
-
-    public RosterAdapter(Context context) {
-        this.context = context;
-    }
 
     public void setType(int type) {
         this.type = type;
@@ -203,7 +198,7 @@ public class RosterAdapter extends BaseAdapter {
     @Override
     public View getView(int i, View convertView, ViewGroup viewGroup) {
         if (convertView == null) {
-            convertView = new RosterItemView(context);
+            convertView = new RosterItemView(viewGroup.getContext());
         }
         RosterHelper roster = RosterHelper.getInstance();
         Protocol protocol = roster.getCurrentProtocol();

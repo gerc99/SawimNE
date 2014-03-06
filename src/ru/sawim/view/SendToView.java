@@ -63,7 +63,7 @@ public class SendToView extends Fragment implements AdapterView.OnItemClickListe
         allListView.setDividerHeight(0);
         allListView.setOnItemClickListener(this);
 
-        allRosterAdapter = new RosterAdapter(getActivity());
+        allRosterAdapter = new RosterAdapter();
         allRosterAdapter.setType(RosterHelper.ALL_CONTACTS);
         allListView.setAdapter(allRosterAdapter);
 
