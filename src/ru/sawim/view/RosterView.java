@@ -245,9 +245,9 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         SawimApplication.getActionBar().setIcon(SawimResources.appIcon);
 
         String[] data = new String[] {JLocale.getString(R.string.all_contacts), JLocale.getString(R.string.online_contacts), JLocale.getString(R.string.active_contacts) };
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(SawimApplication.getCurrentActivity(),
-                android.R.layout.simple_spinner_item, data);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(SawimApplication.getActionBar().getThemedContext(),
+                R.layout.support_simple_spinner_dropdown_item, data);
+        adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         SawimApplication.getActionBar().setListNavigationCallbacks(adapter, new ActionBar.OnNavigationListener() {
             @Override
             public boolean onNavigationItemSelected(int itemPosition, long itemId) {

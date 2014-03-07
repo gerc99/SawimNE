@@ -350,14 +350,16 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
     }
 
     private boolean closePane() {
-        Log.e(TAG, ""+smileysPopup.isShown());
-        if (smileysPopup != null)
-            smileysPopup.hide();
-        if (nickList != null && !SawimApplication.isManyPane())
+        if (nickList != null && !SawimApplication.isManyPane()) {
             if (drawerLayout.isDrawerOpen(nickList)) {
                 drawerLayout.closeDrawer(nickList);
                 return true;
             }
+        }
+        if (smileysPopup != null) {
+            smileysPopup.hide();
+            return true;
+        }
         adapter.isRepaint = false;
         return false;
     }

@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 public class Jid {
     private static final String[] transports = {"mrim.", "icq.", "picq.", "pyicq.", "sicq.", "j2j."};
     private static final String[] icqTransports = {"icq.", "picq.", "pyicq."};
-    public static final Pattern pattern = Pattern.compile("(([^ @/<>'\\\"]+)@)([^ @/<>'\\\"]+)(?:/([^ <>'\\\"]*))?");
+    public static final Pattern pattern = Pattern.compile("(([^ @/<>'\\\"]+)@)([^ @/<>'\\\"]+)\\.([a-zA-Z\\.]{2,6})(?:/([^ <>'\\\"]*))?");
 
     public static String realJidToSawimJid(String realJid) {
         if (isIrcConference(realJid)) {

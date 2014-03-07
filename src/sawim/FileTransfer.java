@@ -111,16 +111,14 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
     public void onFileSelect(InputStream in, String fileName) {
         try {
             setFileName(fileName);
-            int fileSize = 0;
-            fileSize = in.available();
+            int fileSize = in.available();
             byte[] image = null;
 
             if ((fileSize < MAX_IMAGE_SIZE) && Util.isImageFile(filename)) {
                 image = new byte[fileSize];
                 TcpSocket.readFully(in, image, 0, image.length);
             }
-
-            setData(in, fileSize);
+            setData(new ByteArrayInputStream(image), fileSize);
             askForNameDesc();
             showPreview(image);
         } catch (Exception e) {
@@ -349,9 +347,10 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
                     StringBuilder sb = new StringBuilder();
                     Scanner scanner = new Scanner(responseIn);
                     while (scanner.hasNext()) {
-                        sb.append(scanner.next());
+                        sb.append(scanner.next() + "\n");
                     }
                     Log.i(TAG, "error response: " + sb.toString());
+                    url = sb.toString();
                 }
             } catch (Exception ex) {
                 Log.e(TAG, "Error during POST", ex);

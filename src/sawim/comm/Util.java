@@ -1,6 +1,5 @@
 package sawim.comm;
 
-import android.util.Patterns;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import sawim.Options;
@@ -573,7 +572,7 @@ public class Util {
     }
 
     public static boolean isUrl(String text) {
-        return Patterns.WEB_URL.matcher(text).matches();
+        return text.startsWith("http://") || text.startsWith("https://");
     }
 
     public static boolean isImageFile(String filename) {
