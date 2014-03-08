@@ -17,7 +17,7 @@ import ru.sawim.R;
  * same orientation as the layout you should wrap the child in a simple
  * {@link android.widget.FrameLayout} so it can receive the margin.
  */
-public class IcsLinearLayout extends LinearLayout {
+public class IcsLinearLayout extends SizeNotifierLinearLayout {
     private static final int[] LL = new int[]{
         /* 0 */ android.R.attr.divider,
         /* 1 */ android.R.attr.showDividers,

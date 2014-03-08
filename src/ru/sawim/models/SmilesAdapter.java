@@ -53,9 +53,13 @@ public class SmilesAdapter extends BaseAdapter {
     public View getView(int i, View convView, ViewGroup viewGroup) {
         ItemWrapper wr;
         if (convView == null) {
-            LayoutInflater inf = LayoutInflater.from(baseContext);
-            convView = inf.inflate(R.layout.smiles_item, null);
-            wr = new ItemWrapper(convView);
+            convView = new ImageView(baseContext) {
+                public void onMeasure(int paramAnonymousInt1, int paramAnonymousInt2) {
+                    setMeasuredDimension(View.MeasureSpec.getSize(paramAnonymousInt1), View.MeasureSpec.getSize(paramAnonymousInt1));
+                }
+            };
+            ((ImageView) convView).setScaleType(ImageView.ScaleType.CENTER);
+            wr = new ItemWrapper((ImageView) convView);
             convView.setTag(wr);
         } else {
             wr = (ItemWrapper) convView.getTag();
@@ -92,12 +96,10 @@ public class SmilesAdapter extends BaseAdapter {
     }
 
     public class ItemWrapper {
-        View item = null;
         private ImageView itemImage = null;
 
-        public ItemWrapper(View item) {
-            this.item = item;
-            itemImage = (ImageView) item.findViewById(R.id.smileImage);
+        public ItemWrapper(ImageView item) {
+            itemImage = item;
         }
 
         void populateAniFrom(AniIcon ic) {
@@ -123,16 +125,11 @@ public class SmilesAdapter extends BaseAdapter {
         }
 
         void click(final int position) {
-            item.setOnClickListener(new View.OnClickListener() {
+            itemImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (onItemClickListener == null) {
-                        return;
-                    }
-
-                    view.playSoundEffect(SoundEffectConstants.CLICK);
-                    view.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_CLICKED);
-                    onItemClickListener.onItemClick(SmilesAdapter.this, position);
+                    if (onItemClickListener != null)
+                        onItemClickListener.onItemClick(SmilesAdapter.this, position);
                 }
             });
         }

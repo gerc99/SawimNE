@@ -11,6 +11,7 @@ import android.os.Environment;
 import android.os.Message;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Surface;
 import android.view.WindowManager;
 import org.microemu.util.AndroidRecordStoreManager;
@@ -80,21 +81,24 @@ public class SawimApplication extends Application {
 
         startApp();
         TextFormatter.init();
-        updateAppIcon();
     }
 
     private void startService() {
-        if (isRunService()) return;
-        startService(new Intent(this, SawimService.class));
+        Log.i("SawimApplication startService", "isRunService="+isRunService());
+        if (!isRunService()) {
+            startService(new Intent(this, SawimService.class));
+        }
         registerReceiver(networkStateReceiver, networkStateReceiver.getFilter());
         bindService(new Intent(this, SawimService.class), serviceConnection, BIND_AUTO_CREATE);
     }
 
     public void stopService() {
-        if (!isRunService()) return;
+        Log.i("SawimApplication stopService", "isRunService="+isRunService());
         unbindService(serviceConnection);
         unregisterReceiver(networkStateReceiver);
-        stopService(new Intent(this, SawimService.class));
+        if (isRunService()) {
+            stopService(new Intent(this, SawimService.class));
+        }
         ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).cancelAll();
     }
 
@@ -177,18 +181,14 @@ public class SawimApplication extends Application {
     }
 
     public void quit(boolean isForceClose) {
-        RosterHelper cl = RosterHelper.getInstance();
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e1) {
-        }
-        cl.safeSave();
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e1) {
-        }
-        ChatHistory.instance.saveUnreadMessages();
-        AutoAbsence.getInstance().online();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                RosterHelper.getInstance().safeSave();
+                ChatHistory.instance.saveUnreadMessages();
+                AutoAbsence.getInstance().online();
+            }
+        });
     }
 
     public static long getCurrentGmtTime() {

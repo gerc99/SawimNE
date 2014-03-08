@@ -43,7 +43,6 @@ public class TextFormatter {
         smilesPattern = compilePattern();
     }
 
-
     public CharSequence parsedText(final Contact contact, final CharSequence text) {
         final int linkColor = Scheme.getColor(Scheme.THEME_LINKS);
         SpannableStringBuilder builder = new SpannableStringBuilder(text);
@@ -67,6 +66,22 @@ public class TextFormatter {
             //}
         }
         return builder;
+    }
+
+    public CharSequence detectEmotions(CharSequence text) {
+        Spannable s;
+        if (text instanceof Spannable) {
+            s = (Spannable)text;
+        } else {
+            s = Spannable.Factory.getInstance().newSpannable(text);
+        }
+        Matcher matcher = smilesPattern.matcher(text);
+        while (matcher.find()) {
+            s.setSpan(new ImageSpan(smiles.getSmileIcon(smiles.buildSmileyToId().get(matcher.group())).getImage()),
+                    matcher.start(), matcher.end(),
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+        return s;
     }
 
     private Pattern compilePattern() {

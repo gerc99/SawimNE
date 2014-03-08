@@ -36,6 +36,7 @@ import ru.sawim.SawimResources;
 import ru.sawim.Scheme;
 import ru.sawim.models.MessagesAdapter;
 import ru.sawim.models.RosterAdapter;
+import ru.sawim.text.TextFormatter;
 import ru.sawim.view.menu.JuickMenu;
 import ru.sawim.view.menu.MyMenu;
 import ru.sawim.widget.MyListView;
@@ -111,7 +112,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         chatListsView = new ChatListsView(activity, SawimApplication.isManyPane(), chatListView, nickList);
         chatInputBarView = new ChatInputBarView(activity, menuButton, smileButton, messageEditor, sendButton);
         chatViewLayout = new ChatViewRoot(activity, chatListsView, chatInputBarView);
-        smileysPopup = new SmileysPopup(activity, chatViewLayout);
+        smileysPopup = new SmileysPopup(activity, chatViewLayout, messageEditor);
         drawerLayout = new DrawerLayout(activity);
 
         SawimApplication.getInstance().setConfigurationChanged(new SawimApplication.OnConfigurationChanged() {
@@ -283,7 +284,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         smileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                smileysPopup.show(messageEditor);
+                smileysPopup.show();
             }
         });
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
@@ -298,6 +299,18 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
                 | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
         messageEditor.setHint(R.string.hint_message);
         messageEditor.addTextChangedListener(textWatcher);
+        messageEditor.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View view, int i, KeyEvent keyEvent) {
+                if (i == KeyEvent.KEYCODE_BACK && smileysPopup != null && smileysPopup.isShown()) {
+                    if (keyEvent.getAction() == KeyEvent.ACTION_UP) {
+                        smileysPopup.hide();
+                    }
+                    return true;
+                }
+                return false;
+            }
+        });
         sendByEnter = Options.getBoolean(Options.OPTION_SIMPLE_INPUT);
         if (sendByEnter) {
             messageEditor.setImeOptions(EditorInfo.IME_ACTION_SEND);
@@ -357,8 +370,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
             }
         }
         if (smileysPopup != null) {
-            smileysPopup.hide();
-            return true;
+            return smileysPopup.hide();
         }
         adapter.isRepaint = false;
         return false;
@@ -600,8 +612,9 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
             case UPDATE_MUC_LIST:
                 if (contact != null && contact.isPresence() == (byte) 1)
                     adapter.refreshList(chat.getMessData());
-                if (drawerLayout != null) {
-                    if (SawimApplication.isManyPane() || isConference && (nickList != null && drawerLayout.isDrawerOpen(nickList))) {
+                if (isConference) {
+                    if (SawimApplication.isManyPane()
+                            || (drawerLayout != null && nickList != null && drawerLayout.isDrawerOpen(nickList))) {
                         mucUsersView.update();
                     }
                 }
@@ -985,6 +998,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
                     getActivity().supportInvalidateOptionsMenu();
                 }
             }
+            TextFormatter.getInstance().detectEmotions(s);
         }
     };
 }

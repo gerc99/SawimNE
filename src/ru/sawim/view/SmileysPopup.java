@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.PopupWindow;
 import ru.sawim.models.SmilesAdapter;
+import ru.sawim.widget.SizeNotifierLinearLayout;
 import ru.sawim.widget.Util;
 import sawim.modules.Emotions;
 import sawim.roster.RosterHelper;
@@ -19,61 +20,76 @@ import sawim.roster.RosterHelper;
 public class SmileysPopup {
 
 	private final Activity activity;
-    View rootView;
+    SizeNotifierLinearLayout rootView;
 
 	private PopupWindow popupWindow;
 	private EditText editText;
+    private boolean keyboardVisible;
 
-	public SmileysPopup(Activity activity, View view) {
+    public SmileysPopup(Activity activity, SizeNotifierLinearLayout view, EditText editText) {
 		this.activity = activity;
         rootView = view;
+        this.editText = editText;
+        rootView.setOnSizeChangedListener(new SizeNotifierLinearLayout.OnSizeChangedListener() {
+            @Override
+            public void onSizeChanged() {
+                boolean oldValue = keyboardVisible;
+                keyboardVisible = getPossibleKeyboardHeight() > 0;
+                if (keyboardVisible && keyboardVisible != oldValue) {
+                    hide();
+                } else if (!keyboardVisible && keyboardVisible != oldValue && isShown()) {
+                    hide();
+                }
+            }
+        });
 	}
 
-	public void show(EditText editText) {
+	public void show() {
         if (isShown()) {
             hide();
             return;
         }
+        showView();
+	}
+
+    private void showView() {
         View smileysView = getContentView();
-		this.editText = editText;
-		if (popupWindow == null) {
-			popupWindow = new PopupWindow(activity);
-			popupWindow.setContentView(smileysView);
-			popupWindow.setWidth(activity.getWindow().getDecorView().getWidth());
-			popupWindow.setHeight(activity.getWindow().getDecorView().getHeight() / 2);
-		}
+        if (popupWindow == null) {
+            popupWindow = new PopupWindow(activity);
+            popupWindow.setContentView(smileysView);
+            popupWindow.setWidth(activity.getWindow().getDecorView().getWidth());
+            popupWindow.setHeight(activity.getWindow().getDecorView().getHeight() / 2);
+        }
 
         Rect rect = new Rect();
         activity.getWindow().getDecorView().getWindowVisibleDisplayFrame(rect);
 
-        boolean showInsteadOfKeyboard = showInsteadOfKeyboard();
+        boolean showInsteadOfKeyboard = getPossibleKeyboardHeight() > 0;
         if (showInsteadOfKeyboard) {
             popupWindow.setHeight(getPossibleKeyboardHeight());
             popupWindow.showAtLocation(activity.getWindow().getDecorView(), Gravity.BOTTOM, 0, 0);
             popupWindow.getContentView().setPadding(0, 0, 0, 0);
         } else {
-            int keyBoardHeight = rect.height() - this.editText.getHeight();
+            int keyBoardHeight = (rect.height() - this.editText.getHeight()) / 2;
             popupWindow.setHeight(keyBoardHeight);
-            popupWindow.showAtLocation(activity.getWindow().getDecorView(), Gravity.TOP, rect.left, rect.top);
+            popupWindow.showAtLocation(activity.getWindow().getDecorView(), Gravity.TOP, rect.left, rect.top + keyBoardHeight);
         }
-	}
+    }
 
     public boolean isShown() {
         return popupWindow != null && popupWindow.isShowing();
     }
 
-    public void hide() {
+    public boolean hide() {
         if (isShown()) {
             try {
                 popupWindow.dismiss();
             } catch (Exception e) {
             }
+            return true;
         }
+        return false;
     }
-
-	private boolean showInsteadOfKeyboard() {
-		return getPossibleKeyboardHeight() > 100;
-	}
 
 	private int getPossibleKeyboardHeight() {
 		int viewHeight = rootView.getHeight();
