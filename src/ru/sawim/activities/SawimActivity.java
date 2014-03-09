@@ -236,11 +236,7 @@ public class SawimActivity extends ActionBarActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        ChatView view = (ChatView) getSupportFragmentManager().findFragmentByTag(ChatView.TAG);
-        if (view != null) {
-            if (ExternalApi.instance.onActivityResult(requestCode, resultCode, data))
-                return;
-        }
+        if (ExternalApi.instance.onActivityResult(requestCode, resultCode, data)) return;
         super.onActivityResult(requestCode, resultCode, data);
     }
 

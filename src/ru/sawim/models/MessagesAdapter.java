@@ -89,23 +89,24 @@ public class MessagesAdapter extends BaseAdapter {
         String nick = mData.getNick();
         boolean incoming = mData.isIncoming();
 
-        item.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
-        item.msgText.setOnTextLinkClickListener(new TextLinkClick(currentProtocol, currentContact));
-        item.msgText.setLinkTextColor(Scheme.getColor(Scheme.THEME_LINKS));
-        item.msgText.setTypeface(mData.isConfHighLight() ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT);
+        //viewGroup.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
+        item.setOnTextLinkClickListener(new TextLinkClick(currentProtocol, currentContact));
+        item.setLinkTextColor(Scheme.getColor(Scheme.THEME_LINKS));
+        item.setTypeface(mData.isConfHighLight() ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT);
         item.setBackgroundColor(0);
+        item.setMsgTextSize(SawimApplication.getFontSize());
         if (mData.isMe() || mData.isPresence()) {
-            item.msgText.setTextSize(SawimApplication.getFontSize() - 2);
+            item.setTextSize(SawimApplication.getFontSize() - 2);
             if (mData.isMe()) {
                 SpannableStringBuilder text = new SpannableStringBuilder();
                 text.append("* ").append(nick).append(" ").append(parsedText);
-                item.msgText.setText(text);
-                item.msgText.setTextColor(Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG));
+                item.setText(text);
+                item.setTextColor(Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG));
             } else {
                 SpannableStringBuilder text = new SpannableStringBuilder();
                 text.append(mData.strTime).append(" ").append(nick).append(parsedText);
-                item.msgText.setText(text);
-                item.msgText.setTextColor(Scheme.getColor(Scheme.THEME_CHAT_INMSG));
+                item.setText(text);
+                item.setTextColor(Scheme.getColor(Scheme.THEME_CHAT_INMSG));
             }
         } else {
             item.setBackgroundResource(incoming ?
@@ -117,26 +118,23 @@ public class MessagesAdapter extends BaseAdapter {
             } else {
                 item.setPadding((int) (11 * displayDensity), (int) (7 * displayDensity), (int) (18 * displayDensity), (int) (9 * displayDensity));
             }
+
             if (mData.getIconIndex() == Message.ICON_OUT_MSG_FROM_CLIENT) {
-                item.titleItemView.setCheckImage(SawimResources.messageIconCheck.getBitmap());
+                item.setCheckImage(SawimResources.messageIconCheck.getBitmap());
             }
-
-            item.titleItemView.setNick(Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG),
+            item.setNick(Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG),
                     SawimApplication.getFontSize(), Typeface.DEFAULT_BOLD, nick);
-
-            item.titleItemView.setMsgTime(Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG),
+            item.setMsgTime(Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG),
                     SawimApplication.getFontSize() * 2 / 3, Typeface.DEFAULT, mData.strTime);
-
-            item.msgText.setTextSize(SawimApplication.getFontSize());
-            item.msgText.setTextColor(Scheme.getColor(mData.getMessColor()));
-            item.msgText.setText(parsedText);
+            item.setTextColor(Scheme.getColor(mData.getMessColor()));
+            item.setText(parsedText);
         }
         if (mData.isMarked() && isMultiQuote) {
-            item.msgText.setTypeface(Typeface.DEFAULT_BOLD);
+            item.setTypeface(Typeface.DEFAULT_BOLD);
             item.setBackgroundColor(Scheme.getColor(Scheme.THEME_ITEM_SELECTED));
         }
         item.setShowDivider(position == index && index > 0 && position != getCount());
-        item.titleItemView.repaint();
+        item.repaint();
         return item;
     }
 }

@@ -41,7 +41,6 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
     private static final int JNR_HTTP = 1;
     private static final int JO_HTTP = 2;
     private static final int IBB_MODE = 3;
-    private static final int MAX_IMAGE_SIZE = 2 * 1024 * 1024;
     private String filename;
     private String description;
     private int sendMode;
@@ -114,11 +113,11 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
             int fileSize = in.available();
             byte[] image = null;
 
-            if ((fileSize < MAX_IMAGE_SIZE) && Util.isImageFile(filename)) {
+            if (Util.isImageFile(filename)) {
                 image = new byte[fileSize];
                 TcpSocket.readFully(in, image, 0, image.length);
             }
-            setData(new ByteArrayInputStream(image), fileSize);
+            setData(image == null ? in : new ByteArrayInputStream(image), fileSize);
             askForNameDesc();
             showPreview(image);
         } catch (Exception e) {

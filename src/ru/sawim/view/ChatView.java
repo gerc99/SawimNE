@@ -291,6 +291,12 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
             messageEditor.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
             messageEditor.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
         }
+        sendByEnter = Options.getBoolean(Options.OPTION_SIMPLE_INPUT);
+        if (sendByEnter) {
+            messageEditor.setImeOptions(EditorInfo.IME_ACTION_SEND);
+        } else {
+            messageEditor.setImeOptions(EditorInfo.IME_ACTION_NONE);
+        }
         messageEditor.setSingleLine(false);
         messageEditor.setMaxLines(4);
         messageEditor.setHorizontallyScrolling(false);
@@ -299,6 +305,22 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
                 | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
         messageEditor.setHint(R.string.hint_message);
         messageEditor.addTextChangedListener(textWatcher);
+        messageEditor.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                if (i == EditorInfo.IME_ACTION_SEND) {
+                    send();
+                    return true;
+                }
+                if (sendByEnter) {
+                    if (keyEvent != null && i == EditorInfo.IME_NULL && keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
+                        send();
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
         messageEditor.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View view, int i, KeyEvent keyEvent) {
@@ -308,13 +330,15 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
                     }
                     return true;
                 }
+                if (sendByEnter) {
+                    if (keyEvent.getAction() == KeyEvent.ACTION_DOWN && i == KeyEvent.KEYCODE_ENTER) {
+                        send();
+                        return true;
+                    }
+                }
                 return false;
             }
         });
-        sendByEnter = Options.getBoolean(Options.OPTION_SIMPLE_INPUT);
-        if (sendByEnter) {
-            messageEditor.setImeOptions(EditorInfo.IME_ACTION_SEND);
-        }
         if (sendByEnter) {
             sendButton.setVisibility(ImageButton.GONE);
         } else {
@@ -960,7 +984,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-            if (sendByEnter && (start + count <= s.length()) && (1 == count)) {
+            /*if (sendByEnter && (start + count <= s.length()) && (1 == count)) {
                 boolean enter = ('\n' == s.charAt(start));
                 if (enter) {
                     messageEditor.setText(previousText);
@@ -972,7 +996,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
                     }
                     return;
                 }
-            }
+            }*/
             if (protocol == null || contact == null) return;
             int length = s.length();
             if (length > 0) {

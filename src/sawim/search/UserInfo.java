@@ -24,8 +24,6 @@ import sawim.comm.Util;
 import sawim.forms.EditInfo;
 import sawim.modules.DebugLog;
 import sawim.modules.fs.FileBrowserListener;
-import sawim.modules.fs.FileSystem;
-import sawim.modules.fs.JSR75FileSystem;
 import sawim.modules.photo.PhotoListener;
 import sawim.util.JLocale;
 
@@ -380,11 +378,7 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
 
     public void onFileSelect(InputStream fis, String fileName) throws SawimException {
         try {
-            JSR75FileSystem file = FileSystem.getInstance();
-            file.openFile(fileName);
-
-            //java.io.InputStream fis = file.openInputStream();
-            int size = (int) file.fileSize();
+            int size = fis.available();
             if (size <= 30 * 1024 * 1024) {
                 byte[] binAvatar = new byte[size];
                 int readed = 0;
@@ -396,20 +390,14 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
                 setBinAvatar(binAvatar);
                 binAvatar = null;
             }
-
             TcpSocket.close(fis);
-            file.close();
             fis = null;
-            file = null;
         } catch (Throwable ignored) {
         }
         if (null != avatar) {
             protocol.saveUserInfo(this);
             updateProfileView();
         }
-    }
-
-    public void onDirectorySelect(String directory) {
     }
 
     public void processPhoto(byte[] data) {

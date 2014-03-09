@@ -121,7 +121,8 @@ public class MyTextView extends View {
             y += getScrollY();
             int line = layout.getLineForVertical(y);
             int off = layout.getOffsetForHorizontal(line, x);
-            final InternalURLSpan[] urlSpans = buffer.getSpans(off, off, InternalURLSpan.class);
+            final InternalURLSpan[] firstUrlSpans = buffer.getSpans(off, off, InternalURLSpan.class);
+            final InternalURLSpan[] urlSpans = buffer.getSpans(buffer.getSpanStart(firstUrlSpans), off, InternalURLSpan.class);
             if (action == MotionEvent.ACTION_CANCEL || action == MotionEvent.ACTION_OUTSIDE) {
                 isSecondTap = true;
             }

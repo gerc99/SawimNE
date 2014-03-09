@@ -412,8 +412,10 @@ public final class RosterHelper {
     }
 
     public void setCurrPage(int curr) {
-        Options.setInt(Options.OPTION_CURRENT_PAGE, curr);
-        Options.safeSave();
+        if (Options.getInt(Options.OPTION_CURRENT_PAGE) != curr) {
+            Options.setInt(Options.OPTION_CURRENT_PAGE, curr);
+            Options.safeSave();
+        }
     }
 
     public int getCurrPage() {

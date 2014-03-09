@@ -46,7 +46,6 @@ public class TextLinkClick implements TextLinkClickListener {
             return;
         }
         if (isLongTap || Jid.isJID(clickedString)) {
-            Log.e("TextLinkClick1", ""+clickedString);
             CharSequence[] items = new CharSequence[2];
             items[0] = SawimApplication.getCurrentActivity().getString(R.string.copy);
             items[1] = SawimApplication.getCurrentActivity().getString(R.string.add_contact);
@@ -76,7 +75,6 @@ public class TextLinkClick implements TextLinkClickListener {
         } else {
             if (!Util.isUrl(clickedString))
                 clickedString = "http://" + clickedString;
-            Log.e("TextLinkClick2", ""+clickedString);
             if (clickedString.toLowerCase().startsWith(HtmlTask.PIK4U)
                     || (clickedString.toLowerCase().startsWith("https://db.tt/"))
                     || Util.isImageFile(clickedString)) {
