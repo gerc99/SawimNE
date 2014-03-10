@@ -5,6 +5,7 @@ import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
+import ru.sawim.SawimApplication;
 
 /**
  * Created with IntelliJ IDEA.
@@ -23,6 +24,7 @@ public class SawimServiceConnection implements ServiceConnection {
     public void onServiceDisconnected(ComponentName className) {
         // This is called when the connection with the service has been unexpectedly disconnected - process crashed.
         mService = null;
+        SawimApplication.getInstance().isBindService = false;
     }
 
     public void send(Message msg) {

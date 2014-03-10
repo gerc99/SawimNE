@@ -59,7 +59,7 @@ public class MessageItemView extends View {
         setPadding(padding, padding, padding, padding);
     }
 
-    public void setTextSize(int size) {
+    private void setTextSize(int size) {
         textPaint.setTextSize(size * getResources().getDisplayMetrics().scaledDensity);
     }
 

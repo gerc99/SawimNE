@@ -191,6 +191,7 @@ public class SawimActivity extends ActionBarActivity {
         }
         handleIntent();
         if (!isOpenNewChat && SawimApplication.isManyPane()) openChat(null, null, true);
+        FormView.showLastWindow();
     }
 
     @Override

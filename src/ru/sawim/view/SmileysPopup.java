@@ -34,7 +34,7 @@ public class SmileysPopup {
             @Override
             public void onSizeChanged() {
                 boolean oldValue = keyboardVisible;
-                keyboardVisible = getPossibleKeyboardHeight() > 0;
+                keyboardVisible = getPossibleKeyboardHeight() > 100;
                 if (keyboardVisible && keyboardVisible != oldValue) {
                     hide();
                 } else if (!keyboardVisible && keyboardVisible != oldValue && isShown()) {
@@ -64,7 +64,7 @@ public class SmileysPopup {
         Rect rect = new Rect();
         activity.getWindow().getDecorView().getWindowVisibleDisplayFrame(rect);
 
-        boolean showInsteadOfKeyboard = getPossibleKeyboardHeight() > 0;
+        boolean showInsteadOfKeyboard = getPossibleKeyboardHeight() > 100;
         if (showInsteadOfKeyboard) {
             popupWindow.setHeight(getPossibleKeyboardHeight());
             popupWindow.showAtLocation(activity.getWindow().getDecorView(), Gravity.BOTTOM, 0, 0);

@@ -71,20 +71,20 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
         return v;
     }
 
-    public static void show() {
-        SawimApplication.getCurrentActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                SawimActivity.resetBar();
-                if (SawimApplication.isManyPane())
-                    SawimApplication.getCurrentActivity().setContentView(R.layout.intercalation_layout);
-                FormView newFragment = new FormView();
-                FragmentTransaction transaction = SawimApplication.getCurrentActivity().getSupportFragmentManager().beginTransaction();
-                transaction.replace(R.id.fragment_container, newFragment, FormView.TAG);
-                transaction.addToBackStack(null);
-                transaction.commitAllowingStateLoss();
-            }
-        });
+    public static void add() {
+        SawimApplication.fragmentsStack.add(new FormView());
+    }
+
+    public static void showLastWindow() {
+        if (SawimApplication.fragmentsStack.size() > 0) {
+            SawimActivity.resetBar();
+            if (SawimApplication.isManyPane())
+                SawimApplication.getCurrentActivity().setContentView(R.layout.intercalation_layout);
+            FragmentTransaction transaction = SawimApplication.getCurrentActivity().getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.fragment_container, SawimApplication.fragmentsStack.get(SawimApplication.fragmentsStack.size() - 1), FormView.TAG);
+            transaction.addToBackStack(null);
+            transaction.commitAllowingStateLoss();
+        }
     }
 
     @Override

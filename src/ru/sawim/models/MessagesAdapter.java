@@ -82,21 +82,19 @@ public class MessagesAdapter extends BaseAdapter {
         final MessData mData = items.get(index);
         if (mData.messView == null || isRepaint) {
             if (isRepaint) mData.messView = null;
-            mData.messView = new MessageItemView(viewGroup.getContext(), !(mData.isMe() || mData.isPresence()));
+            mData.messView = new MessageItemView(SawimApplication.getInstance().getBaseContext(), !(mData.isMe() || mData.isPresence()));
         }
         MessageItemView item = mData.messView;
         CharSequence parsedText = mData.getText();
         String nick = mData.getNick();
         boolean incoming = mData.isIncoming();
 
-        //viewGroup.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
         item.setOnTextLinkClickListener(new TextLinkClick(currentProtocol, currentContact));
         item.setLinkTextColor(Scheme.getColor(Scheme.THEME_LINKS));
         item.setTypeface(mData.isConfHighLight() ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT);
         item.setBackgroundColor(0);
-        item.setMsgTextSize(SawimApplication.getFontSize());
         if (mData.isMe() || mData.isPresence()) {
-            item.setTextSize(SawimApplication.getFontSize() - 2);
+            item.setMsgTextSize(SawimApplication.getFontSize() - 2);
             if (mData.isMe()) {
                 SpannableStringBuilder text = new SpannableStringBuilder();
                 text.append("* ").append(nick).append(" ").append(parsedText);
@@ -126,6 +124,7 @@ public class MessagesAdapter extends BaseAdapter {
                     SawimApplication.getFontSize(), Typeface.DEFAULT_BOLD, nick);
             item.setMsgTime(Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG),
                     SawimApplication.getFontSize() * 2 / 3, Typeface.DEFAULT, mData.strTime);
+            item.setMsgTextSize(SawimApplication.getFontSize());
             item.setTextColor(Scheme.getColor(mData.getMessColor()));
             item.setText(parsedText);
         }

@@ -8,6 +8,7 @@ import android.util.Log;
 import ru.sawim.SawimApplication;
 import ru.sawim.R;
 import ru.sawim.Scheme;
+import ru.sawim.view.FormView;
 import ru.sawim.view.SendToView;
 
 /**
@@ -43,6 +44,7 @@ public class SendToActivity extends ActionBarActivity {
     protected void onResume() {
         super.onResume();
         SawimApplication.setActionBar(getSupportActionBar());
+        FormView.showLastWindow();
     }
 
     @Override

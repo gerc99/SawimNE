@@ -9,6 +9,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Environment;
 import android.os.Message;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -27,6 +28,7 @@ import sawim.roster.RosterHelper;
 import sawim.search.Search;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -55,10 +57,12 @@ public class SawimApplication extends Application {
     public static boolean hideIconsClient;
     public static int autoAbsenceTime;
 
+    public static ArrayList<Fragment> fragmentsStack = new ArrayList<Fragment>();
     public static SawimApplication instance;
     public AndroidRecordStoreManager recordStoreManager;
     private final SawimServiceConnection serviceConnection = new SawimServiceConnection();
     private final NetworkStateReceiver networkStateReceiver = new NetworkStateReceiver();
+    public boolean isBindService = false;
 
     public static SawimApplication getInstance() {
         return instance;
@@ -88,14 +92,20 @@ public class SawimApplication extends Application {
         if (!isRunService()) {
             startService(new Intent(this, SawimService.class));
         }
-        registerReceiver(networkStateReceiver, networkStateReceiver.getFilter());
-        bindService(new Intent(this, SawimService.class), serviceConnection, BIND_AUTO_CREATE);
+        if (!isBindService) {
+            isBindService = true;
+            registerReceiver(networkStateReceiver, networkStateReceiver.getFilter());
+            bindService(new Intent(this, SawimService.class), serviceConnection, BIND_AUTO_CREATE);
+        }
     }
 
     public void stopService() {
         Log.i("SawimApplication stopService", "isRunService="+isRunService());
-        unbindService(serviceConnection);
-        unregisterReceiver(networkStateReceiver);
+        if (isBindService) {
+            isBindService = false;
+            unbindService(serviceConnection);
+            unregisterReceiver(networkStateReceiver);
+        }
         if (isRunService()) {
             stopService(new Intent(this, SawimService.class));
         }

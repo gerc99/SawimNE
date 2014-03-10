@@ -20,9 +20,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/server"
-                android:id="@+id/acc_server_text" android:layout_alignLeft="@+id/acc_pass_text"
-                android:layout_below="@+id/edit_login"
-                android:textStyle="bold"/>
+                android:id="@+id/acc_server_text"
+                android:textStyle="bold" android:layout_below="@+id/edit_login" android:layout_alignParentLeft="false"
+                android:layout_alignWithParentIfMissing="false" android:layout_centerHorizontal="true"/>
         <EditText
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"

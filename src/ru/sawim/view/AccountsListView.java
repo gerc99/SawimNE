@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.text.InputType;
 import android.view.*;
 import android.widget.*;
@@ -28,7 +29,7 @@ import sawim.roster.RosterHelper;
  */
 public class AccountsListView extends Fragment {
 
-    public static final String TAG = "AccountsListView";
+    public static final String TAG = AccountsListView.class.getSimpleName();
     private AccountsAdapter accountsListAdapter;
 
     @Override
@@ -70,7 +71,11 @@ public class AccountsListView extends Fragment {
 
         switch (item.getItemId()) {
             case R.id.menu_edit:
-                new LoginDialog(protocolType, accountID, true).show(getActivity().getSupportFragmentManager(), "login");
+                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                LoginDialog loginDialog = new LoginDialog(protocolType, accountID, true);
+                transaction.replace(R.id.fragment_container, loginDialog, loginDialog.TAG);
+                transaction.addToBackStack(null);
+                transaction.commitAllowingStateLoss();
                 return true;
 
             case R.id.lift_up:
@@ -146,13 +151,18 @@ public class AccountsListView extends Fragment {
 
             @Override
             public void onClick(DialogInterface dialog, int item) {
-                new LoginDialog(Profile.protocolTypes[item], -1, false).show(getActivity().getSupportFragmentManager(), "login");
+                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                LoginDialog loginDialog = new LoginDialog(Profile.protocolTypes[item], -1, false);
+                transaction.replace(R.id.fragment_container, loginDialog, loginDialog.TAG);
+                transaction.addToBackStack(null);
+                transaction.commitAllowingStateLoss();
             }
         });
         builder.create().show();
     }
 
-    class LoginDialog extends DialogFragment {
+    class LoginDialog extends Fragment {
+        public final String TAG = AccountsListView.class.getSimpleName();
         private int type;
         public int id;
         private boolean isEdit;
@@ -191,7 +201,7 @@ public class AccountsListView extends Fragment {
             }
             if (isEdit) {
                 final Profile account = Options.getAccount(id);
-                getDialog().setTitle(getText(R.string.acc_edit));
+                getActivity().setTitle(getText(R.string.acc_edit));
                 if (isXmpp) {
                     editLogin.setText(account.userId.substring(0, account.userId.indexOf('@')));
                     editServer.setText(account.userId.substring(account.userId.indexOf('@') + 1));
@@ -201,7 +211,7 @@ public class AccountsListView extends Fragment {
                 editPass.setText(account.password);
                 editNick.setText(account.nick);
             } else {
-                getDialog().setTitle(getText(R.string.acc_add));
+                getActivity().setTitle(getText(R.string.acc_add));
                 if (isXmpp) {
                     editServer.setText(SawimApplication.DEFAULT_SERVER);
                 }
@@ -247,7 +257,8 @@ public class AccountsListView extends Fragment {
                         account.isActive = true;
                         addAccount(Options.getAccountCount() + 1, account);
                     }
-                    dismiss();
+                    if (login.length() > 0 && password.length() > 0)
+                        getFragmentManager().popBackStack();
                 }
             });
             return dialogLogin;
