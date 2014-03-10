@@ -36,7 +36,6 @@ public class SawimService extends Service {
         }).start();
         if (RosterHelper.getInstance() != null) {
             RosterHelper.getInstance().autoConnect();
-            Thread.yield();
         }
         //musicReceiver = new MusicReceiver(this);
         //this.registerReceiver(musicReceiver, musicReceiver.getIntentFilter());

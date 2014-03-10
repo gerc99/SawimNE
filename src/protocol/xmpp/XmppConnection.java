@@ -33,7 +33,7 @@ public final class XmppConnection extends ClientConnection {
     private Socket socket;
     private Xmpp protocol;
 
-    private String fullJid_;
+    String fullJid_;
     private String domain_ = "";
     private String resource;
     private final boolean xep0048 = false;
@@ -49,6 +49,14 @@ public final class XmppConnection extends ClientConnection {
     private boolean isGTalk_ = false;
     private boolean authorized_ = false;
     private boolean rosterLoaded = false;
+
+    boolean smSupported = false;
+    private boolean smEnabled = false;
+    String smSessionID = "";
+    long packetsIn;
+    long packetsOut;
+    XmppSession session;
+    SessionManagementListener smListener;
 
     private UserInfo singleUserInfo;
     private String autoSubscribeDomain;
@@ -155,6 +163,8 @@ public final class XmppConnection extends ClientConnection {
         resource = xmpp.getResource();
         fullJid_ = xmpp.getUserId() + '/' + resource;
         domain_ = Jid.getDomain(fullJid_);
+
+        session = new XmppSession(SawimApplication.getContext(), this);
     }
 
     private void setProgress(int percent) {
@@ -208,14 +218,20 @@ public final class XmppConnection extends ClientConnection {
     }
 
     protected final void ping() throws SawimException {
+        if (isSessionManagementEnabled()) {
+            session.save();
+        }
         write(pingPacket);
     }
 
     protected final void pingForPong() throws SawimException {
+        if (isSessionManagementEnabled()) {
+            session.save();
+        }
         write(forPongPacket);
     }
 
-    private void putPacketIntoQueue(Object packet) {
+    public void putPacketIntoQueue(Object packet) {
         synchronized (packets) {
             packets.addElement(packet);
         }
@@ -426,6 +442,19 @@ public final class XmppConnection extends ClientConnection {
         if (x.is("stream:features")) {
             parseStreamFeatures(x);
             return;
+        } else if (x.is("resumed")) {
+            session.save();
+            setAuthStatus(true);
+            DebugLog.systemPrintln("[INFO-JABBER] Resumed session ID=" + smSessionID);
+        } else if (x.is("failed")) {
+            // expired session
+            DebugLog.systemPrintln("[INFO-JABBER] Failed to resume session ID=" + smSessionID);
+            setSessionManagementEnabled(false);
+            smSessionID = "";
+            packetsIn = 0;
+            packetsOut = 0;
+            session.save();
+            resourceBinding();
         } else if (x.is("compressed")) {
             setStreamCompression();
             return;
@@ -485,12 +514,22 @@ public final class XmppConnection extends ClientConnection {
 
     private void parse(XmlNode x) throws SawimException {
         if (x.is("iq")) {
+            if (isSessionManagementEnabled()) {
+                packetsIn++;
+            }
             parseIq(x);
 
         } else if (x.is("presence")) {
+            if (isSessionManagementEnabled()) {
+                packetsIn++;
+            }
             parsePresence(x);
 
         } else if (x.is("message")) {
+            if (isSessionManagementEnabled()) {
+                packetsIn++;
+                session.save();
+            }
             parseMessage(x);
 
         } else if (x.is("stream:error")) {
@@ -498,8 +537,37 @@ public final class XmppConnection extends ClientConnection {
 
             XmlNode err = (null == x.childAt(0)) ? x : x.childAt(0);
             DebugLog.systemPrintln("[INFO-JABBER] Stream error!: " + err.name + "," + err.value);
-
+        } else if (x.is("r")) {
+            sendAck();
+        } else if (x.is("enabled")) {
+            setSessionManagementEnabled(true);
+            smSessionID = x.getAttribute("id");
+            session.save();
+            DebugLog.systemPrintln("[INFO-JABBER] Session management enabled with ID=" + smSessionID);
         }
+    }
+
+    private void sendAck() {
+        putPacketIntoQueue("<a xmlns='urn:xmpp:sm:3' h='" + String.valueOf(packetsIn) + "'/>");
+    }
+
+    public boolean isSessionManagementEnabled() {
+        return smEnabled;
+    }
+
+    public void setSessionManagementEnabled(boolean smEnabled) {
+        this.smEnabled = smEnabled;
+        if (smListener != null) {
+            smListener.enabled(this);
+        }
+    }
+
+    public void setSessionManagementListener(SessionManagementListener listener) {
+        this.smListener = listener;
+    }
+
+    public interface SessionManagementListener {
+        void enabled(XmppConnection connection);
     }
 
     private String generateId(String key) {
@@ -669,6 +737,10 @@ public final class XmppConnection extends ClientConnection {
                     setProgress(90);
                     getBookmarks();
                     putPacketIntoQueue("<iq type='get' id='getnotes'><query xmlns='jabber:iq:private'><storage xmlns='storage:rosternotes'/></query></iq>");
+
+                    if (smSupported && !isSessionManagementEnabled()) {
+                        putPacketIntoQueue("<enable xmlns='urn:xmpp:sm:3' resume='true' />");
+                    }
                     setProgress(100);
 
                 } else if (IQ_TYPE_SET == iqType) {
@@ -1112,7 +1184,7 @@ public final class XmppConnection extends ClientConnection {
 
         if (S_ERROR.equals(type)) {
             XmlNode errorNode = x.getFirstNode(S_ERROR);
-            
+
             /*DebugLog.systemPrintln(
                     "[INFO-JABBER] <IQ> error received: " +
                     "Code=" + errorNode.getAttribute(S_CODE) + " " +
@@ -1719,7 +1791,10 @@ public final class XmppConnection extends ClientConnection {
             nonSaslLogin();
             return;
         }
-
+        x2 = x.getFirstNode("sm", "urn:xmpp:sm:3");
+        if (null != x2) {
+            smSupported = true;
+        }
         x2 = x.getFirstNode("starttls");
         if (null != x2) {
             DebugLog.println("starttls");
@@ -1792,13 +1867,16 @@ public final class XmppConnection extends ClientConnection {
             return;
         }
 
+        if (smSupported) {
+            session.load();
+            if (smSessionID != "") {
+                sendRequest("<resume xmlns='urn:xmpp:sm:3' previd='" + smSessionID + "' h='" + packetsIn + "' />");
+                return;
+            }
+        }
+
         if (x.contains("bind")) {
-            DebugLog.systemPrintln("[INFO-JABBER] Send bind request");
-            sendRequest("<iq type='set' id='bind'>"
-                    + "<bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'>"
-                    + "<resource>" + Util.xmlEscape(resource) + "</resource>"
-                    + "</bind>"
-                    + "</iq>");
+            resourceBinding();
             return;
         }
         x2 = x.getFirstNode("auth", "http://jabber.org/features/iq-auth");
@@ -1806,6 +1884,15 @@ public final class XmppConnection extends ClientConnection {
             nonSaslLogin();
             return;
         }
+    }
+
+    private void resourceBinding() throws SawimException {
+        DebugLog.systemPrintln("[INFO-JABBER] Send bind request");
+        sendRequest("<iq type='set' id='bind'>"
+                + "<bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'>"
+                + "<resource>" + Util.xmlEscape(resource) + "</resource>"
+                + "</bind>"
+                + "</iq>");
     }
 
     private void parseChallenge(XmlNode x) throws SawimException {

@@ -15,6 +15,10 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
     <uses-permission android:name="android.permission.MANAGE_ACCOUNTS"/>
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <permission android:name="ru.sawim.permission.C2D_MESSAGE" android:protectionLevel="normal"/>
+    <uses-permission android:name="ru.sawim.permission.C2D_MESSAGE"/>
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE"/>
+
     <supports-screens android:smallScreens="true" android:normalScreens="true" android:largeScreens="true"
                       android:anyDensity="true"/>
     <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="19"/>
@@ -72,5 +76,13 @@
                   android:launchMode="singleTask"/>
 
         <service android:enabled="true" android:name=".service.SawimService" android:stopWithTask="true"/>
+        <receiver android:name="com.google.android.gcm.GCMBroadcastReceiver" android:permission="com.google.android.c2dm.permission.SEND">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
+                <action android:name="com.google.android.c2dm.intent.REGISTRATION"/>
+                <category android:name="ru.sawim"/>
+            </intent-filter>
+        </receiver>
+        <service android:name=".GCMIntentService"/>
     </application>
 </manifest> 
