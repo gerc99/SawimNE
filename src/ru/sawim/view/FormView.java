@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import ru.sawim.activities.SawimActivity;
 import ru.sawim.models.form.Forms;
 import ru.sawim.widget.MySpinner;
 import ru.sawim.widget.Util;
+import android.support.v4.app.Fragment;
 
 import java.util.List;
 
@@ -71,20 +73,36 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
         return v;
     }
 
-    public static void add() {
-        SawimApplication.fragmentsStack.add(new FormView());
+    public static void show() {
+        SawimApplication.getCurrentActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                FormView formView = new FormView();
+                if (!SawimApplication.getCurrentActivity().isFinishing()) {
+                    show(formView);
+                } else {
+                    SawimApplication.fragmentsStack.add(formView);
+                }
+            }
+        });
     }
 
     public static void showLastWindow() {
-        if (SawimApplication.fragmentsStack.size() > 0) {
-            SawimActivity.resetBar();
-            if (SawimApplication.isManyPane())
-                SawimApplication.getCurrentActivity().setContentView(R.layout.intercalation_layout);
-            FragmentTransaction transaction = SawimApplication.getCurrentActivity().getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.fragment_container, SawimApplication.fragmentsStack.get(SawimApplication.fragmentsStack.size() - 1), FormView.TAG);
-            transaction.addToBackStack(null);
-            transaction.commitAllowingStateLoss();
+        int fragmentsStackCount = SawimApplication.fragmentsStack.size();
+        if (fragmentsStackCount > 0) {
+            show(SawimApplication.fragmentsStack.get(fragmentsStackCount - 1));
+            SawimApplication.fragmentsStack.remove(fragmentsStackCount - 1);
         }
+    }
+
+    private static void show(Fragment fragment) {
+        SawimActivity.resetBar();
+        if (SawimApplication.isManyPane())
+            SawimApplication.getCurrentActivity().setContentView(R.layout.intercalation_layout);
+        FragmentTransaction transaction = SawimApplication.getCurrentActivity().getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragment_container, fragment, FormView.TAG);
+        transaction.addToBackStack(null);
+        transaction.commitAllowingStateLoss();
     }
 
     @Override

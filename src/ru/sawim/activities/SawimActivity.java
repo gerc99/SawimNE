@@ -34,7 +34,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.*;
 import protocol.Contact;
 import protocol.Protocol;
@@ -191,7 +190,6 @@ public class SawimActivity extends ActionBarActivity {
         }
         handleIntent();
         if (!isOpenNewChat && SawimApplication.isManyPane()) openChat(null, null, true);
-        FormView.showLastWindow();
     }
 
     @Override

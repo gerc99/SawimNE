@@ -311,6 +311,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
             }
             update();
         }
+        FormView.showLastWindow();
     }
 
     public RosterAdapter getRosterAdapter() {

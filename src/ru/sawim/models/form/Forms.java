@@ -113,7 +113,7 @@ public class Forms {
     }
 
     public void show() {
-        FormView.add();
+        FormView.show();
     }
 
     public void preferenceFormShow() {

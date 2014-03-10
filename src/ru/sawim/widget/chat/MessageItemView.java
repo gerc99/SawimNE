@@ -53,8 +53,6 @@ public class MessageItemView extends View {
         int padding = Util.dipToPixels(context, 5);
 
         textPaint.setAntiAlias(true);
-        textPaint.setTextSize(SawimApplication.getFontSize());
-        textPaint.setColor(Scheme.getColor(Scheme.THEME_TEXT));
 
         setPadding(padding, padding, padding, padding);
     }
