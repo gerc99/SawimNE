@@ -76,7 +76,7 @@ public class MessageItemView extends View {
         int height = isAddTitleView ? measureHeight(heightMeasureSpec) : getPaddingTop() + getPaddingBottom();
         if (layout == null)
             makeLayout(width - getPaddingRight() - getPaddingLeft());
-        titleHeight = height;
+        titleHeight = isAddTitleView ? height - getPaddingTop() : getPaddingTop();
         if (layout != null)
         height += layout.getLineTop(layout.getLineCount());
         setMeasuredDimension(width, height);
@@ -193,7 +193,7 @@ public class MessageItemView extends View {
             textPaint.setTextAlign(Paint.Align.LEFT);
             setTextSize(msgTextSize);
             textPaint.setTypeface(msgTextTypeface);
-            canvas.translate(getPaddingLeft(), isAddTitleView ? titleHeight - getPaddingTop() : getPaddingTop());
+            canvas.translate(getPaddingLeft(), titleHeight);
             layout.draw(canvas);
             canvas.restore();
         }
@@ -218,7 +218,7 @@ public class MessageItemView extends View {
             int x = (int) event.getX();
             int y = (int) event.getY();
             x += getScrollX();
-            y += getScrollY();
+            y += getScrollY() - titleHeight;
             int line = layout.getLineForVertical(y);
             int off = layout.getOffsetForHorizontal(line, x);
             final InternalURLSpan[] urlSpans = buffer.getSpans(off, off, InternalURLSpan.class);
