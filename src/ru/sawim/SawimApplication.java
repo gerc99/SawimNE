@@ -97,12 +97,7 @@ public class SawimApplication extends Application {
         try {
             GCMRegistrar.checkDevice(this);
             GCMRegistrar.checkManifest(this);
-            final String regId = GCMRegistrar.getRegistrationId(this);
-            SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-            String prefRegId = sp.getString("gcm_regid", null);
-            if (regId.length() == 0 || !regId.equals(prefRegId)) {
-                GCMRegistrar.register(this, GCMIntentService.CLIENT_ID);
-            }
+            GCMRegistrar.register(this, GCMIntentService.CLIENT_ID);
         } catch (Exception e) {
             Log.e(LOG_TAG, e.toString());
         }
