@@ -83,6 +83,6 @@
                 <category android:name="ru.sawim"/>
             </intent-filter>
         </receiver>
-        <service android:name=".GCMIntentService"/>
+        <service android:name=".service.GCMIntentService"/>
     </application>
 </manifest> 
