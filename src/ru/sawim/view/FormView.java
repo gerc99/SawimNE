@@ -132,7 +132,7 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
 
     private void hideKeyboard() {
         if (SawimApplication.getCurrentActivity().getCurrentFocus() != null)
-            ((InputMethodManager) SawimApplication.getCurrentActivity().getSystemService("input_method")).hideSoftInputFromWindow(SawimApplication.getCurrentActivity().getCurrentFocus().getWindowToken(), 0);
+            ((InputMethodManager) SawimApplication.getCurrentActivity().getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(SawimApplication.getCurrentActivity().getCurrentFocus().getWindowToken(), 0);
     }
 
     @Override

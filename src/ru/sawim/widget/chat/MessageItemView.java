@@ -62,7 +62,7 @@ public class MessageItemView extends View {
     }
 
     public void makeLayout(int specSize) {
-        if (text == null) return;
+        if (text == null || specSize < 0) return;
         try {
             layout = new StaticLayout(text, textPaint, specSize, Layout.Alignment.ALIGN_NORMAL, 1.0F, 0.0F, false);
         } catch (ArrayIndexOutOfBoundsException e) {
@@ -77,6 +77,7 @@ public class MessageItemView extends View {
         if (layout == null)
             makeLayout(width - getPaddingRight() - getPaddingLeft());
         titleHeight = height;
+        if (layout != null)
         height += layout.getLineTop(layout.getLineCount());
         setMeasuredDimension(width, height);
     }
@@ -159,8 +160,10 @@ public class MessageItemView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         int stopX = getWidth() - getPaddingRight();
-        if (isShowDivider)
+        if (isShowDivider) {
+            textPaint.setColor(Scheme.getColor(Scheme.THEME_TEXT));
             canvas.drawLine(getPaddingLeft(), getScrollY() - 2, stopX, getScrollY() - 2, textPaint);
+        }
 
         if (isAddTitleView) {
             if (nickText != null) {
@@ -177,28 +180,28 @@ public class MessageItemView extends View {
                 setTextSize(msgTimeSize);
                 textPaint.setTypeface(msgTimeTypeface);
                 canvas.drawText(msgTimeText,
-                        stopX - (checkImage == null ? 0 : (checkImage.getWidth() << 1) - getPaddingLeft()), textY, textPaint);
+                        stopX - (checkImage == null ? 0 : checkImage.getWidth() << 1), textY, textPaint);
             }
             if (checkImage != null) {
                 canvas.drawBitmap(checkImage,
                         stopX - checkImage.getWidth(), getPaddingTop() + checkImage.getHeight() / 2, null);
             }
         }
-
-        canvas.save();
-        textPaint.setColor(msgTextColor);
-        textPaint.setTextAlign(Paint.Align.LEFT);
-        setTextSize(msgTextSize);
-        textPaint.setTypeface(msgTextTypeface);
-        canvas.translate(getPaddingLeft(), isAddTitleView ? titleHeight - getPaddingTop() : getPaddingTop());
-        layout.draw(canvas);
-        canvas.restore();
+        if (layout != null) {
+            canvas.save();
+            textPaint.setColor(msgTextColor);
+            textPaint.setTextAlign(Paint.Align.LEFT);
+            setTextSize(msgTextSize);
+            textPaint.setTypeface(msgTextTypeface);
+            canvas.translate(getPaddingLeft(), isAddTitleView ? titleHeight - getPaddingTop() : getPaddingTop());
+            layout.draw(canvas);
+            canvas.restore();
+        }
     }
 
     public void setShowDivider(boolean showDivider) {
         isShowDivider = showDivider;
         textPaint.setStrokeWidth((int) (4 * getResources().getDisplayMetrics().density + 0.5f));
-        textPaint.setColor(Scheme.getColor(Scheme.THEME_TEXT));
     }
 
     @Override
@@ -218,8 +221,7 @@ public class MessageItemView extends View {
             y += getScrollY();
             int line = layout.getLineForVertical(y);
             int off = layout.getOffsetForHorizontal(line, x);
-            final InternalURLSpan[] firstUrlSpans = buffer.getSpans(off, off, InternalURLSpan.class);
-            final InternalURLSpan[] urlSpans = buffer.getSpans(buffer.getSpanStart(firstUrlSpans), off, InternalURLSpan.class);
+            final InternalURLSpan[] urlSpans = buffer.getSpans(off, off, InternalURLSpan.class);
             if (action == MotionEvent.ACTION_CANCEL || action == MotionEvent.ACTION_OUTSIDE) {
                 isSecondTap = true;
             }

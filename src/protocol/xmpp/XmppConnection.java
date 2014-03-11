@@ -1869,7 +1869,7 @@ public final class XmppConnection extends ClientConnection {
 
         if (smSupported) {
             session.load();
-            if (smSessionID != "") {
+            if (!smSessionID.equals("")) {
                 sendRequest("<resume xmlns='urn:xmpp:sm:3' previd='" + smSessionID + "' h='" + packetsIn + "' />");
                 return;
             }
@@ -1877,7 +1877,6 @@ public final class XmppConnection extends ClientConnection {
 
         if (x.contains("bind")) {
             resourceBinding();
-            return;
         }
         x2 = x.getFirstNode("auth", "http://jabber.org/features/iq-auth");
         if (null != x2) {
@@ -1893,6 +1892,7 @@ public final class XmppConnection extends ClientConnection {
                 + "<resource>" + Util.xmlEscape(resource) + "</resource>"
                 + "</bind>"
                 + "</iq>");
+        return;
     }
 
     private void parseChallenge(XmlNode x) throws SawimException {

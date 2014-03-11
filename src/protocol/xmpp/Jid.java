@@ -65,8 +65,8 @@ public class Jid {
 
     public static boolean isConference(String jid) {
         int index = jid.indexOf('@');
-        if ((-1 < index)) {
-            if (isConferenceDomain(jid, index + 1) && isJID(jid)) {
+        if (-1 < index) {
+            if (isConferenceDomain(jid, index + 1)) {
                 return true;
             }
             int index1 = jid.lastIndexOf('%', index);

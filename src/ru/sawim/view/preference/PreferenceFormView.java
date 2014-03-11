@@ -1,6 +1,7 @@
 package ru.sawim.view.preference;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.preference.*;
 import android.support.v4.app.FragmentTransaction;
@@ -58,7 +59,7 @@ public class PreferenceFormView extends PreferenceFragment {
 
     private void hideKeyboard() {
         if (SawimApplication.getCurrentActivity().getCurrentFocus() != null)
-            ((InputMethodManager) SawimApplication.getCurrentActivity().getSystemService("input_method")).hideSoftInputFromWindow(SawimApplication.getCurrentActivity().getCurrentFocus().getWindowToken(), 0);
+            ((InputMethodManager) SawimApplication.getCurrentActivity().getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(SawimApplication.getCurrentActivity().getCurrentFocus().getWindowToken(), 0);
     }
 
     public boolean hasBack() {

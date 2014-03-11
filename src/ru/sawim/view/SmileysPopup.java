@@ -111,6 +111,7 @@ public class SmileysPopup {
             public void onItemClick(SmilesAdapter adapterView, int position) {
                 if (RosterHelper.getInstance().getUpdateChatListener() != null)
                     RosterHelper.getInstance().getUpdateChatListener().pastText(Emotions.instance.getSmileCode(position));
+                hide();
             }
         });
 		return grid;

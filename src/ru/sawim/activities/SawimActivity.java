@@ -83,6 +83,7 @@ public class SawimActivity extends ActionBarActivity {
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
     }
 
     public static void resetBar() {

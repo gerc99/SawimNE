@@ -313,7 +313,7 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
             try {
                 conn = (HttpURLConnection) new URL(UPLOAD_URL).openConnection();
                 conn.setDoOutput(true);
-                if (Build.VERSION.SDK != null && Build.VERSION.SDK_INT > 13) { conn.setRequestProperty("Connection", "close"); }
+                if (Build.VERSION.SDK_INT > 13) { conn.setRequestProperty("Connection", "close"); }
 
                 conn.setRequestProperty("Authorization", "Client-ID c90472da1a4d000"); // get on site
 

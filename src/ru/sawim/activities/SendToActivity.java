@@ -1,5 +1,6 @@
 package ru.sawim.activities;
 
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.media.AudioManager;
 import android.os.Bundle;
@@ -51,6 +52,15 @@ public class SendToActivity extends ActionBarActivity {
     protected void onPause() {
         super.onPause();
         SawimApplication.setActionBar(null);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+        Intent intent = new Intent(this, SawimActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
     }
 
     int oldOrientation;

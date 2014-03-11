@@ -13,7 +13,6 @@ import ru.sawim.SawimApplication;
 import ru.sawim.R;
 import ru.sawim.models.MucUsersAdapter;
 import ru.sawim.view.menu.MyMenu;
-import sawim.util.JLocale;
 
 /**
  * Created with IntelliJ IDEA.
