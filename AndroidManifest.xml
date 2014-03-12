@@ -91,5 +91,8 @@
             </intent-filter>
         </receiver>
         <service android:name=".service.GCMIntentService"/>
+        <meta-data
+                android:name="com.google.android.gms.version"
+                android:value="@integer/google_play_services_version" />
     </application>
 </manifest> 

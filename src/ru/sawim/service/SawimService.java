@@ -26,7 +26,7 @@ public class SawimService extends Service {
     public void onCreate() {
         super.onCreate();
         Log.i(LOG_TAG, "onStart();");
-        //startForeground(R.string.app_name, SawimNotification.get(this));
+        startForeground(R.string.app_name, SawimNotification.get(this));
 
         new Thread(new Runnable() {
             @Override

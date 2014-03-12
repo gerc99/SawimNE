@@ -34,12 +34,12 @@ public class XmppSession {
         _prefs = _context.getSharedPreferences(PREFS_NAME, 0);
         _editor = _prefs.edit();
         // Check device for Play Services APK. If check succeeds, proceed with GCM registration.
-       /* if (checkPlayServices()) {
+        if (checkPlayServices()) {
             gcm = GoogleCloudMessaging.getInstance(_context);
             registerInBackground();
         } else {
             Log.i(XmppSession.class.getSimpleName(), "No valid Google Play Services APK found.");
-        }*/
+        }
     }
     /**
      * Check the device to make sure it has the Google Play Services APK. If
