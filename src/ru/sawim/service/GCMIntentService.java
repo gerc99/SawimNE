@@ -1,12 +1,17 @@
 package ru.sawim.service;
 
+import com.google.android.gms.gcm.GoogleCloudMessaging;
+
+import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.Log;
-import com.google.android.gcm.GCMBaseIntentService;
 import protocol.Protocol;
 import protocol.xmpp.Xmpp;
 import protocol.xmpp.XmppConnection;
+import ru.sawim.GCMBroadcastReceiver;
 import ru.sawim.SawimApplication;
 import sawim.roster.RosterHelper;
 
@@ -16,62 +21,50 @@ import java.net.URLDecoder;
 /**
  * Created by Vitaly on 01.03.14.
  */
-public class GCMIntentService extends GCMBaseIntentService implements XmppConnection.SessionManagementListener {
+public class GCMIntentService extends IntentService {
 
     public static final String LOG_TAG = GCMIntentService.class.getSimpleName();
-    public final static String CLIENT_ID = "284764164645";
 
     private String regId;
 
     public GCMIntentService() {
-        super(CLIENT_ID);
-        int count = RosterHelper.getInstance().getProtocolCount();
-        for (int i = 0; i < count; ++i) {
-            Protocol p = RosterHelper.getInstance().getProtocol(i);
-            if (p instanceof Xmpp) {
-                XmppConnection xmppConnection = ((Xmpp) p).getConnection();
-                xmppConnection.setSessionManagementListener(this);
+        super(LOG_TAG);
+    }
+
+    @Override
+    protected void onHandleIntent(Intent intent) {
+        Bundle extras = intent.getExtras();
+        GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(this);
+        // The getMessageType() intent parameter must be the intent you received
+        // in your BroadcastReceiver.
+        String messageType = gcm.getMessageType(intent);
+
+        if (!extras.isEmpty()) {  // has effect of unparcelling Bundle
+            /*
+             * Filter messages based on message type. Since it is likely that GCM will be
+             * extended in the future with new message types, just ignore any message types you're
+             * not interested in, or that you don't recognize.
+             */
+            if (GoogleCloudMessaging.MESSAGE_TYPE_SEND_ERROR.equals(messageType)) {
+                //sendNotification("Send error: " + extras.toString());
+            } else if (GoogleCloudMessaging.MESSAGE_TYPE_DELETED.equals(messageType)) {
+                //sendNotification("Deleted messages on server: " + extras.toString());
+                // If it's a regular GCM message, do some work.
+            } else if (GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE.equals(messageType)) {
+                if (intent.hasExtra("message")) {
+                    String msg = intent.getExtras().getString("message");
+                    String from = intent.getExtras().getString("message_from");
+                    try {
+                        String message = URLDecoder.decode(msg, "UTF-8");
+                        Log.d(LOG_TAG, message);
+                        SawimApplication.getInstance().sendNotify(from, message);
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         }
-    }
-
-    @Override
-    protected void onMessage(Context context, Intent intent) {
-        if (intent.hasExtra("message")) {
-            String msg = intent.getExtras().getString("message");
-            String from = intent.getExtras().getString("message_from");
-            try {
-                String message = URLDecoder.decode(msg, "UTF-8");
-                Log.d(LOG_TAG, message);
-                SawimApplication.getInstance().sendNotify(from, message);
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    @Override
-    protected void onError(Context context, String s) {
-        Log.i(LOG_TAG, "got error " + s);
-    }
-
-    @Override
-    protected void onRegistered(Context context, String s) {
-        Log.i(LOG_TAG, "regid=" + s);
-        regId = s;
-    }
-
-    @Override
-    protected void onUnregistered(Context context, String s) {
-        regId = null;
-    }
-
-    @Override
-    public void enabled(XmppConnection connection) {
-        if (regId != null)
-            connection.putPacketIntoQueue("<iq type='set'>" +
-                    "<register xmlns='http://sawim.ru/notifications#gcm' regid='"+ regId+ "' /></iq>");
-        else
-            Log.d(LOG_TAG, "device not registered for GCM yet");
+        // Release the wake lock provided by the WakefulBroadcastReceiver.
+        GCMBroadcastReceiver.completeWakefulIntent(intent);
     }
 }

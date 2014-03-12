@@ -1,6 +1,6 @@
 buildscript {
     repositories {
-        mavenCentral()                                     
+        mavenCentral()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:0.8.0'
@@ -25,10 +25,10 @@ android {
         targetSdkVersion 19
     }
     lintOptions {
-       checkReleaseBuilds false
-       // Or, if you prefer, you can continue to check for errors in release builds,
-       // but continue the build even when errors are found:
-       abortOnError false
+        checkReleaseBuilds false
+        // Or, if you prefer, you can continue to check for errors in release builds,
+        // but continue the build even when errors are found:
+        abortOnError false
     }
     sourceSets {
         main {
@@ -54,8 +54,9 @@ android {
         release.setRoot('build-types/release')
     }
     dependencies {
+        compile 'com.google.android.gms:play-services:4.1.32'
         compile 'com.android.support:support-v4:19.0.1'
         compile 'com.android.support:appcompat-v7:19.0.1'
-	compile 'com.viewpagerindicator:library:2.4.1@aar'
+        compile 'com.viewpagerindicator:library:2.4.1@aar'
     }
 }

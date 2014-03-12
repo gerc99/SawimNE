@@ -17,9 +17,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Surface;
 import android.view.WindowManager;
-import com.google.android.gcm.GCMRegistrar;
 import org.microemu.util.AndroidRecordStoreManager;
-import ru.sawim.service.GCMIntentService;
 import ru.sawim.service.SawimService;
 import ru.sawim.service.SawimServiceConnection;
 import ru.sawim.text.TextFormatter;
@@ -91,16 +89,6 @@ public class SawimApplication extends Application {
 
         startApp();
         TextFormatter.init();
-    }
-
-    public void initGCM() {
-        try {
-            GCMRegistrar.checkDevice(this);
-            GCMRegistrar.checkManifest(this);
-            GCMRegistrar.register(this, GCMIntentService.CLIENT_ID);
-        } catch (Exception e) {
-            Log.e(LOG_TAG, e.toString());
-        }
     }
 
     private void startService() {
