@@ -1,5 +1,8 @@
 out/*
 gen/*
 .idea/*
+build/*
+.gradle/*
+local.properties
 SawimNE.iml
 SawimNE.apk
