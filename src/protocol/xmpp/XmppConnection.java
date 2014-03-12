@@ -56,7 +56,6 @@ public final class XmppConnection extends ClientConnection {
     long packetsIn;
     long packetsOut;
     XmppSession session;
-    SessionManagementListener smListener;
 
     private UserInfo singleUserInfo;
     private String autoSubscribeDomain;
@@ -557,18 +556,9 @@ public final class XmppConnection extends ClientConnection {
 
     public void setSessionManagementEnabled(boolean smEnabled) {
         this.smEnabled = smEnabled;
-        if (smListener != null) {
-            smListener.enabled(this);
-        }
+        session.enable();
     }
 
-    public void setSessionManagementListener(SessionManagementListener listener) {
-        this.smListener = listener;
-    }
-
-    public interface SessionManagementListener {
-        void enabled(XmppConnection connection);
-    }
 
     private String generateId(String key) {
         return key + Util.uniqueValue();
