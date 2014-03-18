@@ -78,10 +78,10 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
             @Override
             public void run() {
                 FormView formView = new FormView();
-                if (!SawimApplication.getCurrentActivity().isFinishing()) {
-                    show(formView);
-                } else {
+                if (SawimApplication.getCurrentActivity().isFinishing()) {
                     SawimApplication.fragmentsStack.add(formView);
+                } else {
+                    show(formView);
                 }
             }
         });
@@ -123,7 +123,8 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
                 if (SawimApplication.isManyPane())
                     ((SawimActivity) SawimApplication.getCurrentActivity()).recreateActivity();
                 else
-                    SawimApplication.getCurrentActivity().getSupportFragmentManager().popBackStack();
+                    if (!SawimApplication.getCurrentActivity().isFinishing())
+                        SawimApplication.getCurrentActivity().getSupportFragmentManager().popBackStack();
                 hideKeyboard();
                 SawimApplication.getCurrentActivity().supportInvalidateOptionsMenu();
             }

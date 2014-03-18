@@ -310,7 +310,7 @@ public class RecordStoreImpl {
 
 
     public int getRecordSize(int recordId)
-            throws Exception, Exception, Exception {
+            throws Exception {
         if (!open) {
             throw new Exception();
         }

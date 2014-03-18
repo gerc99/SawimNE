@@ -137,6 +137,12 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
         return list.getClickListListener() == null || list.getClickListListener().back();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        SawimActivity.resetBar();
+    }
+
     public void onPrepareOptionsMenu_(Menu menu) {
         menu.clear();
         if (list.getBuildOptionsMenu() != null)

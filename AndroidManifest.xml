@@ -90,7 +90,7 @@
                 <category android:name="ru.sawim"/>
             </intent-filter>
         </receiver>
-        <service android:name=".service.GCMIntentService"/>
+        <service android:name=".GCMIntentService"/>
         <meta-data
                 android:name="com.google.android.gms.version"
                 android:value="@integer/google_play_services_version" />

@@ -1,19 +1,11 @@
-package ru.sawim.service;
+package ru.sawim;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 import android.app.IntentService;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.util.Log;
-import protocol.Protocol;
-import protocol.xmpp.Xmpp;
-import protocol.xmpp.XmppConnection;
-import ru.sawim.GCMBroadcastReceiver;
-import ru.sawim.SawimApplication;
-import sawim.roster.RosterHelper;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;

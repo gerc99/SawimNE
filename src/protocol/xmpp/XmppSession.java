@@ -86,8 +86,10 @@ public class XmppSession {
     }
 
     public void enable() {
-        connection.putPacketIntoQueue("<iq type='set'>" +
-                "<register xmlns='http://sawim.ru/notifications#gcm' regid='"+ regid+ "' /></iq>");
+        if (regid != null && regid.length() > 0) {
+            connection.putPacketIntoQueue("<iq type='set'>" +
+                    "<register xmlns='http://sawim.ru/notifications#gcm' regid='" + regid + "' /></iq>");
+        }
     }
 
 

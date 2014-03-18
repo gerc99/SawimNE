@@ -155,17 +155,17 @@ public class AndroidRecordStoreManager {
         deleteFromDisk(recordStoreImpl, recordId);
     }
 
-    public void loadRecord(RecordStoreImpl recordStoreImpl, int recordId)
-            throws Exception, Exception, Exception {
+    public void loadRecord(RecordStoreImpl recordStoreImpl, int recordId) {
         try {
             DataInputStream dis = new DataInputStream(
                     activity.openFileInput(getRecordFileName(recordStoreImpl.getName(), recordId)));
-            recordStoreImpl.readRecord(dis);
-            dis.close();
-        } catch (FileNotFoundException e) {
-            throw new Exception();
-        } catch (IOException e) {
-            Log.e("RecordStore.loadFromDisk: ERROR reading ", getRecordFileName(recordStoreImpl.getName(), recordId), e);
+            if (dis.available() > 0) {
+                recordStoreImpl.readRecord(dis);
+                dis.close();
+            }
+
+        } catch (Exception e) {
+            //Log.e("RecordStore.loadFromDisk: ERROR reading ", getRecordFileName(recordStoreImpl.getName(), recordId), e);
         }
     }
 

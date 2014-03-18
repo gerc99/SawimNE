@@ -37,15 +37,11 @@ public class SawimService extends Service {
         if (RosterHelper.getInstance() != null) {
             RosterHelper.getInstance().autoConnect();
         }
-        //musicReceiver = new MusicReceiver(this);
-        //this.registerReceiver(musicReceiver, musicReceiver.getIntentFilter());
-        //scrobbling finished
     }
 
     @Override
     public void onDestroy() {
         Log.i(LOG_TAG, "onDestroy();");
-        //this.unregisterReceiver(musicReceiver);
         release();
         stopForeground(true);
     }

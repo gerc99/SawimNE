@@ -1,6 +1,5 @@
 package protocol.xmpp;
 
-import android.util.Log;
 import sawim.SawimException;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;

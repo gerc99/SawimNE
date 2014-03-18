@@ -49,7 +49,7 @@ public class MainPreferenceView extends PreferenceFragment {
     @Override
     public void onResume() {
         super.onResume();
-        SawimApplication.getActionBar().setDisplayHomeAsUpEnabled(true);
+        SawimApplication.getCurrentActivity().getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getActivity().setTitle(R.string.options);
     }
 

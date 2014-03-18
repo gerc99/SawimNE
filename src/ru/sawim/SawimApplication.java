@@ -73,7 +73,7 @@ public class SawimApplication extends Application {
     }
 
     public static Context getContext() {
-        return instance.getApplicationContext();
+        return instance;
     }
 
     @Override
@@ -200,7 +200,7 @@ public class SawimApplication extends Application {
                 ChatHistory.instance.saveUnreadMessages();
                 AutoAbsence.getInstance().online();
             }
-        });
+        }).start();
     }
 
     public static long getCurrentGmtTime() {

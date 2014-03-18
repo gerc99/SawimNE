@@ -5,7 +5,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.WakefulBroadcastReceiver;
-import ru.sawim.service.GCMIntentService;
 
 /**
  * Created by Vitaly on 12.03.14.

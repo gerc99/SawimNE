@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +17,7 @@ import protocol.Profile;
 import protocol.xmpp.XmppRegistration;
 import ru.sawim.SawimApplication;
 import ru.sawim.R;
+import ru.sawim.activities.SawimActivity;
 import sawim.Options;
 import sawim.comm.StringConvertor;
 import sawim.roster.RosterHelper;
@@ -60,7 +62,11 @@ public class StartWindowView extends Fragment {
         signInXmppButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                new LoginDialog(Profile.PROTOCOL_JABBER).show(SawimApplication.getCurrentActivity().getSupportFragmentManager(), "login");
+                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                LoginDialog loginDialog = new LoginDialog(Profile.PROTOCOL_JABBER);
+                transaction.replace(R.id.fragment_container, loginDialog, loginDialog.TAG);
+                transaction.addToBackStack(null);
+                transaction.commitAllowingStateLoss();
             }
         });
         Button signIntoOtherNetworksButton = (Button) v.findViewById(R.id.sign_into_other_networks);
@@ -74,8 +80,11 @@ public class StartWindowView extends Fragment {
 
                     @Override
                     public void onClick(DialogInterface dialog, int item) {
-                        new LoginDialog(Profile.protocolTypes[item])
-                                .show(SawimApplication.getCurrentActivity().getSupportFragmentManager(), "login");
+                        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                        LoginDialog loginDialog = new LoginDialog(Profile.protocolTypes[item]);
+                        transaction.replace(R.id.fragment_container, loginDialog, loginDialog.TAG);
+                        transaction.addToBackStack(null);
+                        transaction.commitAllowingStateLoss();
                     }
                 });
                 builder.create().show();
@@ -85,20 +94,26 @@ public class StartWindowView extends Fragment {
         return v;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        SawimActivity.resetBar();
+    }
+
     public void addAccount(int num, Profile acc) {
         Options.setAccount(num, acc);
         RosterHelper.getInstance().setCurrentProtocol();
     }
 
     private void back() {
-        SawimApplication.getCurrentActivity().getSupportFragmentManager().popBackStack();
-        if (SawimApplication.getCurrentActivity().getSupportFragmentManager()
-                .findFragmentById(R.id.chat_fragment) != null)
-            SawimApplication.getCurrentActivity().getSupportFragmentManager()
-                    .findFragmentById(R.id.chat_fragment).getView().setVisibility(View.VISIBLE);
+        if (SawimApplication.isManyPane())
+            ((SawimActivity) SawimApplication.getCurrentActivity()).recreateActivity();
+        else
+            SawimApplication.getCurrentActivity().getSupportFragmentManager().popBackStack();
     }
 
-    class LoginDialog extends DialogFragment {
+    class LoginDialog extends Fragment {
+        public final String TAG = AccountsListView.class.getSimpleName();
         private int type;
 
         public LoginDialog(final int type) {
@@ -124,7 +139,7 @@ public class StartWindowView extends Fragment {
                 }
             }
             loginText.setText(Profile.protocolIds[protocolIndex]);
-            getDialog().setTitle(getText(R.string.acc_add));
+            getActivity().setTitle(getText(R.string.acc_add));
             if (isXmpp) {
                 serverText.setVisibility(TextView.VISIBLE);
                 editServer.setVisibility(EditText.VISIBLE);
@@ -166,8 +181,10 @@ public class StartWindowView extends Fragment {
                     account.nick = nick;
                     account.isActive = true;
                     addAccount(Options.getAccountCount() + 1, account);
-                    dismiss();
-                    back();
+                    if (login.length() > 0 && password.length() > 0) {
+                        getFragmentManager().popBackStack();
+                        back();
+                    }
                 }
             });
             return dialogLogin;

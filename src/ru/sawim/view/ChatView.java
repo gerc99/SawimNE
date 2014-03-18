@@ -724,8 +724,8 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
                 }
                 if (isConference) {
                     XmppServiceContact xmppServiceContact = ((XmppServiceContact) contact);
-                    if (xmppServiceContact.getContact(mData.getNick()) == null
-                            && !xmppServiceContact.getName().equals(mData.getNick())) {
+                    if (xmppServiceContact.getName().equals(mData.getNick())) return;
+                    if (xmppServiceContact.getContact(mData.getNick()) == null) {
                         Toast.makeText(SawimApplication.getCurrentActivity(),
                                 getString(R.string.contact_walked), Toast.LENGTH_LONG).show();
                     }

@@ -59,11 +59,11 @@ public class TextFormatter {
     public CharSequence detectEmotions(CharSequence text, SpannableStringBuilder builder) {
         Matcher matcher = smilesPattern.matcher(text);
         while (matcher.find()) {
-            //if (!isThereLinks(builder, new int[]{matcher.start(), matcher.end()})) {
+            if (!isThereLinks(builder, new int[]{matcher.start(), matcher.end()})) {
                 builder.setSpan(new ImageSpan(smiles.getSmileIcon(smiles.buildSmileyToId().get(matcher.group())).getImage()),
                         matcher.start(), matcher.end(),
                         Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            //}
+            }
         }
         return builder;
     }

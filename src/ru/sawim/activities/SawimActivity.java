@@ -81,11 +81,6 @@ public class SawimActivity extends ActionBarActivity {
         }
     }
 
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-    }
-
     public static void resetBar() {
         SawimApplication.getActionBar().setDisplayHomeAsUpEnabled(false);
         SawimApplication.getActionBar().setDisplayShowTitleEnabled(true);
@@ -94,8 +89,6 @@ public class SawimActivity extends ActionBarActivity {
         SawimApplication.getActionBar().setDisplayShowCustomEnabled(false);
         SawimApplication.getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         SawimApplication.getActionBar().setIcon(SawimResources.appIcon);
-        if (SawimApplication.isManyPane())
-            ((SawimActivity)SawimApplication.getCurrentActivity()).getRosterView().getDrawerToggle().setDrawerIndicatorEnabled(false);
         SawimApplication.getCurrentActivity().setTitle(R.string.app_name);
     }
 
@@ -256,8 +249,6 @@ public class SawimActivity extends ActionBarActivity {
             if (SawimApplication.getInstance().getConfigurationChanged() != null)
                 SawimApplication.getInstance().getConfigurationChanged().onConfigurationChanged();
         }
-        if (getRosterView() != null && getRosterView().getDrawerToggle() != null)
-            getRosterView().getDrawerToggle().onConfigurationChanged(newConfig);
         if (getChatView() != null && getChatView().getDrawerToggle() != null)
             getChatView().getDrawerToggle().onConfigurationChanged(newConfig);
     }
@@ -353,10 +344,7 @@ public class SawimActivity extends ActionBarActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         ChatView chatView = getChatView();
         VirtualListView virtualListView = (VirtualListView) getSupportFragmentManager().findFragmentByTag(VirtualListView.TAG);
-        if (getRosterView() != null && getRosterView().getDrawerToggle() != null
-                && getRosterView().getDrawerToggle().onOptionsItemSelected(item)) {
-            return true;
-        } else if (!SawimApplication.isManyPane()
+        if (!SawimApplication.isManyPane()
                 && chatView != null
                 && chatView.getDrawerToggle().onOptionsItemSelected(item) ) {
             return true;
