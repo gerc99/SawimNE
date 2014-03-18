@@ -81,7 +81,6 @@ public class ProtocolsAdapter extends BaseAdapter {
         }
         rosterItemView.itemNameFont = Typeface.DEFAULT;
         rosterItemView.setBackgroundColor(position == activeItem ? Scheme.getColor(Scheme.THEME_ITEM_SELECTED) : 0);
-        rosterItemView.isShowDivider = true;
         rosterItemView.repaint();
         return convertView;
     }
