@@ -14,6 +14,7 @@ import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
 import ru.sawim.widget.SimpleItemView;
+import ru.sawim.widget.Util;
 import ru.sawim.widget.roster.RosterItemView;
 import sawim.chat.ChatHistory;
 import sawim.roster.RosterHelper;
@@ -59,8 +60,6 @@ public class ProtocolsAdapter extends BaseAdapter {
         rosterItemView.setNull();
         boolean isActiveContacts = position == RosterHelper.getInstance().getProtocolCount();
         if (isActiveContacts) {
-            rosterItemView.itemNameColor = Scheme.getColor(Scheme.THEME_TEXT);
-            rosterItemView.itemNameFont = Typeface.DEFAULT;
             rosterItemView.itemName = JLocale.getString(R.string.active_contacts);
         } else {
             Protocol protocol = getItem(position);
@@ -73,10 +72,14 @@ public class ProtocolsAdapter extends BaseAdapter {
                 icon = messageIcon;
             if (icon != null)
                 rosterItemView.itemFirstImage = icon.getBitmap();
-            rosterItemView.itemNameColor = Scheme.getColor(Scheme.THEME_TEXT);
-            rosterItemView.itemNameFont = Typeface.DEFAULT;
             rosterItemView.itemName = protocol.getUserId();
         }
+        if (Util.isNeedToFixSpinnerAdapter()) {
+            rosterItemView.itemNameColor = 0xFF000000;
+        } else {
+            rosterItemView.itemNameColor = Scheme.getColor(Scheme.THEME_TEXT);
+        }
+        rosterItemView.itemNameFont = Typeface.DEFAULT;
         rosterItemView.setBackgroundColor(position == activeItem ? Scheme.getColor(Scheme.THEME_ITEM_SELECTED) : 0);
         rosterItemView.isShowDivider = true;
         rosterItemView.repaint();
@@ -102,4 +105,6 @@ public class ProtocolsAdapter extends BaseAdapter {
         itemView.setText(isActiveContacts ? JLocale.getString(R.string.active_contacts) : protocol.getUserId());
         return convertView;
     }
+
+
 }
