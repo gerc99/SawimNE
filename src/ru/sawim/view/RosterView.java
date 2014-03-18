@@ -57,6 +57,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     private static final int UPDATE_ROSTER = 2;
     private static final int PUT_INTO_QUEUE = 3;
 
+    private LinearLayout rosterBarLayout;
     private LinearLayout barLinearLayout;
     private RosterViewRoot rosterViewLayout;
     private static ProgressBar progressBar;
@@ -72,6 +73,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         super.onAttach(activity);
         SawimApplication.setCurrentActivity((ActionBarActivity) activity);
         handler = new Handler(this);
+        rosterBarLayout = new LinearLayout(getActivity());
         barLinearLayout = new LinearLayout(activity);
         chatsImage = new ImageButton(getActivity());
         if (progressBar == null) {
@@ -225,58 +227,72 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
             }
         });
 
+        chatsImage.setBackgroundColor(0);
+        chatsImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final Chat current = ChatHistory.instance.chatAt(ChatHistory.instance.getPreferredItem());
+                if (current == null) return;
+                if (0 < current.getAuthRequestCounter()) {
+                    new DialogFragment() {
+                        @Override
+                        public Dialog onCreateDialog(Bundle savedInstanceState) {
+                            final Context context = getActivity();
+                            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
+                            dialogBuilder.setInverseBackgroundForced(Util.isNeedToInverseDialogBackground());
+                            dialogBuilder.setMessage(JLocale.getString(R.string.grant) + " " + current.getContact().getName() + "?");
+                            dialogBuilder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    new ContactMenu(current.getProtocol(), current.getContact()).doAction(ContactMenu.USER_MENU_GRANT_AUTH);
+                                    getActivity().supportInvalidateOptionsMenu();
+                                    updateRoster();
+                                }
+                            });
+                            dialogBuilder.setNegativeButton(R.string.deny, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    new ContactMenu(current.getProtocol(), current.getContact()).doAction(ContactMenu.USER_MENU_DENY_AUTH);
+                                    getActivity().supportInvalidateOptionsMenu();
+                                    updateRoster();
+                                }
+                            });
+                            Dialog dialog = dialogBuilder.create();
+                            dialog.setCanceledOnTouchOutside(true);
+                            return dialog;
+                        }
+                    }.show(getFragmentManager().beginTransaction(), "auth");
+                } else {
+                    openChat(current.getProtocol(), current.getContact());
+                    getActivity().supportInvalidateOptionsMenu();
+                    updateRoster();
+                }
+            }
+        });
+
         if (SawimApplication.isManyPane()) {
+            LinearLayout.LayoutParams rosterBarLayoutLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+            rosterBarLayoutLP.weight = 2;
+            rosterBarLayout.setLayoutParams(rosterBarLayoutLP);
+            rosterBarLayout.removeAllViews();
+            barLinearLayout.removeAllViews();
+            LinearLayout.LayoutParams barLinearLayoutLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+            barLinearLayout.setLayoutParams(barLinearLayoutLP);
+            LinearLayout.LayoutParams protocolsSpinnerLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+            protocolsSpinnerLP.weight = 1;
+            protocolsSpinner.setLayoutParams(protocolsSpinnerLP);
+            LinearLayout.LayoutParams chatsImageLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+            chatsImageLP.weight = 4;
+            chatsImage.setLayoutParams(chatsImageLP);
+            rosterBarLayout.addView(protocolsSpinner);
+            rosterBarLayout.addView(chatsImage);
+            barLinearLayout.addView(rosterBarLayout);
             ChatView chatView = (ChatView) SawimApplication.getCurrentActivity().getSupportFragmentManager()
                     .findFragmentById(R.id.chat_fragment);
-            barLinearLayout.removeAllViews();
             chatView.removeTitleBar();
-            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-            barLinearLayout.setLayoutParams(layoutParams);
             barLinearLayout.addView(chatView.getTitleBar());
             SawimApplication.getActionBar().setCustomView(barLinearLayout);
         } else {
-            chatsImage.setBackgroundColor(0);
-            chatsImage.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    final Chat current = ChatHistory.instance.chatAt(ChatHistory.instance.getPreferredItem());
-                    if (current == null) return;
-                    if (0 < current.getAuthRequestCounter()) {
-                        new DialogFragment() {
-                            @Override
-                            public Dialog onCreateDialog(Bundle savedInstanceState) {
-                                final Context context = getActivity();
-                                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
-                                dialogBuilder.setInverseBackgroundForced(Util.isNeedToInverseDialogBackground());
-                                dialogBuilder.setMessage(JLocale.getString(R.string.grant) + " " + current.getContact().getName() + "?");
-                                dialogBuilder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        new ContactMenu(current.getProtocol(), current.getContact()).doAction(ContactMenu.USER_MENU_GRANT_AUTH);
-                                        getActivity().supportInvalidateOptionsMenu();
-                                        updateRoster();
-                                    }
-                                });
-                                dialogBuilder.setNegativeButton(R.string.deny, new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        new ContactMenu(current.getProtocol(), current.getContact()).doAction(ContactMenu.USER_MENU_DENY_AUTH);
-                                        getActivity().supportInvalidateOptionsMenu();
-                                        updateRoster();
-                                    }
-                                });
-                                Dialog dialog = dialogBuilder.create();
-                                dialog.setCanceledOnTouchOutside(true);
-                                return dialog;
-                            }
-                        }.show(getFragmentManager().beginTransaction(), "auth");
-                    } else {
-                        openChat(current.getProtocol(), current.getContact());
-                        getActivity().supportInvalidateOptionsMenu();
-                        updateRoster();
-                    }
-                }
-            });
             barLinearLayout.removeAllViews();
             LinearLayout.LayoutParams protocolsSpinnerLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
             protocolsSpinnerLP.weight = 9;

@@ -29,13 +29,13 @@ public class ChatBarView extends IcsLinearLayout {
                 com.viewpagerindicator.R.attr.vpiTabPageIndicatorStyle);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
         setOrientation(HORIZONTAL);
+        if (SawimApplication.isManyPane())
+            layoutParams.weight = 1;
         setLayoutParams(layoutParams);
         setDividerPadding(10);
 
         LinearLayout.LayoutParams labelLayoutParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-        setOrientation(HORIZONTAL);
         labelLayoutParams.weight = 1;
-        setLayoutParams(labelLayoutParams);
         LinearLayout linearLayout = new LinearLayout(context);
         linearLayout.setGravity(Gravity.CENTER);
         imageView = new ImageView(context);
@@ -45,10 +45,11 @@ public class ChatBarView extends IcsLinearLayout {
         linearLayout.addView(textView);
         addViewInLayout(linearLayout, 0, labelLayoutParams);
 
-        LinearLayout.LayoutParams chatsImageLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
-        chatsImageLP.gravity = Gravity.CENTER_VERTICAL;
-        chatsImage.setMinimumWidth(76);
-        addViewInLayout(chatsImage, 1, chatsImageLP);
+        if (!SawimApplication.isManyPane()) {
+            LinearLayout.LayoutParams chatsImageLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
+            chatsImageLP.gravity = Gravity.CENTER_VERTICAL;
+            addViewInLayout(chatsImage, 1, chatsImageLP);
+        }
     }
 
     public void update() {
@@ -56,7 +57,8 @@ public class ChatBarView extends IcsLinearLayout {
     }
 
     public void setVisibilityChatsImage(int visibility) {
-        getChildAt(1).setVisibility(visibility);
+        if (getChildAt(1) != null)
+            getChildAt(1).setVisibility(visibility);
     }
 
     public void setVisibilityLabelImage(int visibility) {

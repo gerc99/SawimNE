@@ -193,14 +193,9 @@ public class SawimApplication extends Application {
     }
 
     public void quit(boolean isForceClose) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                RosterHelper.getInstance().safeSave();
-                ChatHistory.instance.saveUnreadMessages();
-                AutoAbsence.getInstance().online();
-            }
-        }).start();
+        RosterHelper.getInstance().safeSave();
+        ChatHistory.instance.saveUnreadMessages();
+        AutoAbsence.getInstance().online();
     }
 
     public static long getCurrentGmtTime() {

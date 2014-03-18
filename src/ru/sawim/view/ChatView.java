@@ -144,12 +144,13 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
             SawimApplication.getActionBar().setDisplayUseLogoEnabled(contact.isConference());
             SawimApplication.getActionBar().setDisplayHomeAsUpEnabled(contact.isConference());
             SawimApplication.getActionBar().setHomeButtonEnabled(contact.isConference());
-            SawimApplication.getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         }
 
-        removeTitleBar();
-        SawimApplication.getActionBar().setDisplayShowCustomEnabled(true);
-        SawimApplication.getActionBar().setCustomView(chatBarLayout);
+        if (!SawimApplication.isManyPane()) {
+            removeTitleBar();
+            SawimApplication.getActionBar().setDisplayShowCustomEnabled(true);
+            SawimApplication.getActionBar().setCustomView(chatBarLayout);
+        }
     }
 
     @Override
@@ -660,13 +661,14 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
     private void updateChatIcon() {
         if (chatBarLayout == null) return;
         Drawable icMess = ChatHistory.instance.getUnreadMessageIcon();
-        if (contact != null && !SawimApplication.isManyPane())
+        if (contact != null && !SawimApplication.isManyPane()) {
             SawimApplication.getActionBar().setIcon(StatusInfo.STATUS_OFFLINE == contact.getStatusIndex() ? SawimResources.usersIcon : SawimResources.usersIconOn);
-        if (icMess == null) {
-            chatBarLayout.setVisibilityChatsImage(View.GONE);
-        } else {
-            chatBarLayout.setVisibilityChatsImage(View.VISIBLE);
-            chatsImage.setImageDrawable(icMess);
+            if (icMess == null) {
+                chatBarLayout.setVisibilityChatsImage(View.GONE);
+            } else {
+                chatBarLayout.setVisibilityChatsImage(View.VISIBLE);
+                chatsImage.setImageDrawable(icMess);
+            }
         }
         if (chatsSpinnerAdapter != null && chat != null)
             chatBarLayout.updateLabelIcon(chatsSpinnerAdapter.getImageChat(chat, false));
