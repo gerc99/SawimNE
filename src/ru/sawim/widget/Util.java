@@ -82,4 +82,9 @@ public class Util {
         // workaround for buggy GingerBread AlertDialog
         return Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB && !Scheme.isBlack();
     }
+
+    public static boolean isNeedToFixSpinnerAdapter() {
+        // workaround for buggy GingerBread Spinner
+        return Scheme.isBlack() && Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN;
+    }
 }

@@ -406,8 +406,9 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
                 dropDownViewHolder = (DropDownViewHolder) v.getTag();
             }
             if (string == null) return v;
-            if (Scheme.isBlack() && Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN)
+            if (Util.isNeedToFixSpinnerAdapter()) {
                 dropDownViewHolder.label.setTextColor(0xff000000);
+            }
             dropDownViewHolder.label.setTextSize(SawimApplication.getFontSize());
             dropDownViewHolder.label.setText(string);
             return v;
