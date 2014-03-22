@@ -63,12 +63,13 @@ public class SawimActivity extends ActionBarActivity {
     public static final String NOTIFY_REPLY = "ru.sawim.notify.reply";
     private boolean isOpenNewChat = false;
 
+    public static ExternalApi externalApi = new ExternalApi();
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         setTheme(Scheme.isBlack() ? R.style.BaseTheme : R.style.BaseThemeLight);
         super.onCreate(savedInstanceState);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
-        ExternalApi.instance.setActivity(this);
         SawimApplication.setActionBar(null);
         SawimApplication.setCurrentActivity(this);
         setContentView(SawimApplication.isManyPane() ? R.layout.main_twopane : R.layout.main);
@@ -225,12 +226,6 @@ public class SawimActivity extends ActionBarActivity {
             recreateActivity();
         else
             super.onBackPressed();
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (ExternalApi.instance.onActivityResult(requestCode, resultCode, data)) return;
-        super.onActivityResult(requestCode, resultCode, data);
     }
 
     public void recreateActivity() {

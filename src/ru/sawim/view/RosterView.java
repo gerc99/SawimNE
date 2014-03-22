@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -96,7 +97,8 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         rosterListView.setOnItemClickListener(this);
         rosterViewLayout = new RosterViewRoot(SawimApplication.getCurrentActivity(), progressBar, rosterListView);
 
-        protocolsSpinner = new MySpinner(activity, null, R.attr.actionDropDownStyle);
+        protocolsSpinner = new MySpinner(activity, null, (Build.VERSION.SDK_INT < 11)
+                ? R.attr.actionDropDownStyle : android.R.attr.actionDropDownStyle);
         protocolsAdapter = new ProtocolsAdapter(activity);
     }
 

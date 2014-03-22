@@ -14,9 +14,11 @@ import protocol.net.TcpSocket;
 import protocol.xmpp.Xmpp;
 import ru.sawim.SawimApplication;
 import ru.sawim.R;
+import ru.sawim.activities.SawimActivity;
 import ru.sawim.models.list.VirtualList;
 import ru.sawim.models.list.VirtualListItem;
 import ru.sawim.models.list.VirtualListModel;
+import ru.sawim.view.VirtualListView;
 import sawim.Clipboard;
 import sawim.ExternalApi;
 import sawim.SawimException;
@@ -201,8 +203,8 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
                         break;
 
                     case INFO_MENU_TAKE_AVATAR:
-                        ExternalApi.instance.setActivity(SawimApplication.getCurrentActivity());
-                        ExternalApi.instance.startCamera(UserInfo.this, 640, 480);
+                        SawimActivity.externalApi.setFragment(SawimApplication.getCurrentActivity().getSupportFragmentManager().findFragmentByTag(VirtualListView.TAG));
+                        SawimActivity.externalApi.startCamera(UserInfo.this, 640, 480);
                         break;
 
                     case INFO_MENU_REMOVE_AVATAR:
@@ -212,7 +214,7 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
                         break;
 
                     case INFO_MENU_ADD_AVATAR:
-                        if (ExternalApi.instance.pickFile(UserInfo.this)) {
+                        if (SawimActivity.externalApi.pickFile(UserInfo.this)) {
                             return;
                         }
                         break;

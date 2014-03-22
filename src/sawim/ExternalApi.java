@@ -4,13 +4,13 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import protocol.net.TcpSocket;
@@ -23,16 +23,13 @@ import java.io.File;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 
 public class ExternalApi {
 
-    public static ExternalApi instance = new ExternalApi();
-    private FragmentActivity activity;
+    private Fragment fragment;
 
-    public void setActivity(FragmentActivity a) {
-        if (activity == null)
-            activity = a;
+    public void setFragment(Fragment a) {
+        fragment = a;
     }
 
     private PhotoListener photoListener = null;
@@ -50,15 +47,15 @@ public class ExternalApi {
                 if (!isCallable(extCameraIntent)) throw new Exception("not found");
                 imageUrl = Uri.fromFile(getOutputMediaFile());
                 extCameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUrl);
-                activity.startActivityForResult(extCameraIntent, RESULT_EXTERNAL_PHOTO);
+                fragment.startActivityForResult(extCameraIntent, RESULT_EXTERNAL_PHOTO);
                 return;
             } catch (Exception ignored) {
             }
         }
-        Intent cameraIntent = new Intent(activity, CameraActivity.class);
+        Intent cameraIntent = new Intent(fragment.getActivity(), CameraActivity.class);
         cameraIntent.putExtra("width", width);
         cameraIntent.putExtra("height", height);
-        activity.startActivityForResult(cameraIntent, RESULT_PHOTO);
+        fragment.startActivityForResult(cameraIntent, RESULT_PHOTO);
     }
 
     public boolean pickFile(FileBrowserListener listener) {
@@ -69,7 +66,7 @@ public class ExternalApi {
             intent.addCategory(Intent.CATEGORY_OPENABLE);
             intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
             if (!isCallable(intent)) return false;
-            activity.startActivityForResult(intent, RESULT_EXTERNAL_FILE);
+            fragment.startActivityForResult(intent, RESULT_EXTERNAL_FILE);
             return true;
         } catch (Exception e) {
             sawim.modules.DebugLog.panic("pickFile", e);
@@ -78,7 +75,7 @@ public class ExternalApi {
     }
 
     private boolean isCallable(Intent intent) {
-        return !activity.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY).isEmpty();
+        return !fragment.getActivity().getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY).isEmpty();
     }
 
     public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -95,7 +92,7 @@ public class ExternalApi {
                 if (null == photoListener) return false;
                 // remove copy of image
                 if ((null != data) && (null != data.getData()) && (null != imageUrl)) {
-                    Uri file = Uri.parse("file://" + getPath(activity, data.getData()));
+                    Uri file = Uri.parse("file://" + getPath(fragment.getActivity(), data.getData()));
                     DebugLog.println("pickFile " + imageUrl + " " + file);
                     if (!imageUrl.equals(file)) {
                         new File(file.getPath()).delete();
@@ -104,7 +101,7 @@ public class ExternalApi {
 
                 Uri uriImage = imageUrl;
                 DebugLog.println("pickFile " + uriImage);
-                InputStream in = activity.getContentResolver().openInputStream(uriImage);
+                InputStream in = fragment.getActivity().getContentResolver().openInputStream(uriImage);
                 byte[] img = new byte[in.available()];
                 TcpSocket.readFully(in, img, 0, img.length);
                 photoListener.processPhoto(img);
@@ -115,13 +112,13 @@ public class ExternalApi {
 
             } else if (RESULT_EXTERNAL_FILE == requestCode) {
                 Uri fileUri = data.getData();
-                InputStream is = activity.getContentResolver().openInputStream(fileUri);
-                fileTransferListener.onFileSelect(is, getFileName(fileUri, activity));
+                InputStream is = fragment.getActivity().getContentResolver().openInputStream(fileUri);
+                fileTransferListener.onFileSelect(is, getFileName(fileUri, fragment.getActivity()));
                 fileTransferListener = null;
                 return true;
             }
         } catch (Throwable ignored) {
-            DebugLog.panic("activity", ignored);
+            DebugLog.panic("fragment", ignored);
         }
         return false;
     }
@@ -147,7 +144,7 @@ public class ExternalApi {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         Uri uri = Uri.parse("file://" + historyFilePath);
         intent.setDataAndType(uri, "text/plain");
-        activity.startActivity(intent);
+        fragment.startActivity(intent);
     }*/
 
     private static File getOutputMediaFile() {

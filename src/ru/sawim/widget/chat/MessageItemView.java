@@ -4,6 +4,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.graphics.*;
 import android.text.*;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import ru.sawim.SawimApplication;
@@ -209,6 +210,18 @@ public class MessageItemView extends View {
         return false;
     }
 
+    private int getLineForVertical(int vertical) {
+        int high = layout.getLineCount(), low = -1, guess;
+        while (high - low > 1) {
+            guess = (high + low) / 2;
+            if (layout.getLineTop(guess) > vertical)
+                high = guess;
+            else
+                low = guess;
+        }
+        return low;
+    }
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (text == null) return super.onTouchEvent(event);
@@ -219,7 +232,9 @@ public class MessageItemView extends View {
             int y = (int) event.getY();
             x += getScrollX();
             y += getScrollY() - titleHeight;
-            int line = layout.getLineForVertical(y);
+            int line = getLineForVertical(y);
+            if (line < 0) return super.onTouchEvent(event);
+
             int off = layout.getOffsetForHorizontal(line, x);
             final InternalURLSpan[] urlSpans = buffer.getSpans(off, off, InternalURLSpan.class);
             if (action == MotionEvent.ACTION_CANCEL || action == MotionEvent.ACTION_OUTSIDE) {

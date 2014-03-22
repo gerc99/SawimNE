@@ -51,13 +51,11 @@ public class FileProgressView extends DialogFragment {
     }
 
     public void showProgress() {
-        FragmentTransaction transaction = SawimApplication.getCurrentActivity().getSupportFragmentManager().beginTransaction();
-        transaction.add(this, "file_progress");
-        transaction.commit();
+        show(SawimApplication.getCurrentActivity().getSupportFragmentManager().beginTransaction(), "file_progress");
     }
 
     public void changeFileProgress(final int percent, final String caption, final String text) {
-        if (SawimApplication.getCurrentActivity() == null) return;
+        if (SawimApplication.getCurrentActivity() == null || !isAdded()) return;
         if (percent == 100) {
             RosterHelper.getInstance().removeTransfer(true);
             dismiss();

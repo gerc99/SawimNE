@@ -11,9 +11,12 @@ import protocol.Protocol;
 import protocol.net.TcpSocket;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
+import ru.sawim.activities.SawimActivity;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
 import ru.sawim.view.FileProgressView;
+import ru.sawim.view.SendToView;
+import ru.sawim.view.VirtualListView;
 import sawim.chat.Chat;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
@@ -64,20 +67,6 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
         this.isFinish = finish;
     }
 
-    private void addFileProgress() {
-        fileProgressView = new FileProgressView();
-    }
-
-    private void changeFileProgress(int percent, String caption, String text) {
-        if (fileProgressView != null)
-            fileProgressView.changeFileProgress(percent, caption, text);
-    }
-
-    private void showFileProgress() {
-        if (fileProgressView != null)
-            fileProgressView.showProgress();
-    }
-
     public Contact getReceiver() {
         return cItem;
     }
@@ -96,15 +85,14 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
     }
 
     public void startFileTransfer() {
-        if (ExternalApi.instance.pickFile(this)) {
+        if (SawimActivity.externalApi.pickFile(this)) {
             return;
         }
         sawim.modules.DebugLog.panic("show file browser");
     }
 
     public void startPhotoTransfer() {
-        ExternalApi.instance.setActivity(SawimApplication.getCurrentActivity());
-        ExternalApi.instance.startCamera(this, 1024, 768);
+        SawimActivity.externalApi.startCamera(this, 1024, 768);
     }
 
     public void onFileSelect(InputStream in, String fileName) {
@@ -156,7 +144,7 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
         if (apply) {
             description = name_Desc.getTextFieldValue(descriptionField);
             sendMode = name_Desc.getSelectorValue(transferMode);
-            addProgress();
+            showFileProgress();
             if (name_Desc.getSelectorValue(transferMode) == IBB_MODE) {
                 try {
                     protocol.sendFile(this, filename, description);
@@ -166,7 +154,7 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
                 setProgress(0);
                 new Thread(this).start();
             }
-            showFileProgress();
+            addProgress();
         } else {
             destroy();
         }
@@ -176,10 +164,17 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
         return filename + " - " + StringConvertor.bytesToSizeString(getFileSize(), false);
     }
 
+    private void showFileProgress() {
+        if (fileProgressView == null)
+            fileProgressView = new FileProgressView();
+        fileProgressView.showProgress();
+    }
+
     private void changeFileProgress(int percent, int message) {
-        changeFileProgress(percent, JLocale.getString(R.string.sending_file),
-                getProgressText() + "\n"
-                        + JLocale.getString(message));
+        if (fileProgressView != null)
+            fileProgressView.changeFileProgress(percent, JLocale.getString(R.string.sending_file),
+                    getProgressText() + "\n"
+                            + JLocale.getString(message));
     }
 
     public void cancel() {
@@ -197,7 +192,6 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
     private void addProgress() {
         chat = protocol.getChat(cItem);
         chat.activate();
-        addFileProgress();
         chat.addFileProgress(JLocale.getString(R.string.sending_file), getProgressText());
         RosterHelper.getInstance().addTransfer(this);
     }
