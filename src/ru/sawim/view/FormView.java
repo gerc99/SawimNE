@@ -173,13 +173,18 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
             final EditText editText = holder.editText;
             final Button button = holder.button;
 
-            prepareView(spinner, padding, fontSize);
-            prepareView(seekBar, padding, fontSize);
-            prepareView(descView, padding, fontSize);
-            prepareView(checkBox, padding, fontSize);
-            prepareView(editText, padding, fontSize);
-            prepareView(labelView, padding, fontSize);
-            prepareView(imageView, padding, fontSize);
+            prepareView(spinner, fontSize);
+            prepareView(seekBar, fontSize);
+            prepareView(descView, fontSize);
+            prepareView(checkBox, fontSize);
+            prepareView(editText, fontSize);
+            prepareView(labelView, fontSize);
+            prepareView(imageView, fontSize);
+
+            imageView.setPadding(0, padding, 0, padding);
+            labelView.setPadding(0, padding, 0, padding);
+            spinner.setPadding(0, padding, 0, padding);
+            seekBar.setPadding(0, padding, 0, padding);
 
             imageView.setAdjustViewBounds(true);
             imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
@@ -302,8 +307,7 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
         }
     }
 
-    private void prepareView(View view, int padding, int fontSize) {
-        view.setPadding(0, padding, 0, padding);
+    private void prepareView(View view, int fontSize) {
         view.setVisibility(View.GONE);
         // EditText pass through this condition too
         if (view instanceof TextView) {
