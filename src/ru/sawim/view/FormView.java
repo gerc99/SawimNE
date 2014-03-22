@@ -4,23 +4,22 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
-import ru.sawim.SawimApplication;
 import ru.sawim.R;
+import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
 import ru.sawim.activities.SawimActivity;
 import ru.sawim.models.form.Forms;
 import ru.sawim.widget.MySpinner;
 import ru.sawim.widget.Util;
-import android.support.v4.app.Fragment;
 
 import java.util.List;
 
@@ -151,7 +150,8 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
     private void buildList() {
         listLayout.removeAllViews();
         List<Forms.Control> controls = Forms.getInstance().controls;
-        int padding = Util.dipToPixels(getActivity(), 15);
+        int padding = Util.dipToPixels(getActivity(), 4);
+        int fontSize = SawimApplication.getFontSize();
         for (int position = 0; position < controls.size(); ++position) {
             final Forms.Control c = controls.get(position);
             ViewHolder holder = new ViewHolder();
@@ -173,19 +173,16 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
             final EditText editText = holder.editText;
             final Button button = holder.button;
 
-            descView.setVisibility(TextView.GONE);
-            labelView.setVisibility(TextView.GONE);
-            imageView.setVisibility(ImageView.GONE);
-            checkBox.setVisibility(CheckBox.GONE);
-            spinner.setVisibility(Spinner.GONE);
-            seekBar.setVisibility(SeekBar.GONE);
-            editText.setVisibility(EditText.GONE);
-            setAllTextSize(descView, labelView, checkBox, editText, SawimApplication.getFontSize());
+            prepareView(spinner, padding, fontSize);
+            prepareView(seekBar, padding, fontSize);
+            prepareView(descView, padding, fontSize);
+            prepareView(checkBox, padding, fontSize);
+            prepareView(editText, padding, fontSize);
+            prepareView(labelView, padding, fontSize);
+            prepareView(imageView, padding, fontSize);
 
-            imageView.setPadding(0, padding, 0, padding);
-            labelView.setPadding(0, padding, 0, padding);
-            spinner.setPadding(0, padding, 0, padding);
-            seekBar.setPadding(0, padding, 0, padding);
+            imageView.setAdjustViewBounds(true);
+            imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
 
             if (Forms.CONTROL_TEXT == c.type) {
                 drawText(c, labelView, descView, listLayout);
@@ -305,11 +302,13 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
         }
     }
 
-    private void setAllTextSize(TextView descView, TextView labelView, CheckBox checkBox, EditText editText, int size) {
-        descView.setTextSize(size - 1);
-        labelView.setTextSize(size - 1);
-        checkBox.setTextSize(size);
-        editText.setTextSize(size);
+    private void prepareView(View view, int padding, int fontSize) {
+        view.setPadding(0, padding, 0, padding);
+        view.setVisibility(View.GONE);
+        // EditText pass through this condition too
+        if (view instanceof TextView) {
+            ((TextView)view).setTextSize(fontSize);
+        }
     }
 
     private void drawText(Forms.Control c, TextView labelView, TextView descView, LinearLayout convertView) {
