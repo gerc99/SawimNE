@@ -3,9 +3,7 @@ package ru.sawim.text;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ImageSpan;
-import android.util.Patterns;
 import protocol.Contact;
-import protocol.xmpp.Jid;
 import ru.sawim.Scheme;
 import ru.sawim.view.menu.JuickMenu;
 import sawim.modules.Emotions;
@@ -46,11 +44,14 @@ public class TextFormatter {
     public CharSequence parsedText(final Contact contact, final CharSequence text) {
         final int linkColor = Scheme.getColor(Scheme.THEME_LINKS);
         SpannableStringBuilder builder = new SpannableStringBuilder(text);
-        if (contact != null)
-            if (contact.getUserId().equals(JuickMenu.JUICK) || contact.getUserId().equals(JuickMenu.JUBO))
+        if (contact != null) {
+            String userId = contact.getUserId();
+            if (userId.equals(JuickMenu.JUICK) || userId.equals(JuickMenu.JUBO)) {
                 getTextWithLinks(builder, linkColor, JuickMenu.MODE_JUICK);
-            else if (contact.getUserId().equals(JuickMenu.PSTO))
+            } else if (userId.equals(JuickMenu.PSTO) || userId.equals(JuickMenu.POINT)) {
                 getTextWithLinks(builder, linkColor, JuickMenu.MODE_PSTO);
+            }
+        }
         getTextWithLinks(builder, linkColor, -1);
         detectEmotions(text, builder);
         return builder;
