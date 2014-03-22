@@ -3,9 +3,7 @@ package sawim;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.util.Log;
-
 import org.json.JSONObject;
-
 import protocol.Contact;
 import protocol.Protocol;
 import protocol.net.TcpSocket;
@@ -15,8 +13,6 @@ import ru.sawim.activities.SawimActivity;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
 import ru.sawim.view.FileProgressView;
-import ru.sawim.view.SendToView;
-import ru.sawim.view.VirtualListView;
 import sawim.chat.Chat;
 import sawim.comm.StringConvertor;
 import sawim.comm.Util;
@@ -127,7 +123,7 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
 
     private void askForNameDesc() {
         name_Desc = new Forms(R.string.name_desc, this, true);
-        name_Desc.addString(R.string.filename, filename);
+        name_Desc.addString(String.format("%s: %s", JLocale.getString(R.string.filename), filename), null);
         name_Desc.addTextField(descriptionField, R.string.description, "");
         String items = "jimm.net.ru|www.jimm.net.ru|jimm.org";
         if (cItem instanceof protocol.xmpp.XmppContact) {
@@ -136,7 +132,7 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
             }
         }
         name_Desc.addSelector(transferMode, R.string.send_via, items, 0);
-        name_Desc.addString(JLocale.getString(R.string.size) + ": ", String.valueOf(getFileSize() / 1024) + " kb");
+        name_Desc.addString(String.format("%s: %d KB", JLocale.getString(R.string.size), getFileSize() / 1024), null);
         name_Desc.show();
     }
 
