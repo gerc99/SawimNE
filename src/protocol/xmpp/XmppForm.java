@@ -3,8 +3,8 @@ package protocol.xmpp;
 import ru.sawim.R;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
-import sawim.comm.Util;
-import sawim.roster.RosterHelper;
+import ru.sawim.comm.Util;
+import ru.sawim.roster.RosterHelper;
 
 final class XmppForm implements FormListener {
     private XForm form;

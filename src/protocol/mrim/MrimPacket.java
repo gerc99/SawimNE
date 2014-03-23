@@ -3,11 +3,11 @@
 package protocol.mrim;
 
 import ru.sawim.SawimApplication;
-import sawim.comm.Config;
-import sawim.comm.MD5;
-import sawim.comm.StringConvertor;
-import sawim.comm.Util;
-import sawim.search.Search;
+import ru.sawim.comm.Config;
+import ru.sawim.comm.MD5;
+import ru.sawim.comm.StringConvertor;
+import ru.sawim.comm.Util;
+import ru.sawim.search.Search;
 
 
 final class MrimPacket {

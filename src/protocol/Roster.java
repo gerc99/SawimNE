@@ -1,7 +1,5 @@
 package protocol;
 
-import sawim.comm.Util;
-
 import java.util.Vector;
 
 /**

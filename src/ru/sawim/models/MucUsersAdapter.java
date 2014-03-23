@@ -1,26 +1,20 @@
 package ru.sawim.models;
 
 import DrawControls.icons.Icon;
-import android.content.Context;
 import android.graphics.Typeface;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
-import android.widget.TextView;
 import protocol.xmpp.Xmpp;
 import protocol.xmpp.XmppContact;
 import protocol.xmpp.XmppServiceContact;
-import ru.sawim.SawimApplication;
 import ru.sawim.R;
 import ru.sawim.SawimResources;
 import ru.sawim.Scheme;
 import ru.sawim.widget.roster.RosterItemView;
-import sawim.Options;
-import sawim.chat.Chat;
-import sawim.util.JLocale;
+import ru.sawim.Options;
+import ru.sawim.util.JLocale;
 
 import java.util.ArrayList;
 import java.util.List;

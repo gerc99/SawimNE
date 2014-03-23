@@ -45,13 +45,13 @@ import ru.sawim.widget.chat.ChatBarView;
 import ru.sawim.widget.chat.ChatInputBarView;
 import ru.sawim.widget.chat.ChatListsView;
 import ru.sawim.widget.chat.ChatViewRoot;
-import sawim.Clipboard;
-import sawim.Options;
-import sawim.chat.Chat;
-import sawim.chat.ChatHistory;
-import sawim.chat.MessData;
-import sawim.roster.RosterHelper;
-import sawim.util.JLocale;
+import ru.sawim.Clipboard;
+import ru.sawim.Options;
+import ru.sawim.chat.Chat;
+import ru.sawim.chat.ChatHistory;
+import ru.sawim.chat.MessData;
+import ru.sawim.roster.RosterHelper;
+import ru.sawim.util.JLocale;
 
 /**
  * Created with IntelliJ IDEA.

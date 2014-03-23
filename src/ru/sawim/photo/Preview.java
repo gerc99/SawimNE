@@ -34,7 +34,7 @@ class Preview extends SurfaceView implements SurfaceHolder.Callback {
             camera.setPreviewDisplay(holder);
             camera.startPreview();
         } catch (Exception e) {
-            sawim.modules.DebugLog.panic("surfaceCreated", e);
+            ru.sawim.modules.DebugLog.panic("surfaceCreated", e);
         }
     }
 
@@ -49,7 +49,7 @@ class Preview extends SurfaceView implements SurfaceHolder.Callback {
         Camera.Size pref = null;
         if (null != sizes) {
             for (Camera.Size size : sizes) {
-                sawim.modules.DebugLog.println("size " + size.width + " " + size.height);
+                ru.sawim.modules.DebugLog.println("size " + size.width + " " + size.height);
                 if ((size.width <= w) && (size.height <= h)) {
                     if (null == pref) {
                         pref = size;
@@ -60,7 +60,7 @@ class Preview extends SurfaceView implements SurfaceHolder.Callback {
             }
         }
         pref = (null == pref) ? camera.new Size(w, h) : pref;
-        sawim.modules.DebugLog.println("_ " + pref.width + " " + pref.height + " " + w + " " + h);
+        ru.sawim.modules.DebugLog.println("_ " + pref.width + " " + pref.height + " " + w + " " + h);
         return pref;
     }
 
@@ -90,18 +90,18 @@ class Preview extends SurfaceView implements SurfaceHolder.Callback {
         try {
             setParameters(parameters.getSupportedPreviewSizes(), null, w, h);
         } catch (Exception e) {
-            sawim.modules.DebugLog.panic("surfaceChanged def", e);
+            ru.sawim.modules.DebugLog.panic("surfaceChanged def", e);
             try {
                 setParameters(parameters.getSupportedPreviewSizes(), parameters.getSupportedPictureSizes(), w, h);
             } catch (Exception ex) {
-                sawim.modules.DebugLog.panic("surfaceChanged opt", ex);
+                ru.sawim.modules.DebugLog.panic("surfaceChanged opt", ex);
             }
         }
         try {
             camera.setPreviewDisplay(holder);
             camera.startPreview();
         } catch (Exception e) {
-            sawim.modules.DebugLog.panic("surfaceChanged camera", e);
+            ru.sawim.modules.DebugLog.panic("surfaceChanged camera", e);
         }
     }
 

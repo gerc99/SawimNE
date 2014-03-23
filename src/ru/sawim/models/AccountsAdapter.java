@@ -12,8 +12,8 @@ import android.widget.ToggleButton;
 import protocol.Profile;
 import protocol.Protocol;
 import ru.sawim.R;
-import sawim.Options;
-import sawim.roster.RosterHelper;
+import ru.sawim.Options;
+import ru.sawim.roster.RosterHelper;
 
 
 /**

@@ -6,13 +6,13 @@ import protocol.*;
 import ru.sawim.R;
 import ru.sawim.models.list.VirtualList;
 import ru.sawim.models.list.VirtualListModel;
-import sawim.chat.message.PlainMessage;
-import sawim.comm.StringConvertor;
-import sawim.comm.Util;
-import sawim.roster.RosterHelper;
-import sawim.search.Search;
-import sawim.search.UserInfo;
-import sawim.util.JLocale;
+import ru.sawim.chat.message.PlainMessage;
+import ru.sawim.comm.StringConvertor;
+import ru.sawim.comm.Util;
+import ru.sawim.roster.RosterHelper;
+import ru.sawim.search.Search;
+import ru.sawim.search.UserInfo;
+import ru.sawim.util.JLocale;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -279,7 +279,7 @@ public class Mrim extends Protocol {
         MrimContact contact = (MrimContact) c;
         switch (action) {
             case MrimContact.USER_MENU_SEND_SMS:
-                new sawim.forms.SmsForm(this, contact.getPhones()).show();
+                new ru.sawim.forms.SmsForm(this, contact.getPhones()).show();
                 break;
 
             case ContactMenu.CONFERENCE_DISCONNECT:

@@ -7,7 +7,7 @@ import protocol.Contact;
 import protocol.ContactMenu;
 import protocol.Protocol;
 import ru.sawim.R;
-import sawim.util.JLocale;
+import ru.sawim.util.JLocale;
 
 public class MrimPhoneContact extends MrimContact {
     static final String PHONE_UIN = "phone";

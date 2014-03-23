@@ -6,7 +6,7 @@ import android.text.style.ImageSpan;
 import protocol.Contact;
 import ru.sawim.Scheme;
 import ru.sawim.view.menu.JuickMenu;
-import sawim.modules.Emotions;
+import ru.sawim.modules.Emotions;
 
 import java.util.ArrayList;
 import java.util.regex.Matcher;

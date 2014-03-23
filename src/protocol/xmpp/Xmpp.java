@@ -10,14 +10,14 @@ import ru.sawim.R;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
 import ru.sawim.view.TextBoxView;
-import sawim.FileTransfer;
-import sawim.chat.message.PlainMessage;
-import sawim.comm.StringConvertor;
-import sawim.comm.Util;
-import sawim.roster.RosterHelper;
-import sawim.search.Search;
-import sawim.search.UserInfo;
-import sawim.util.JLocale;
+import ru.sawim.FileTransfer;
+import ru.sawim.chat.message.PlainMessage;
+import ru.sawim.comm.StringConvertor;
+import ru.sawim.comm.Util;
+import ru.sawim.roster.RosterHelper;
+import ru.sawim.search.Search;
+import ru.sawim.search.UserInfo;
+import ru.sawim.util.JLocale;
 
 import java.util.Vector;
 

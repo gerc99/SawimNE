@@ -5,9 +5,9 @@ import protocol.Contact;
 import protocol.Group;
 import protocol.Protocol;
 import protocol.StatusInfo;
-import sawim.chat.message.PlainMessage;
-import sawim.search.Search;
-import sawim.search.UserInfo;
+import ru.sawim.chat.message.PlainMessage;
+import ru.sawim.search.Search;
+import ru.sawim.search.UserInfo;
 
 /**
  * Created with IntelliJ IDEA.

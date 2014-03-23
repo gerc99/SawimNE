@@ -20,7 +20,7 @@
  *******************************************************************************/
 package protocol.net;
 
-import sawim.comm.Util;
+import ru.sawim.comm.Util;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

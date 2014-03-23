@@ -2,10 +2,10 @@ package protocol.net;
 
 import protocol.Protocol;
 import ru.sawim.SawimApplication;
-import sawim.SawimException;
-import sawim.chat.message.Message;
-import sawim.chat.message.PlainMessage;
-import sawim.modules.DebugLog;
+import ru.sawim.SawimException;
+import ru.sawim.chat.message.Message;
+import ru.sawim.chat.message.PlainMessage;
+import ru.sawim.modules.DebugLog;
 
 import java.util.Vector;
 

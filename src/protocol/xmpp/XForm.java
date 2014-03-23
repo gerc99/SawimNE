@@ -7,9 +7,9 @@ import android.util.Log;
 import ru.sawim.R;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
-import sawim.comm.StringConvertor;
-import sawim.comm.Util;
-import sawim.util.JLocale;
+import ru.sawim.comm.StringConvertor;
+import ru.sawim.comm.Util;
+import ru.sawim.util.JLocale;
 
 import java.util.Vector;
 

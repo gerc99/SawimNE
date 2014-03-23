@@ -46,15 +46,15 @@ import ru.sawim.SawimResources;
 import ru.sawim.Scheme;
 import ru.sawim.view.*;
 import ru.sawim.view.preference.MainPreferenceView;
-import sawim.ExternalApi;
-import sawim.Options;
-import sawim.chat.Chat;
-import sawim.chat.ChatHistory;
-import sawim.forms.ManageContactListForm;
-import sawim.forms.SmsForm;
-import sawim.modules.DebugLog;
-import sawim.modules.Notify;
-import sawim.roster.RosterHelper;
+import ru.sawim.ExternalApi;
+import ru.sawim.Options;
+import ru.sawim.chat.Chat;
+import ru.sawim.chat.ChatHistory;
+import ru.sawim.forms.ManageContactListForm;
+import ru.sawim.forms.SmsForm;
+import ru.sawim.modules.DebugLog;
+import ru.sawim.modules.Notify;
+import ru.sawim.roster.RosterHelper;
 
 public class SawimActivity extends ActionBarActivity {
 

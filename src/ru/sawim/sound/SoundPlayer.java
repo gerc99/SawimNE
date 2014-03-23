@@ -5,8 +5,8 @@ import android.content.res.AssetFileDescriptor;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import ru.sawim.SawimApplication;
-import sawim.modules.fs.FileSystem;
-import sawim.modules.fs.JSR75FileSystem;
+import ru.sawim.modules.fs.FileSystem;
+import ru.sawim.modules.fs.JSR75FileSystem;
 
 import java.io.IOException;
 

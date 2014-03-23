@@ -4,7 +4,6 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,8 +13,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
-import sawim.comm.Util;
-import sawim.roster.RosterHelper;
+import ru.sawim.comm.Util;
+import ru.sawim.roster.RosterHelper;
 
 /**
  * Created with IntelliJ IDEA.

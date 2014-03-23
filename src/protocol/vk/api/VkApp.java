@@ -1,8 +1,6 @@
 package protocol.vk.api;
 
 import android.content.Context;
-import android.os.Handler;
-import android.os.Looper;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -11,7 +9,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
-import ru.sawim.SawimApplication;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -39,13 +36,13 @@ public class VkApp {
         setListener(new VkDialogListener() {
             @Override
             public void onComplete(String url) {
-                sawim.modules.DebugLog.println("token " + url);
+                ru.sawim.modules.DebugLog.println("token " + url);
                 _vkSess.deserialize(url.substring(url.indexOf("#") + 1));
             }
 
             @Override
             public void onError(String description) {
-                sawim.modules.DebugLog.println("error " + description);
+                ru.sawim.modules.DebugLog.println("error " + description);
                 error = true;
             }
         });
@@ -108,14 +105,14 @@ public class VkApp {
 
             String responseText = EntityUtils.toString(entity);
 
-            sawim.modules.DebugLog.println("result " + responseText);
+            ru.sawim.modules.DebugLog.println("result " + responseText);
             //parse response for error code or not
             if (parseResponse(responseText)) throw new IOException("error");
             return new JSONObject(responseText);
 
             //Log.d(Constants.DEBUG_TAG,"response text="+responseText);
         } catch (Exception ioex) {
-            sawim.modules.DebugLog.panic("uri" + uri, ioex);
+            ru.sawim.modules.DebugLog.panic("uri" + uri, ioex);
             return null;
         }
     }
@@ -146,7 +143,7 @@ public class VkApp {
                 return true;
             }
         } catch (Exception e) {
-            sawim.modules.DebugLog.panic("hasAccessToken", e);
+            ru.sawim.modules.DebugLog.panic("hasAccessToken", e);
         }
         return false;
     }

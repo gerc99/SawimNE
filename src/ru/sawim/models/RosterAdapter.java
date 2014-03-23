@@ -1,12 +1,10 @@
 package ru.sawim.models;
 
 import DrawControls.icons.Icon;
-import android.content.Context;
 import android.database.DataSetObserver;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -18,13 +16,12 @@ import ru.sawim.SawimApplication;
 import ru.sawim.SawimResources;
 import ru.sawim.Scheme;
 import ru.sawim.widget.roster.RosterItemView;
-import sawim.chat.Chat;
-import sawim.chat.ChatHistory;
-import sawim.chat.message.Message;
-import sawim.comm.Util;
-import sawim.modules.tracking.Tracking;
-import sawim.roster.RosterHelper;
-import sawim.roster.TreeNode;
+import ru.sawim.chat.Chat;
+import ru.sawim.chat.ChatHistory;
+import ru.sawim.chat.message.Message;
+import ru.sawim.modules.tracking.Tracking;
+import ru.sawim.roster.RosterHelper;
+import ru.sawim.roster.TreeNode;
 
 import java.util.ArrayList;
 import java.util.List;

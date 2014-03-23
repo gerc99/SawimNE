@@ -11,7 +11,7 @@ import ru.sawim.activities.AccountsListActivity;
 import ru.sawim.activities.SawimActivity;
 import ru.sawim.view.AboutProgramView;
 import ru.sawim.view.SawimFragment;
-import sawim.OptionsForm;
+import ru.sawim.OptionsForm;
 
 /**
  * Created by admin on 25.01.14.

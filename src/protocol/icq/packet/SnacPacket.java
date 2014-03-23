@@ -4,9 +4,9 @@
 package protocol.icq.packet;
 
 
-import sawim.SawimException;
-import sawim.comm.ArrayReader;
-import sawim.comm.Util;
+import ru.sawim.SawimException;
+import ru.sawim.comm.ArrayReader;
+import ru.sawim.comm.Util;
 
 
 public class SnacPacket extends Packet {

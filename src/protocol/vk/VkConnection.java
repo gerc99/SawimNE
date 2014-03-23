@@ -1,7 +1,5 @@
 package protocol.vk;
 
-import android.os.Handler;
-import android.os.Looper;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -10,7 +8,7 @@ import protocol.Group;
 import protocol.Roster;
 import protocol.vk.api.VkApp;
 import ru.sawim.SawimApplication;
-import sawim.chat.message.PlainMessage;
+import ru.sawim.chat.message.PlainMessage;
 
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -121,7 +119,7 @@ public class VkConnection implements Runnable {
             onlineCheck--;
             messageCheck--;
         }
-        sawim.modules.DebugLog.println("vk done");
+        ru.sawim.modules.DebugLog.println("vk done");
     }
 
 
@@ -131,7 +129,7 @@ public class VkConnection implements Runnable {
             Vector<Group> groups = groups();
             vk.setRoster(new Roster(groups, contacts), false);
         } catch (Exception e) {
-            sawim.modules.DebugLog.panic("Vk processContacts", e);
+            ru.sawim.modules.DebugLog.panic("Vk processContacts", e);
         }
     }
 

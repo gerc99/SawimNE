@@ -7,9 +7,9 @@ import android.os.*;
 import android.util.Log;
 import ru.sawim.R;
 import ru.sawim.SawimNotification;
-import sawim.Options;
-import sawim.chat.ChatHistory;
-import sawim.roster.RosterHelper;
+import ru.sawim.Options;
+import ru.sawim.chat.ChatHistory;
+import ru.sawim.roster.RosterHelper;
 
 public class SawimService extends Service {
 

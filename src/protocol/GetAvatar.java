@@ -1,7 +1,7 @@
 package protocol;
 
 import protocol.net.TcpSocket;
-import sawim.search.UserInfo;
+import ru.sawim.search.UserInfo;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

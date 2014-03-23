@@ -7,16 +7,15 @@ import android.widget.Toast;
 import protocol.Contact;
 import ru.sawim.SawimApplication;
 import ru.sawim.R;
-import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
 import ru.sawim.models.list.VirtualList;
 import ru.sawim.models.list.VirtualListItem;
 import ru.sawim.models.list.VirtualListModel;
 import ru.sawim.view.TextBoxView;
-import sawim.comm.Config;
-import sawim.comm.StringConvertor;
-import sawim.roster.RosterHelper;
-import sawim.util.JLocale;
+import ru.sawim.comm.Config;
+import ru.sawim.comm.StringConvertor;
+import ru.sawim.roster.RosterHelper;
+import ru.sawim.util.JLocale;
 
 import java.util.Vector;
 

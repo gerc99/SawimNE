@@ -3,24 +3,21 @@ package protocol;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.widget.Toast;
 import protocol.xmpp.Xmpp;
 import ru.sawim.SawimApplication;
 import ru.sawim.R;
-import ru.sawim.SawimApplication;
 import ru.sawim.view.TextBoxView;
 import ru.sawim.view.menu.MyMenu;
-import sawim.FileTransfer;
-import sawim.chat.ChatHistory;
-import sawim.chat.message.PlainMessage;
-import sawim.comm.Util;
-import sawim.forms.ManageContactListForm;
-import sawim.history.HistoryStorage;
-import sawim.history.HistoryStorageList;
-import sawim.roster.RosterHelper;
-import sawim.util.JLocale;
+import ru.sawim.FileTransfer;
+import ru.sawim.chat.ChatHistory;
+import ru.sawim.chat.message.PlainMessage;
+import ru.sawim.comm.Util;
+import ru.sawim.forms.ManageContactListForm;
+import ru.sawim.history.HistoryStorage;
+import ru.sawim.history.HistoryStorageList;
+import ru.sawim.util.JLocale;
 
 import java.util.Vector;
 
@@ -113,10 +110,10 @@ public class ContactMenu implements TextBoxView.TextBoxListener {
         final FragmentActivity activity = SawimApplication.getCurrentActivity();
         switch (cmd) {
             case USER_MENU_TRACK:
-                new sawim.modules.tracking.TrackingForm(contact.getUserId()).activate();
+                new ru.sawim.modules.tracking.TrackingForm(contact.getUserId()).activate();
                 break;
             case USER_MENU_TRACK_CONF:
-                new sawim.modules.tracking.TrackingForm(contact.getUserId()).activateForConf();
+                new ru.sawim.modules.tracking.TrackingForm(contact.getUserId()).activateForConf();
                 break;
 
             case USER_MENU_ANNOTATION: {

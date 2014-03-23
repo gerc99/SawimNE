@@ -2,9 +2,9 @@ package protocol.mrim;
 
 import DrawControls.icons.ImageList;
 import protocol.ClientInfo;
-import sawim.comm.Config;
-import sawim.comm.StringConvertor;
-import sawim.modules.DebugLog;
+import ru.sawim.comm.Config;
+import ru.sawim.comm.StringConvertor;
+import ru.sawim.modules.DebugLog;
 
 
 public final class MrimClient {

@@ -4,8 +4,8 @@
 package protocol.mrim;
 
 import protocol.StatusInfo;
-import sawim.comm.StringConvertor;
-import sawim.comm.Util;
+import ru.sawim.comm.StringConvertor;
+import ru.sawim.comm.Util;
 
 import java.io.ByteArrayOutputStream;
 

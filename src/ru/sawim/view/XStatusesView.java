@@ -18,9 +18,9 @@ import protocol.xmpp.Xmpp;
 import ru.sawim.R;
 import ru.sawim.models.XStatusesAdapter;
 import ru.sawim.widget.Util;
-import sawim.comm.StringConvertor;
-import sawim.io.Storage;
-import sawim.roster.RosterHelper;
+import ru.sawim.comm.StringConvertor;
+import ru.sawim.io.Storage;
+import ru.sawim.roster.RosterHelper;
 
 /**
  * Created with IntelliJ IDEA.

@@ -6,8 +6,8 @@ package protocol.icq;
 import protocol.icq.action.IcqAction;
 import protocol.icq.packet.Packet;
 import protocol.icq.packet.SnacPacket;
-import sawim.SawimException;
-import sawim.modules.DebugLog;
+import ru.sawim.SawimException;
+import ru.sawim.modules.DebugLog;
 
 import java.util.Vector;
 

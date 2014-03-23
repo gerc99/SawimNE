@@ -8,19 +8,19 @@ import protocol.net.ClientConnection;
 import protocol.net.TcpSocket;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
-import sawim.Options;
-import sawim.SawimException;
-import sawim.chat.Chat;
-import sawim.chat.message.PlainMessage;
-import sawim.chat.message.SystemNotice;
-import sawim.comm.StringConvertor;
-import sawim.comm.Util;
-import sawim.modules.DebugLog;
-import sawim.modules.Notify;
-import sawim.roster.RosterHelper;
-import sawim.search.Search;
-import sawim.search.UserInfo;
-import sawim.util.JLocale;
+import ru.sawim.Options;
+import ru.sawim.SawimException;
+import ru.sawim.chat.Chat;
+import ru.sawim.chat.message.PlainMessage;
+import ru.sawim.chat.message.SystemNotice;
+import ru.sawim.comm.StringConvertor;
+import ru.sawim.comm.Util;
+import ru.sawim.modules.DebugLog;
+import ru.sawim.modules.Notify;
+import ru.sawim.roster.RosterHelper;
+import ru.sawim.search.Search;
+import ru.sawim.search.UserInfo;
+import ru.sawim.util.JLocale;
 
 import java.util.Vector;
 
@@ -331,7 +331,7 @@ public final class MrimConnection extends ClientConnection {
             case MULTICHAT_INVITE:
                 email = packetData.getString();
 
-                sawim.modules.DebugLog.println("invite from " + email);
+                ru.sawim.modules.DebugLog.println("invite from " + email);
 
                 return;
             case MULTICHAT_ATTACHED:
@@ -344,7 +344,7 @@ public final class MrimConnection extends ClientConnection {
                 return;
         }
 
-        sawim.modules.DebugLog.dump("type " + type, packetData.toByteArray());
+        ru.sawim.modules.DebugLog.dump("type " + type, packetData.toByteArray());
 
     }
 

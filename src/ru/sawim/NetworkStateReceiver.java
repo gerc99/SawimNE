@@ -7,9 +7,7 @@ import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import protocol.Protocol;
-import sawim.Options;
-import sawim.modules.DebugLog;
-import sawim.roster.RosterHelper;
+import ru.sawim.roster.RosterHelper;
 
 public class NetworkStateReceiver extends BroadcastReceiver {
     private String previousNetworkType = null;

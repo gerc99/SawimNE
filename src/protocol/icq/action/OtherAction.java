@@ -4,7 +4,7 @@
 package protocol.icq.action;
 
 import protocol.icq.packet.Packet;
-import sawim.SawimException;
+import ru.sawim.SawimException;
 
 
 public class OtherAction extends IcqAction {

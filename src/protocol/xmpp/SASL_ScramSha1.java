@@ -4,8 +4,8 @@ package protocol.xmpp;
 import com.ssttr.crypto.HMACSHA1;
 import com.ssttr.crypto.MessageDigest;
 import com.ssttr.crypto.SHA1;
-import sawim.comm.StringConvertor;
-import sawim.comm.Util;
+import ru.sawim.comm.StringConvertor;
+import ru.sawim.comm.Util;
 
 public class SASL_ScramSha1 {
     private String jid;

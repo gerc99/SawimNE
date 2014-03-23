@@ -6,16 +6,16 @@ import protocol.icq.packet.*;
 import protocol.icq.plugin.XtrazMessagePlugin;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
-import sawim.Options;
-import sawim.SawimException;
-import sawim.chat.message.PlainMessage;
-import sawim.chat.message.SystemNotice;
-import sawim.comm.ArrayReader;
-import sawim.comm.GUID;
-import sawim.comm.StringConvertor;
-import sawim.comm.Util;
-import sawim.modules.DebugLog;
-import sawim.util.JLocale;
+import ru.sawim.Options;
+import ru.sawim.SawimException;
+import ru.sawim.chat.message.PlainMessage;
+import ru.sawim.chat.message.SystemNotice;
+import ru.sawim.comm.ArrayReader;
+import ru.sawim.comm.GUID;
+import ru.sawim.comm.StringConvertor;
+import ru.sawim.comm.Util;
+import ru.sawim.modules.DebugLog;
+import ru.sawim.util.JLocale;
 
 public final class IcqNetDefActions {
     public static final int FLAG_HAPPY = 0x0008;

@@ -3,7 +3,7 @@
 package protocol.icq;
 
 import protocol.StatusInfo;
-import sawim.comm.GUID;
+import ru.sawim.comm.GUID;
 
 
 public class IcqStatusInfo {

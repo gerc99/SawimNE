@@ -4,10 +4,10 @@ import ru.sawim.R;
 import ru.sawim.models.form.ControlStateListener;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
-import sawim.comm.StringConvertor;
-import sawim.comm.Util;
-import sawim.roster.RosterHelper;
-import sawim.util.JLocale;
+import ru.sawim.comm.StringConvertor;
+import ru.sawim.comm.Util;
+import ru.sawim.roster.RosterHelper;
+import ru.sawim.util.JLocale;
 
 public final class AdHoc implements FormListener, ControlStateListener {
     private XmppContact contact;

@@ -54,7 +54,7 @@ public class CameraActivity extends Activity {
                     }
                     it.finish();
                 } catch (Exception e) {
-                    sawim.modules.DebugLog.panic("photo", e);
+                    ru.sawim.modules.DebugLog.panic("photo", e);
                 }
             }
         };
@@ -64,7 +64,7 @@ public class CameraActivity extends Activity {
                 try {
                     preview.takePicture(jpegCallback);
                 } catch (Exception e) {
-                    sawim.modules.DebugLog.panic("click", e);
+                    ru.sawim.modules.DebugLog.panic("click", e);
                 }
             }
         });

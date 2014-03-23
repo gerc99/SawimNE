@@ -28,7 +28,7 @@ package com.ssttr.crypto;
 //import java.io.InputStream;
 
 
-import sawim.comm.Util;
+import ru.sawim.comm.Util;
 
 /**
  * The MessageDigest class defines a general class for computing digest

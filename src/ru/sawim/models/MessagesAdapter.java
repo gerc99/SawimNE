@@ -12,9 +12,9 @@ import ru.sawim.SawimResources;
 import ru.sawim.Scheme;
 import ru.sawim.text.TextLinkClick;
 import ru.sawim.widget.chat.MessageItemView;
-import sawim.chat.Chat;
-import sawim.chat.MessData;
-import sawim.chat.message.Message;
+import ru.sawim.chat.Chat;
+import ru.sawim.chat.MessData;
+import ru.sawim.chat.message.Message;
 
 import java.util.ArrayList;
 import java.util.List;

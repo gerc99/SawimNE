@@ -2,7 +2,7 @@ package protocol.vk.api;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import sawim.comm.Util;
+import ru.sawim.comm.Util;
 
 public class VkSession {
     private SharedPreferences _prefs;

@@ -1,6 +1,6 @@
 package ru.sawim.config;
 
-import sawim.comm.Config;
+import ru.sawim.comm.Config;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -50,8 +50,8 @@ public class Options {
 
     private void setupSystem() {
         int timeZone =  TimeZone.getDefault().getOffset(System.currentTimeMillis()) / 3600000;
-        sawim.Options.setInt(sawim.Options.OPTION_GMT_OFFSET, timeZone);
-        sawim.Options.setInt(sawim.Options.OPTION_LOCAL_OFFSET, 0);
+        ru.sawim.Options.setInt(ru.sawim.Options.OPTION_GMT_OFFSET, timeZone);
+        ru.sawim.Options.setInt(ru.sawim.Options.OPTION_LOCAL_OFFSET, 0);
     }
 
 
@@ -88,7 +88,7 @@ public class Options {
 
     private int getOptionKey(String name) {
         try {
-            Class clazz = sawim.Options.class;
+            Class clazz = ru.sawim.Options.class;
             return clazz.getField(OPTIONS_PREFIX + name.toUpperCase()).getInt(null);
         } catch (Exception e) {
             return -1;
@@ -96,7 +96,7 @@ public class Options {
     }
 
     private void each(Processor p) {
-        Class clazz = sawim.Options.class;
+        Class clazz = ru.sawim.Options.class;
         Object[] options = getOptionsArray();
         for (Field field : clazz.getDeclaredFields()) {
             try {
@@ -114,7 +114,7 @@ public class Options {
 
     private Object[] getOptionsArray() {
         Object[] options = null;
-        Class clazz = sawim.Options.class;
+        Class clazz = ru.sawim.Options.class;
         try {
             Field optionsField = clazz.getDeclaredField("options");
             boolean accessible = optionsField.isAccessible();

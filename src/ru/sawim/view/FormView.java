@@ -181,128 +181,138 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
         int fontSize = SawimApplication.getFontSize();
         for (int position = 0; position < controls.size(); ++position) {
             final Forms.Control c = controls.get(position);
-            if (Forms.CONTROL_TEXT == c.type) {
-                drawText(c, listLayout);
-            } else if (Forms.CONTROL_INPUT == c.type) {
-                EditText editText = new EditText(getActivity());
-                drawText(c, listLayout);
-                editText.setHint(R.string.enter_the);
-                editText.setText(c.text);
-                editText.addTextChangedListener(new TextWatcher() {
+            switch (c.type) {
+                case Forms.CONTROL_TEXT:
+                    drawText(c, listLayout);
+                    break;
+                case Forms.CONTROL_INPUT:
+                    EditText editText = new EditText(getActivity());
+                    drawText(c, listLayout);
+                    editText.setHint(R.string.enter_the);
+                    editText.setText(c.text);
+                    editText.addTextChangedListener(new TextWatcher() {
 
-                    public void afterTextChanged(Editable s) {
-                    }
+                        public void afterTextChanged(Editable s) {
+                        }
 
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                    }
+                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                        }
 
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-                        c.text = s.toString();
-                        Forms.getInstance().controlUpdated(c);
-                    }
-                });
-                listLayout.addView(editText);
-            } else if (Forms.CONTROL_CHECKBOX == c.type) {
-                CheckBox checkBox = new CheckBox(getActivity());
-                checkBox.setText(c.description);
-                checkBox.setChecked(c.selected);
-                checkBox.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        c.selected = !c.selected;
-                        Forms.getInstance().controlUpdated(c);
-                    }
-                });
-                listLayout.addView(checkBox);
-            } else if (Forms.CONTROL_SELECT == c.type) {
-                drawText(c, listLayout);
-                MySpinner spinner = new MySpinner(getActivity());
-                MySpinnerAdapter adapter = new MySpinnerAdapter(getActivity(), c.items);
-                spinner.setPadding(0, padding, 0, padding);
-                spinner.setAdapter(adapter);
-                spinner.setPrompt(c.description);
-                spinner.setSelection(c.current);
-                spinner.setOnItemSelectedEvenIfUnchangedListener(new AdapterView.OnItemSelectedListener() {
-                    @Override
-                    public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
-                        c.current = position;
-                        Forms.getInstance().controlUpdated(c);
-                    }
+                        public void onTextChanged(CharSequence s, int start, int before, int count) {
+                            c.text = s.toString();
+                            Forms.getInstance().controlUpdated(c);
+                        }
+                    });
+                    listLayout.addView(editText);
+                    break;
+                case Forms.CONTROL_CHECKBOX:
+                    CheckBox checkBox = new CheckBox(getActivity());
+                    checkBox.setText(c.description);
+                    checkBox.setChecked(c.selected);
+                    checkBox.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            c.selected = !c.selected;
+                            Forms.getInstance().controlUpdated(c);
+                        }
+                    });
+                    listLayout.addView(checkBox);
+                    break;
+                case Forms.CONTROL_SELECT:
+                    drawText(c, listLayout);
+                    MySpinner spinner = new MySpinner(getActivity());
+                    MySpinnerAdapter adapter = new MySpinnerAdapter(getActivity(), c.items);
+                    spinner.setPadding(0, padding, 0, padding);
+                    spinner.setAdapter(adapter);
+                    spinner.setPrompt(c.description);
+                    spinner.setSelection(c.current);
+                    spinner.setOnItemSelectedEvenIfUnchangedListener(new AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
+                            c.current = position;
+                            Forms.getInstance().controlUpdated(c);
+                        }
 
-                    @Override
-                    public void onNothingSelected(AdapterView<?> adapterView) {
-                    }
-                });
-                listLayout.addView(spinner);
-            } else if (Forms.CONTROL_GAUGE == c.type) {
-                drawText(c, listLayout);
-                SeekBar seekBar = new SeekBar(getActivity());
-                seekBar.setPadding(0, padding, 0, padding);
-                seekBar.setProgress(c.level);
-                seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                    @Override
-                    public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                        c.level = i;
-                        Forms.getInstance().controlUpdated(c);
-                    }
+                        @Override
+                        public void onNothingSelected(AdapterView<?> adapterView) {
+                        }
+                    });
+                    listLayout.addView(spinner);
+                    break;
+                case Forms.CONTROL_GAUGE:
+                    drawText(c, listLayout);
+                    SeekBar seekBar = new SeekBar(getActivity());
+                    seekBar.setPadding(0, padding, 0, padding);
+                    seekBar.setProgress(c.level);
+                    seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                        @Override
+                        public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                            c.level = i;
+                            Forms.getInstance().controlUpdated(c);
+                        }
 
-                    @Override
-                    public void onStartTrackingTouch(SeekBar seekBar) {
-                    }
+                        @Override
+                        public void onStartTrackingTouch(SeekBar seekBar) {
+                        }
 
-                    @Override
-                    public void onStopTrackingTouch(SeekBar seekBar) {
-                    }
-                });
-                listLayout.addView(seekBar);
-            } else if (Forms.CONTROL_GAUGE_FONT == c.type) {
-                SeekBar seekBar = new SeekBar(getActivity());
-                final TextView descView = new TextView(getActivity());
-                descView.setTextSize(fontSize);
-                descView.setText(c.description + "(" + c.level + ")");
-                seekBar.setMax(60);
-                seekBar.setProgress(c.level);
-                seekBar.setPadding(0, padding, 0, padding);
-                seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                    @Override
-                    public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                        c.level = i;
-                        descView.setTextSize(c.level);
-                        descView.setText(c.description + "(" + c.level + ")");
-                        Forms.getInstance().controlUpdated(c);
-                    }
+                        @Override
+                        public void onStopTrackingTouch(SeekBar seekBar) {
+                        }
+                    });
+                    listLayout.addView(seekBar);
+                    break;
+                case Forms.CONTROL_GAUGE_FONT:
+                    SeekBar seekBarFont = new SeekBar(getActivity());
+                    final TextView descView = new TextView(getActivity());
+                    descView.setTextSize(fontSize);
+                    descView.setText(c.description + "(" + c.level + ")");
+                    seekBarFont.setMax(60);
+                    seekBarFont.setProgress(c.level);
+                    seekBarFont.setPadding(0, padding, 0, padding);
+                    seekBarFont.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                        @Override
+                        public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                            c.level = i;
+                            descView.setTextSize(c.level);
+                            descView.setText(c.description + "(" + c.level + ")");
+                            Forms.getInstance().controlUpdated(c);
+                        }
 
-                    @Override
-                    public void onStartTrackingTouch(SeekBar seekBar) {
-                    }
+                        @Override
+                        public void onStartTrackingTouch(SeekBar seekBar) {
+                        }
 
-                    @Override
-                    public void onStopTrackingTouch(SeekBar seekBar) {
-                    }
-                });
-                listLayout.addView(descView);
-                listLayout.addView(seekBar);
-            } else if (Forms.CONTROL_IMAGE == c.type) {
-                final ImageView imageView = new ImageView(getActivity());
-                imageView.setPadding(0, padding, 0, padding);
-                imageView.setAdjustViewBounds(true);
-                imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-                imageView.setImageDrawable(c.image);
-                drawText(c, listLayout);
-                listLayout.addView(imageView);
-            } else if (Forms.CONTROL_LINK == c.type) {
-                drawText(c, listLayout);
-            } else if (Forms.CONTROL_BUTTON == c.type) {
-                Button button = new Button(getActivity());
-                button.setText(getText(c));
-                button.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        hideKeyboard();
-                        Forms.getInstance().controlUpdated(c);
-                    }
-                });
-                listLayout.addView(button);
+                        @Override
+                        public void onStopTrackingTouch(SeekBar seekBar) {
+                        }
+                    });
+                    listLayout.addView(descView);
+                    listLayout.addView(seekBarFont);
+                    break;
+                case Forms.CONTROL_IMAGE:
+                    final ImageView imageView = new ImageView(getActivity());
+                    imageView.setPadding(0, padding, 0, padding);
+                    imageView.setAdjustViewBounds(true);
+                    imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                    imageView.setImageDrawable(c.image);
+                    drawText(c, listLayout);
+                    listLayout.addView(imageView);
+                    break;
+                case Forms.CONTROL_LINK:
+                    drawText(c, listLayout);
+                    break;
+                case Forms.CONTROL_BUTTON:
+                    Button button = new Button(getActivity());
+                    button.setText(getText(c));
+                    button.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            hideKeyboard();
+                            Forms.getInstance().controlUpdated(c);
+                        }
+                    });
+                    listLayout.addView(button);
+                    break;
             }
         }
     }

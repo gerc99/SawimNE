@@ -3,7 +3,6 @@ package ru.sawim.view;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.text.InputType;
@@ -18,9 +17,9 @@ import protocol.xmpp.XmppRegistration;
 import ru.sawim.SawimApplication;
 import ru.sawim.R;
 import ru.sawim.activities.SawimActivity;
-import sawim.Options;
-import sawim.comm.StringConvertor;
-import sawim.roster.RosterHelper;
+import ru.sawim.Options;
+import ru.sawim.comm.StringConvertor;
+import ru.sawim.roster.RosterHelper;
 
 /**
  * Created with IntelliJ IDEA.

@@ -1,23 +1,22 @@
 package protocol.xmpp;
 
-import android.util.Log;
 import protocol.*;
 import protocol.net.ClientConnection;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
-import sawim.Options;
-import sawim.SawimException;
-import sawim.chat.message.PlainMessage;
-import sawim.chat.message.SystemNotice;
-import sawim.comm.Config;
-import sawim.comm.MD5;
-import sawim.comm.StringConvertor;
-import sawim.comm.Util;
-import sawim.modules.AutoAbsence;
-import sawim.modules.DebugLog;
-import sawim.roster.RosterHelper;
-import sawim.search.UserInfo;
-import sawim.util.JLocale;
+import ru.sawim.Options;
+import ru.sawim.SawimException;
+import ru.sawim.chat.message.PlainMessage;
+import ru.sawim.chat.message.SystemNotice;
+import ru.sawim.comm.Config;
+import ru.sawim.comm.MD5;
+import ru.sawim.comm.StringConvertor;
+import ru.sawim.comm.Util;
+import ru.sawim.modules.AutoAbsence;
+import ru.sawim.modules.DebugLog;
+import ru.sawim.roster.RosterHelper;
+import ru.sawim.search.UserInfo;
+import ru.sawim.util.JLocale;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -2267,7 +2266,7 @@ public final class XmppConnection extends ClientConnection {
                 + "xmlns:stream='http:/" + "/etherx.jabber.org/streams' "
                 + "version='1.0' "
                 + "to='" + server + "'"
-                + " xml:lang='" + sawim.util.JLocale.getSystemLanguage() + "'>";
+                + " xml:lang='" + ru.sawim.util.JLocale.getSystemLanguage() + "'>";
     }
 
     private void getVCard(String jid) {

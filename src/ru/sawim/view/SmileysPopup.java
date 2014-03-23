@@ -2,20 +2,17 @@ package ru.sawim.view;
 
 import android.app.Activity;
 import android.graphics.Rect;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
-import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.PopupWindow;
 import ru.sawim.models.SmilesAdapter;
 import ru.sawim.widget.SizeNotifierLinearLayout;
 import ru.sawim.widget.Util;
-import sawim.modules.Emotions;
-import sawim.roster.RosterHelper;
+import ru.sawim.modules.Emotions;
+import ru.sawim.roster.RosterHelper;
 
 public class SmileysPopup {
 

@@ -6,11 +6,11 @@ import protocol.*;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.view.menu.MyMenu;
-import sawim.Options;
-import sawim.comm.Config;
-import sawim.comm.StringConvertor;
-import sawim.comm.Util;
-import sawim.util.JLocale;
+import ru.sawim.Options;
+import ru.sawim.comm.Config;
+import ru.sawim.comm.StringConvertor;
+import ru.sawim.comm.Util;
+import ru.sawim.util.JLocale;
 
 import java.util.Vector;
 

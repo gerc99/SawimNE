@@ -5,29 +5,24 @@ import android.app.Application;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Environment;
 import android.os.Message;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.Surface;
 import android.view.WindowManager;
 import org.microemu.util.AndroidRecordStoreManager;
 import ru.sawim.service.SawimService;
 import ru.sawim.service.SawimServiceConnection;
 import ru.sawim.text.TextFormatter;
-import sawim.Options;
-import sawim.Updater;
-import sawim.chat.ChatHistory;
-import sawim.comm.Util;
-import sawim.modules.*;
-import sawim.roster.RosterHelper;
-import sawim.search.Search;
+import ru.sawim.chat.ChatHistory;
+import ru.sawim.comm.Util;
+import ru.sawim.modules.*;
+import ru.sawim.roster.RosterHelper;
+import ru.sawim.search.Search;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -165,7 +160,7 @@ public class SawimApplication extends Application {
             Options.loadAccounts();
             RosterHelper.getInstance().initAccounts();
             RosterHelper.getInstance().loadAccounts();
-            sawim.modules.tracking.Tracking.loadTrackingFromRMS();
+            ru.sawim.modules.tracking.Tracking.loadTrackingFromRMS();
         } catch (Exception e) {
             DebugLog.panic("init", e);
             DebugLog.instance.activate();
@@ -209,7 +204,7 @@ public class SawimApplication extends Application {
     }
 
     public static java.io.InputStream getResourceAsStream(String name) {
-        InputStream in = sawim.modules.fs.FileSystem.openSawimFile(name);
+        InputStream in = ru.sawim.modules.fs.FileSystem.openSawimFile(name);
         if (null == in) {
             try {
                 in = SawimApplication.getInstance().getAssets().open(name.substring(1));
@@ -242,7 +237,7 @@ public class SawimApplication extends Application {
     }
 
     public static void minimize() {
-        sawim.modules.AutoAbsence.getInstance().userActivity();
+        ru.sawim.modules.AutoAbsence.getInstance().userActivity();
         instance.paused = true;
     }
 

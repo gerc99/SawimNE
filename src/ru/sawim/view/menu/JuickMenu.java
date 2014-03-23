@@ -7,8 +7,8 @@ import android.support.v4.app.FragmentTransaction;
 import protocol.Protocol;
 import ru.sawim.R;
 import ru.sawim.view.ChatView;
-import sawim.chat.Chat;
-import sawim.roster.RosterHelper;
+import ru.sawim.chat.Chat;
+import ru.sawim.roster.RosterHelper;
 
 /**
  * Created with IntelliJ IDEA.

@@ -5,10 +5,10 @@ import protocol.icq.IcqNetDefActions;
 import protocol.icq.IcqStatusInfo;
 import protocol.icq.packet.SnacPacket;
 import ru.sawim.SawimApplication;
-import sawim.comm.ArrayReader;
-import sawim.comm.GUID;
-import sawim.comm.StringConvertor;
-import sawim.comm.Util;
+import ru.sawim.comm.ArrayReader;
+import ru.sawim.comm.GUID;
+import ru.sawim.comm.StringConvertor;
+import ru.sawim.comm.Util;
 
 
 public class XtrazMessagePlugin {

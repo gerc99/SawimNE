@@ -15,9 +15,9 @@ import protocol.StatusInfo;
 import ru.sawim.SawimApplication;
 import ru.sawim.R;
 import ru.sawim.models.AccountsAdapter;
-import sawim.Options;
-import sawim.comm.StringConvertor;
-import sawim.roster.RosterHelper;
+import ru.sawim.Options;
+import ru.sawim.comm.StringConvertor;
+import ru.sawim.roster.RosterHelper;
 
 /**
  * Created with IntelliJ IDEA.

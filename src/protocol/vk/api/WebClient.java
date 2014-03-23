@@ -13,7 +13,7 @@ import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
-import sawim.modules.DebugLog;
+import ru.sawim.modules.DebugLog;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -59,7 +59,7 @@ public class WebClient {
             HttpResponse response = client.execute(request);
             return EntityUtils.toString(response.getEntity());
         } catch (Exception ioex) {
-            sawim.modules.DebugLog.panic("uri" + uri, ioex);
+            ru.sawim.modules.DebugLog.panic("uri" + uri, ioex);
             return null;
         }
     }

@@ -10,10 +10,10 @@ import ru.sawim.models.form.Forms;
 import ru.sawim.models.list.VirtualList;
 import ru.sawim.models.list.VirtualListItem;
 import ru.sawim.models.list.VirtualListModel;
-import sawim.Clipboard;
-import sawim.comm.StringConvertor;
-import sawim.comm.Util;
-import sawim.util.JLocale;
+import ru.sawim.Clipboard;
+import ru.sawim.comm.StringConvertor;
+import ru.sawim.comm.Util;
+import ru.sawim.util.JLocale;
 
 import java.util.List;
 import java.util.Vector;

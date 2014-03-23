@@ -1,8 +1,8 @@
 package protocol.net;
 
 import android.net.SSLCertificateSocketFactory;
-import sawim.SawimException;
-import sawim.modules.DebugLog;
+import ru.sawim.SawimException;
+import ru.sawim.modules.DebugLog;
 
 import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.SSLSession;
@@ -142,7 +142,7 @@ public final class TcpSocket {
         try {
             os.write(data, offset, length);
         } catch (IOException e) {
-            sawim.modules.DebugLog.panic("write", e);
+            ru.sawim.modules.DebugLog.panic("write", e);
             throw new SawimException(120, 2);
         }
     }

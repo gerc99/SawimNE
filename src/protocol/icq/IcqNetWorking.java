@@ -5,8 +5,8 @@ import protocol.icq.action.IcqAction;
 import protocol.icq.packet.*;
 import protocol.net.ClientConnection;
 import protocol.net.TcpSocket;
-import sawim.SawimException;
-import sawim.comm.Util;
+import ru.sawim.SawimException;
+import ru.sawim.comm.Util;
 
 
 public final class IcqNetWorking extends ClientConnection {
@@ -170,7 +170,7 @@ public final class IcqNetWorking extends ClientConnection {
         } catch (SawimException e) {
             throw e;
         } catch (Exception e) {
-            sawim.modules.DebugLog.dump("broken packet " + channel, flapData);
+            ru.sawim.modules.DebugLog.dump("broken packet " + channel, flapData);
         }
         return null;
     }

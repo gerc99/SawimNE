@@ -2,7 +2,7 @@
 
 package protocol.icq.packet;
 
-import sawim.comm.Util;
+import ru.sawim.comm.Util;
 
 public abstract class Packet {
 

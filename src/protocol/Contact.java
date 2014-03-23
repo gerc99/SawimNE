@@ -8,12 +8,12 @@ import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
 import ru.sawim.view.menu.MyMenu;
-import sawim.chat.Chat;
-import sawim.comm.StringConvertor;
-import sawim.modules.tracking.Tracking;
-import sawim.roster.RosterHelper;
-import sawim.roster.TreeNode;
-import sawim.util.JLocale;
+import ru.sawim.chat.Chat;
+import ru.sawim.comm.StringConvertor;
+import ru.sawim.modules.tracking.Tracking;
+import ru.sawim.roster.RosterHelper;
+import ru.sawim.roster.TreeNode;
+import ru.sawim.util.JLocale;
 
 
 abstract public class Contact extends TreeNode {
@@ -342,7 +342,7 @@ abstract public class Contact extends TreeNode {
             menu.add(Menu.NONE, ContactMenu.USER_MENU_TRACK, Menu.NONE, R.string.extra_settings);
         }
         if (isSingleUserContact() || isOnline()) {
-            /*if (sawim.modules.fs.FileSystem.isSupported()) {
+            /*if (ru.sawim.modules.fs.FileSystem.isSupported()) {
                 menu.add(Menu.FIRST, USER_MENU_FILE_TRANS, 2, R.string.ft_name);
             }
             if (FileTransfer.isPhotoSupported()) {

@@ -7,13 +7,13 @@ import protocol.icq.Icq;
 import protocol.icq.IcqContact;
 import protocol.icq.PrivacyItem;
 import protocol.icq.packet.*;
-import sawim.Options;
-import sawim.SawimException;
-import sawim.comm.ArrayReader;
-import sawim.comm.MD5;
-import sawim.comm.StringConvertor;
-import sawim.comm.Util;
-import sawim.modules.DebugLog;
+import ru.sawim.Options;
+import ru.sawim.SawimException;
+import ru.sawim.comm.ArrayReader;
+import ru.sawim.comm.MD5;
+import ru.sawim.comm.StringConvertor;
+import ru.sawim.comm.Util;
+import ru.sawim.modules.DebugLog;
 
 import java.util.Vector;
 

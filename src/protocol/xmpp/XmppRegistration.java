@@ -5,10 +5,10 @@ import ru.sawim.SawimApplication;
 import ru.sawim.R;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
-import sawim.Options;
-import sawim.SawimException;
-import sawim.comm.StringConvertor;
-import sawim.comm.Util;
+import ru.sawim.Options;
+import ru.sawim.SawimException;
+import ru.sawim.comm.StringConvertor;
+import ru.sawim.comm.Util;
 
 
 public class XmppRegistration implements Runnable, FormListener {

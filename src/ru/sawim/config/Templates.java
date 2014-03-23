@@ -1,6 +1,6 @@
 package ru.sawim.config;
 
-import sawim.comm.Config;
+import ru.sawim.comm.Config;
 
 import java.util.Vector;
 

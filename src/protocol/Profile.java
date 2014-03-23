@@ -2,7 +2,7 @@ package protocol;
 
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
-import sawim.comm.Util;
+import ru.sawim.comm.Util;
 
 
 public final class Profile {

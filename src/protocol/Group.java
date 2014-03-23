@@ -2,8 +2,8 @@ package protocol;
 
 import DrawControls.icons.Icon;
 import ru.sawim.SawimResources;
-import sawim.comm.Util;
-import sawim.roster.TreeNode;
+import ru.sawim.comm.Util;
+import ru.sawim.roster.TreeNode;
 
 import java.util.Vector;
 

@@ -6,7 +6,7 @@ import protocol.icq.Icq;
 import protocol.icq.IcqNetWorking;
 import protocol.icq.packet.Packet;
 import ru.sawim.SawimApplication;
-import sawim.SawimException;
+import ru.sawim.SawimException;
 
 public abstract class IcqAction {
     private IcqNetWorking connection;

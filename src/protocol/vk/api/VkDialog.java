@@ -72,7 +72,7 @@ public class VkDialog extends Dialog {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             //Log.d(Constants.DEBUG_TAG, "Redirecting URL " + url);
-            sawim.modules.DebugLog.println("redirect to " + url);
+            ru.sawim.modules.DebugLog.println("redirect to " + url);
 
             if (url.startsWith(VkApp.CALLBACK_URL) & (!url.contains("error"))) {
                 //Log.d(Constants.DEBUG_TAG,"url contains callback url");

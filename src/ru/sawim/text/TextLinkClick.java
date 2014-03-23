@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.provider.Browser;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.View;
 import protocol.Protocol;
 import protocol.xmpp.Jid;
@@ -16,9 +15,9 @@ import ru.sawim.R;
 import ru.sawim.view.PictureView;
 import ru.sawim.view.menu.JuickMenu;
 import ru.sawim.view.tasks.HtmlTask;
-import sawim.Clipboard;
-import sawim.comm.Util;
-import sawim.modules.DebugLog;
+import ru.sawim.Clipboard;
+import ru.sawim.comm.Util;
+import ru.sawim.modules.DebugLog;
 
 /**
  * Created with IntelliJ IDEA.

@@ -6,10 +6,7 @@ package protocol.xmpp;
 import DrawControls.icons.ImageList;
 import protocol.XStatusInfo;
 import ru.sawim.R;
-import sawim.comm.Config;
-import sawim.comm.StringConvertor;
-
-import java.util.HashMap;
+import ru.sawim.comm.StringConvertor;
 
 
 public class XmppXStatus {

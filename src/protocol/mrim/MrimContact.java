@@ -6,9 +6,9 @@ import protocol.*;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.view.menu.MyMenu;
-import sawim.Options;
-import sawim.comm.StringConvertor;
-import sawim.modules.DebugLog;
+import ru.sawim.Options;
+import ru.sawim.comm.StringConvertor;
+import ru.sawim.modules.DebugLog;
 
 public class MrimContact extends Contact {
     private int contactId;

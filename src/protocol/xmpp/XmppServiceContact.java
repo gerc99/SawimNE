@@ -11,12 +11,12 @@ import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.SawimResources;
 import ru.sawim.view.menu.MyMenu;
-import sawim.Options;
-import sawim.chat.message.SystemNotice;
-import sawim.comm.StringConvertor;
-import sawim.modules.tracking.Tracking;
-import sawim.roster.RosterHelper;
-import sawim.util.JLocale;
+import ru.sawim.Options;
+import ru.sawim.chat.message.SystemNotice;
+import ru.sawim.comm.StringConvertor;
+import ru.sawim.modules.tracking.Tracking;
+import ru.sawim.roster.RosterHelper;
+import ru.sawim.util.JLocale;
 
 import java.util.Vector;
 
@@ -249,7 +249,7 @@ public class XmppServiceContact extends XmppContact {
                 text += '.';
                 playSoundEye();
                 textPresence.append(text).append(" ").append(reasone);
-                //sawim.modules.MagicEye.addAction(getProtocol(), getUserId(), nick + " " + text, reasone);
+                //ru.sawim.modules.MagicEye.addAction(getProtocol(), getUserId(), nick + " " + text, reasone);
                 xmpp.addMessage(new SystemNotice(xmpp,
                         SystemNotice.SYS_NOTICE_ERROR, getUserId(), text));
             }
@@ -278,7 +278,7 @@ public class XmppServiceContact extends XmppContact {
             if (0 != eventCode) {
                 String event = JLocale.getString(eventCode);
                 textPresence.append(event).append(" ").append(reasone);
-                //sawim.modules.MagicEye.addAction(xmpp, getUserId(), nick + " " + event, reasone);
+                //ru.sawim.modules.MagicEye.addAction(xmpp, getUserId(), nick + " " + event, reasone);
             }
         }
         addPresence(xmpp, nick, textPresence.toString());

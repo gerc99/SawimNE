@@ -5,7 +5,6 @@ package protocol;
 import DrawControls.icons.Icon;
 import DrawControls.icons.ImageList;
 import ru.sawim.R;
-import sawim.util.JLocale;
 
 
 public class XStatusInfo {

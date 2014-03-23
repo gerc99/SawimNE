@@ -4,11 +4,9 @@ import DrawControls.icons.Icon;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.LinearLayout;
 import protocol.Protocol;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
@@ -16,9 +14,9 @@ import ru.sawim.Scheme;
 import ru.sawim.widget.SimpleItemView;
 import ru.sawim.widget.Util;
 import ru.sawim.widget.roster.RosterItemView;
-import sawim.chat.ChatHistory;
-import sawim.roster.RosterHelper;
-import sawim.util.JLocale;
+import ru.sawim.chat.ChatHistory;
+import ru.sawim.roster.RosterHelper;
+import ru.sawim.util.JLocale;
 
 /**
  * Created by admin on 01.03.14.

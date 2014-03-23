@@ -3,14 +3,13 @@ package ru.sawim.models.form;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 import ru.sawim.SawimApplication;
 import ru.sawim.view.FormView;
 import ru.sawim.view.preference.PreferenceFormView;
-import sawim.comm.StringConvertor;
-import sawim.comm.Util;
-import sawim.modules.DebugLog;
-import sawim.util.JLocale;
+import ru.sawim.comm.StringConvertor;
+import ru.sawim.comm.Util;
+import ru.sawim.modules.DebugLog;
+import ru.sawim.util.JLocale;
 
 import java.util.ArrayList;
 import java.util.List;

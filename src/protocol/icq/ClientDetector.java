@@ -4,7 +4,7 @@ import DrawControls.icons.ImageList;
 import protocol.ClientInfo;
 import protocol.net.TcpSocket;
 import ru.sawim.SawimApplication;
-import sawim.comm.StringConvertor;
+import ru.sawim.comm.StringConvertor;
 
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -100,7 +100,7 @@ public class ClientDetector {
 
         final int length = packed;
 
-        sawim.modules.DebugLog.assert0("length is 0", (0 == length));
+        ru.sawim.modules.DebugLog.assert0("length is 0", (0 == length));
 
         final int where = getWord(code, ip);
         int byteIndex = 0;
