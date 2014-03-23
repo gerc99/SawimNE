@@ -3,9 +3,7 @@ package ru.sawim.text;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ImageSpan;
-import android.util.Patterns;
 import protocol.Contact;
-import protocol.xmpp.Jid;
 import ru.sawim.Scheme;
 import ru.sawim.view.menu.JuickMenu;
 import sawim.modules.Emotions;
@@ -25,6 +23,7 @@ public class TextFormatter {
 
     private Pattern juickPattern = Pattern.compile("(#[0-9]+(/[0-9]+)?)");
     private Pattern pstoPattern = Pattern.compile("(#[\\w]+(/[0-9]+)?)");
+    private Pattern nickPattern = Pattern.compile("(@[\\w@.-]+(/[0-9]+)?)");
     private Pattern urlPattern = Pattern.compile("(([^ @/<>'\\\"]+)@([^ @/<>'\\\"]+)\\.([a-zA-Z\\.]{2,6})(?:/([^ <>'\\\"]*))?)|(((?:(http|https|Http|Https):\\/\\/(?:(?:[a-zA-Z0-9\\$\\-\\_\\.\\+\\!\\*\\'\\(\\)\\,\\;\\?\\&\\=]|(?:\\%[a-fA-F0-9]{2})){1,64}(?:\\:(?:[a-zA-Z0-9\\$\\-\\_\\.\\+\\!\\*\\'\\(\\)\\,\\;\\?\\&\\=]|(?:\\%[a-fA-F0-9]{2})){1,25})?\\@)?)?((?:(?:[a-zA-Z0-9][a-zA-Z0-9\\-]{0,64}\\.)+(?:(?:aero|arpa|asia|a[cdefgilmnoqrstuwxz])|(?:biz|b[abdefghijmnorstvwyz])|(?:cat|com|coop|c[acdfghiklmnoruvxyz])|d[ejkmoz]|(?:edu|e[cegrstu])|f[ijkmor]|(?:gov|g[abdefghilmnpqrstuwy])|h[kmnrtu]|(?:inc|info|int|i[delmnoqrst])|(?:jobs|j[emop])|k[eghimnprwyz]|l[abcikrstuvy]|(?:mil|mobi|museum|m[acdeghklmnopqrstuvwxyz])|(?:name|net|n[acefgilopruz])|(?:org|om)|(?:pro|p[aefghklmnrstwy])|qa|r[eosuw]|s[abcdeghijklmnortuvyz]|(?:tel|travel|t[cdfghjklmnoprtvwz])|u[agksyz]|v[aceginu]|w[fs]|(?:рф|xxx)|y[et]|z[amw]))|(?:(?:25[0-5]|2[0-4][0-9]|[0-1][0-9]{2}|[1-9][0-9]|[1-9])\\.(?:25[0-5]|2[0-4][0-9]|[0-1][0-9]{2}|[1-9][0-9]|[1-9]|0)\\.(?:25[0-5]|2[0-4][0-9]|[0-1][0-9]{2}|[1-9][0-9]|[1-9]|0)\\.(?:25[0-5]|2[0-4][0-9]|[0-1][0-9]{2}|[1-9][0-9]|[0-9])))(?:\\:\\d{1,5})?)(\\/(?:(?:[a-zA-Z0-9\\;\\/\\?\\:\\@\\&\\=\\#\\~\\-\\.\\+\\!\\*\\'\\(\\)\\,\\_])|(?:\\%[a-fA-F0-9]{2}))*)?(?:\\b|$))");
     private Pattern smilesPattern;
     private static final Emotions smiles = Emotions.instance;
@@ -46,11 +45,14 @@ public class TextFormatter {
     public CharSequence parsedText(final Contact contact, final CharSequence text) {
         final int linkColor = Scheme.getColor(Scheme.THEME_LINKS);
         SpannableStringBuilder builder = new SpannableStringBuilder(text);
-        if (contact != null)
-            if (contact.getUserId().equals(JuickMenu.JUICK) || contact.getUserId().equals(JuickMenu.JUBO))
+        if (contact != null) {
+            String userId = contact.getUserId();
+            if (userId.equals(JuickMenu.JUICK) || userId.equals(JuickMenu.JUBO)) {
                 getTextWithLinks(builder, linkColor, JuickMenu.MODE_JUICK);
-            else if (contact.getUserId().equals(JuickMenu.PSTO))
+            } else if (userId.equals(JuickMenu.PSTO) || userId.equals(JuickMenu.POINT)) {
                 getTextWithLinks(builder, linkColor, JuickMenu.MODE_PSTO);
+            }
+        }
         getTextWithLinks(builder, linkColor, -1);
         detectEmotions(text, builder);
         return builder;
@@ -116,11 +118,19 @@ public class TextFormatter {
     public void getTextWithLinks(final SpannableStringBuilder ssb, final int linkColor, final int mode) {
         ArrayList<Hyperlink> msgList = new ArrayList<Hyperlink>();
         ArrayList<Hyperlink> linkList = new ArrayList<Hyperlink>();
-        if (mode == JuickMenu.MODE_JUICK)
-            addLinks(msgList, ssb, juickPattern);
-        else if (mode == JuickMenu.MODE_PSTO)
-            addLinks(msgList, ssb, pstoPattern);
-        addLinks(linkList, ssb, urlPattern);
+        switch (mode) {
+            case JuickMenu.MODE_JUICK:
+                addLinks(msgList, ssb, juickPattern);
+                addLinks(msgList, ssb, nickPattern);
+                break;
+            case JuickMenu.MODE_PSTO:
+                addLinks(msgList, ssb, pstoPattern);
+                addLinks(msgList, ssb, nickPattern);
+                break;
+            default:
+                addLinks(linkList, ssb, urlPattern);
+                break;
+        }
         for (Hyperlink link : msgList) {
             ssb.setSpan(link.span, link.start, link.end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             //ssb.setSpan(new ForegroundColorSpan(linkColor), link.start, link.end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
