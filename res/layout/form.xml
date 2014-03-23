@@ -1,16 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
               android:layout_width="match_parent"
-              android:layout_height="match_parent"
+              android:layout_height="wrap_content"
               android:id="@+id/data_form">
 
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true">
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="New Text"
+                android:id="@+id/textView"
+                android:layout_centerHorizontal="true"
+                android:layout_gravity="center"/>
+        <ProgressBar
+                style="?android:attr/progressBarStyleLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/progressBar" android:layout_gravity="center_horizontal"
+                android:layout_centerVertical="true" android:layout_centerHorizontal="true"/>
+    </LinearLayout>
     <ScrollView android:layout_weight="1"
                 android:id="@+id/data_form_scroll"
-                android:layout_margin="5dp"
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent">
+                android:layout_height="fill_parent" android:visibility="gone" android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp" android:layout_marginTop="5dp"
+                android:layout_above="@+id/data_form_button_bar">
         <LinearLayout
                 android:id="@+id/data_form_linear"
                 android:orientation="vertical"
@@ -23,7 +43,9 @@
                   android:id="@+id/data_form_button_bar"
                   android:orientation="horizontal"
                   android:layout_width="fill_parent"
-                  android:layout_height="wrap_content">
+                  android:layout_height="wrap_content"
+                  android:layout_alignParentTop="false" android:layout_alignParentLeft="false"
+                  android:layout_alignParentStart="false" android:layout_alignParentBottom="true">
         <Button android:id="@+id/data_form_ok"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
@@ -35,4 +57,4 @@
                 android:layout_height="wrap_content"
                 android:text="@android:string/cancel"/>
     </LinearLayout>
-</LinearLayout>
+</RelativeLayout>

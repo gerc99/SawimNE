@@ -224,6 +224,7 @@ public final class Search implements FormListener, ControlStateListener {
             searchForm.addTextField(Search.EMAIL, R.string.email, "");
         }
         searchForm.addSelector(Search.AGE, R.string.age, ageList, 0);
+        searchForm.invalidate(true);
     }
 
     private void activate() {

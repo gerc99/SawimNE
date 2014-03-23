@@ -50,7 +50,7 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
     private Contact cItem;
     private Chat chat;
     private JSR75FileSystem file;
-    private Forms name_Desc;
+    private Forms forms;
     private FileProgressView fileProgressView;
     private boolean isFinish = false;
 
@@ -122,26 +122,26 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
     }
 
     private void askForNameDesc() {
-        name_Desc = new Forms(R.string.name_desc, this, true);
-        name_Desc.addString(String.format("%s: %s", JLocale.getString(R.string.filename), filename), null);
-        name_Desc.addTextField(descriptionField, R.string.description, "");
+        forms = new Forms(R.string.name_desc, this, true);
+        forms.addString(String.format("%s: %s", JLocale.getString(R.string.filename), filename), null);
+        forms.addTextField(descriptionField, R.string.description, "");
         String items = "jimm.net.ru|www.jimm.net.ru|jimm.org";
         if (cItem instanceof protocol.xmpp.XmppContact) {
             if (cItem.isSingleUserContact() && cItem.isOnline()) {
                 items += "|ibb";
             }
         }
-        name_Desc.addSelector(transferMode, R.string.send_via, items, 0);
-        name_Desc.addString(String.format("%s: %d KB", JLocale.getString(R.string.size), getFileSize() / 1024), null);
-        name_Desc.show();
+        forms.addSelector(transferMode, R.string.send_via, items, 0);
+        forms.addString(String.format("%s: %d KB", JLocale.getString(R.string.size), getFileSize() / 1024), null);
+        forms.show();
     }
 
     public void formAction(Forms form, boolean apply) {
         if (apply) {
-            description = name_Desc.getTextFieldValue(descriptionField);
-            sendMode = name_Desc.getSelectorValue(transferMode);
+            description = forms.getTextFieldValue(descriptionField);
+            sendMode = forms.getSelectorValue(transferMode);
             showFileProgress();
-            if (name_Desc.getSelectorValue(transferMode) == IBB_MODE) {
+            if (forms.getSelectorValue(transferMode) == IBB_MODE) {
                 try {
                     protocol.sendFile(this, filename, description);
                 } catch (Exception ignored) {
@@ -237,7 +237,7 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
             SawimApplication.gc();
         } catch (Exception ignored) {
         }
-        name_Desc.back();
+        forms.back();
         if (isFinish) SawimApplication.getCurrentActivity().finish();
         fileProgressView = null;
     }
@@ -273,11 +273,12 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
             @Override
             public void run() {
                 try {
-                    name_Desc.addBitmap(BitmapFactory.decodeByteArray(image, 0, image.length));
+                    forms.addBitmap(BitmapFactory.decodeByteArray(image, 0, image.length));
                 } catch (Throwable ignored) {
                 }
             }
         }).start();
+        forms.invalidate(true);
     }
 
     private void setFileName(String name) {
@@ -293,13 +294,11 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
     }
 
     private void sendFileThroughServer(InputStream fis, int fileSize) throws SawimException {
-        TcpSocket socket = new TcpSocket();
-        final String UPLOAD_URL = "https://api.imgur.com/3/image";
         String url = null;
-        HttpURLConnection conn = null;
-        InputStream responseIn = null;
-
         if (Util.isImageFile(filename)) {
+            final String UPLOAD_URL = "https://api.imgur.com/3/image";
+            HttpURLConnection conn = null;
+            InputStream responseIn = null;
             try {
                 conn = (HttpURLConnection) new URL(UPLOAD_URL).openConnection();
                 conn.setDoOutput(true);
@@ -312,10 +311,24 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
                 int count = 0;
                 int n = 0;
 
-                while (-1 != (n = fis.read(buffer))) {
+                /*while (-1 != (n = fis.read(buffer))) {
                     out.write(buffer, 0, n);
                     count += n;
                     setProgress((int)(100.0-2) * count/fileSize);
+                }*/
+
+                int counter = fileSize;
+                while (counter > 0) {
+                    int read = fis.read(buffer);
+                    out.write(buffer, 0, read);
+                    counter -= read;
+                    if (fileSize != 0) {
+                        if (isCanceled()) {
+                            throw new SawimException(194, 1);
+                        }
+                        out.flush();
+                        setProgress((100 - 2) * (fileSize - counter) / fileSize);
+                    }
                 }
                 out.flush();
                 out.close();
@@ -342,7 +355,10 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
                     url = sb.toString();
                 }
             } catch (Exception ex) {
-                Log.e(TAG, "Error during POST", ex);
+                ex.printStackTrace();
+                DebugLog.panic("send file", ex);
+                Log.e(TAG, "Error during POST");
+                throw new SawimException(194, 0);
             } finally {
                 try {
                     responseIn.close();
@@ -352,6 +368,7 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
                 } catch (Exception ignore) {}
             }
         } else {
+            TcpSocket socket = new TcpSocket();
             try {
                 socket.connectTo("files.jimm.net.ru", 2000);
 

@@ -9,6 +9,7 @@ import android.text.*;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import ru.sawim.SawimApplication;
 import ru.sawim.text.InternalURLSpan;
 import ru.sawim.text.TextLinkClickListener;
@@ -137,7 +138,8 @@ public class MyTextView extends View {
                 if (action == MotionEvent.ACTION_DOWN) {
                     isSecondTap = false;
                     isLongTap = false;
-                    postDelayed(longPressed, 700L);
+                    removeCallbacks(longPressed);
+                    postDelayed(longPressed, ViewConfiguration.getLongPressTimeout());
                 }
                 if (action == MotionEvent.ACTION_UP) {
                     if (!isLongTap) {

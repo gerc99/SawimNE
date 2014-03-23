@@ -57,7 +57,7 @@ final class XmppForm implements FormListener {
 
     public void show() {
         form.init(typeToTitle(type), this);
-        form.setWainting();
+        form.setWaiting();
         form.getForm().show();
     }
 

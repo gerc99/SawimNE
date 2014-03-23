@@ -12,9 +12,6 @@ import java.util.Vector;
 
 public class SmsForm implements FormListener {
 
-    /**
-     * Creates a new instance of SmsForm
-     */
     public SmsForm(Protocol protocol, String phones) {
         this.phones = phones;
 
@@ -66,13 +63,12 @@ public class SmsForm implements FormListener {
             form.addString(R.string.send_via, agents);
         }
         form.addTextField(TEXT, R.string.message, " ");
-                form.show();
+        form.show();
     }
 
     private void sendSms(Protocol p, String phone, String text) {
         if (p instanceof Mrim) {
             ((Mrim) p).sendSms(phone, text);
-            return;
         }
     }
 

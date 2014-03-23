@@ -771,8 +771,6 @@ public final class Xmpp extends Protocol implements FormListener {
     private static final int NICK = 0;
     private static final int PASSWORD = 1;
     private static final int AUTOJOIN = 2;
-    private static final int OLD_GATE = 3;
-
 
     private static Forms enterDataInvite = null;
     private static final int JID_MESS_TO = 7;
@@ -817,6 +815,7 @@ public final class Xmpp extends Protocol implements FormListener {
     void setConferenceInfo(String jid, String description) {
         if ((null != enterData) && enterConf.getUserId().equals(jid)) {
             enterData.addString(R.string.description, description);
+            enterData.invalidate(true);
         }
     }
 
@@ -837,7 +836,6 @@ public final class Xmpp extends Protocol implements FormListener {
                         join(enterConf);
                     }
                 }
-                //RosterHelper.getSawimActivity().updateRoster();
             }
             enterData.back();
             enterData = null;
@@ -847,7 +845,6 @@ public final class Xmpp extends Protocol implements FormListener {
             if (apply) {
                 String[] onlineConferenceI = Util.explode(onlineConference(getContactItems()), '|');
                 getConnection().sendInvite(onlineConferenceI[enterDataInvite.getSelectorValue(JID_MESS_TO)], enterDataInvite.getTextFieldValue(JID_INVITE_TO), enterDataInvite.getTextFieldValue(REASON_INVITE));
-                //RosterHelper.getSawimActivity().updateRoster();
                 Toast.makeText(SawimApplication.getContext(), R.string.invitation_sent, Toast.LENGTH_LONG).show();
             }
             enterDataInvite.back();

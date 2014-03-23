@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,9 +34,13 @@ import java.util.List;
 public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.OnClickListener {
 
     public static final String TAG = FormView.class.getSimpleName();
+    private TextView textView;
+    private ProgressBar progressBar;
+    private ScrollView scrollView;
     private LinearLayout listLayout;
     private Button okButton;
     private Button cancelButton;
+    private int padding;
 
     @Override
     public void onAttach(Activity a) {
@@ -65,10 +70,22 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.form, container, false);
-        LinearLayout rootLayout = (LinearLayout) v.findViewById(R.id.data_form);
+        RelativeLayout rootLayout = (RelativeLayout) v.findViewById(R.id.data_form);
+        textView = (TextView) v.findViewById(R.id.textView);
+        progressBar = (ProgressBar) v.findViewById(R.id.progressBar);
+        scrollView = (ScrollView) v.findViewById(R.id.data_form_scroll);
         listLayout = (LinearLayout) v.findViewById(R.id.data_form_linear);
+        padding = Util.dipToPixels(getActivity(), 6);
         if (!Scheme.isSystemBackground())
             rootLayout.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
+
+        updateForm(true);
+        if (Forms.getInstance().getWaitingString() != null) {
+            progressBar.setVisibility(View.VISIBLE);
+            scrollView.setVisibility(View.GONE);
+            textView.setVisibility(View.VISIBLE);
+            textView.setText(Forms.getInstance().getWaitingString());
+        }
         return v;
     }
 
@@ -105,11 +122,22 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
     }
 
     @Override
-    public void updateForm() {
+    public void updateForm(final boolean isLoad) {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                buildList();
+                textView.setVisibility(isLoad ? View.GONE : View.VISIBLE);
+                progressBar.setVisibility(isLoad ? View.GONE : View.VISIBLE);
+                scrollView.setVisibility(isLoad ? View.VISIBLE : View.GONE);
+                if (isLoad) {
+                    buildList();
+                }
+                if (Forms.getInstance().getErrorString() != null) {
+                    textView.setVisibility(View.VISIBLE);
+                    progressBar.setVisibility(View.GONE);
+                    scrollView.setVisibility(View.GONE);
+                    textView.setText(Forms.getInstance().getErrorString());
+                }
             }
         });
     }
@@ -150,50 +178,14 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
     private void buildList() {
         listLayout.removeAllViews();
         List<Forms.Control> controls = Forms.getInstance().controls;
-        int padding = Util.dipToPixels(getActivity(), 4);
         int fontSize = SawimApplication.getFontSize();
         for (int position = 0; position < controls.size(); ++position) {
             final Forms.Control c = controls.get(position);
-            ViewHolder holder = new ViewHolder();
-            holder.imageView = new ImageView(getActivity());
-            holder.descView = new TextView(getActivity());
-            holder.labelView = new TextView(getActivity());
-            holder.checkBox = new CheckBox(getActivity());
-            holder.spinner = new MySpinner(getActivity());
-            holder.seekBar = new SeekBar(getActivity());
-            holder.editText = new EditText(getActivity());
-            holder.button = new Button(getActivity());
-
-            final ImageView imageView = holder.imageView;
-            final TextView descView = holder.descView;
-            final TextView labelView = holder.labelView;
-            final CheckBox checkBox = holder.checkBox;
-            final MySpinner spinner = holder.spinner;
-            final SeekBar seekBar = holder.seekBar;
-            final EditText editText = holder.editText;
-            final Button button = holder.button;
-
-            prepareView(spinner, fontSize);
-            prepareView(seekBar, fontSize);
-            prepareView(descView, fontSize);
-            prepareView(checkBox, fontSize);
-            prepareView(editText, fontSize);
-            prepareView(labelView, fontSize);
-            prepareView(imageView, fontSize);
-
-            imageView.setPadding(0, padding, 0, padding);
-            labelView.setPadding(0, padding, 0, padding);
-            spinner.setPadding(0, padding, 0, padding);
-            seekBar.setPadding(0, padding, 0, padding);
-
-            imageView.setAdjustViewBounds(true);
-            imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-
             if (Forms.CONTROL_TEXT == c.type) {
-                drawText(c, labelView, descView, listLayout);
+                drawText(c, listLayout);
             } else if (Forms.CONTROL_INPUT == c.type) {
-                drawText(c, labelView, descView, listLayout);
-                editText.setVisibility(EditText.VISIBLE);
+                EditText editText = new EditText(getActivity());
+                drawText(c, listLayout);
                 editText.setHint(R.string.enter_the);
                 editText.setText(c.text);
                 editText.addTextChangedListener(new TextWatcher() {
@@ -211,7 +203,7 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
                 });
                 listLayout.addView(editText);
             } else if (Forms.CONTROL_CHECKBOX == c.type) {
-                checkBox.setVisibility(CheckBox.VISIBLE);
+                CheckBox checkBox = new CheckBox(getActivity());
                 checkBox.setText(c.description);
                 checkBox.setChecked(c.selected);
                 checkBox.setOnClickListener(new View.OnClickListener() {
@@ -223,9 +215,10 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
                 });
                 listLayout.addView(checkBox);
             } else if (Forms.CONTROL_SELECT == c.type) {
-                drawText(c, labelView, descView, listLayout);
-                spinner.setVisibility(Spinner.VISIBLE);
+                drawText(c, listLayout);
+                MySpinner spinner = new MySpinner(getActivity());
                 MySpinnerAdapter adapter = new MySpinnerAdapter(getActivity(), c.items);
+                spinner.setPadding(0, padding, 0, padding);
                 spinner.setAdapter(adapter);
                 spinner.setPrompt(c.description);
                 spinner.setSelection(c.current);
@@ -242,8 +235,9 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
                 });
                 listLayout.addView(spinner);
             } else if (Forms.CONTROL_GAUGE == c.type) {
-                drawText(c, labelView, descView, listLayout);
-                seekBar.setVisibility(SeekBar.VISIBLE);
+                drawText(c, listLayout);
+                SeekBar seekBar = new SeekBar(getActivity());
+                seekBar.setPadding(0, padding, 0, padding);
                 seekBar.setProgress(c.level);
                 seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                     @Override
@@ -262,11 +256,13 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
                 });
                 listLayout.addView(seekBar);
             } else if (Forms.CONTROL_GAUGE_FONT == c.type) {
-                descView.setVisibility(TextView.VISIBLE);
+                SeekBar seekBar = new SeekBar(getActivity());
+                final TextView descView = new TextView(getActivity());
+                descView.setTextSize(fontSize);
                 descView.setText(c.description + "(" + c.level + ")");
-                seekBar.setVisibility(SeekBar.VISIBLE);
                 seekBar.setMax(60);
                 seekBar.setProgress(c.level);
+                seekBar.setPadding(0, padding, 0, padding);
                 seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                     @Override
                     public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
@@ -287,13 +283,17 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
                 listLayout.addView(descView);
                 listLayout.addView(seekBar);
             } else if (Forms.CONTROL_IMAGE == c.type) {
-                drawText(c, labelView, descView, listLayout);
-                imageView.setVisibility(ImageView.VISIBLE);
+                final ImageView imageView = new ImageView(getActivity());
+                imageView.setPadding(0, padding, 0, padding);
+                imageView.setAdjustViewBounds(true);
+                imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
                 imageView.setImageDrawable(c.image);
+                drawText(c, listLayout);
                 listLayout.addView(imageView);
             } else if (Forms.CONTROL_LINK == c.type) {
-                drawText(c, labelView, descView, listLayout);
+                drawText(c, listLayout);
             } else if (Forms.CONTROL_BUTTON == c.type) {
+                Button button = new Button(getActivity());
                 button.setText(getText(c));
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -307,22 +307,16 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
         }
     }
 
-    private void prepareView(View view, int fontSize) {
-        view.setVisibility(View.GONE);
-        // EditText pass through this condition too
-        if (view instanceof TextView) {
-            ((TextView)view).setTextSize(fontSize);
-        }
-    }
-
-    private void drawText(Forms.Control c, TextView labelView, TextView descView, LinearLayout convertView) {
+    private void drawText(Forms.Control c, LinearLayout convertView) {
+        final TextView descView = new TextView(getActivity());
+        final TextView labelView = new TextView(getActivity());
         if (c.label != null) {
-            labelView.setVisibility(TextView.VISIBLE);
+            labelView.setPadding(0, padding, 0, padding);
             labelView.setText(c.label);
             convertView.addView(labelView);
         }
         if (c.description != null) {
-            descView.setVisibility(TextView.VISIBLE);
+            descView.setPadding(0, padding, 0, padding);
             descView.setText(c.description);
             convertView.addView(descView);
         }
@@ -334,17 +328,6 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
         if (c.label != null && c.description != null) s += "\n";
         if (c.description != null) s += c.description;
         return s;
-    }
-
-    static class ViewHolder {
-        ImageView imageView;
-        TextView descView;
-        TextView labelView;
-        CheckBox checkBox;
-        MySpinner spinner;
-        SeekBar seekBar;
-        EditText editText;
-        Button button;
     }
 
     static class MySpinnerAdapter extends BaseAdapter implements SpinnerAdapter {

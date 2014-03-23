@@ -3,7 +3,6 @@ package protocol.xmpp;
 import protocol.Profile;
 import ru.sawim.SawimApplication;
 import ru.sawim.R;
-import ru.sawim.SawimApplication;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
 import sawim.Options;
@@ -143,7 +142,7 @@ public class XmppRegistration implements Runnable, FormListener {
             case TYPE_NEW_ACCOUNT_DOMAIN:
                 String jid = form.getForm().getTextFieldValue(FORM_SERVER);
                 if (!StringConvertor.isEmpty(jid)) {
-                    form.setWainting();
+                    form.setWaiting();
                     requestForm(jid);
                     type = TYPE_NEW_ACCOUNT_CREATE;
                 }

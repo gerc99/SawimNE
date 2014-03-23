@@ -241,6 +241,7 @@ public final class HistoryStorageList implements Runnable, FormListener {
 
         } else if (searching == it) {
             frmFind.addString_(NOT_FOUND, text + "\n" + JLocale.getString(R.string.not_found));
+            frmFind.invalidate(true);
         }
     }
 
@@ -310,6 +311,5 @@ public final class HistoryStorageList implements Runnable, FormListener {
 
     void exportDone() {
         export = null;
-        //invalidate();
     }
 }

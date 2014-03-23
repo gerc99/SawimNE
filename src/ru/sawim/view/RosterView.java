@@ -97,7 +97,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         rosterListView.setOnItemClickListener(this);
         rosterViewLayout = new RosterViewRoot(SawimApplication.getCurrentActivity(), progressBar, rosterListView);
 
-        protocolsSpinner = new MySpinner(activity, null, (Build.VERSION.SDK_INT < 11)
+        protocolsSpinner = new MySpinner(activity, null, Build.VERSION.SDK_INT < 11
                 ? R.attr.actionDropDownStyle : android.R.attr.actionDropDownStyle);
         protocolsAdapter = new ProtocolsAdapter(activity);
     }

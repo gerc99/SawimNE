@@ -3,6 +3,7 @@ package sawim.modules;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
+import ru.sawim.ExceptionHandler;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
@@ -85,7 +86,7 @@ public final class DebugLog {
             text += String.format("\n%s.%s() %d", ste.getClassName(), ste.getMethodName(), ste.getLineNumber());
         }
         println(text);
-//        ExceptionHandler.reportOnlyHandler(SawimApplication.getInstance().getApplicationContext()).uncaughtException(null, e);
+        ExceptionHandler.reportOnlyHandler(SawimApplication.getInstance().getApplicationContext()).uncaughtException(null, e);
         e.printStackTrace();
     }
 

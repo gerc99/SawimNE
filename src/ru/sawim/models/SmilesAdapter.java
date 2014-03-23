@@ -4,16 +4,11 @@ import DrawControls.icons.AniIcon;
 import DrawControls.icons.Icon;
 import android.content.Context;
 import android.graphics.drawable.AnimationDrawable;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.SoundEffectConstants;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.accessibility.AccessibilityEvent;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import ru.sawim.R;
 import sawim.modules.Emotions;
 
 /**
@@ -54,8 +49,9 @@ public class SmilesAdapter extends BaseAdapter {
         ItemWrapper wr;
         if (convView == null) {
             convView = new ImageView(baseContext) {
-                public void onMeasure(int paramAnonymousInt1, int paramAnonymousInt2) {
-                    setMeasuredDimension(View.MeasureSpec.getSize(paramAnonymousInt1), View.MeasureSpec.getSize(paramAnonymousInt1));
+                @Override
+                protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+                    setMeasuredDimension(View.MeasureSpec.getSize(widthMeasureSpec), View.MeasureSpec.getSize(widthMeasureSpec));
                 }
             };
             ((ImageView) convView).setScaleType(ImageView.ScaleType.CENTER);

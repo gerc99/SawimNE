@@ -3,6 +3,7 @@ package ru.sawim.models.form;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import ru.sawim.SawimApplication;
 import ru.sawim.view.FormView;
 import ru.sawim.view.preference.PreferenceFormView;
@@ -40,6 +41,8 @@ public class Forms {
     private CharSequence caption;
     private static Forms instance;
     private boolean isAccept;
+    private String waitingString;
+    private String errorString;
 
     public static class Control {
         public int id;
@@ -64,6 +67,22 @@ public class Forms {
         caption = caption_;
         formListener = l;
         this.isAccept = isAccept;
+    }
+
+    public String getErrorString() {
+        return errorString;
+    }
+
+    public void setErrorString(String errorString) {
+        this.errorString = errorString;
+    }
+
+    public String getWaitingString() {
+        return waitingString;
+    }
+
+    public void setWaitingString(String waitingString) {
+        this.waitingString = waitingString;
     }
 
     public static Forms getInstance() {
@@ -95,7 +114,7 @@ public class Forms {
     }
 
     public interface OnUpdateForm {
-        void updateForm();
+        void updateForm(boolean isLoad);
 
         void back();
     }
@@ -114,15 +133,17 @@ public class Forms {
 
     public void show() {
         FormView.show();
+        invalidate(true);
     }
 
     public void preferenceFormShow() {
         PreferenceFormView.show();
+        invalidate(true);
     }
 
-    public void invalidate() {
+    public void invalidate(boolean isLoad) {
         if (updateFormListener != null)
-            updateFormListener.updateForm();
+            updateFormListener.updateForm(isLoad);
     }
 
     public void back() {
@@ -147,7 +168,6 @@ public class Forms {
 
     private void add(Control c) {
         controls.add(c);
-        invalidate();
     }
 
     public int getSize() {
@@ -289,7 +309,7 @@ public class Forms {
             for (int num = 0; num < controls.size(); ++num) {
                 if ((controls.get(num)).id == controlId) {
                     controls.remove(num);
-                    invalidate();
+                    invalidate(true);
                     return;
                 }
             }
@@ -313,7 +333,6 @@ public class Forms {
     public void setTextFieldLabel(int controlId, String desc) {
         Control c = get(controlId);
         c.description = desc;
-        invalidate();
     }
 
     public int getGaugeValue(int controlId) {

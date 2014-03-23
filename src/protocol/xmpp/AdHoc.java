@@ -76,7 +76,9 @@ public final class AdHoc implements FormListener, ControlStateListener {
         } else {
             int label = loaded ? R.string.commands_not_found : R.string.receiving_commands;
             commandsListForm.addString(JLocale.getString(label));
+            commandsListForm.invalidate(true);
         }
+        commandsListForm.invalidate(loaded);
     }
 
     private void requestCommandsForCurrentResource() {
@@ -116,7 +118,7 @@ public final class AdHoc implements FormListener, ControlStateListener {
             nodes[i] = StringConvertor.notNull(item.getAttribute("node"));
             names[i] = StringConvertor.notNull(item.getAttribute(XmlNode.S_NAME));
         }
-        updateForm(true);
+        updateForm(count == commandsListForm.getSize());
     }
 
     private int commandIndex;

@@ -279,13 +279,14 @@ public class SawimActivity extends ActionBarActivity {
     public boolean onPrepareOptionsMenu(Menu menu) {
         ChatView chatView = getChatView();
         VirtualListView virtualListView = (VirtualListView) getSupportFragmentManager().findFragmentByTag(VirtualListView.TAG);
+        SawimFragment formView = (SawimFragment) getSupportFragmentManager().findFragmentByTag(FormView.TAG);
         SawimFragment mainPreferenceView = (SawimFragment) getSupportFragmentManager().findFragmentByTag(MainPreferenceView.TAG);
         SawimFragment preferenceView = (SawimFragment) getSupportFragmentManager().findFragmentByTag(MainPreferenceView.TAG);
         menu.clear();
         if (virtualListView != null) {
             virtualListView.onPrepareOptionsMenu_(menu);
             return true;
-        } else if (preferenceView != null || mainPreferenceView != null) {
+        } else if (formView != null || preferenceView != null || mainPreferenceView != null) {
             return false;
         } else if (chatView != null && !SawimApplication.isManyPane()) {
             chatView.onPrepareOptionsMenu_(menu);

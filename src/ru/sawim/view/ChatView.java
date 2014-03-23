@@ -13,12 +13,10 @@ import android.os.*;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.*;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -48,7 +46,6 @@ import ru.sawim.widget.chat.ChatInputBarView;
 import ru.sawim.widget.chat.ChatListsView;
 import ru.sawim.widget.chat.ChatViewRoot;
 import sawim.Clipboard;
-import sawim.ExternalApi;
 import sawim.Options;
 import sawim.chat.Chat;
 import sawim.chat.ChatHistory;
@@ -201,7 +198,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
             drawerToggle.setDrawerIndicatorEnabled(true);
             drawerToggle.syncState();
         }
-        chatsImage.setBackgroundColor(0);
+        chatsImage.setBackgroundDrawable(null);
         chatsImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -242,7 +239,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         });
         if (SawimApplication.isManyPane()) {
             menuButton.setVisibility(ImageButton.VISIBLE);
-            menuButton.setBackgroundColor(0);
+            menuButton.setBackgroundDrawable(null);
             menuButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -284,7 +281,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
             });
         } else
             menuButton.setVisibility(ImageButton.GONE);
-        smileButton.setBackgroundColor(0);
+        smileButton.setBackgroundDrawable(null);
         smileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -347,7 +344,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
             sendButton.setVisibility(ImageButton.GONE);
         } else {
             sendButton.setVisibility(ImageButton.VISIBLE);
-            sendButton.setBackgroundColor(0);
+            sendButton.setBackgroundDrawable(null);
             sendButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
