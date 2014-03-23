@@ -74,11 +74,12 @@ public final class AdHoc implements FormListener, ControlStateListener {
         if (0 < names.length) {
             commandsListForm.addSelector(FORM_COMMAND, R.string.commands, names, 0);
         } else {
-            int label = loaded ? R.string.commands_not_found : R.string.receiving_commands;
-            commandsListForm.addString(JLocale.getString(label));
-            commandsListForm.invalidate(true);
+            if (loaded)
+                commandsListForm.setErrorString(JLocale.getString(R.string.commands_not_found));
+            else
+                commandsListForm.setWaitingString(JLocale.getString(R.string.receiving_commands));
         }
-        commandsListForm.invalidate(loaded);
+        commandsListForm.invalidate(true);
     }
 
     private void requestCommandsForCurrentResource() {
@@ -118,7 +119,7 @@ public final class AdHoc implements FormListener, ControlStateListener {
             nodes[i] = StringConvertor.notNull(item.getAttribute("node"));
             names[i] = StringConvertor.notNull(item.getAttribute(XmlNode.S_NAME));
         }
-        updateForm(count == commandsListForm.getSize());
+        updateForm(true);
     }
 
     private int commandIndex;
