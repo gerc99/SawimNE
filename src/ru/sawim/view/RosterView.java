@@ -63,7 +63,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     private Handler handler;
     private ProtocolsAdapter protocolsAdapter;
     private MySpinner protocolsSpinner;
-    private ImageButton chatsImage;
+    private MyImageButton chatsImage;
 
     @Override
     public void onAttach(Activity activity) {
@@ -72,7 +72,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         handler = new Handler(this);
         rosterBarLayout = new LinearLayout(getActivity());
         barLinearLayout = new LinearLayout(activity);
-        chatsImage = new ImageButton(getActivity());
+        chatsImage = new MyImageButton(getActivity());
         if (progressBar == null) {
             progressBar = new ProgressBar(activity, null, android.R.attr.progressBarStyleHorizontal);
             progressBar.setMax(100);
@@ -225,7 +225,6 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
             }
         });
 
-        chatsImage.setBackgroundColor(0);
         chatsImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

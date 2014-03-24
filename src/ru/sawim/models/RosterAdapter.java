@@ -178,12 +178,12 @@ public class RosterAdapter extends BaseAdapter {
             rosterItemView.itemFifthImage = ((BitmapDrawable) Tracking.getTrackIcon(id)).getBitmap();
     }
 
-    public Drawable getImageChat(Chat chat, boolean showMess) {
+    public BitmapDrawable getImageChat(Chat chat, boolean showMess) {
         if (chat.getContact().isTyping()) {
             return Message.getIcon(Message.ICON_TYPE);
         } else {
             Icon icStatus = chat.getContact().getLeftIcon(chat.getProtocol());
-            Drawable icMess = Message.getIcon((byte) chat.getContact().getUnreadMessageIcon());
+            BitmapDrawable icMess = Message.getIcon((byte) chat.getContact().getUnreadMessageIcon());
             return icMess == null || !showMess ? icStatus.getImage() : icMess;
         }
     }

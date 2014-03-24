@@ -1,4 +1,4 @@
-package ru.sawim;
+package ru.sawim.receiver;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import protocol.Protocol;
+import ru.sawim.Options;
 import ru.sawim.roster.RosterHelper;
 
 public class NetworkStateReceiver extends BroadcastReceiver {

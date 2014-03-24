@@ -34,12 +34,6 @@ final class Socket implements Runnable {
     private boolean secured;
     private final Vector<Object> read = new Vector<Object>();
 
-    /**
-     * Creates a new instance of Socket
-     */
-    public Socket() {
-    }
-
     public void startCompression() throws IOException, NoSuchAlgorithmException {
         zIn = new ZLibInputStream(socket.getIs());
         zOut = new ZLibOutputStream(socket.getOs());
@@ -130,29 +124,6 @@ final class Socket implements Runnable {
     char readChar() throws SawimException {
         try {
             return (char) (readByte() & 0xff);
-            /*byte bt = readByte();
-            if (0 <= bt) {
-                return (char) bt;
-            }
-            if ((bt & 0xE0) == 0xC0) {
-                byte bt2 = readByte();
-                return (char) (((bt & 0x3F) << 6) | (bt2 & 0x3F));
-
-            } else if ((bt & 0xF0) == 0xE0) {
-                byte bt2 = readByte();
-                byte bt3 = readByte();
-                return (char) (((bt & 0x1F) << 12) | ((bt2 & 0x3F) << 6) | (bt3 & 0x3F));
-
-            } else {
-                int seqLen = 0;
-                if ((bt & 0xF8) == 0xF0) seqLen = 3;
-                else if ((bt & 0xFC) == 0xF8) seqLen = 4;
-                else if ((bt & 0xFE) == 0xFC) seqLen = 5;
-                for (; 0 < seqLen; --seqLen) {
-                    readByte();
-                }
-                return '?';
-            }*/
         } catch (SawimException e) {
             DebugLog.panic("readChar je ", e);
             throw e;

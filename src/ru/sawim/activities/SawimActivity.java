@@ -294,7 +294,8 @@ public class SawimActivity extends ActionBarActivity {
         }
         Protocol p = RosterHelper.getInstance().getCurrentProtocol();
         if (p != null) {
-            if (Options.getInt(Options.OPTION_CURRENT_SPINNER_ITEM) != 2) {
+            int count = RosterHelper.getInstance().getProtocolCount();
+            if (Options.getInt(Options.OPTION_CURRENT_SPINNER_ITEM) != count) {
                 menu.add(Menu.NONE, MENU_CONNECT, Menu.NONE, R.string.connect)
                         .setTitle((p.isConnected() || p.isConnecting()) ? R.string.disconnect : R.string.connect);
                 menu.add(Menu.NONE, MENU_STATUS, Menu.NONE, R.string.status);
@@ -303,14 +304,13 @@ public class SawimActivity extends ActionBarActivity {
                 if ((p instanceof Icq) || (p instanceof Mrim))
                     menu.add(Menu.NONE, MENU_PRIVATE_STATUS, Menu.NONE, R.string.private_status);
             }
-            int count = RosterHelper.getInstance().getProtocolCount();
             for (int i = 0; i < count; ++i) {
                 Protocol pr = RosterHelper.getInstance().getProtocol(i);
                 if ((pr instanceof Mrim) && pr.isConnected()) {
                     menu.add(Menu.NONE, MENU_SEND_SMS, Menu.NONE, R.string.send_sms);
                 }
             }
-            if (Options.getInt(Options.OPTION_CURRENT_SPINNER_ITEM) != 2) {
+            if (Options.getInt(Options.OPTION_CURRENT_SPINNER_ITEM) != count) {
                 if (p.isConnected()) {
                     if (p instanceof Xmpp) {
                         if (((Xmpp) p).hasS2S()) {

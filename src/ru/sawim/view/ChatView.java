@@ -39,6 +39,7 @@ import ru.sawim.models.RosterAdapter;
 import ru.sawim.text.TextFormatter;
 import ru.sawim.view.menu.JuickMenu;
 import ru.sawim.view.menu.MyMenu;
+import ru.sawim.widget.MyImageButton;
 import ru.sawim.widget.MyListView;
 import ru.sawim.widget.Util;
 import ru.sawim.widget.chat.ChatBarView;
@@ -85,10 +86,10 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
     private MucUsersView mucUsersView = new MucUsersView();
     private ActionBarDrawerToggle drawerToggle;
     private DrawerLayout drawerLayout;
-    private ImageButton chatsImage;
-    private ImageButton menuButton;
-    private ImageButton smileButton;
-    private ImageButton sendButton;
+    private MyImageButton chatsImage;
+    private MyImageButton menuButton;
+    private MyImageButton smileButton;
+    private MyImageButton sendButton;
     private ChatBarView chatBarLayout;
 
     private Handler handler;
@@ -99,11 +100,11 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         handler = new Handler(this);
-        chatsImage = new ImageButton(activity);
+        chatsImage = new MyImageButton(activity);
 
-        menuButton = new ImageButton(activity);
-        smileButton = new ImageButton(activity);
-        sendButton = new ImageButton(activity);
+        menuButton = new MyImageButton(activity);
+        smileButton = new MyImageButton(activity);
+        sendButton = new MyImageButton(activity);
         messageEditor = new EditText(activity);
 
         chatBarLayout = new ChatBarView(activity, chatsImage);
@@ -239,7 +240,6 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         });
         if (SawimApplication.isManyPane()) {
             menuButton.setVisibility(ImageButton.VISIBLE);
-            menuButton.setBackgroundDrawable(null);
             menuButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -281,7 +281,6 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
             });
         } else
             menuButton.setVisibility(ImageButton.GONE);
-        smileButton.setBackgroundDrawable(null);
         smileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -344,7 +343,6 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
             sendButton.setVisibility(ImageButton.GONE);
         } else {
             sendButton.setVisibility(ImageButton.VISIBLE);
-            sendButton.setBackgroundDrawable(null);
             sendButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -461,7 +459,6 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         if (SawimApplication.isManyPane()) adapter.isRepaint = true;
         else drawerLayout.setDrawerLockMode(contact.isConference() ?
                 DrawerLayout.LOCK_MODE_UNLOCKED : DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-        chatBarLayout.setVisibilityLabelImage(contact.isConference() ? ImageView.GONE : ImageView.VISIBLE);
 
         setPosition(unreadMessageCount);
     }
@@ -677,7 +674,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
             }
         }
         if (chatsSpinnerAdapter != null && chat != null)
-            chatBarLayout.updateLabelIcon(chatsSpinnerAdapter.getImageChat(chat, false));
+            chatBarLayout.updateLabelIcon(contact.isConference() ? null : chatsSpinnerAdapter.getImageChat(chat, false));
     }
 
     private void updateRoster() {

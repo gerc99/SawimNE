@@ -1,6 +1,7 @@
 package ru.sawim.widget.chat;
 
 import android.content.Context;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.Gravity;
 import android.view.View;
@@ -11,6 +12,7 @@ import ru.sawim.SawimResources;
 import ru.sawim.Scheme;
 import ru.sawim.widget.IcsLinearLayout;
 import ru.sawim.widget.LabelView;
+import ru.sawim.widget.SimpleItemView;
 
 /**
  * Created with IntelliJ IDEA.
@@ -21,8 +23,7 @@ import ru.sawim.widget.LabelView;
  */
 public class ChatBarView extends IcsLinearLayout {
 
-    ImageView imageView;
-    LabelView textView;
+    SimpleItemView itemView;
 
     public ChatBarView(Context context, View chatsImage) {
         super(context,
@@ -36,14 +37,9 @@ public class ChatBarView extends IcsLinearLayout {
 
         LinearLayout.LayoutParams labelLayoutParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
         labelLayoutParams.weight = 1;
-        LinearLayout linearLayout = new LinearLayout(context);
-        linearLayout.setGravity(Gravity.CENTER);
-        imageView = new ImageView(context);
-        imageView.setPadding(0, 0, 10, 0);
-        linearLayout.addView(imageView);
-        textView = new LabelView(context);
-        linearLayout.addView(textView);
-        addViewInLayout(linearLayout, 0, labelLayoutParams);
+
+        itemView = new SimpleItemView(context);
+        addViewInLayout(itemView, 0, labelLayoutParams);
 
         if (!SawimApplication.isManyPane()) {
             LinearLayout.LayoutParams chatsImageLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
@@ -61,17 +57,16 @@ public class ChatBarView extends IcsLinearLayout {
             getChildAt(1).setVisibility(visibility);
     }
 
-    public void setVisibilityLabelImage(int visibility) {
-        imageView.setVisibility(visibility);
-    }
-
     public void updateTextView(String text) {
-        textView.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
-        textView.setTextSize(SawimApplication.getFontSize());
-        textView.setText(text);
+        itemView.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
+        itemView.setTextSize(SawimApplication.getFontSize());
+        itemView.setText(text);
     }
 
-    public void updateLabelIcon(Drawable drawable) {
-        imageView.setImageDrawable(drawable);
+    public void updateLabelIcon(BitmapDrawable drawable) {
+        if (drawable == null)
+            itemView.setImage(null);
+        else
+            itemView.setImage(drawable.getBitmap());
     }
 }

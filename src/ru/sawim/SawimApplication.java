@@ -15,6 +15,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Surface;
 import android.view.WindowManager;
 import org.microemu.util.AndroidRecordStoreManager;
+import ru.sawim.receiver.NetworkStateReceiver;
 import ru.sawim.service.SawimService;
 import ru.sawim.service.SawimServiceConnection;
 import ru.sawim.text.TextFormatter;

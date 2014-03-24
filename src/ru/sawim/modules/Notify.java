@@ -85,7 +85,6 @@ public class Notify implements Runnable {
             case NOTIFY_MULTIMESSAGE:
             case NOTIFY_ALARM:
             case NOTIFY_BLOG:
-
                 return true;
         }
         return false;
@@ -106,17 +105,14 @@ public class Notify implements Runnable {
                 vibrate = SawimApplication.isPaused() ? LONG_DURATION : 200;
             }
         }
-
         int volume = getVolume();
         boolean play = isPlay && (volume > 0);
         String file = play ? files[notType] : null;
-
         if (0 < vibrate) {
             vibrate(vibrate);
         }
         if (null != file) {
             safePlay(file);
-
         }
     }
 
@@ -149,7 +145,6 @@ public class Notify implements Runnable {
                 return;
             }
             next = now + 3000;
-
         } else {
             next = now + 2000;
         }

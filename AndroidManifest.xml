@@ -83,14 +83,14 @@
                   android:launchMode="singleTask"/>
 
         <service android:enabled="true" android:name=".service.SawimService" android:stopWithTask="true"/>
-        <receiver android:name=".GCMBroadcastReceiver" android:permission="com.google.android.c2dm.permission.SEND">
+        <receiver android:name=".receiver.GCMBroadcastReceiver" android:permission="com.google.android.c2dm.permission.SEND">
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
                 <action android:name="com.google.android.c2dm.intent.REGISTRATION"/>
                 <category android:name="ru.sawim"/>
             </intent-filter>
         </receiver>
-        <service android:name=".GCMIntentService"/>
+        <service android:name=".service.GCMIntentService"/>
         <meta-data
                 android:name="com.google.android.gms.version"
                 android:value="@integer/google_play_services_version" />
