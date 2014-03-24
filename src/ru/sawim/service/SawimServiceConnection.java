@@ -25,6 +25,7 @@ public class SawimServiceConnection implements ServiceConnection {
         // This is called when the connection with the service has been unexpectedly disconnected - process crashed.
         mService = null;
         SawimApplication.getInstance().isBindService = false;
+        SawimApplication.getInstance().quit(true);
     }
 
     public void send(Message msg) {

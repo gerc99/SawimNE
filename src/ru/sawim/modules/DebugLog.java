@@ -52,7 +52,7 @@ public final class DebugLog {
 
     public static void println(String text) {
         System.out.println(text);
-        instance.print(text);
+        //instance.print(text);
     }
 
     public static void panic(String str) {
@@ -79,15 +79,17 @@ public final class DebugLog {
     }
 
     public static void panic(String str, Throwable e) {
-        System.err.println("panic: " + _(str));
         String text = "panic: " + _(str) + " " + e.getMessage()
                 + " (" + e.getClass().getName() + ")";
         for (StackTraceElement ste : e.getStackTrace()) {
             text += String.format("\n%s.%s() %d", ste.getClassName(), ste.getMethodName(), ste.getLineNumber());
         }
         println(text);
-        ExceptionHandler.reportOnlyHandler(SawimApplication.getInstance().getApplicationContext()).uncaughtException(null, e);
         e.printStackTrace();
+    }
+
+    public static void panic(Throwable e) {
+        ExceptionHandler.reportOnlyHandler(SawimApplication.getInstance().getApplicationContext()).uncaughtException(null, e);
     }
 
     public static long profilerStart() {

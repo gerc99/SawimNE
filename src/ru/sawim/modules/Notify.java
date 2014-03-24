@@ -2,10 +2,13 @@ package ru.sawim.modules;
 
 import android.content.Context;
 import android.os.Vibrator;
+import ru.sawim.R;
 import ru.sawim.SawimApplication;
+import ru.sawim.roster.RosterHelper;
 import ru.sawim.sound.SoundPlayer;
 import ru.sawim.Options;
 import ru.sawim.comm.Util;
+import ru.sawim.util.JLocale;
 
 public class Notify implements Runnable {
 
@@ -21,10 +24,8 @@ public class Notify implements Runnable {
     private static final int VIBRA_LOCKED_ONLY = 2;
     private static Notify _this = new Notify();
     private static String[] files = {null, null, null, null, null, null, null};
-    private static String fileVibrate = null;
     final long[] pattern = {0, 200, 100, 100, 100, 200, 0};
     private final Object syncObject = new Object();
-    private String nextMelody = null;
     private long nextPlayTime = 0;
     private int playingType = 0;
     private boolean isPlay;
@@ -56,31 +57,6 @@ public class Notify implements Runnable {
 
     public static boolean isSound(int notType) {
         return !Options.getBoolean(Options.OPTION_SILENT_MODE) && isSoundNotification(notType);
-    }
-
-    private String getMimeType(String ext) {
-        if ("mp3".equals(ext)) {
-            return "audio/mpeg";
-        }
-        if ("mid".equals(ext) || "midi".equals(ext)) {
-            return "audio/midi";
-        }
-        if ("amr".equals(ext)) {
-            return "audio/amr";
-        }
-        if ("mmf".equals(ext)) {
-            return "audio/mmf";
-        }
-        if ("imy".equals(ext)) {
-            return "audio/iMelody";
-        }
-        if ("aac".equals(ext)) {
-            return "audio/aac";
-        }
-        if ("m4a".equals(ext)) {
-            return "audio/m4a";
-        }
-        return "audio/X-wav";
     }
 
     private static final int LONG_DURATION = 500;
@@ -121,7 +97,6 @@ public class Notify implements Runnable {
         if (NOTIFY_ALARM == notType) {
             vibrate = 1500;
         } else {
-
             int vibraKind = Options.getInt(Options.OPTION_VIBRATOR);
             if ((VIBRA_LOCKED_ONLY == vibraKind)) {
                 vibraKind = VIBRA_OFF;
@@ -244,30 +219,21 @@ public class Notify implements Runnable {
         return null;
     }
 
-    public void changeSoundMode(boolean showPopup) {
+    public void changeSoundMode() {
         boolean newValue = !Options.getBoolean(Options.OPTION_SILENT_MODE);
         closePlayer();
         Options.setBoolean(Options.OPTION_SILENT_MODE, newValue);
         Options.safeSave();
-        if (showPopup) {
-            String text = newValue ? "#sound_is_off" : "#sound_is_on";
-            //new Popup(JLocale.getString(text)).show();
-        }
         vibrate(newValue ? 0 : 100);
     }
 
     public void initSounds() {
         files[NOTIFY_ONLINE] = selectSoundType("/online.");
-
         files[NOTIFY_MESSAGE] = selectSoundType("/message.");
         files[NOTIFY_TYPING] = selectSoundType("/typing.");
         files[NOTIFY_ALARM] = selectSoundType("/alarm.");
         files[NOTIFY_RECONNECT] = selectSoundType("/reconnect.");
         files[NOTIFY_BLOG] = selectSoundType("/blog.");
-
-        if (testSoundFile("/vibrate.imy")) {
-            fileVibrate = "/vibrate.imy";
-        }
     }
 
     public boolean hasAnySound() {

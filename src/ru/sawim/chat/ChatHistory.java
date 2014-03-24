@@ -452,8 +452,9 @@ public final class ChatHistory {
                     s.addRecord(out.toByteArray());
                 }
             }
-        } catch (Exception ignored) {
-            Log.e("saveUnreadMessages", ignored.getMessage());
+        } catch (Exception e) {
+            if (e != null)
+                Log.e("saveUnreadMessages", e.getMessage());
         }
         s.close();
     }

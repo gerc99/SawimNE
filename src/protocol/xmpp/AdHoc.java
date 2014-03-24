@@ -79,7 +79,7 @@ public final class AdHoc implements FormListener, ControlStateListener {
             else
                 commandsListForm.setWaitingString(JLocale.getString(R.string.receiving_commands));
         }
-        commandsListForm.invalidate(true);
+        commandsListForm.invalidate(loaded);
     }
 
     private void requestCommandsForCurrentResource() {

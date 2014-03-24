@@ -294,14 +294,15 @@ public class SawimActivity extends ActionBarActivity {
         }
         Protocol p = RosterHelper.getInstance().getCurrentProtocol();
         if (p != null) {
-            menu.add(Menu.NONE, MENU_CONNECT, Menu.NONE, R.string.connect)
-                    .setTitle((p.isConnected() || p.isConnecting()) ? R.string.disconnect : R.string.connect);
-            menu.add(Menu.NONE, MENU_STATUS, Menu.NONE, R.string.status);
-            if (p.getXStatusInfo() != null)
-                menu.add(Menu.NONE, MENU_XSTATUS, Menu.NONE, R.string.xstatus);
-            if ((p instanceof Icq) || (p instanceof Mrim))
-                menu.add(Menu.NONE, MENU_PRIVATE_STATUS, Menu.NONE, R.string.private_status);
-
+            if (Options.getInt(Options.OPTION_CURRENT_SPINNER_ITEM) != 2) {
+                menu.add(Menu.NONE, MENU_CONNECT, Menu.NONE, R.string.connect)
+                        .setTitle((p.isConnected() || p.isConnecting()) ? R.string.disconnect : R.string.connect);
+                menu.add(Menu.NONE, MENU_STATUS, Menu.NONE, R.string.status);
+                if (p.getXStatusInfo() != null)
+                    menu.add(Menu.NONE, MENU_XSTATUS, Menu.NONE, R.string.xstatus);
+                if ((p instanceof Icq) || (p instanceof Mrim))
+                    menu.add(Menu.NONE, MENU_PRIVATE_STATUS, Menu.NONE, R.string.private_status);
+            }
             int count = RosterHelper.getInstance().getProtocolCount();
             for (int i = 0; i < count; ++i) {
                 Protocol pr = RosterHelper.getInstance().getProtocol(i);
@@ -309,23 +310,25 @@ public class SawimActivity extends ActionBarActivity {
                     menu.add(Menu.NONE, MENU_SEND_SMS, Menu.NONE, R.string.send_sms);
                 }
             }
-            if (p.isConnected()) {
-                if (p instanceof Xmpp) {
-                    if (((Xmpp) p).hasS2S()) {
-                        menu.add(Menu.NONE, MENU_DISCO, Menu.NONE, R.string.service_discovery);
-                    }
-                }
-                menu.add(Menu.NONE, MENU_GROUPS, Menu.NONE, R.string.manage_contact_list);
-                if (p instanceof Icq) {
-                    menu.add(Menu.NONE, MENU_MYSELF, Menu.NONE, R.string.myself);
-                } else {
+            if (Options.getInt(Options.OPTION_CURRENT_SPINNER_ITEM) != 2) {
+                if (p.isConnected()) {
                     if (p instanceof Xmpp) {
-                        menu.add(Menu.NONE, MENU_NOTES, Menu.NONE, R.string.notes);
+                        if (((Xmpp) p).hasS2S()) {
+                            menu.add(Menu.NONE, MENU_DISCO, Menu.NONE, R.string.service_discovery);
+                        }
                     }
-                    if (p.hasVCardEditor())
+                    menu.add(Menu.NONE, MENU_GROUPS, Menu.NONE, R.string.manage_contact_list);
+                    if (p instanceof Icq) {
                         menu.add(Menu.NONE, MENU_MYSELF, Menu.NONE, R.string.myself);
-                    if (p instanceof Mrim)
-                        menu.add(Menu.NONE, MENU_MICROBLOG, Menu.NONE, R.string.microblog);
+                    } else {
+                        if (p instanceof Xmpp) {
+                            menu.add(Menu.NONE, MENU_NOTES, Menu.NONE, R.string.notes);
+                        }
+                        if (p.hasVCardEditor())
+                            menu.add(Menu.NONE, MENU_MYSELF, Menu.NONE, R.string.myself);
+                        if (p instanceof Mrim)
+                            menu.add(Menu.NONE, MENU_MICROBLOG, Menu.NONE, R.string.microblog);
+                    }
                 }
             }
         }
@@ -372,7 +375,7 @@ public class SawimActivity extends ActionBarActivity {
                 new SmsForm(null, null).show();
                 break;
             case MENU_SOUND:
-                Notify.getSound().changeSoundMode(false);
+                Notify.getSound().changeSoundMode();
                 break;
             case MENU_OPTIONS:
                 MainPreferenceView.show();

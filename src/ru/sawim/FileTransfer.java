@@ -345,7 +345,7 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
-                DebugLog.panic("send file", ex);
+                DebugLog.panic(ex);
                 Log.e(TAG, "Error during POST");
                 throw new SawimException(194, 0);
             } finally {
