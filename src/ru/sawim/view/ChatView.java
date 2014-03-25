@@ -199,7 +199,6 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
             drawerToggle.setDrawerIndicatorEnabled(true);
             drawerToggle.syncState();
         }
-        chatsImage.setBackgroundDrawable(null);
         chatsImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

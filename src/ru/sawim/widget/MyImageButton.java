@@ -30,7 +30,6 @@ public class MyImageButton extends ImageButton {
     private void init() {
         setBackgroundResource(Scheme.isBlack()
                 ? R.drawable.abc_list_selector_holo_dark : R.drawable.abc_list_selector_holo_light);
-        setScaleType(ImageView.ScaleType.CENTER_INSIDE);
         setMinimumWidth(Util.dipToPixels(getContext(), 45));
         setMinimumHeight(Util.dipToPixels(getContext(), 40));
     }
