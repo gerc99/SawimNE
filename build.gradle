@@ -58,4 +58,27 @@ android {
         compile 'com.android.support:appcompat-v7:19.0.1'
         compile 'com.viewpagerindicator:library:2.4.1@aar'
     }
+    // signing config
+    if(file("keystore.properties").exists()) {
+        Properties props = new Properties()
+        props.load(new FileInputStream(file("keystore.properties")))
+
+        signingConfigs {
+            sawim {
+                storeFile file(props["key.store"])
+                storePassword props["key.store.password"]
+                keyAlias props["key.alias"]
+                keyPassword props["key.alias.password"]
+            }
+        }
+
+        buildTypes {
+            release {
+                runProguard true
+                proguardFile getDefaultProguardFile('proguard-android.txt')
+                proguardFile file("proguard-android.txt")
+                signingConfig signingConfigs.sawim
+            }
+        }
+    }
 }
