@@ -67,7 +67,7 @@ public class RecordEnumerationImpl {
     }
 
     public byte[] nextRecord()
-            throws Exception, Exception, Exception {
+            throws Exception {
         if (!recordStoreImpl.isOpen()) {
             throw new Exception();
         }

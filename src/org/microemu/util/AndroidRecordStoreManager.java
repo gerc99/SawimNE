@@ -74,7 +74,7 @@ public class AndroidRecordStoreManager {
     }
 
     public void deleteRecordStore(final String recordStoreName)
-            throws Exception, Exception {
+            throws Exception {
         initializeIfNecessary();
 
         Object value = recordStores.get(recordStoreName);
@@ -151,7 +151,7 @@ public class AndroidRecordStoreManager {
     }
 
     public void deleteRecord(RecordStoreImpl recordStoreImpl, int recordId)
-            throws Exception, Exception {
+            throws Exception {
         deleteFromDisk(recordStoreImpl, recordId);
     }
 
@@ -171,7 +171,7 @@ public class AndroidRecordStoreManager {
 
 
     public void saveRecord(RecordStoreImpl recordStoreImpl, int recordId)
-            throws Exception, Exception {
+            throws Exception {
         saveToDisk(recordStoreImpl, recordId);
     }
 

@@ -68,7 +68,6 @@ public final class Clipboard {
             }
         } catch (Throwable e) {
             ru.sawim.modules.DebugLog.panic("get clipboard", e);
-            // do nothing
         }
         return text.get();
     }
