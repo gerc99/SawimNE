@@ -90,10 +90,11 @@ public class ProtocolsAdapter extends BaseAdapter {
         }
         SimpleItemView itemView = (SimpleItemView) convertView;
         Protocol protocol = getItem(position);
+        if (protocol == null) return convertView;
         boolean isActiveContacts = position == RosterHelper.getInstance().getProtocolCount();
         if (!isActiveContacts) {
             Icon statusIcon = protocol.getCurrentStatusIcon();
-            if (statusIcon != null && position != RosterHelper.getInstance().getProtocolCount())
+            if (statusIcon != null)
                 itemView.setImage(statusIcon.getImage().getBitmap());
         }
         itemView.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));

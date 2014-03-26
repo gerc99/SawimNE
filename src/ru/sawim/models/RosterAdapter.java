@@ -202,7 +202,7 @@ public class RosterAdapter extends BaseAdapter {
         Object o = getItem(i);
         RosterItemView rosterItemView = (RosterItemView) convertView;
         rosterItemView.setNull();
-        if (o != null)
+        if (protocol != null && o != null)
             if (type == RosterHelper.ACTIVE_CONTACTS) {
                 if (o instanceof String) {
                     rosterItemView.addLayer((String) o);
