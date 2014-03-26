@@ -15,6 +15,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
+import android.util.Log;
 import android.view.*;
 import android.widget.*;
 import protocol.Contact;
@@ -341,6 +342,15 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
                     protocolsAdapter.notifyDataSetChanged();
             }
             update();
+        } else {
+            FragmentManager fragmentManager = SawimApplication.getCurrentActivity().getSupportFragmentManager();
+            FragmentTransaction transaction = fragmentManager.beginTransaction();
+            if (fragmentManager.findFragmentById(R.id.chat_fragment) != null)
+                SawimApplication.getCurrentActivity().setContentView(R.layout.intercalation_layout);
+            StartWindowView newFragment = new StartWindowView();
+            transaction.replace(R.id.fragment_container, newFragment, StartWindowView.TAG);
+            transaction.commit();
+            SawimApplication.getCurrentActivity().supportInvalidateOptionsMenu();
         }
         FormView.showLastWindow();
     }

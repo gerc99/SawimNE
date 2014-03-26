@@ -1,5 +1,6 @@
 package ru.sawim.activities;
 
+import android.content.res.Configuration;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import ru.sawim.R;
@@ -20,5 +21,18 @@ public class BaseActivity extends ActionBarActivity {
         getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         getSupportActionBar().setIcon(SawimResources.appIcon);
         getSupportActionBar().setTitle(R.string.app_name);
+    }
+
+    int oldOrientation;
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (oldOrientation != newConfig.orientation) {
+            oldOrientation = newConfig.orientation;
+            if (SawimApplication.getInstance().getConfigurationChanged() != null) {
+                SawimApplication.getInstance().getConfigurationChanged().onConfigurationChanged();
+            }
+        }
     }
 }

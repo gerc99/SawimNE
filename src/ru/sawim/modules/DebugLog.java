@@ -79,12 +79,12 @@ public final class DebugLog {
     }
 
     public static void panic(String str, Throwable e) {
-        String text = "panic: " + _(str) + " " + e.getMessage()
-                + " (" + e.getClass().getName() + ")";
+        //String text = "panic: " + _(str) + " " + e.getMessage()
+        //        + " (" + e.getClass().getName() + ")";
         //for (StackTraceElement ste : e.getStackTrace()) {
         //    text += String.format("\n%s.%s() %d", ste.getClassName(), ste.getMethodName(), ste.getLineNumber());
         //}
-        println(text);
+        //println(text);
     }
 
     public static void panic(Throwable e) {

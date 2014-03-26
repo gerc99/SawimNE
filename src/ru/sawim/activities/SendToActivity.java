@@ -60,17 +60,4 @@ public class SendToActivity extends BaseActivity {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }
-
-    int oldOrientation;
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        if (oldOrientation != newConfig.orientation) {
-            oldOrientation = newConfig.orientation;
-            if (SawimApplication.getInstance().getConfigurationChanged() != null) {
-                SawimApplication.getInstance().getConfigurationChanged().onConfigurationChanged();
-            }
-        }
-    }
 }

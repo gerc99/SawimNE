@@ -32,7 +32,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.ActionBar;
 import android.view.*;
 import protocol.Contact;
 import protocol.Protocol;
@@ -41,7 +40,6 @@ import protocol.mrim.Mrim;
 import protocol.xmpp.Xmpp;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
-import ru.sawim.SawimResources;
 import ru.sawim.Scheme;
 import ru.sawim.view.*;
 import ru.sawim.view.preference.MainPreferenceView;
@@ -155,17 +153,18 @@ public class SawimActivity extends BaseActivity {
         SawimApplication.setCurrentActivity(this);
         SawimApplication.maximize();
         FragmentManager fragmentManager = SawimApplication.getCurrentActivity().getSupportFragmentManager();
+        StartWindowView startWindowView = (StartWindowView) fragmentManager.findFragmentByTag(StartWindowView.TAG);
         if (RosterHelper.getInstance().getProtocolCount() == 0) {
             FragmentTransaction transaction = fragmentManager.beginTransaction();
             if (fragmentManager.findFragmentById(R.id.chat_fragment) != null)
                 setContentView(R.layout.intercalation_layout);
-            StartWindowView newFragment = new StartWindowView();
-            transaction.replace(R.id.fragment_container, newFragment, StartWindowView.TAG);
-            transaction.addToBackStack(null);
-            transaction.commitAllowingStateLoss();
-            supportInvalidateOptionsMenu();
+            if (startWindowView == null) {
+                StartWindowView newFragment = new StartWindowView();
+                transaction.replace(R.id.fragment_container, newFragment, StartWindowView.TAG);
+                transaction.commit();
+                supportInvalidateOptionsMenu();
+            }
         } else {
-            StartWindowView startWindowView = (StartWindowView) fragmentManager.findFragmentByTag(StartWindowView.TAG);
             if (startWindowView != null)
                 fragmentManager.popBackStack();
         }
@@ -196,11 +195,7 @@ public class SawimActivity extends BaseActivity {
                 back();
         } else if (preferenceFormView != null) {
             if (preferenceFormView.hasBack()) {
-                if (SawimApplication.isManyPane()) {
-                    recreateActivity();
-                } else {
-                    super.onBackPressed();
-                }
+                back();
             }
         } else super.onBackPressed();
         //if (SawimApplication.isManyPane())
@@ -219,17 +214,10 @@ public class SawimActivity extends BaseActivity {
         startActivity(new Intent(this, SawimActivity.class));
     }
 
-    int oldOrientation;
-
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         if (SawimApplication.isTablet()) recreateActivity();
-        if (oldOrientation != newConfig.orientation) {
-            oldOrientation = newConfig.orientation;
-            if (SawimApplication.getInstance().getConfigurationChanged() != null)
-                SawimApplication.getInstance().getConfigurationChanged().onConfigurationChanged();
-        }
         if (getChatView() != null && getChatView().getDrawerToggle() != null)
             getChatView().getDrawerToggle().onConfigurationChanged(newConfig);
     }
@@ -265,16 +253,11 @@ public class SawimActivity extends BaseActivity {
     public boolean onPrepareOptionsMenu(Menu menu) {
         ChatView chatView = getChatView();
         VirtualListView virtualListView = (VirtualListView) getSupportFragmentManager().findFragmentByTag(VirtualListView.TAG);
-        SawimFragment formView = (SawimFragment) getSupportFragmentManager().findFragmentByTag(FormView.TAG);
-        SawimFragment mainPreferenceView = (SawimFragment) getSupportFragmentManager().findFragmentByTag(MainPreferenceView.TAG);
-        SawimFragment preferenceView = (SawimFragment) getSupportFragmentManager().findFragmentByTag(MainPreferenceView.TAG);
         menu.clear();
-        if (virtualListView != null) {
+        if (virtualListView != null && virtualListView.isAdded()) {
             virtualListView.onPrepareOptionsMenu_(menu);
             return true;
-        } else if (formView != null || preferenceView != null || mainPreferenceView != null) {
-            return false;
-        } else if (chatView != null && !SawimApplication.isManyPane()) {
+        } else if (chatView != null && chatView.isAdded() && !SawimApplication.isManyPane()) {
             chatView.onPrepareOptionsMenu_(menu);
             return true;
         }

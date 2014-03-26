@@ -62,7 +62,7 @@ final class XmppForm implements FormListener {
     }
 
     public void showCaptcha(XmlNode baseNode) {
-        form.init(typeToTitle(type), this);
+        form.init(jid, this);
         final String S_CAPTCHA = "captcha";
         XmlNode captcha = baseNode.getFirstNode(S_CAPTCHA);
         id = baseNode.getAttribute("id");

@@ -58,6 +58,7 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         getActivity().setTitle(Forms.getInstance().getCaption());
+        SawimApplication.getCurrentActivity().getSupportActionBar().setTitle(Forms.getInstance().getCaption());
         okButton = (Button) getActivity().findViewById(R.id.data_form_ok);
         okButton.setOnClickListener(this);
         buildList();
@@ -70,14 +71,13 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.form, container, false);
-        RelativeLayout rootLayout = (RelativeLayout) v.findViewById(R.id.data_form);
         textView = (TextView) v.findViewById(R.id.textView);
         progressBar = (ProgressBar) v.findViewById(R.id.progressBar);
         scrollView = (ScrollView) v.findViewById(R.id.data_form_scroll);
         listLayout = (LinearLayout) v.findViewById(R.id.data_form_linear);
         padding = Util.dipToPixels(getActivity(), 6);
         if (!Scheme.isSystemBackground())
-            rootLayout.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
+            v.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
 
         updateForm(false);
         return v;
@@ -120,7 +120,7 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (!isLoad || (!isLoad && Forms.getInstance().getWaitingString() != null)) {
+                if (!isLoad && Forms.getInstance().getWaitingString() != null) {
                     progressBar.setVisibility(View.VISIBLE);
                     scrollView.setVisibility(View.GONE);
                     textView.setVisibility(View.VISIBLE);

@@ -58,7 +58,6 @@ public class MainPreferenceView extends PreferenceFragment {
         PreferenceScreen screen1 = getPreferenceManager().createPreferenceScreen(getActivity());
         screen1.setKey("screen1");
         screen1.setTitle(R.string.options_account);
-        //screen.setSummary("Description of screen");
         screen1.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
@@ -71,7 +70,6 @@ public class MainPreferenceView extends PreferenceFragment {
         final PreferenceScreen screen2 = getPreferenceManager().createPreferenceScreen(getActivity());
         screen2.setKey("screen2");
         screen2.setTitle(R.string.options_network);
-        //screen.setSummary("Description of screen");
         screen2.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
@@ -84,7 +82,6 @@ public class MainPreferenceView extends PreferenceFragment {
         final PreferenceScreen screen3 = getPreferenceManager().createPreferenceScreen(getActivity());
         screen3.setKey("screen3");
         screen3.setTitle(R.string.options_interface);
-        //screen.setSummary("Description of screen");
         screen3.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
@@ -97,7 +94,6 @@ public class MainPreferenceView extends PreferenceFragment {
         final PreferenceScreen screen4 = getPreferenceManager().createPreferenceScreen(getActivity());
         screen4.setKey("screen4");
         screen4.setTitle(R.string.options_signaling);
-        //screen.setSummary("Description of screen");
         screen4.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
@@ -110,7 +106,6 @@ public class MainPreferenceView extends PreferenceFragment {
         final PreferenceScreen screen5 = getPreferenceManager().createPreferenceScreen(getActivity());
         screen5.setKey("screen5");
         screen5.setTitle(R.string.antispam);
-        //screen.setSummary("Description of screen");
         screen5.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
@@ -123,7 +118,6 @@ public class MainPreferenceView extends PreferenceFragment {
         final PreferenceScreen screen6 = getPreferenceManager().createPreferenceScreen(getActivity());
         screen6.setKey("screen6");
         screen6.setTitle(R.string.answerer);
-        //screen.setSummary("Description of screen");
         screen6.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
@@ -149,7 +143,6 @@ public class MainPreferenceView extends PreferenceFragment {
         final PreferenceScreen screen8 = getPreferenceManager().createPreferenceScreen(getActivity());
         screen8.setKey("screen8");
         screen8.setTitle(R.string.about_program);
-        //screen.setSummary("Description of screen");
         screen8.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {

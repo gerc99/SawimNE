@@ -97,10 +97,10 @@ public class StartWindowView extends Fragment {
     public void onResume() {
         super.onResume();
         SawimApplication.getCurrentActivity().resetBar();
-        SawimApplication.getCurrentActivity().supportInvalidateOptionsMenu();
         if (RosterHelper.getInstance().getProtocolCount() > 0) {
-            back();
+            ((SawimActivity)SawimApplication.getCurrentActivity()).recreateActivity();
         }
+        SawimApplication.getCurrentActivity().supportInvalidateOptionsMenu();
     }
 
     public void addAccount(int num, Profile acc) {
@@ -110,7 +110,7 @@ public class StartWindowView extends Fragment {
 
     private void back() {
         if (SawimApplication.isManyPane())
-            ((SawimActivity) SawimApplication.getCurrentActivity()).recreateActivity();
+            ((SawimActivity)SawimApplication.getCurrentActivity()).recreateActivity();
         else
             SawimApplication.getCurrentActivity().getSupportFragmentManager().popBackStack();
     }

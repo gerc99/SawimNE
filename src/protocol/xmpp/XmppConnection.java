@@ -2409,8 +2409,8 @@ public final class XmppConnection extends ClientConnection {
                 + xXml
                 + "</presence>";
         putPacketIntoQueue(xml);
-        if (!AutoAbsence.getInstance().isChangeStatus())
-            setConferencesXStatus(status, msg, priority);
+        //if (!AutoAbsence.getInstance().isChangeStatus())
+        //    setConferencesXStatus(status, msg, priority);
     }
 
     void setConferencesXStatus(String status, String msg, int priority) {
