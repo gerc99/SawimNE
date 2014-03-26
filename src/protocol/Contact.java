@@ -7,13 +7,13 @@ import android.view.Menu;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
-import ru.sawim.view.menu.MyMenu;
 import ru.sawim.chat.Chat;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.modules.tracking.Tracking;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.roster.TreeNode;
 import ru.sawim.util.JLocale;
+import ru.sawim.view.menu.MyMenu;
 
 
 abstract public class Contact extends TreeNode {

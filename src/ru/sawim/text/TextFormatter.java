@@ -5,8 +5,8 @@ import android.text.SpannableStringBuilder;
 import android.text.style.ImageSpan;
 import protocol.Contact;
 import ru.sawim.Scheme;
-import ru.sawim.view.menu.JuickMenu;
 import ru.sawim.modules.Emotions;
+import ru.sawim.view.menu.JuickMenu;
 
 import java.util.ArrayList;
 import java.util.regex.Matcher;
@@ -73,7 +73,7 @@ public class TextFormatter {
     public CharSequence detectEmotions(CharSequence text) {
         Spannable s;
         if (text instanceof Spannable) {
-            s = (Spannable)text;
+            s = (Spannable) text;
         } else {
             s = Spannable.Factory.getInstance().newSpannable(text);
         }

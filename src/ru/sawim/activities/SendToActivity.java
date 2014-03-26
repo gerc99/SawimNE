@@ -1,12 +1,8 @@
 package ru.sawim.activities;
 
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.media.AudioManager;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
-import ru.sawim.SawimApplication;
 import ru.sawim.R;
 import ru.sawim.Scheme;
 import ru.sawim.view.FormView;
@@ -26,7 +22,7 @@ public class SendToActivity extends BaseActivity {
         setTheme(Scheme.isBlack() ? R.style.BaseTheme : R.style.BaseThemeLight);
         super.onCreate(savedInstanceState);
 
-        SawimApplication.setCurrentActivity(this);
+        BaseActivity.setCurrentActivity(this);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
         setContentView(R.layout.intercalation_layout);
 

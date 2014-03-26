@@ -14,10 +14,11 @@ import android.widget.EditText;
 import android.widget.TextView;
 import protocol.Profile;
 import protocol.xmpp.XmppRegistration;
-import ru.sawim.SawimApplication;
-import ru.sawim.R;
-import ru.sawim.activities.SawimActivity;
 import ru.sawim.Options;
+import ru.sawim.R;
+import ru.sawim.SawimApplication;
+import ru.sawim.activities.BaseActivity;
+import ru.sawim.activities.SawimActivity;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.roster.RosterHelper;
 
@@ -72,7 +73,7 @@ public class StartWindowView extends Fragment {
         signIntoOtherNetworksButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(SawimApplication.getCurrentActivity());
+                AlertDialog.Builder builder = new AlertDialog.Builder(BaseActivity.getCurrentActivity());
                 builder.setCancelable(true);
                 builder.setTitle(R.string.acc_sel_protocol);
                 builder.setItems(Profile.protocolNames, new DialogInterface.OnClickListener() {
@@ -96,11 +97,11 @@ public class StartWindowView extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        SawimApplication.getCurrentActivity().resetBar();
+        BaseActivity.getCurrentActivity().resetBar();
         if (RosterHelper.getInstance().getProtocolCount() > 0) {
-            ((SawimActivity)SawimApplication.getCurrentActivity()).recreateActivity();
+            ((SawimActivity) BaseActivity.getCurrentActivity()).recreateActivity();
         }
-        SawimApplication.getCurrentActivity().supportInvalidateOptionsMenu();
+        BaseActivity.getCurrentActivity().supportInvalidateOptionsMenu();
     }
 
     public void addAccount(int num, Profile acc) {
@@ -110,9 +111,9 @@ public class StartWindowView extends Fragment {
 
     private void back() {
         if (SawimApplication.isManyPane())
-            ((SawimActivity)SawimApplication.getCurrentActivity()).recreateActivity();
+            ((SawimActivity) BaseActivity.getCurrentActivity()).recreateActivity();
         else
-            SawimApplication.getCurrentActivity().getSupportFragmentManager().popBackStack();
+            BaseActivity.getCurrentActivity().getSupportFragmentManager().popBackStack();
     }
 
     class LoginDialog extends Fragment {

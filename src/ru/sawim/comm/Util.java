@@ -1,8 +1,8 @@
 package ru.sawim.comm;
 
+import ru.sawim.Options;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
-import ru.sawim.Options;
 import ru.sawim.chat.Chat;
 import ru.sawim.roster.TreeNode;
 import ru.sawim.util.JLocale;

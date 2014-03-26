@@ -1,7 +1,6 @@
 
 package ru.sawim;
 
-import ru.sawim.R;
 import ru.sawim.util.JLocale;
 
 import java.util.HashMap;

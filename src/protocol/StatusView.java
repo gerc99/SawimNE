@@ -4,15 +4,15 @@ import DrawControls.icons.Icon;
 import android.view.ContextMenu;
 import android.view.Menu;
 import protocol.xmpp.XmppServiceContact;
+import ru.sawim.Clipboard;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
+import ru.sawim.comm.StringConvertor;
+import ru.sawim.comm.Util;
 import ru.sawim.models.list.VirtualList;
 import ru.sawim.models.list.VirtualListItem;
 import ru.sawim.models.list.VirtualListModel;
-import ru.sawim.Clipboard;
-import ru.sawim.comm.StringConvertor;
-import ru.sawim.comm.Util;
 import ru.sawim.util.JLocale;
 
 import java.util.List;

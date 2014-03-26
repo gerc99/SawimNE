@@ -7,16 +7,16 @@ import android.widget.Toast;
 import protocol.Contact;
 import protocol.Protocol;
 import protocol.xmpp.XmppContact;
+import ru.sawim.Options;
 import ru.sawim.R;
-import ru.sawim.SawimApplication;
+import ru.sawim.activities.BaseActivity;
+import ru.sawim.chat.message.Message;
+import ru.sawim.comm.Util;
+import ru.sawim.io.Storage;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
 import ru.sawim.models.list.VirtualList;
 import ru.sawim.models.list.VirtualListModel;
-import ru.sawim.Options;
-import ru.sawim.chat.message.Message;
-import ru.sawim.comm.Util;
-import ru.sawim.io.Storage;
 import ru.sawim.util.JLocale;
 
 import java.util.Vector;
@@ -49,7 +49,7 @@ public final class Answerer implements FormListener {
     public void activate() {
         list = VirtualList.getInstance();
         list.setCaption(JLocale.getString(R.string.answerer));
-                refreshList();
+        refreshList();
         list.setOnBuildContextMenu(new VirtualList.OnBuildContextMenu() {
             @Override
             public void onCreateContextMenu(ContextMenu menu, int listItem) {
@@ -106,7 +106,7 @@ public final class Answerer implements FormListener {
 
                     case MENU_CLEAR:
                         popupAction();
-                        Toast.makeText(SawimApplication.getCurrentActivity(), "All removed", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(BaseActivity.getCurrentActivity(), "All removed", Toast.LENGTH_SHORT).show();
                         break;
 
                     case MENU_ON_OFF:

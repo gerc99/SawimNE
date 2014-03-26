@@ -5,19 +5,20 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.widget.Toast;
 import protocol.*;
-import ru.sawim.SawimApplication;
-import ru.sawim.R;
-import ru.sawim.models.form.FormListener;
-import ru.sawim.models.form.Forms;
-import ru.sawim.view.TextBoxView;
 import ru.sawim.FileTransfer;
+import ru.sawim.R;
+import ru.sawim.SawimApplication;
+import ru.sawim.activities.BaseActivity;
 import ru.sawim.chat.message.PlainMessage;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
+import ru.sawim.models.form.FormListener;
+import ru.sawim.models.form.Forms;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.search.Search;
 import ru.sawim.search.UserInfo;
 import ru.sawim.util.JLocale;
+import ru.sawim.view.TextBoxView;
 
 import java.util.Vector;
 
@@ -39,7 +40,7 @@ public final class Xmpp extends Protocol implements FormListener {
     protected void initStatusInfo() {
         bots.addElement("juick@juick.com");
         bots.addElement("psto@psto.net");
-		bots.addElement("p@point.im");
+        bots.addElement("p@point.im");
 
         byte type = getProfile().protocolType;
         ImageList icons = createStatusIcons(type);
@@ -569,7 +570,7 @@ public final class Xmpp extends Protocol implements FormListener {
                         sendMessage(contact, box.getString(), true);
                     }
                 });
-                textbox.show(SawimApplication.getCurrentActivity().getSupportFragmentManager(), "title_conf");
+                textbox.show(BaseActivity.getCurrentActivity().getSupportFragmentManager(), "title_conf");
                 break;
 
             case ContactMenu.CONFERENCE_CONNECT:
@@ -655,7 +656,7 @@ public final class Xmpp extends Protocol implements FormListener {
                 selected = i;
             }
         }
-        AlertDialog.Builder builder = new AlertDialog.Builder(SawimApplication.getCurrentActivity());
+        AlertDialog.Builder builder = new AlertDialog.Builder(BaseActivity.getCurrentActivity());
         builder.setCancelable(true);
         builder.setTitle(c.getName());
         builder.setSingleChoiceItems(Util.vectorToArray(items), selected, new DialogInterface.OnClickListener() {

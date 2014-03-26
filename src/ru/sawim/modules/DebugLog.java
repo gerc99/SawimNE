@@ -3,15 +3,11 @@ package ru.sawim.modules;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
-import ru.sawim.ExceptionHandler;
-import ru.sawim.R;
-import ru.sawim.SawimApplication;
-import ru.sawim.Scheme;
+import ru.sawim.*;
+import ru.sawim.comm.Util;
 import ru.sawim.models.list.VirtualList;
 import ru.sawim.models.list.VirtualListItem;
 import ru.sawim.models.list.VirtualListModel;
-import ru.sawim.Clipboard;
-import ru.sawim.comm.Util;
 import ru.sawim.util.JLocale;
 
 import java.util.List;
@@ -137,7 +133,7 @@ public final class DebugLog {
     private void init() {
         list = VirtualList.getInstance();
         list.setCaption(JLocale.getString(R.string.debug_log));
-                list.setModel(model);
+        list.setModel(model);
         list.setOnBuildContextMenu(new VirtualList.OnBuildContextMenu() {
             @Override
             public void onCreateContextMenu(ContextMenu menu, int listItem) {

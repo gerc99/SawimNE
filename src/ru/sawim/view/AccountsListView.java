@@ -12,11 +12,11 @@ import android.widget.*;
 import protocol.Profile;
 import protocol.Protocol;
 import protocol.StatusInfo;
-import ru.sawim.SawimApplication;
-import ru.sawim.R;
-import ru.sawim.models.AccountsAdapter;
 import ru.sawim.Options;
+import ru.sawim.R;
+import ru.sawim.SawimApplication;
 import ru.sawim.comm.StringConvertor;
+import ru.sawim.models.AccountsAdapter;
 import ru.sawim.roster.RosterHelper;
 
 /**

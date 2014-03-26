@@ -32,19 +32,14 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.view.*;
+import android.view.Menu;
+import android.view.MenuItem;
 import protocol.Contact;
 import protocol.Protocol;
 import protocol.icq.Icq;
 import protocol.mrim.Mrim;
 import protocol.xmpp.Xmpp;
-import ru.sawim.R;
-import ru.sawim.SawimApplication;
-import ru.sawim.Scheme;
-import ru.sawim.view.*;
-import ru.sawim.view.preference.MainPreferenceView;
-import ru.sawim.ExternalApi;
-import ru.sawim.Options;
+import ru.sawim.*;
 import ru.sawim.chat.Chat;
 import ru.sawim.chat.ChatHistory;
 import ru.sawim.forms.ManageContactListForm;
@@ -52,6 +47,8 @@ import ru.sawim.forms.SmsForm;
 import ru.sawim.modules.DebugLog;
 import ru.sawim.modules.Notify;
 import ru.sawim.roster.RosterHelper;
+import ru.sawim.view.*;
+import ru.sawim.view.preference.MainPreferenceView;
 
 public class SawimActivity extends BaseActivity {
 
@@ -67,7 +64,7 @@ public class SawimActivity extends BaseActivity {
         setTheme(Scheme.isBlack() ? R.style.BaseTheme : R.style.BaseThemeLight);
         super.onCreate(savedInstanceState);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
-        SawimApplication.setCurrentActivity(this);
+        BaseActivity.setCurrentActivity(this);
         setContentView(SawimApplication.isManyPane() ? R.layout.main_twopane : R.layout.main);
 
         if (savedInstanceState == null && !SawimApplication.isManyPane()) {
@@ -150,9 +147,9 @@ public class SawimActivity extends BaseActivity {
     @Override
     public void onResume() {
         super.onResume();
-        SawimApplication.setCurrentActivity(this);
+        BaseActivity.setCurrentActivity(this);
         SawimApplication.maximize();
-        FragmentManager fragmentManager = SawimApplication.getCurrentActivity().getSupportFragmentManager();
+        FragmentManager fragmentManager = BaseActivity.getCurrentActivity().getSupportFragmentManager();
         StartWindowView startWindowView = (StartWindowView) fragmentManager.findFragmentByTag(StartWindowView.TAG);
         if (RosterHelper.getInstance().getProtocolCount() == 0) {
             FragmentTransaction transaction = fragmentManager.beginTransaction();
@@ -224,7 +221,8 @@ public class SawimActivity extends BaseActivity {
 
     private RosterView getRosterView() {
         RosterView rosterView = (RosterView) getSupportFragmentManager().findFragmentByTag(RosterView.TAG);
-        if (rosterView == null) rosterView = (RosterView) getSupportFragmentManager().findFragmentById(R.id.roster_fragment);
+        if (rosterView == null)
+            rosterView = (RosterView) getSupportFragmentManager().findFragmentById(R.id.roster_fragment);
         return rosterView;
     }
 
@@ -314,7 +312,7 @@ public class SawimActivity extends BaseActivity {
         VirtualListView virtualListView = (VirtualListView) getSupportFragmentManager().findFragmentByTag(VirtualListView.TAG);
         if (!SawimApplication.isManyPane()
                 && chatView != null
-                && chatView.getDrawerToggle().onOptionsItemSelected(item) ) {
+                && chatView.getDrawerToggle().onOptionsItemSelected(item)) {
             return true;
         }
         if (item.getItemId() == android.R.id.home) back();

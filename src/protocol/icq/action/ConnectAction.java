@@ -84,7 +84,7 @@ public class ConnectAction extends IcqAction {
     private byte[] cookie;
 
     private String[] getServerHostAndPort() {
-        return new String[] {"login.icq.com" , "5190"};
+        return new String[]{"login.icq.com", "5190"};
     }
 
     private boolean md5login;

@@ -14,10 +14,10 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import protocol.net.TcpSocket;
-import ru.sawim.photo.CameraActivity;
 import ru.sawim.modules.DebugLog;
 import ru.sawim.modules.fs.FileBrowserListener;
 import ru.sawim.modules.photo.PhotoListener;
+import ru.sawim.photo.CameraActivity;
 
 import java.io.File;
 import java.io.InputStream;
@@ -125,7 +125,7 @@ public class ExternalApi {
 
     private static String getMimeTypeFromUri(FragmentActivity a, Uri uri) {
         try {
-            String[] projection = { MediaStore.MediaColumns.MIME_TYPE };
+            String[] projection = {MediaStore.MediaColumns.MIME_TYPE};
             Cursor cursor = a.managedQuery(uri, projection, null, null, null);
             if (cursor != null) {
                 int column_index = cursor
@@ -158,12 +158,12 @@ public class ExternalApi {
         }
         // Create a media file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        return new File(mediaStorageDir.getPath(), "IMG_"+ timeStamp + ".jpg");
+        return new File(mediaStorageDir.getPath(), "IMG_" + timeStamp + ".jpg");
     }
 
     public static String getFileName(Uri fileUri, FragmentActivity activity) {
         String file = getPath(activity, fileUri);
-        Log.e("Sawim", file+" ");
+        Log.e("Sawim", file + " ");
         return file.substring(file.lastIndexOf('/') + 1);
     }
 
@@ -197,7 +197,7 @@ public class ExternalApi {
                     contentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
                 }
                 final String selection = "_id=?";
-                final String[] selectionArgs = new String[] {
+                final String[] selectionArgs = new String[]{
                         split[1]
                 };
                 return getDataColumn(context, contentUri, selection, selectionArgs);
@@ -213,7 +213,7 @@ public class ExternalApi {
     }
 
     private static String getDataColumn(Context context, Uri uri, String selection,
-                                       String[] selectionArgs) {
+                                        String[] selectionArgs) {
         Cursor cursor = null;
         final String column = "_data";
         final String[] projection = {column};

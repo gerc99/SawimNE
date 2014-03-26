@@ -3,18 +3,18 @@ package protocol.xmpp;
 import android.view.Menu;
 import android.view.MenuItem;
 import ru.sawim.R;
-import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
+import ru.sawim.activities.BaseActivity;
+import ru.sawim.comm.StringConvertor;
+import ru.sawim.comm.Util;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
 import ru.sawim.models.list.VirtualList;
 import ru.sawim.models.list.VirtualListItem;
 import ru.sawim.models.list.VirtualListModel;
-import ru.sawim.view.TextBoxView;
-import ru.sawim.comm.StringConvertor;
-import ru.sawim.comm.Util;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.util.JLocale;
+import ru.sawim.view.TextBoxView;
 
 import java.util.Vector;
 
@@ -38,7 +38,7 @@ public final class AffiliationListConf implements FormListener, TextBoxView.Text
         xmpp = protocol;
         searchBox = new TextBoxView();
         screen.setCaption(JLocale.getString(R.string.conf_aff_list));
-                screen.setModel(model);
+        screen.setModel(model);
         screen.setClickListListener(new VirtualList.OnClickListListener() {
             @Override
             public void itemSelected(int position) {
@@ -69,7 +69,7 @@ public final class AffiliationListConf implements FormListener, TextBoxView.Text
 
                     case COMMAND_SEARCH:
                         searchBox.setTextBoxListener(AffiliationListConf.this);
-                        searchBox.show(SawimApplication.getCurrentActivity().getSupportFragmentManager(), "service_discovery_search");
+                        searchBox.show(BaseActivity.getCurrentActivity().getSupportFragmentManager(), "service_discovery_search");
                         break;
                 }
             }

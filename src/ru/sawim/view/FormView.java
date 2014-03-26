@@ -8,7 +8,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +16,7 @@ import android.widget.*;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
+import ru.sawim.activities.BaseActivity;
 import ru.sawim.activities.SawimActivity;
 import ru.sawim.models.form.Forms;
 import ru.sawim.widget.MySpinner;
@@ -58,7 +58,7 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         getActivity().setTitle(Forms.getInstance().getCaption());
-        SawimApplication.getCurrentActivity().getSupportActionBar().setTitle(Forms.getInstance().getCaption());
+        BaseActivity.getCurrentActivity().getSupportActionBar().setTitle(Forms.getInstance().getCaption());
         okButton = (Button) getActivity().findViewById(R.id.data_form_ok);
         okButton.setOnClickListener(this);
         buildList();
@@ -84,11 +84,11 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
     }
 
     public static void show() {
-        SawimApplication.getCurrentActivity().runOnUiThread(new Runnable() {
+        BaseActivity.getCurrentActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 FormView formView = new FormView();
-                if (SawimApplication.getCurrentActivity().isFinishing()) {
+                if (BaseActivity.getCurrentActivity().isFinishing()) {
                     SawimApplication.fragmentsStack.add(formView);
                 } else {
                     show(formView);
@@ -106,10 +106,10 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
     }
 
     private static void show(Fragment fragment) {
-        SawimApplication.getCurrentActivity().resetBar();
+        BaseActivity.getCurrentActivity().resetBar();
         if (SawimApplication.isManyPane())
-            SawimApplication.getCurrentActivity().setContentView(R.layout.intercalation_layout);
-        FragmentTransaction transaction = SawimApplication.getCurrentActivity().getSupportFragmentManager().beginTransaction();
+            BaseActivity.getCurrentActivity().setContentView(R.layout.intercalation_layout);
+        FragmentTransaction transaction = BaseActivity.getCurrentActivity().getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment_container, fragment, FormView.TAG);
         transaction.addToBackStack(null);
         transaction.commitAllowingStateLoss();
@@ -148,19 +148,18 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
             @Override
             public void run() {
                 if (SawimApplication.isManyPane())
-                    ((SawimActivity) SawimApplication.getCurrentActivity()).recreateActivity();
-                else
-                    if (!SawimApplication.getCurrentActivity().isFinishing())
-                        SawimApplication.getCurrentActivity().getSupportFragmentManager().popBackStack();
+                    ((SawimActivity) BaseActivity.getCurrentActivity()).recreateActivity();
+                else if (!BaseActivity.getCurrentActivity().isFinishing())
+                    BaseActivity.getCurrentActivity().getSupportFragmentManager().popBackStack();
                 hideKeyboard();
-                SawimApplication.getCurrentActivity().supportInvalidateOptionsMenu();
+                BaseActivity.getCurrentActivity().supportInvalidateOptionsMenu();
             }
         });
     }
 
     private void hideKeyboard() {
-        if (SawimApplication.getCurrentActivity().getCurrentFocus() != null)
-            ((InputMethodManager) SawimApplication.getCurrentActivity().getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(SawimApplication.getCurrentActivity().getCurrentFocus().getWindowToken(), 0);
+        if (BaseActivity.getCurrentActivity().getCurrentFocus() != null)
+            ((InputMethodManager) BaseActivity.getCurrentActivity().getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(BaseActivity.getCurrentActivity().getCurrentFocus().getWindowToken(), 0);
     }
 
     @Override

@@ -6,15 +6,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import protocol.Protocol;
-import ru.sawim.SawimApplication;
 import ru.sawim.R;
+import ru.sawim.SawimApplication;
 import ru.sawim.SawimResources;
 import ru.sawim.Scheme;
-import ru.sawim.text.TextLinkClick;
-import ru.sawim.widget.chat.MessageItemView;
 import ru.sawim.chat.Chat;
 import ru.sawim.chat.MessData;
 import ru.sawim.chat.message.Message;
+import ru.sawim.text.TextLinkClick;
+import ru.sawim.widget.chat.MessageItemView;
 
 import java.util.ArrayList;
 import java.util.List;

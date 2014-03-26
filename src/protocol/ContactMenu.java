@@ -6,11 +6,10 @@ import android.support.v4.app.FragmentActivity;
 import android.view.ContextMenu;
 import android.widget.Toast;
 import protocol.xmpp.Xmpp;
-import ru.sawim.SawimApplication;
-import ru.sawim.R;
-import ru.sawim.view.TextBoxView;
-import ru.sawim.view.menu.MyMenu;
 import ru.sawim.FileTransfer;
+import ru.sawim.R;
+import ru.sawim.SawimApplication;
+import ru.sawim.activities.BaseActivity;
 import ru.sawim.chat.ChatHistory;
 import ru.sawim.chat.message.PlainMessage;
 import ru.sawim.comm.Util;
@@ -18,6 +17,8 @@ import ru.sawim.forms.ManageContactListForm;
 import ru.sawim.history.HistoryStorage;
 import ru.sawim.history.HistoryStorageList;
 import ru.sawim.util.JLocale;
+import ru.sawim.view.TextBoxView;
+import ru.sawim.view.menu.MyMenu;
 
 import java.util.Vector;
 
@@ -107,7 +108,7 @@ public class ContactMenu implements TextBoxView.TextBoxListener {
     }
 
     public void doAction(int cmd) {
-        final FragmentActivity activity = SawimApplication.getCurrentActivity();
+        final FragmentActivity activity = BaseActivity.getCurrentActivity();
         switch (cmd) {
             case USER_MENU_TRACK:
                 new ru.sawim.modules.tracking.TrackingForm(contact.getUserId()).activate();

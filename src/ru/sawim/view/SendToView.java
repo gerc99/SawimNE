@@ -16,17 +16,17 @@ import android.widget.Toast;
 import protocol.Contact;
 import protocol.Group;
 import protocol.Protocol;
-import ru.sawim.SawimApplication;
-import ru.sawim.R;
-import ru.sawim.Scheme;
-import ru.sawim.models.RosterAdapter;
-import ru.sawim.widget.IconTabPageIndicator;
 import ru.sawim.ExternalApi;
 import ru.sawim.FileTransfer;
+import ru.sawim.R;
+import ru.sawim.Scheme;
+import ru.sawim.activities.BaseActivity;
 import ru.sawim.chat.ChatHistory;
+import ru.sawim.models.RosterAdapter;
 import ru.sawim.modules.DebugLog;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.roster.TreeNode;
+import ru.sawim.widget.IconTabPageIndicator;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -119,7 +119,7 @@ public class SendToView extends Fragment implements AdapterView.OnItemClickListe
     }
 
     private void initBar() {
-        ActionBar actionBar = SawimApplication.getCurrentActivity().getSupportActionBar();
+        ActionBar actionBar = BaseActivity.getCurrentActivity().getSupportActionBar();
         boolean isShowTabs = roster.getProtocolCount() > 1;
         actionBar.setDisplayShowTitleEnabled(!isShowTabs);
         actionBar.setDisplayShowHomeEnabled(!isShowTabs);

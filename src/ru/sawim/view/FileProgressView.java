@@ -13,6 +13,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
+import ru.sawim.activities.BaseActivity;
 import ru.sawim.comm.Util;
 import ru.sawim.roster.RosterHelper;
 
@@ -50,17 +51,17 @@ public class FileProgressView extends DialogFragment {
     }
 
     public void showProgress() {
-        show(SawimApplication.getCurrentActivity().getSupportFragmentManager().beginTransaction(), "file_progress");
+        show(BaseActivity.getCurrentActivity().getSupportFragmentManager().beginTransaction(), "file_progress");
     }
 
     public void changeFileProgress(final int percent, final String caption, final String text) {
-        if (SawimApplication.getCurrentActivity() == null || !isAdded()) return;
+        if (BaseActivity.getCurrentActivity() == null || !isAdded()) return;
         if (percent == 100) {
             RosterHelper.getInstance().removeTransfer(true);
             dismiss();
         }
         final String strTime = Util.getLocalDateString(SawimApplication.getCurrentGmtTime(), true);
-        Handler handler = new Handler(SawimApplication.getCurrentActivity().getMainLooper());
+        Handler handler = new Handler(BaseActivity.getCurrentActivity().getMainLooper());
         handler.post(new Runnable() {
             @Override
             public void run() {

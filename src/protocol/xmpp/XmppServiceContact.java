@@ -7,16 +7,16 @@ import protocol.Contact;
 import protocol.ContactMenu;
 import protocol.Protocol;
 import protocol.StatusInfo;
+import ru.sawim.Options;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.SawimResources;
-import ru.sawim.view.menu.MyMenu;
-import ru.sawim.Options;
 import ru.sawim.chat.message.SystemNotice;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.modules.tracking.Tracking;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.util.JLocale;
+import ru.sawim.view.menu.MyMenu;
 
 import java.util.Vector;
 

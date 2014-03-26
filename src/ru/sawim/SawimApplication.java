@@ -13,16 +13,15 @@ import android.support.v4.app.Fragment;
 import android.view.Surface;
 import android.view.WindowManager;
 import org.microemu.util.AndroidRecordStoreManager;
-import ru.sawim.activities.BaseActivity;
-import ru.sawim.receiver.NetworkStateReceiver;
-import ru.sawim.service.SawimService;
-import ru.sawim.service.SawimServiceConnection;
-import ru.sawim.text.TextFormatter;
 import ru.sawim.chat.ChatHistory;
 import ru.sawim.comm.Util;
 import ru.sawim.modules.*;
+import ru.sawim.receiver.NetworkStateReceiver;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.search.Search;
+import ru.sawim.service.SawimService;
+import ru.sawim.service.SawimServiceConnection;
+import ru.sawim.text.TextFormatter;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -47,7 +46,6 @@ public class SawimApplication extends Application {
     public static final String PATH_AVATARS = Environment.getExternalStorageDirectory().getAbsolutePath() + "/sawimne/avatars/";
 
     public static boolean returnFromAcc = false;
-    private static BaseActivity currentActivity;
     private boolean paused = true;
     private static int fontSize;
     public static boolean showStatusLine;
@@ -261,15 +259,6 @@ public class SawimApplication extends Application {
     public void setConfigurationChanged(OnConfigurationChanged cC) {
         configurationChanged = null;
         configurationChanged = cC;
-    }
-
-    public static BaseActivity getCurrentActivity() {
-        return currentActivity;
-    }
-
-    public static void setCurrentActivity(BaseActivity a) {
-        SawimApplication.currentActivity = null;
-        SawimApplication.currentActivity = a;
     }
 
     public interface OnConfigurationChanged {

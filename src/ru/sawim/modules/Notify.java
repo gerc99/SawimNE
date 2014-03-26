@@ -2,13 +2,10 @@ package ru.sawim.modules;
 
 import android.content.Context;
 import android.os.Vibrator;
-import ru.sawim.R;
-import ru.sawim.SawimApplication;
-import ru.sawim.roster.RosterHelper;
-import ru.sawim.sound.SoundPlayer;
 import ru.sawim.Options;
+import ru.sawim.SawimApplication;
 import ru.sawim.comm.Util;
-import ru.sawim.util.JLocale;
+import ru.sawim.sound.SoundPlayer;
 
 public class Notify implements Runnable {
 
@@ -60,6 +57,7 @@ public class Notify implements Runnable {
     }
 
     private static final int LONG_DURATION = 500;
+
     public boolean vibrate(final int duration) {
         final Vibrator vibrator = (Vibrator) SawimApplication.getInstance().getSystemService(Context.VIBRATOR_SERVICE);
         if (null == vibrator) {

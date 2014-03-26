@@ -1,8 +1,8 @@
 package ru.sawim.history;
 
-import ru.sawim.config.HomeDirectory;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
+import ru.sawim.config.HomeDirectory;
 import ru.sawim.roster.RosterHelper;
 
 import java.io.InputStream;

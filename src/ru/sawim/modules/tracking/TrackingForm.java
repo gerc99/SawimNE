@@ -2,14 +2,15 @@ package ru.sawim.modules.tracking;
 
 import DrawControls.icons.Icon;
 import android.graphics.drawable.Drawable;
-import ru.sawim.SawimApplication;
 import ru.sawim.R;
+import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
+import ru.sawim.activities.BaseActivity;
 import ru.sawim.models.list.VirtualList;
 import ru.sawim.models.list.VirtualListItem;
 import ru.sawim.models.list.VirtualListModel;
-import ru.sawim.view.TextBoxView;
 import ru.sawim.util.JLocale;
+import ru.sawim.view.TextBoxView;
 
 import java.util.Vector;
 
@@ -281,7 +282,7 @@ public final class TrackingForm implements TextBoxView.TextBoxListener {
             inputBox.setCaption(null);
         }
         inputBox.setString(text);
-        inputBox.show(SawimApplication.getCurrentActivity().getSupportFragmentManager(), "tracking-message");
+        inputBox.show(BaseActivity.getCurrentActivity().getSupportFragmentManager(), "tracking-message");
     }
 
     private void changeStatus(int index) {

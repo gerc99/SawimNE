@@ -401,15 +401,15 @@ public class RecordStoreImpl {
             for (Enumeration e = recordListeners.elements(); e.hasMoreElements(); ) {
                 RecordListener l = (RecordListener) e.nextElement();
                 switch (type) {
-                        case RecordListener.RECORD_ADD:
-                            l.recordAdded(this, recordId);
-                            break;
-                        case RecordListener.RECORD_CHANGE:
-                            l.recordChanged(this, recordId);
-                            break;
-                        case RecordListener.RECORD_DELETE:
-                            l.recordDeleted(this, recordId);
-                    }
+                    case RecordListener.RECORD_ADD:
+                        l.recordAdded(this, recordId);
+                        break;
+                    case RecordListener.RECORD_CHANGE:
+                        l.recordChanged(this, recordId);
+                        break;
+                    case RecordListener.RECORD_DELETE:
+                        l.recordDeleted(this, recordId);
+                }
             }
         }
     }

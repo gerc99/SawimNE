@@ -7,19 +7,20 @@ import org.json.JSONObject;
 import protocol.Contact;
 import protocol.Protocol;
 import protocol.net.TcpSocket;
+import ru.sawim.activities.BaseActivity;
 import ru.sawim.activities.SawimActivity;
-import ru.sawim.models.form.FormListener;
-import ru.sawim.models.form.Forms;
-import ru.sawim.view.FileProgressView;
 import ru.sawim.chat.Chat;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
+import ru.sawim.models.form.FormListener;
+import ru.sawim.models.form.Forms;
 import ru.sawim.modules.DebugLog;
 import ru.sawim.modules.fs.FileBrowserListener;
 import ru.sawim.modules.fs.JSR75FileSystem;
 import ru.sawim.modules.photo.PhotoListener;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.util.JLocale;
+import ru.sawim.view.FileProgressView;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -236,7 +237,7 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
         } catch (Exception ignored) {
         }
         forms.back();
-        if (isFinish) SawimApplication.getCurrentActivity().finish();
+        if (isFinish) BaseActivity.getCurrentActivity().finish();
         fileProgressView = null;
     }
 
@@ -300,7 +301,9 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
             try {
                 conn = (HttpURLConnection) new URL(UPLOAD_URL).openConnection();
                 conn.setDoOutput(true);
-                if (Build.VERSION.SDK_INT > 13) { conn.setRequestProperty("Connection", "close"); }
+                if (Build.VERSION.SDK_INT > 13) {
+                    conn.setRequestProperty("Connection", "close");
+                }
 
                 conn.setRequestProperty("Authorization", "Client-ID c90472da1a4d000"); // get on site
 
@@ -350,10 +353,12 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
             } finally {
                 try {
                     responseIn.close();
-                } catch (Exception ignore) {}
+                } catch (Exception ignore) {
+                }
                 try {
                     conn.disconnect();
-                } catch (Exception ignore) {}
+                } catch (Exception ignore) {
+                }
             }
         } else {
             TcpSocket socket = new TcpSocket();

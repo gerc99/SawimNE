@@ -11,12 +11,12 @@ import protocol.Protocol;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
-import ru.sawim.widget.SimpleItemView;
-import ru.sawim.widget.Util;
-import ru.sawim.widget.roster.RosterItemView;
 import ru.sawim.chat.ChatHistory;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.util.JLocale;
+import ru.sawim.widget.SimpleItemView;
+import ru.sawim.widget.Util;
+import ru.sawim.widget.roster.RosterItemView;
 
 /**
  * Created by admin on 01.03.14.

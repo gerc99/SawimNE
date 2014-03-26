@@ -5,17 +5,18 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 import protocol.Contact;
-import ru.sawim.SawimApplication;
 import ru.sawim.R;
+import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
+import ru.sawim.activities.BaseActivity;
+import ru.sawim.comm.Config;
+import ru.sawim.comm.StringConvertor;
 import ru.sawim.models.list.VirtualList;
 import ru.sawim.models.list.VirtualListItem;
 import ru.sawim.models.list.VirtualListModel;
-import ru.sawim.view.TextBoxView;
-import ru.sawim.comm.Config;
-import ru.sawim.comm.StringConvertor;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.util.JLocale;
+import ru.sawim.view.TextBoxView;
 
 import java.util.Vector;
 
@@ -142,12 +143,12 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
                     case COMMAND_SEARCH:
                         searchBox.setString("");
                         searchBox.setTextBoxListener(ServiceDiscovery.this);
-                        searchBox.show(SawimApplication.getCurrentActivity().getSupportFragmentManager(), JLocale.getString(R.string.service_discovery_search));
+                        searchBox.show(BaseActivity.getCurrentActivity().getSupportFragmentManager(), JLocale.getString(R.string.service_discovery_search));
                         break;
 
                     case COMMAND_SET_SERVER:
                         serverBox.setTextBoxListener(ServiceDiscovery.this);
-                        serverBox.show(SawimApplication.getCurrentActivity().getSupportFragmentManager(), JLocale.getString(R.string.service_discovery_server));
+                        serverBox.show(BaseActivity.getCurrentActivity().getSupportFragmentManager(), JLocale.getString(R.string.service_discovery_server));
                         break;
 
                     case COMMAND_HOME:

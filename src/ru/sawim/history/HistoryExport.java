@@ -3,11 +3,10 @@ package ru.sawim.history;
 import protocol.Contact;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
-import ru.sawim.config.HomeDirectory;
-
 import ru.sawim.SawimException;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
+import ru.sawim.config.HomeDirectory;
 import ru.sawim.modules.Notify;
 import ru.sawim.modules.fs.FileSystem;
 import ru.sawim.modules.fs.JSR75FileSystem;

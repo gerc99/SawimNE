@@ -80,8 +80,9 @@ public class ZLibOutputStream extends DeflaterOutputStream {
     /**
      * Create a new ZLib compatible output stream wrapping the given low level
      * stream. ZLib compatiblity means we will send a zlib header.
+     *
      * @param os OutputStream The underlying stream.
-     * @throws java.io.IOException In case of a lowlevel transfer problem.
+     * @throws java.io.IOException                    In case of a lowlevel transfer problem.
      * @throws java.security.NoSuchAlgorithmException In case of a {@link java.util.zip.Deflater} error.
      */
     public ZLibOutputStream(OutputStream os) throws IOException,
@@ -91,6 +92,7 @@ public class ZLibOutputStream extends DeflaterOutputStream {
 
     /**
      * Flush the given stream, preferring Java7 FLUSH_SYNC if available.
+     *
      * @throws java.io.IOException In case of a lowlevel exception.
      */
     @Override

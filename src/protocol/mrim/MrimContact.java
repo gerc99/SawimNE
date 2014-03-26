@@ -3,12 +3,12 @@ package protocol.mrim;
 import android.view.ContextMenu;
 import android.view.Menu;
 import protocol.*;
+import ru.sawim.Options;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
-import ru.sawim.view.menu.MyMenu;
-import ru.sawim.Options;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.modules.DebugLog;
+import ru.sawim.view.menu.MyMenu;
 
 public class MrimContact extends Contact {
     private int contactId;

@@ -4,11 +4,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.view.View;
-import android.widget.LinearLayout;
-import ru.sawim.SawimApplication;
-import ru.sawim.R;
 
 /**
  * A simple extension of a regular linear layout that supports the divider API

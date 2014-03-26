@@ -213,6 +213,7 @@ public class FileSystemFileConnection {
         public Object run() {
             return getBoolean();
         }
+
         abstract boolean getBoolean();
     }
 

@@ -64,7 +64,7 @@ public class Options {
     public static final int OPTION_CHAT_PRESENSEFONT_SCHEME = 92;
     public static final int OPTION_PRIVATE_STATUS = 93;
     public static final int OPTION_MAX_MSG_COUNT = 94;
-    public static final int OPTION_AA_TIME  = 106;
+    public static final int OPTION_AA_TIME = 106;
     public static final int OPTION_FONT_SCHEME = 107;
 
     ////////////////////// BOOLEAN

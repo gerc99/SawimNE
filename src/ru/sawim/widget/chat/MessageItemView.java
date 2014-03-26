@@ -2,9 +2,14 @@ package ru.sawim.widget.chat;
 
 import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.graphics.*;
-import android.text.*;
-import android.util.Log;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Typeface;
+import android.text.Layout;
+import android.text.Spannable;
+import android.text.StaticLayout;
+import android.text.TextPaint;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -80,7 +85,7 @@ public class MessageItemView extends View {
             makeLayout(width - getPaddingRight() - getPaddingLeft());
         titleHeight = isAddTitleView ? height - getPaddingTop() : getPaddingTop();
         if (layout != null)
-        height += layout.getLineTop(layout.getLineCount());
+            height += layout.getLineTop(layout.getLineCount());
         setMeasuredDimension(width, height);
     }
 

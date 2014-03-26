@@ -24,7 +24,6 @@
 
 package org.microemu.util;
 
-import java.lang.Exception;
 import java.util.Vector;
 
 

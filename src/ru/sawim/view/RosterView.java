@@ -15,29 +15,34 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
-import android.util.Log;
-import android.view.*;
+import android.view.ContextMenu;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.*;
 import protocol.Contact;
 import protocol.ContactMenu;
 import protocol.Group;
 import protocol.Protocol;
+import ru.sawim.Options;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
 import ru.sawim.activities.BaseActivity;
 import ru.sawim.activities.SawimActivity;
-import ru.sawim.models.ProtocolsAdapter;
-import ru.sawim.models.RosterAdapter;
-import ru.sawim.widget.*;
-import ru.sawim.widget.roster.RosterViewRoot;
-import ru.sawim.Options;
 import ru.sawim.chat.Chat;
 import ru.sawim.chat.ChatHistory;
 import ru.sawim.forms.ManageContactListForm;
+import ru.sawim.models.ProtocolsAdapter;
+import ru.sawim.models.RosterAdapter;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.roster.TreeNode;
 import ru.sawim.util.JLocale;
+import ru.sawim.widget.MyImageButton;
+import ru.sawim.widget.MyListView;
+import ru.sawim.widget.MySpinner;
+import ru.sawim.widget.Util;
+import ru.sawim.widget.roster.RosterViewRoot;
 
 
 /**
@@ -92,7 +97,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         activity.registerForContextMenu(rosterListView);
         rosterListView.setOnCreateContextMenuListener(this);
         rosterListView.setOnItemClickListener(this);
-        rosterViewLayout = new RosterViewRoot(SawimApplication.getCurrentActivity(), progressBar, rosterListView);
+        rosterViewLayout = new RosterViewRoot(BaseActivity.getCurrentActivity(), progressBar, rosterListView);
 
         protocolsSpinner = new MySpinner(activity, null, Build.VERSION.SDK_INT < 11
                 ? R.attr.actionDropDownStyle : android.R.attr.actionDropDownStyle);
@@ -128,7 +133,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
                         progressBar.setVisibility(ProgressBar.GONE);
                     }
                     if (100 == percent || 0 == percent) {
-                        SawimApplication.getCurrentActivity().supportInvalidateOptionsMenu();
+                        BaseActivity.getCurrentActivity().supportInvalidateOptionsMenu();
                     }
                 }
                 break;
@@ -192,7 +197,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     }
 
     private void initBar() {
-        ActionBar actionBar = SawimApplication.getCurrentActivity().getSupportActionBar();
+        ActionBar actionBar = BaseActivity.getCurrentActivity().getSupportActionBar();
         actionBar.setDisplayShowTitleEnabled(false);
         actionBar.setDisplayShowHomeEnabled(false);
         actionBar.setDisplayUseLogoEnabled(false);
@@ -219,7 +224,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
                     }
                     protocolsAdapter.setActiveItem(itemPosition);
                     update();
-                    SawimApplication.getCurrentActivity().supportInvalidateOptionsMenu();
+                    BaseActivity.getCurrentActivity().supportInvalidateOptionsMenu();
                 }
 
                 @Override
@@ -287,7 +292,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
                 rosterBarLayout.addView(protocolsSpinner);
             rosterBarLayout.addView(chatsImage);
             barLinearLayout.addView(rosterBarLayout);
-            ChatView chatView = (ChatView) SawimApplication.getCurrentActivity().getSupportFragmentManager()
+            ChatView chatView = (ChatView) BaseActivity.getCurrentActivity().getSupportFragmentManager()
                     .findFragmentById(R.id.chat_fragment);
             chatView.removeTitleBar();
             barLinearLayout.addView(chatView.getTitleBar());
@@ -318,12 +323,12 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         super.onResume();
         resume();
         if (!SawimApplication.isManyPane() && Scheme.isChangeTheme(Options.getInt(Options.OPTION_COLOR_SCHEME))) {
-            ((SawimActivity)SawimApplication.getCurrentActivity()).recreateActivity();
+            ((SawimActivity) BaseActivity.getCurrentActivity()).recreateActivity();
         }
     }
 
     public void resume() {
-        SawimApplication.setCurrentActivity((BaseActivity) getActivity());
+        BaseActivity.setCurrentActivity((BaseActivity) getActivity());
         initBar();
 
         getRosterAdapter().setType(RosterHelper.getInstance().getCurrPage());
@@ -337,20 +342,20 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
                 SawimApplication.returnFromAcc = false;
                 if (RosterHelper.getInstance().getCurrentProtocol().getContactItems().size() == 0
                         && !RosterHelper.getInstance().getCurrentProtocol().isConnecting())
-                    Toast.makeText(SawimApplication.getCurrentActivity(), R.string.press_menu_for_connect, Toast.LENGTH_LONG).show();
+                    Toast.makeText(BaseActivity.getCurrentActivity(), R.string.press_menu_for_connect, Toast.LENGTH_LONG).show();
                 if (protocolsAdapter != null)
                     protocolsAdapter.notifyDataSetChanged();
             }
             update();
         } else {
-            FragmentManager fragmentManager = SawimApplication.getCurrentActivity().getSupportFragmentManager();
+            FragmentManager fragmentManager = BaseActivity.getCurrentActivity().getSupportFragmentManager();
             FragmentTransaction transaction = fragmentManager.beginTransaction();
             if (fragmentManager.findFragmentById(R.id.chat_fragment) != null)
-                SawimApplication.getCurrentActivity().setContentView(R.layout.intercalation_layout);
+                BaseActivity.getCurrentActivity().setContentView(R.layout.intercalation_layout);
             StartWindowView newFragment = new StartWindowView();
             transaction.replace(R.id.fragment_container, newFragment, StartWindowView.TAG);
             transaction.commit();
-            SawimApplication.getCurrentActivity().supportInvalidateOptionsMenu();
+            BaseActivity.getCurrentActivity().supportInvalidateOptionsMenu();
         }
         FormView.showLastWindow();
     }
@@ -364,13 +369,13 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         if (!SawimApplication.isManyPane()) {
             ChatView chatView = new ChatView();
             chatView.initChat(p, c);
-            FragmentTransaction transaction = SawimApplication.getCurrentActivity().getSupportFragmentManager().beginTransaction();
+            FragmentTransaction transaction = BaseActivity.getCurrentActivity().getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.fragment_container, chatView, ChatView.TAG);
             transaction.addToBackStack(null);
             transaction.commit();
         } else {
-            ChatView chatViewTablet = (ChatView) SawimApplication.getCurrentActivity().getSupportFragmentManager()
-                .findFragmentById(R.id.chat_fragment);
+            ChatView chatViewTablet = (ChatView) BaseActivity.getCurrentActivity().getSupportFragmentManager()
+                    .findFragmentById(R.id.chat_fragment);
             chatViewTablet.pause(chatViewTablet.getCurrentChat());
             if (c != null) {
                 chatViewTablet.openChat(p, c);
@@ -423,7 +428,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
             }
             if (node.isGroup()) {
                 if (p.isConnected()) {
-                    new ManageContactListForm(p, (Group) node).showMenu(SawimApplication.getCurrentActivity());
+                    new ManageContactListForm(p, (Group) node).showMenu(BaseActivity.getCurrentActivity());
                 }
             }
         }

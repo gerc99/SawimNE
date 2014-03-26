@@ -4,11 +4,11 @@ import DrawControls.icons.Icon;
 import DrawControls.icons.ImageList;
 import protocol.*;
 import ru.sawim.R;
-import ru.sawim.models.list.VirtualList;
-import ru.sawim.models.list.VirtualListModel;
 import ru.sawim.chat.message.PlainMessage;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
+import ru.sawim.models.list.VirtualList;
+import ru.sawim.models.list.VirtualListModel;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.search.Search;
 import ru.sawim.search.UserInfo;
@@ -315,7 +315,7 @@ public class Mrim extends Protocol {
             }
             VirtualList tl = VirtualList.getInstance();
             tl.setCaption(JLocale.getString(R.string.list_of_users));
-                    tl.setModel(list);
+            tl.setModel(list);
             tl.show();
             tl.updateModel();
 

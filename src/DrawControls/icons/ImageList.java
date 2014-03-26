@@ -138,7 +138,7 @@ public class ImageList {
         Vector tmpIcons = new Vector();
         for (int i = 0; i < smileyDrawables.length(); ++i) {
             BitmapDrawable smile = ((BitmapDrawable) SawimApplication.getInstance().getResources()
-                .getDrawable(smileyDrawables.getResourceId(i, 0)));
+                    .getDrawable(smileyDrawables.getResourceId(i, 0)));
             smile.setBounds(0, 0, smile.getBitmap().getWidth(), smile.getBitmap().getHeight());
             tmpIcons.addElement(new Icon(smile));
         }

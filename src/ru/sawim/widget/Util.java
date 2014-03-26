@@ -8,11 +8,10 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.os.Build;
 import android.util.DisplayMetrics;
-import android.util.TypedValue;
 import android.view.View;
 import android.widget.LinearLayout;
-import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
+import ru.sawim.activities.BaseActivity;
 
 /**
  * Created with IntelliJ IDEA.
@@ -26,7 +25,7 @@ public class Util {
     public static Bitmap avatarBitmap(byte[] buffer) {
         if (buffer == null) return null;
         DisplayMetrics metrics = new DisplayMetrics();
-        SawimApplication.getCurrentActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        BaseActivity.getCurrentActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
         float scaleWidth = metrics.scaledDensity;
         float scaleHeight = metrics.scaledDensity;
 

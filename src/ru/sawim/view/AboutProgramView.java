@@ -8,8 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import ru.sawim.SawimApplication;
 import ru.sawim.R;
+import ru.sawim.SawimApplication;
 
 /**
  * Created with IntelliJ IDEA.

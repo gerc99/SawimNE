@@ -1,12 +1,8 @@
 package ru.sawim;
 
-import ru.sawim.Options;
-import ru.sawim.SawimApplication;
-import ru.sawim.R;
-import ru.sawim.Scheme;
+import ru.sawim.comm.Util;
 import ru.sawim.models.form.ControlStateListener;
 import ru.sawim.models.form.Forms;
-import ru.sawim.comm.Util;
 import ru.sawim.modules.Answerer;
 import ru.sawim.modules.Notify;
 import ru.sawim.util.JLocale;

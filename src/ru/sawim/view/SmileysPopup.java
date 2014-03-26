@@ -9,22 +9,22 @@ import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.PopupWindow;
 import ru.sawim.models.SmilesAdapter;
-import ru.sawim.widget.SizeNotifierLinearLayout;
-import ru.sawim.widget.Util;
 import ru.sawim.modules.Emotions;
 import ru.sawim.roster.RosterHelper;
+import ru.sawim.widget.SizeNotifierLinearLayout;
+import ru.sawim.widget.Util;
 
 public class SmileysPopup {
 
-	private final Activity activity;
+    private final Activity activity;
     SizeNotifierLinearLayout rootView;
 
-	private PopupWindow popupWindow;
-	private EditText editText;
+    private PopupWindow popupWindow;
+    private EditText editText;
     private boolean keyboardVisible;
 
     public SmileysPopup(Activity activity, SizeNotifierLinearLayout view, EditText editText) {
-		this.activity = activity;
+        this.activity = activity;
         rootView = view;
         this.editText = editText;
         rootView.setOnSizeChangedListener(new SizeNotifierLinearLayout.OnSizeChangedListener() {
@@ -39,15 +39,15 @@ public class SmileysPopup {
                 }
             }
         });
-	}
+    }
 
-	public void show() {
+    public void show() {
         if (isShown()) {
             hide();
             return;
         }
         showView();
-	}
+    }
 
     private void showView() {
         View smileysView = getContentView();
@@ -88,16 +88,16 @@ public class SmileysPopup {
         return false;
     }
 
-	private int getPossibleKeyboardHeight() {
-		int viewHeight = rootView.getHeight();
-		int screenHeight = activity.getResources().getDisplayMetrics().heightPixels;
-		int statusBarHeight = activity.getWindow().findViewById(Window.ID_ANDROID_CONTENT).getTop();
-		
-		return screenHeight - viewHeight - statusBarHeight;
-	}
+    private int getPossibleKeyboardHeight() {
+        int viewHeight = rootView.getHeight();
+        int screenHeight = activity.getResources().getDisplayMetrics().heightPixels;
+        int statusBarHeight = activity.getWindow().findViewById(Window.ID_ANDROID_CONTENT).getTop();
 
-	private View getContentView() {
-		GridView grid = new GridView(activity);
+        return screenHeight - viewHeight - statusBarHeight;
+    }
+
+    private View getContentView() {
+        GridView grid = new GridView(activity);
         grid.setBackgroundResource(Util.getSystemBackground(activity));
         grid.setColumnWidth(Util.dipToPixels(activity, 45));
         grid.setNumColumns(-1);
@@ -112,6 +112,6 @@ public class SmileysPopup {
                 hide();
             }
         });
-		return grid;
-	}
+        return grid;
+    }
 }

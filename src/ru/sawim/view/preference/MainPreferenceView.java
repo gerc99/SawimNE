@@ -5,13 +5,13 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceScreen;
 import android.support.v4.app.FragmentTransaction;
+import ru.sawim.OptionsForm;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.activities.AccountsListActivity;
-import ru.sawim.activities.SawimActivity;
+import ru.sawim.activities.BaseActivity;
 import ru.sawim.view.AboutProgramView;
 import ru.sawim.view.SawimFragment;
-import ru.sawim.OptionsForm;
 
 /**
  * Created by admin on 25.01.14.
@@ -31,14 +31,14 @@ public class MainPreferenceView extends PreferenceFragment {
     }
 
     public static void show() {
-        SawimApplication.getCurrentActivity().runOnUiThread(new Runnable() {
+        BaseActivity.getCurrentActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                SawimApplication.getCurrentActivity().resetBar();
+                BaseActivity.getCurrentActivity().resetBar();
                 if (SawimApplication.isManyPane())
-                    SawimApplication.getCurrentActivity().setContentView(R.layout.intercalation_layout);
+                    BaseActivity.getCurrentActivity().setContentView(R.layout.intercalation_layout);
                 MainPreferenceView newFragment = new MainPreferenceView();
-                FragmentTransaction transaction = SawimApplication.getCurrentActivity().getSupportFragmentManager().beginTransaction();
+                FragmentTransaction transaction = BaseActivity.getCurrentActivity().getSupportFragmentManager().beginTransaction();
                 transaction.replace(R.id.fragment_container, newFragment, MainPreferenceView.TAG);
                 transaction.addToBackStack(null);
                 transaction.commitAllowingStateLoss();
@@ -49,7 +49,7 @@ public class MainPreferenceView extends PreferenceFragment {
     @Override
     public void onResume() {
         super.onResume();
-        SawimApplication.getCurrentActivity().getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        BaseActivity.getCurrentActivity().getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getActivity().setTitle(R.string.options);
     }
 
@@ -61,7 +61,7 @@ public class MainPreferenceView extends PreferenceFragment {
         screen1.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                startActivity(new Intent(SawimApplication.getCurrentActivity(), AccountsListActivity.class));
+                startActivity(new Intent(BaseActivity.getCurrentActivity(), AccountsListActivity.class));
                 return false;
             }
         });
@@ -146,7 +146,7 @@ public class MainPreferenceView extends PreferenceFragment {
         screen8.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                new AboutProgramView().show(SawimApplication.getCurrentActivity().getSupportFragmentManager(), AboutProgramView.TAG);
+                new AboutProgramView().show(BaseActivity.getCurrentActivity().getSupportFragmentManager(), AboutProgramView.TAG);
                 return false;
             }
         });

@@ -10,14 +10,15 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import protocol.Protocol;
 import protocol.xmpp.Jid;
-import ru.sawim.SawimApplication;
+import ru.sawim.Clipboard;
 import ru.sawim.R;
+import ru.sawim.SawimApplication;
+import ru.sawim.activities.BaseActivity;
+import ru.sawim.comm.Util;
+import ru.sawim.modules.DebugLog;
 import ru.sawim.view.PictureView;
 import ru.sawim.view.menu.JuickMenu;
 import ru.sawim.view.tasks.HtmlTask;
-import ru.sawim.Clipboard;
-import ru.sawim.comm.Util;
-import ru.sawim.modules.DebugLog;
 
 /**
  * Created with IntelliJ IDEA.
@@ -41,14 +42,14 @@ public class TextLinkClick implements TextLinkClickListener {
         if (clickedString.length() == 0) return;
         boolean isJuick = clickedString.substring(0, 1).equals("@") || clickedString.substring(0, 1).equals("#");
         if (isJuick) {
-            new JuickMenu(SawimApplication.getCurrentActivity(), currentProtocol, currentContact, clickedString).show();
+            new JuickMenu(BaseActivity.getCurrentActivity(), currentProtocol, currentContact, clickedString).show();
             return;
         }
         if (isLongTap || Jid.isJID(clickedString)) {
             CharSequence[] items = new CharSequence[2];
-            items[0] = SawimApplication.getCurrentActivity().getString(R.string.copy);
-            items[1] = SawimApplication.getCurrentActivity().getString(R.string.add_contact);
-            final AlertDialog.Builder builder = new AlertDialog.Builder(SawimApplication.getCurrentActivity());
+            items[0] = BaseActivity.getCurrentActivity().getString(R.string.copy);
+            items[1] = BaseActivity.getCurrentActivity().getString(R.string.add_contact);
+            final AlertDialog.Builder builder = new AlertDialog.Builder(BaseActivity.getCurrentActivity());
             builder.setCancelable(true);
             builder.setTitle(R.string.url_menu);
             final String finalClickedString = clickedString;
@@ -79,12 +80,12 @@ public class TextLinkClick implements TextLinkClickListener {
                     || Util.isImageFile(clickedString)) {
                 PictureView pictureView = new PictureView();
                 pictureView.setLink(clickedString);
-                FragmentTransaction transaction = SawimApplication.getCurrentActivity().getSupportFragmentManager().beginTransaction();
+                FragmentTransaction transaction = BaseActivity.getCurrentActivity().getSupportFragmentManager().beginTransaction();
                 transaction.add(pictureView, PictureView.TAG);
                 transaction.commitAllowingStateLoss();
             } else {
                 Uri uri = Uri.parse(clickedString);
-                Context context = SawimApplication.getCurrentActivity();
+                Context context = BaseActivity.getCurrentActivity();
                 Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                 intent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
                 context.startActivity(intent);

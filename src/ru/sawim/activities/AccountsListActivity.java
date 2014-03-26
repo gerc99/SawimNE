@@ -4,14 +4,13 @@ import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import protocol.Profile;
 import protocol.xmpp.XmppRegistration;
-import ru.sawim.SawimApplication;
 import ru.sawim.R;
+import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
 import ru.sawim.view.AccountsListView;
 
@@ -29,7 +28,7 @@ public class AccountsListActivity extends BaseActivity implements XmppRegistrati
         setTheme(Scheme.isBlack() ? R.style.BaseTheme : R.style.BaseThemeLight);
         super.onCreate(savedInstanceState);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
-        if (SawimApplication.getCurrentActivity().getSupportFragmentManager()
+        if (BaseActivity.getCurrentActivity().getSupportFragmentManager()
                 .findFragmentById(R.id.chat_fragment) != null)
             setContentView(R.layout.intercalation_layout);
         else

@@ -1,18 +1,15 @@
 package ru.sawim.view.preference;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.preference.*;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.ActionBar;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.inputmethod.InputMethodManager;
-import ru.sawim.SawimApplication;
 import ru.sawim.R;
-import ru.sawim.activities.SawimActivity;
+import ru.sawim.SawimApplication;
+import ru.sawim.activities.BaseActivity;
 import ru.sawim.models.form.Forms;
 
 import java.util.List;
@@ -33,7 +30,7 @@ public class PreferenceFormView extends PreferenceFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         getActivity().setTitle(Forms.getInstance().getCaption());
-        SawimApplication.getCurrentActivity().getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        BaseActivity.getCurrentActivity().getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         rootScreen = getPreferenceManager().createPreferenceScreen(getActivity());
         setPreferenceScreen(rootScreen);
         buildList();
@@ -41,14 +38,14 @@ public class PreferenceFormView extends PreferenceFragment {
     }
 
     public static void show() {
-        SawimApplication.getCurrentActivity().runOnUiThread(new Runnable() {
+        BaseActivity.getCurrentActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                SawimApplication.getCurrentActivity().resetBar();
+                BaseActivity.getCurrentActivity().resetBar();
                 if (SawimApplication.isManyPane())
-                    SawimApplication.getCurrentActivity().setContentView(R.layout.intercalation_layout);
+                    BaseActivity.getCurrentActivity().setContentView(R.layout.intercalation_layout);
                 PreferenceFormView newFragment = new PreferenceFormView();
-                FragmentTransaction transaction = SawimApplication.getCurrentActivity().getSupportFragmentManager().beginTransaction();
+                FragmentTransaction transaction = BaseActivity.getCurrentActivity().getSupportFragmentManager().beginTransaction();
                 transaction.replace(R.id.fragment_container, newFragment, PreferenceFormView.TAG);
                 transaction.addToBackStack(null);
                 transaction.commitAllowingStateLoss();
@@ -57,8 +54,8 @@ public class PreferenceFormView extends PreferenceFragment {
     }
 
     private void hideKeyboard() {
-        if (SawimApplication.getCurrentActivity().getCurrentFocus() != null)
-            ((InputMethodManager) SawimApplication.getCurrentActivity().getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(SawimApplication.getCurrentActivity().getCurrentFocus().getWindowToken(), 0);
+        if (BaseActivity.getCurrentActivity().getCurrentFocus() != null)
+            ((InputMethodManager) BaseActivity.getCurrentActivity().getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(BaseActivity.getCurrentActivity().getCurrentFocus().getWindowToken(), 0);
     }
 
     public boolean hasBack() {

@@ -12,6 +12,17 @@ import ru.sawim.SawimResources;
  */
 public class BaseActivity extends ActionBarActivity {
 
+    private static BaseActivity currentActivity;
+
+    public static BaseActivity getCurrentActivity() {
+        return currentActivity;
+    }
+
+    public static void setCurrentActivity(BaseActivity a) {
+        currentActivity = null;
+        currentActivity = a;
+    }
+
     public void resetBar() {
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         getSupportActionBar().setDisplayShowTitleEnabled(true);

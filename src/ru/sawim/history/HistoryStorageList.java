@@ -7,15 +7,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 import org.microemu.util.RecordStoreImpl;
+import ru.sawim.Clipboard;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
+import ru.sawim.activities.BaseActivity;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
 import ru.sawim.models.list.VirtualList;
 import ru.sawim.models.list.VirtualListItem;
 import ru.sawim.models.list.VirtualListModel;
-import ru.sawim.Clipboard;
 import ru.sawim.util.JLocale;
 
 import java.util.Hashtable;
@@ -151,7 +152,7 @@ public final class HistoryStorageList implements Runnable, FormListener {
                 items[0] = JLocale.getString(R.string.currect_contact);
                 items[1] = JLocale.getString(R.string.all_contact_except_this);
                 items[2] = JLocale.getString(R.string.clear_all_contacts);
-                AlertDialog.Builder builder = new AlertDialog.Builder(SawimApplication.getCurrentActivity());
+                AlertDialog.Builder builder = new AlertDialog.Builder(BaseActivity.getCurrentActivity());
                 builder.setCancelable(true);
                 builder.setTitle(JLocale.getString(R.string.history));
                 builder.setItems(items, new DialogInterface.OnClickListener() {
@@ -192,7 +193,7 @@ public final class HistoryStorageList implements Runnable, FormListener {
                     String sb = JLocale.getString(R.string.hist_cur) + ": " + getSize() + "\n"
                             + JLocale.getString(R.string.hist_size) + ": " + (rs.getSize() / 1024) + "\n"
                             + JLocale.getString(R.string.hist_avail) + ": " + (rs.getSizeAvailable() / 1024) + "\n";
-                    Toast.makeText(SawimApplication.getCurrentActivity(), sb, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(BaseActivity.getCurrentActivity(), sb, Toast.LENGTH_SHORT).show();
                 } catch (Exception ignored) {
                 }
                 break;

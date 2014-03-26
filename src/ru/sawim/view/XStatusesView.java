@@ -16,11 +16,11 @@ import protocol.icq.Icq;
 import protocol.mrim.Mrim;
 import protocol.xmpp.Xmpp;
 import ru.sawim.R;
-import ru.sawim.models.XStatusesAdapter;
-import ru.sawim.widget.Util;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.io.Storage;
+import ru.sawim.models.XStatusesAdapter;
 import ru.sawim.roster.RosterHelper;
+import ru.sawim.widget.Util;
 
 /**
  * Created with IntelliJ IDEA.

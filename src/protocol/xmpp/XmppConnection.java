@@ -2,9 +2,9 @@ package protocol.xmpp;
 
 import protocol.*;
 import protocol.net.ClientConnection;
+import ru.sawim.Options;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
-import ru.sawim.Options;
 import ru.sawim.SawimException;
 import ru.sawim.chat.message.PlainMessage;
 import ru.sawim.chat.message.SystemNotice;
@@ -12,7 +12,6 @@ import ru.sawim.comm.Config;
 import ru.sawim.comm.MD5;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
-import ru.sawim.modules.AutoAbsence;
 import ru.sawim.modules.DebugLog;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.search.UserInfo;
@@ -373,7 +372,7 @@ public final class XmppConnection extends ClientConnection {
         if (StringConvertor.isEmpty(server)) {
             server = domain_;
         }
-        String []hostAndPort = getHostAndPort(server);
+        String[] hostAndPort = getHostAndPort(server);
         connectTo(hostAndPort[0], Integer.parseInt(hostAndPort[1]));
 
         write(getOpenStreamXml(domain_));
@@ -1986,7 +1985,7 @@ public final class XmppConnection extends ClientConnection {
             String first = "Email=" + escapedJid
                     + "&Passwd=" + Util.urlEscape(passwd)
                     + "&PersistentCookie=false&source=googletalk";
-            HttpURLConnection c = (HttpURLConnection)new URL("https://www.google.com:443/accounts/ClientAuth?" + first).openConnection();
+            HttpURLConnection c = (HttpURLConnection) new URL("https://www.google.com:443/accounts/ClientAuth?" + first).openConnection();
 
             DebugLog.systemPrintln("[INFO-JABBER] Connecting to www.google.com");
 
@@ -2001,7 +2000,7 @@ public final class XmppConnection extends ClientConnection {
                     first = "SID=" + SID + "&LSID=" + LSID + "&service=mail&Session=true";
                     c.disconnect();
                     is.close();
-                    c = (HttpURLConnection)new URL("https://www.google.com:443/accounts/IssueAuthToken?" + first).openConnection();
+                    c = (HttpURLConnection) new URL("https://www.google.com:443/accounts/IssueAuthToken?" + first).openConnection();
 
                     DebugLog.systemPrintln("[INFO-JABBER] Next www.google.com connection");
                     is = c.getInputStream();
@@ -2357,7 +2356,8 @@ public final class XmppConnection extends ClientConnection {
             }
             long time = conf.hasChat() ? getXmpp().getChat(conf).getLastMessageTime() : 0;
 
-            if (0 != time) xNode += "<history maxstanzas='20' seconds='" + (SawimApplication.getCurrentGmtTime() - time) + "'/>";
+            if (0 != time)
+                xNode += "<history maxstanzas='20' seconds='" + (SawimApplication.getCurrentGmtTime() - time) + "'/>";
 
             if (!StringConvertor.isEmpty(xNode)) {
                 xml += "<x xmlns='http://jabber.org/protocol/muc'>" + xNode + "</x>";

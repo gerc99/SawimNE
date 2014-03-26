@@ -1,11 +1,11 @@
 package protocol.xmpp;
 
 import ru.sawim.R;
+import ru.sawim.comm.StringConvertor;
+import ru.sawim.comm.Util;
 import ru.sawim.models.form.ControlStateListener;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
-import ru.sawim.comm.StringConvertor;
-import ru.sawim.comm.Util;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.util.JLocale;
 

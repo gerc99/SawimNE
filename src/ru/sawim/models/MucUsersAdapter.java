@@ -9,12 +9,12 @@ import android.widget.BaseAdapter;
 import protocol.xmpp.Xmpp;
 import protocol.xmpp.XmppContact;
 import protocol.xmpp.XmppServiceContact;
+import ru.sawim.Options;
 import ru.sawim.R;
 import ru.sawim.SawimResources;
 import ru.sawim.Scheme;
-import ru.sawim.widget.roster.RosterItemView;
-import ru.sawim.Options;
 import ru.sawim.util.JLocale;
+import ru.sawim.widget.roster.RosterItemView;
 
 import java.util.ArrayList;
 import java.util.List;

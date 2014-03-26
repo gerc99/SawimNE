@@ -2,17 +2,13 @@ package protocol.xmpp;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.util.Log;
-import ru.sawim.SawimApplication;
-
-import java.io.IOException;
-import java.util.concurrent.atomic.AtomicInteger;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+
+import java.io.IOException;
 
 public class XmppSession {
     private SharedPreferences _prefs;
@@ -41,6 +37,7 @@ public class XmppSession {
             Log.i(XmppSession.class.getSimpleName(), "No valid Google Play Services APK found.");
         }
     }
+
     /**
      * Check the device to make sure it has the Google Play Services APK. If
      * it doesn't, display a dialog that allows users to download the APK from
@@ -58,7 +55,7 @@ public class XmppSession {
 
     /**
      * Registers the application with GCM servers asynchronously.
-     * <p>
+     * <p/>
      * Stores the registration ID and the app versionCode in the application's
      * shared preferences.
      */
@@ -105,7 +102,7 @@ public class XmppSession {
     public void load() {
         String jid = _prefs.getString("JID", "");
         if (jid.equals(connection.fullJid_)) {
-            connection.setSessionManagementEnabled( _prefs.getBoolean("Enabled", false));
+            connection.setSessionManagementEnabled(_prefs.getBoolean("Enabled", false));
             connection.packetsIn = _prefs.getLong("PacketsIn", 0);
             connection.packetsOut = _prefs.getLong("PacketsOut", 0);
             connection.smSessionID = _prefs.getString("SessionID", "");

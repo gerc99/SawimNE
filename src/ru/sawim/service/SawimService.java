@@ -5,9 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.*;
 import android.util.Log;
+import ru.sawim.Options;
 import ru.sawim.R;
 import ru.sawim.SawimNotification;
-import ru.sawim.Options;
 import ru.sawim.chat.ChatHistory;
 import ru.sawim.roster.RosterHelper;
 

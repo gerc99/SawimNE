@@ -10,10 +10,10 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import protocol.Protocol;
+import ru.sawim.Options;
 import ru.sawim.R;
 import ru.sawim.models.StatusesAdapter;
 import ru.sawim.widget.Util;
-import ru.sawim.Options;
 
 public class StatusesView extends DialogFragment {
     public static final int ADAPTER_STATUS = 0;

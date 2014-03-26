@@ -61,6 +61,7 @@ public final class VirtualListModel {
             header = null;
         }
     }
+
     public void addParam(int langStr, String str) {
         addParam(JLocale.getString(langStr), str);
     }

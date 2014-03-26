@@ -12,21 +12,22 @@ import protocol.icq.Icq;
 import protocol.mrim.Mrim;
 import protocol.net.TcpSocket;
 import protocol.xmpp.Xmpp;
-import ru.sawim.SawimApplication;
+import ru.sawim.Clipboard;
 import ru.sawim.R;
+import ru.sawim.SawimApplication;
+import ru.sawim.SawimException;
+import ru.sawim.activities.BaseActivity;
 import ru.sawim.activities.SawimActivity;
+import ru.sawim.comm.Util;
+import ru.sawim.forms.EditInfo;
 import ru.sawim.models.list.VirtualList;
 import ru.sawim.models.list.VirtualListItem;
 import ru.sawim.models.list.VirtualListModel;
-import ru.sawim.view.VirtualListView;
-import ru.sawim.Clipboard;
-import ru.sawim.SawimException;
-import ru.sawim.comm.Util;
-import ru.sawim.forms.EditInfo;
 import ru.sawim.modules.DebugLog;
 import ru.sawim.modules.fs.FileBrowserListener;
 import ru.sawim.modules.photo.PhotoListener;
 import ru.sawim.util.JLocale;
+import ru.sawim.view.VirtualListView;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -202,7 +203,7 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
                         break;
 
                     case INFO_MENU_TAKE_AVATAR:
-                        SawimActivity.externalApi.setFragment(SawimApplication.getCurrentActivity().getSupportFragmentManager().findFragmentByTag(VirtualListView.TAG));
+                        SawimActivity.externalApi.setFragment(BaseActivity.getCurrentActivity().getSupportFragmentManager().findFragmentByTag(VirtualListView.TAG));
                         SawimActivity.externalApi.startCamera(UserInfo.this, 640, 480);
                         break;
 

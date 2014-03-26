@@ -3,7 +3,7 @@ package ru.sawim;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.os.Build;
-import ru.sawim.SawimApplication;
+import ru.sawim.activities.BaseActivity;
 import ru.sawim.activities.SawimActivity;
 
 import java.util.concurrent.atomic.AtomicReference;
@@ -43,11 +43,11 @@ public final class Clipboard {
         try {
             if (Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
                 android.text.ClipboardManager clipboard = (android.text.ClipboardManager)
-                        SawimApplication.getCurrentActivity().getSystemService(SawimActivity.CLIPBOARD_SERVICE);
+                        BaseActivity.getCurrentActivity().getSystemService(SawimActivity.CLIPBOARD_SERVICE);
                 clipboard.setText(text);
             } else {
                 ClipboardManager clipboard = (ClipboardManager)
-                        SawimApplication.getCurrentActivity().getSystemService(SawimActivity.CLIPBOARD_SERVICE);
+                        BaseActivity.getCurrentActivity().getSystemService(SawimActivity.CLIPBOARD_SERVICE);
                 clipboard.setPrimaryClip(ClipData.newPlainText("", text));
             }
         } catch (Throwable e) {
@@ -60,10 +60,10 @@ public final class Clipboard {
         text.set(null);
         try {
             if (Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
-                android.text.ClipboardManager clipboard = (android.text.ClipboardManager) SawimApplication.getCurrentActivity().getSystemService(SawimActivity.CLIPBOARD_SERVICE);
+                android.text.ClipboardManager clipboard = (android.text.ClipboardManager) BaseActivity.getCurrentActivity().getSystemService(SawimActivity.CLIPBOARD_SERVICE);
                 text.set(clipboard.hasText() ? clipboard.getText().toString() : null);
             } else {
-                ClipboardManager clipboard = (ClipboardManager) SawimApplication.getCurrentActivity().getSystemService(SawimActivity.CLIPBOARD_SERVICE);
+                ClipboardManager clipboard = (ClipboardManager) BaseActivity.getCurrentActivity().getSystemService(SawimActivity.CLIPBOARD_SERVICE);
                 text.set(clipboard.hasPrimaryClip() ? clipboard.getText().toString() : null);
             }
         } catch (Throwable e) {

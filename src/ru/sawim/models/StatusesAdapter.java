@@ -14,9 +14,9 @@ import protocol.Protocol;
 import protocol.StatusInfo;
 import ru.sawim.R;
 import ru.sawim.Scheme;
-import ru.sawim.view.StatusesView;
 import ru.sawim.forms.PrivateStatusForm;
 import ru.sawim.util.JLocale;
+import ru.sawim.view.StatusesView;
 
 /**
  * Created with IntelliJ IDEA.
