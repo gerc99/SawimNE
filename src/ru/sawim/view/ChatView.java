@@ -13,6 +13,7 @@ import android.os.*;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.InputType;
@@ -33,6 +34,7 @@ import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.SawimResources;
 import ru.sawim.Scheme;
+import ru.sawim.activities.BaseActivity;
 import ru.sawim.activities.SawimActivity;
 import ru.sawim.models.MessagesAdapter;
 import ru.sawim.models.RosterAdapter;
@@ -141,16 +143,17 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
 
     private void resetBar() {
         if (!SawimApplication.isManyPane()) {
+            ActionBar actionBar = SawimApplication.getCurrentActivity().getSupportActionBar();
             removeTitleBar();
-            SawimApplication.getActionBar().setDisplayShowTitleEnabled(false);
+            actionBar.setDisplayShowTitleEnabled(false);
             if (contact != null) {
-                SawimApplication.getActionBar().setDisplayShowHomeEnabled(contact.isConference());
-                SawimApplication.getActionBar().setDisplayUseLogoEnabled(contact.isConference());
-                SawimApplication.getActionBar().setDisplayHomeAsUpEnabled(contact.isConference());
-                SawimApplication.getActionBar().setHomeButtonEnabled(contact.isConference());
+                actionBar.setDisplayShowHomeEnabled(contact.isConference());
+                actionBar.setDisplayUseLogoEnabled(contact.isConference());
+                actionBar.setDisplayHomeAsUpEnabled(contact.isConference());
+                actionBar.setHomeButtonEnabled(contact.isConference());
             }
-            SawimApplication.getActionBar().setDisplayShowCustomEnabled(true);
-            SawimApplication.getActionBar().setCustomView(chatBarLayout);
+            actionBar.setDisplayShowCustomEnabled(true);
+            actionBar.setCustomView(chatBarLayout);
         }
     }
 
@@ -401,7 +404,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
     @Override
     public void onStart() {
         super.onStart();
-        SawimApplication.setCurrentActivity((ActionBarActivity) getActivity());
+        SawimApplication.setCurrentActivity((BaseActivity) getActivity());
         if (contact == null)
             initChat(RosterHelper.getInstance().getCurrentProtocol(), RosterHelper.getInstance().getCurrentContact());
         else
@@ -664,7 +667,8 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         if (chatBarLayout == null) return;
         Drawable icMess = ChatHistory.instance.getUnreadMessageIcon();
         if (contact != null && !SawimApplication.isManyPane()) {
-            SawimApplication.getActionBar().setIcon(StatusInfo.STATUS_OFFLINE == contact.getStatusIndex() ? SawimResources.usersIcon : SawimResources.usersIconOn);
+            SawimApplication.getCurrentActivity().getSupportActionBar()
+                    .setIcon(StatusInfo.STATUS_OFFLINE == contact.getStatusIndex() ? SawimResources.usersIcon : SawimResources.usersIconOn);
             if (icMess == null) {
                 chatBarLayout.setVisibilityChatsImage(View.GONE);
             } else {

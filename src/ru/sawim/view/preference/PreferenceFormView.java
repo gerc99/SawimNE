@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.preference.*;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.ActionBar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -32,7 +33,7 @@ public class PreferenceFormView extends PreferenceFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         getActivity().setTitle(Forms.getInstance().getCaption());
-        SawimApplication.getActionBar().setDisplayHomeAsUpEnabled(true);
+        SawimApplication.getCurrentActivity().getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         rootScreen = getPreferenceManager().createPreferenceScreen(getActivity());
         setPreferenceScreen(rootScreen);
         buildList();
@@ -43,9 +44,7 @@ public class PreferenceFormView extends PreferenceFragment {
         SawimApplication.getCurrentActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (SawimApplication.getActionBar() == null)
-                    SawimApplication.setActionBar(SawimApplication.getCurrentActivity().getSupportActionBar());
-                SawimActivity.resetBar();
+                SawimApplication.getCurrentActivity().resetBar();
                 if (SawimApplication.isManyPane())
                     SawimApplication.getCurrentActivity().setContentView(R.layout.intercalation_layout);
                 PreferenceFormView newFragment = new PreferenceFormView();

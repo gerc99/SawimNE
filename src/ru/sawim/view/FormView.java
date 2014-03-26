@@ -79,13 +79,7 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
         if (!Scheme.isSystemBackground())
             rootLayout.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
 
-        updateForm(true);
-        if (Forms.getInstance().getWaitingString() != null) {
-            progressBar.setVisibility(View.VISIBLE);
-            scrollView.setVisibility(View.GONE);
-            textView.setVisibility(View.VISIBLE);
-            textView.setText(Forms.getInstance().getWaitingString());
-        }
+        updateForm(false);
         return v;
     }
 
@@ -112,7 +106,7 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
     }
 
     private static void show(Fragment fragment) {
-        SawimActivity.resetBar();
+        SawimApplication.getCurrentActivity().resetBar();
         if (SawimApplication.isManyPane())
             SawimApplication.getCurrentActivity().setContentView(R.layout.intercalation_layout);
         FragmentTransaction transaction = SawimApplication.getCurrentActivity().getSupportFragmentManager().beginTransaction();
@@ -126,10 +120,16 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                textView.setVisibility(isLoad ? View.GONE : View.VISIBLE);
-                progressBar.setVisibility(isLoad ? View.GONE : View.VISIBLE);
-                scrollView.setVisibility(isLoad ? View.VISIBLE : View.GONE);
+                if (!isLoad || (!isLoad && Forms.getInstance().getWaitingString() != null)) {
+                    progressBar.setVisibility(View.VISIBLE);
+                    scrollView.setVisibility(View.GONE);
+                    textView.setVisibility(View.VISIBLE);
+                    textView.setText(Forms.getInstance().getWaitingString());
+                }
                 if (isLoad) {
+                    textView.setVisibility(View.GONE);
+                    progressBar.setVisibility(View.GONE);
+                    scrollView.setVisibility(View.VISIBLE);
                     buildList();
                 }
                 if (Forms.getInstance().getErrorString() != null) {

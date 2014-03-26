@@ -33,7 +33,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.view.*;
 import protocol.Contact;
 import protocol.Protocol;
@@ -56,7 +55,7 @@ import ru.sawim.modules.DebugLog;
 import ru.sawim.modules.Notify;
 import ru.sawim.roster.RosterHelper;
 
-public class SawimActivity extends ActionBarActivity {
+public class SawimActivity extends BaseActivity {
 
     public static final String LOG_TAG = SawimActivity.class.getSimpleName();
     public static final String NOTIFY = "ru.sawim.notify";
@@ -70,7 +69,6 @@ public class SawimActivity extends ActionBarActivity {
         setTheme(Scheme.isBlack() ? R.style.BaseTheme : R.style.BaseThemeLight);
         super.onCreate(savedInstanceState);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
-        SawimApplication.setActionBar(null);
         SawimApplication.setCurrentActivity(this);
         setContentView(SawimApplication.isManyPane() ? R.layout.main_twopane : R.layout.main);
 
@@ -80,17 +78,6 @@ public class SawimActivity extends ActionBarActivity {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.fragment_container, rosterView, RosterView.TAG).commit();
         }
-    }
-
-    public static void resetBar() {
-        SawimApplication.getActionBar().setDisplayHomeAsUpEnabled(false);
-        SawimApplication.getActionBar().setDisplayShowTitleEnabled(true);
-        SawimApplication.getActionBar().setDisplayUseLogoEnabled(true);
-        SawimApplication.getActionBar().setDisplayShowHomeEnabled(true);
-        SawimApplication.getActionBar().setDisplayShowCustomEnabled(false);
-        SawimApplication.getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-        SawimApplication.getActionBar().setIcon(SawimResources.appIcon);
-        SawimApplication.getCurrentActivity().setTitle(R.string.app_name);
     }
 
     @Override
@@ -166,22 +153,21 @@ public class SawimActivity extends ActionBarActivity {
     public void onResume() {
         super.onResume();
         SawimApplication.setCurrentActivity(this);
-        if (SawimApplication.getActionBar() == null)
-            SawimApplication.setActionBar(getSupportActionBar());
         SawimApplication.maximize();
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        FragmentManager fragmentManager = SawimApplication.getCurrentActivity().getSupportFragmentManager();
         if (RosterHelper.getInstance().getProtocolCount() == 0) {
-            if (getSupportFragmentManager()
-                    .findFragmentById(R.id.chat_fragment) != null)
+            FragmentTransaction transaction = fragmentManager.beginTransaction();
+            if (fragmentManager.findFragmentById(R.id.chat_fragment) != null)
                 setContentView(R.layout.intercalation_layout);
             StartWindowView newFragment = new StartWindowView();
             transaction.replace(R.id.fragment_container, newFragment, StartWindowView.TAG);
             transaction.addToBackStack(null);
             transaction.commitAllowingStateLoss();
+            supportInvalidateOptionsMenu();
         } else {
-            StartWindowView startWindowView = (StartWindowView) getSupportFragmentManager().findFragmentByTag(StartWindowView.TAG);
+            StartWindowView startWindowView = (StartWindowView) fragmentManager.findFragmentByTag(StartWindowView.TAG);
             if (startWindowView != null)
-                getSupportFragmentManager().popBackStack();
+                fragmentManager.popBackStack();
         }
         handleIntent();
         if (!isOpenNewChat && SawimApplication.isManyPane()) openChat(null, null, true);

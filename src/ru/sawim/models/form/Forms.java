@@ -132,12 +132,10 @@ public class Forms {
 
     public void show() {
         FormView.show();
-        invalidate(true);
     }
 
     public void preferenceFormShow() {
         PreferenceFormView.show();
-        invalidate(true);
     }
 
     public void invalidate(boolean isLoad) {

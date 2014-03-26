@@ -34,7 +34,7 @@ public class MainPreferenceView extends PreferenceFragment {
         SawimApplication.getCurrentActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                SawimActivity.resetBar();
+                SawimApplication.getCurrentActivity().resetBar();
                 if (SawimApplication.isManyPane())
                     SawimApplication.getCurrentActivity().setContentView(R.layout.intercalation_layout);
                 MainPreferenceView newFragment = new MainPreferenceView();

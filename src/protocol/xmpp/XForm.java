@@ -1,9 +1,7 @@
 package protocol.xmpp;
 
-
 import DrawControls.icons.ImageList;
 import android.graphics.Bitmap;
-import android.util.Log;
 import ru.sawim.R;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
@@ -23,7 +21,7 @@ final class XForm {
     private Vector values = new Vector();
 
     XForm() {
-        this.waitingForm = true;
+        waitingForm = true;
     }
 
     void init(int caption, FormListener listener) {
@@ -57,6 +55,7 @@ final class XForm {
     public void setWaiting() {
         waitingForm = true;
         form.setWaitingString(JLocale.getString(R.string.wait));
+        form.invalidate(false);
     }
 
     public void setErrorMessage(String error) {
@@ -100,8 +99,7 @@ final class XForm {
             }
             addField(item, item.getAttribute("type"));
         }
-        Log.e("qqqqqqq", form.getSize()+""+xForm.childrenCount());
-        form.invalidate(form.getSize() == xForm.childrenCount() - 1);
+        form.invalidate(true);
     }
 
     public void loadFromXml(XmlNode xml, XmlNode baseXml) {
@@ -132,8 +130,7 @@ final class XForm {
                 addField(S_KEY, S_HIDDEN, "", "");
             }
         }
-        Log.e("iiiiiiii", form.getSize()+""+xForm.childrenCount());
-        form.invalidate(form.getSize() == xForm.childrenCount() - 1);
+        form.invalidate(true);
     }
 
     public String getXmlForm() {

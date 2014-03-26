@@ -18,7 +18,8 @@ import ru.sawim.SawimApplication;
  */
 
 public class LabelView extends View {
-    private Paint textPaint;
+
+    private Paint textPaint = new Paint();
     private String text = "";
     private int ascent;
 
@@ -38,8 +39,6 @@ public class LabelView extends View {
     }
 
     private final void initLabelView() {
-        setPadding(3, 3, 3, 3);
-        textPaint = new Paint();
         textPaint.setAntiAlias(true);
         textPaint.setTextSize(16);
         textPaint.setColor(0xFF000000);

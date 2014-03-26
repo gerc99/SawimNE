@@ -9,6 +9,7 @@ import ru.sawim.Options;
 import ru.sawim.SawimException;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
+import ru.sawim.util.JLocale;
 
 
 public class XmppRegistration implements Runnable, FormListener {
@@ -32,8 +33,8 @@ public class XmppRegistration implements Runnable, FormListener {
         type = TYPE_NEW_ACCOUNT_DOMAIN;
         id = "reg0";
         form = new XForm();
-        form.init("registration", this);
-        form.getForm().addTextField(FORM_SERVER, "domain", SawimApplication.DEFAULT_SERVER);
+        form.init(JLocale.getString(R.string.registration), this);
+        form.getForm().addTextField(FORM_SERVER, JLocale.getString(R.string.domain), SawimApplication.DEFAULT_SERVER);
         form.getForm().addString(String.format(SawimApplication.getContext().getString(R.string.hint_registration_domen), SawimApplication.DEFAULT_SERVER));
         return form.getForm();
     }

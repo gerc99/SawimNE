@@ -10,11 +10,10 @@ import android.content.pm.PackageManager;
 import android.os.Environment;
 import android.os.Message;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.view.Surface;
 import android.view.WindowManager;
 import org.microemu.util.AndroidRecordStoreManager;
+import ru.sawim.activities.BaseActivity;
 import ru.sawim.receiver.NetworkStateReceiver;
 import ru.sawim.service.SawimService;
 import ru.sawim.service.SawimServiceConnection;
@@ -48,8 +47,7 @@ public class SawimApplication extends Application {
     public static final String PATH_AVATARS = Environment.getExternalStorageDirectory().getAbsolutePath() + "/sawimne/avatars/";
 
     public static boolean returnFromAcc = false;
-    private static ActionBarActivity currentActivity;
-    private static ActionBar actionBar;
+    private static BaseActivity currentActivity;
     private boolean paused = true;
     private static int fontSize;
     public static boolean showStatusLine;
@@ -265,20 +263,11 @@ public class SawimApplication extends Application {
         configurationChanged = cC;
     }
 
-    public static ActionBar getActionBar() {
-        return actionBar;
-    }
-
-    public static void setActionBar(ActionBar actionBar) {
-        SawimApplication.actionBar = null;
-        SawimApplication.actionBar = actionBar;
-    }
-
-    public static ActionBarActivity getCurrentActivity() {
+    public static BaseActivity getCurrentActivity() {
         return currentActivity;
     }
 
-    public static void setCurrentActivity(ActionBarActivity a) {
+    public static void setCurrentActivity(BaseActivity a) {
         SawimApplication.currentActivity = null;
         SawimApplication.currentActivity = a;
     }

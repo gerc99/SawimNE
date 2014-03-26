@@ -102,7 +102,7 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
     }
 
     public static void show() {
-        SawimActivity.resetBar();
+        SawimApplication.getCurrentActivity().resetBar();
         if (SawimApplication.isManyPane())
             SawimApplication.getCurrentActivity().setContentView(R.layout.intercalation_layout);
         VirtualListView newFragment = new VirtualListView();
@@ -140,7 +140,7 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
     @Override
     public void onResume() {
         super.onResume();
-        SawimActivity.resetBar();
+        SawimApplication.getCurrentActivity().resetBar();
     }
 
     public void onPrepareOptionsMenu_(Menu menu) {

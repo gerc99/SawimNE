@@ -12,9 +12,9 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.view.*;
 import android.widget.*;
 import protocol.Contact;
@@ -24,6 +24,7 @@ import protocol.Protocol;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
+import ru.sawim.activities.BaseActivity;
 import ru.sawim.activities.SawimActivity;
 import ru.sawim.models.ProtocolsAdapter;
 import ru.sawim.models.RosterAdapter;
@@ -68,7 +69,6 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        SawimApplication.setCurrentActivity((ActionBarActivity) activity);
         handler = new Handler(this);
         rosterBarLayout = new LinearLayout(getActivity());
         barLinearLayout = new LinearLayout(activity);
@@ -191,13 +191,14 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     }
 
     private void initBar() {
-        SawimApplication.getActionBar().setDisplayShowTitleEnabled(false);
-        SawimApplication.getActionBar().setDisplayShowHomeEnabled(false);
-        SawimApplication.getActionBar().setDisplayUseLogoEnabled(false);
-        SawimApplication.getActionBar().setDisplayHomeAsUpEnabled(false);
-        SawimApplication.getActionBar().setHomeButtonEnabled(false);
-        SawimApplication.getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-        SawimApplication.getActionBar().setDisplayShowCustomEnabled(true);
+        ActionBar actionBar = SawimApplication.getCurrentActivity().getSupportActionBar();
+        actionBar.setDisplayShowTitleEnabled(false);
+        actionBar.setDisplayShowHomeEnabled(false);
+        actionBar.setDisplayUseLogoEnabled(false);
+        actionBar.setDisplayHomeAsUpEnabled(false);
+        actionBar.setHomeButtonEnabled(false);
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+        actionBar.setDisplayShowCustomEnabled(true);
         if (RosterHelper.getInstance().getProtocolCount() > 0) {
             protocolsSpinner.setAdapter(protocolsAdapter);
             protocolsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -289,7 +290,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
                     .findFragmentById(R.id.chat_fragment);
             chatView.removeTitleBar();
             barLinearLayout.addView(chatView.getTitleBar());
-            SawimApplication.getActionBar().setCustomView(barLinearLayout);
+            actionBar.setCustomView(barLinearLayout);
         } else {
             barLinearLayout.removeAllViews();
             LinearLayout.LayoutParams protocolsSpinnerLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
@@ -301,7 +302,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
             if (RosterHelper.getInstance().getProtocolCount() > 0)
                 barLinearLayout.addView(protocolsSpinner);
             barLinearLayout.addView(chatsImage);
-            SawimApplication.getActionBar().setCustomView(barLinearLayout);
+            actionBar.setCustomView(barLinearLayout);
         }
     }
 
@@ -321,9 +322,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     }
 
     public void resume() {
-        SawimApplication.setCurrentActivity((ActionBarActivity) getActivity());
-        if (SawimApplication.getActionBar() == null)
-            SawimApplication.setActionBar(SawimApplication.getCurrentActivity().getSupportActionBar());
+        SawimApplication.setCurrentActivity((BaseActivity) getActivity());
         initBar();
 
         getRosterAdapter().setType(RosterHelper.getInstance().getCurrPage());

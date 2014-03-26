@@ -19,7 +19,7 @@ import ru.sawim.view.SendToView;
  * Time: 18:54
  * To change this template use File | Settings | File Templates.
  */
-public class SendToActivity extends ActionBarActivity {
+public class SendToActivity extends BaseActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -44,14 +44,12 @@ public class SendToActivity extends ActionBarActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        SawimApplication.setActionBar(getSupportActionBar());
         FormView.showLastWindow();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        SawimApplication.setActionBar(null);
     }
 
     @Override

@@ -22,7 +22,7 @@ import ru.sawim.view.AccountsListView;
  * Time: 19:56
  * To change this template use File | Settings | File Templates.
  */
-public class AccountsListActivity extends ActionBarActivity implements XmppRegistration.OnAddAccount {
+public class AccountsListActivity extends BaseActivity implements XmppRegistration.OnAddAccount {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -34,14 +34,12 @@ public class AccountsListActivity extends ActionBarActivity implements XmppRegis
             setContentView(R.layout.intercalation_layout);
         else
             setContentView(SawimApplication.isManyPane() ? R.layout.main_twopane : R.layout.main);
-        SawimApplication.setCurrentActivity(this);
-        SawimApplication.setActionBar(getSupportActionBar());
-        SawimApplication.getActionBar().setDisplayHomeAsUpEnabled(true);
-        SawimApplication.getActionBar().setDisplayShowTitleEnabled(true);
-        SawimApplication.getActionBar().setDisplayUseLogoEnabled(true);
-        SawimApplication.getActionBar().setDisplayShowHomeEnabled(true);
-        SawimApplication.getActionBar().setDisplayShowCustomEnabled(false);
-        SawimApplication.getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowTitleEnabled(true);
+        getSupportActionBar().setDisplayUseLogoEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayShowCustomEnabled(false);
+        getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         if (findViewById(R.id.fragment_container) != null) {
             if (savedInstanceState != null) return;
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -50,12 +48,6 @@ public class AccountsListActivity extends ActionBarActivity implements XmppRegis
             transaction.add(R.id.fragment_container, accountsListView, AccountsListView.TAG);
             transaction.commit();
         }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        SawimApplication.setActionBar(null);
     }
 
     @Override

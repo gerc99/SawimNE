@@ -15,7 +15,7 @@ import ru.sawim.SawimApplication;
  */
 public class SimpleItemView extends View {
 
-    private Paint textPaint;
+    private Paint textPaint = new Paint();
     private String text = "";
     private int ascent;
     private Bitmap image = null;
@@ -36,8 +36,6 @@ public class SimpleItemView extends View {
     }
 
     private final void initLabelView() {
-        setPadding(3, 3, 3, 3);
-        textPaint = new Paint();
         textPaint.setAntiAlias(true);
         textPaint.setTextSize(16);
         textPaint.setColor(0xFF000000);
@@ -50,6 +48,7 @@ public class SimpleItemView extends View {
 
     public void setImage(Bitmap image) {
         this.image = image;
+        repaint();
     }
 
     public void setText(String text) {

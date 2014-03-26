@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.ActionBar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -118,14 +119,15 @@ public class SendToView extends Fragment implements AdapterView.OnItemClickListe
     }
 
     private void initBar() {
+        ActionBar actionBar = SawimApplication.getCurrentActivity().getSupportActionBar();
         boolean isShowTabs = roster.getProtocolCount() > 1;
-        SawimApplication.getActionBar().setDisplayShowTitleEnabled(!isShowTabs);
-        SawimApplication.getActionBar().setDisplayShowHomeEnabled(!isShowTabs);
-        SawimApplication.getActionBar().setDisplayUseLogoEnabled(!isShowTabs);
-        SawimApplication.getActionBar().setDisplayHomeAsUpEnabled(!isShowTabs);
-        SawimApplication.getActionBar().setDisplayShowCustomEnabled(isShowTabs);
+        actionBar.setDisplayShowTitleEnabled(!isShowTabs);
+        actionBar.setDisplayShowHomeEnabled(!isShowTabs);
+        actionBar.setDisplayUseLogoEnabled(!isShowTabs);
+        actionBar.setDisplayHomeAsUpEnabled(!isShowTabs);
+        actionBar.setDisplayShowCustomEnabled(isShowTabs);
         getActivity().setTitle(R.string.app_name);
-        SawimApplication.getActionBar().setCustomView(horizontalScrollView);
+        actionBar.setCustomView(horizontalScrollView);
     }
 
     private void updateBarProtocols() {

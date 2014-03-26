@@ -96,7 +96,11 @@ public class StartWindowView extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        SawimActivity.resetBar();
+        SawimApplication.getCurrentActivity().resetBar();
+        SawimApplication.getCurrentActivity().supportInvalidateOptionsMenu();
+        if (RosterHelper.getInstance().getProtocolCount() > 0) {
+            back();
+        }
     }
 
     public void addAccount(int num, Profile acc) {
