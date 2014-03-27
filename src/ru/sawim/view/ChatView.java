@@ -401,7 +401,6 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
     @Override
     public void onStart() {
         super.onStart();
-        BaseActivity.setCurrentActivity((BaseActivity) getActivity());
         if (contact == null)
             initChat(RosterHelper.getInstance().getCurrentProtocol(), RosterHelper.getInstance().getCurrentContact());
         else

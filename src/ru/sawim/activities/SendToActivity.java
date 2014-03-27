@@ -22,7 +22,6 @@ public class SendToActivity extends BaseActivity {
         setTheme(Scheme.isBlack() ? R.style.BaseTheme : R.style.BaseThemeLight);
         super.onCreate(savedInstanceState);
 
-        BaseActivity.setCurrentActivity(this);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
         setContentView(R.layout.intercalation_layout);
 

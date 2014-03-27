@@ -65,7 +65,6 @@ public class SawimActivity extends BaseActivity {
         setTheme(Scheme.isBlack() ? R.style.BaseTheme : R.style.BaseThemeLight);
         super.onCreate(savedInstanceState);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
-        BaseActivity.setCurrentActivity(this);
         setContentView(SawimApplication.isManyPane() ? R.layout.main_twopane : R.layout.main);
 
         if (savedInstanceState == null && !SawimApplication.isManyPane()) {
@@ -148,7 +147,6 @@ public class SawimActivity extends BaseActivity {
     @Override
     public void onResume() {
         super.onResume();
-        BaseActivity.setCurrentActivity(this);
         SawimApplication.maximize();
         FragmentManager fragmentManager = BaseActivity.getCurrentActivity().getSupportFragmentManager();
         StartWindowView startWindowView = (StartWindowView) fragmentManager.findFragmentByTag(StartWindowView.TAG);

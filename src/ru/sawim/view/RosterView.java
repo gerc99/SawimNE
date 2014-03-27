@@ -328,7 +328,6 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     }
 
     public void resume() {
-        BaseActivity.setCurrentActivity((BaseActivity) getActivity());
         initBar();
 
         getRosterAdapter().setType(RosterHelper.getInstance().getCurrPage());
