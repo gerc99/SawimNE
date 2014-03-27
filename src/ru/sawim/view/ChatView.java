@@ -115,7 +115,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         smileysPopup = new SmileysPopup(activity, chatViewLayout, messageEditor);
         drawerLayout = new DrawerLayout(activity);
 
-        SawimApplication.getInstance().setConfigurationChanged(new SawimApplication.OnConfigurationChanged() {
+        BaseActivity.getCurrentActivity().setConfigurationChanged(new BaseActivity.OnConfigurationChanged() {
             @Override
             public void onConfigurationChanged() {
                 adapter.isRepaint = true;

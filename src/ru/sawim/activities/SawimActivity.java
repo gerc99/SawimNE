@@ -32,6 +32,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import protocol.Contact;
@@ -153,13 +154,14 @@ public class SawimActivity extends BaseActivity {
         StartWindowView startWindowView = (StartWindowView) fragmentManager.findFragmentByTag(StartWindowView.TAG);
         if (RosterHelper.getInstance().getProtocolCount() == 0) {
             FragmentTransaction transaction = fragmentManager.beginTransaction();
-            if (fragmentManager.findFragmentById(R.id.chat_fragment) != null)
+            if (SawimApplication.isManyPane()) {
                 setContentView(R.layout.intercalation_layout);
-            if (startWindowView == null) {
-                StartWindowView newFragment = new StartWindowView();
-                transaction.replace(R.id.fragment_container, newFragment, StartWindowView.TAG);
-                transaction.commit();
-                supportInvalidateOptionsMenu();
+                if (startWindowView == null) {
+                    StartWindowView newFragment = new StartWindowView();
+                    transaction.replace(R.id.fragment_container, newFragment, StartWindowView.TAG);
+                    transaction.commit();
+                    supportInvalidateOptionsMenu();
+                }
             }
         } else {
             if (startWindowView != null)
@@ -249,60 +251,64 @@ public class SawimActivity extends BaseActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        ChatView chatView = getChatView();
-        VirtualListView virtualListView = (VirtualListView) getSupportFragmentManager().findFragmentByTag(VirtualListView.TAG);
         menu.clear();
+        ChatView chatView = getChatView();
+        RosterView rosterView = getRosterView();
+        StartWindowView startWindowView = (StartWindowView) getSupportFragmentManager().findFragmentByTag(StartWindowView.TAG);
+        VirtualListView virtualListView = (VirtualListView) getSupportFragmentManager().findFragmentByTag(VirtualListView.TAG);
         if (virtualListView != null && virtualListView.isAdded()) {
             virtualListView.onPrepareOptionsMenu_(menu);
             return true;
         } else if (chatView != null && chatView.isAdded() && !SawimApplication.isManyPane()) {
             chatView.onPrepareOptionsMenu_(menu);
             return true;
-        }
-        Protocol p = RosterHelper.getInstance().getCurrentProtocol();
-        if (p != null) {
-            int count = RosterHelper.getInstance().getProtocolCount();
-            if (Options.getInt(Options.OPTION_CURRENT_SPINNER_ITEM) != count) {
-                menu.add(Menu.NONE, MENU_CONNECT, Menu.NONE, R.string.connect)
-                        .setTitle((p.isConnected() || p.isConnecting()) ? R.string.disconnect : R.string.connect);
-                menu.add(Menu.NONE, MENU_STATUS, Menu.NONE, R.string.status);
-                if (p.getXStatusInfo() != null)
-                    menu.add(Menu.NONE, MENU_XSTATUS, Menu.NONE, R.string.xstatus);
-                if ((p instanceof Icq) || (p instanceof Mrim))
-                    menu.add(Menu.NONE, MENU_PRIVATE_STATUS, Menu.NONE, R.string.private_status);
-            }
-            for (int i = 0; i < count; ++i) {
-                Protocol pr = RosterHelper.getInstance().getProtocol(i);
-                if ((pr instanceof Mrim) && pr.isConnected()) {
-                    menu.add(Menu.NONE, MENU_SEND_SMS, Menu.NONE, R.string.send_sms);
+        } else if ((rosterView != null && rosterView.isAdded())
+                || (startWindowView != null && startWindowView.isAdded())) {
+            Protocol p = RosterHelper.getInstance().getCurrentProtocol();
+            if (p != null) {
+                int count = RosterHelper.getInstance().getProtocolCount();
+                if (Options.getInt(Options.OPTION_CURRENT_SPINNER_ITEM) != count) {
+                    menu.add(Menu.NONE, MENU_CONNECT, Menu.NONE, R.string.connect)
+                            .setTitle((p.isConnected() || p.isConnecting()) ? R.string.disconnect : R.string.connect);
+                    menu.add(Menu.NONE, MENU_STATUS, Menu.NONE, R.string.status);
+                    if (p.getXStatusInfo() != null)
+                        menu.add(Menu.NONE, MENU_XSTATUS, Menu.NONE, R.string.xstatus);
+                    if ((p instanceof Icq) || (p instanceof Mrim))
+                        menu.add(Menu.NONE, MENU_PRIVATE_STATUS, Menu.NONE, R.string.private_status);
                 }
-            }
-            if (Options.getInt(Options.OPTION_CURRENT_SPINNER_ITEM) != count) {
-                if (p.isConnected()) {
-                    if (p instanceof Xmpp) {
-                        if (((Xmpp) p).hasS2S()) {
-                            menu.add(Menu.NONE, MENU_DISCO, Menu.NONE, R.string.service_discovery);
-                        }
+                for (int i = 0; i < count; ++i) {
+                    Protocol pr = RosterHelper.getInstance().getProtocol(i);
+                    if ((pr instanceof Mrim) && pr.isConnected()) {
+                        menu.add(Menu.NONE, MENU_SEND_SMS, Menu.NONE, R.string.send_sms);
                     }
-                    menu.add(Menu.NONE, MENU_GROUPS, Menu.NONE, R.string.manage_contact_list);
-                    if (p instanceof Icq) {
-                        menu.add(Menu.NONE, MENU_MYSELF, Menu.NONE, R.string.myself);
-                    } else {
+                }
+                if (Options.getInt(Options.OPTION_CURRENT_SPINNER_ITEM) != count) {
+                    if (p.isConnected()) {
                         if (p instanceof Xmpp) {
-                            menu.add(Menu.NONE, MENU_NOTES, Menu.NONE, R.string.notes);
+                            if (((Xmpp) p).hasS2S()) {
+                                menu.add(Menu.NONE, MENU_DISCO, Menu.NONE, R.string.service_discovery);
+                            }
                         }
-                        if (p.hasVCardEditor())
+                        menu.add(Menu.NONE, MENU_GROUPS, Menu.NONE, R.string.manage_contact_list);
+                        if (p instanceof Icq) {
                             menu.add(Menu.NONE, MENU_MYSELF, Menu.NONE, R.string.myself);
-                        if (p instanceof Mrim)
-                            menu.add(Menu.NONE, MENU_MICROBLOG, Menu.NONE, R.string.microblog);
+                        } else {
+                            if (p instanceof Xmpp) {
+                                menu.add(Menu.NONE, MENU_NOTES, Menu.NONE, R.string.notes);
+                            }
+                            if (p.hasVCardEditor())
+                                menu.add(Menu.NONE, MENU_MYSELF, Menu.NONE, R.string.myself);
+                            if (p instanceof Mrim)
+                                menu.add(Menu.NONE, MENU_MICROBLOG, Menu.NONE, R.string.microblog);
+                        }
                     }
                 }
             }
+            menu.add(Menu.NONE, MENU_SOUND, Menu.NONE, Options.getBoolean(Options.OPTION_SILENT_MODE)
+                    ? R.string.sound_on : R.string.sound_off);
+            menu.add(Menu.NONE, MENU_OPTIONS, Menu.NONE, R.string.options);
+            menu.add(Menu.NONE, MENU_QUIT, Menu.NONE, R.string.quit);
         }
-        menu.add(Menu.NONE, MENU_SOUND, Menu.NONE, Options.getBoolean(Options.OPTION_SILENT_MODE)
-                ? R.string.sound_on : R.string.sound_off);
-        menu.add(Menu.NONE, MENU_OPTIONS, Menu.NONE, R.string.options);
-        menu.add(Menu.NONE, MENU_QUIT, Menu.NONE, R.string.quit);
         return super.onPrepareOptionsMenu(menu);
     }
 

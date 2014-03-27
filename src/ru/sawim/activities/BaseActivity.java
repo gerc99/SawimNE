@@ -4,7 +4,6 @@ import android.content.res.Configuration;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import ru.sawim.R;
-import ru.sawim.SawimApplication;
 import ru.sawim.SawimResources;
 
 /**
@@ -41,9 +40,24 @@ public class BaseActivity extends ActionBarActivity {
         super.onConfigurationChanged(newConfig);
         if (oldOrientation != newConfig.orientation) {
             oldOrientation = newConfig.orientation;
-            if (SawimApplication.getInstance().getConfigurationChanged() != null) {
-                SawimApplication.getInstance().getConfigurationChanged().onConfigurationChanged();
+            if (configurationChanged != null) {
+                configurationChanged.onConfigurationChanged();
             }
         }
+    }
+
+    private static OnConfigurationChanged configurationChanged;
+
+    public OnConfigurationChanged getConfigurationChanged() {
+        return configurationChanged;
+    }
+
+    public void setConfigurationChanged(OnConfigurationChanged configurationChanged) {
+        BaseActivity.configurationChanged = null;
+        BaseActivity.configurationChanged = configurationChanged;
+    }
+
+    public interface OnConfigurationChanged {
+        public void onConfigurationChanged();
     }
 }

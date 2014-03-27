@@ -90,17 +90,18 @@ public class ProtocolsAdapter extends BaseAdapter {
         }
         SimpleItemView itemView = (SimpleItemView) convertView;
         Protocol protocol = getItem(position);
-        if (protocol == null) return convertView;
         boolean isActiveContacts = position == RosterHelper.getInstance().getProtocolCount();
         if (!isActiveContacts) {
-            Icon statusIcon = protocol.getCurrentStatusIcon();
-            if (statusIcon != null)
-                itemView.setImage(statusIcon.getImage().getBitmap());
+            if (protocol != null) {
+                Icon statusIcon = protocol.getCurrentStatusIcon();
+                if (statusIcon != null)
+                    itemView.setImage(statusIcon.getImage().getBitmap());
+            }
         }
         itemView.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
         itemView.setTypeface(Typeface.DEFAULT);
         itemView.setTextSize(SawimApplication.getFontSize());
-        itemView.setText(isActiveContacts ? JLocale.getString(R.string.active_contacts) : protocol.getUserId());
+        itemView.setText(protocol != null && !isActiveContacts ? protocol.getUserId() : JLocale.getString(R.string.active_contacts));
         return convertView;
     }
 

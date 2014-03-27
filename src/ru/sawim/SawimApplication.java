@@ -249,19 +249,4 @@ public class SawimApplication extends Application {
     public static int getFontSize() {
         return fontSize;
     }
-
-    private static OnConfigurationChanged configurationChanged;
-
-    public OnConfigurationChanged getConfigurationChanged() {
-        return configurationChanged;
-    }
-
-    public void setConfigurationChanged(OnConfigurationChanged cC) {
-        configurationChanged = null;
-        configurationChanged = cC;
-    }
-
-    public interface OnConfigurationChanged {
-        public void onConfigurationChanged();
-    }
 }

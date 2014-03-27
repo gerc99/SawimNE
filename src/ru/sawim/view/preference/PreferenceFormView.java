@@ -163,8 +163,8 @@ public class PreferenceFormView extends PreferenceFragment {
                         seekBarPreference.setTitleTextSize(c.level);
                         seekBarPreference.setTitleText(c.description + "(" + c.level + ")");
                         Forms.getInstance().controlUpdated(c);
-                        if (SawimApplication.getInstance().getConfigurationChanged() != null)
-                            SawimApplication.getInstance().getConfigurationChanged().onConfigurationChanged();
+                        if (BaseActivity.getCurrentActivity().getConfigurationChanged() != null)
+                            BaseActivity.getCurrentActivity().getConfigurationChanged().onConfigurationChanged();
                         return true;
                     }
                 });

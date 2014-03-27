@@ -194,7 +194,7 @@ public class RosterAdapter extends BaseAdapter {
     @Override
     public View getView(int i, View convertView, ViewGroup viewGroup) {
         if (convertView == null) {
-            convertView = new RosterItemView(viewGroup.getContext());
+            convertView = new RosterItemView(SawimApplication.getInstance().getBaseContext());
         }
         RosterHelper roster = RosterHelper.getInstance();
         Protocol protocol = roster.getCurrentProtocol();

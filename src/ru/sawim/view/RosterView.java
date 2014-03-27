@@ -348,14 +348,14 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
             }
             update();
         } else {
-            FragmentManager fragmentManager = BaseActivity.getCurrentActivity().getSupportFragmentManager();
-            FragmentTransaction transaction = fragmentManager.beginTransaction();
-            if (fragmentManager.findFragmentById(R.id.chat_fragment) != null)
-                BaseActivity.getCurrentActivity().setContentView(R.layout.intercalation_layout);
-            StartWindowView newFragment = new StartWindowView();
-            transaction.replace(R.id.fragment_container, newFragment, StartWindowView.TAG);
-            transaction.commit();
-            BaseActivity.getCurrentActivity().supportInvalidateOptionsMenu();
+            if (!SawimApplication.isManyPane()) {
+                FragmentManager fragmentManager = BaseActivity.getCurrentActivity().getSupportFragmentManager();
+                FragmentTransaction transaction = fragmentManager.beginTransaction();
+                StartWindowView newFragment = new StartWindowView();
+                transaction.replace(R.id.fragment_container, newFragment, StartWindowView.TAG);
+                transaction.commit();
+                BaseActivity.getCurrentActivity().supportInvalidateOptionsMenu();
+            }
         }
         FormView.showLastWindow();
     }

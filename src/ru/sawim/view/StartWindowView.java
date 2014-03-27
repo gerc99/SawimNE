@@ -100,6 +100,9 @@ public class StartWindowView extends Fragment {
         BaseActivity.getCurrentActivity().resetBar();
         if (RosterHelper.getInstance().getProtocolCount() > 0) {
             ((SawimActivity) BaseActivity.getCurrentActivity()).recreateActivity();
+        } else {
+            if (SawimApplication.isManyPane())
+                BaseActivity.getCurrentActivity().getSupportFragmentManager().popBackStack();
         }
         BaseActivity.getCurrentActivity().supportInvalidateOptionsMenu();
     }
