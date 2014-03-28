@@ -355,7 +355,6 @@ public final class Xmpp extends Protocol implements FormListener {
     }
 
     String getDefaultServer(String domain) {
-
         switch (getProfile().protocolType) {
             case Profile.PROTOCOL_GTALK:
                 return "talk.google.com";

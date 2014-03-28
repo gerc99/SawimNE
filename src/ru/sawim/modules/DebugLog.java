@@ -75,6 +75,7 @@ public final class DebugLog {
     }
 
     public static void panic(String str, Throwable e) {
+        e.printStackTrace();
         //String text = "panic: " + _(str) + " " + e.getMessage()
         //        + " (" + e.getClass().getName() + ")";
         //for (StackTraceElement ste : e.getStackTrace()) {

@@ -125,7 +125,7 @@ final class Socket implements Runnable {
         try {
             return (char) (readByte() & 0xff);
         } catch (SawimException e) {
-            DebugLog.panic("readChar je ", e);
+            DebugLog.panic("readChar se ", e);
             throw e;
         } catch (Exception e) {
             DebugLog.panic("readChar e ", e);

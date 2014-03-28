@@ -97,7 +97,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         activity.registerForContextMenu(rosterListView);
         rosterListView.setOnCreateContextMenuListener(this);
         rosterListView.setOnItemClickListener(this);
-        rosterViewLayout = new RosterViewRoot(BaseActivity.getCurrentActivity(), progressBar, rosterListView);
+        rosterViewLayout = new RosterViewRoot(activity, progressBar, rosterListView);
 
         protocolsSpinner = new MySpinner(activity, null, Build.VERSION.SDK_INT < 11
                 ? R.attr.actionDropDownStyle : android.R.attr.actionDropDownStyle);

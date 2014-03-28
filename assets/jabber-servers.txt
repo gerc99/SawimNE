@@ -17,3 +17,4 @@ ovi.com=ssl:chat.ovi.com:5223
 talkonaut.com=talkonaut.com
 xmpp.ru=xmpp.ru
 diary.ru=jabber.diary.ru
+omerta.pw=omerta.pw:5222

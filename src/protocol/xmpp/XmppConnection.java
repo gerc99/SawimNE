@@ -336,17 +336,14 @@ public final class XmppConnection extends ClientConnection {
             // skip socket/ssl, get host and port
             socketUrl[0] = url[1];
             socketUrl[1] = url[2];
-            return socketUrl;
         } else if (2 == url.length) {
             // get host and port
             socketUrl[0] = url[0];
             socketUrl[1] = url[1];
-            return socketUrl;
         } else if (1 == url.length) {
             // default port
             socketUrl[0] = url[0];
             socketUrl[1] = S_5222;
-            return socketUrl;
         }
         if (null != defaultServer) {
             socketUrl[0] = defaultServer;

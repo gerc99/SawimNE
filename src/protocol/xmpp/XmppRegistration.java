@@ -86,9 +86,8 @@ public class XmppRegistration implements Runnable, FormListener {
             } else {
                 error = connection.getError(n.getFirstNode("error"));
             }
-
-        } catch (SawimException ex) {
         } catch (Exception ex) {
+            ex.printStackTrace();
         }
         try {
             connection.disconnect();
