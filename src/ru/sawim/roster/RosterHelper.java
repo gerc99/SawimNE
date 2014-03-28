@@ -330,7 +330,7 @@ public final class RosterHelper {
     }*/
 
     public final void markMessages(Contact contact) {
-        SawimNotification.clear(SawimApplication.getContext());
+        SawimApplication.getInstance().updateAppIcon();
         if (getUpdateChatListener() != null)
             getUpdateChatListener().updateChat(contact);
     }

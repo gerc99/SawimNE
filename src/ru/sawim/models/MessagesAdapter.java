@@ -95,13 +95,12 @@ public class MessagesAdapter extends BaseAdapter {
         item.setBackgroundColor(0);
         if (mData.isMe() || mData.isPresence()) {
             item.setMsgTextSize(SawimApplication.getFontSize() - 2);
+            SpannableStringBuilder text = new SpannableStringBuilder();
             if (mData.isMe()) {
-                SpannableStringBuilder text = new SpannableStringBuilder();
                 text.append("* ").append(nick).append(" ").append(parsedText);
                 item.setText(text);
                 item.setTextColor(Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG));
             } else {
-                SpannableStringBuilder text = new SpannableStringBuilder();
                 text.append(mData.strTime).append(" ").append(nick).append(parsedText);
                 item.setText(text);
                 item.setTextColor(Scheme.getColor(Scheme.THEME_CHAT_INMSG));

@@ -65,7 +65,7 @@ public class SawimApplication extends Application {
     }
 
     public static Context getContext() {
-        return instance;
+        return instance.getBaseContext();
     }
 
     @Override

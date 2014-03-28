@@ -1,6 +1,7 @@
 package ru.sawim;
 
 import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -8,6 +9,7 @@ import android.support.v4.app.NotificationCompat;
 import ru.sawim.activities.SawimActivity;
 import ru.sawim.chat.ChatHistory;
 import ru.sawim.roster.RosterHelper;
+import ru.sawim.util.JLocale;
 
 /**
  * Created by admin on 27.01.14.
@@ -15,6 +17,7 @@ import ru.sawim.roster.RosterHelper;
 public class SawimNotification {
 
     public static final int NOTIFY_ID = 1;
+    public static final int NOTIFY_FILE_ID = 2;
 
     public static Notification get(Context context) {
         int unread = ChatHistory.instance.getPersonalUnreadMessageCount(false);
@@ -60,6 +63,25 @@ public class SawimNotification {
         return notification.build();
     }
 
+    public static void fileProgress(String filename, String percent, String text) {
+        Context context = SawimApplication.getContext();
+        Intent intent = new Intent(context, SawimActivity.class);
+        intent.setAction(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_LAUNCHER);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent contentIntent = PendingIntent.getActivity(context, 0, intent, 0);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
+        builder.setContentIntent(contentIntent);
+        builder.setOngoing(false);
+        builder.setContentTitle(filename + " " + percent);
+        builder.setTicker(JLocale.getString(R.string.sending_file));
+        builder.setContentText(text);
+        builder.setSmallIcon(android.R.drawable.stat_sys_download_done);
+        builder.setAutoCancel(true);
+        NotificationManager mng = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        mng.notify(NOTIFY_FILE_ID, builder.build());
+    }
+
     /*public static void sendNotify(Context context, final String title, final String text) {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         long when = 0;
@@ -100,9 +122,8 @@ public class SawimNotification {
         }
     }*/
 
-    public static void clear(Context context) {
-        SawimApplication.getInstance().updateAppIcon();
-        //NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        //notificationManager.cancel(NOTIFY_ID);
+    public static void clear(int id) {
+        NotificationManager notificationManager = (NotificationManager) SawimApplication.getContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancel(id);
     }
 }

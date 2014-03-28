@@ -1,6 +1,5 @@
 package ru.sawim.view;
 
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.DialogFragment;
@@ -12,10 +11,7 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import ru.sawim.R;
-import ru.sawim.SawimApplication;
 import ru.sawim.activities.BaseActivity;
-import ru.sawim.comm.Util;
-import ru.sawim.roster.RosterHelper;
 
 /**
  * Created with IntelliJ IDEA.
@@ -24,12 +20,13 @@ import ru.sawim.roster.RosterHelper;
  * Time: 14:23
  * To change this template use File | Settings | File Templates.
  */
-public class FileProgressView extends DialogFragment {
+public class ProgressView extends DialogFragment {
 
     private TextView captionText;
     private TextView descriptionText;
     private ProgressBar progressBar;
     private Button closeButton;
+    OnProgressListener listener;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -43,35 +40,33 @@ public class FileProgressView extends DialogFragment {
         closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                RosterHelper.getInstance().removeTransfer(true);
-                FileProgressView.this.dismiss();
+                listener.onClose();
             }
         });
         return v;
     }
 
-    public void showProgress() {
+    public void showProgress(OnProgressListener listener) {
+        this.listener = listener;
         show(BaseActivity.getCurrentActivity().getSupportFragmentManager().beginTransaction(), "file_progress");
     }
 
     public void changeFileProgress(final int percent, final String caption, final String text) {
         if (BaseActivity.getCurrentActivity() == null || !isAdded()) return;
-        if (percent == 100) {
-            RosterHelper.getInstance().removeTransfer(true);
-            dismiss();
-        }
-        final String strTime = Util.getLocalDateString(SawimApplication.getCurrentGmtTime(), true);
         Handler handler = new Handler(BaseActivity.getCurrentActivity().getMainLooper());
         handler.post(new Runnable() {
             @Override
             public void run() {
-                captionText.setText(caption + " " + strTime);
+                captionText.setText(caption);
                 descriptionText.setText(text);
                 progressBar.setVisibility(ProgressBar.VISIBLE);
-                Rect bounds = progressBar.getProgressDrawable().getBounds();
-                progressBar.getProgressDrawable().setBounds(bounds);
+                progressBar.getProgressDrawable().setBounds(progressBar.getProgressDrawable().getBounds());
                 progressBar.setProgress(percent);
             }
         });
+    }
+
+    public interface OnProgressListener {
+        public void onClose();
     }
 }

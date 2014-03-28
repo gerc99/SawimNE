@@ -20,7 +20,6 @@ import ru.sawim.modules.fs.JSR75FileSystem;
 import ru.sawim.modules.photo.PhotoListener;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.util.JLocale;
-import ru.sawim.view.FileProgressView;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -50,7 +49,6 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
     private Chat chat;
     private JSR75FileSystem file;
     private Forms forms;
-    private FileProgressView fileProgressView;
     private boolean isFinish = false;
 
     public FileTransfer(Protocol p, Contact _cItem) {
@@ -139,7 +137,7 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
         if (apply) {
             description = forms.getTextFieldValue(descriptionField);
             sendMode = forms.getSelectorValue(transferMode);
-            showFileProgress();
+            //showFileProgress();
             if (forms.getSelectorValue(transferMode) == IBB_MODE) {
                 try {
                     protocol.sendFile(this, filename, description);
@@ -150,6 +148,8 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
                 new Thread(this).start();
             }
             addProgress();
+            forms.back();
+            if (isFinish) BaseActivity.getCurrentActivity().finish();
         } else {
             destroy();
         }
@@ -159,17 +159,13 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
         return filename + " - " + StringConvertor.bytesToSizeString(getFileSize(), false);
     }
 
-    private void showFileProgress() {
-        if (fileProgressView == null)
-            fileProgressView = new FileProgressView();
-        fileProgressView.showProgress();
-    }
-
     private void changeFileProgress(int percent, int message) {
-        if (fileProgressView != null)
-            fileProgressView.changeFileProgress(percent, JLocale.getString(R.string.sending_file),
-                    getProgressText() + "\n"
-                            + JLocale.getString(message));
+        String text = getProgressText() + "\n" + JLocale.getString(message);
+        SawimNotification.fileProgress(filename, percent + "%", text);
+        if (percent == 100) {
+            RosterHelper.getInstance().removeTransfer(true);
+            //SawimNotification.clear(SawimNotification.NOTIFY_FILE_ID);
+        }
     }
 
     public void cancel() {
@@ -238,7 +234,6 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
         }
         forms.back();
         if (isFinish) BaseActivity.getCurrentActivity().finish();
-        fileProgressView = null;
     }
 
     public void run() {
