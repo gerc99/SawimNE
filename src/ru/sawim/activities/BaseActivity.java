@@ -19,20 +19,39 @@ public class BaseActivity extends ActionBarActivity {
     }
 
     @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        currentActivity = this;
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         currentActivity = this;
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        currentActivity = null;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        currentActivity = null;
+    }
+
     public void resetBar() {
-        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-        getSupportActionBar().setDisplayShowTitleEnabled(true);
-        getSupportActionBar().setDisplayUseLogoEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setDisplayShowCustomEnabled(false);
-        getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-        getSupportActionBar().setIcon(SawimResources.appIcon);
-        getSupportActionBar().setTitle(R.string.app_name);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(false);
+        actionBar.setDisplayShowTitleEnabled(true);
+        actionBar.setDisplayUseLogoEnabled(true);
+        actionBar.setDisplayShowHomeEnabled(true);
+        actionBar.setDisplayShowCustomEnabled(false);
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+        actionBar.setIcon(SawimResources.appIcon);
+        actionBar.setTitle(R.string.app_name);
     }
 
     int oldOrientation;

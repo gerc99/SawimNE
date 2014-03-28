@@ -19,6 +19,8 @@ import ru.sawim.text.InternalURLSpan;
 import ru.sawim.text.TextLinkClickListener;
 import ru.sawim.widget.Util;
 
+import java.util.HashMap;
+
 /**
  * Created with IntelliJ IDEA.
  * User: Gerc
@@ -52,37 +54,37 @@ public class MessageItemView extends View {
     private boolean isShowDivider = false;
 
     private int titleHeight;
-    private boolean isAddTitleView;
 
-    public MessageItemView(Context context, boolean addTitleView) {
+    private static final HashMap<CharSequence, Layout> layoutHolder = new HashMap<CharSequence, Layout>();
+
+    public MessageItemView(Context context) {
         super(context);
-        isAddTitleView = addTitleView;
-        int padding = Util.dipToPixels(context, 5);
-
         textPaint.setAntiAlias(true);
-
-        setPadding(padding, padding, padding, padding);
     }
 
-    private void setTextSize(int size) {
+    public void setTextSize(int size) {
         textPaint.setTextSize(size * getResources().getDisplayMetrics().scaledDensity);
     }
 
     public void makeLayout(int specSize) {
-        if (text == null || specSize < 0) return;
-        try {
-            layout = new StaticLayout(text, textPaint, specSize, Layout.Alignment.ALIGN_NORMAL, 1.0F, 0.0F, false);
-        } catch (ArrayIndexOutOfBoundsException e) {
-            layout = new StaticLayout(text.toString(), textPaint, specSize, Layout.Alignment.ALIGN_NORMAL, 1.0F, 0.0F, false);
+        layout = layoutHolder.get(text);
+        if (layout == null) {
+            if (specSize <= 0) return;
+            try {
+                layout = new StaticLayout(text, textPaint, specSize, Layout.Alignment.ALIGN_NORMAL, 1.0F, 0.0F, false);
+            } catch (ArrayIndexOutOfBoundsException e) {
+                layout = new StaticLayout(text.toString(), textPaint, specSize, Layout.Alignment.ALIGN_NORMAL, 1.0F, 0.0F, false);
+            }
+            layoutHolder.put(text, layout);
         }
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        boolean isAddTitleView = nickText != null;
         int width = MeasureSpec.getSize(widthMeasureSpec);
         int height = isAddTitleView ? measureHeight(heightMeasureSpec) : getPaddingTop() + getPaddingBottom();
-        if (layout == null)
-            makeLayout(width - getPaddingRight() - getPaddingLeft());
+        makeLayout(width - getPaddingRight() - getPaddingLeft());
         titleHeight = isAddTitleView ? height - getPaddingTop() : getPaddingTop();
         if (layout != null)
             height += layout.getLineTop(layout.getLineCount());
@@ -158,9 +160,8 @@ public class MessageItemView extends View {
     }
 
     public void repaint() {
-        setTextSize(SawimApplication.getFontSize());
-        invalidate();
         requestLayout();
+        invalidate();
     }
 
     @Override
@@ -172,27 +173,25 @@ public class MessageItemView extends View {
             canvas.drawLine(getPaddingLeft(), getScrollY() - 2, stopX, getScrollY() - 2, textPaint);
         }
 
-        if (isAddTitleView) {
-            if (nickText != null) {
-                textPaint.setColor(nickColor);
-                textPaint.setTextAlign(Paint.Align.LEFT);
-                setTextSize(nickSize);
-                textPaint.setTypeface(nickTypeface);
-                canvas.drawText(nickText, getPaddingLeft(), textY, textPaint);
-            }
+        if (nickText != null) {
+            textPaint.setColor(nickColor);
+            textPaint.setTextAlign(Paint.Align.LEFT);
+            setTextSize(nickSize);
+            textPaint.setTypeface(nickTypeface);
+            canvas.drawText(nickText, getPaddingLeft(), textY, textPaint);
+        }
 
-            if (msgTimeText != null) {
-                textPaint.setColor(msgTimeColor);
-                textPaint.setTextAlign(Paint.Align.RIGHT);
-                setTextSize(msgTimeSize);
-                textPaint.setTypeface(msgTimeTypeface);
-                canvas.drawText(msgTimeText,
-                        stopX - (checkImage == null ? 0 : checkImage.getWidth() << 1), textY, textPaint);
-            }
-            if (checkImage != null) {
-                canvas.drawBitmap(checkImage,
-                        stopX - checkImage.getWidth(), getPaddingTop() + checkImage.getHeight() / 2, null);
-            }
+        if (msgTimeText != null) {
+            textPaint.setColor(msgTimeColor);
+            textPaint.setTextAlign(Paint.Align.RIGHT);
+            setTextSize(msgTimeSize);
+            textPaint.setTypeface(msgTimeTypeface);
+            canvas.drawText(msgTimeText,
+                    stopX - (checkImage == null ? 0 : checkImage.getWidth() << 1), textY, textPaint);
+        }
+        if (checkImage != null) {
+            canvas.drawBitmap(checkImage,
+                    stopX - checkImage.getWidth(), getPaddingTop() + checkImage.getHeight() / 2, null);
         }
         if (layout != null) {
             canvas.save();

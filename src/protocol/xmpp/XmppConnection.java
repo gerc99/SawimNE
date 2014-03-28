@@ -263,7 +263,8 @@ public final class XmppConnection extends ClientConnection {
 
     protected final void closeSocket() {
         try {
-            write("<presence type='unavailable'><status>Logged out</status></presence>");
+            if (!isSessionManagementEnabled())
+                write("<presence type='unavailable'><status>Logged out</status></presence>");
         } catch (Exception ignored) {
         }
         if (socket != null) {

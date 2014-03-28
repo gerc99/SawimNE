@@ -2,6 +2,7 @@ package ru.sawim.models;
 
 import android.graphics.Typeface;
 import android.text.SpannableStringBuilder;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -14,6 +15,7 @@ import ru.sawim.chat.Chat;
 import ru.sawim.chat.MessData;
 import ru.sawim.chat.message.Message;
 import ru.sawim.text.TextLinkClick;
+import ru.sawim.widget.Util;
 import ru.sawim.widget.chat.MessageItemView;
 
 import java.util.ArrayList;
@@ -32,7 +34,6 @@ public class MessagesAdapter extends BaseAdapter {
     private Protocol currentProtocol;
     private String currentContact;
 
-    public boolean isRepaint;
     private boolean isMultiQuote = false;
     private int position = -1;
 
@@ -78,13 +79,13 @@ public class MessagesAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int index, View row, ViewGroup viewGroup) {
+    public View getView(int index, View convView, ViewGroup viewGroup) {
         final MessData mData = items.get(index);
-        if (mData.messView == null || isRepaint) {
-            if (isRepaint) mData.messView = null;
-            mData.messView = new MessageItemView(SawimApplication.getInstance().getBaseContext(), !(mData.isMe() || mData.isPresence()));
+        View row = convView;
+        if (row == null) {
+            row = new MessageItemView(SawimApplication.getInstance().getBaseContext());
         }
-        MessageItemView item = mData.messView;
+        MessageItemView item = (MessageItemView) row;
         CharSequence parsedText = mData.getText();
         String nick = mData.getNick();
         boolean incoming = mData.isIncoming();
@@ -94,6 +95,12 @@ public class MessagesAdapter extends BaseAdapter {
         item.setTypeface(mData.isConfHighLight() ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT);
         item.setBackgroundColor(0);
         if (mData.isMe() || mData.isPresence()) {
+            int padding = Util.dipToPixels(item.getContext(), 5);
+            item.setPadding(padding, padding, padding, padding);
+            item.setNick(0, 0, null, null);
+            item.setMsgTime(0, 0, null, null);
+            item.setCheckImage(null);
+            item.setTextSize(SawimApplication.getFontSize() - 2);
             item.setMsgTextSize(SawimApplication.getFontSize() - 2);
             SpannableStringBuilder text = new SpannableStringBuilder();
             if (mData.isMe()) {
@@ -109,13 +116,14 @@ public class MessagesAdapter extends BaseAdapter {
             item.setBackgroundResource(incoming ?
                     (Scheme.isBlack() ? R.drawable.msg_in_dark : R.drawable.msg_in)
                     : (Scheme.isBlack() ? R.drawable.msg_out_dark : R.drawable.msg_out));
-            float displayDensity = SawimApplication.getInstance().getResources().getDisplayMetrics().density;
             if (incoming) {
-                item.setPadding((int) (19 * displayDensity), (int) (7 * displayDensity), (int) (9 * displayDensity), (int) (9 * displayDensity));
+                item.setPadding(Util.dipToPixels(item.getContext(), 19),
+                        Util.dipToPixels(item.getContext(), 7), Util.dipToPixels(item.getContext(), 9), Util.dipToPixels(item.getContext(), 9));
             } else {
-                item.setPadding((int) (11 * displayDensity), (int) (7 * displayDensity), (int) (18 * displayDensity), (int) (9 * displayDensity));
+                item.setPadding(Util.dipToPixels(item.getContext(), 11),
+                        Util.dipToPixels(item.getContext(), 7), Util.dipToPixels(item.getContext(), 18), Util.dipToPixels(item.getContext(), 9));
             }
-
+            item.setTextSize(SawimApplication.getFontSize());
             if (mData.getIconIndex() == Message.ICON_OUT_MSG_FROM_CLIENT) {
                 item.setCheckImage(SawimResources.messageIconCheck.getBitmap());
             }
@@ -126,6 +134,7 @@ public class MessagesAdapter extends BaseAdapter {
             item.setMsgTextSize(SawimApplication.getFontSize());
             item.setTextColor(Scheme.getColor(mData.getMessColor()));
             item.setText(parsedText);
+
         }
         if (mData.isMarked() && isMultiQuote) {
             item.setTypeface(Typeface.DEFAULT_BOLD);

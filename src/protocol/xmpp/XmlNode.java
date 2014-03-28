@@ -201,7 +201,6 @@ public final class XmlNode {
         try {
             s = new String(s.getBytes("ISO8859-1"), "UTF-8");
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
         }
         return s;
     }

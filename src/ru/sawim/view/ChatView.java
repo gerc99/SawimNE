@@ -118,7 +118,6 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         BaseActivity.getCurrentActivity().setConfigurationChanged(new BaseActivity.OnConfigurationChanged() {
             @Override
             public void onConfigurationChanged() {
-                adapter.isRepaint = true;
                 hideKeyboard();
             }
         });
@@ -394,7 +393,6 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         if (smileysPopup != null) {
             return smileysPopup.hide();
         }
-        adapter.isRepaint = false;
         return false;
     }
 
@@ -454,8 +452,8 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         messageEditor.setText(chat.message);
         messageEditor.setSelection(messageEditor.getText().length());
         updateChatIcon();
-        if (SawimApplication.isManyPane()) adapter.isRepaint = true;
-        else drawerLayout.setDrawerLockMode(contact.isConference() ?
+        if (!SawimApplication.isManyPane())
+            drawerLayout.setDrawerLockMode(contact.isConference() ?
                 DrawerLayout.LOCK_MODE_UNLOCKED : DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
         setPosition(unreadMessageCount);

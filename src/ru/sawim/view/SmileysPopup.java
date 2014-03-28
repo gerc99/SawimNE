@@ -99,7 +99,7 @@ public class SmileysPopup {
     private View getContentView() {
         GridView grid = new GridView(activity);
         grid.setBackgroundResource(Util.getSystemBackground(activity));
-        grid.setColumnWidth(Util.dipToPixels(activity, 45));
+        grid.setColumnWidth(Util.dipToPixels(activity, 60));
         grid.setNumColumns(-1);
 
         final SmilesAdapter smilesAdapter = new SmilesAdapter(activity);

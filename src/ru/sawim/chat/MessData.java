@@ -19,7 +19,6 @@ public final class MessData {
     private boolean isHighLight;
 
     private CharSequence parsedText;
-    public MessageItemView messView;
 
     public static final short INCOMING = 2;
     public static final short ME = 4;
