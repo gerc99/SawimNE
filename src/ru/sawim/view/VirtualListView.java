@@ -1,6 +1,7 @@
 package ru.sawim.view;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.view.*;
@@ -84,7 +85,7 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
     }
 
     @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, android.view.ContextMenu.ContextMenuInfo menuInfo) {
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         contextMenuInfo = (AdapterView.AdapterContextMenuInfo) menuInfo;
         if (list.getBuildContextMenu() != null)
@@ -135,6 +136,12 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
 
     public boolean hasBack() {
         return list.getClickListListener() == null || list.getClickListListener().back();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (SawimActivity.externalApi.onActivityResult(requestCode, resultCode, data)) return;
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override

@@ -182,6 +182,7 @@ public class AccountsListView extends Fragment {
             final EditText editServer = (EditText) dialogLogin.findViewById(R.id.edit_server);
             final EditText editNick = (EditText) dialogLogin.findViewById(R.id.edit_nick);
             final EditText editPass = (EditText) dialogLogin.findViewById(R.id.edit_password);
+            final Button buttonOk = (Button) dialogLogin.findViewById(R.id.ButtonOK);
             int protocolIndex = 0;
             final boolean isXmpp = type == Profile.PROTOCOL_JABBER;
             for (int i = 0; i < Profile.protocolTypes.length; ++i) {
@@ -200,7 +201,7 @@ public class AccountsListView extends Fragment {
             }
             if (isEdit) {
                 final Profile account = Options.getAccount(id);
-                getActivity().setTitle(getText(R.string.acc_edit));
+                getActivity().setTitle(R.string.acc_edit);
                 if (isXmpp) {
                     editLogin.setText(account.userId.substring(0, account.userId.indexOf('@')));
                     editServer.setText(account.userId.substring(account.userId.indexOf('@') + 1));
@@ -209,18 +210,19 @@ public class AccountsListView extends Fragment {
                 }
                 editPass.setText(account.password);
                 editNick.setText(account.nick);
+                buttonOk.setText(R.string.acc_edit);
             } else {
-                getActivity().setTitle(getText(R.string.acc_add));
+                getActivity().setTitle(R.string.acc_add);
                 if (isXmpp) {
                     editServer.setText(SawimApplication.DEFAULT_SERVER);
                 }
+                buttonOk.setText(R.string.acc_add);
             }
             if (type == Profile.PROTOCOL_ICQ) {
                 editLogin.setInputType(InputType.TYPE_CLASS_NUMBER);
             } else {
                 editLogin.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
             }
-            Button buttonOk = (Button) dialogLogin.findViewById(R.id.ButtonOK);
             final int finalProtocolIndex = protocolIndex;
             buttonOk.setOnClickListener(new View.OnClickListener() {
 

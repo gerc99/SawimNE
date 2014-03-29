@@ -131,7 +131,7 @@ public class SawimApplication extends Application {
         String version = "";
         try {
             PackageInfo pinfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-            version = pinfo.versionName;
+            version = pinfo.versionName + "(" + pinfo.versionCode + ")";
         } catch (PackageManager.NameNotFoundException e) {
             version = "unknown";
         }

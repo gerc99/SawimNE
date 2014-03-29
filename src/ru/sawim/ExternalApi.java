@@ -163,7 +163,6 @@ public class ExternalApi {
 
     public static String getFileName(Uri fileUri, FragmentActivity activity) {
         String file = getPath(activity, fileUri);
-        Log.e("Sawim", file + " ");
         return file.substring(file.lastIndexOf('/') + 1);
     }
 

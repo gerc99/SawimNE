@@ -1,5 +1,6 @@
 package protocol.xmpp;
 
+import android.support.v4.view.MenuItemCompat;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -41,7 +42,8 @@ public final class MirandaNotes {
         screen.setBuildOptionsMenu(new VirtualList.OnBuildOptionsMenu() {
             @Override
             public void onCreateOptionsMenu(Menu menu) {
-                menu.add(Menu.NONE, COMMAND_ADD, Menu.NONE, R.string.add_to_list);
+                MenuItem item = menu.add(Menu.NONE, COMMAND_ADD, Menu.NONE, R.string.add_to_list);
+                MenuItemCompat.setShowAsAction(item, MenuItem.SHOW_AS_ACTION_ALWAYS);
             }
 
             @Override

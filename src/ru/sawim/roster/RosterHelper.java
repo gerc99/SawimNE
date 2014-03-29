@@ -113,7 +113,7 @@ public final class RosterHelper {
     }
 
     public void initAccounts() {
-        protocolList = new Protocol[10];
+        protocolList = new Protocol[Options.getMaxAccountCount()];
         int count = Math.max(1, Options.getAccountCount());
         for (int i = 0; i < count; ++i) {
             Profile p = Options.getAccount(i);

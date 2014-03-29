@@ -11,13 +11,15 @@ import ru.sawim.chat.ChatHistory;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.util.JLocale;
 
+import java.util.HashMap;
+
 /**
  * Created by admin on 27.01.14.
  */
 public class SawimNotification {
 
     public static final int NOTIFY_ID = 1;
-    public static final int NOTIFY_FILE_ID = 2;
+    private static final HashMap<String, Integer> idsMap = new HashMap<String, Integer>();
 
     public static Notification get(Context context) {
         int unread = ChatHistory.instance.getPersonalUnreadMessageCount(false);
@@ -73,13 +75,17 @@ public class SawimNotification {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
         builder.setContentIntent(contentIntent);
         builder.setOngoing(false);
-        builder.setContentTitle(filename + " " + percent);
+        builder.setContentTitle(filename);
         builder.setTicker(JLocale.getString(R.string.sending_file));
-        builder.setContentText(text);
+        builder.setContentText(percent + " " + text);
         builder.setSmallIcon(android.R.drawable.stat_sys_download_done);
         builder.setAutoCancel(true);
         NotificationManager mng = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        mng.notify(NOTIFY_FILE_ID, builder.build());
+        int id = filename.hashCode();
+        if (idsMap.containsKey(filename))
+            id = idsMap.get(filename);
+        else idsMap.put(filename, id);
+        mng.notify(id, builder.build());
     }
 
     /*public static void sendNotify(Context context, final String title, final String text) {
@@ -122,8 +128,9 @@ public class SawimNotification {
         }
     }*/
 
-    public static void clear(int id) {
+    public static void clear(String id) {
         NotificationManager notificationManager = (NotificationManager) SawimApplication.getContext().getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.cancel(id);
+        notificationManager.cancel(idsMap.get(id));
+        idsMap.remove(id);
     }
 }
