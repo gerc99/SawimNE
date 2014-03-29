@@ -203,7 +203,8 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
                         break;
 
                     case INFO_MENU_TAKE_AVATAR:
-                        SawimActivity.externalApi.setFragment(BaseActivity.getCurrentActivity().getSupportFragmentManager().findFragmentByTag(VirtualListView.TAG));
+                        SawimActivity.externalApi.setFragment(BaseActivity.getCurrentActivity()
+                                .getSupportFragmentManager().findFragmentByTag(VirtualListView.TAG));
                         SawimActivity.externalApi.startCamera(UserInfo.this, 640, 480);
                         break;
 
@@ -214,6 +215,8 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
                         break;
 
                     case INFO_MENU_ADD_AVATAR:
+                        SawimActivity.externalApi.setFragment(BaseActivity.getCurrentActivity()
+                                .getSupportFragmentManager().findFragmentByTag(VirtualListView.TAG));
                         if (SawimActivity.externalApi.pickFile(UserInfo.this)) {
                             return;
                         }

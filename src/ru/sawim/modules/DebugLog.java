@@ -22,6 +22,8 @@ public final class DebugLog {
     private VirtualListModel model = new VirtualListModel();
     private VirtualList list = null;
 
+    private static final boolean DEBUG = false;
+
     public static void memoryUsage(String str) {
         long size = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory());
         size = (size + 512) / 1024;
@@ -75,12 +77,14 @@ public final class DebugLog {
     }
 
     public static void panic(String str, Throwable e) {
-        //String text = "panic: " + _(str) + " " + e.getMessage()
-        //        + " (" + e.getClass().getName() + ")";
-        //for (StackTraceElement ste : e.getStackTrace()) {
-        //    text += String.format("\n%s.%s() %d", ste.getClassName(), ste.getMethodName(), ste.getLineNumber());
-        //}
-        //println(text);
+        if (DEBUG) {
+            String text = "panic: " + _(str) + " " + e.getMessage()
+                    + " (" + e.getClass().getName() + ")";
+            for (StackTraceElement ste : e.getStackTrace()) {
+                text += String.format("\n%s.%s() %d", ste.getClassName(), ste.getMethodName(), ste.getLineNumber());
+            }
+            println(text);
+        }
     }
 
     public static void panic(Throwable e) {

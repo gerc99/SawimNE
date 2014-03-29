@@ -102,12 +102,13 @@ public class MessagesAdapter extends BaseAdapter {
             item.setCheckImage(null);
             item.setTextSize(SawimApplication.getFontSize() - 2);
             item.setMsgTextSize(SawimApplication.getFontSize() - 2);
-            SpannableStringBuilder text = new SpannableStringBuilder();
             if (mData.isMe()) {
+                SpannableStringBuilder text = new SpannableStringBuilder();
                 text.append("* ").append(nick).append(" ").append(parsedText);
                 item.setText(text);
                 item.setTextColor(Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG));
             } else {
+                SpannableStringBuilder text = new SpannableStringBuilder();
                 text.append(mData.strTime).append(" ").append(nick).append(parsedText);
                 item.setText(text);
                 item.setTextColor(Scheme.getColor(Scheme.THEME_CHAT_INMSG));
@@ -124,9 +125,7 @@ public class MessagesAdapter extends BaseAdapter {
                         Util.dipToPixels(item.getContext(), 7), Util.dipToPixels(item.getContext(), 18), Util.dipToPixels(item.getContext(), 9));
             }
             item.setTextSize(SawimApplication.getFontSize());
-            if (mData.getIconIndex() == Message.ICON_OUT_MSG_FROM_CLIENT) {
-                item.setCheckImage(SawimResources.messageIconCheck.getBitmap());
-            }
+            item.setCheckImage(mData.getIconIndex() == Message.ICON_OUT_MSG_FROM_CLIENT ? SawimResources.messageIconCheck.getBitmap() : null);
             item.setNick(Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG),
                     SawimApplication.getFontSize(), Typeface.DEFAULT_BOLD, nick);
             item.setMsgTime(Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG),
