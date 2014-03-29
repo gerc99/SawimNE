@@ -4,6 +4,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import ru.sawim.R;
 import ru.sawim.SawimResources;
 
@@ -26,20 +27,9 @@ public class BaseActivity extends ActionBarActivity {
 
     @Override
     protected void onResume() {
+        currentActivity = null;
         super.onResume();
         currentActivity = this;
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        currentActivity = null;
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        currentActivity = null;
     }
 
     public void resetBar() {
