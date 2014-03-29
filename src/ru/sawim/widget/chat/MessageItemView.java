@@ -53,7 +53,7 @@ public class MessageItemView extends View {
 
     private int titleHeight;
 
-    private static final HashMap<Integer, Layout> layoutHolder = new HashMap<Integer, Layout>();
+    private static final HashMap<CharSequence, Layout> layoutHolder = new HashMap<CharSequence, Layout>();
 
     public MessageItemView(Context context) {
         super(context);
@@ -65,7 +65,7 @@ public class MessageItemView extends View {
     }
 
     public void makeLayout(int specSize) {
-        layout = layoutHolder.get(text.length());
+        layout = layoutHolder.get(text);
         if (layout == null) {
             if (specSize <= 0) return;
             try {
@@ -73,7 +73,7 @@ public class MessageItemView extends View {
             } catch (ArrayIndexOutOfBoundsException e) {
                 layout = new StaticLayout(text.toString(), textPaint, specSize, Layout.Alignment.ALIGN_NORMAL, 1.0F, 0.0F, false);
             }
-            layoutHolder.put(text.length(), layout);
+            layoutHolder.put(text, layout);
         }
     }
 

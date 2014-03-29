@@ -8,6 +8,7 @@ import android.widget.LinearLayout;
 import ru.sawim.SawimApplication;
 import ru.sawim.SawimResources;
 import ru.sawim.Scheme;
+import ru.sawim.comm.Util;
 import ru.sawim.widget.IcsLinearLayout;
 import ru.sawim.widget.SimpleItemView;
 
@@ -36,6 +37,8 @@ public class ChatBarView extends IcsLinearLayout {
         labelLayoutParams.weight = 1;
 
         itemView = new SimpleItemView(context);
+        int padding = ru.sawim.widget.Util.dipToPixels(context, 3);
+        itemView.setPadding(padding, padding, padding, padding);
         addViewInLayout(itemView, 0, labelLayoutParams);
 
         if (!SawimApplication.isManyPane()) {
