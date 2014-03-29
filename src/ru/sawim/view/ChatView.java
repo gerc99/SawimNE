@@ -448,7 +448,13 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         int unreadMessageCount = chat.getUnreadMessageCount();
         chat.resetUnreadMessages();
         removeMessages(Options.getInt(Options.OPTION_MAX_MSG_COUNT));
-        if (sharingText != null) chat.message += " " + sharingText;
+        if (sharingText != null) {
+            if (null != chat.message) {
+                chat.message += " " + sharingText;
+            }  else {
+                chat.message = sharingText;
+            }
+        }
         messageEditor.setText(chat.message);
         messageEditor.setSelection(messageEditor.getText().length());
         updateChatIcon();
@@ -493,8 +499,8 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         return chat != null && chat.dividerPosition == chat.getMessCount();
     }
 
-    public void setSharingText(String sharingText) {
-        this.sharingText = sharingText;
+    public void setSharingText(String text) {
+        sharingText = text;
     }
 
     private void removeMessages(final int limit) {

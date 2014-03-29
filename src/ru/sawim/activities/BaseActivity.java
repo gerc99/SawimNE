@@ -27,7 +27,6 @@ public class BaseActivity extends ActionBarActivity {
 
     @Override
     protected void onResume() {
-        currentActivity = null;
         super.onResume();
         currentActivity = this;
     }

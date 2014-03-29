@@ -82,12 +82,13 @@ public class SendToView extends Fragment implements AdapterView.OnItemClickListe
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             String type = intent.getType();
             if (type.equals("text/plain")) {
+                String subjectText = intent.getStringExtra(Intent.EXTRA_SUBJECT);
                 String sharingText = intent.getStringExtra(Intent.EXTRA_TEXT);
                 ChatView newFragment = new ChatView();
                 c.activate(p);
                 newFragment.initChat(p, c);
                 if (sharingText != null)
-                    newFragment.setSharingText(sharingText);
+                    newFragment.setSharingText(subjectText == null ? sharingText : subjectText + "\n" + sharingText);
                 FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
                 transaction.replace(R.id.fragment_container, newFragment, ChatView.TAG);
                 transaction.addToBackStack(null);
