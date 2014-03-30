@@ -1,3 +1,6 @@
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.util.ArrayList;
 package protocol.xmpp;
 
 import DrawControls.icons.ImageList;
@@ -5,9 +8,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.widget.Toast;
 import protocol.*;
-import ru.sawim.FileTransfer;
-import ru.sawim.R;
-import ru.sawim.SawimApplication;
+import ru.sawim.*;
 import ru.sawim.activities.BaseActivity;
 import ru.sawim.chat.message.PlainMessage;
 import ru.sawim.comm.StringConvertor;
@@ -19,6 +20,8 @@ import ru.sawim.search.Search;
 import ru.sawim.search.UserInfo;
 import ru.sawim.util.JLocale;
 import ru.sawim.view.TextBoxView;
+import ru.sawim.view.menu.JuickMenu;
+
 
 import java.util.Vector;
 
@@ -32,15 +35,15 @@ public final class Xmpp extends Protocol implements FormListener {
     private AffiliationListConf alistc = null;
     private MirandaNotes notes = null;
     public static final XmppXStatus xStatus = new XmppXStatus();
-    private final Vector bots = new Vector();
+    private final ArrayList<String> bots = new ArrayList<String>();
 
     public Xmpp() {
     }
 
     protected void initStatusInfo() {
-        bots.addElement("juick@juick.com");
-        bots.addElement("psto@psto.net");
-        bots.addElement("p@point.im");
+        bots.add(JuickMenu.JUICK);
+        bots.add(JuickMenu.PSTO);
+        bots.add(JuickMenu.POINT);
 
         byte type = getProfile().protocolType;
         ImageList icons = createStatusIcons(type);
@@ -126,8 +129,8 @@ public final class Xmpp extends Protocol implements FormListener {
         return (null != connection) && connection.isConnected();
     }
 
-    public final boolean isBlogBot(String jid) {
-        return -1 < bots.indexOf(jid);
+    public boolean isBlogBot(String jid) {
+        return bots.contains(getUniqueUserId(jid));
     }
 
     public void startConnection() {
@@ -755,11 +758,15 @@ public final class Xmpp extends Protocol implements FormListener {
     }
 
     public String getUniqueUserId(Contact c) {
-        String jid = c.getUserId();
-        if (isContactOverGate(jid)) {
-            return Jid.getNick(jid).replace('%', '@');
+        return getUniqueUserId(c.getUserId());
+    }
+
+    @Override
+    public String getUniqueUserId(String userId) {
+        if (isContactOverGate(userId)) {
+            return Jid.getNick(userId).replace('%', '@').replace("\\40", "@");
         }
-        return jid.replace('%', '@');
+        return userId.replace('%', '@');
     }
 
     public void saveAnnotations(String xml) {

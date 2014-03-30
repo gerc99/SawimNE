@@ -525,5 +525,5 @@
     <string name="sucks">Отстой</string>
     <string name="wake_lock">Не дать устройству заснуть и продолжать работу в фоновом режиме</string>
     <string name="domain">Домен</string>
-
+    <string name="account_settings">Настройки аккаунта</string>
 </resources>

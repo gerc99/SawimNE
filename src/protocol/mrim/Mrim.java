@@ -63,11 +63,15 @@ public class Mrim extends Protocol {
     }
 
     public String getUniqueUserId(Contact contact) {
-        String userId = contact.getUserId();
+        return getUniqueUserId(contact.getUserId());
+    }
+
+    @Override
+    public String getUniqueUserId(String userId) {
         if (userId.endsWith("@uin.icq")) {
             return userId.substring(0, userId.indexOf("@"));
         }
-        return contact.getUserId();
+        return userId;
     }
 
     public void startConnection() {

@@ -891,10 +891,6 @@ abstract public class Protocol {
     private void addMessageNotify(Chat chat, Contact contact, Message message, boolean isHighlight) {
         boolean isPersonal = contact.isSingleUserContact();
         boolean isBlog = isBlogBot(contact.getUserId());
-        boolean isHuman = isBlog || chat.isHuman() || !isPersonal;
-        if (isBot(contact)) {
-            isHuman = false;
-        }
         boolean isMention = false;
         if (!isPersonal && !message.isOffline() && (contact instanceof XmppContact)) {
             String msg = message.getText();
@@ -935,9 +931,6 @@ abstract public class Protocol {
                 playNotification(Notify.isSound(Notify.NOTIFY_MULTIMESSAGE), Notify.NOTIFY_MULTIMESSAGE);
             }
             playNotification(Notify.NOTIFY_MULTIMESSAGE);
-        }
-        if (!isPersonal) {
-            return;
         }
     }
 
@@ -1110,6 +1103,10 @@ abstract public class Protocol {
 
     public String getUniqueUserId(Contact contact) {
         return contact.getUserId();
+    }
+
+    public String getUniqueUserId(String userId) {
+        return userId;
     }
 
     public final Chat getChat(Contact contact) {

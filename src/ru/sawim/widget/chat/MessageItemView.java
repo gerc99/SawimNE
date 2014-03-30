@@ -10,6 +10,7 @@ import android.text.Layout;
 import android.text.Spannable;
 import android.text.StaticLayout;
 import android.text.TextPaint;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -65,7 +66,7 @@ public class MessageItemView extends View {
     }
 
     public void makeLayout(int specSize) {
-        layout = layoutHolder.get(text);
+        layout = layoutHolder.get(text.toString());
         if (layout == null) {
             if (specSize <= 0) return;
             try {
@@ -73,7 +74,7 @@ public class MessageItemView extends View {
             } catch (ArrayIndexOutOfBoundsException e) {
                 layout = new StaticLayout(text.toString(), textPaint, specSize, Layout.Alignment.ALIGN_NORMAL, 1.0F, 0.0F, false);
             }
-            layoutHolder.put(text, layout);
+            layoutHolder.put(text.toString(), layout);
         }
     }
 

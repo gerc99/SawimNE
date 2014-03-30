@@ -5,11 +5,13 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceScreen;
 import android.support.v4.app.FragmentTransaction;
-import ru.sawim.OptionsForm;
-import ru.sawim.R;
-import ru.sawim.SawimApplication;
+import protocol.Contact;
+import protocol.Protocol;
+import protocol.xmpp.*;
+import ru.sawim.*;
 import ru.sawim.activities.AccountsListActivity;
 import ru.sawim.activities.BaseActivity;
+import ru.sawim.roster.RosterHelper;
 import ru.sawim.view.AboutProgramView;
 import ru.sawim.view.SawimFragment;
 
@@ -78,6 +80,24 @@ public class MainPreferenceView extends PreferenceFragment {
             }
         });
         rootScreen.addPreference(screen2);
+
+        final Protocol protocol = RosterHelper.getInstance().getCurrentProtocol();
+        if (protocol instanceof Xmpp) {
+            final PreferenceScreen accountSettings = getPreferenceManager().createPreferenceScreen(getActivity());
+            accountSettings.setTitle(R.string.account_settings);
+            accountSettings.setSummary(protocol.getUserId());
+            accountSettings.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    String serverAddress = Jid.getDomain(protocol.getUserId());
+                    Contact serverContact = protocol.createTempContact(serverAddress);
+                    AdHoc adhoc = new AdHoc((Xmpp)protocol, (XmppContact)serverContact);
+                    adhoc.show();
+                    return false;
+                }
+            });
+            rootScreen.addPreference(accountSettings);
+        }
 
         final PreferenceScreen screen3 = getPreferenceManager().createPreferenceScreen(getActivity());
         screen3.setKey("screen3");

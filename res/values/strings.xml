@@ -9,8 +9,8 @@
 
     <string name="connect">Connect</string>
     <string name="disconnect">Disconnect</string>
-    <string name="sound_on">Sound On</string>
-    <string name="sound_off">Sound Off</string>
+    <string name="sound_on">Enable sound</string>
+    <string name="sound_off">Disable sound</string>
     <string name="add_contact">Add contact…</string>
     <string name="options">Options</string>
     <string name="quit">Quit</string>
@@ -521,4 +521,5 @@
     <string name="sucks">Sucks</string>
     <string name="wake_lock">Support the work when the screen is off</string>
     <string name="domain">Domain</string>
+    <string name="account_settings">Account settings</string>
 </resources>

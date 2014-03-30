@@ -46,7 +46,7 @@ public class TextFormatter {
         final int linkColor = Scheme.getColor(Scheme.THEME_LINKS);
         SpannableStringBuilder builder = new SpannableStringBuilder(text);
         if (contact != null) {
-            String userId = contact.getUserId();
+            String userId = contact.getProtocol().getUniqueUserId(contact);
             if (userId.equals(JuickMenu.JUICK) || userId.equals(JuickMenu.JUBO)) {
                 getTextWithLinks(builder, linkColor, JuickMenu.MODE_JUICK);
             } else if (userId.equals(JuickMenu.PSTO) || userId.equals(JuickMenu.POINT)) {
