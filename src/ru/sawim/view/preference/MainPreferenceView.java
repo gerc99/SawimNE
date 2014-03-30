@@ -57,120 +57,112 @@ public class MainPreferenceView extends PreferenceFragment {
 
     private void buildList() {
         rootScreen.removeAll();
-        PreferenceScreen screen1 = getPreferenceManager().createPreferenceScreen(getActivity());
-        screen1.setKey("screen1");
-        screen1.setTitle(R.string.options_account);
-        screen1.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+        PreferenceScreen accountsScreen = getPreferenceManager().createPreferenceScreen(getActivity());
+        accountsScreen.setTitle(R.string.options_account);
+        accountsScreen.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 startActivity(new Intent(BaseActivity.getCurrentActivity(), AccountsListActivity.class));
                 return false;
             }
         });
-        rootScreen.addPreference(screen1);
+        rootScreen.addPreference(accountsScreen);
 
-        final PreferenceScreen screen2 = getPreferenceManager().createPreferenceScreen(getActivity());
-        screen2.setKey("screen2");
-        screen2.setTitle(R.string.options_network);
-        screen2.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+        final PreferenceScreen optionsNetworkScreen = getPreferenceManager().createPreferenceScreen(getActivity());
+        optionsNetworkScreen.setTitle(R.string.options_network);
+        optionsNetworkScreen.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                new OptionsForm().select(screen2.getTitle(), OptionsForm.OPTIONS_NETWORK);
+                new OptionsForm().select(optionsNetworkScreen.getTitle(), OptionsForm.OPTIONS_NETWORK);
                 return false;
             }
         });
-        rootScreen.addPreference(screen2);
+        rootScreen.addPreference(optionsNetworkScreen);
 
         final Protocol protocol = RosterHelper.getInstance().getCurrentProtocol();
         if (protocol instanceof Xmpp) {
-            final PreferenceScreen accountSettings = getPreferenceManager().createPreferenceScreen(getActivity());
-            accountSettings.setTitle(R.string.account_settings);
-            accountSettings.setSummary(protocol.getUserId());
-            accountSettings.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            final PreferenceScreen accountSettingsScreen = getPreferenceManager().createPreferenceScreen(getActivity());
+            accountSettingsScreen.setTitle(R.string.account_settings);
+            accountSettingsScreen.setSummary(protocol.getUserId());
+            accountSettingsScreen.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
                     String serverAddress = Jid.getDomain(protocol.getUserId());
                     Contact serverContact = protocol.createTempContact(serverAddress);
-                    AdHoc adhoc = new AdHoc((Xmpp)protocol, (XmppContact)serverContact);
+                    AdHoc adhoc = new AdHoc((Xmpp) protocol, (XmppContact) serverContact);
                     adhoc.show();
                     return false;
                 }
             });
-            rootScreen.addPreference(accountSettings);
+            rootScreen.addPreference(accountSettingsScreen);
         }
 
-        final PreferenceScreen screen3 = getPreferenceManager().createPreferenceScreen(getActivity());
-        screen3.setKey("screen3");
-        screen3.setTitle(R.string.options_interface);
-        screen3.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+        final PreferenceScreen optionsInterfaceScreen = getPreferenceManager().createPreferenceScreen(getActivity());
+        optionsInterfaceScreen.setTitle(R.string.options_interface);
+        optionsInterfaceScreen.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                new OptionsForm().select(screen3.getTitle(), OptionsForm.OPTIONS_INTERFACE);
+                new OptionsForm().select(optionsInterfaceScreen.getTitle(), OptionsForm.OPTIONS_INTERFACE);
                 return false;
             }
         });
-        rootScreen.addPreference(screen3);
+        rootScreen.addPreference(optionsInterfaceScreen);
 
-        final PreferenceScreen screen4 = getPreferenceManager().createPreferenceScreen(getActivity());
-        screen4.setKey("screen4");
-        screen4.setTitle(R.string.options_signaling);
-        screen4.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+        final PreferenceScreen optionsSignalingScreen = getPreferenceManager().createPreferenceScreen(getActivity());
+        optionsSignalingScreen.setTitle(R.string.options_signaling);
+        optionsSignalingScreen.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                new OptionsForm().select(screen4.getTitle(), OptionsForm.OPTIONS_SIGNALING);
+                new OptionsForm().select(optionsSignalingScreen.getTitle(), OptionsForm.OPTIONS_SIGNALING);
                 return false;
             }
         });
-        rootScreen.addPreference(screen4);
+        rootScreen.addPreference(optionsSignalingScreen);
 
-        final PreferenceScreen screen5 = getPreferenceManager().createPreferenceScreen(getActivity());
-        screen5.setKey("screen5");
-        screen5.setTitle(R.string.antispam);
-        screen5.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+        final PreferenceScreen optionsAntispamScreen = getPreferenceManager().createPreferenceScreen(getActivity());
+        optionsAntispamScreen.setTitle(R.string.antispam);
+        optionsAntispamScreen.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                new OptionsForm().select(screen5.getTitle(), OptionsForm.OPTIONS_ANTISPAM);
+                new OptionsForm().select(optionsAntispamScreen.getTitle(), OptionsForm.OPTIONS_ANTISPAM);
                 return false;
             }
         });
-        rootScreen.addPreference(screen5);
+        rootScreen.addPreference(optionsAntispamScreen);
 
-        final PreferenceScreen screen6 = getPreferenceManager().createPreferenceScreen(getActivity());
-        screen6.setKey("screen6");
-        screen6.setTitle(R.string.answerer);
-        screen6.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+        final PreferenceScreen optionsAnswererScreen = getPreferenceManager().createPreferenceScreen(getActivity());
+        optionsAnswererScreen.setTitle(R.string.answerer);
+        optionsAnswererScreen.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                new OptionsForm().select(screen6.getTitle(), OptionsForm.OPTIONS_ANSWERER);
+                new OptionsForm().select(optionsAnswererScreen.getTitle(), OptionsForm.OPTIONS_ANSWERER);
                 return false;
             }
         });
-        rootScreen.addPreference(screen6);
+        rootScreen.addPreference(optionsAnswererScreen);
 
-        final PreferenceScreen screen7 = getPreferenceManager().createPreferenceScreen(getActivity());
-        screen7.setKey("screen7");
-        screen7.setTitle(R.string.options_pro);
-        screen7.setSummary(R.string.options_pro);
-        screen7.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+        final PreferenceScreen optionsProScreen = getPreferenceManager().createPreferenceScreen(getActivity());
+        optionsProScreen.setTitle(R.string.options_pro);
+        optionsProScreen.setSummary(R.string.options_pro);
+        optionsProScreen.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                new OptionsForm().select(screen7.getTitle(), OptionsForm.OPTIONS_PRO);
+                new OptionsForm().select(optionsProScreen.getTitle(), OptionsForm.OPTIONS_PRO);
                 return false;
             }
         });
-        rootScreen.addPreference(screen7);
+        rootScreen.addPreference(optionsProScreen);
 
-        final PreferenceScreen screen8 = getPreferenceManager().createPreferenceScreen(getActivity());
-        screen8.setKey("screen8");
-        screen8.setTitle(R.string.about_program);
-        screen8.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+        final PreferenceScreen aboutProgramScreen = getPreferenceManager().createPreferenceScreen(getActivity());
+        aboutProgramScreen.setTitle(R.string.about_program);
+        aboutProgramScreen.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 new AboutProgramView().show(BaseActivity.getCurrentActivity().getSupportFragmentManager(), AboutProgramView.TAG);
                 return false;
             }
         });
-        rootScreen.addPreference(screen8);
+        rootScreen.addPreference(aboutProgramScreen);
     }
 
     public boolean hasBack() {

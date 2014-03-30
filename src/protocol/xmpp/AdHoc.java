@@ -189,7 +189,7 @@ public final class AdHoc implements FormListener, ControlStateListener {
             protocol.getConnection().resetAdhoc();
             commandForm = null;
             if (!StringConvertor.isEmpty(text)) {
-                //new Popup(text).show();
+                RosterHelper.getInstance().activateWithMsg(text);
                 showForm = false;
             }
         }
