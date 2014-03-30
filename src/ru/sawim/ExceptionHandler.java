@@ -107,7 +107,7 @@ public final class ExceptionHandler implements Thread.UncaughtExceptionHandler {
                 .append("Exception: ").append(exception.getClass().getName()).append("\n")
                 .append("Message: ").append(exception.getMessage()).append("\nStacktrace:\n");
         for (StackTraceElement element : stackTraceElements) {
-            builder.append("\t").append(element.toString()).append("\n");
+            builder.append("\t\tat ").append(element.toString()).append("\n");
         }
         processThrowable(exception.getCause(), builder);
     }
