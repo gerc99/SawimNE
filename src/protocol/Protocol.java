@@ -527,7 +527,7 @@ abstract public class Protocol {
     protected void userCloseConnection() {
     }
 
-    public final void disconnect(boolean user) {
+    public void disconnect(boolean user) {
         disconnect(user, true);
     }
 

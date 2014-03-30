@@ -164,6 +164,14 @@ public final class Xmpp extends Protocol implements FormListener {
         return true;
     }
 
+
+    public void disconnect(boolean user) {
+        if (user && null != connection) {
+            connection.session.disable();
+        }
+        super.disconnect(user);
+    }
+
     protected final void userCloseConnection() {
         //rejoinList.removeAllElements();
     }

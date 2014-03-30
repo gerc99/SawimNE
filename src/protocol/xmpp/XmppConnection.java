@@ -385,10 +385,15 @@ public final class XmppConnection extends ClientConnection {
 
         setProgress(30);
         socket.start();
-        write(GET_ROSTER_XML);
-        setProgress(50);
-        usePong();
-        setProgress(60);
+        if (isSessionManagementEnabled()) {
+            usePong();
+            setProgress(100);
+        } else {
+            write(GET_ROSTER_XML);
+            setProgress(50);
+            usePong();
+            setProgress(60);
+        }
     }
 
     private boolean processInPacket() throws SawimException {
@@ -554,7 +559,6 @@ public final class XmppConnection extends ClientConnection {
         this.smEnabled = smEnabled;
         session.enable();
     }
-
 
     private String generateId(String key) {
         return key + Util.uniqueValue();

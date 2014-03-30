@@ -89,7 +89,13 @@ public class XmppSession {
         }
     }
 
-
+    public void disable() {
+        _editor.putBoolean("Enabled", false);
+        _editor.putLong("PacketsIn", 0);
+        _editor.putLong("PacketsOut", 0);
+        _editor.putString("SessionID", "");
+        _editor.commit();
+    }
     public void save() {
         _editor.putString("JID", connection.fullJid_);
         _editor.putBoolean("Enabled", connection.isSessionManagementEnabled());
