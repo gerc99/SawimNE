@@ -23,8 +23,6 @@ import ru.sawim.view.TextBoxView;
 import ru.sawim.view.menu.JuickMenu;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.util.Vector;
 
 
@@ -164,10 +162,10 @@ public final class Xmpp extends Protocol implements FormListener {
         return true;
     }
 
-
     public void disconnect(boolean user) {
         if (user && null != connection) {
-            connection.session.disable();
+            connection.session.clear();
+            connection.loggedOut();
         }
         super.disconnect(user);
     }

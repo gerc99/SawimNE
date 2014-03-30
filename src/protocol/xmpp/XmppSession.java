@@ -89,7 +89,7 @@ public class XmppSession {
         }
     }
 
-    public void disable() {
+    public void clear() {
         _editor.putBoolean("Enabled", false);
         _editor.putLong("PacketsIn", 0);
         _editor.putLong("PacketsOut", 0);

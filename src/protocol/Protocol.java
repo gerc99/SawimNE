@@ -535,17 +535,10 @@ abstract public class Protocol {
     }
 
     public void disconnect(boolean user) {
-        disconnect(user, true);
-    }
-
-    public final void disconnect(boolean user, boolean setOffline) {
         setConnectingProgress(-1);
         closeConnection();
         if (user) {
             userCloseConnection();
-            setStatusesOffline();
-        }
-        if (setOffline) {
             setStatusesOffline();
         }
         RosterHelper.getInstance().updateBarProtocols();
@@ -977,7 +970,7 @@ abstract public class Protocol {
         DebugLog.println("connect");
         isReconnect = false;
         reconnect_attempts = RECONNECT_COUNT;
-        disconnect(false, false);
+        disconnect(false);
         startConnection();
         setLastStatusChangeTime();
     }
