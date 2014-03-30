@@ -21,8 +21,8 @@ import ru.sawim.search.UserInfo;
 import ru.sawim.util.JLocale;
 import ru.sawim.view.TextBoxView;
 import ru.sawim.view.menu.JuickMenu;
-
-
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.util.Vector;
@@ -306,6 +306,7 @@ public final class Xmpp extends Protocol implements FormListener {
         for (int i = 0; i < subContactSize; ++i) {
             XmppContact.SubContact subContact = new XmppContact.SubContact();
             subContact.status = dis.readByte();
+            subContact.client = dis.readByte();
             subContact.priority = dis.readByte();
             subContact.priorityA = dis.readByte();
             subContact.resource = dis.readUTF();
@@ -327,6 +328,7 @@ public final class Xmpp extends Protocol implements FormListener {
         dos.writeInt(xmppContact.subcontacts.size());
         for (XmppContact.SubContact subContact : xmppContact.subcontacts) {
             dos.writeByte(subContact.status);
+            dos.writeByte(subContact.client);
             dos.writeByte(subContact.priority);
             dos.writeByte(subContact.priorityA);
             dos.writeUTF(subContact.resource);
@@ -910,3 +912,4 @@ public final class Xmpp extends Protocol implements FormListener {
         }
     }
 }
+

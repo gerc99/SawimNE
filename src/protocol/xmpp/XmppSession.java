@@ -96,6 +96,7 @@ public class XmppSession {
         _editor.putString("SessionID", "");
         _editor.commit();
     }
+
     public void save() {
         _editor.putString("JID", connection.fullJid_);
         _editor.putBoolean("Enabled", connection.isSessionManagementEnabled());
