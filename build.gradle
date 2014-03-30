@@ -76,7 +76,6 @@ android {
             release {
                 runProguard true
                 proguardFile getDefaultProguardFile('proguard-android.txt')
-                proguardFile file("proguard-android.txt")
                 signingConfig signingConfigs.sawim
             }
         }
