@@ -26,6 +26,7 @@ import java.io.*;
 import java.util.Vector;
 
 abstract public class Protocol {
+    private static final int ROSTER_STORAGE_VERSION = 1;
     private static final int RECONNECT_COUNT = 20;
     private final Object rosterLockObject = new Object();
     public ClientInfo clientInfo;
@@ -323,7 +324,7 @@ abstract public class Protocol {
             buf = cl.getRecord(1);
             bais = new ByteArrayInputStream(buf);
             dis = new DataInputStream(bais);
-            if (!dis.readUTF().equals(SawimApplication.VERSION)) {
+            if (dis.readInt() != ROSTER_STORAGE_VERSION) {
                 throw new Exception();
             }
             loadProtocolData(cl.getRecord(2));
@@ -363,7 +364,7 @@ abstract public class Protocol {
         byte[] buf;
         baos = new ByteArrayOutputStream();
         dos = new DataOutputStream(baos);
-        dos.writeUTF(SawimApplication.VERSION);
+        dos.writeInt(ROSTER_STORAGE_VERSION);
         buf = baos.toByteArray();
         cl.addRecord(buf, 0, buf.length);
         baos.reset();
