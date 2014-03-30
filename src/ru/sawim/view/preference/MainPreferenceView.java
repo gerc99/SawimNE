@@ -12,6 +12,7 @@ import ru.sawim.*;
 import ru.sawim.activities.AccountsListActivity;
 import ru.sawim.activities.BaseActivity;
 import ru.sawim.roster.RosterHelper;
+import ru.sawim.util.JLocale;
 import ru.sawim.view.AboutProgramView;
 import ru.sawim.view.SawimFragment;
 
@@ -36,7 +37,6 @@ public class MainPreferenceView extends PreferenceFragment {
         BaseActivity.getCurrentActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                BaseActivity.getCurrentActivity().resetBar();
                 if (SawimApplication.isManyPane())
                     BaseActivity.getCurrentActivity().setContentView(R.layout.intercalation_layout);
                 MainPreferenceView newFragment = new MainPreferenceView();
@@ -51,8 +51,8 @@ public class MainPreferenceView extends PreferenceFragment {
     @Override
     public void onResume() {
         super.onResume();
+        BaseActivity.getCurrentActivity().resetBar(JLocale.getString(R.string.options));
         BaseActivity.getCurrentActivity().getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getActivity().setTitle(R.string.options);
     }
 
     private void buildList() {

@@ -21,17 +21,17 @@ public class BaseActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         currentActivity = this;
+        super.onCreate(savedInstanceState);
     }
 
     @Override
     protected void onResume() {
-        super.onResume();
         currentActivity = this;
+        super.onResume();
     }
 
-    public void resetBar() {
+    public void resetBar(String title) {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(false);
         actionBar.setDisplayShowTitleEnabled(true);
@@ -40,7 +40,7 @@ public class BaseActivity extends ActionBarActivity {
         actionBar.setDisplayShowCustomEnabled(false);
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionBar.setIcon(SawimResources.appIcon);
-        actionBar.setTitle(R.string.app_name);
+        actionBar.setTitle(title);
     }
 
     int oldOrientation;

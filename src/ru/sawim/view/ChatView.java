@@ -115,7 +115,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         smileysPopup = new SmileysPopup(activity, chatViewLayout, messageEditor);
         drawerLayout = new DrawerLayout(activity);
 
-        BaseActivity.getCurrentActivity().setConfigurationChanged(new BaseActivity.OnConfigurationChanged() {
+        ((BaseActivity) activity).setConfigurationChanged(new BaseActivity.OnConfigurationChanged() {
             @Override
             public void onConfigurationChanged() {
                 hideKeyboard();

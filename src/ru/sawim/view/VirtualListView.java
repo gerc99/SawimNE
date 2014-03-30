@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.*;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -83,7 +82,6 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
         lv.setOnCreateContextMenuListener(this);
         update();
         getActivity().supportInvalidateOptionsMenu();
-        Log.e(TAG, "supportInvalidateOptionsMenu");
     }
 
     @Override
@@ -104,8 +102,14 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
         return super.onContextItemSelected(item);
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        BaseActivity.getCurrentActivity().resetBar(list.getCaption());
+        BaseActivity.getCurrentActivity().getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
     public static void show() {
-        BaseActivity.getCurrentActivity().resetBar();
         if (SawimApplication.isManyPane())
             BaseActivity.getCurrentActivity().setContentView(R.layout.intercalation_layout);
         VirtualListView newFragment = new VirtualListView();
@@ -144,12 +148,6 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (SawimActivity.externalApi.onActivityResult(requestCode, resultCode, data)) return;
         super.onActivityResult(requestCode, resultCode, data);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        BaseActivity.getCurrentActivity().resetBar();
     }
 
     public void onPrepareOptionsMenu_(Menu menu) {

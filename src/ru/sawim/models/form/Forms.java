@@ -37,7 +37,7 @@ public class Forms {
     private FormListener formListener;
     private OnBackPressed backPressedListener;
     private ControlStateListener controlListener;
-    private CharSequence caption;
+    private String caption;
     private static Forms instance;
     private boolean isAccept;
     private String waitingString;
@@ -104,11 +104,11 @@ public class Forms {
         return isAccept;
     }
 
-    public void setCaption(String caption) {
-        this.caption = caption;
+    public void setCaption(String text) {
+        caption = text;
     }
 
-    public CharSequence getCaption() {
+    public String getCaption() {
         return caption;
     }
 

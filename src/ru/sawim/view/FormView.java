@@ -58,7 +58,6 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         getActivity().setTitle(Forms.getInstance().getCaption());
-        BaseActivity.getCurrentActivity().getSupportActionBar().setTitle(Forms.getInstance().getCaption());
         okButton = (Button) getActivity().findViewById(R.id.data_form_ok);
         okButton.setOnClickListener(this);
         buildList();
@@ -106,13 +105,19 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
     }
 
     private static void show(Fragment fragment) {
-        BaseActivity.getCurrentActivity().resetBar();
         if (SawimApplication.isManyPane())
             BaseActivity.getCurrentActivity().setContentView(R.layout.intercalation_layout);
         FragmentTransaction transaction = BaseActivity.getCurrentActivity().getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment_container, fragment, FormView.TAG);
         transaction.addToBackStack(null);
         transaction.commitAllowingStateLoss();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        BaseActivity.getCurrentActivity().resetBar(Forms.getInstance().getCaption());
+        BaseActivity.getCurrentActivity().getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     @Override

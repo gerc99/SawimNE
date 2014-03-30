@@ -30,7 +30,6 @@ public class PreferenceFormView extends PreferenceFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         getActivity().setTitle(Forms.getInstance().getCaption());
-        BaseActivity.getCurrentActivity().getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         rootScreen = getPreferenceManager().createPreferenceScreen(getActivity());
         setPreferenceScreen(rootScreen);
         buildList();
@@ -41,7 +40,6 @@ public class PreferenceFormView extends PreferenceFragment {
         BaseActivity.getCurrentActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                BaseActivity.getCurrentActivity().resetBar();
                 if (SawimApplication.isManyPane())
                     BaseActivity.getCurrentActivity().setContentView(R.layout.intercalation_layout);
                 PreferenceFormView newFragment = new PreferenceFormView();
@@ -51,6 +49,13 @@ public class PreferenceFormView extends PreferenceFragment {
                 transaction.commitAllowingStateLoss();
             }
         });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        BaseActivity.getCurrentActivity().resetBar(Forms.getInstance().getCaption());
+        BaseActivity.getCurrentActivity().getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     private void hideKeyboard() {

@@ -21,6 +21,7 @@ import ru.sawim.activities.BaseActivity;
 import ru.sawim.activities.SawimActivity;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.roster.RosterHelper;
+import ru.sawim.util.JLocale;
 
 /**
  * Created with IntelliJ IDEA.
@@ -97,7 +98,7 @@ public class StartWindowView extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        BaseActivity.getCurrentActivity().resetBar();
+        BaseActivity.getCurrentActivity().resetBar(JLocale.getString(R.string.app_name));
         if (RosterHelper.getInstance().getProtocolCount() > 0) {
             ((SawimActivity) BaseActivity.getCurrentActivity()).recreateActivity();
         } else {
