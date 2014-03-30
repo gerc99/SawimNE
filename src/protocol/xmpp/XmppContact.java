@@ -169,11 +169,11 @@ public class XmppContact extends Contact {
         public byte priorityA;
     }
 
-    public Vector subcontacts = new Vector();
+    public Vector<SubContact> subcontacts = new Vector<SubContact>();
 
     private void removeSubContact(String resource) {
         for (int i = subcontacts.size() - 1; i >= 0; --i) {
-            SubContact c = (SubContact) subcontacts.elementAt(i);
+            SubContact c = subcontacts.elementAt(i);
             if (c.resource.equals(resource)) {
                 c.status = StatusInfo.STATUS_OFFLINE;
                 c.statusText = null;
@@ -185,7 +185,7 @@ public class XmppContact extends Contact {
 
     public SubContact getExistSubContact(String resource) {
         for (int i = subcontacts.size() - 1; i >= 0; --i) {
-            SubContact c = (SubContact) subcontacts.elementAt(i);
+            SubContact c = subcontacts.elementAt(i);
             if (c.resource.equals(resource)) {
                 return c;
             }
@@ -221,10 +221,10 @@ public class XmppContact extends Contact {
             return currentContact;
         }
         try {
-            currentContact = (SubContact) subcontacts.elementAt(0);
+            currentContact = subcontacts.elementAt(0);
             byte maxPriority = currentContact.priority;
             for (int i = 1; i < subcontacts.size(); ++i) {
-                SubContact contact = (SubContact) subcontacts.elementAt(i);
+                SubContact contact = subcontacts.elementAt(i);
                 if (maxPriority < contact.priority) {
                     maxPriority = contact.priority;
                     currentContact = contact;

@@ -12,6 +12,8 @@ import ru.sawim.chat.message.PlainMessage;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
 import ru.sawim.models.form.FormListener;
+import ru.sawim.R;
+import ru.sawim.SawimApplication;
 import ru.sawim.models.form.Forms;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.search.Search;
@@ -21,6 +23,8 @@ import ru.sawim.view.TextBoxView;
 import ru.sawim.view.menu.JuickMenu;
 
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.util.Vector;
 
 
@@ -277,6 +281,47 @@ public final class Xmpp extends Protocol implements FormListener {
                     connection.sendPresence(c);
                 }
             }
+        }
+    }
+
+    @Override
+    protected Contact loadContact(DataInputStream dis) throws Exception {
+        XmppContact contact = (XmppContact)super.loadContact(dis);
+        if (contact instanceof XmppServiceContact) {
+            XmppServiceContact serviceContact = (XmppServiceContact)contact;
+            if (serviceContact.isConference()) {
+                String userNick = dis.readUTF();
+                serviceContact.setMyName(userNick);
+            }
+        }
+        int subContactSize = dis.readInt();
+        for (int i = 0; i < subContactSize; ++i) {
+            XmppContact.SubContact subContact = new XmppContact.SubContact();
+            subContact.status = dis.readByte();
+            subContact.priority = dis.readByte();
+            subContact.priorityA = dis.readByte();
+            subContact.resource = dis.readUTF();
+            contact.subcontacts.add(subContact);
+        }
+        return contact;
+    }
+
+    @Override
+    protected void saveContact(DataOutputStream dos, Contact contact) throws Exception {
+        super.saveContact(dos, contact);
+        if (contact instanceof XmppServiceContact) {
+            XmppServiceContact serviceContact = (XmppServiceContact)contact;
+            if (serviceContact.isConference()) {
+                dos.writeUTF(serviceContact.getMyName());
+            }
+        }
+        XmppContact xmppContact = (XmppContact)contact;
+        dos.writeInt(xmppContact.subcontacts.size());
+        for (XmppContact.SubContact subContact : xmppContact.subcontacts) {
+            dos.writeByte(subContact.status);
+            dos.writeByte(subContact.priority);
+            dos.writeByte(subContact.priorityA);
+            dos.writeUTF(subContact.resource);
         }
     }
 
@@ -650,7 +695,7 @@ public final class Xmpp extends Protocol implements FormListener {
         final Vector items = new Vector();
         int selected = 0;
         for (int i = 0; i < c.subcontacts.size(); ++i) {
-            XmppContact.SubContact contact = (XmppContact.SubContact) c.subcontacts.elementAt(i);
+            XmppContact.SubContact contact = c.subcontacts.elementAt(i);
             items.add(contact.resource);
             if (contact.resource.equals(c.currentResource)) {
                 selected = i;

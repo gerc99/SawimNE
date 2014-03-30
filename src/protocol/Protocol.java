@@ -395,6 +395,7 @@ abstract public class Protocol {
         Contact contact = createContact(uin, name);
         contact.setGroupId(groupId);
         contact.setBooleanValues(booleanValues);
+        contact.setStatus(dis.readByte(), null);
         return contact;
     }
 
@@ -420,6 +421,7 @@ abstract public class Protocol {
         out.writeUTF(contact.getName());
         out.writeInt(contact.getGroupId());
         out.writeByte(contact.getBooleanValues());
+        out.writeByte(contact.getStatusIndex());
     }
 
     protected void saveGroup(DataOutputStream out, Group group) throws Exception {
@@ -526,12 +528,18 @@ abstract public class Protocol {
     }
 
     public final void disconnect(boolean user) {
+        disconnect(user, true);
+    }
+
+    public final void disconnect(boolean user, boolean setOffline) {
         setConnectingProgress(-1);
         closeConnection();
         if (user) {
             userCloseConnection();
         }
-        setStatusesOffline();
+        if (setOffline) {
+            setStatusesOffline();
+        }
         RosterHelper.getInstance().updateBarProtocols();
         RosterHelper.getInstance().updateProgressBar();
         RosterHelper.getInstance().updateRoster();
@@ -961,7 +969,7 @@ abstract public class Protocol {
         DebugLog.println("connect");
         isReconnect = false;
         reconnect_attempts = RECONNECT_COUNT;
-        disconnect(false);
+        disconnect(false, false);
         startConnection();
         setLastStatusChangeTime();
     }

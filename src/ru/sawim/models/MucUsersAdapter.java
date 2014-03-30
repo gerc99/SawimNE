@@ -109,9 +109,9 @@ public class MucUsersAdapter extends BaseAdapter {
 
     private final int getContactCount(byte priority) {
         int count = 0;
-        Vector subcontacts = conference.subcontacts;
+        Vector<XmppContact.SubContact> subcontacts = conference.subcontacts;
         for (int i = 0; i < subcontacts.size(); ++i) {
-            XmppContact.SubContact contact = (XmppContact.SubContact) subcontacts.elementAt(i);
+            XmppContact.SubContact contact = subcontacts.elementAt(i);
             if (contact != null)
                 if (contact.priority == priority) {
                     count++;
@@ -124,9 +124,9 @@ public class MucUsersAdapter extends BaseAdapter {
         if (TextUtils.isEmpty(nick)) {
             return null;
         }
-        Vector subcontacts = conference.subcontacts;
+        Vector<XmppContact.SubContact> subcontacts = conference.subcontacts;
         for (int i = 0; i < subcontacts.size(); ++i) {
-            XmppContact.SubContact contact = (XmppContact.SubContact) subcontacts.elementAt(i);
+            XmppContact.SubContact contact = subcontacts.elementAt(i);
             if (nick.equals(contact.resource)) {
                 return contact;
             }
@@ -137,9 +137,9 @@ public class MucUsersAdapter extends BaseAdapter {
     private void addLayerToListOfSubcontacts(int layer, int size, byte priority) {
         boolean hasLayer = false;
         items.add(JLocale.getString(layer)/* + "(" + size + ")"*/);
-        Vector subcontacts = conference.subcontacts;
+        Vector<XmppContact.SubContact> subcontacts = conference.subcontacts;
         for (int i = 0; i < subcontacts.size(); ++i) {
-            XmppContact.SubContact contact = (XmppContact.SubContact) subcontacts.elementAt(i);
+            XmppContact.SubContact contact = subcontacts.elementAt(i);
             if (contact.priority == priority) {
                 items.add(contact);
                 hasLayer = true;
