@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.*;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -41,7 +42,7 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
     @Override
     public void onDetach() {
         super.onDetach();
-        if (getFragmentManager().getBackStackEntryCount() == 1) {
+        if (getFragmentManager().getBackStackEntryCount() <= 1) {
             list.clearAll();
             adapter = null;
         }
@@ -82,6 +83,7 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
         lv.setOnCreateContextMenuListener(this);
         update();
         getActivity().supportInvalidateOptionsMenu();
+        Log.e(TAG, "supportInvalidateOptionsMenu");
     }
 
     @Override

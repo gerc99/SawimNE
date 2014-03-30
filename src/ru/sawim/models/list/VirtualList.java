@@ -121,8 +121,8 @@ public class VirtualList {
         return buildOptionsMenu;
     }
 
-    public void setBuildOptionsMenu(OnBuildOptionsMenu buildOptionsMenu) {
-        this.buildOptionsMenu = buildOptionsMenu;
+    public void setBuildOptionsMenu(OnBuildOptionsMenu listener) {
+        buildOptionsMenu = listener;
     }
 
     public interface OnBuildContextMenu {
