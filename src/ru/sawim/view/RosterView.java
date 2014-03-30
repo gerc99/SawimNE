@@ -64,7 +64,6 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     private LinearLayout rosterBarLayout;
     private LinearLayout barLinearLayout;
     private RosterViewRoot rosterViewLayout;
-    private static ProgressBar progressBar;
     private MyListView rosterListView;
     private AdapterView.AdapterContextMenuInfo contextMenuInfo;
     private Handler handler;
@@ -79,14 +78,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         rosterBarLayout = new LinearLayout(getActivity());
         barLinearLayout = new LinearLayout(activity);
         chatsImage = new MyImageButton(getActivity());
-        if (progressBar == null) {
-            progressBar = new ProgressBar(activity, null, android.R.attr.progressBarStyleHorizontal);
-            progressBar.setMax(100);
-            progressBar.getProgressDrawable().setBounds(progressBar.getProgressDrawable().getBounds());
-            LinearLayout.LayoutParams ProgressBarLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            ProgressBarLP.setMargins(30, 0, 30, 1);
-            progressBar.setLayoutParams(ProgressBarLP);
-        }
+        chatsImage = new MyImageButton(getActivity());
 
         rosterListView = new MyListView(activity);
         RosterAdapter rosterAdapter = new RosterAdapter();
@@ -97,7 +89,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         activity.registerForContextMenu(rosterListView);
         rosterListView.setOnCreateContextMenuListener(this);
         rosterListView.setOnItemClickListener(this);
-        rosterViewLayout = new RosterViewRoot(activity, progressBar, rosterListView);
+        rosterViewLayout = new RosterViewRoot(activity, rosterListView);
 
         protocolsSpinner = new MySpinner(activity, null, Build.VERSION.SDK_INT < 11
                 ? R.attr.actionDropDownStyle : android.R.attr.actionDropDownStyle);
@@ -125,13 +117,9 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
             case UPDATE_PROGRESS_BAR:
                 final Protocol p = RosterHelper.getInstance().getCurrentProtocol();
                 if (p != null) {
+                    BaseActivity activity = BaseActivity.getCurrentActivity();
                     byte percent = p.getConnectingProgress();
-                    if (100 != percent) {
-                        progressBar.setVisibility(ProgressBar.VISIBLE);
-                        progressBar.setProgress(percent);
-                    } else {
-                        progressBar.setVisibility(ProgressBar.GONE);
-                    }
+                    activity.setSupportProgress(percent * 100);
                     if (100 == percent || 0 == percent) {
                         BaseActivity.getCurrentActivity().supportInvalidateOptionsMenu();
                     }

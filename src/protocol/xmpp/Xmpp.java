@@ -1,8 +1,6 @@
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.util.ArrayList;
 package protocol.xmpp;
 
+import java.util.ArrayList;
 import DrawControls.icons.ImageList;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
