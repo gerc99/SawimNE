@@ -85,20 +85,30 @@ public class XmppSession {
     }
 
     public void enable() {
-        if (!StringConvertor.isEmpty(regid)) {
-            connection.putPacketIntoQueue("<iq type='set'>" +
-                    "<register xmlns='http://sawim.ru/notifications#gcm' regid='" + regid + "' /></iq>");
-        }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (connection.isSessionManagementEnabled() && !StringConvertor.isEmpty(regid)) {
+                    connection.putPacketIntoQueue("<iq type='set'>" +
+                            "<register xmlns='http://sawim.ru/notifications#gcm' regid='" + regid + "' /></iq>");
+                }
+            }
+        }).start();
     }
 
     public void clear() {
-        if (!StringConvertor.isEmpty(regid)) {
-            try {
-                connection.writePacket("<iq type='set'>" +
-                        "<unregister xmlns='http://sawim.ru/notifications#gcm'/></iq>");
-            } catch (SawimException ignored) {
-                ignored.printStackTrace();
-            }
+        if (connection.isSessionManagementEnabled() && !StringConvertor.isEmpty(regid)) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        connection.writePacket("<iq type='set'>" +
+                                "<unregister xmlns='http://sawim.ru/notifications#gcm'/></iq>");
+                    } catch (SawimException ignored) {
+                        ignored.printStackTrace();
+                    }
+                }
+            }).start();
         }
         _editor.putBoolean("Enabled", false);
         _editor.putLong("PacketsIn", 0);

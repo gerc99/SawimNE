@@ -26,10 +26,12 @@ import java.io.*;
 import java.util.Vector;
 
 abstract public class Protocol {
-    public static final String PUSH_SERVER = "beta.bggg.net.ru";
-
     private static final int ROSTER_STORAGE_VERSION = 1;
     private static final int RECONNECT_COUNT = 20;
+
+    public static final String PUSH_SERVER = "beta.bggg.net.ru";
+    private boolean smEnabled = false;
+
     private final Object rosterLockObject = new Object();
     public ClientInfo clientInfo;
     protected Roster roster = new Roster();
@@ -983,6 +985,14 @@ abstract public class Protocol {
 
     public final boolean isReconnect() {
         return isReconnect;
+    }
+
+    public boolean isSessionManagementEnabled() {
+        return smEnabled;
+    }
+
+    public void setSessionManagementEnabled(boolean flag) {
+        smEnabled = flag;
     }
 
     public final void playNotification(boolean isSound, int type) {

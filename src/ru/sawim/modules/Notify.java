@@ -127,7 +127,6 @@ public class Notify implements Runnable {
             Thread.sleep(100);
         } catch (OutOfMemoryError err) {
         } catch (InterruptedException e) {
-            e.printStackTrace();
         }
     }
 
