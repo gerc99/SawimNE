@@ -1,9 +1,8 @@
 package protocol.xmpp;
 
 
-import com.ssttr.crypto.HMACSHA1;
-import com.ssttr.crypto.MessageDigest;
-import com.ssttr.crypto.SHA1;
+import ru.sawim.crypto.HMACSHA1;
+import ru.sawim.crypto.SHA1;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
 
@@ -72,12 +71,7 @@ public class SASL_ScramSha1 {
             return null;
         }
 
-        MessageDigest sha;
-        sha = new SHA1();
-        sha.init();
-        sha.update(clientKey);
-        sha.finish();
-        byte[] storedKey = sha.getDigestBits();
+        byte[] storedKey = SHA1.calculate(clientKey);
 
         String clientFinalMessageWithoutProof = "c=biws,r=" + r;
 

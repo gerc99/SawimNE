@@ -9,7 +9,7 @@ import ru.sawim.SawimException;
 import ru.sawim.chat.message.PlainMessage;
 import ru.sawim.chat.message.SystemNotice;
 import ru.sawim.comm.Config;
-import ru.sawim.comm.MD5;
+import ru.sawim.crypto.MD5;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
 import ru.sawim.modules.DebugLog;
@@ -1846,7 +1846,7 @@ public final class XmppConnection extends ClientConnection {
                     data.writeUtf8String(Jid.getNick(getXmpp().getUserId()));
                     data.writeByte(0);
                     data.writeUtf8String(getXmpp().getPassword());
-                    auth += MD5.toBase64(data.toByteArray());
+                    auth += Util.base64encode(data.toByteArray());
                     auth += "</auth>";
 
                 } else if (canUsePlain && isGTalk_) {
@@ -1894,7 +1894,7 @@ public final class XmppConnection extends ClientConnection {
         DebugLog.systemPrintln("[INFO-JABBER] Received challenge");
 
         String resp = "<response xmlns='urn:ietf:params:xml:ns:xmpp-sasl'";
-        String challenge = MD5.decodeBase64(x.value);
+        String challenge = Util.decodeBase64(x.value);
 
         if (null != scramSHA1) {
             resp += ">" + scramSHA1.response(challenge) + "</response>";
@@ -1932,7 +1932,6 @@ public final class XmppConnection extends ClientConnection {
         hUserRealmPass.updateASCII(realm);
         hUserRealmPass.update((byte) ':');
         hUserRealmPass.updateASCII(pass);
-        hUserRealmPass.finish();
 
         MD5 hA1 = new MD5();
         hA1.init();
@@ -1941,13 +1940,11 @@ public final class XmppConnection extends ClientConnection {
         hA1.updateASCII(nonce);
         hA1.update((byte) ':');
         hA1.updateASCII(cnonce);
-        hA1.finish();
 
         MD5 hA2 = new MD5();
         hA2.init();
         hA2.updateASCII("AUTHENTICATE:");
         hA2.updateASCII(digestUri);
-        hA2.finish();
 
         MD5 hResp = new MD5();
         hResp.init();
@@ -1958,21 +1955,18 @@ public final class XmppConnection extends ClientConnection {
         hResp.updateASCII(cnonce);
         hResp.updateASCII(":auth:");
         hResp.updateASCII(hA2.getDigestHex());
-        hResp.finish();
 
         String quote = "\"";
         //    if (Profile.PROTOCOL_VK == getXmpp().getProfile().protocolType) {
         //        quote = "";
         //    }
-        return MD5.toBase64(StringConvertor.stringToByteArrayUtf8(
-                new StringBuffer()
-                        .append("username=\"").append(user)
-                        .append("\",realm=\"").append(realm)
-                        .append("\",nonce=\"").append(nonce)
-                        .append("\",cnonce=\"").append(cnonce)
-                        .append("\",nc=00000001,digest-uri=\"").append(digestUri)
-                        .append("\",qop=auth,response=").append(quote).append(hResp.getDigestHex())
-                        .append(quote).append(",charset=utf-8").toString()));
+        return Util.base64encode(StringConvertor.stringToByteArrayUtf8(
+                new StringBuffer().append("username=\"").append(user).append("\",realm=\"").append(realm)
+                                  .append("\",nonce=\"").append(nonce).append("\",cnonce=\"").append(cnonce)
+                                  .append("\",nc=00000001,digest-uri=\"").append(digestUri)
+                                  .append("\",qop=auth,response=").append(quote).append(hResp.getDigestHex())
+                                  .append(quote).append(",charset=utf-8").toString()
+        ));
     }
 
 
@@ -2022,7 +2016,7 @@ public final class XmppConnection extends ClientConnection {
                         data.writeUtf8String(Jid.getNick(jid));
                         data.writeByte(0);
                         data.writeUtf8String(str);
-                        String token = MD5.toBase64(data.toByteArray());
+                        String token = Util.base64encode(data.toByteArray());
                         return token;
                     }
                 }
@@ -2694,7 +2688,7 @@ public final class XmppConnection extends ClientConnection {
         for (int i = 0; i < features.size(); ++i) {
             sb.append(features.elementAt(i)).append('<');
         }
-        return MD5.toBase64(new MD5().calculate(StringConvertor.stringToByteArrayUtf8(sb.toString())));
+        return Util.base64encode(MD5.calculate(StringConvertor.stringToByteArrayUtf8(sb.toString())));
     }
 
     private String getFeatures(Vector features) {

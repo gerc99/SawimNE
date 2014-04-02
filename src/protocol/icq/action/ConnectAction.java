@@ -10,7 +10,7 @@ import protocol.icq.packet.*;
 import ru.sawim.Options;
 import ru.sawim.SawimException;
 import ru.sawim.comm.ArrayReader;
-import ru.sawim.comm.MD5;
+import ru.sawim.crypto.MD5;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
 import ru.sawim.modules.DebugLog;
@@ -157,7 +157,7 @@ public class ConnectAction extends IcqAction {
 
                         byte[] passwordRaw = StringConvertor.stringToByteArray(password);
 
-                        byte[] passkey = new MD5().calculate(passwordRaw);
+                        byte[] passkey = MD5.calculate(passwordRaw);
 
                         byte[] md5buf = new byte[authkey.length + passkey.length + AIM_MD5_STRING.length];
                         int md5marker = 0;
@@ -167,7 +167,7 @@ public class ConnectAction extends IcqAction {
                         md5marker += passkey.length;
                         System.arraycopy(AIM_MD5_STRING, 0, md5buf, md5marker, AIM_MD5_STRING.length);
 
-                        stream.writeTLV(0x0025, new MD5().calculate(md5buf));
+                        stream.writeTLV(0x0025, MD5.calculate(md5buf));
 
                         ConnectPacket.putVersion(stream, true);
 

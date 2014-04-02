@@ -1,10 +1,8 @@
-
-
 package protocol.mrim;
 
 import ru.sawim.SawimApplication;
 import ru.sawim.comm.Config;
-import ru.sawim.comm.MD5;
+import ru.sawim.crypto.MD5;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
 import ru.sawim.search.Search;
@@ -123,11 +121,7 @@ final class MrimPacket {
         MrimBuffer out = new MrimBuffer();
         out.putString(mrim.getUserId());
 
-        MD5 hash = new MD5();
-        hash.init();
-        hash.updateASCII(mrim.getPassword());
-        hash.finish();
-        byte[] pass = hash.getDigestBits();
+        byte[] pass = MD5.calculate(mrim.getPassword());
         out.putDWord(pass.length);
         out.putBytes(pass);
         out.putStatusInfo(mrim);

@@ -1,5 +1,6 @@
 package ru.sawim.comm;
 
+import android.util.Base64;
 import ru.sawim.Options;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
@@ -653,59 +654,11 @@ public class Util {
 
     private static final String base64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
 
-    private static int base64GetNextChar(String str, int index) {
-        if (-1 == index) return -2;
-        char ch = str.charAt(index);
-        if ('=' == ch) {
-            return -1;
-        }
-        return base64.indexOf(ch);
-    }
-
-    private static int base64GetNextIndex(String str, int index) {
-        for (; index < str.length(); ++index) {
-            char ch = str.charAt(index);
-            if ('=' == ch) {
-                return index;
-            }
-            int code = base64.indexOf(ch);
-            if (-1 != code) {
-                return index;
-            }
-        }
-        return -1;
-    }
-
     public static byte[] base64decode(String str) {
-        if (null == str) str = "";
-        Util out = new Util();
-        for (int strIndex = 0; strIndex < str.length(); ++strIndex) {
-            strIndex = base64GetNextIndex(str, strIndex);
-            if (-1 == strIndex) break;
-            int ch1 = base64GetNextChar(str, strIndex);
-            if (-1 == ch1) break;
-
-            strIndex = base64GetNextIndex(str, strIndex + 1);
-            if (-1 == strIndex) break;
-            int ch2 = base64GetNextChar(str, strIndex);
-            if (-1 == ch2) break;
-            out.writeByte((byte) (0xFF & ((ch1 << 2) | (ch2 >>> 4))));
-
-            strIndex = base64GetNextIndex(str, strIndex + 1);
-            if (-1 == strIndex) break;
-            int ch3 = base64GetNextChar(str, strIndex);
-            if (-1 == ch3) break;
-            out.writeByte((byte) (0xFF & ((ch2 << 4) | (ch3 >>> 2))));
-
-            strIndex = base64GetNextIndex(str, strIndex + 1);
-            if (-1 == strIndex) break;
-            int ch4 = base64GetNextChar(str, strIndex);
-            if (-1 == ch4) break;
-            out.writeByte((byte) (0xFF & ((ch3 << 6) | (ch4))));
-        }
-        return out.toByteArray();
+        return Base64.decode(StringConvertor.notNull(str), Base64.DEFAULT);
     }
 
+    // Replacing it with Android impl will broke authorization.
     public static String base64encode(final byte[] data) {
         char[] out = new char[((data.length + 2) / 3) * 4];
         for (int i = 0, index = 0; i < data.length; i += 3, index += 4) {
@@ -732,6 +685,11 @@ public class Util {
             out[index + 0] = base64.charAt(val & 0x3F);
         }
         return new String(out);
+    }
+
+    public static String decodeBase64(String src) {
+        final byte[] data = base64decode(src);
+        return StringConvertor.utf8beByteArrayToString(data, 0, data.length);
     }
 
     private static final String[] escapedChars = {"&quot;", "&apos;", "&gt;", "&lt;", "&amp;"};
