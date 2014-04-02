@@ -97,6 +97,7 @@ public class XmppSession {
                 connection.writePacket("<iq type='set'>" +
                         "<unregister xmlns='http://sawim.ru/notifications#gcm'/></iq>");
             } catch (SawimException ignored) {
+                ignored.printStackTrace();
             }
         }
         _editor.putBoolean("Enabled", false);

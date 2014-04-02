@@ -124,7 +124,10 @@ public class Notify implements Runnable {
     public void run() {
         try {
             playNotify();
+            Thread.sleep(100);
         } catch (OutOfMemoryError err) {
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 

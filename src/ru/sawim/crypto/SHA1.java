@@ -9,4 +9,3 @@ public final class SHA1 extends ru.sawim.crypto.MessageDigest {
         super("SHA-1");
     }
 }
-- 
