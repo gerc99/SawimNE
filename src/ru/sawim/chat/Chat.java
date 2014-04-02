@@ -449,7 +449,7 @@ public final class Chat {
     }
 
     MessData getUnreadMessage(int num) {
-        int index = getMessCount() - getOtherMessageCount() + num;
+        int index = getMessCount() - getUnreadMessageCount() + num;
         return getMessageDataByIndex(index);
     }
 

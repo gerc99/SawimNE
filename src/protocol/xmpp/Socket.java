@@ -34,6 +34,9 @@ final class Socket implements Runnable {
     private boolean secured;
     private final Vector<Object> read = new Vector<Object>();
 
+    public Socket() {
+    }
+
     public void startCompression() throws IOException, NoSuchAlgorithmException {
         zIn = new ZLibInputStream(socket.getIs());
         zOut = new ZLibOutputStream(socket.getOs());

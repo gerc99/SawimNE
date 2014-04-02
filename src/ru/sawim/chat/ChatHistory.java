@@ -440,7 +440,6 @@ public final class ChatHistory {
             s.open(true);
             for (int i = getTotal() - 1; 0 <= i; --i) {
                 Chat chat = chatAt(i);
-
                 int count = chat.getUnreadMessageCount();
                 for (int j = 0; j < count; ++j) {
                     MessData message = chat.getUnreadMessage(j);
@@ -455,8 +454,6 @@ public final class ChatHistory {
                 }
             }
         } catch (Exception e) {
-            if (e != null)
-                Log.e("saveUnreadMessages", e.getMessage());
         }
         s.close();
     }

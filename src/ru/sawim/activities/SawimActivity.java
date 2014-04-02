@@ -278,7 +278,7 @@ public class SawimActivity extends BaseActivity {
                 }
                 for (int i = 0; i < count; ++i) {
                     Protocol pr = RosterHelper.getInstance().getProtocol(i);
-                    if ((pr instanceof Mrim) && pr.isConnected()) {
+                    if (pr instanceof Mrim && pr.isConnected()) {
                         menu.add(Menu.NONE, MENU_SEND_SMS, Menu.NONE, R.string.send_sms);
                     }
                 }

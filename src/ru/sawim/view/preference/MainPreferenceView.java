@@ -80,7 +80,7 @@ public class MainPreferenceView extends PreferenceFragment {
         rootScreen.addPreference(optionsNetworkScreen);
 
         final Protocol protocol = RosterHelper.getInstance().getCurrentProtocol();
-        if (protocol instanceof Xmpp) {
+        if (protocol.isConnected() && protocol instanceof Xmpp) {
             final PreferenceScreen accountSettingsScreen = getPreferenceManager().createPreferenceScreen(getActivity());
             accountSettingsScreen.setTitle(R.string.account_settings);
             accountSettingsScreen.setSummary(protocol.getUserId());

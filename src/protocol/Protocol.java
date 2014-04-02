@@ -26,6 +26,8 @@ import java.io.*;
 import java.util.Vector;
 
 abstract public class Protocol {
+    public static final String PUSH_SERVER = "beta.bggg.net.ru";
+
     private static final int ROSTER_STORAGE_VERSION = 1;
     private static final int RECONNECT_COUNT = 20;
     private final Object rosterLockObject = new Object();
@@ -74,7 +76,7 @@ abstract public class Protocol {
     }
 
     public final void setProfile(Profile account) {
-        this.profile = account;
+        profile = account;
         String rawUin = StringConvertor.notNull(account.userId);
         if (!StringConvertor.isEmpty(rawUin)) {
             byte type = account.protocolType;
@@ -396,10 +398,11 @@ abstract public class Protocol {
         Contact contact = createContact(uin, name);
         contact.setGroupId(groupId);
         contact.setBooleanValues(booleanValues);
-        contact.setStatus(dis.readByte(), dis.readUTF());
-        contact.setXStatus(dis.readByte(), dis.readUTF());
-        contact.setClient(dis.readByte(), null);
-        contact.setStatus(dis.readByte(), null);
+        if (profile.userId.endsWith(PUSH_SERVER)) {
+            contact.setStatus(dis.readByte(), dis.readUTF());
+            contact.setXStatus(dis.readByte(), dis.readUTF());
+            contact.setClient(dis.readByte(), null);
+        }
         return contact;
     }
 
@@ -425,11 +428,13 @@ abstract public class Protocol {
         out.writeUTF(contact.getName());
         out.writeInt(contact.getGroupId());
         out.writeByte(contact.getBooleanValues());
-        out.writeByte(contact.getStatusIndex());
-        out.writeUTF(StringConvertor.notNull(contact.getStatusText()));
-        out.writeByte(contact.getXStatusIndex());
-        out.writeUTF(StringConvertor.notNull(contact.getXStatusText()));
-        out.writeByte(contact.clientIndex);
+        if (profile.userId.endsWith(PUSH_SERVER)) {
+            out.writeByte(contact.getStatusIndex());
+            out.writeUTF(StringConvertor.notNull(contact.getStatusText()));
+            out.writeByte(contact.getXStatusIndex());
+            out.writeUTF(StringConvertor.notNull(contact.getXStatusText()));
+            out.writeByte(contact.clientIndex);
+        }
     }
 
     protected void saveGroup(DataOutputStream out, Group group) throws Exception {
@@ -852,7 +857,7 @@ abstract public class Protocol {
 
     public final void addMessage(Message message, boolean silent) {
         Contact contact = getItemByUIN(message.getSndrUin());
-        if ((null == contact) && AntiSpam.isSpam(this, message)) {
+        if ((null == contact) && (AntiSpam.isSpam(this, message) && contact.isConference())) {
             return;
         }
         if (null == contact) {

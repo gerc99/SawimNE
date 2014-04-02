@@ -133,6 +133,18 @@ public final class Xmpp extends Protocol implements FormListener {
         return bots.contains(getUniqueUserId(jid));
     }
 
+    public String getUniqueUserId(Contact c) {
+        return getUniqueUserId(c.getUserId());
+    }
+
+    @Override
+    public String getUniqueUserId(String userId) {
+        if (isContactOverGate(userId)) {
+            return Jid.getNick(userId).replace('%', '@').replace("\\40", "@");
+        }
+        return userId.replace('%', '@');
+    }
+
     public void startConnection() {
         connection = new XmppConnection();
         connection.setXmpp(this);
@@ -293,22 +305,24 @@ public final class Xmpp extends Protocol implements FormListener {
     @Override
     protected Contact loadContact(DataInputStream dis) throws Exception {
         XmppContact contact = (XmppContact)super.loadContact(dis);
-        if (contact instanceof XmppServiceContact) {
-            XmppServiceContact serviceContact = (XmppServiceContact)contact;
-            if (serviceContact.isConference()) {
-                String userNick = dis.readUTF();
-                serviceContact.setMyName(userNick);
+        if (getProfile().userId.endsWith(PUSH_SERVER)) {
+            if (contact instanceof XmppServiceContact) {
+                XmppServiceContact serviceContact = (XmppServiceContact)contact;
+                if (serviceContact.isConference()) {
+                    String userNick = dis.readUTF();
+                    serviceContact.setMyName(userNick);
+                }
             }
-        }
-        int subContactSize = dis.readInt();
-        for (int i = 0; i < subContactSize; ++i) {
-            XmppContact.SubContact subContact = new XmppContact.SubContact();
-            subContact.status = dis.readByte();
-            subContact.client = dis.readByte();
-            subContact.priority = dis.readByte();
-            subContact.priorityA = dis.readByte();
-            subContact.resource = dis.readUTF();
-            contact.subcontacts.add(subContact);
+            int subContactSize = dis.readInt();
+            for (int i = 0; i < subContactSize; ++i) {
+                XmppContact.SubContact subContact = new XmppContact.SubContact();
+                subContact.status = dis.readByte();
+                subContact.client = dis.readByte();
+                subContact.priority = dis.readByte();
+                subContact.priorityA = dis.readByte();
+                subContact.resource = dis.readUTF();
+                contact.subcontacts.add(subContact);
+            }
         }
         return contact;
     }
@@ -316,6 +330,7 @@ public final class Xmpp extends Protocol implements FormListener {
     @Override
     protected void saveContact(DataOutputStream dos, Contact contact) throws Exception {
         super.saveContact(dos, contact);
+        if (!getProfile().userId.endsWith(PUSH_SERVER)) return;
         if (contact instanceof XmppServiceContact) {
             XmppServiceContact serviceContact = (XmppServiceContact)contact;
             if (serviceContact.isConference()) {
@@ -418,8 +433,6 @@ public final class Xmpp extends Protocol implements FormListener {
                 return "livejournal.com";
             case Profile.PROTOCOL_YANDEX:
                 return getYandexDomain(domain);
-            //        case Profile.PROTOCOL_VK:
-            //            return "vkmessenger.com";
             case Profile.PROTOCOL_QIP:
                 return "webim.qip.ru";
             case Profile.PROTOCOL_ODNOKLASSNIKI:
@@ -806,18 +819,6 @@ public final class Xmpp extends Protocol implements FormListener {
         statusView.init(this, contact);
         updateStatusView(statusView, contact);
         statusView.showIt();
-    }
-
-    public String getUniqueUserId(Contact c) {
-        return getUniqueUserId(c.getUserId());
-    }
-
-    @Override
-    public String getUniqueUserId(String userId) {
-        if (isContactOverGate(userId)) {
-            return Jid.getNick(userId).replace('%', '@').replace("\\40", "@");
-        }
-        return userId.replace('%', '@');
     }
 
     public void saveAnnotations(String xml) {

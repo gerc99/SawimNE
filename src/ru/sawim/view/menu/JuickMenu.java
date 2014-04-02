@@ -68,7 +68,7 @@ public class JuickMenu implements DialogInterface.OnClickListener {
     }
 
     public void onClick(DialogInterface dialog, int which) {
-        if (currentContact.equals(JUBO)) {
+        if (currentContact.startsWith(JUBO)) {
             ChatView chatView = (ChatView) activity.getSupportFragmentManager()
                     .findFragmentById(R.id.chat_fragment);
             if (chatView == null) {
@@ -121,7 +121,7 @@ public class JuickMenu implements DialogInterface.OnClickListener {
                     textToInser = text;
                     break;
                 case 1:
-                    if (currentContact.equals(PSTO))
+                    if (currentContact.startsWith(PSTO))
                         textToInser = "P " + text;
                     else
                         textToInser = "PM " + text;

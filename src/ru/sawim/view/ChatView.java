@@ -463,6 +463,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
                 DrawerLayout.LOCK_MODE_UNLOCKED : DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
         setPosition(unreadMessageCount);
+        chatListView.setFastScrollEnabled(true);
     }
 
     @Override

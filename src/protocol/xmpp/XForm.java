@@ -242,7 +242,10 @@ final class XForm {
     }
 
     private void addInfo(String title, String instructions) {
-        form.addString(title, instructions);
+        form.setCaption(title);
+        if (StringConvertor.isEmpty(instructions)) {
+            form.addString(instructions);
+        }
     }
 
     private void addField(String name, String type, String label, String value) {
@@ -259,7 +262,6 @@ final class XForm {
             form.addTextField(num, label, value);
 
         } else if (S_TEXT_MULTI.equals(type)) {
-            //int size = Math.max(2 * 1024, value.length());
             form.addTextField(num, label, value);
 
         } else if (S_TEXT_PRIVATE.equals(type)) {
@@ -272,7 +274,6 @@ final class XForm {
             form.addTextField(num, label, value);
 
         } else if (S_JID_MULTI.equals(type)) {
-            int size = Math.max(2 * 1024, value.length());
             form.addTextField(num, label, value);
 
         } else if ("".equals(type)) {

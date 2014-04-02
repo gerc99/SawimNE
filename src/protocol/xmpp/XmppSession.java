@@ -7,6 +7,8 @@ import android.util.Log;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+import ru.sawim.SawimException;
+import ru.sawim.comm.StringConvertor;
 
 import java.io.IOException;
 
@@ -83,13 +85,20 @@ public class XmppSession {
     }
 
     public void enable() {
-        if (regid != null && regid.length() > 0) {
+        if (!StringConvertor.isEmpty(regid)) {
             connection.putPacketIntoQueue("<iq type='set'>" +
                     "<register xmlns='http://sawim.ru/notifications#gcm' regid='" + regid + "' /></iq>");
         }
     }
 
     public void clear() {
+        if (!StringConvertor.isEmpty(regid)) {
+            try {
+                connection.writePacket("<iq type='set'>" +
+                        "<unregister xmlns='http://sawim.ru/notifications#gcm'/></iq>");
+            } catch (SawimException ignored) {
+            }
+        }
         _editor.putBoolean("Enabled", false);
         _editor.putLong("PacketsIn", 0);
         _editor.putLong("PacketsOut", 0);

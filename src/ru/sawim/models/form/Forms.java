@@ -247,7 +247,7 @@ public class Forms {
     }
 
     public void addString(String text) {
-        addString(-1, text);
+        addString(text, null);
     }
 
     public void addString_(int controlId, String text) {

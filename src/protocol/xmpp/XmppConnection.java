@@ -285,7 +285,7 @@ public final class XmppConnection extends ClientConnection {
         write(StringConvertor.stringToByteArrayUtf8(xml));
     }
 
-    private void writePacket(String packet) throws SawimException {
+    void writePacket(String packet) throws SawimException {
         write(packet);
     }
 
@@ -2259,7 +2259,7 @@ public final class XmppConnection extends ClientConnection {
 
     public void getBookmarks() {
         putPacketIntoQueue("<iq type='get' id='0'><query xmlns='jabber:iq:private'><storage xmlns='storage:bookmarks'/></query></iq>");
-
+        //putPacketIntoQueue("<iq type='get' to='jabber.ru@xmpp.beta.bggg.net.ru' id='0'><query xmlns='jabber:iq:private'><storage xmlns='storage:bookmarks'/></query></iq>");
         if (xep0048) {
             putPacketIntoQueue("<iq type='get' id='1'><pubsub xmlns='http://jabber.org/protocol/pubsub'><items node='storage:bookmarks'/></pubsub></iq>");
         }

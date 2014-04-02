@@ -47,9 +47,9 @@ public class TextFormatter {
         SpannableStringBuilder builder = new SpannableStringBuilder(text);
         if (contact != null) {
             String userId = contact.getProtocol().getUniqueUserId(contact);
-            if (userId.equals(JuickMenu.JUICK) || userId.equals(JuickMenu.JUBO)) {
+            if (userId.startsWith(JuickMenu.JUICK) || userId.startsWith(JuickMenu.JUBO)) {
                 getTextWithLinks(builder, linkColor, JuickMenu.MODE_JUICK);
-            } else if (userId.equals(JuickMenu.PSTO) || userId.equals(JuickMenu.POINT)) {
+            } else if (userId.startsWith(JuickMenu.PSTO) || userId.startsWith(JuickMenu.POINT)) {
                 getTextWithLinks(builder, linkColor, JuickMenu.MODE_PSTO);
             }
         }

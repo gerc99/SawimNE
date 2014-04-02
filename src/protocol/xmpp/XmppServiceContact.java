@@ -75,9 +75,7 @@ public class XmppServiceContact extends XmppContact {
                 return 3;
         }
         return 0;
-    }
-
-    ;
+    };
 
     public boolean isAutoJoin() {
         return autojoin;
