@@ -14,7 +14,7 @@ public abstract class ClientConnection implements Runnable {
     private long keepAliveInterv;
     private boolean usePong;
     protected boolean connect;
-    private Vector messages = new Vector();
+    private Vector<PlainMessage> messages = new Vector<PlainMessage>();
 
     private long nextPingTime;
     private long pongTime;
@@ -134,7 +134,7 @@ public abstract class ClientConnection implements Runnable {
     public final boolean isMessageExist(long msgId) {
         if (-1 < msgId) {
             for (int i = 0; i < messages.size(); ++i) {
-                PlainMessage m = (PlainMessage) messages.elementAt(i);
+                PlainMessage m = messages.elementAt(i);
                 if (m.getMessageId() == msgId) {
                     return true;
                 }
@@ -146,7 +146,7 @@ public abstract class ClientConnection implements Runnable {
     public final void markMessageSended(long msgId, byte status) {
         PlainMessage msg = null;
         for (int i = 0; i < messages.size(); ++i) {
-            PlainMessage m = (PlainMessage) messages.elementAt(i);
+            PlainMessage m = messages.elementAt(i);
             if (m.getMessageId() == msgId) {
                 msg = m;
                 break;
@@ -160,7 +160,7 @@ public abstract class ClientConnection implements Runnable {
         }
         long date = SawimApplication.getCurrentGmtTime() - 5 * 60;
         for (int i = messages.size() - 1; i >= 0; --i) {
-            PlainMessage m = (PlainMessage) messages.elementAt(i);
+            PlainMessage m = messages.elementAt(i);
             if (date > m.getNewDate()) {
                 messages.removeElement(m);
             }

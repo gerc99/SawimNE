@@ -52,7 +52,7 @@ public class SystemNotice extends Message {
             return reason;
         }
         if (SYS_NOTICE_AUTHREQ == getSysnoteType()) {
-            text = getSndrUin() + JLocale.getString(R.string.wantsyourauth);
+            text = getSndrUin() + " " + JLocale.getString(R.string.wantsyourauth);
         }
         if (StringConvertor.isEmpty(text)) {
             return reason;
