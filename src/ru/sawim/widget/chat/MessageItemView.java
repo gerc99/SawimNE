@@ -66,15 +66,11 @@ public class MessageItemView extends View {
     }
 
     public void makeLayout(int specSize) {
-        layout = layoutHolder.get(text.toString());
-        if (layout == null) {
-            if (specSize <= 0) return;
-            try {
-                layout = new StaticLayout(text, textPaint, specSize, Layout.Alignment.ALIGN_NORMAL, 1.0F, 0.0F, false);
-            } catch (ArrayIndexOutOfBoundsException e) {
-                layout = new StaticLayout(text.toString(), textPaint, specSize, Layout.Alignment.ALIGN_NORMAL, 1.0F, 0.0F, false);
-            }
-            layoutHolder.put(text.toString(), layout);
+        if (specSize <= 0) return;
+        try {
+            layout = new StaticLayout(text, textPaint, specSize, Layout.Alignment.ALIGN_NORMAL, 1.0F, 0.0F, false);
+        } catch (ArrayIndexOutOfBoundsException e) {
+            layout = new StaticLayout(text.toString(), textPaint, specSize, Layout.Alignment.ALIGN_NORMAL, 1.0F, 0.0F, false);
         }
     }
 
@@ -83,7 +79,18 @@ public class MessageItemView extends View {
         boolean isAddTitleView = nickText != null;
         int width = MeasureSpec.getSize(widthMeasureSpec);
         int height = isAddTitleView ? measureHeight(heightMeasureSpec) : getPaddingTop() + getPaddingBottom();
-        makeLayout(width - getPaddingRight() - getPaddingLeft());
+        int layoutWidth = width - getPaddingRight() - getPaddingLeft();
+        layout = layoutHolder.get(text.toString());
+        if (layout == null) {
+            makeLayout(layoutWidth);
+            layoutHolder.put(text.toString(), layout);
+        } else {
+            if (layout.getWidth() != layoutWidth) {
+                layoutHolder.clear();
+                makeLayout(layoutWidth);
+                layoutHolder.put(text.toString(), layout);
+            }
+        }
         titleHeight = isAddTitleView ? height - getPaddingTop() : getPaddingTop();
         if (layout != null)
             height += layout.getLineTop(layout.getLineCount());
