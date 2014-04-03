@@ -62,6 +62,7 @@ public final class Xmpp extends Protocol implements FormListener {
             StatusInfo.STATUS_DND
     };
 
+
     private static final byte[] statusesOther = {
             StatusInfo.STATUS_OFFLINE,
             StatusInfo.STATUS_CHAT,
@@ -190,6 +191,9 @@ public final class Xmpp extends Protocol implements FormListener {
         XmppConnection c = connection;
         connection = null;
         if (null != c) {
+            if (c.isSessionManagementEnabled()) {
+                setStatusesOffline();
+            }
             c.disconnect();
         }
     }

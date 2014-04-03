@@ -30,7 +30,6 @@ abstract public class Protocol {
     private static final int RECONNECT_COUNT = 20;
 
     public static final String PUSH_SERVER = "beta.bggg.net.ru";
-    private boolean smEnabled = false;
 
     private final Object rosterLockObject = new Object();
     public ClientInfo clientInfo;
@@ -985,14 +984,6 @@ abstract public class Protocol {
 
     public final boolean isReconnect() {
         return isReconnect;
-    }
-
-    public boolean isSessionManagementEnabled() {
-        return smEnabled;
-    }
-
-    public void setSessionManagementEnabled(boolean flag) {
-        smEnabled = flag;
     }
 
     public final void playNotification(boolean isSound, int type) {

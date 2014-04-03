@@ -556,11 +556,11 @@ public final class XmppConnection extends ClientConnection {
     }
 
     public boolean isSessionManagementEnabled() {
-        return getProtocol().isSessionManagementEnabled();
+        return smEnabled;
     }
 
-    public void setSessionManagementEnabled(boolean smEnabled) {
-        getProtocol().setSessionManagementEnabled(smEnabled);
+    public void setSessionManagementEnabled(boolean flag) {
+        smEnabled = flag;
         session.enable();
     }
 
