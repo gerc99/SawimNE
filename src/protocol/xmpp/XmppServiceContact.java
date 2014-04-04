@@ -342,11 +342,10 @@ public class XmppServiceContact extends XmppContact {
                 contactMenu.add(Menu.NONE, ContactMenu.CONFERENCE_DISCONNECT, Menu.NONE, R.string.leave_chat);
             } else {
                 contactMenu.add(Menu.NONE, ContactMenu.CONFERENCE_CONNECT, Menu.NONE, R.string.connect);
-            }
-            if (!isOnline()) {//
                 contactMenu.add(Menu.NONE, ContactMenu.USER_MENU_USERS_LIST, Menu.NONE, R.string.list_of_users);
             }
-            contactMenu.add(Menu.NONE, ContactMenu.CONFERENCE_OPTIONS, Menu.NONE, R.string.options);
+            if (protocol.isConnected())
+                contactMenu.add(Menu.NONE, ContactMenu.CONFERENCE_OPTIONS, Menu.NONE, R.string.options);
             if (isOnline()) {
                 SubContact my = getContact(getMyName());
                 if (null != my) {

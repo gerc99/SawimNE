@@ -191,7 +191,7 @@ public final class Xmpp extends Protocol implements FormListener {
         XmppConnection c = connection;
         connection = null;
         if (null != c) {
-            if (c.isSessionManagementEnabled()) {
+            if (!c.isSessionManagementEnabled()) {
                 setStatusesOffline();
             }
             c.disconnect();
@@ -876,7 +876,7 @@ public final class Xmpp extends Protocol implements FormListener {
     }
 
     void setConferenceInfo(String jid, String description) {
-        if ((null != enterData) && enterConf.getUserId().equals(jid)) {
+        if (null != enterData && enterConf.getUserId().equals(jid)) {
             enterData.addString(R.string.description, description);
             enterData.invalidate(true);
         }
