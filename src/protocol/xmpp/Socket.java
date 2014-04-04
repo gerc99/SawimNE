@@ -65,7 +65,6 @@ final class Socket implements Runnable {
             try {
                 bRead = zIn.read(data);
             } catch (IOException e) {
-                e.printStackTrace();
             }
             if (-1 == bRead) {
                 throw new SawimException(120, 13);
@@ -156,6 +155,7 @@ final class Socket implements Runnable {
             try {
                 readObject = readObject();
             } catch (SawimException e) {
+                connected = false;
                 readObject = e;
             }
             if (null != readObject) {
