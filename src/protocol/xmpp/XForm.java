@@ -242,8 +242,10 @@ final class XForm {
     }
 
     private void addInfo(String title, String instructions) {
-        form.setCaption(title);
-        if (StringConvertor.isEmpty(instructions)) {
+        if (!StringConvertor.isEmpty(title)) {
+            form.setCaption(title);
+        }
+        if (!StringConvertor.isEmpty(instructions)) {
             form.addString(instructions);
         }
     }

@@ -28,6 +28,7 @@ import java.util.Vector;
 
 public final class Xmpp extends Protocol implements FormListener {
 
+    public final static int PRIORITY = 50;
     private XmppConnection connection;
     private Vector rejoinList = new Vector();
     private String resource;
@@ -291,11 +292,9 @@ public final class Xmpp extends Protocol implements FormListener {
         cont.finished();
     }
 
-    public final static int PRIORITY = 50;
-
     protected void s_updateOnlineStatus() {
         connection.setStatus(getProfile().statusIndex, "", PRIORITY);
-        if (isReconnect()) {
+        /*if (isReconnect()) {
             for (int i = 0; i < rejoinList.size(); ++i) {
                 String jid = (String) rejoinList.elementAt(i);
                 XmppServiceContact c = (XmppServiceContact) getItemByUIN(jid);
@@ -303,7 +302,7 @@ public final class Xmpp extends Protocol implements FormListener {
                     connection.sendPresence(c);
                 }
             }
-        }
+        }*/
     }
 
     @Override

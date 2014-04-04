@@ -51,7 +51,9 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
     @Override
     public void onDetach() {
         super.onDetach();
-        Forms.getInstance().setUpdateFormListener(null);
+        if (getFragmentManager().getBackStackEntryCount() <= 1) {
+            Forms.getInstance().setUpdateFormListener(null);
+        }
     }
 
     @Override
@@ -170,7 +172,8 @@ public class FormView extends SawimFragment implements Forms.OnUpdateForm, View.
     @Override
     public void onClick(View view) {
         if (Forms.getInstance().getFormListener() != null)
-            Forms.getInstance().getFormListener().formAction(Forms.getInstance(), view.equals(okButton));
+            Forms.getInstance().getFormListener()
+                    .formAction(Forms.getInstance(), view.equals(okButton));
         hideKeyboard();
     }
 

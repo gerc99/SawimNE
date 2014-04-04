@@ -12,6 +12,7 @@ import ru.sawim.comm.Config;
 import ru.sawim.crypto.MD5;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
+import ru.sawim.modules.AutoAbsence;
 import ru.sawim.modules.DebugLog;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.search.UserInfo;
@@ -2409,8 +2410,8 @@ public final class XmppConnection extends ClientConnection {
                 + xXml
                 + "</presence>";
         putPacketIntoQueue(xml);
-        //if (!AutoAbsence.getInstance().isChangeStatus())
-        //    setConferencesXStatus(status, msg, priority);
+        if (!AutoAbsence.getInstance().isChangeStatus())
+            setConferencesXStatus(status, msg, priority);
     }
 
     void setConferencesXStatus(String status, String msg, int priority) {

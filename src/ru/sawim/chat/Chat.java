@@ -242,10 +242,9 @@ public final class Chat {
     }
 
     public long getLastMessageTime() {
-        if (0 == getMessCount()) {
-            return 0;
-        }
-        MessData md = getMessageDataByIndex(getMessCount() - 1);
+        int count = getMessCount() - getOtherMessageCount() - 1;
+        if (getMessCount() <= 0) return 0;
+        MessData md = getMessageDataByIndex(count);
         return md.getTime();
     }
 
