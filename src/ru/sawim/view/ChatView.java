@@ -372,6 +372,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
     @Override
     public void onDetach() {
         super.onDetach();
+        MessagesAdapter.clearCache();
         sharingText = null;
         chat = null;
         oldChat = null;

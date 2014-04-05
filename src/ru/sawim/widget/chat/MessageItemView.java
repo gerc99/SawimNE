@@ -165,6 +165,10 @@ public class MessageItemView extends View {
         msgTextSize = size;
     }
 
+    public static void clearCache() {
+        layoutHolder.clear();
+    }
+
     public void repaint() {
         requestLayout();
         invalidate();

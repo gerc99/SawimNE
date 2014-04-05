@@ -63,6 +63,10 @@ public class MessagesAdapter extends BaseAdapter {
         this.position = position;
     }
 
+    public static void clearCache() {
+        MessageItemView.clearCache();
+    }
+
     @Override
     public int getCount() {
         return items.size();
