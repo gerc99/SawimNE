@@ -38,7 +38,6 @@ public class Forms {
     private OnBackPressed backPressedListener;
     private ControlStateListener controlListener;
     private String caption;
-    private static Forms instance;
     private boolean isAccept;
     private String waitingString;
     private String errorString;
@@ -62,7 +61,6 @@ public class Forms {
     }
 
     public Forms(String caption_, FormListener l, boolean isAccept) {
-        instance = this;
         caption = caption_;
         formListener = l;
         this.isAccept = isAccept;
@@ -82,10 +80,6 @@ public class Forms {
 
     public void setWaitingString(String waitingString) {
         this.waitingString = waitingString;
-    }
-
-    public static Forms getInstance() {
-        return instance;
     }
 
     public void setControlStateListener(ControlStateListener l) {
@@ -131,11 +125,11 @@ public class Forms {
     }
 
     public void show() {
-        FormView.show();
+        FormView.show(this);
     }
 
     public void preferenceFormShow() {
-        PreferenceFormView.show();
+        PreferenceFormView.show(this);
     }
 
     public void invalidate(boolean isLoad) {

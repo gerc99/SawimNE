@@ -25,21 +25,23 @@ public class PreferenceFormView extends PreferenceFragment {
 
     public static final String TAG = PreferenceFormView.class.getSimpleName();
     PreferenceScreen rootScreen;
+    private static Forms forms;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        getActivity().setTitle(Forms.getInstance().getCaption());
+        getActivity().setTitle(forms.getCaption());
         rootScreen = getPreferenceManager().createPreferenceScreen(getActivity());
         setPreferenceScreen(rootScreen);
         buildList();
         getActivity().supportInvalidateOptionsMenu();
     }
 
-    public static void show() {
+    public static void show(final Forms forms) {
         BaseActivity.getCurrentActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                PreferenceFormView.forms = forms;
                 if (SawimApplication.isManyPane())
                     BaseActivity.getCurrentActivity().setContentView(R.layout.intercalation_layout);
                 PreferenceFormView newFragment = new PreferenceFormView();
@@ -54,7 +56,7 @@ public class PreferenceFormView extends PreferenceFragment {
     @Override
     public void onResume() {
         super.onResume();
-        BaseActivity.getCurrentActivity().resetBar(Forms.getInstance().getCaption());
+        BaseActivity.getCurrentActivity().resetBar(forms.getCaption());
         BaseActivity.getCurrentActivity().getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
@@ -65,12 +67,12 @@ public class PreferenceFormView extends PreferenceFragment {
 
     public boolean hasBack() {
         hideKeyboard();
-        return Forms.getInstance().getBackPressedListener() != null && Forms.getInstance().getBackPressedListener().back();
+        return forms.getBackPressedListener() != null && forms.getBackPressedListener().back();
     }
 
     private void buildList() {
         rootScreen.removeAll();
-        List<Forms.Control> controls = Forms.getInstance().controls;
+        List<Forms.Control> controls = forms.controls;
         for (int position = 0; position < controls.size(); ++position) {
             final Forms.Control c = controls.get(position);
             if (Forms.CONTROL_TEXT == c.type) {
@@ -96,7 +98,7 @@ public class PreferenceFormView extends PreferenceFragment {
 
                     public void onTextChanged(CharSequence s, int start, int before, int count) {
                         c.text = s.toString();
-                        Forms.getInstance().controlUpdated(c);
+                        forms.controlUpdated(c);
                     }
                 });
                 rootScreen.addPreference(editTextPreference);
@@ -110,7 +112,7 @@ public class PreferenceFormView extends PreferenceFragment {
                 checkBoxPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                     public boolean onPreferenceClick(Preference preference) {
                         c.selected = !c.selected;
-                        Forms.getInstance().controlUpdated(c);
+                        forms.controlUpdated(c);
                         return true;
                     }
                 });
@@ -131,7 +133,7 @@ public class PreferenceFormView extends PreferenceFragment {
                         ListPreference listPreference = (ListPreference) preference;
                         int index = listPreference.findIndexOfValue(textValue);
                         c.current = index;
-                        Forms.getInstance().controlUpdated(c);
+                        forms.controlUpdated(c);
                         buildList();
                         return true;
                     }
@@ -146,7 +148,7 @@ public class PreferenceFormView extends PreferenceFragment {
                     @Override
                     public boolean onPreferenceChange(Preference preference, Object newValue) {
                         c.level = Integer.parseInt(newValue.toString());
-                        Forms.getInstance().controlUpdated(c);
+                        forms.controlUpdated(c);
                         return true;
                     }
                 });
@@ -167,7 +169,7 @@ public class PreferenceFormView extends PreferenceFragment {
                         seekBarPreference.getSeekBar().setProgress(c.level);
                         seekBarPreference.setTitleTextSize(c.level);
                         seekBarPreference.setTitleText(c.description + "(" + c.level + ")");
-                        Forms.getInstance().controlUpdated(c);
+                        forms.controlUpdated(c);
                         if (BaseActivity.getCurrentActivity().getConfigurationChanged() != null)
                             BaseActivity.getCurrentActivity().getConfigurationChanged().onConfigurationChanged();
                         return true;

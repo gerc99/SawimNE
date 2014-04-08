@@ -9,7 +9,6 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Environment;
 import android.os.Message;
-import android.support.v4.app.Fragment;
 import android.view.Surface;
 import android.view.WindowManager;
 import org.microemu.util.AndroidRecordStoreManager;
@@ -24,7 +23,6 @@ import ru.sawim.service.SawimServiceConnection;
 import ru.sawim.text.TextFormatter;
 
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -53,7 +51,6 @@ public class SawimApplication extends Application {
     public static boolean hideIconsClient;
     public static int autoAbsenceTime;
 
-    public static ArrayList<Fragment> fragmentsStack = new ArrayList<Fragment>();
     public static SawimApplication instance;
     public AndroidRecordStoreManager recordStoreManager;
     private final SawimServiceConnection serviceConnection = new SawimServiceConnection();
