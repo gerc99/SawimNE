@@ -65,6 +65,13 @@ public class RosterAdapter extends BaseAdapter {
         return i;
     }
 
+    @Override
+    public boolean isEnabled(int position) {
+        Object o = items.get(position);
+        if (o instanceof String) return false;
+        return super.isEnabled(position);
+    }
+
     public void putIntoQueue(Group g) {
         if (type == RosterHelper.ACTIVE_CONTACTS) return;
         if (-1 == updateQueue.indexOf(g)) {
