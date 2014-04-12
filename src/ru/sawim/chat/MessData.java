@@ -79,6 +79,10 @@ public final class MessData {
         rowData = (short) (marked ? (rowData | MARKED) : (rowData & ~MARKED));
     }
 
+    public boolean isMessage() {
+        return isPresence() && isService() && isFile();
+    }
+
     public boolean isHighLight() {
         return isHighLight;
     }
