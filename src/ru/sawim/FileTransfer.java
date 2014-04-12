@@ -49,15 +49,10 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
     private Chat chat;
     private JSR75FileSystem file;
     private Forms forms;
-    private boolean isFinish = false;
 
     public FileTransfer(Protocol p, Contact _cItem) {
         protocol = p;
         cItem = _cItem;
-    }
-
-    public void setFinish(boolean finish) {
-        this.isFinish = finish;
     }
 
     public Contact getReceiver() {
@@ -99,8 +94,14 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
                 TcpSocket.readFully(in, image, 0, image.length);
             }
             setData(image == null ? in : new ByteArrayInputStream(image), fileSize);
-            askForNameDesc();
-            showPreview(image);
+            if (Util.isImageFile(filename)) {
+                setProgress(0);
+                new Thread(this).start();
+                addProgress();
+            } else {
+                askForNameDesc();
+                showPreview(image);
+            }
         } catch (Exception e) {
             closeFile();
             handleException(new SawimException(191, 6));
@@ -149,7 +150,6 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
             }
             addProgress();
             forms.back();
-            if (isFinish) BaseActivity.getCurrentActivity().finish();
         } else {
             destroy();
         }
@@ -163,7 +163,7 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
         SawimNotification.fileProgress(getProgressText(), percent + "%", JLocale.getString(message));
         if (percent == 100) {
             RosterHelper.getInstance().removeTransfer(true);
-            //SawimNotification.clear(SawimNotification.NOTIFY_FILE_ID);
+            SawimNotification.clear(getProgressText());
         }
     }
 
@@ -231,8 +231,8 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
             SawimApplication.gc();
         } catch (Exception ignored) {
         }
-        forms.back();
-        if (isFinish) BaseActivity.getCurrentActivity().finish();
+        if (forms != null)
+            forms.back();
     }
 
     public void run() {
@@ -261,7 +261,7 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
     }
 
     private void showPreview(final byte[] image) {
-        if (image == null) return;
+        if (image == null || forms == null) return;
         new Thread(new Runnable() {
             @Override
             public void run() {

@@ -231,8 +231,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
                         }
                     }.show(getFragmentManager().beginTransaction(), "auth");
                 } else {
-                    forceGoToChat(ChatHistory.instance.getPreferredItem());
-                    updateRoster();
+                    forceGoToChat(ChatHistory.instance.chatAt(ChatHistory.instance.getPreferredItem()));
                 }
             }
         });
@@ -518,14 +517,14 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         } else ChatHistory.instance.unregisterChat(chat);
     }
 
-    private void forceGoToChat(int position) {
-        Chat current = ChatHistory.instance.chatAt(position);
+    private void forceGoToChat(Chat current) {
         if (current == null) return;
         pause(chat);
         chatListView.stopScroll();
         openChat(current.getProtocol(), current.getContact());
         resume(current);
         getActivity().supportInvalidateOptionsMenu();
+        updateRoster();
     }
 
     public void initChat(Protocol p, Contact c) {
@@ -582,12 +581,8 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
                             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                                 Object o = parent.getAdapter().getItem(position);
                                 if (o instanceof Chat) {
-                                    Chat current = (Chat) o;
-                                    pause(chat);
-                                    openChat(current.getProtocol(), current.getContact());
-                                    resume(current);
+                                    forceGoToChat((Chat) o);
                                     dismiss();
-                                    updateRoster();
                                 }
                             }
                         });

@@ -543,11 +543,11 @@ abstract public class Protocol {
 
     public void disconnect(boolean user) {
         setConnectingProgress(-1);
-        closeConnection();
         if (user) {
             userCloseConnection();
-            setStatusesOffline();
         }
+        setStatusesOffline();
+        closeConnection();
         RosterHelper.getInstance().updateBarProtocols();
         RosterHelper.getInstance().updateProgressBar();
         RosterHelper.getInstance().updateRoster();
@@ -630,7 +630,7 @@ abstract public class Protocol {
         }
     }
 
-    protected final void setStatusesOffline() {
+    protected void setStatusesOffline() {
         for (int i = roster.getContactItems().size() - 1; i >= 0; --i) {
             Contact c = roster.getContactItems().elementAt(i);
             c.setOfflineStatus();

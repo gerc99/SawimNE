@@ -88,6 +88,30 @@ public class SawimNotification {
         mng.notify(id, builder.build());
     }
 
+    public static void captcha(String title) {
+        Context context = SawimApplication.getContext();
+        Intent intent = new Intent(context, SawimActivity.class);
+        intent.setAction(SawimActivity.NOTIFY_CAPTCHA);
+        intent.addCategory(Intent.CATEGORY_LAUNCHER);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.putExtra(SawimActivity.NOTIFY_CAPTCHA, title);
+        PendingIntent contentIntent = PendingIntent.getActivity(context, 0, intent, 0);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
+        builder.setContentIntent(contentIntent);
+        builder.setOngoing(false);
+        builder.setContentTitle(title);
+        builder.setTicker(JLocale.getString(R.string.captcha));
+        builder.setContentText(JLocale.getString(R.string.captcha));
+        builder.setSmallIcon(android.R.drawable.stat_notify_more);
+        builder.setAutoCancel(true);
+        NotificationManager mng = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        int id = title.hashCode();
+        if (idsMap.containsKey(title))
+            id = idsMap.get(title);
+        else idsMap.put(title, id);
+        mng.notify(id, builder.build());
+    }
+
     /*public static void sendNotify(Context context, final String title, final String text) {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         long when = 0;
@@ -129,6 +153,7 @@ public class SawimNotification {
     }*/
 
     public static void clear(String id) {
+        if (idsMap.get(id) == null) return;
         NotificationManager notificationManager = (NotificationManager) SawimApplication.getContext().getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancel(idsMap.get(id));
         idsMap.remove(id);

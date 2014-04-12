@@ -21,9 +21,7 @@ public class SendToActivity extends BaseActivity {
     public void onCreate(Bundle savedInstanceState) {
         setTheme(Scheme.isBlack() ? R.style.BaseTheme : R.style.BaseThemeLight);
         super.onCreate(savedInstanceState);
-
-        setVolumeControlStream(AudioManager.STREAM_MUSIC);
-        setContentView(R.layout.intercalation_layout);
+        setContentView(R.layout.main);
 
         if (findViewById(R.id.fragment_container) != null) {
             if (savedInstanceState != null) {
@@ -34,17 +32,6 @@ public class SendToActivity extends BaseActivity {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.fragment_container, rosterView, SendToView.TAG).commit();
         }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        FormView.showLastWindow();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
     }
 
     @Override

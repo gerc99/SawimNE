@@ -27,12 +27,7 @@ public class AccountsListActivity extends BaseActivity implements XmppRegistrati
     public void onCreate(Bundle savedInstanceState) {
         setTheme(Scheme.isBlack() ? R.style.BaseTheme : R.style.BaseThemeLight);
         super.onCreate(savedInstanceState);
-        setVolumeControlStream(AudioManager.STREAM_MUSIC);
-        if (BaseActivity.getCurrentActivity().getSupportFragmentManager()
-                .findFragmentById(R.id.chat_fragment) != null)
-            setContentView(R.layout.intercalation_layout);
-        else
-            setContentView(SawimApplication.isManyPane() ? R.layout.main_twopane : R.layout.main);
+        setContentView(R.layout.main);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(true);
         getSupportActionBar().setDisplayUseLogoEnabled(true);

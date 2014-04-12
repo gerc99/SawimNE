@@ -344,7 +344,6 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
                 BaseActivity.getCurrentActivity().supportInvalidateOptionsMenu();
             }
         }
-        FormView.showLastWindow();
     }
 
     public RosterAdapter getRosterAdapter() {

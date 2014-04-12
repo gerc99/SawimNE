@@ -242,8 +242,8 @@ public final class Chat {
     }
 
     public long getLastMessageTime() {
-        int count = getMessCount() - getOtherMessageCount() - 1;
-        if (getMessCount() <= 0) return 0;
+        int count = getMessCount() - getPresenceMessageCounter() - 1;
+        if (count < 0) return 0;
         MessData md = getMessageDataByIndex(count);
         return md.getTime();
     }
@@ -251,6 +251,7 @@ public final class Chat {
     public int typeNewMessageIcon = Message.ICON_NONE;
     private short messageCounter = 0;
     private short otherMessageCounter = 0;
+    private short presenceMessageCounter = 0;
     private byte sysNoticeCounter = 0;
     private byte authRequestCounter = 0;
 
@@ -265,12 +266,14 @@ public final class Chat {
 
     public void resetUnreadMessages() {
         typeNewMessageIcon = Message.ICON_NONE;
-        boolean notEmpty = (0 < messageCounter)
-                || (0 < otherMessageCounter)
-                || (0 < sysNoticeCounter);
+        boolean notEmpty = 0 < messageCounter
+                || 0 < otherMessageCounter
+                || 0 < sysNoticeCounter
+                || 0 < presenceMessageCounter;
         messageCounter = 0;
         otherMessageCounter = 0;
         sysNoticeCounter = 0;
+        presenceMessageCounter = 0;
         if (notEmpty) {
             contact.updateChatState(this);
             protocol.markMessages(contact);
@@ -279,7 +282,7 @@ public final class Chat {
 
     public int getUnreadMessageCount() {
         return messageCounter + sysNoticeCounter + authRequestCounter
-                + otherMessageCounter;
+                + otherMessageCounter + presenceMessageCounter;
     }
 
     public int getPersonalUnreadMessageCount() {
@@ -288,11 +291,15 @@ public final class Chat {
 
     public int getOtherMessageCount() {
         return sysNoticeCounter + authRequestCounter
-                + otherMessageCounter;
+                + otherMessageCounter + presenceMessageCounter;
     }
 
     public int getAuthRequestCounter() {
         return authRequestCounter;
+    }
+
+    public int getPresenceMessageCounter() {
+        return presenceMessageCounter;
     }
 
     public final int getNewMessageIcon() {
@@ -395,6 +402,7 @@ public final class Chat {
             contact.updateChatState(this);
             ChatHistory.instance.updateChatList();
         }
+        presenceMessageCounter++;
     }
 
     public void addMessage(Message message, boolean toHistory, boolean isHighlight) {

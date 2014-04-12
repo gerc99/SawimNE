@@ -192,10 +192,13 @@ public final class Xmpp extends Protocol implements FormListener {
         XmppConnection c = connection;
         connection = null;
         if (null != c) {
-            if (!c.isSessionManagementEnabled()) {
-                setStatusesOffline();
-            }
             c.disconnect();
+        }
+    }
+
+    protected void setStatusesOffline() {
+        if (connection != null && !connection.isSessionManagementEnabled()) {
+            super.setStatusesOffline();
         }
     }
 

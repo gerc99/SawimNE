@@ -32,7 +32,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
+import android.support.v4.app.NavUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
@@ -57,6 +57,7 @@ public class SawimActivity extends BaseActivity {
     public static final String LOG_TAG = SawimActivity.class.getSimpleName();
     public static final String NOTIFY = "ru.sawim.notify";
     public static final String NOTIFY_REPLY = "ru.sawim.notify.reply";
+    public static final String NOTIFY_CAPTCHA = "ru.sawim.notify.captcha";
     private boolean isOpenNewChat = false;
 
     public static ExternalApi externalApi = new ExternalApi();
@@ -66,7 +67,6 @@ public class SawimActivity extends BaseActivity {
         setTheme(Scheme.isBlack() ? R.style.BaseTheme : R.style.BaseThemeLight);
         super.onCreate(savedInstanceState);
         supportRequestWindowFeature(Window.FEATURE_PROGRESS);
-        setVolumeControlStream(AudioManager.STREAM_MUSIC);
         setContentView(SawimApplication.isManyPane() ? R.layout.main_twopane : R.layout.main);
 
         if (savedInstanceState == null && !SawimApplication.isManyPane()) {
@@ -94,6 +94,9 @@ public class SawimActivity extends BaseActivity {
             Chat current = ChatHistory.instance.chatAt(ChatHistory.instance.getPreferredItem());
             if (current != null)
                 isOpenNewChat = openChat(current.getProtocol(), current.getContact(), true);
+        }
+        if (NOTIFY_CAPTCHA.equals(getIntent().getAction())) {
+            FormView.showWindows(getIntent().getStringExtra(NOTIFY_CAPTCHA));
         }
         setIntent(null);
     }
@@ -155,7 +158,7 @@ public class SawimActivity extends BaseActivity {
         if (RosterHelper.getInstance().getProtocolCount() == 0) {
             FragmentTransaction transaction = fragmentManager.beginTransaction();
             if (SawimApplication.isManyPane()) {
-                setContentView(R.layout.intercalation_layout);
+                setContentView(R.layout.main);
                 if (startWindowView == null) {
                     StartWindowView newFragment = new StartWindowView();
                     transaction.replace(R.id.fragment_container, newFragment, StartWindowView.TAG);

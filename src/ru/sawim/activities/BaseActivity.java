@@ -1,6 +1,7 @@
 package ru.sawim.activities;
 
 import android.content.res.Configuration;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
@@ -23,6 +24,7 @@ public class BaseActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         currentActivity = this;
         super.onCreate(savedInstanceState);
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
     }
 
     @Override

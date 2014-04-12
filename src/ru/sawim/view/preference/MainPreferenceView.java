@@ -38,7 +38,7 @@ public class MainPreferenceView extends PreferenceFragment {
             @Override
             public void run() {
                 if (SawimApplication.isManyPane())
-                    BaseActivity.getCurrentActivity().setContentView(R.layout.intercalation_layout);
+                    BaseActivity.getCurrentActivity().setContentView(R.layout.main);
                 MainPreferenceView newFragment = new MainPreferenceView();
                 FragmentTransaction transaction = BaseActivity.getCurrentActivity().getSupportFragmentManager().beginTransaction();
                 transaction.replace(R.id.fragment_container, newFragment, MainPreferenceView.TAG);

@@ -43,7 +43,7 @@ public class PreferenceFormView extends PreferenceFragment {
             public void run() {
                 PreferenceFormView.forms = forms;
                 if (SawimApplication.isManyPane())
-                    BaseActivity.getCurrentActivity().setContentView(R.layout.intercalation_layout);
+                    BaseActivity.getCurrentActivity().setContentView(R.layout.main);
                 PreferenceFormView newFragment = new PreferenceFormView();
                 FragmentTransaction transaction = BaseActivity.getCurrentActivity().getSupportFragmentManager().beginTransaction();
                 transaction.replace(R.id.fragment_container, newFragment, PreferenceFormView.TAG);

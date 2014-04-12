@@ -111,7 +111,7 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
 
     public static void show() {
         if (SawimApplication.isManyPane())
-            BaseActivity.getCurrentActivity().setContentView(R.layout.intercalation_layout);
+            BaseActivity.getCurrentActivity().setContentView(R.layout.main);
         VirtualListView newFragment = new VirtualListView();
         FragmentTransaction transaction = BaseActivity.getCurrentActivity().getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment_container, newFragment, VirtualListView.TAG);

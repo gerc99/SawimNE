@@ -1,37 +1,28 @@
 package ru.sawim.view;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
-import protocol.ContactMenu;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
+import ru.sawim.SawimNotification;
 import ru.sawim.Scheme;
 import ru.sawim.activities.BaseActivity;
-import ru.sawim.activities.SawimActivity;
-import ru.sawim.chat.Chat;
 import ru.sawim.models.form.Forms;
-import ru.sawim.util.JLocale;
-import ru.sawim.widget.MyListView;
 import ru.sawim.widget.MySpinner;
 import ru.sawim.widget.Util;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -51,8 +42,12 @@ public class FormView extends DialogFragment implements Forms.OnUpdateForm, View
     private Button okButton;
     private Button cancelButton;
     private int padding;
-    private static ArrayList<FormView> fragmentsStack = new ArrayList<FormView>();
-    private static ArrayList<Forms> forms = new ArrayList<Forms>();
+    private Forms forms;
+    private static HashMap<String, Forms> formsMap = new HashMap<String, Forms>();
+
+    public FormView(Forms forms) {
+        this.forms = forms;
+    }
 
     @Override
     public void onAttach(Activity a) {
@@ -64,11 +59,12 @@ public class FormView extends DialogFragment implements Forms.OnUpdateForm, View
     public void onDetach() {
         super.onDetach();
         getLastForms().setUpdateFormListener(null);
-        forms.remove(forms.size() - 1);
+        formsMap.remove(formsMap.size() - 1);
+        SawimNotification.clear(getLastForms().getCaption());
     }
 
-    private static Forms getLastForms() {
-         return forms.get(forms.size() - 1);
+    private Forms getLastForms() {
+         return forms;
     }
 
     @Override
@@ -85,39 +81,40 @@ public class FormView extends DialogFragment implements Forms.OnUpdateForm, View
 
         okButton = (Button) v.findViewById(R.id.data_form_ok);
         okButton.setOnClickListener(this);
-        buildList();
         cancelButton = (Button) v.findViewById(R.id.data_form_cancel);
         cancelButton.setOnClickListener(this);
         getActivity().supportInvalidateOptionsMenu();
+        buildList();
         updateForm(false);
         return v;
     }
 
-    public static void show(final Forms forms) {
+    public static void show(final Forms f) {
         BaseActivity.getCurrentActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                final FormView formView = new FormView();
-                formView.forms.add(forms);
+                formsMap.put(f.getCaption(), f);
                 if (BaseActivity.getCurrentActivity().isFinishing()) {
-                    fragmentsStack.add(formView);
+                    SawimNotification.captcha(f.getCaption());
                 } else {
-                    show(formView);
+                    new FormView(f).show(BaseActivity.getCurrentActivity()
+                            .getSupportFragmentManager().beginTransaction(), "form");
                 }
             }
         });
     }
 
-    public static void showLastWindow() {
-        int fragmentsStackCount = fragmentsStack.size();
-        if (fragmentsStackCount > 0) {
-            show(fragmentsStack.get(fragmentsStackCount - 1));
-            fragmentsStack.remove(fragmentsStackCount - 1);
-        }
-    }
-
-    private static void show(FormView formView) {
-        formView.show(BaseActivity.getCurrentActivity().getSupportFragmentManager().beginTransaction(), "form");
+    public static void showWindows(final String title) {
+        BaseActivity.getCurrentActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (!BaseActivity.getCurrentActivity().isFinishing()) {
+                    FormView formView = new FormView(formsMap.get(title));
+                    formView.show(BaseActivity.getCurrentActivity()
+                            .getSupportFragmentManager().beginTransaction(), "form");
+                }
+            }
+        });
     }
 
     @Override
