@@ -38,6 +38,7 @@ public class XmppServiceContact extends XmppContact {
     private String password;
     private String myNick;
     private String baseMyNick;
+    private String subject;
 
     public XmppServiceContact(String jid, String name) {
         super(jid, name);
@@ -308,8 +309,13 @@ public class XmppServiceContact extends XmppContact {
     public void setSubject(String subject) {
         XmppContact.SubContact c = getContact(getMyName());
         if (isConference && isOnline()) {
+            this.subject = subject;
             setStatus(c.status, subject);
         }
+    }
+
+    public String getSubject() {
+        return subject;
     }
 
     public XmppContact.SubContact getContact(String nick) {

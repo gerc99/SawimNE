@@ -1648,32 +1648,26 @@ public final class XmppConnection extends ClientConnection {
             }
 
             if (c instanceof XmppServiceContact) {
-                isConference = c.isConference();
+                XmppServiceContact conference = (XmppServiceContact) c;
+                isConference = conference.isConference();
                 XmlNode xMuc = msg.getXNode("http://jabber.org/protocol/muc#user");
                 if (null != xMuc) {
                     int code = Util.strToIntDef(xMuc.getFirstNodeAttribute(S_STATUS, S_CODE), 0);
                     if (code == 100) {
-                        boolean prevWarning = ((XmppServiceContact) c).warning;
-                        ((XmppServiceContact) c).warning = true;
-                        if (prevWarning == ((XmppServiceContact) c).warning) {
-                            prevWarning = true;
+                        boolean prevWarning = conference.warning;
+                        conference.warning = true;
+                        if (prevWarning == conference.warning) {
                             return;
                         }
                     }
                 }
                 if ((null != subject) && isConference && isGroupchat) {
-                    String prevSubject = StringConvertor.notNull(c.getStatusText());
-                    ((XmppServiceContact) c).setSubject(subject);
-                    getXmpp().ui_changeContactStatus(c);
-                    if (prevSubject.equals(subject)) {
-                        prevSubject = null;
-                    }
-                    subject = null;
+                    String prevSubject = StringConvertor.notNull(conference.getSubject());
+                    conference.setSubject(subject);
+                    getXmpp().ui_changeContactStatus(conference);
                     fromRes = null;
-                    if (StringConvertor.isEmpty(prevSubject) && !c.hasUnreadMessage()) {
-                        if (!(c.hasChat() && protocol.getChat(c).isVisibleChat())) {
-                            return;
-                        }
+                    if (prevSubject.equals(subject)) {
+                        return;
                     }
                 }
             }

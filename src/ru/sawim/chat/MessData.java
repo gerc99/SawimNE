@@ -80,7 +80,7 @@ public final class MessData {
     }
 
     public boolean isMessage() {
-        return isPresence() && isService() && isFile();
+        return !(isPresence() || isService() || isFile());
     }
 
     public boolean isHighLight() {
