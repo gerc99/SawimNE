@@ -198,7 +198,7 @@ public final class Chat {
     }
 
     public HistoryStorage getHistory() {
-        if ((null == history) && hasHistory()) {
+        if (null == history && hasHistory()) {
             history = HistoryStorage.getHistory(contact);
         }
         return history;
@@ -323,15 +323,12 @@ public final class Chat {
     }
 
     private void addToHistory(String msg, boolean incoming, String nick, long time) {
-        if (hasHistory()) {
+        if (getHistory() != null) {
             getHistory().addText(msg, incoming, nick, time);
         }
     }
 
     public void addTextToHistory(MessData md) {
-        if (!hasHistory()) {
-            return;
-        }
         if ((null == md) || (null == md.getText())) {
             return;
         }

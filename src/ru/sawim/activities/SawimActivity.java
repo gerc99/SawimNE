@@ -27,12 +27,10 @@ package ru.sawim.activities;
 
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.NavUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;

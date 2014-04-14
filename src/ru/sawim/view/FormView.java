@@ -11,6 +11,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
 import ru.sawim.R;
@@ -71,6 +72,7 @@ public class FormView extends DialogFragment implements Forms.OnUpdateForm, View
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         getDialog().setTitle(getLastForms().getCaption());
+        getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         getDialog().setCanceledOnTouchOutside(false);
         View v = inflater.inflate(R.layout.form, container, false);
         textView = (TextView) v.findViewById(R.id.textView);
@@ -90,18 +92,22 @@ public class FormView extends DialogFragment implements Forms.OnUpdateForm, View
     }
 
     public static void show(final Forms f) {
-        BaseActivity.getCurrentActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                formsMap.put(f.getCaption(), f);
-                if (BaseActivity.getCurrentActivity().isFinishing()) {
-                    SawimNotification.captcha(f.getCaption());
-                } else {
-                    new FormView(f).show(BaseActivity.getCurrentActivity()
-                            .getSupportFragmentManager().beginTransaction(), "form");
+        formsMap.put(f.getCaption(), f);
+        if (BaseActivity.getCurrentActivity() == null) {
+            SawimNotification.captcha(f.getCaption());
+        } else {
+            BaseActivity.getCurrentActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (BaseActivity.getCurrentActivity().isFinishing()) {
+                        SawimNotification.captcha(f.getCaption());
+                    } else {
+                        new FormView(f).show(BaseActivity.getCurrentActivity()
+                                .getSupportFragmentManager().beginTransaction(), "form");
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 
     public static void showWindows(final String title) {
