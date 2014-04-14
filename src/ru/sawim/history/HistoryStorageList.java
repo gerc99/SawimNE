@@ -51,8 +51,8 @@ public final class HistoryStorageList implements Runnable, FormListener {
             }
 
             @Override
-            public void onContextItemSelected(int listItem, int itemMenuId) {
-                select(itemMenuId, listItem);
+            public void onContextItemSelected(BaseActivity activity, int listItem, int itemMenuId) {
+                select(activity, itemMenuId, listItem);
             }
         });
         allMsg.setBuildOptionsMenu(new VirtualList.OnBuildOptionsMenu() {
@@ -65,13 +65,13 @@ public final class HistoryStorageList implements Runnable, FormListener {
             }
 
             @Override
-            public void onOptionsItemSelected(MenuItem item) {
-                select(item.getItemId(), 0);
+            public void onOptionsItemSelected(BaseActivity activity, MenuItem item) {
+                select(activity, item.getItemId(), 0);
             }
         });
         allMsg.setClickListListener(new VirtualList.OnClickListListener() {
             @Override
-            public void itemSelected(int position) {
+            public void itemSelected(BaseActivity activity, int position) {
             }
 
             @Override
@@ -134,7 +134,7 @@ public final class HistoryStorageList implements Runnable, FormListener {
         }
     }
 
-    private void select(int action, int currItem) {
+    private void select(BaseActivity activity, int action, int currItem) {
         switch (action) {
             case MENU_FIND:
                 if (null == frmFind) {
@@ -144,7 +144,7 @@ public final class HistoryStorageList implements Runnable, FormListener {
                     frmFind.addCheckBox(find_case_sensitiv, R.string.find_case_sensitiv, false);
                 }
                 frmFind.remove(NOT_FOUND);
-                frmFind.show();
+                frmFind.show(activity);
                 break;
 
             case MENU_CLEAR:
@@ -152,7 +152,7 @@ public final class HistoryStorageList implements Runnable, FormListener {
                 items[0] = JLocale.getString(R.string.currect_contact);
                 items[1] = JLocale.getString(R.string.all_contact_except_this);
                 items[2] = JLocale.getString(R.string.clear_all_contacts);
-                AlertDialog.Builder builder = new AlertDialog.Builder(BaseActivity.getCurrentActivity());
+                AlertDialog.Builder builder = new AlertDialog.Builder(activity);
                 builder.setCancelable(true);
                 builder.setTitle(JLocale.getString(R.string.history));
                 builder.setItems(items, new DialogInterface.OnClickListener() {
@@ -183,7 +183,7 @@ public final class HistoryStorageList implements Runnable, FormListener {
                 if (-1 == index) return;
                 CachedRecord record = getCachedRecord(index);
                 if (null == record) return;
-                Clipboard.setClipBoardText(record.text);
+                Clipboard.setClipBoardText(activity, record.text);
                 break;
 
             case MENU_INFO:
@@ -193,7 +193,7 @@ public final class HistoryStorageList implements Runnable, FormListener {
                     String sb = JLocale.getString(R.string.hist_cur) + ": " + getSize() + "\n"
                             + JLocale.getString(R.string.hist_size) + ": " + (rs.getSize() / 1024) + "\n"
                             + JLocale.getString(R.string.hist_avail) + ": " + (rs.getSizeAvailable() / 1024) + "\n";
-                    Toast.makeText(BaseActivity.getCurrentActivity(), sb, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(activity, sb, Toast.LENGTH_SHORT).show();
                 } catch (Exception ignored) {
                 }
                 break;

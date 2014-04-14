@@ -41,13 +41,13 @@ public final class MicroBlog implements TextBoxView.TextBoxListener {
         list.setModel(model);
         list.setClickListListener(new VirtualList.OnClickListListener() {
             @Override
-            public void itemSelected(int position) {
+            public void itemSelected(BaseActivity activity, int position) {
                 String to = "";
                 int cur = position;
                 if (cur < ids.size()) {
                     to = (String) ids.elementAt(cur);
                 }
-                write(to);
+                write(activity, to);
             }
 
             @Override
@@ -64,10 +64,10 @@ public final class MicroBlog implements TextBoxView.TextBoxListener {
             }
 
             @Override
-            public void onOptionsItemSelected(MenuItem item) {
+            public void onOptionsItemSelected(BaseActivity activity, MenuItem item) {
                 switch (item.getItemId()) {
                     case MENU_WRITE:
-                        write("");
+                        write(activity, "");
                         break;
 
                     case MENU_CLEAN:
@@ -90,7 +90,7 @@ public final class MicroBlog implements TextBoxView.TextBoxListener {
             }
 
             @Override
-            public void onContextItemSelected(int listItem, int itemMenuId) {
+            public void onContextItemSelected(BaseActivity activity, int listItem, int itemMenuId) {
                 switch (itemMenuId) {
                     case MENU_REPLY:
                         String to = "";
@@ -98,12 +98,12 @@ public final class MicroBlog implements TextBoxView.TextBoxListener {
                         if (cur < ids.size()) {
                             to = (String) ids.elementAt(cur);
                         }
-                        write(to);
+                        write(activity, to);
                         break;
 
                     case MENU_COPY:
                         VirtualListItem item = list.getModel().elements.get(listItem);
-                        Clipboard.setClipBoardText(((item.getLabel() == null) ? "" : item.getLabel() + "\n") + item.getDescStr());
+                        Clipboard.setClipBoardText(activity, ((item.getLabel() == null) ? "" : item.getLabel() + "\n") + item.getDescStr());
                         break;
 
                     /*case MENU_USER_MENU:
@@ -164,11 +164,11 @@ public final class MicroBlog implements TextBoxView.TextBoxListener {
     private TextBoxView postEditor;
     private String replayTo = "";
 
-    private void write(String to) {
+    private void write(BaseActivity activity, String to) {
         replayTo = StringConvertor.notNull(to);
         postEditor = new TextBoxView();
         postEditor.setTextBoxListener(this);
-        postEditor.show(BaseActivity.getCurrentActivity().getSupportFragmentManager(), StringConvertor.isEmpty(replayTo) ? "message" : "reply");
+        postEditor.show(activity.getSupportFragmentManager(), StringConvertor.isEmpty(replayTo) ? "message" : "reply");
     }
 
     public void textboxAction(TextBoxView box, boolean ok) {

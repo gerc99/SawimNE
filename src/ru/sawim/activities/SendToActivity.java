@@ -1,11 +1,9 @@
 package ru.sawim.activities;
 
 import android.content.Intent;
-import android.media.AudioManager;
 import android.os.Bundle;
 import ru.sawim.R;
 import ru.sawim.Scheme;
-import ru.sawim.view.FormView;
 import ru.sawim.view.SendToView;
 
 /**

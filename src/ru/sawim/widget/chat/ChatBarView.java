@@ -8,7 +8,6 @@ import android.widget.LinearLayout;
 import ru.sawim.SawimApplication;
 import ru.sawim.SawimResources;
 import ru.sawim.Scheme;
-import ru.sawim.comm.Util;
 import ru.sawim.widget.IcsLinearLayout;
 import ru.sawim.widget.SimpleItemView;
 

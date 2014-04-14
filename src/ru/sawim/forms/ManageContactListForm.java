@@ -2,11 +2,11 @@ package ru.sawim.forms;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.support.v4.app.FragmentActivity;
 import protocol.Contact;
 import protocol.Group;
 import protocol.Protocol;
 import ru.sawim.R;
+import ru.sawim.activities.BaseActivity;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
 import ru.sawim.models.form.FormListener;
@@ -53,14 +53,14 @@ public final class ManageContactListForm implements FormListener, TextBoxView.Te
         this.contact = contact;
     }
 
-    public void showContactRename(FragmentActivity a) {
+    public void showContactRename(BaseActivity a) {
         renameContactTextbox = new TextBoxView();
         renameContactTextbox.setString(contact.getName());
         renameContactTextbox.setTextBoxListener(this);
         renameContactTextbox.show(a.getSupportFragmentManager(), "rename");
     }
 
-    public void showContactMove(FragmentActivity a) {
+    public void showContactMove(BaseActivity a) {
         Vector groups = protocol.getGroupItems();
         Group myGroup = protocol.getGroup(contact);
         Vector items = new Vector();
@@ -85,8 +85,7 @@ public final class ManageContactListForm implements FormListener, TextBoxView.Te
         builder.create().show();
     }
 
-
-    public void showMenu(final FragmentActivity a) {
+    public void showMenu(final BaseActivity a) {
         final MyMenu menu = new MyMenu(a);
         boolean canAdd = !protocol.getGroupItems().isEmpty()
                 && ((null == group) || group.hasMode(Group.MODE_NEW_CONTACTS));
@@ -123,23 +122,23 @@ public final class ManageContactListForm implements FormListener, TextBoxView.Te
         builder.create().show();
     }
 
-    private void select(FragmentActivity a, int cmd) {
+    private void select(BaseActivity a, int cmd) {
         action = cmd;
         Search search = protocol.getSearchForm();
         switch (cmd) {
             case ADD_USER:
                 search.putToGroup(group);
-                search.show("", false);
+                search.show(a, "", false);
                 break;
 
             case ADD_CONFERENCE:
                 search.putToGroup(group);
-                search.show("", true);
+                search.show(a, "", true);
                 break;
 
             case SEARCH_USER:
                 search.putToGroup(group);
-                search.show();
+                search.show(a);
                 break;
 
             case ADD_GROUP:
@@ -151,7 +150,7 @@ public final class ManageContactListForm implements FormListener, TextBoxView.Te
                     Forms form = new Forms(R.string.rename_group, this, true);
                     addGroup(form, getGroups(Group.MODE_EDITABLE));
                     form.addTextField(GROUP_NEW_NAME, R.string.new_group_name, "");
-                    form.show();
+                    form.show(a);
                 } else {
                     showTextBox(a, R.string.rename_group, group.getName());
                 }
@@ -161,7 +160,7 @@ public final class ManageContactListForm implements FormListener, TextBoxView.Te
                 if (null == group) {
                     Forms form = new Forms(R.string.del_group, this, true);
                     addGroup(form, getGroups(Group.MODE_REMOVABLE));
-                    form.show();
+                    form.show(a);
                 } else {
                     protocol.removeGroup(group);
                 }
@@ -199,7 +198,7 @@ public final class ManageContactListForm implements FormListener, TextBoxView.Te
         }
     }
 
-    private void showTextBox(FragmentActivity a, int caption, String text) {
+    private void showTextBox(BaseActivity a, int caption, String text) {
         groupName = new TextBoxView();
         groupName.setCaption(JLocale.getString(caption));
         groupName.setString(text);

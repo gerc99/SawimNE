@@ -1,6 +1,7 @@
 package protocol.xmpp;
 
 import ru.sawim.R;
+import ru.sawim.activities.BaseActivity;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
 import ru.sawim.models.form.ControlStateListener;
@@ -38,11 +39,11 @@ public final class AdHoc implements FormListener, ControlStateListener {
         resourceConf = res;
     }
 
-    public void show() {
+    public void show(BaseActivity activity) {
         commandsListForm = new Forms(R.string.adhoc, this, true);
         updateForm(false);
         commandsListForm.setControlStateListener(this);
-        commandsListForm.show();
+        commandsListForm.show(activity);
         requestCommandsForCurrentResource();
     }
 

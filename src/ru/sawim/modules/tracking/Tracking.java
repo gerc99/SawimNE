@@ -9,8 +9,6 @@ import protocol.icq.Icq;
 import protocol.mrim.Mrim;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
-import ru.sawim.activities.BaseActivity;
-import ru.sawim.activities.SawimActivity;
 import ru.sawim.chat.Chat;
 import ru.sawim.chat.message.PlainMessage;
 import ru.sawim.modules.Notify;
@@ -345,7 +343,7 @@ public final class Tracking {
         Chat chat_ = new Chat(protocol, item);
         switch (action) {
             case ACTION_CHAT:
-                ((SawimActivity) BaseActivity.getCurrentActivity()).openChat(chat.getProtocol(), chat.getContact(), true);
+                //((SawimActivity) activity).openChat(chat.getProtocol(), chat.getContact(), true);
                 break;
             case ACTION_NOTICE:
                 RosterHelper.getInstance().activateWithMsg(JLocale.getString(R.string.track_form_title)

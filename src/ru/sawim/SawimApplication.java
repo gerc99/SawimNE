@@ -13,11 +13,9 @@ import android.view.Surface;
 import android.view.WindowManager;
 import org.microemu.util.AndroidRecordStoreManager;
 import ru.sawim.chat.ChatHistory;
-import ru.sawim.comm.Util;
 import ru.sawim.modules.*;
 import ru.sawim.receiver.NetworkStateReceiver;
 import ru.sawim.roster.RosterHelper;
-import ru.sawim.search.Search;
 import ru.sawim.service.SawimService;
 import ru.sawim.service.SawimServiceConnection;
 import ru.sawim.text.TextFormatter;
@@ -190,11 +188,6 @@ public class SawimApplication extends Application {
     public static long getCurrentGmtTime() {
         return System.currentTimeMillis() / 1000
                 + Options.getInt(Options.OPTION_LOCAL_OFFSET) * 3600;
-    }
-
-    public static void openUrl(String url) {
-        Search search = RosterHelper.getInstance().getCurrentProtocol().getSearchForm();
-        search.show(Util.getUrlWithoutProtocol(url), true);
     }
 
     public static java.io.InputStream getResourceAsStream(String name) {

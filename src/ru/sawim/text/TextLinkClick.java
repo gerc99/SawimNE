@@ -12,10 +12,10 @@ import protocol.Protocol;
 import protocol.xmpp.Jid;
 import ru.sawim.Clipboard;
 import ru.sawim.R;
-import ru.sawim.SawimApplication;
 import ru.sawim.activities.BaseActivity;
 import ru.sawim.comm.Util;
 import ru.sawim.modules.DebugLog;
+import ru.sawim.roster.RosterHelper;
 import ru.sawim.view.PictureView;
 import ru.sawim.view.menu.JuickMenu;
 import ru.sawim.view.tasks.HtmlTask;
@@ -40,16 +40,17 @@ public class TextLinkClick implements TextLinkClickListener {
     @Override
     public void onTextLinkClick(View textView, String clickedString, boolean isLongTap) {
         if (clickedString.length() == 0) return;
+        final Context context = textView.getContext();
         boolean isJuick = clickedString.startsWith("@") || clickedString.startsWith("#");
         if (isJuick) {
-            new JuickMenu(BaseActivity.getCurrentActivity(), currentProtocol, currentContact, clickedString).show();
+            new JuickMenu((BaseActivity) context, currentProtocol, currentContact, clickedString).show();
             return;
         }
         if (isLongTap || Jid.isJID(clickedString)) {
             CharSequence[] items = new CharSequence[2];
-            items[0] = BaseActivity.getCurrentActivity().getString(R.string.copy);
-            items[1] = BaseActivity.getCurrentActivity().getString(R.string.add_contact);
-            final AlertDialog.Builder builder = new AlertDialog.Builder(BaseActivity.getCurrentActivity());
+            items[0] = context.getString(R.string.copy);
+            items[1] = context.getString(R.string.add_contact);
+            final AlertDialog.Builder builder = new AlertDialog.Builder(context);
             builder.setCancelable(true);
             builder.setTitle(R.string.url_menu);
             final String finalClickedString = clickedString;
@@ -58,10 +59,11 @@ public class TextLinkClick implements TextLinkClickListener {
                 public void onClick(DialogInterface dialog, int which) {
                     switch (which) {
                         case 0:
-                            Clipboard.setClipBoardText(finalClickedString);
+                            Clipboard.setClipBoardText(context, finalClickedString);
                             break;
                         case 1:
-                            SawimApplication.openUrl(finalClickedString);
+                            RosterHelper.getInstance().getCurrentProtocol().getSearchForm().show((BaseActivity) context,
+                                    Util.getUrlWithoutProtocol(finalClickedString), true);
                             break;
                     }
                 }
@@ -80,12 +82,11 @@ public class TextLinkClick implements TextLinkClickListener {
                     || Util.isImageFile(clickedString)) {
                 PictureView pictureView = new PictureView();
                 pictureView.setLink(clickedString);
-                FragmentTransaction transaction = BaseActivity.getCurrentActivity().getSupportFragmentManager().beginTransaction();
+                FragmentTransaction transaction = ((BaseActivity) context).getSupportFragmentManager().beginTransaction();
                 transaction.add(pictureView, PictureView.TAG);
                 transaction.commitAllowingStateLoss();
             } else {
                 Uri uri = Uri.parse(clickedString);
-                Context context = BaseActivity.getCurrentActivity();
                 Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                 intent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
                 context.startActivity(intent);

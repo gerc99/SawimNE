@@ -10,7 +10,6 @@ import android.text.Layout;
 import android.text.Spannable;
 import android.text.StaticLayout;
 import android.text.TextPaint;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;

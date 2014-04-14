@@ -83,7 +83,7 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
         SawimActivity.externalApi.startCamera(this, 1024, 768);
     }
 
-    public void onFileSelect(InputStream in, String fileName) {
+    public void onFileSelect(BaseActivity activity, InputStream in, String fileName) {
         try {
             setFileName(fileName);
             int fileSize = in.available();
@@ -99,7 +99,7 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
                 new Thread(this).start();
                 addProgress();
             } else {
-                askForNameDesc();
+                askForNameDesc(activity);
                 showPreview(image);
             }
         } catch (Exception e) {
@@ -108,18 +108,18 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
         }
     }
 
-    public void processPhoto(final byte[] data) {
+    public void processPhoto(BaseActivity activity, final byte[] data) {
         setData(new ByteArrayInputStream(data), data.length);
         String timestamp = Util.getLocalDateString(SawimApplication.getCurrentGmtTime(), false);
         String photoName = "photo-"
                 + timestamp.replace('.', '-').replace(' ', '-')
                 + ".jpg";
         setFileName(photoName);
-        askForNameDesc();
+        askForNameDesc(activity);
         showPreview(data);
     }
 
-    private void askForNameDesc() {
+    private void askForNameDesc(BaseActivity activity) {
         forms = new Forms(R.string.name_desc, this, true);
         forms.addString(String.format("%s: %s", JLocale.getString(R.string.filename), filename), null);
         forms.addTextField(descriptionField, R.string.description, "");
@@ -131,7 +131,7 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
         }
         forms.addSelector(transferMode, R.string.send_via, items, 0);
         forms.addString(String.format("%s: %d KB", JLocale.getString(R.string.size), getFileSize() / 1024), null);
-        forms.show();
+        forms.show(activity);
     }
 
     public void formAction(Forms form, boolean apply) {

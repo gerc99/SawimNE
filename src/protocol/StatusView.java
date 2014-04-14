@@ -8,6 +8,7 @@ import ru.sawim.Clipboard;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
+import ru.sawim.activities.BaseActivity;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
 import ru.sawim.models.list.VirtualList;
@@ -130,11 +131,11 @@ public final class StatusView {
             }
 
             @Override
-            public void onContextItemSelected(int listItem, int itemMenuId) {
+            public void onContextItemSelected(BaseActivity activity, int listItem, int itemMenuId) {
                 switch (itemMenuId) {
                     case INFO_MENU_COPY:
                         VirtualListItem item = list.getModel().elements.get(listItem);
-                        Clipboard.setClipBoardText(((item.getLabel() == null) ? "" : item.getLabel() + "\n") + item.getDescStr());
+                        Clipboard.setClipBoardText(activity, ((item.getLabel() == null) ? "" : item.getLabel() + "\n") + item.getDescStr());
                         break;
 
                     case INFO_MENU_COPY_ALL:
@@ -148,7 +149,7 @@ public final class StatusView {
                             if (descStr != null)
                                 s.append(descStr).append("\n");
                         }
-                        Clipboard.setClipBoardText(s.toString());
+                        Clipboard.setClipBoardText(activity, s.toString());
                         break;
                 }
             }

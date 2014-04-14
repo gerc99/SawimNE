@@ -10,7 +10,6 @@ import protocol.xmpp.Xmpp;
 import ru.sawim.FileTransfer;
 import ru.sawim.Options;
 import ru.sawim.SawimApplication;
-import ru.sawim.SawimNotification;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
 import ru.sawim.modules.AutoAbsence;

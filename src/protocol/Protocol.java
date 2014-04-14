@@ -4,6 +4,7 @@ import DrawControls.icons.Icon;
 import org.microemu.util.RecordStoreImpl;
 import protocol.xmpp.XmppContact;
 import ru.sawim.*;
+import ru.sawim.activities.BaseActivity;
 import ru.sawim.chat.Chat;
 import ru.sawim.chat.ChatHistory;
 import ru.sawim.chat.message.Message;
@@ -1087,7 +1088,7 @@ abstract public class Protocol {
     protected void doAction(Contact contact, int cmd) {
     }
 
-    public void showUserInfo(Contact contact) {
+    public void showUserInfo(BaseActivity activity, Contact contact) {
     }
 
     public void showStatus(Contact contact) {

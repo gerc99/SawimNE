@@ -37,8 +37,8 @@ public final class TrackingForm implements TextBoxView.TextBoxListener {
         screen.setModel(model);
         screen.setClickListListener(new VirtualList.OnClickListListener() {
             @Override
-            public void itemSelected(int position) {
-                changeStatus(position);
+            public void itemSelected(BaseActivity activity, int position) {
+                changeStatus(activity, position);
             }
 
             @Override
@@ -275,20 +275,20 @@ public final class TrackingForm implements TextBoxView.TextBoxListener {
         showList();
     }
 
-    private void activateInputBox(String text) {
+    private void activateInputBox(BaseActivity activity, String text) {
         if (inputBox == null) {
             inputBox = new TextBoxView();
             inputBox.setTextBoxListener(this);
             inputBox.setCaption(null);
         }
         inputBox.setString(text);
-        inputBox.show(BaseActivity.getCurrentActivity().getSupportFragmentManager(), "tracking-message");
+        inputBox.show(activity.getSupportFragmentManager(), "tracking-message");
     }
 
-    private void changeStatus(int index) {
+    private void changeStatus(BaseActivity activity, int index) {
         Line line = getLine(index);
         if (line.id_action == Tracking.ACTION_MESSAGE_TEXT) {
-            activateInputBox(editText);
+            activateInputBox(activity, editText);
         } else if (line.isAll) {
             if (line.status_flag == NO || line.status_flag == NOTHING) {
                 line.status_flag = YES;

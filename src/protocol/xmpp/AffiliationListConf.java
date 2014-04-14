@@ -41,9 +41,9 @@ public final class AffiliationListConf implements FormListener, TextBoxView.Text
         screen.setModel(model);
         screen.setClickListListener(new VirtualList.OnClickListListener() {
             @Override
-            public void itemSelected(int position) {
+            public void itemSelected(BaseActivity activity, int position) {
                 String jid = getCurrentJid(position);
-                showOptionsForm(jid, getCurrentReason(position));
+                showOptionsForm(activity, jid, getCurrentReason(position));
             }
 
             @Override
@@ -61,15 +61,15 @@ public final class AffiliationListConf implements FormListener, TextBoxView.Text
             }
 
             @Override
-            public void onOptionsItemSelected(MenuItem item) {
+            public void onOptionsItemSelected(BaseActivity activity, MenuItem item) {
                 switch (item.getItemId()) {
                     case COMMAND_ADD:
-                        showOptionsForm("", "");
+                        showOptionsForm(activity, "", "");
                         break;
 
                     case COMMAND_SEARCH:
                         searchBox.setTextBoxListener(AffiliationListConf.this);
-                        searchBox.show(BaseActivity.getCurrentActivity().getSupportFragmentManager(), "service_discovery_search");
+                        searchBox.show(activity.getSupportFragmentManager(), "service_discovery_search");
                         break;
                 }
             }
@@ -226,13 +226,13 @@ public final class AffiliationListConf implements FormListener, TextBoxView.Text
         }
     }
 
-    private void showOptionsForm(String jid, String reason) {
+    private void showOptionsForm(BaseActivity activity, String jid, String reason) {
         int[] affiliationsList = {R.string.owner, R.string.admin, R.string.member, R.string.outcast, R.string.none};
         enterData = new Forms(R.string.conf_aff_list, this, true);
         enterData.addTextField(JID, R.string.jid, jid);
         enterData.addSelector(AFFILIATION, R.string.affiliation, affiliationsList, getAffiliation());
         enterData.addTextField(REASON, R.string.reason, reason);
-        enterData.show();
+        enterData.show(activity);
     }
 
     public void formAction(Forms form, boolean apply) {

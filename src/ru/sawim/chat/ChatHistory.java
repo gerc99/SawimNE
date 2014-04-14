@@ -1,7 +1,6 @@
 package ru.sawim.chat;
 
 import android.graphics.drawable.BitmapDrawable;
-import android.util.Log;
 import protocol.Contact;
 import protocol.Protocol;
 import ru.sawim.chat.message.Message;

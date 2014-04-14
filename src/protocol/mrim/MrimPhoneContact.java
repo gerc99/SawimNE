@@ -7,6 +7,7 @@ import protocol.Contact;
 import protocol.ContactMenu;
 import protocol.Protocol;
 import ru.sawim.R;
+import ru.sawim.activities.BaseActivity;
 import ru.sawim.util.JLocale;
 
 public class MrimPhoneContact extends MrimContact {
@@ -27,11 +28,11 @@ public class MrimPhoneContact extends MrimContact {
         return Mrim.getPhoneContactIcon();
     }
 
-    public void activate(Protocol p) {
+    public void activate(BaseActivity activity, Protocol p) {
         if (hasChat()) {
             p.getChat(this).activate();
         } else {
-            new ContactMenu(p, this).doAction(USER_MENU_SEND_SMS);
+            new ContactMenu(p, this).doAction(activity, USER_MENU_SEND_SMS);
         }
     }
 

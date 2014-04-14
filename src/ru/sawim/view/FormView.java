@@ -65,7 +65,7 @@ public class FormView extends DialogFragment implements Forms.OnUpdateForm, View
     }
 
     private Forms getLastForms() {
-         return forms;
+        return forms;
     }
 
     @Override
@@ -91,33 +91,31 @@ public class FormView extends DialogFragment implements Forms.OnUpdateForm, View
         return v;
     }
 
-    public static void show(final Forms f) {
+    public static void show(final BaseActivity activity, final Forms f) {
         formsMap.put(f.getCaption(), f);
-        if (BaseActivity.getCurrentActivity() == null) {
+        if (activity == null) {
             SawimNotification.captcha(f.getCaption());
         } else {
-            BaseActivity.getCurrentActivity().runOnUiThread(new Runnable() {
+            activity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    if (BaseActivity.getCurrentActivity().isFinishing()) {
+                    if (activity.isFinishing()) {
                         SawimNotification.captcha(f.getCaption());
                     } else {
-                        new FormView(f).show(BaseActivity.getCurrentActivity()
-                                .getSupportFragmentManager().beginTransaction(), "form");
+                        new FormView(f).show(activity.getSupportFragmentManager().beginTransaction(), "form");
                     }
                 }
             });
         }
     }
 
-    public static void showWindows(final String title) {
-        BaseActivity.getCurrentActivity().runOnUiThread(new Runnable() {
+    public static void showWindows(final BaseActivity activity, final String title) {
+        activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (!BaseActivity.getCurrentActivity().isFinishing()) {
+                if (!activity.isFinishing()) {
                     FormView formView = new FormView(formsMap.get(title));
-                    formView.show(BaseActivity.getCurrentActivity()
-                            .getSupportFragmentManager().beginTransaction(), "form");
+                    formView.show(activity.getSupportFragmentManager().beginTransaction(), "form");
                 }
             }
         });
@@ -125,7 +123,7 @@ public class FormView extends DialogFragment implements Forms.OnUpdateForm, View
 
     @Override
     public void updateForm(final boolean isLoad) {
-        BaseActivity.getCurrentActivity().runOnUiThread(new Runnable() {
+        getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 if (!isLoad && getLastForms().getWaitingString() != null) {
@@ -152,7 +150,7 @@ public class FormView extends DialogFragment implements Forms.OnUpdateForm, View
 
     @Override
     public void back() {
-        BaseActivity.getCurrentActivity().runOnUiThread(new Runnable() {
+        getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 dismiss();
@@ -161,10 +159,9 @@ public class FormView extends DialogFragment implements Forms.OnUpdateForm, View
     }
 
     private void hideKeyboard() {
-        if (BaseActivity.getCurrentActivity().getCurrentFocus() != null)
-            ((InputMethodManager) BaseActivity.getCurrentActivity()
-                    .getSystemService(Context.INPUT_METHOD_SERVICE))
-                    .hideSoftInputFromWindow(BaseActivity.getCurrentActivity().getCurrentFocus().getWindowToken(), 0);
+        if (getActivity().getCurrentFocus() != null)
+            ((InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE))
+                    .hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), 0);
     }
 
     @Override
@@ -182,7 +179,7 @@ public class FormView extends DialogFragment implements Forms.OnUpdateForm, View
     }
 
     private void buildList() {
-        Context context = BaseActivity.getCurrentActivity();
+        Context context = getActivity();
         listLayout.removeAllViews();
         List<Forms.Control> controls = getLastForms().controls;
         int fontSize = SawimApplication.getFontSize();

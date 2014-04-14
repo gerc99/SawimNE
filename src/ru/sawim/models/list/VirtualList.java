@@ -3,6 +3,7 @@ package ru.sawim.models.list;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
+import ru.sawim.activities.BaseActivity;
 import ru.sawim.view.VirtualListView;
 
 public class VirtualList {
@@ -67,7 +68,7 @@ public class VirtualList {
     }
 
     public interface OnClickListListener {
-        void itemSelected(int position);
+        void itemSelected(BaseActivity activity, int position);
 
         boolean back();
     }
@@ -114,7 +115,7 @@ public class VirtualList {
     public interface OnBuildOptionsMenu {
         void onCreateOptionsMenu(Menu menu);
 
-        void onOptionsItemSelected(MenuItem item);
+        void onOptionsItemSelected(BaseActivity activity, MenuItem item);
     }
 
     public OnBuildOptionsMenu getBuildOptionsMenu() {
@@ -128,7 +129,7 @@ public class VirtualList {
     public interface OnBuildContextMenu {
         void onCreateContextMenu(ContextMenu menu, int listItem);
 
-        void onContextItemSelected(int listItem, int itemMenuId);
+        void onContextItemSelected(BaseActivity activity, int listItem, int itemMenuId);
     }
 
     public void setOnBuildContextMenu(OnBuildContextMenu l) {

@@ -75,8 +75,7 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
         profileView.setModel(new VirtualListModel());
         profileView.setClickListListener(new VirtualList.OnClickListListener() {
             @Override
-            public void itemSelected(int position) {
-
+            public void itemSelected(BaseActivity activity, int position) {
             }
 
             @Override
@@ -87,7 +86,10 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
         });
     }
 
-    public void showProfile() {
+    BaseActivity activity;
+
+    public void showProfile(BaseActivity activity) {
+        this.activity = activity;
         profileView.show();
     }
 
@@ -177,7 +179,7 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
         profile.addParam(R.string.fax, workFax);
 
         profile.setHeader(R.string.avatar);
-        profile.addAvatar(null, ru.sawim.widget.Util.avatarBitmap(avatar));
+        profile.addAvatar(null, ru.sawim.widget.Util.avatarBitmap(activity, avatar));
     }
 
     private void addMenu() {
@@ -196,14 +198,14 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
             }
 
             @Override
-            public void onOptionsItemSelected(MenuItem item) {
+            public void onOptionsItemSelected(BaseActivity activity, MenuItem item) {
                 switch (item.getItemId()) {
                     case INFO_MENU_EDIT:
-                        new EditInfo(protocol, UserInfo.this).init().show();
+                        new EditInfo(protocol, UserInfo.this).init().show(activity);
                         break;
 
                     case INFO_MENU_TAKE_AVATAR:
-                        SawimActivity.externalApi.setFragment(BaseActivity.getCurrentActivity()
+                        SawimActivity.externalApi.setFragment(activity
                                 .getSupportFragmentManager().findFragmentByTag(VirtualListView.TAG));
                         SawimActivity.externalApi.startCamera(UserInfo.this, 640, 480);
                         break;
@@ -215,7 +217,7 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
                         break;
 
                     case INFO_MENU_ADD_AVATAR:
-                        SawimActivity.externalApi.setFragment(BaseActivity.getCurrentActivity()
+                        SawimActivity.externalApi.setFragment(activity
                                 .getSupportFragmentManager().findFragmentByTag(VirtualListView.TAG));
                         if (SawimActivity.externalApi.pickFile(UserInfo.this)) {
                             return;
@@ -237,11 +239,11 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
             }
 
             @Override
-            public void onContextItemSelected(int listItem, int itemMenuId) {
+            public void onContextItemSelected(BaseActivity activity, int listItem, int itemMenuId) {
                 switch (itemMenuId) {
                     case INFO_MENU_COPY:
                         VirtualListItem item = profileView.getModel().elements.get(listItem);
-                        Clipboard.setClipBoardText(((item.getLabel() == null) ? "" : item.getLabel() + "\n") + item.getDescStr());
+                        Clipboard.setClipBoardText(activity, ((item.getLabel() == null) ? "" : item.getLabel() + "\n") + item.getDescStr());
                         break;
 
                     case INFO_MENU_COPY_ALL:
@@ -255,7 +257,7 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
                             if (descStr != null)
                                 s.append(descStr).append("\n");
                         }
-                        Clipboard.setClipBoardText(s.toString());
+                        Clipboard.setClipBoardText(activity, s.toString());
                         break;
 
                     case INFO_MENU_SAVE_AVATAR:
@@ -381,7 +383,7 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
         }
     }
 
-    public void onFileSelect(InputStream fis, String fileName) throws SawimException {
+    public void onFileSelect(BaseActivity activity, InputStream fis, String fileName) throws SawimException {
         try {
             int size = fis.available();
             if (size <= 30 * 1024 * 1024) {
@@ -405,7 +407,7 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
         }
     }
 
-    public void processPhoto(byte[] data) {
+    public void processPhoto(BaseActivity activity, byte[] data) {
         setBinAvatar(data);
         data = null;
         if (null != avatar) {

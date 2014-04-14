@@ -10,6 +10,7 @@ import protocol.icq.packet.ToIcqSrvPacket;
 import protocol.icq.plugin.XtrazMessagePlugin;
 import ru.sawim.Options;
 import ru.sawim.R;
+import ru.sawim.activities.BaseActivity;
 import ru.sawim.chat.message.PlainMessage;
 import ru.sawim.comm.GUID;
 import ru.sawim.comm.StringConvertor;
@@ -905,7 +906,7 @@ public class Icq extends Protocol {
         sendAuthResult(userId, false);
     }
 
-    public void showUserInfo(Contact contact) {
+    public void showUserInfo(BaseActivity activity, Contact contact) {
         final UserInfo data;
         if (isConnected()) {
             data = getUserInfo(contact);
@@ -918,7 +919,7 @@ public class Icq extends Protocol {
             data.createProfileView(contact.getName());
             data.updateProfileView();
         }
-        data.showProfile();
+        data.showProfile(activity);
     }
 
     public void showStatus(Contact contact) {

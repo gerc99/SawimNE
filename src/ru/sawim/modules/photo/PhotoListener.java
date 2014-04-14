@@ -4,8 +4,10 @@
 package ru.sawim.modules.photo;
 
 
+import ru.sawim.activities.BaseActivity;
+
 public interface PhotoListener {
-    void processPhoto(byte[] photo);
+    void processPhoto(BaseActivity activity, byte[] photo);
 }
 
 

@@ -14,6 +14,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import protocol.net.TcpSocket;
+import ru.sawim.activities.BaseActivity;
 import ru.sawim.modules.DebugLog;
 import ru.sawim.modules.fs.FileBrowserListener;
 import ru.sawim.modules.photo.PhotoListener;
@@ -84,7 +85,7 @@ public class ExternalApi {
         try {
             if (RESULT_PHOTO == requestCode) {
                 if (null == photoListener) return false;
-                photoListener.processPhoto(data.getByteArrayExtra("photo"));
+                photoListener.processPhoto((BaseActivity) fragment.getActivity(), data.getByteArrayExtra("photo"));
                 photoListener = null;
                 return true;
 
@@ -104,7 +105,7 @@ public class ExternalApi {
                 InputStream in = fragment.getActivity().getContentResolver().openInputStream(uriImage);
                 byte[] img = new byte[in.available()];
                 TcpSocket.readFully(in, img, 0, img.length);
-                photoListener.processPhoto(img);
+                photoListener.processPhoto((BaseActivity) fragment.getActivity(), img);
 
                 imageUrl = null;
                 photoListener = null;
@@ -113,7 +114,7 @@ public class ExternalApi {
             } else if (RESULT_EXTERNAL_FILE == requestCode) {
                 Uri fileUri = data.getData();
                 InputStream is = fragment.getActivity().getContentResolver().openInputStream(fileUri);
-                fileTransferListener.onFileSelect(is, getFileName(fileUri, fragment.getActivity()));
+                fileTransferListener.onFileSelect((BaseActivity) fragment.getActivity(), is, getFileName(fileUri, fragment.getActivity()));
                 fileTransferListener = null;
                 return true;
             }

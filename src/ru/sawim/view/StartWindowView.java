@@ -56,7 +56,7 @@ public class StartWindowView extends Fragment {
                         addAccount(num, acc);
                     }
                 });
-                xmppRegistration.init().show();
+                xmppRegistration.init().show((BaseActivity) getActivity());
             }
         });
         Button signInXmppButton = (Button) v.findViewById(R.id.sign_in_jabber);
@@ -74,7 +74,7 @@ public class StartWindowView extends Fragment {
         signIntoOtherNetworksButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(BaseActivity.getCurrentActivity());
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 builder.setCancelable(true);
                 builder.setTitle(R.string.acc_sel_protocol);
                 builder.setItems(Profile.protocolNames, new DialogInterface.OnClickListener() {
@@ -98,14 +98,14 @@ public class StartWindowView extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        BaseActivity.getCurrentActivity().resetBar(JLocale.getString(R.string.app_name));
+        ((BaseActivity) getActivity()).resetBar(JLocale.getString(R.string.app_name));
         if (RosterHelper.getInstance().getProtocolCount() > 0) {
-            ((SawimActivity) BaseActivity.getCurrentActivity()).recreateActivity();
+            ((SawimActivity) getActivity()).recreateActivity();
         } else {
             if (SawimApplication.isManyPane())
-                BaseActivity.getCurrentActivity().getSupportFragmentManager().popBackStack();
+                getActivity().getSupportFragmentManager().popBackStack();
         }
-        BaseActivity.getCurrentActivity().supportInvalidateOptionsMenu();
+        getActivity().supportInvalidateOptionsMenu();
     }
 
     public void addAccount(int num, Profile acc) {
@@ -115,9 +115,9 @@ public class StartWindowView extends Fragment {
 
     private void back() {
         if (SawimApplication.isManyPane())
-            ((SawimActivity) BaseActivity.getCurrentActivity()).recreateActivity();
+            ((SawimActivity) getActivity()).recreateActivity();
         else
-            BaseActivity.getCurrentActivity().getSupportFragmentManager().popBackStack();
+            getActivity().getSupportFragmentManager().popBackStack();
     }
 
     class LoginDialog extends Fragment {

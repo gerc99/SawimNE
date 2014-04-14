@@ -94,7 +94,7 @@ public class SawimActivity extends BaseActivity {
                 isOpenNewChat = openChat(current.getProtocol(), current.getContact(), true);
         }
         if (NOTIFY_CAPTCHA.equals(getIntent().getAction())) {
-            FormView.showWindows(getIntent().getStringExtra(NOTIFY_CAPTCHA));
+            FormView.showWindows(this, getIntent().getStringExtra(NOTIFY_CAPTCHA));
         }
         setIntent(null);
     }
@@ -151,7 +151,7 @@ public class SawimActivity extends BaseActivity {
     public void onResume() {
         super.onResume();
         SawimApplication.maximize();
-        FragmentManager fragmentManager = BaseActivity.getCurrentActivity().getSupportFragmentManager();
+        FragmentManager fragmentManager = getSupportFragmentManager();
         StartWindowView startWindowView = (StartWindowView) fragmentManager.findFragmentByTag(StartWindowView.TAG);
         if (RosterHelper.getInstance().getProtocolCount() == 0) {
             FragmentTransaction transaction = fragmentManager.beginTransaction();
@@ -346,13 +346,13 @@ public class SawimActivity extends BaseActivity {
                 new StatusesView(p, StatusesView.ADAPTER_PRIVATESTATUS).show(getSupportFragmentManager(), "change-private-status");
                 break;
             case MENU_SEND_SMS:
-                new SmsForm(null, null).show();
+                new SmsForm(null, null).show(this);
                 break;
             case MENU_SOUND:
                 Notify.getSound().changeSoundMode();
                 break;
             case MENU_OPTIONS:
-                MainPreferenceView.show();
+                MainPreferenceView.show(this);
                 break;
             case MENU_DISCO:
                 ((Xmpp) p).getServiceDiscovery().showIt();
@@ -364,7 +364,7 @@ public class SawimActivity extends BaseActivity {
                 new ManageContactListForm(p).showMenu(this);
                 break;
             case MENU_MYSELF:
-                p.showUserInfo(p.createTempContact(p.getUserId(), p.getNick()));
+                p.showUserInfo(this, p.createTempContact(p.getUserId(), p.getNick()));
                 break;
             case MENU_MICROBLOG:
                 ((Mrim) p).getMicroBlog().activate();

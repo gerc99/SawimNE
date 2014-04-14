@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import ru.sawim.SawimApplication;
+import ru.sawim.activities.BaseActivity;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
 import ru.sawim.modules.DebugLog;
@@ -125,11 +126,15 @@ public class Forms {
     }
 
     public void show() {
-        FormView.show(this);
+        FormView.show(BaseActivity.getCurrentActivity(), this);
     }
 
-    public void preferenceFormShow() {
-        PreferenceFormView.show(this);
+    public void show(BaseActivity activity) {
+        FormView.show(activity, this);
+    }
+
+    public void preferenceFormShow(BaseActivity activity) {
+        PreferenceFormView.show(activity, this);
     }
 
     public void invalidate(boolean isLoad) {

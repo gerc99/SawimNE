@@ -59,7 +59,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
         groupItem = model.createNewParser(true);
         screen.setClickListListener(new VirtualList.OnClickListListener() {
             @Override
-            public void itemSelected(int position) {
+            public void itemSelected(BaseActivity activity, int position) {
                 String jid = getCurrentJid(position);
                 if (Jid.isConference(jid)) {
                     Contact c = xmpp.createTempContact(jid);
@@ -108,7 +108,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
             }
 
             @Override
-            public void onContextItemSelected(int listItem, int action) {
+            public void onContextItemSelected(BaseActivity activity, int listItem, int action) {
                 String jid = getCurrentJid(listItem);
                 if (!StringConvertor.isEmpty(jid)) {
                     switch (action) {
@@ -138,17 +138,17 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
             }
 
             @Override
-            public void onOptionsItemSelected(MenuItem item) {
+            public void onOptionsItemSelected(BaseActivity activity, MenuItem item) {
                 switch (item.getItemId()) {
                     case COMMAND_SEARCH:
                         searchBox.setString("");
                         searchBox.setTextBoxListener(ServiceDiscovery.this);
-                        searchBox.show(BaseActivity.getCurrentActivity().getSupportFragmentManager(), JLocale.getString(R.string.service_discovery_search));
+                        searchBox.show(activity.getSupportFragmentManager(), JLocale.getString(R.string.service_discovery_search));
                         break;
 
                     case COMMAND_SET_SERVER:
                         serverBox.setTextBoxListener(ServiceDiscovery.this);
-                        serverBox.show(BaseActivity.getCurrentActivity().getSupportFragmentManager(), JLocale.getString(R.string.service_discovery_server));
+                        serverBox.show(activity.getSupportFragmentManager(), JLocale.getString(R.string.service_discovery_server));
                         break;
 
                     case COMMAND_HOME:

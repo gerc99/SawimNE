@@ -1,6 +1,5 @@
 package ru.sawim.activities;
 
-import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
@@ -10,7 +9,6 @@ import android.view.MenuItem;
 import protocol.Profile;
 import protocol.xmpp.XmppRegistration;
 import ru.sawim.R;
-import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
 import ru.sawim.view.AccountsListView;
 
@@ -67,7 +65,7 @@ public class AccountsListActivity extends BaseActivity implements XmppRegistrati
             case R.id.menu_registration_jabber:
                 protocol.xmpp.XmppRegistration jabberRegistration = new protocol.xmpp.XmppRegistration();
                 jabberRegistration.setListener(this);
-                jabberRegistration.init().show();
+                jabberRegistration.init().show(this);
                 return true;
         }
         return super.onOptionsItemSelected(item);

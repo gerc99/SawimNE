@@ -60,7 +60,7 @@ public final class Answerer implements FormListener {
             }
 
             @Override
-            public void onContextItemSelected(int listItem, int itemMenuId) {
+            public void onContextItemSelected(BaseActivity activity, int listItem, int itemMenuId) {
                 switch (itemMenuId) {
                     case MENU_EDIT:
                         form = new Forms(R.string.answerer_dictionary, Answerer.this, false);
@@ -68,7 +68,7 @@ public final class Answerer implements FormListener {
                         form.clearForm();
                         form.addTextField(FORM_EDIT_QUESTION, JLocale.getString(R.string.answerer_question), getItemQuestion(listItem));
                         form.addTextField(FORM_EDIT_ANSWER, JLocale.getString(R.string.answerer_answer), getItemAnswer(listItem));
-                        form.show();
+                        form.show(activity);
                         break;
 
                     case MENU_DELETE:
@@ -92,7 +92,7 @@ public final class Answerer implements FormListener {
             }
 
             @Override
-            public void onOptionsItemSelected(MenuItem item) {
+            public void onOptionsItemSelected(BaseActivity activity, MenuItem item) {
                 switch (item.getItemId()) {
                     case MENU_ADD:
                         form = new Forms(R.string.answerer_dictionary, Answerer.this, false);
@@ -101,12 +101,12 @@ public final class Answerer implements FormListener {
                         form.clearForm();
                         form.addTextField(FORM_EDIT_QUESTION, JLocale.getString(R.string.answerer_question), "");
                         form.addTextField(FORM_EDIT_ANSWER, JLocale.getString(R.string.answerer_answer), "");
-                        form.show();
+                        form.show(activity);
                         break;
 
                     case MENU_CLEAR:
                         popupAction();
-                        Toast.makeText(BaseActivity.getCurrentActivity(), "All removed", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(activity, "All removed", Toast.LENGTH_SHORT).show();
                         break;
 
                     case MENU_ON_OFF:

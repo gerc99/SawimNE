@@ -7,6 +7,7 @@ import android.view.MenuItem;
 import ru.sawim.Clipboard;
 import ru.sawim.R;
 import ru.sawim.Scheme;
+import ru.sawim.activities.BaseActivity;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
 import ru.sawim.models.form.FormListener;
@@ -47,10 +48,10 @@ public final class MirandaNotes {
             }
 
             @Override
-            public void onOptionsItemSelected(MenuItem item) {
+            public void onOptionsItemSelected(BaseActivity activity, MenuItem item) {
                 switch (item.getItemId()) {
                     case COMMAND_ADD: {
-                        new NoteEditor(addEmptyNote()).showIt();
+                        new NoteEditor(addEmptyNote()).showIt(activity);
                         break;
                     }
                 }
@@ -66,11 +67,11 @@ public final class MirandaNotes {
             }
 
             @Override
-            public void onContextItemSelected(int listItem, int itemMenuId) {
+            public void onContextItemSelected(BaseActivity activity, int listItem, int itemMenuId) {
                 switch (itemMenuId) {
                     case COMMAND_EDIT: {
                         Note note = (Note) notes.elementAt(listItem);
-                        new NoteEditor(note).showIt();
+                        new NoteEditor(note).showIt(activity);
                         break;
                     }
 
@@ -82,7 +83,7 @@ public final class MirandaNotes {
 
                     case MENU_COPY:
                         VirtualListItem item = screen.getModel().elements.get(listItem);
-                        Clipboard.setClipBoardText(((item.getLabel() == null) ? "" : item.getLabel() + "\n") + item.getDescStr());
+                        Clipboard.setClipBoardText(activity, ((item.getLabel() == null) ? "" : item.getLabel() + "\n") + item.getDescStr());
                         break;
 
                     case MENU_COPY_ALL:
@@ -96,16 +97,16 @@ public final class MirandaNotes {
                             if (descStr != null)
                                 s.append(descStr).append("\n");
                         }
-                        Clipboard.setClipBoardText(s.toString());
+                        Clipboard.setClipBoardText(activity, s.toString());
                         break;
                 }
             }
         });
         screen.setClickListListener(new VirtualList.OnClickListListener() {
             @Override
-            public void itemSelected(int position) {
+            public void itemSelected(BaseActivity activity, int position) {
                 Note note = (Note) notes.elementAt(position);
-                new NoteEditor(note).showIt();
+                new NoteEditor(note).showIt(activity);
             }
 
             @Override
@@ -187,8 +188,8 @@ public final class MirandaNotes {
         screen.setCurrentItemIndex(notes.indexOf(note), false);
     }
 
-    public void showNoteEditor(Note n) {
-        new NoteEditor(n).showIt();
+    public void showNoteEditor(BaseActivity activity, Note n) {
+        new NoteEditor(n).showIt(activity);
     }
 
     public class Note {
@@ -208,12 +209,12 @@ public final class MirandaNotes {
             this.note = note;
         }
 
-        private void showIt() {
+        private void showIt(BaseActivity activity) {
             Forms form = new Forms(R.string.notes, this, false);
             form.addTextField(FIELD_TITLE, R.string.title, note.title);
             form.addTextField(FIELD_TAGS, R.string.tags, note.tags);
             form.addTextField(FIELD_TEXT, R.string.text, note.text == null ? "" : note.text.toString());
-            form.show();
+            form.show(activity);
         }
 
         public void formAction(Forms form, boolean apply) {

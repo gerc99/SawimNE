@@ -1,19 +1,18 @@
 package protocol.xmpp;
 
-import java.util.ArrayList;
 import DrawControls.icons.ImageList;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.widget.Toast;
 import protocol.*;
-import ru.sawim.*;
+import ru.sawim.FileTransfer;
+import ru.sawim.R;
+import ru.sawim.SawimApplication;
 import ru.sawim.activities.BaseActivity;
 import ru.sawim.chat.message.PlainMessage;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
 import ru.sawim.models.form.FormListener;
-import ru.sawim.R;
-import ru.sawim.SawimApplication;
 import ru.sawim.models.form.Forms;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.search.Search;
@@ -21,8 +20,10 @@ import ru.sawim.search.UserInfo;
 import ru.sawim.util.JLocale;
 import ru.sawim.view.TextBoxView;
 import ru.sawim.view.menu.JuickMenu;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.util.ArrayList;
 import java.util.Vector;
 
 
@@ -310,10 +311,10 @@ public final class Xmpp extends Protocol implements FormListener {
 
     @Override
     protected Contact loadContact(DataInputStream dis) throws Exception {
-        XmppContact contact = (XmppContact)super.loadContact(dis);
+        XmppContact contact = (XmppContact) super.loadContact(dis);
         if (getProfile().userId.endsWith(PUSH_SERVER)) {
             if (contact instanceof XmppServiceContact) {
-                XmppServiceContact serviceContact = (XmppServiceContact)contact;
+                XmppServiceContact serviceContact = (XmppServiceContact) contact;
                 if (serviceContact.isConference()) {
                     String userNick = dis.readUTF();
                     serviceContact.setMyName(userNick);
@@ -338,12 +339,12 @@ public final class Xmpp extends Protocol implements FormListener {
         super.saveContact(dos, contact);
         if (!getProfile().userId.endsWith(PUSH_SERVER)) return;
         if (contact instanceof XmppServiceContact) {
-            XmppServiceContact serviceContact = (XmppServiceContact)contact;
+            XmppServiceContact serviceContact = (XmppServiceContact) contact;
             if (serviceContact.isConference()) {
                 dos.writeUTF(serviceContact.getMyName());
             }
         }
-        XmppContact xmppContact = (XmppContact)contact;
+        XmppContact xmppContact = (XmppContact) contact;
         dos.writeInt(xmppContact.subcontacts.size());
         for (XmppContact.SubContact subContact : xmppContact.subcontacts) {
             dos.writeByte(subContact.status);
@@ -595,7 +596,7 @@ public final class Xmpp extends Protocol implements FormListener {
         }
     }
 
-    protected void doAction(Contact c, int cmd) {
+    protected void doAction(BaseActivity activity, Contact c, int cmd) {
         final XmppContact contact = (XmppContact) c;
         switch (cmd) {
             case ContactMenu.GATE_CONNECT:
@@ -621,7 +622,7 @@ public final class Xmpp extends Protocol implements FormListener {
             case ContactMenu.GATE_ADD:
                 Search s = this.getSearchForm();
                 s.setXmppGate(c.getUserId());
-                s.show("", false);
+                s.show(activity, "", false);
                 break;
 
             case ContactMenu.USER_MENU_USERS_LIST:
@@ -642,7 +643,7 @@ public final class Xmpp extends Protocol implements FormListener {
                         sendMessage(contact, box.getString(), true);
                     }
                 });
-                textbox.show(BaseActivity.getCurrentActivity().getSupportFragmentManager(), "title_conf");
+                textbox.show(activity.getSupportFragmentManager(), "title_conf");
                 break;
 
             case ContactMenu.CONFERENCE_CONNECT:
@@ -650,7 +651,7 @@ public final class Xmpp extends Protocol implements FormListener {
                 break;
 
             case ContactMenu.CONFERENCE_OPTIONS:
-                showOptionsForm((XmppServiceContact) c);
+                showOptionsForm(activity, (XmppServiceContact) c);
                 break;
 
             case ContactMenu.CONFERENCE_OWNER_OPTIONS:
@@ -691,11 +692,11 @@ public final class Xmpp extends Protocol implements FormListener {
                 break;
 
             case ContactMenu.USER_MENU_CONNECTIONS:
-                showListOfSubcontacts(contact);
+                showListOfSubcontacts(activity, contact);
                 break;
             case ContactMenu.USER_INVITE:
                 try {
-                    showInviteForm(c.getUserId() + '/' + ((XmppContact) c).getCurrentSubContact().resource);
+                    showInviteForm(activity, c.getUserId() + '/' + ((XmppContact) c).getCurrentSubContact().resource);
                 } catch (Exception e) {
                 }
                 break;
@@ -707,7 +708,7 @@ public final class Xmpp extends Protocol implements FormListener {
 
             case ContactMenu.USER_MENU_ADHOC:
                 AdHoc adhoc = new AdHoc(this, contact);
-                adhoc.show();
+                adhoc.show(activity);
                 break;
 
             case ContactMenu.USER_MENU_REMOVE_ME:
@@ -718,7 +719,7 @@ public final class Xmpp extends Protocol implements FormListener {
         }
     }
 
-    public void showListOfSubcontacts(final XmppContact c) {
+    public void showListOfSubcontacts(BaseActivity activity, final XmppContact c) {
         final Vector items = new Vector();
         int selected = 0;
         for (int i = 0; i < c.subcontacts.size(); ++i) {
@@ -728,7 +729,7 @@ public final class Xmpp extends Protocol implements FormListener {
                 selected = i;
             }
         }
-        AlertDialog.Builder builder = new AlertDialog.Builder(BaseActivity.getCurrentActivity());
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setCancelable(true);
         builder.setTitle(c.getName());
         builder.setSingleChoiceItems(Util.vectorToArray(items), selected, new DialogInterface.OnClickListener() {
@@ -742,7 +743,7 @@ public final class Xmpp extends Protocol implements FormListener {
         builder.create().show();
     }
 
-    public void showUserInfo(Contact contact) {
+    public void showUserInfo(BaseActivity activity, Contact contact) {
         if (!contact.isSingleUserContact()) {
             doAction(contact, ContactMenu.USER_MENU_USERS_LIST);
             return;
@@ -772,7 +773,7 @@ public final class Xmpp extends Protocol implements FormListener {
             data.createProfileView(contact.getName());
             data.updateProfileView();
         }
-        data.showProfile();
+        data.showProfile(activity);
     }
 
     public void updateStatusView(StatusView statusView, Contact contact) {
@@ -855,15 +856,15 @@ public final class Xmpp extends Protocol implements FormListener {
         return items.substring(1);
     }
 
-    public final void showInviteForm(String jid) {
+    public final void showInviteForm(BaseActivity activity, String jid) {
         enterDataInvite = new Forms(R.string.invite, this, true);
         enterDataInvite.addSelector(JID_MESS_TO, R.string.conference, onlineConference(getContactItems()), 1);
         enterDataInvite.addTextField(JID_INVITE_TO, R.string.jid, jid);
         enterDataInvite.addTextField(REASON_INVITE, R.string.reason, "");
-        enterDataInvite.show();
+        enterDataInvite.show(activity);
     }
 
-    void showOptionsForm(XmppServiceContact c) {
+    void showOptionsForm(BaseActivity activity, XmppServiceContact c) {
         enterConf = c;
         enterData = new Forms(R.string.conference, this, false);
         enterData.addTextField(NICK, R.string.nick, c.getMyName());
@@ -871,7 +872,7 @@ public final class Xmpp extends Protocol implements FormListener {
         if (!c.isTemp()) {
             enterData.addCheckBox(AUTOJOIN, R.string.autojoin, c.isAutoJoin());
         }
-        enterData.show();
+        enterData.show(activity);
         if (!Jid.isIrcConference(c.getUserId())) {
             getConnection().requestConferenceInfo(c.getUserId());
         }

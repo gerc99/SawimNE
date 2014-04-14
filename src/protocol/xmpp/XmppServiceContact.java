@@ -11,6 +11,7 @@ import ru.sawim.Options;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.SawimResources;
+import ru.sawim.activities.BaseActivity;
 import ru.sawim.chat.message.SystemNotice;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.modules.tracking.Tracking;
@@ -76,7 +77,9 @@ public class XmppServiceContact extends XmppContact {
                 return 3;
         }
         return 0;
-    };
+    }
+
+    ;
 
     public boolean isAutoJoin() {
         return autojoin;
@@ -434,12 +437,12 @@ public class XmppServiceContact extends XmppContact {
         return !isPrivate;
     }
 
-    public void activate(Protocol p) {
+    public void activate(BaseActivity activity, Protocol p) {
         if (isOnline() || isPrivate || hasChat()) {
             super.activate(p);
 
         } else if (isConference && p.isConnected()) {
-            new ContactMenu(p, this).doAction(ContactMenu.CONFERENCE_CONNECT);
+            new ContactMenu(p, this).doAction(activity, ContactMenu.CONFERENCE_CONNECT);
         }
     }
 

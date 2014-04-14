@@ -19,7 +19,10 @@ import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.*;
+import android.widget.AdapterView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.Toast;
 import protocol.Contact;
 import protocol.ContactMenu;
 import protocol.Group;
@@ -117,11 +120,11 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
             case UPDATE_PROGRESS_BAR:
                 final Protocol p = RosterHelper.getInstance().getCurrentProtocol();
                 if (p != null) {
-                    BaseActivity activity = BaseActivity.getCurrentActivity();
+                    BaseActivity activity = (BaseActivity) getActivity();
                     byte percent = p.getConnectingProgress();
                     activity.setSupportProgress(percent * 100);
                     if (100 == percent || 0 == percent) {
-                        BaseActivity.getCurrentActivity().supportInvalidateOptionsMenu();
+                        activity.supportInvalidateOptionsMenu();
                     }
                 }
                 break;
@@ -185,7 +188,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     }
 
     private void initBar() {
-        ActionBar actionBar = BaseActivity.getCurrentActivity().getSupportActionBar();
+        ActionBar actionBar = ((BaseActivity) getActivity()).getSupportActionBar();
         actionBar.setDisplayShowTitleEnabled(false);
         actionBar.setDisplayShowHomeEnabled(false);
         actionBar.setDisplayUseLogoEnabled(false);
@@ -212,7 +215,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
                     }
                     protocolsAdapter.setActiveItem(itemPosition);
                     update();
-                    BaseActivity.getCurrentActivity().supportInvalidateOptionsMenu();
+                    getActivity().supportInvalidateOptionsMenu();
                 }
 
                 @Override
@@ -236,7 +239,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
                             dialogBuilder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    new ContactMenu(current.getProtocol(), current.getContact()).doAction(ContactMenu.USER_MENU_GRANT_AUTH);
+                                    new ContactMenu(current.getProtocol(), current.getContact()).doAction((BaseActivity) getActivity(), ContactMenu.USER_MENU_GRANT_AUTH);
                                     getActivity().supportInvalidateOptionsMenu();
                                     updateRoster();
                                 }
@@ -244,7 +247,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
                             dialogBuilder.setNegativeButton(R.string.deny, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    new ContactMenu(current.getProtocol(), current.getContact()).doAction(ContactMenu.USER_MENU_DENY_AUTH);
+                                    new ContactMenu(current.getProtocol(), current.getContact()).doAction((BaseActivity) getActivity(), ContactMenu.USER_MENU_DENY_AUTH);
                                     getActivity().supportInvalidateOptionsMenu();
                                     updateRoster();
                                 }
@@ -280,7 +283,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
                 rosterBarLayout.addView(protocolsSpinner);
             rosterBarLayout.addView(chatsImage);
             barLinearLayout.addView(rosterBarLayout);
-            ChatView chatView = (ChatView) BaseActivity.getCurrentActivity().getSupportFragmentManager()
+            ChatView chatView = (ChatView) getActivity().getSupportFragmentManager()
                     .findFragmentById(R.id.chat_fragment);
             chatView.removeTitleBar();
             barLinearLayout.addView(chatView.getTitleBar());
@@ -311,7 +314,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         super.onResume();
         resume();
         if (!SawimApplication.isManyPane() && Scheme.isChangeTheme(Options.getInt(Options.OPTION_COLOR_SCHEME))) {
-            ((SawimActivity) BaseActivity.getCurrentActivity()).recreateActivity();
+            ((SawimActivity) getActivity()).recreateActivity();
         }
     }
 
@@ -329,19 +332,19 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
                 SawimApplication.returnFromAcc = false;
                 if (RosterHelper.getInstance().getCurrentProtocol().getContactItems().size() == 0
                         && !RosterHelper.getInstance().getCurrentProtocol().isConnecting())
-                    Toast.makeText(BaseActivity.getCurrentActivity(), R.string.press_menu_for_connect, Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), R.string.press_menu_for_connect, Toast.LENGTH_LONG).show();
                 if (protocolsAdapter != null)
                     protocolsAdapter.notifyDataSetChanged();
             }
             update();
         } else {
             if (!SawimApplication.isManyPane()) {
-                FragmentManager fragmentManager = BaseActivity.getCurrentActivity().getSupportFragmentManager();
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                 FragmentTransaction transaction = fragmentManager.beginTransaction();
                 StartWindowView newFragment = new StartWindowView();
                 transaction.replace(R.id.fragment_container, newFragment, StartWindowView.TAG);
                 transaction.commit();
-                BaseActivity.getCurrentActivity().supportInvalidateOptionsMenu();
+                getActivity().supportInvalidateOptionsMenu();
             }
         }
     }
@@ -355,12 +358,12 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         if (!SawimApplication.isManyPane()) {
             ChatView chatView = new ChatView();
             chatView.initChat(p, c);
-            FragmentTransaction transaction = BaseActivity.getCurrentActivity().getSupportFragmentManager().beginTransaction();
+            FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.fragment_container, chatView, ChatView.TAG);
             transaction.addToBackStack(null);
             transaction.commit();
         } else {
-            ChatView chatViewTablet = (ChatView) BaseActivity.getCurrentActivity().getSupportFragmentManager()
+            ChatView chatViewTablet = (ChatView) getActivity().getSupportFragmentManager()
                     .findFragmentById(R.id.chat_fragment);
             chatViewTablet.pause(chatViewTablet.getCurrentChat());
             if (c != null) {
@@ -414,7 +417,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
             }
             if (node.isGroup()) {
                 if (p.isConnected()) {
-                    new ManageContactListForm(p, (Group) node).showMenu(BaseActivity.getCurrentActivity());
+                    new ManageContactListForm(p, (Group) node).showMenu((BaseActivity) getActivity());
                 }
             }
         }
@@ -446,6 +449,6 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         Protocol p = RosterHelper.getInstance().getCurrentProtocol();
         if (RosterHelper.getInstance().getCurrPage() == RosterHelper.ACTIVE_CONTACTS)
             p = c.getProtocol();
-        new ContactMenu(p, c).doAction(item.getItemId());
+        new ContactMenu(p, c).doAction(((BaseActivity) getActivity()), item.getItemId());
     }
 }

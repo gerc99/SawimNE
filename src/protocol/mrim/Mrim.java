@@ -4,6 +4,7 @@ import DrawControls.icons.Icon;
 import DrawControls.icons.ImageList;
 import protocol.*;
 import ru.sawim.R;
+import ru.sawim.activities.BaseActivity;
 import ru.sawim.chat.message.PlainMessage;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
@@ -279,15 +280,15 @@ public class Mrim extends Protocol {
     public void saveUserInfo(UserInfo userInfo) {
     }
 
-    protected void doAction(Contact c, int action) {
+    protected void doAction(BaseActivity activity, Contact c, int action) {
         MrimContact contact = (MrimContact) c;
         switch (action) {
             case MrimContact.USER_MENU_SEND_SMS:
-                new ru.sawim.forms.SmsForm(this, contact.getPhones()).show();
+                new ru.sawim.forms.SmsForm(this, contact.getPhones()).show(activity);
                 break;
 
             case ContactMenu.CONFERENCE_DISCONNECT:
-                new ContactMenu(this, c).doAction(ContactMenu.USER_MENU_USER_REMOVE);
+                new ContactMenu(this, c).doAction(activity, ContactMenu.USER_MENU_USER_REMOVE);
                 break;
 
             case ContactMenu.USER_MENU_PS_VISIBLE:
@@ -331,7 +332,7 @@ public class Mrim extends Protocol {
         }
     }
 
-    public void showUserInfo(Contact contact) {
+    public void showUserInfo(BaseActivity activity, Contact contact) {
         UserInfo data;
         if (contact instanceof MrimPhoneContact) {
             data = new UserInfo(this);
@@ -353,7 +354,7 @@ public class Mrim extends Protocol {
             data.createProfileView(contact.getName());
             data.updateProfileView();
         }
-        data.showProfile();
+        data.showProfile(activity);
     }
 
     public void showStatus(Contact contact) {

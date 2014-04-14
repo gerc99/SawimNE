@@ -6,7 +6,6 @@ import ru.sawim.Scheme;
 import ru.sawim.chat.message.Message;
 import ru.sawim.comm.Util;
 import ru.sawim.text.TextFormatter;
-import ru.sawim.widget.chat.MessageItemView;
 
 public final class MessData {
 

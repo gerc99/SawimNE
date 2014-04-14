@@ -3,6 +3,7 @@ package ru.sawim.forms;
 import protocol.Protocol;
 import protocol.mrim.Mrim;
 import ru.sawim.R;
+import ru.sawim.activities.BaseActivity;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
 import ru.sawim.roster.RosterHelper;
@@ -44,7 +45,7 @@ public class SmsForm implements FormListener {
     private static final int TEXT = 1;
     private static final int AGENT = 2;
 
-    public void show() {
+    public void show(BaseActivity activity) {
         if (0 == agents.length()) {
             return;
         }
@@ -62,7 +63,7 @@ public class SmsForm implements FormListener {
             form.addString(R.string.send_via, agents);
         }
         form.addTextField(TEXT, R.string.message, " ");
-        form.show();
+        form.show(activity);
     }
 
     private void sendSms(Protocol p, String phone, String text) {

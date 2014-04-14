@@ -59,7 +59,7 @@ android {
         compile 'com.viewpagerindicator:library:2.4.1@aar'
     }
     // signing config
-    if(file("keystore.properties").exists()) {
+    if (file("keystore.properties").exists()) {
         Properties props = new Properties()
         props.load(new FileInputStream(file("keystore.properties")))
 

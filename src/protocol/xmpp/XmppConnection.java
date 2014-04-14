@@ -9,10 +9,9 @@ import ru.sawim.SawimException;
 import ru.sawim.chat.message.PlainMessage;
 import ru.sawim.chat.message.SystemNotice;
 import ru.sawim.comm.Config;
-import ru.sawim.crypto.MD5;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
-import ru.sawim.modules.AutoAbsence;
+import ru.sawim.crypto.MD5;
 import ru.sawim.modules.DebugLog;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.search.UserInfo;
@@ -1957,10 +1956,10 @@ public final class XmppConnection extends ClientConnection {
         //    }
         return Util.base64encode(StringConvertor.stringToByteArrayUtf8(
                 new StringBuffer().append("username=\"").append(user).append("\",realm=\"").append(realm)
-                                  .append("\",nonce=\"").append(nonce).append("\",cnonce=\"").append(cnonce)
-                                  .append("\",nc=00000001,digest-uri=\"").append(digestUri)
-                                  .append("\",qop=auth,response=").append(quote).append(hResp.getDigestHex())
-                                  .append(quote).append(",charset=utf-8").toString()
+                        .append("\",nonce=\"").append(nonce).append("\",cnonce=\"").append(cnonce)
+                        .append("\",nc=00000001,digest-uri=\"").append(digestUri)
+                        .append("\",qop=auth,response=").append(quote).append(hResp.getDigestHex())
+                        .append(quote).append(",charset=utf-8").toString()
         ));
     }
 

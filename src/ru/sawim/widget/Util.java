@@ -1,5 +1,6 @@
 package ru.sawim.widget;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -11,7 +12,6 @@ import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.LinearLayout;
 import ru.sawim.Scheme;
-import ru.sawim.activities.BaseActivity;
 
 /**
  * Created with IntelliJ IDEA.
@@ -22,10 +22,10 @@ import ru.sawim.activities.BaseActivity;
  */
 public class Util {
 
-    public static Bitmap avatarBitmap(byte[] buffer) {
+    public static Bitmap avatarBitmap(Activity activity, byte[] buffer) {
         if (buffer == null) return null;
         DisplayMetrics metrics = new DisplayMetrics();
-        BaseActivity.getCurrentActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
         float scaleWidth = metrics.scaledDensity;
         float scaleHeight = metrics.scaledDensity;
 

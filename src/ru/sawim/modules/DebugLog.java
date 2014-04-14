@@ -4,6 +4,7 @@ import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import ru.sawim.*;
+import ru.sawim.activities.BaseActivity;
 import ru.sawim.comm.Util;
 import ru.sawim.models.list.VirtualList;
 import ru.sawim.models.list.VirtualListItem;
@@ -143,11 +144,11 @@ public final class DebugLog {
             }
 
             @Override
-            public void onContextItemSelected(int listItem, int itemMenuId) {
+            public void onContextItemSelected(BaseActivity activity, int listItem, int itemMenuId) {
                 switch (itemMenuId) {
                     case MENU_COPY:
                         VirtualListItem item = list.getModel().elements.get(listItem);
-                        Clipboard.setClipBoardText(((item.getLabel() == null) ? "" : item.getLabel() + "\n") + item.getDescStr());
+                        Clipboard.setClipBoardText(activity, ((item.getLabel() == null) ? "" : item.getLabel() + "\n") + item.getDescStr());
                         break;
 
                     case MENU_COPY_ALL:
@@ -161,7 +162,7 @@ public final class DebugLog {
                             if (descStr != null)
                                 s.append(descStr).append("\n");
                         }
-                        Clipboard.setClipBoardText(s.toString());
+                        Clipboard.setClipBoardText(activity, s.toString());
                         break;
                 }
             }
@@ -173,7 +174,7 @@ public final class DebugLog {
             }
 
             @Override
-            public void onOptionsItemSelected(MenuItem item) {
+            public void onOptionsItemSelected(BaseActivity activity, MenuItem item) {
                 switch (item.getItemId()) {
                     case MENU_CLEAN:
                         model.clear();

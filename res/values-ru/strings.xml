@@ -466,7 +466,6 @@
     <string name="error_221">Соединение серез HTTP-прокси было неожиданно завершено</string>
 
 
-
     <string name="transport">Транспорт</string>
     <string name="conference">Конференция</string>
     <string name="jid">JID</string>

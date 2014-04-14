@@ -31,10 +31,12 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
     private VirtualList list = VirtualList.getInstance();
     private MyListView lv;
     private AdapterView.AdapterContextMenuInfo contextMenuInfo;
+    private static BaseActivity activity;
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
+    public void onAttach(Activity a) {
+        super.onAttach(a);
+        activity = (BaseActivity) a;
         list.setVirtualListListener(this);
     }
 
@@ -45,6 +47,7 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
             list.clearAll();
             adapter = null;
         }
+        activity = null;
     }
 
     @Override
@@ -75,7 +78,7 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
                     }
                 }
                 if (list.getClickListListener() != null)
-                    list.getClickListListener().itemSelected(position);
+                    list.getClickListListener().itemSelected(activity, position);
             }
         });
         currentActivity.registerForContextMenu(lv);
@@ -98,22 +101,22 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
         if (menuInfo == null)
             menuInfo = contextMenuInfo;
         if (list.getBuildContextMenu() != null)
-            list.getBuildContextMenu().onContextItemSelected(menuInfo.position, item.getItemId());
+            list.getBuildContextMenu().onContextItemSelected(activity, menuInfo.position, item.getItemId());
         return super.onContextItemSelected(item);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        BaseActivity.getCurrentActivity().resetBar(list.getCaption());
-        BaseActivity.getCurrentActivity().getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        activity.resetBar(list.getCaption());
+        activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     public static void show() {
         if (SawimApplication.isManyPane())
-            BaseActivity.getCurrentActivity().setContentView(R.layout.main);
+            activity.setContentView(R.layout.main);
         VirtualListView newFragment = new VirtualListView();
-        FragmentTransaction transaction = BaseActivity.getCurrentActivity().getSupportFragmentManager().beginTransaction();
+        FragmentTransaction transaction = activity.getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment_container, newFragment, VirtualListView.TAG);
         transaction.addToBackStack(null);
         transaction.commit();
@@ -122,7 +125,7 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
     @Override
     public void update() {
         if (list.getModel() == null) return;
-        BaseActivity.getCurrentActivity().runOnUiThread(new Runnable() {
+        activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 adapter.refreshList(list.getModel().elements);
@@ -134,10 +137,10 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
     @Override
     public void back() {
         if (SawimApplication.isManyPane())
-            ((SawimActivity) BaseActivity.getCurrentActivity()).recreateActivity();
+            ((SawimActivity) activity).recreateActivity();
         else
-            BaseActivity.getCurrentActivity().getSupportFragmentManager().popBackStack();
-        BaseActivity.getCurrentActivity().supportInvalidateOptionsMenu();
+            activity.getSupportFragmentManager().popBackStack();
+        activity.supportInvalidateOptionsMenu();
     }
 
     public boolean hasBack() {
@@ -158,7 +161,7 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
 
     public void onOptionsItemSelected_(MenuItem item) {
         if (list.getBuildOptionsMenu() != null)
-            list.getBuildOptionsMenu().onOptionsItemSelected(item);
+            list.getBuildOptionsMenu().onOptionsItemSelected(activity, item);
     }
 
     @Override
@@ -168,7 +171,7 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
 
     @Override
     public void setCurrentItemIndex(final int i, final boolean isSelected) {
-        BaseActivity.getCurrentActivity().runOnUiThread(new Runnable() {
+        activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 if (isSelected)

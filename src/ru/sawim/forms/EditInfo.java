@@ -2,6 +2,7 @@ package ru.sawim.forms;
 
 import protocol.Protocol;
 import ru.sawim.R;
+import ru.sawim.activities.BaseActivity;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
 import ru.sawim.search.UserInfo;
@@ -77,8 +78,8 @@ public class EditInfo implements FormListener {
         return this;
     }
 
-    public void show() {
-        form.show();
+    public void show(BaseActivity activity) {
+        form.show(activity);
     }
 
     private void destroy() {

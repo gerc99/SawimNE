@@ -9,6 +9,7 @@ import protocol.Protocol;
 import protocol.icq.Icq;
 import protocol.mrim.Mrim;
 import ru.sawim.R;
+import ru.sawim.activities.BaseActivity;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
 import ru.sawim.models.form.ControlStateListener;
@@ -74,7 +75,6 @@ public final class Search implements FormListener, ControlStateListener {
         this.protocol = protocol;
         icqFields = (protocol instanceof Icq);
         preferredNick = null;
-
     }
 
     public void controlStateChanged(int id) {
@@ -88,22 +88,22 @@ public final class Search implements FormListener, ControlStateListener {
             }
             Contact contact = protocol.createTempContact(userid);
             if (null != contact) {
-                protocol.showUserInfo(contact);
+                //protocol.showUserInfo(contact);
             }
         }
     }
 
-    public void show() {
+    public void show(BaseActivity activity) {
         type = TYPE_FULL;
         createSearchForm(false);
-        searchForm.show();
+        searchForm.show(activity);
     }
 
-    public void show(String uin, boolean isConference) {
+    public void show(BaseActivity activity, String uin, boolean isConference) {
         type = TYPE_LITE;
         setSearchParam(Search.UIN, uin);
         createSearchForm(isConference);
-        searchForm.show();
+        searchForm.show(activity);
     }
 
     private void showResults() {
@@ -267,7 +267,7 @@ public final class Search implements FormListener, ControlStateListener {
             }
 
             @Override
-            public void onOptionsItemSelected(MenuItem item) {
+            public void onOptionsItemSelected(BaseActivity activity, MenuItem item) {
                 switch (item.getItemId()) {
                     case MENU_NEXT:
                         nextOrPrev(true);
@@ -287,13 +287,13 @@ public final class Search implements FormListener, ControlStateListener {
             }
 
             @Override
-            public void onContextItemSelected(int listItem, int itemMenuId) {
+            public void onContextItemSelected(BaseActivity activity, int listItem, int itemMenuId) {
                 switch (itemMenuId) {
                     case MENU_ADD:
                         UserInfo info = getCurrentResult();
                         Search s = new Search(protocol);
                         s.preferredNick = info.getOptimalName();
-                        s.show(info.uin, false);
+                        s.show(activity, info.uin, false);
                         break;
 
                     case MENU_MESSAGE:

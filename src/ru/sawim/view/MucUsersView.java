@@ -2,7 +2,6 @@ package ru.sawim.view;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -36,7 +35,7 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
     }
 
     public void show(final ChatView chatView, ListView nickList) {
-        final FragmentActivity activity = BaseActivity.getCurrentActivity();
+        final BaseActivity activity = (BaseActivity) chatView.getActivity();
         usersAdapter.init((Xmpp) protocol, xmppServiceContact);
         nickList.setAdapter(usersAdapter);
         nickList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -58,7 +57,7 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
                 if (o instanceof String) return false;
                 final String nick = usersAdapter.getCurrentSubContact(o);
                 final MyMenu menu = new MyMenu(activity);
-                final MyMenu roleConfigMenu = getRoleConfigMenu(nick);
+                final MyMenu roleConfigMenu = getRoleConfigMenu(activity, nick);
                 menu.add(activity.getString(R.string.open_private), ContactMenu.COMMAND_PRIVATE);
                 menu.add(activity.getString(R.string.info), ContactMenu.COMMAND_INFO);
                 menu.add(activity.getString(R.string.user_statuses), ContactMenu.COMMAND_STATUS);
@@ -89,21 +88,21 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
                                 activity.supportInvalidateOptionsMenu();
                                 break;
                             case ContactMenu.COMMAND_INFO:
-                                protocol.showUserInfo(xmppServiceContact.getPrivateContact(nick));
+                                protocol.showUserInfo(activity, xmppServiceContact.getPrivateContact(nick));
                                 break;
                             case ContactMenu.COMMAND_STATUS:
                                 protocol.showStatus(xmppServiceContact.getPrivateContact(nick));
                                 break;
                             case ContactMenu.USER_INVITE:
                                 try {
-                                    ((Xmpp) protocol).showInviteForm(xmppServiceContact.getUserId() + '/' + subContact.resource);
+                                    ((Xmpp) protocol).showInviteForm(activity, xmppServiceContact.getUserId() + '/' + subContact.resource);
                                 } catch (Exception e) {
                                 }
                                 break;
                             case ContactMenu.GATE_COMMANDS:
                                 AdHoc adhoc = new AdHoc((Xmpp) protocol, xmppServiceContact);
                                 adhoc.setResource(subContact.resource);
-                                adhoc.show();
+                                adhoc.show(activity);
                                 break;
                             case ContactMenu.ROLE_COMMANDS:
                                 showRoleConfig(roleConfigMenu, nick, chatView);
@@ -123,8 +122,8 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
         nickList.setOnItemLongClickListener(null);
     }
 
-    private MyMenu getRoleConfigMenu(final String nick) {
-        final MyMenu menu = new MyMenu(BaseActivity.getCurrentActivity());
+    private MyMenu getRoleConfigMenu(BaseActivity activity, final String nick) {
+        final MyMenu menu = new MyMenu(activity);
         int myAffiliation = usersAdapter.getAffiliation(xmppServiceContact.getMyName());
         int myRole = usersAdapter.getRole(xmppServiceContact.getMyName());
         final int role = usersAdapter.getRole(nick);
@@ -175,7 +174,8 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
     }
 
     private void showRoleConfig(final MyMenu menu, final String nick, final ChatView chatView) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(BaseActivity.getCurrentActivity());
+        final BaseActivity activity = (BaseActivity) chatView.getActivity();
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setCancelable(true);
         builder.setTitle(xmppServiceContact.getName());
         builder.setAdapter(menu, new DialogInterface.OnClickListener() {
@@ -186,14 +186,14 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
                         kikTextbox = new TextBoxView();
                         kikTextbox.setTextBoxListener(MucUsersView.this);
                         kikTextbox.setString("");
-                        kikTextbox.show(BaseActivity.getCurrentActivity().getSupportFragmentManager(), "message");
+                        kikTextbox.show(activity.getSupportFragmentManager(), "message");
                         break;
 
                     case ContactMenu.COMMAND_BAN:
                         banTextbox = new TextBoxView();
                         banTextbox.setTextBoxListener(MucUsersView.this);
                         banTextbox.setString("");
-                        banTextbox.show(BaseActivity.getCurrentActivity().getSupportFragmentManager(), "message");
+                        banTextbox.show(activity.getSupportFragmentManager(), "message");
                         break;
 
                     case ContactMenu.COMMAND_DEVOICE:

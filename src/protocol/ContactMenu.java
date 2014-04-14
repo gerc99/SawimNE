@@ -2,7 +2,6 @@ package protocol;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.support.v4.app.FragmentActivity;
 import android.view.ContextMenu;
 import android.widget.Toast;
 import protocol.xmpp.Xmpp;
@@ -107,8 +106,7 @@ public class ContactMenu implements TextBoxView.TextBoxListener {
         contact.initContextMenu(protocol, menu);
     }
 
-    public void doAction(int cmd) {
-        final FragmentActivity activity = BaseActivity.getCurrentActivity();
+    public void doAction(final BaseActivity activity, int cmd) {
         switch (cmd) {
             case USER_MENU_TRACK:
                 new ru.sawim.modules.tracking.TrackingForm(contact.getUserId()).activate();
@@ -126,7 +124,7 @@ public class ContactMenu implements TextBoxView.TextBoxListener {
             }
 
             case USER_MENU_ADD_USER:
-                protocol.getSearchForm().show(contact.getUserId(), false);
+                protocol.getSearchForm().show(activity, contact.getUserId(), false);
                 break;
 
             case USER_MENU_USER_REMOVE:
@@ -147,7 +145,7 @@ public class ContactMenu implements TextBoxView.TextBoxListener {
                 builder.setAdapter(menu, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        doAction(menu.getItem(which).idItem);
+                        doAction(activity, menu.getItem(which).idItem);
                     }
                 });
                 builder.create().show();
@@ -185,7 +183,6 @@ public class ContactMenu implements TextBoxView.TextBoxListener {
                     }
                     if (history.getHistorySize() > 0)
                         new HistoryStorageList().show(history);
-                    //ru.sawim.activities.SawimActivity.getSawimActivity().showHistory(history);
                 }
                 break;
 
@@ -194,7 +191,7 @@ public class ContactMenu implements TextBoxView.TextBoxListener {
                 break;
 
             case USER_MENU_USER_INFO:
-                protocol.showUserInfo(contact);
+                protocol.showUserInfo(activity, contact);
                 break;
 
             case CONFERENCE_AFFILIATION_LIST:

@@ -24,7 +24,7 @@ import java.util.List;
 public class PreferenceFormView extends PreferenceFragment {
 
     public static final String TAG = PreferenceFormView.class.getSimpleName();
-    PreferenceScreen rootScreen;
+    private PreferenceScreen rootScreen;
     private static Forms forms;
 
     @Override
@@ -37,32 +37,28 @@ public class PreferenceFormView extends PreferenceFragment {
         getActivity().supportInvalidateOptionsMenu();
     }
 
-    public static void show(final Forms forms) {
-        BaseActivity.getCurrentActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                PreferenceFormView.forms = forms;
-                if (SawimApplication.isManyPane())
-                    BaseActivity.getCurrentActivity().setContentView(R.layout.main);
-                PreferenceFormView newFragment = new PreferenceFormView();
-                FragmentTransaction transaction = BaseActivity.getCurrentActivity().getSupportFragmentManager().beginTransaction();
-                transaction.replace(R.id.fragment_container, newFragment, PreferenceFormView.TAG);
-                transaction.addToBackStack(null);
-                transaction.commitAllowingStateLoss();
-            }
-        });
+    public static void show(BaseActivity activity, final Forms forms) {
+        PreferenceFormView.forms = forms;
+        if (SawimApplication.isManyPane())
+            activity.setContentView(R.layout.main);
+        PreferenceFormView newFragment = new PreferenceFormView();
+        FragmentTransaction transaction = activity.getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragment_container, newFragment, PreferenceFormView.TAG);
+        transaction.addToBackStack(null);
+        transaction.commitAllowingStateLoss();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        BaseActivity.getCurrentActivity().resetBar(forms.getCaption());
-        BaseActivity.getCurrentActivity().getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ((BaseActivity) getActivity()).resetBar(forms.getCaption());
+        ((BaseActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     private void hideKeyboard() {
-        if (BaseActivity.getCurrentActivity().getCurrentFocus() != null)
-            ((InputMethodManager) BaseActivity.getCurrentActivity().getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(BaseActivity.getCurrentActivity().getCurrentFocus().getWindowToken(), 0);
+        if (getActivity().getCurrentFocus() != null)
+            ((InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE))
+                    .hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), 0);
     }
 
     public boolean hasBack() {
@@ -170,8 +166,6 @@ public class PreferenceFormView extends PreferenceFragment {
                         seekBarPreference.setTitleTextSize(c.level);
                         seekBarPreference.setTitleText(c.description + "(" + c.level + ")");
                         forms.controlUpdated(c);
-                        if (BaseActivity.getCurrentActivity().getConfigurationChanged() != null)
-                            BaseActivity.getCurrentActivity().getConfigurationChanged().onConfigurationChanged();
                         return true;
                     }
                 });

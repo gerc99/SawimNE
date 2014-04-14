@@ -99,7 +99,7 @@ public class SendToView extends Fragment implements AdapterView.OnItemClickListe
                 try {
                     InputStream is = getActivity().getContentResolver().openInputStream(data);
                     FileTransfer fileTransfer = new FileTransfer(p, c);
-                    fileTransfer.onFileSelect(is, ExternalApi.getFileName(data, getActivity()));
+                    fileTransfer.onFileSelect((BaseActivity) getActivity(), is, ExternalApi.getFileName(data, getActivity()));
                 } catch (FileNotFoundException e) {
                     DebugLog.panic("onFileSelect", e);
                 }
@@ -119,7 +119,7 @@ public class SendToView extends Fragment implements AdapterView.OnItemClickListe
     }
 
     private void initBar() {
-        ActionBar actionBar = BaseActivity.getCurrentActivity().getSupportActionBar();
+        ActionBar actionBar = ((BaseActivity) getActivity()).getSupportActionBar();
         boolean isShowTabs = roster.getProtocolCount() > 1;
         actionBar.setDisplayShowTitleEnabled(!isShowTabs);
         actionBar.setDisplayShowHomeEnabled(!isShowTabs);

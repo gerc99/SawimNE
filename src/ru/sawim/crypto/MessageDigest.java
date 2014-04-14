@@ -50,10 +50,10 @@ public class MessageDigest {
         byte digestBits[] = digest.digest();
         StringBuilder out = new StringBuilder();
         for (byte digestBit : digestBits) {
-            char c = (char)((digestBit >> 4) & 0xf);
-            out.append((c > 9) ? (char)((c - 10) + 'a') : (char)(c + '0'));
-            c = (char)(digestBit & 0xf);
-            out.append((c > 9) ? (char)((c - 10) + 'a') : (char)(c + '0'));
+            char c = (char) ((digestBit >> 4) & 0xf);
+            out.append((c > 9) ? (char) ((c - 10) + 'a') : (char) (c + '0'));
+            c = (char) (digestBit & 0xf);
+            out.append((c > 9) ? (char) ((c - 10) + 'a') : (char) (c + '0'));
         }
         return out.toString();
     }

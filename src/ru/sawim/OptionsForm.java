@@ -1,5 +1,6 @@
 package ru.sawim;
 
+import ru.sawim.activities.BaseActivity;
 import ru.sawim.comm.Util;
 import ru.sawim.models.form.ControlStateListener;
 import ru.sawim.models.form.Forms;
@@ -169,7 +170,7 @@ public class OptionsForm implements ControlStateListener {
         SawimApplication.updateOptions();
     }
 
-    public void select(CharSequence name, int cmd) {
+    public void select(BaseActivity activity, CharSequence name, int cmd) {
         currentOptionsForm = cmd;
         form = new Forms(R.string.options, null, false);
         form.setBackPressedListener(new Forms.OnBackPressed() {
@@ -254,7 +255,7 @@ public class OptionsForm implements ControlStateListener {
                 return;
         }
         form.setControlStateListener(this);
-        form.preferenceFormShow();
+        form.preferenceFormShow(activity);
     }
 
     public void controlStateChanged(int id) {
