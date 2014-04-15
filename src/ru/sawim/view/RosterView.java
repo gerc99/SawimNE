@@ -393,39 +393,50 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         }
     }
 
+    private void sharing(Protocol p, Contact c) {
+        Intent intent = getActivity().getIntent();
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        String type = intent.getType();
+        if (type.equals("text/plain")) {
+            String subjectText = intent.getStringExtra(Intent.EXTRA_SUBJECT);
+            String sharingText = intent.getStringExtra(Intent.EXTRA_TEXT);
+            ChatView newFragment = new ChatView();
+            c.activate((BaseActivity) getActivity(), p);
+            newFragment.initChat(p, c);
+            if (sharingText != null)
+                newFragment.setSharingText(subjectText == null ? sharingText : subjectText + "\n" + sharingText);
+            FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.fragment_container, newFragment, ChatView.TAG);
+            transaction.addToBackStack(null);
+            transaction.commit();
+        } else {
+            Uri data = intent.getParcelableExtra(Intent.EXTRA_STREAM);
+            if (data == null) return;
+            try {
+                InputStream is = getActivity().getContentResolver().openInputStream(data);
+                FileTransfer fileTransfer = new FileTransfer(p, c);
+                fileTransfer.onFileSelect((BaseActivity) getActivity(), is, ExternalApi.getFileName(data, getActivity()));
+            } catch (FileNotFoundException e) {
+            }
+            Toast.makeText(getActivity(), R.string.sending_file, Toast.LENGTH_LONG).show();
+            ((SawimActivity) getActivity()).closeActivity();
+        }
+        setMode(MODE_DEFAULT);
+    }
+
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-        TreeNode item = (TreeNode) rosterListView.getAdapter().getItem(position);
         if (getMode() == MODE_SHARE || getMode() == MODE_SHARE_TEXT) {
-            if (item.isContact()) {
-                Protocol p = RosterHelper.getInstance().getCurrentProtocol();
-                Contact c = ((Contact) item);
-                Intent intent = getActivity().getIntent();
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                String type = intent.getType();
-                if (type.equals("text/plain")) {
-                    String subjectText = intent.getStringExtra(Intent.EXTRA_SUBJECT);
-                    String sharingText = intent.getStringExtra(Intent.EXTRA_TEXT);
-                    ChatView newFragment = new ChatView();
-                    c.activate((BaseActivity) getActivity(), p);
-                    newFragment.initChat(p, c);
-                    if (sharingText != null)
-                        newFragment.setSharingText(subjectText == null ? sharingText : subjectText + "\n" + sharingText);
-                    FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                    transaction.replace(R.id.fragment_container, newFragment, ChatView.TAG);
-                    transaction.addToBackStack(null);
-                    transaction.commit();
-                } else {
-                    Uri data = intent.getParcelableExtra(Intent.EXTRA_STREAM);
-                    if (data == null) return;
-                    try {
-                        InputStream is = getActivity().getContentResolver().openInputStream(data);
-                        FileTransfer fileTransfer = new FileTransfer(p, c);
-                        fileTransfer.onFileSelect((BaseActivity) getActivity(), is, ExternalApi.getFileName(data, getActivity()));
-                    } catch (FileNotFoundException e) {
-                    }
-                    Toast.makeText(getActivity(), R.string.sending_file, Toast.LENGTH_LONG).show();
-                    ((SawimActivity) getActivity()).closeActivity();
+            if (RosterHelper.getInstance().getCurrPage() == RosterHelper.ACTIVE_CONTACTS) {
+                Object o = rosterListView.getAdapter().getItem(position);
+                if (o instanceof Chat) {
+                    Chat chat = (Chat) o;
+                    sharing(chat.getProtocol(), chat.getContact());
+                }
+            } else {
+                TreeNode item = (TreeNode) rosterListView.getAdapter().getItem(position);
+                if (item.isContact()) {
+                    sharing(RosterHelper.getInstance().getCurrentProtocol(), (Contact) item);
                 }
             }
         } else {
@@ -438,6 +449,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
                         update();
                 }
             } else {
+                TreeNode item = (TreeNode) rosterListView.getAdapter().getItem(position);
                 if (item.isContact()) {
                     openChat(RosterHelper.getInstance().getCurrentProtocol(), ((Contact) item));
                     if (SawimApplication.isManyPane())
@@ -445,10 +457,13 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
                 }
             }
         }
-        if (item.isGroup()) {
-            Group group = (Group) item;
-            group.setExpandFlag(!group.isExpanded());
-            updateRoster();
+        if (RosterHelper.getInstance().getCurrPage() != RosterHelper.ACTIVE_CONTACTS) {
+            TreeNode item = (TreeNode) rosterListView.getAdapter().getItem(position);
+            if (item.isGroup()) {
+                Group group = (Group) item;
+                group.setExpandFlag(!group.isExpanded());
+                updateRoster();
+            }
         }
     }
 
