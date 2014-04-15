@@ -29,6 +29,7 @@ import java.util.HashMap;
 public class MessageItemView extends View {
 
     private static final TextPaint textPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
+    private static final TextPaint messageTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
     private String msgTimeText;
     private String nickText;
     private int nickColor;
@@ -39,7 +40,6 @@ public class MessageItemView extends View {
     private Typeface msgTextTypeface;
     private int nickSize;
     private int msgTimeSize;
-    private int msgTextSize;
     private Bitmap checkImage;
 
     private int textY;
@@ -58,6 +58,7 @@ public class MessageItemView extends View {
     public MessageItemView(Context context) {
         super(context);
         textPaint.setAntiAlias(true);
+        messageTextPaint.setAntiAlias(true);
     }
 
     public void setTextSize(int size) {
@@ -67,9 +68,9 @@ public class MessageItemView extends View {
     public void makeLayout(int specSize) {
         if (specSize <= 0) return;
         try {
-            layout = new StaticLayout(text, textPaint, specSize, Layout.Alignment.ALIGN_NORMAL, 1.0F, 0.0F, false);
+            layout = new StaticLayout(text, messageTextPaint, specSize, Layout.Alignment.ALIGN_NORMAL, 1.0F, 0.0F, false);
         } catch (ArrayIndexOutOfBoundsException e) {
-            layout = new StaticLayout(text.toString(), textPaint, specSize, Layout.Alignment.ALIGN_NORMAL, 1.0F, 0.0F, false);
+            layout = new StaticLayout(text.toString(), messageTextPaint, specSize, Layout.Alignment.ALIGN_NORMAL, 1.0F, 0.0F, false);
         }
     }
 
@@ -153,7 +154,7 @@ public class MessageItemView extends View {
     }
 
     public void setLinkTextColor(int color) {
-        textPaint.linkColor = color;
+        messageTextPaint.linkColor = color;
     }
 
     public void setTypeface(Typeface typeface) {
@@ -161,7 +162,7 @@ public class MessageItemView extends View {
     }
 
     public void setMsgTextSize(int size) {
-        msgTextSize = size;
+        messageTextPaint.setTextSize(size * getResources().getDisplayMetrics().scaledDensity);
     }
 
     public static void clearCache() {
@@ -204,10 +205,10 @@ public class MessageItemView extends View {
         }
         if (layout != null) {
             canvas.save();
-            textPaint.setColor(msgTextColor);
-            textPaint.setTextAlign(Paint.Align.LEFT);
-            setTextSize(msgTextSize);
-            textPaint.setTypeface(msgTextTypeface);
+            messageTextPaint.setColor(msgTextColor);
+            messageTextPaint.setTextAlign(Paint.Align.LEFT);
+
+            messageTextPaint.setTypeface(msgTextTypeface);
             canvas.translate(getPaddingLeft(), titleHeight);
             layout.draw(canvas);
             canvas.restore();
