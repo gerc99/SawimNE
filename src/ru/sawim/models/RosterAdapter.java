@@ -98,12 +98,10 @@ public class RosterAdapter extends BaseAdapter {
                 }
             }*/
             items.clear();
-            synchronized (p.getRosterLockObject()) {
-                if (roster.useGroups) {
-                    roster.rebuildFlatItemsWG(p, items);
-                } else {
-                    roster.rebuildFlatItemsWOG(p, items);
-                }
+            if (roster.useGroups) {
+                roster.rebuildFlatItemsWG(p, items);
+            } else {
+                roster.rebuildFlatItemsWOG(p, items);
             }
         }
         notifyDataSetChanged();

@@ -25,7 +25,7 @@ import ru.sawim.models.list.VirtualListItem;
 import ru.sawim.models.list.VirtualListModel;
 import ru.sawim.modules.DebugLog;
 import ru.sawim.modules.fs.FileBrowserListener;
-import ru.sawim.modules.photo.PhotoListener;
+import ru.sawim.photo.PhotoListener;
 import ru.sawim.util.JLocale;
 import ru.sawim.view.VirtualListView;
 

@@ -17,7 +17,7 @@ import ru.sawim.models.form.Forms;
 import ru.sawim.modules.DebugLog;
 import ru.sawim.modules.fs.FileBrowserListener;
 import ru.sawim.modules.fs.JSR75FileSystem;
-import ru.sawim.modules.photo.PhotoListener;
+import ru.sawim.photo.PhotoListener;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.util.JLocale;
 

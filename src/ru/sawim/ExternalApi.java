@@ -17,7 +17,7 @@ import protocol.net.TcpSocket;
 import ru.sawim.activities.BaseActivity;
 import ru.sawim.modules.DebugLog;
 import ru.sawim.modules.fs.FileBrowserListener;
-import ru.sawim.modules.photo.PhotoListener;
+import ru.sawim.photo.PhotoListener;
 import ru.sawim.photo.CameraActivity;
 
 import java.io.File;

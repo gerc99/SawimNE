@@ -39,15 +39,7 @@ public class MessagesAdapter extends BaseAdapter {
     public void init(Chat chat) {
         currentProtocol = chat.getProtocol();
         currentContact = chat.getContact().getUserId();
-        refreshList(chat.getMessData());
-    }
-
-    public void refreshList(List<MessData> list) {
-        items.clear();
-        for (int i = 0; i < list.size(); ++i) {
-            items.add(list.get(i));
-        }
-        notifyDataSetChanged();
+        items = chat.getMessData();
     }
 
     public boolean isMultiQuote() {

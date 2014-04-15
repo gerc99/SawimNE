@@ -1,7 +1,7 @@
 
 
 
-package ru.sawim.modules.photo;
+package ru.sawim.photo;
 
 
 import ru.sawim.activities.BaseActivity;
