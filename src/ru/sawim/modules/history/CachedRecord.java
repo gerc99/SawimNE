@@ -1,4 +1,4 @@
-package ru.sawim.history;
+package ru.sawim.modules.history;
 
 
 public class CachedRecord {

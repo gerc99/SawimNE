@@ -1,4 +1,4 @@
-package ru.sawim.crypto;
+package ru.sawim.modules.crypto;
 
 import ru.sawim.comm.StringConvertor;
 

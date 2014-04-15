@@ -1,6 +1,6 @@
 package protocol.xmpp;
 
-import ru.sawim.search.UserInfo;
+import ru.sawim.modules.search.UserInfo;
 
 public class AvatarLoader implements Runnable {
     private byte[] avatarBytes = null;

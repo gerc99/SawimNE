@@ -5,7 +5,7 @@ import ru.sawim.R;
 import ru.sawim.activities.BaseActivity;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
-import ru.sawim.search.UserInfo;
+import ru.sawim.modules.search.UserInfo;
 
 public class EditInfo implements FormListener {
 

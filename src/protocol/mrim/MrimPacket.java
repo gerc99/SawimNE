@@ -4,8 +4,8 @@ import ru.sawim.SawimApplication;
 import ru.sawim.comm.Config;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
-import ru.sawim.crypto.MD5;
-import ru.sawim.search.Search;
+import ru.sawim.modules.crypto.MD5;
+import ru.sawim.modules.search.Search;
 
 
 final class MrimPacket {

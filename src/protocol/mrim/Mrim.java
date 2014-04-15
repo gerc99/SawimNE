@@ -11,8 +11,8 @@ import ru.sawim.comm.Util;
 import ru.sawim.models.list.VirtualList;
 import ru.sawim.models.list.VirtualListModel;
 import ru.sawim.roster.RosterHelper;
-import ru.sawim.search.Search;
-import ru.sawim.search.UserInfo;
+import ru.sawim.modules.search.Search;
+import ru.sawim.modules.search.UserInfo;
 import ru.sawim.util.JLocale;
 
 import java.io.DataInputStream;

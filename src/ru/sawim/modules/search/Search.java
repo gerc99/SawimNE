@@ -1,4 +1,4 @@
-package ru.sawim.search;
+package ru.sawim.modules.search;
 
 import android.view.ContextMenu;
 import android.view.Menu;

@@ -1,4 +1,4 @@
-package ru.sawim.photo;
+package ru.sawim.modules.photo;
 
 import android.content.Context;
 import android.hardware.Camera;

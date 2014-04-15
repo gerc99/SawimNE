@@ -13,8 +13,8 @@ import ru.sawim.chat.message.PlainMessage;
 import ru.sawim.chat.message.SystemNotice;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
-import ru.sawim.history.CachedRecord;
-import ru.sawim.history.HistoryStorage;
+import ru.sawim.modules.history.CachedRecord;
+import ru.sawim.modules.history.HistoryStorage;
 import ru.sawim.roster.RosterHelper;
 
 import java.util.ArrayList;

@@ -17,8 +17,8 @@ import protocol.net.TcpSocket;
 import ru.sawim.activities.BaseActivity;
 import ru.sawim.modules.DebugLog;
 import ru.sawim.modules.fs.FileBrowserListener;
-import ru.sawim.photo.PhotoListener;
-import ru.sawim.photo.CameraActivity;
+import ru.sawim.modules.photo.PhotoListener;
+import ru.sawim.modules.photo.CameraActivity;
 
 import java.io.File;
 import java.io.InputStream;
@@ -122,7 +122,6 @@ public class ExternalApi {
             }
             fragment = null;
         } catch (Throwable ignored) {
-            DebugLog.panic("fragment", ignored);
         }
         return false;
     }

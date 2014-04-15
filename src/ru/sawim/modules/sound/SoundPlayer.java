@@ -1,4 +1,4 @@
-package ru.sawim.sound;
+package ru.sawim.modules.sound;
 
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;

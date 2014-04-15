@@ -13,7 +13,7 @@ import ru.sawim.comm.ArrayReader;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
 import ru.sawim.modules.DebugLog;
-import ru.sawim.search.UserInfo;
+import ru.sawim.modules.search.UserInfo;
 
 public class RequestInfoAction extends IcqAction {
 

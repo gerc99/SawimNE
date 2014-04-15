@@ -35,7 +35,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-package ru.sawim.connection.zlib;
+package ru.sawim.modules.zlib;
 
 import java.io.IOException;
 import java.io.OutputStream;

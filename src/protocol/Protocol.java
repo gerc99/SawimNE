@@ -19,8 +19,8 @@ import ru.sawim.modules.DebugLog;
 import ru.sawim.modules.Notify;
 import ru.sawim.modules.tracking.Tracking;
 import ru.sawim.roster.RosterHelper;
-import ru.sawim.search.Search;
-import ru.sawim.search.UserInfo;
+import ru.sawim.modules.search.Search;
+import ru.sawim.modules.search.UserInfo;
 import ru.sawim.util.JLocale;
 
 import java.io.*;

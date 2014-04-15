@@ -1,4 +1,4 @@
-package ru.sawim.history;
+package ru.sawim.modules.history;
 
 import protocol.Contact;
 import ru.sawim.R;

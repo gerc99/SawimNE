@@ -11,10 +11,10 @@ import ru.sawim.chat.message.SystemNotice;
 import ru.sawim.comm.Config;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
-import ru.sawim.crypto.MD5;
+import ru.sawim.modules.crypto.MD5;
 import ru.sawim.modules.DebugLog;
 import ru.sawim.roster.RosterHelper;
-import ru.sawim.search.UserInfo;
+import ru.sawim.modules.search.UserInfo;
 import ru.sawim.util.JLocale;
 
 import java.io.BufferedReader;

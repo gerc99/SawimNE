@@ -17,8 +17,8 @@ import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
 import ru.sawim.forms.PrivateStatusForm;
 import ru.sawim.roster.RosterHelper;
-import ru.sawim.search.Search;
-import ru.sawim.search.UserInfo;
+import ru.sawim.modules.search.Search;
+import ru.sawim.modules.search.UserInfo;
 import ru.sawim.util.JLocale;
 
 import java.io.ByteArrayInputStream;

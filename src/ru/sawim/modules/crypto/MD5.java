@@ -1,4 +1,4 @@
-package ru.sawim.crypto;
+package ru.sawim.modules.crypto;
 
 public final class MD5 extends MessageDigest {
     public static byte[] calculate(String input) {

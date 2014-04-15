@@ -1,4 +1,4 @@
-package ru.sawim.search;
+package ru.sawim.modules.search;
 
 import DrawControls.icons.Icon;
 import android.view.ContextMenu;
@@ -25,7 +25,7 @@ import ru.sawim.models.list.VirtualListItem;
 import ru.sawim.models.list.VirtualListModel;
 import ru.sawim.modules.DebugLog;
 import ru.sawim.modules.fs.FileBrowserListener;
-import ru.sawim.photo.PhotoListener;
+import ru.sawim.modules.photo.PhotoListener;
 import ru.sawim.util.JLocale;
 import ru.sawim.view.VirtualListView;
 
@@ -409,7 +409,6 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
 
     public void processPhoto(BaseActivity activity, byte[] data) {
         setBinAvatar(data);
-        data = null;
         if (null != avatar) {
             protocol.saveUserInfo(this);
             updateProfileView();

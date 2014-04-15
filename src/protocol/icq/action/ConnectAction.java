@@ -12,7 +12,7 @@ import ru.sawim.SawimException;
 import ru.sawim.comm.ArrayReader;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
-import ru.sawim.crypto.MD5;
+import ru.sawim.modules.crypto.MD5;
 import ru.sawim.modules.DebugLog;
 
 import java.util.Vector;

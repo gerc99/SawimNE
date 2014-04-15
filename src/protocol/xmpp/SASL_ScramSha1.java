@@ -3,8 +3,8 @@ package protocol.xmpp;
 
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
-import ru.sawim.crypto.HMACSHA1;
-import ru.sawim.crypto.SHA1;
+import ru.sawim.modules.crypto.HMACSHA1;
+import ru.sawim.modules.crypto.SHA1;
 
 public class SASL_ScramSha1 {
     private String jid;

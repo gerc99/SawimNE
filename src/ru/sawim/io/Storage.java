@@ -52,7 +52,7 @@ public final class Storage {
         return null != rs;
     }
 
-    public void open(boolean create) throws IOException, Exception {
+    public void open(boolean create) throws Exception {
         if (null == rs) {
             rs = SawimApplication.getInstance().recordStoreManager.openRecordStore(name, create);
         }

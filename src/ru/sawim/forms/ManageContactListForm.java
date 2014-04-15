@@ -12,7 +12,7 @@ import ru.sawim.comm.Util;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
 import ru.sawim.roster.RosterHelper;
-import ru.sawim.search.Search;
+import ru.sawim.modules.search.Search;
 import ru.sawim.util.JLocale;
 import ru.sawim.view.TextBoxView;
 import ru.sawim.view.menu.MyMenu;

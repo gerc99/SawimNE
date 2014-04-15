@@ -6,8 +6,8 @@ import protocol.Group;
 import protocol.Protocol;
 import protocol.StatusInfo;
 import ru.sawim.chat.message.PlainMessage;
-import ru.sawim.search.Search;
-import ru.sawim.search.UserInfo;
+import ru.sawim.modules.search.Search;
+import ru.sawim.modules.search.UserInfo;
 
 /**
  * Created with IntelliJ IDEA.

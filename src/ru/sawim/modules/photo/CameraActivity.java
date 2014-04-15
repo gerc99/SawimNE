@@ -1,4 +1,4 @@
-package ru.sawim.photo;
+package ru.sawim.modules.photo;
 
 import android.app.Activity;
 import android.content.Intent;

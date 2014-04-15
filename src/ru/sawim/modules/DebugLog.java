@@ -29,20 +29,6 @@ public final class DebugLog {
         println(str + " = " + size + "kb.");
     }
 
-    private static String _(String text) {
-        if (null == text) {
-            return "";
-        }
-        try {
-            String text1 = text;
-            if (!text1.equals(text)) {
-                return "[l] " + text1;
-            }
-        } catch (Exception ignored) {
-        }
-        return text;
-    }
-
     public static void systemPrintln(String text) {
         System.out.println(text);
     }
@@ -69,14 +55,14 @@ public final class DebugLog {
             try {
                 throw new Exception();
             } catch (Exception e) {
-                println("assert: " + _(str));
+                println("assert: " + str);
                 e.printStackTrace();
             }
         }
     }
 
     public static void panic(String str, Throwable e) {
-        String text = "panic: " + _(str) + " " + e.getMessage()
+        String text = "panic: " + str + " " + e.getMessage()
                 + " (" + e.getClass().getName() + ")";
         for (StackTraceElement ste : e.getStackTrace()) {
             text += String.format("\n%s.%s() %d", ste.getClassName(), ste.getMethodName(), ste.getLineNumber());
@@ -96,13 +82,13 @@ public final class DebugLog {
 
     public static long profilerStep(String str, long startTime) {
         long now = System.currentTimeMillis();
-        println("profiler: " + _(str) + ": " + (now - startTime));
+        println("profiler: " + str + ": " + (now - startTime));
         return now;
     }
 
     public static void profilerStep(String str) {
         long now = System.currentTimeMillis();
-        println("profiler: " + _(str) + ": " + (now - profilerTime));
+        println("profiler: " + str + ": " + (now - profilerTime));
         profilerTime = now;
     }
 
@@ -203,7 +189,7 @@ public final class DebugLog {
         String date = Util.getLocalDateString(SawimApplication.getCurrentGmtTime(), true);
         record.addLabel(date + ": ", Scheme.THEME_NUMBER,
                 Scheme.FONT_STYLE_PLAIN);
-        record.addDescription(_(text), Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
+        record.addDescription(text, Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
 
         model.addPar(record);
         removeOldRecords();

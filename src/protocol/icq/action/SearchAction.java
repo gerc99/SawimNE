@@ -11,8 +11,8 @@ import ru.sawim.SawimException;
 import ru.sawim.comm.ArrayReader;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
-import ru.sawim.search.Search;
-import ru.sawim.search.UserInfo;
+import ru.sawim.modules.search.Search;
+import ru.sawim.modules.search.UserInfo;
 
 
 public class SearchAction extends IcqAction {

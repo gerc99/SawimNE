@@ -1,4 +1,4 @@
-package ru.sawim.history;
+package ru.sawim.modules.history;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
