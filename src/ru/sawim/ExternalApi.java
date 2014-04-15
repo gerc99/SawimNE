@@ -57,7 +57,6 @@ public class ExternalApi {
         cameraIntent.putExtra(CameraActivity.WIDTH, width);
         cameraIntent.putExtra(CameraActivity.HEIGHT, height);
         fragment.startActivityForResult(cameraIntent, RESULT_PHOTO);
-        fragment = null;
     }
 
     public boolean pickFile(FileBrowserListener listener) {
@@ -69,7 +68,6 @@ public class ExternalApi {
             intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
             if (!isCallable(intent)) return false;
             fragment.startActivityForResult(intent, RESULT_EXTERNAL_FILE);
-            fragment = null;
             return true;
         } catch (Exception e) {
             ru.sawim.modules.DebugLog.panic("pickFile", e);
