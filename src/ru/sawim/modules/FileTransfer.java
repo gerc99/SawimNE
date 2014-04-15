@@ -1,4 +1,4 @@
-package ru.sawim;
+package ru.sawim.modules;
 
 import android.graphics.BitmapFactory;
 import android.os.Build;
@@ -7,6 +7,10 @@ import org.json.JSONObject;
 import protocol.Contact;
 import protocol.Protocol;
 import protocol.net.TcpSocket;
+import ru.sawim.R;
+import ru.sawim.SawimApplication;
+import ru.sawim.SawimException;
+import ru.sawim.SawimNotification;
 import ru.sawim.activities.BaseActivity;
 import ru.sawim.activities.SawimActivity;
 import ru.sawim.chat.Chat;
@@ -14,7 +18,6 @@ import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
-import ru.sawim.modules.DebugLog;
 import ru.sawim.modules.fs.FileBrowserListener;
 import ru.sawim.modules.photo.PhotoListener;
 import ru.sawim.roster.RosterHelper;

@@ -64,14 +64,14 @@ public class SawimActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         supportRequestWindowFeature(Window.FEATURE_PROGRESS);
 
-        if (Intent.ACTION_SEND.equals(getIntent().getAction())) {
+        if (Intent.ACTION_SEND.startsWith(getIntent().getAction())) {
             setContentView(R.layout.main);
             if (findViewById(R.id.fragment_container) != null) {
                 if (savedInstanceState != null) {
                     return;
                 }
                 RosterView rosterView = new RosterView();
-                rosterView.setMode(RosterView.MODE_SHARE);
+                rosterView.setMode(getIntent().getType().equals("text/plain") ? RosterView.MODE_SHARE_TEXT : RosterView.MODE_SHARE);
                 rosterView.setArguments(getIntent().getExtras());
                 getSupportFragmentManager().beginTransaction()
                         .add(R.id.fragment_container, rosterView, RosterView.TAG).commit();
@@ -96,6 +96,7 @@ public class SawimActivity extends BaseActivity {
 
     private void handleIntent() {
         if (getIntent() == null) return;
+        if (Intent.ACTION_SEND.startsWith(getIntent().getAction())) return;
         if (NOTIFY.equals(getIntent().getAction())) {
             Chat current = ChatHistory.instance.chatAt(ChatHistory.instance.getPreferredItem());
             if (current != null)
@@ -198,30 +199,27 @@ public class SawimActivity extends BaseActivity {
         SawimFragment preferenceFormView = (SawimFragment) getSupportFragmentManager().findFragmentByTag(MainPreferenceView.TAG);
         SawimFragment virtualListView = (SawimFragment) getSupportFragmentManager().findFragmentByTag(VirtualListView.TAG);
         RosterView rosterView = getRosterView();
-        if (rosterView != null && rosterView.getMode() == RosterView.MODE_SHARE) {
-            super.onBackPressed();
-            finish();
-            Intent intent = new Intent(this, SawimActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent);
-        } else {
-            if (chatView != null && chatView.isVisible()) {
+        if (chatView != null && chatView.isVisible()) {
+            if (rosterView != null && rosterView.getMode() == RosterView.MODE_SHARE_TEXT) {
+                super.onBackPressed();
+                closeActivity();
+            } else {
                 if (chatView.hasBack())
                     super.onBackPressed();
-            } else if (virtualListView != null) {
-                if (virtualListView.hasBack())
-                    back();
-            } else if (formView != null) {
-                if (formView.hasBack())
-                    back();
-            } else if (preferenceFormView != null) {
-                if (preferenceFormView.hasBack()) {
-                    back();
-                }
-            } else super.onBackPressed();
-            //if (SawimApplication.isManyPane())
-            //    rosterView.resume();
-        }
+            }
+        } else if (virtualListView != null) {
+            if (virtualListView.hasBack())
+                back();
+        } else if (formView != null) {
+            if (formView.hasBack())
+                back();
+        } else if (preferenceFormView != null) {
+            if (preferenceFormView.hasBack()) {
+                back();
+            }
+        } else super.onBackPressed();
+        //if (SawimApplication.isManyPane())
+        //    rosterView.resume();
     }
 
     private void back() {
@@ -234,6 +232,13 @@ public class SawimActivity extends BaseActivity {
     public void recreateActivity() {
         finish();
         startActivity(new Intent(this, SawimActivity.class));
+    }
+
+    public void closeActivity() {
+        finish();
+        Intent intent = new Intent(this, SawimActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
     }
 
     @Override

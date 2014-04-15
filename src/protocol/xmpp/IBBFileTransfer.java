@@ -3,7 +3,7 @@
 package protocol.xmpp;
 
 
-import ru.sawim.FileTransfer;
+import ru.sawim.modules.FileTransfer;
 import ru.sawim.comm.Util;
 
 

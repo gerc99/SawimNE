@@ -7,7 +7,7 @@ import protocol.*;
 import protocol.icq.Icq;
 import protocol.mrim.Mrim;
 import protocol.xmpp.Xmpp;
-import ru.sawim.FileTransfer;
+import ru.sawim.modules.FileTransfer;
 import ru.sawim.Options;
 import ru.sawim.SawimApplication;
 import ru.sawim.comm.StringConvertor;

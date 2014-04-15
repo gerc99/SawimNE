@@ -37,7 +37,7 @@ import ru.sawim.chat.ChatHistory;
 import ru.sawim.forms.ManageContactListForm;
 import ru.sawim.models.ProtocolsAdapter;
 import ru.sawim.models.RosterAdapter;
-import ru.sawim.modules.DebugLog;
+import ru.sawim.modules.FileTransfer;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.roster.TreeNode;
 import ru.sawim.util.JLocale;
@@ -69,6 +69,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
 
     public static final int MODE_DEFAULT = 0;
     public static final int MODE_SHARE = 1;
+    public static final int MODE_SHARE_TEXT = 2;
     private int mode;
 
     private LinearLayout rosterBarLayout;
@@ -395,7 +396,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
         TreeNode item = (TreeNode) rosterListView.getAdapter().getItem(position);
-        if (getMode() == MODE_SHARE) {
+        if (getMode() == MODE_SHARE || getMode() == MODE_SHARE_TEXT) {
             if (item.isContact()) {
                 Protocol p = RosterHelper.getInstance().getCurrentProtocol();
                 Contact c = ((Contact) item);
@@ -424,7 +425,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
                     } catch (FileNotFoundException e) {
                     }
                     Toast.makeText(getActivity(), R.string.sending_file, Toast.LENGTH_LONG).show();
-                    getFragmentManager().popBackStack();
+                    ((SawimActivity) getActivity()).closeActivity();
                 }
             }
         } else {

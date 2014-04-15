@@ -5,7 +5,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.widget.Toast;
 import protocol.*;
-import ru.sawim.FileTransfer;
+import ru.sawim.modules.FileTransfer;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.activities.BaseActivity;
