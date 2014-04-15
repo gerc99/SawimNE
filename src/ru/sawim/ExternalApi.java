@@ -29,16 +29,16 @@ public class ExternalApi {
 
     private Fragment fragment;
 
-    public void setFragment(Fragment a) {
-        fragment = a;
-    }
-
     private PhotoListener photoListener = null;
     private FileBrowserListener fileTransferListener = null;
     private Uri imageUrl = null;
     private static final int RESULT_PHOTO = FragmentActivity.RESULT_FIRST_USER + 1;
     private static final int RESULT_EXTERNAL_PHOTO = FragmentActivity.RESULT_FIRST_USER + 2;
     public static final int RESULT_EXTERNAL_FILE = FragmentActivity.RESULT_FIRST_USER + 3;
+
+    public void setFragment(Fragment a) {
+        fragment = a;
+    }
 
     public void startCamera(PhotoListener listener, int width, int height) {
         photoListener = listener;
@@ -54,9 +54,10 @@ public class ExternalApi {
             }
         }
         Intent cameraIntent = new Intent(fragment.getActivity(), CameraActivity.class);
-        cameraIntent.putExtra("width", width);
-        cameraIntent.putExtra("height", height);
+        cameraIntent.putExtra(CameraActivity.WIDTH, width);
+        cameraIntent.putExtra(CameraActivity.HEIGHT, height);
         fragment.startActivityForResult(cameraIntent, RESULT_PHOTO);
+        fragment = null;
     }
 
     public boolean pickFile(FileBrowserListener listener) {
@@ -68,6 +69,7 @@ public class ExternalApi {
             intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
             if (!isCallable(intent)) return false;
             fragment.startActivityForResult(intent, RESULT_EXTERNAL_FILE);
+            fragment = null;
             return true;
         } catch (Exception e) {
             ru.sawim.modules.DebugLog.panic("pickFile", e);
@@ -85,7 +87,7 @@ public class ExternalApi {
         try {
             if (RESULT_PHOTO == requestCode) {
                 if (null == photoListener) return false;
-                photoListener.processPhoto((BaseActivity) fragment.getActivity(), data.getByteArrayExtra("photo"));
+                photoListener.processPhoto((BaseActivity) fragment.getActivity(), data.getByteArrayExtra(CameraActivity.PHOTO));
                 photoListener = null;
                 return true;
 
@@ -118,35 +120,12 @@ public class ExternalApi {
                 fileTransferListener = null;
                 return true;
             }
+            fragment = null;
         } catch (Throwable ignored) {
             DebugLog.panic("fragment", ignored);
         }
         return false;
     }
-
-    private static String getMimeTypeFromUri(FragmentActivity a, Uri uri) {
-        try {
-            String[] projection = {MediaStore.MediaColumns.MIME_TYPE};
-            Cursor cursor = a.managedQuery(uri, projection, null, null, null);
-            if (cursor != null) {
-                int column_index = cursor
-                        .getColumnIndexOrThrow(MediaStore.MediaColumns.MIME_TYPE);
-                cursor.moveToFirst();
-                return cursor.getString(column_index);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    /*public void showHistory(HistoryStorage history) {
-        String historyFilePath = history.getAndroidStorage().getTextFile();
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        Uri uri = Uri.parse("file://" + historyFilePath);
-        intent.setDataAndType(uri, "text/plain");
-        fragment.startActivity(intent);
-    }*/
 
     private static File getOutputMediaFile() {
         File mediaStorageDir = new File(android.os.Environment.getExternalStoragePublicDirectory(

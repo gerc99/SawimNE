@@ -5,11 +5,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.*;
 import android.util.Log;
+import com.google.android.gms.gcm.GoogleCloudMessaging;
 import ru.sawim.Options;
 import ru.sawim.R;
 import ru.sawim.SawimNotification;
 import ru.sawim.chat.ChatHistory;
 import ru.sawim.roster.RosterHelper;
+
+import java.io.IOException;
 
 public class SawimService extends Service {
 
@@ -104,7 +107,13 @@ public class SawimService extends Service {
                         SawimService.this.startForeground(R.string.app_name, SawimNotification.get(SawimService.this));
                         break;
                     case SET_STATUS:
-                        RosterHelper.getInstance().setStatus();
+                        //new AsyncTask<Void, Void, Void>() {
+                        //    @Override
+                        //    protected Void doInBackground(Void... params) {
+                                RosterHelper.getInstance().setStatus();
+                        //        return null;
+                        //    }
+                        //}.execute(null, null, null);
                         break;
                 }
             } catch (Exception e) {

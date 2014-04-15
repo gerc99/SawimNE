@@ -31,12 +31,10 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
     private VirtualList list = VirtualList.getInstance();
     private MyListView lv;
     private AdapterView.AdapterContextMenuInfo contextMenuInfo;
-    private static BaseActivity activity;
 
     @Override
     public void onAttach(Activity a) {
         super.onAttach(a);
-        activity = (BaseActivity) a;
         list.setVirtualListListener(this);
     }
 
@@ -47,7 +45,6 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
             list.clearAll();
             adapter = null;
         }
-        activity = null;
     }
 
     @Override
@@ -78,7 +75,7 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
                     }
                 }
                 if (list.getClickListListener() != null)
-                    list.getClickListListener().itemSelected(activity, position);
+                    list.getClickListListener().itemSelected((BaseActivity) getActivity(), position);
             }
         });
         currentActivity.registerForContextMenu(lv);
@@ -101,18 +98,18 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
         if (menuInfo == null)
             menuInfo = contextMenuInfo;
         if (list.getBuildContextMenu() != null)
-            list.getBuildContextMenu().onContextItemSelected(activity, menuInfo.position, item.getItemId());
+            list.getBuildContextMenu().onContextItemSelected((BaseActivity) getActivity(), menuInfo.position, item.getItemId());
         return super.onContextItemSelected(item);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        activity.resetBar(list.getCaption());
-        activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ((BaseActivity) getActivity()).resetBar(list.getCaption());
+        ((BaseActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
-    public static void show() {
+    public static void show(BaseActivity activity) {
         if (SawimApplication.isManyPane())
             activity.setContentView(R.layout.main);
         VirtualListView newFragment = new VirtualListView();
@@ -125,7 +122,7 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
     @Override
     public void update() {
         if (list.getModel() == null) return;
-        activity.runOnUiThread(new Runnable() {
+        getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 adapter.refreshList(list.getModel().elements);
@@ -137,10 +134,10 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
     @Override
     public void back() {
         if (SawimApplication.isManyPane())
-            ((SawimActivity) activity).recreateActivity();
+            ((SawimActivity) getActivity()).recreateActivity();
         else
-            activity.getSupportFragmentManager().popBackStack();
-        activity.supportInvalidateOptionsMenu();
+            getActivity().getSupportFragmentManager().popBackStack();
+        getActivity().supportInvalidateOptionsMenu();
     }
 
     public boolean hasBack() {
@@ -161,7 +158,7 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
 
     public void onOptionsItemSelected_(MenuItem item) {
         if (list.getBuildOptionsMenu() != null)
-            list.getBuildOptionsMenu().onOptionsItemSelected(activity, item);
+            list.getBuildOptionsMenu().onOptionsItemSelected((BaseActivity) getActivity(), item);
     }
 
     @Override
@@ -171,7 +168,7 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
 
     @Override
     public void setCurrentItemIndex(final int i, final boolean isSelected) {
-        activity.runOnUiThread(new Runnable() {
+        getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 if (isSelected)

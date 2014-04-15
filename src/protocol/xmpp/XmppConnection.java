@@ -849,7 +849,7 @@ public final class XmppConnection extends ClientConnection {
                 XmlNode storage = iqQuery.getFirstNode("storage", "storage:bookmarks");
                 if (null != storage) {
                     loadBookmarks(storage);
-                } else if (null == storage) {
+                } else {
                     storage = iqQuery.getFirstNode("storage", "http://miranda-im.org/storage#notes");
                     if (null != storage) {
                         loadMirandaNotes(storage);
@@ -1168,7 +1168,6 @@ public final class XmppConnection extends ClientConnection {
         xmpp.setContactListAddition(group);
         xmpp.rejoin();
     }
-
 
     private void parsePresence(XmlNode x) {
         final String fromFull = x.getAttribute(S_FROM);

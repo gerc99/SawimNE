@@ -26,7 +26,6 @@ import java.io.DataOutputStream;
 import java.util.ArrayList;
 import java.util.Vector;
 
-
 public final class Xmpp extends Protocol implements FormListener {
 
     public final static int PRIORITY = 50;
@@ -63,7 +62,6 @@ public final class Xmpp extends Protocol implements FormListener {
             StatusInfo.STATUS_AWAY,
             StatusInfo.STATUS_DND
     };
-
 
     private static final byte[] statusesOther = {
             StatusInfo.STATUS_OFFLINE,
@@ -118,7 +116,7 @@ public final class Xmpp extends Protocol implements FormListener {
         for (int i = 0; i < rejoinList.size(); ++i) {
             String jid = (String) rejoinList.elementAt(i);
             XmppServiceContact conf = (XmppServiceContact) getItemByUIN(jid);
-            if ((null != conf) && !conf.isOnline()) {
+            if (null != conf && !conf.isOnline()) {
                 join(conf);
             }
         }
@@ -238,7 +236,6 @@ public final class Xmpp extends Protocol implements FormListener {
         return group;
     }
 
-
     public final Group getOrCreateGroup(String groupName) {
         if (StringConvertor.isEmpty(groupName)) {
             return null;
@@ -298,15 +295,15 @@ public final class Xmpp extends Protocol implements FormListener {
 
     protected void s_updateOnlineStatus() {
         connection.setStatus(getProfile().statusIndex, "", PRIORITY);
-        /*if (isReconnect()) {
+        if (isReconnect()) {
             for (int i = 0; i < rejoinList.size(); ++i) {
                 String jid = (String) rejoinList.elementAt(i);
                 XmppServiceContact c = (XmppServiceContact) getItemByUIN(jid);
-                if (null != c) {
+                if (null != c && !c.isOnline()) {
                     connection.sendPresence(c);
                 }
             }
-        }*/
+        }
     }
 
     @Override

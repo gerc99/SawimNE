@@ -11,9 +11,14 @@ import android.widget.FrameLayout;
 import ru.sawim.R;
 
 public class CameraActivity extends Activity {
+
     private static final String TAG = CameraActivity.class.getSimpleName();
     private Preview preview;
     private Button buttonClick;
+
+    public static final String PHOTO = "photo";
+    public static final String WIDTH = "width";
+    public static final String HEIGHT = "height";
 
     /**
      * Called when the activity is first created.
@@ -22,8 +27,8 @@ public class CameraActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.photo);
-        int width = getIntent().getExtras().getInt("width", 1024);
-        int height = getIntent().getExtras().getInt("height", 768);
+        int width = getIntent().getExtras().getInt(WIDTH, 1024);
+        int height = getIntent().getExtras().getInt(HEIGHT, 768);
         try {
             init(width, height);
         } catch (Exception ignored) {
@@ -47,7 +52,7 @@ public class CameraActivity extends Activity {
                     //preview.destroyCamera();
                     Activity it = CameraActivity.this;
                     Intent intent = new Intent();
-                    intent.putExtra("photo", jpeg);
+                    intent.putExtra(PHOTO, jpeg);
                     it.setResult(RESULT_OK, intent);
                     if (null != it.getParent()) {
                         it.getParent().setResult(RESULT_OK, intent);

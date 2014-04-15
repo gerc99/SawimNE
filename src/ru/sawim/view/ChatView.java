@@ -71,10 +71,9 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
     private Contact contact;
     private String sharingText;
     private boolean sendByEnter;
-    private boolean isConference;
 
     private RosterAdapter chatsSpinnerAdapter;
-    private MessagesAdapter adapter = new MessagesAdapter();
+    private MessagesAdapter adapter;
     private EditText messageEditor;
     private MyListView nickList;
     private MyListView chatListView;
@@ -82,7 +81,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
     private ChatInputBarView chatInputBarView;
     private ChatViewRoot chatViewLayout;
     private SmileysPopup smileysPopup;
-    private MucUsersView mucUsersView = new MucUsersView();
+    private MucUsersView mucUsersView;
     private ActionBarDrawerToggle drawerToggle;
     private DrawerLayout drawerLayout;
     private MyImageButton chatsImage;
@@ -365,6 +364,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         if (drawerToggle != null) {
             drawerToggle.setDrawerIndicatorEnabled(false);
             drawerLayout.setDrawerListener(null);
+            drawerToggle = null;
         }
     }
 
@@ -372,11 +372,30 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
     public void onDetach() {
         super.onDetach();
         MessagesAdapter.clearCache();
+        ((BaseActivity) getActivity()).setConfigurationChanged(null);
         sharingText = null;
         chat = null;
         oldChat = null;
         contact = null;
         protocol = null;
+        handler = null;
+        chatsImage = null;
+        menuButton = null;
+        smileButton = null;
+        sendButton = null;
+        messageEditor = null;
+        chatBarLayout = null;
+        chatListView = null;
+        nickList = null;
+        chatListsView = null;
+        chatInputBarView = null;
+        chatViewLayout = null;
+        smileysPopup = null;
+        drawerLayout = null;
+        adapter = null;
+        mucUsersView = null;
+        chatsSpinnerAdapter = null;
+        chatDialogFragment = null;
     }
 
     public boolean hasBack() {
@@ -491,7 +510,8 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         chatListView.postDelayed(new Runnable() {
             @Override
             public void run() {
-                chatListView.setTranscriptMode(ListView.TRANSCRIPT_MODE_NORMAL);
+                if (chatListView != null)
+                    chatListView.setTranscriptMode(ListView.TRANSCRIPT_MODE_NORMAL);
             }
         }, 700L);
     }
@@ -537,11 +557,9 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         initChat(p, c);
         chat = protocol.getChat(contact);
         lastChat = chat.getContact().getUserId();
-        if (oldChat != null) {
-            if (oldChat.equals(lastChat)) {
-                chatListView.setTranscriptMode(ListView.TRANSCRIPT_MODE_DISABLED);
-                return;
-            }
+        if (oldChat != null && oldChat.equals(lastChat)) {
+            chatListView.setTranscriptMode(ListView.TRANSCRIPT_MODE_DISABLED);
+            return;
         }
         initLabel();
         initList();
@@ -598,6 +616,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
     }
 
     private void initList() {
+        adapter = new MessagesAdapter();
         adapter.init(chat);
         chatListView.setAdapter(adapter);
         chatListView.setStackFromBottom(true);
@@ -612,8 +631,9 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
             nickList.setVisibility(View.VISIBLE);
         else if (drawerLayout.isDrawerOpen(nickList))
             drawerLayout.closeDrawer(nickList);
-        isConference = contact instanceof XmppServiceContact && contact.isConference();
+        boolean isConference = contact instanceof XmppServiceContact && contact.isConference();
         if (isConference) {
+            mucUsersView = new MucUsersView();
             mucUsersView.init(protocol, (XmppServiceContact) contact);
             mucUsersView.show(this, nickList);
         } else {
@@ -640,7 +660,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
             case UPDATE_MUC_LIST:
                 if (contact != null && contact.isPresence() == (byte) 1)
                     adapter.refreshList(chat.getMessData());
-                if (isConference) {
+                if (mucUsersView != null) {
                     if (SawimApplication.isManyPane()
                             || (drawerLayout != null && nickList != null && drawerLayout.isDrawerOpen(nickList))) {
                         mucUsersView.update();
@@ -728,7 +748,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
                     new JuickMenu(getActivity(), protocol, contact.getUserId(), chat.getBlogPostId(msg)).show();
                     return;
                 }
-                if (isConference) {
+                if (mucUsersView != null) {
                     XmppServiceContact xmppServiceContact = ((XmppServiceContact) contact);
                     if (xmppServiceContact.getName().equals(mData.getNick())) return;
                     if (xmppServiceContact.getContact(mData.getNick()) == null) {
@@ -828,7 +848,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         super.onCreateContextMenu(menu, v, menuInfo);
         menu.add(Menu.FIRST, ContactMenu.MENU_COPY_TEXT, 0, android.R.string.copy);
         menu.add(Menu.FIRST, ContactMenu.ACTION_QUOTE, 0, R.string.quote);
-        if (isConference) {
+        if (mucUsersView != null) {
             menu.add(Menu.FIRST, ContactMenu.COMMAND_PRIVATE, 0, R.string.open_private);
             menu.add(Menu.FIRST, ContactMenu.COMMAND_INFO, 0, R.string.info);
             menu.add(Menu.FIRST, ContactMenu.COMMAND_STATUS, 0, R.string.user_statuses);

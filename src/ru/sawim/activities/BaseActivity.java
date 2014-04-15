@@ -69,7 +69,6 @@ public class BaseActivity extends ActionBarActivity {
     }
 
     public void setConfigurationChanged(OnConfigurationChanged configurationChanged) {
-        BaseActivity.configurationChanged = null;
         BaseActivity.configurationChanged = configurationChanged;
     }
 

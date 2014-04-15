@@ -27,7 +27,7 @@ public class VirtualList {
     }
 
     public void show() {
-        VirtualListView.show();
+        VirtualListView.show(BaseActivity.getCurrentActivity());
         updateModel();
     }
 

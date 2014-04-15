@@ -78,10 +78,9 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         handler = new Handler(this);
-        rosterBarLayout = new LinearLayout(getActivity());
+        rosterBarLayout = new LinearLayout(activity);
         barLinearLayout = new LinearLayout(activity);
-        chatsImage = new MyImageButton(getActivity());
-        chatsImage = new MyImageButton(getActivity());
+        chatsImage = new MyImageButton(activity);
 
         rosterListView = new MyListView(activity);
         RosterAdapter rosterAdapter = new RosterAdapter();
@@ -105,6 +104,20 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         if (rosterViewLayout.getParent() != null)
             ((ViewGroup) rosterViewLayout.getParent()).removeView(rosterViewLayout);
         return rosterViewLayout;
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        contextMenuInfo = null;
+        handler = null;
+        protocolsAdapter = null;
+        protocolsSpinner = null;
+        rosterViewLayout = null;
+        rosterListView = null;
+        rosterBarLayout = null;
+        barLinearLayout = null;
+        chatsImage = null;
     }
 
     @Override

@@ -40,7 +40,7 @@ public class TextLinkClick implements TextLinkClickListener {
     @Override
     public void onTextLinkClick(View textView, String clickedString, boolean isLongTap) {
         if (clickedString.length() == 0) return;
-        final Context context = textView.getContext();
+        final Context context = BaseActivity.getCurrentActivity();
         boolean isJuick = clickedString.startsWith("@") || clickedString.startsWith("#");
         if (isJuick) {
             new JuickMenu((BaseActivity) context, currentProtocol, currentContact, clickedString).show();
