@@ -63,13 +63,28 @@ public class SawimActivity extends BaseActivity {
         setTheme(Scheme.isBlack() ? R.style.BaseTheme : R.style.BaseThemeLight);
         super.onCreate(savedInstanceState);
         supportRequestWindowFeature(Window.FEATURE_PROGRESS);
-        setContentView(SawimApplication.isManyPane() ? R.layout.main_twopane : R.layout.main);
 
-        if (savedInstanceState == null && !SawimApplication.isManyPane()) {
-            RosterView rosterView = new RosterView();
-            rosterView.setArguments(getIntent().getExtras());
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container, rosterView, RosterView.TAG).commit();
+        if (Intent.ACTION_SEND.equals(getIntent().getAction())) {
+            setContentView(R.layout.main);
+            if (findViewById(R.id.fragment_container) != null) {
+                if (savedInstanceState != null) {
+                    return;
+                }
+                RosterView rosterView = new RosterView();
+                rosterView.setMode(RosterView.MODE_SHARE);
+                rosterView.setArguments(getIntent().getExtras());
+                getSupportFragmentManager().beginTransaction()
+                        .add(R.id.fragment_container, rosterView, RosterView.TAG).commit();
+            }
+        } else {
+            setContentView(SawimApplication.isManyPane() ? R.layout.main_twopane : R.layout.main);
+            if (savedInstanceState == null && !SawimApplication.isManyPane()) {
+                RosterView rosterView = new RosterView();
+                rosterView.setMode(RosterView.MODE_DEFAULT);
+                rosterView.setArguments(getIntent().getExtras());
+                getSupportFragmentManager().beginTransaction()
+                        .add(R.id.fragment_container, rosterView, RosterView.TAG).commit();
+            }
         }
     }
 
@@ -182,22 +197,31 @@ public class SawimActivity extends BaseActivity {
         SawimFragment formView = (SawimFragment) getSupportFragmentManager().findFragmentByTag(FormView.TAG);
         SawimFragment preferenceFormView = (SawimFragment) getSupportFragmentManager().findFragmentByTag(MainPreferenceView.TAG);
         SawimFragment virtualListView = (SawimFragment) getSupportFragmentManager().findFragmentByTag(VirtualListView.TAG);
-        if (chatView != null && chatView.isVisible()) {
-            if (chatView.hasBack())
-                super.onBackPressed();
-        } else if (virtualListView != null) {
-            if (virtualListView.hasBack())
-                back();
-        } else if (formView != null) {
-            if (formView.hasBack())
-                back();
-        } else if (preferenceFormView != null) {
-            if (preferenceFormView.hasBack()) {
-                back();
-            }
-        } else super.onBackPressed();
-        //if (SawimApplication.isManyPane())
-        //    ((RosterView) getSupportFragmentManager().findFragmentById(R.id.roster_fragment)).resume();
+        RosterView rosterView = getRosterView();
+        if (rosterView != null && rosterView.getMode() == RosterView.MODE_SHARE) {
+            super.onBackPressed();
+            finish();
+            Intent intent = new Intent(this, SawimActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+        } else {
+            if (chatView != null && chatView.isVisible()) {
+                if (chatView.hasBack())
+                    super.onBackPressed();
+            } else if (virtualListView != null) {
+                if (virtualListView.hasBack())
+                    back();
+            } else if (formView != null) {
+                if (formView.hasBack())
+                    back();
+            } else if (preferenceFormView != null) {
+                if (preferenceFormView.hasBack()) {
+                    back();
+                }
+            } else super.onBackPressed();
+            //if (SawimApplication.isManyPane())
+            //    rosterView.resume();
+        }
     }
 
     private void back() {

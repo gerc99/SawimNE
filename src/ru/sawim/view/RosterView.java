@@ -5,7 +5,9 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -27,10 +29,7 @@ import protocol.Contact;
 import protocol.ContactMenu;
 import protocol.Group;
 import protocol.Protocol;
-import ru.sawim.Options;
-import ru.sawim.R;
-import ru.sawim.SawimApplication;
-import ru.sawim.Scheme;
+import ru.sawim.*;
 import ru.sawim.activities.BaseActivity;
 import ru.sawim.activities.SawimActivity;
 import ru.sawim.chat.Chat;
@@ -38,6 +37,7 @@ import ru.sawim.chat.ChatHistory;
 import ru.sawim.forms.ManageContactListForm;
 import ru.sawim.models.ProtocolsAdapter;
 import ru.sawim.models.RosterAdapter;
+import ru.sawim.modules.DebugLog;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.roster.TreeNode;
 import ru.sawim.util.JLocale;
@@ -46,6 +46,9 @@ import ru.sawim.widget.MyListView;
 import ru.sawim.widget.MySpinner;
 import ru.sawim.widget.Util;
 import ru.sawim.widget.roster.RosterViewRoot;
+
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 
 
 /**
@@ -63,6 +66,10 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     private static final int UPDATE_PROGRESS_BAR = 1;
     private static final int UPDATE_ROSTER = 2;
     private static final int PUT_INTO_QUEUE = 3;
+
+    public static final int MODE_DEFAULT = 0;
+    public static final int MODE_SHARE = 1;
+    private int mode;
 
     private LinearLayout rosterBarLayout;
     private LinearLayout barLinearLayout;
@@ -333,7 +340,6 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
 
     public void resume() {
         initBar();
-
         getRosterAdapter().setType(RosterHelper.getInstance().getCurrPage());
         protocolsSpinner.setSelection(Options.getInt(Options.OPTION_CURRENT_SPINNER_ITEM));
         protocolsAdapter.setActiveItem(protocolsSpinner.getSelectedItemPosition());
@@ -388,27 +394,61 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-        if (RosterHelper.getInstance().getCurrPage() == RosterHelper.ACTIVE_CONTACTS) {
-            Object o = rosterListView.getAdapter().getItem(position);
-            if (o instanceof Chat) {
-                Chat chat = (Chat) o;
-                openChat(chat.getProtocol(), chat.getContact());
-                if (SawimApplication.isManyPane())
-                    update();
+        TreeNode item = (TreeNode) rosterListView.getAdapter().getItem(position);
+        if (getMode() == MODE_SHARE) {
+            if (item.isContact()) {
+                Protocol p = RosterHelper.getInstance().getCurrentProtocol();
+                Contact c = ((Contact) item);
+                Intent intent = getActivity().getIntent();
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                String type = intent.getType();
+                if (type.equals("text/plain")) {
+                    String subjectText = intent.getStringExtra(Intent.EXTRA_SUBJECT);
+                    String sharingText = intent.getStringExtra(Intent.EXTRA_TEXT);
+                    ChatView newFragment = new ChatView();
+                    c.activate((BaseActivity) getActivity(), p);
+                    newFragment.initChat(p, c);
+                    if (sharingText != null)
+                        newFragment.setSharingText(subjectText == null ? sharingText : subjectText + "\n" + sharingText);
+                    FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                    transaction.replace(R.id.fragment_container, newFragment, ChatView.TAG);
+                    transaction.addToBackStack(null);
+                    transaction.commit();
+                } else {
+                    Uri data = intent.getParcelableExtra(Intent.EXTRA_STREAM);
+                    if (data == null) return;
+                    try {
+                        InputStream is = getActivity().getContentResolver().openInputStream(data);
+                        FileTransfer fileTransfer = new FileTransfer(p, c);
+                        fileTransfer.onFileSelect((BaseActivity) getActivity(), is, ExternalApi.getFileName(data, getActivity()));
+                    } catch (FileNotFoundException e) {
+                    }
+                    Toast.makeText(getActivity(), R.string.sending_file, Toast.LENGTH_LONG).show();
+                    getFragmentManager().popBackStack();
+                }
             }
         } else {
-            TreeNode item = (TreeNode) rosterListView.getAdapter().getItem(position);
-            if (item.isContact()) {
-                openChat(RosterHelper.getInstance().getCurrentProtocol(), ((Contact) item));
-                if (SawimApplication.isManyPane())
-                    update();
-            } else if (item.isGroup()) {
-                Group group = (Group) item;
-                group.setExpandFlag(!group.isExpanded());
-                updateRoster();
+            if (RosterHelper.getInstance().getCurrPage() == RosterHelper.ACTIVE_CONTACTS) {
+                Object o = rosterListView.getAdapter().getItem(position);
+                if (o instanceof Chat) {
+                    Chat chat = (Chat) o;
+                    openChat(chat.getProtocol(), chat.getContact());
+                    if (SawimApplication.isManyPane())
+                        update();
+                }
+            } else {
+                if (item.isContact()) {
+                    openChat(RosterHelper.getInstance().getCurrentProtocol(), ((Contact) item));
+                    if (SawimApplication.isManyPane())
+                        update();
+                }
             }
         }
-
+        if (item.isGroup()) {
+            Group group = (Group) item;
+            group.setExpandFlag(!group.isExpanded());
+            updateRoster();
+        }
     }
 
     @Override
@@ -463,5 +503,13 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         if (RosterHelper.getInstance().getCurrPage() == RosterHelper.ACTIVE_CONTACTS)
             p = c.getProtocol();
         new ContactMenu(p, c).doAction((BaseActivity) getActivity(), item.getItemId());
+    }
+
+    public int getMode() {
+        return mode;
+    }
+
+    public void setMode(int mode) {
+        this.mode = mode;
     }
 }
