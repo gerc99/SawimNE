@@ -107,13 +107,13 @@ public class SawimService extends Service {
                         SawimService.this.startForeground(R.string.app_name, SawimNotification.get(SawimService.this));
                         break;
                     case SET_STATUS:
-                        //new AsyncTask<Void, Void, Void>() {
-                        //    @Override
-                        //    protected Void doInBackground(Void... params) {
+                        new AsyncTask<Void, Void, Void>() {
+                            @Override
+                            protected Void doInBackground(Void... params) {
                                 RosterHelper.getInstance().setStatus();
-                        //        return null;
-                        //    }
-                        //}.execute(null, null, null);
+                                return null;
+                            }
+                        }.execute(null, null, null);
                         break;
                 }
             } catch (Exception e) {

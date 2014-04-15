@@ -1085,7 +1085,7 @@ abstract public class Protocol {
         }
     }
 
-    protected void doAction(Contact contact, int cmd) {
+    protected void doAction(BaseActivity activity, Contact contact, int cmd) {
     }
 
     public void showUserInfo(BaseActivity activity, Contact contact) {

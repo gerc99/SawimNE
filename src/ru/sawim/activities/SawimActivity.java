@@ -108,7 +108,7 @@ public class SawimActivity extends BaseActivity {
             if (fragmentManager.getFragments() == null || rosterView == null || chatView == null || rosterView.isVisible()) {
                 if (p == null || c == null) return false;
                 chatView = new ChatView();
-                c.activate(p);
+                c.activate(this, p);
                 chatView.initChat(p, c);
                 FragmentTransaction transaction = fragmentManager.beginTransaction();
                 transaction.replace(R.id.fragment_container, chatView, ChatView.TAG);
@@ -121,7 +121,7 @@ public class SawimActivity extends BaseActivity {
             }
             if (chatView.isVisible() && chatView.isLastPosition()) {
                 if (c != null) {
-                    c.activate(p);
+                    c.activate(this, p);
                     chatView.openChat(p, c);
                     chatView.resume(p.getChat(c));
                     return true;

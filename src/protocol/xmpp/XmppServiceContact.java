@@ -439,7 +439,7 @@ public class XmppServiceContact extends XmppContact {
 
     public void activate(BaseActivity activity, Protocol p) {
         if (isOnline() || isPrivate || hasChat()) {
-            super.activate(p);
+            super.activate(activity, p);
 
         } else if (isConference && p.isConnected()) {
             new ContactMenu(p, this).doAction(activity, ContactMenu.CONFERENCE_CONNECT);

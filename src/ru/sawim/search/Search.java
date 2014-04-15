@@ -298,7 +298,7 @@ public final class Search implements FormListener, ControlStateListener {
 
                     case MENU_MESSAGE:
                         UserInfo temp = getCurrentResult();
-                        createContact(temp).activate(protocol);
+                        createContact(temp).activate(activity, protocol);
                         break;
                 }
             }

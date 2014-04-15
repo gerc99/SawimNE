@@ -367,7 +367,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     }
 
     private void openChat(Protocol p, Contact c) {
-        c.activate(p);
+        c.activate((BaseActivity) getActivity(), p);
         if (!SawimApplication.isManyPane()) {
             ChatView chatView = new ChatView();
             chatView.initChat(p, c);
@@ -462,6 +462,6 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         Protocol p = RosterHelper.getInstance().getCurrentProtocol();
         if (RosterHelper.getInstance().getCurrPage() == RosterHelper.ACTIVE_CONTACTS)
             p = c.getProtocol();
-        new ContactMenu(p, c).doAction(((BaseActivity) getActivity()), item.getItemId());
+        new ContactMenu(p, c).doAction((BaseActivity) getActivity(), item.getItemId());
     }
 }

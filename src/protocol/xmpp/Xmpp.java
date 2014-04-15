@@ -742,7 +742,7 @@ public final class Xmpp extends Protocol implements FormListener {
 
     public void showUserInfo(BaseActivity activity, Contact contact) {
         if (!contact.isSingleUserContact()) {
-            doAction(contact, ContactMenu.USER_MENU_USERS_LIST);
+            doAction(activity, contact, ContactMenu.USER_MENU_USERS_LIST);
             return;
         }
 

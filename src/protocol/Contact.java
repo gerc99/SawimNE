@@ -7,6 +7,7 @@ import android.view.Menu;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
+import ru.sawim.activities.BaseActivity;
 import ru.sawim.chat.Chat;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.modules.tracking.Tracking;
@@ -152,7 +153,7 @@ abstract public class Contact extends TreeNode {
         statusText = (StatusInfo.STATUS_OFFLINE == status) ? null : text;
     }
 
-    public void activate(Protocol p) {
+    public void activate(BaseActivity activity, Protocol p) {
         RosterHelper.getInstance().setCurrentContact(this);
     }
 

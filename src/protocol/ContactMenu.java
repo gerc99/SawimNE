@@ -208,16 +208,16 @@ public class ContactMenu implements TextBoxView.TextBoxListener {
                     public void onClick(DialogInterface dialog, int which) {
                         switch (which) {
                             case 0:
-                                protocol.doAction(contact, CONFERENCE_OWNERS);
+                                protocol.doAction(activity, contact, CONFERENCE_OWNERS);
                                 break;
                             case 1:
-                                protocol.doAction(contact, CONFERENCE_ADMINS);
+                                protocol.doAction(activity, contact, CONFERENCE_ADMINS);
                                 break;
                             case 2:
-                                protocol.doAction(contact, CONFERENCE_MEMBERS);
+                                protocol.doAction(activity, contact, CONFERENCE_MEMBERS);
                                 break;
                             case 3:
-                                protocol.doAction(contact, CONFERENCE_INBAN);
+                                protocol.doAction(activity, contact, CONFERENCE_INBAN);
                                 break;
                         }
                     }
@@ -240,7 +240,7 @@ public class ContactMenu implements TextBoxView.TextBoxListener {
                 break;
 
             default:
-                protocol.doAction(contact, cmd);
+                protocol.doAction(activity, contact, cmd);
         }
     }
 
