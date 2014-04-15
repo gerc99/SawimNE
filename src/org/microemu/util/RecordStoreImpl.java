@@ -146,10 +146,9 @@ public class RecordStoreImpl {
         this.open = open;
     }
 
-    public void closeRecordStore()
-            throws Exception {
+    public void closeRecordStore() {
         if (!open) {
-            throw new Exception();
+            return;
         }
         if (recordListeners != null) {
             recordListeners.removeAllElements();
@@ -158,19 +157,15 @@ public class RecordStoreImpl {
         open = false;
     }
 
-    public String getName()
-            throws Exception {
+    public String getName() {
         if (!open) {
-            throw new Exception();
+            return null;
         }
         return recordStoreName;
     }
 
     public int getVersion()
             throws Exception {
-        if (!open) {
-            throw new Exception();
-        }
         synchronized (this) {
             return version;
         }
@@ -178,16 +173,12 @@ public class RecordStoreImpl {
 
     public int getNumRecords()
             throws Exception {
-        if (!open) {
-            throw new Exception();
-        }
         return size;
     }
 
-    public int getSize()
-            throws Exception {
+    public int getSize() {
         if (!open) {
-            throw new Exception();
+            return 0;
         }
         // TODO include size overhead such as the data structures used to hold the state of the record store
         // Preload all records
@@ -209,20 +200,15 @@ public class RecordStoreImpl {
         return result;
     }
 
-    public int getSizeAvailable()
-            throws Exception {
+    public int getSizeAvailable() {
         if (!open) {
-            throw new Exception();
+            return 0;
         }
         return recordStoreManager.getSizeAvailable(this);
     }
 
     public long getLastModified()
             throws Exception {
-        if (!open) {
-            throw new Exception();
-        }
-
         synchronized (this) {
             return lastModified;
         }
@@ -238,11 +224,7 @@ public class RecordStoreImpl {
         recordListeners.removeElement(listener);
     }
 
-    public int getNextRecordID()
-            throws Exception {
-        if (!open) {
-            throw new Exception();
-        }
+    public int getNextRecordID() {
         // lastRecordId needs to hold correct number, all records have to be preloaded
         enumerateRecords(false);
 
@@ -253,9 +235,6 @@ public class RecordStoreImpl {
 
     public int addRecord(byte[] data, int offset, int numBytes)
             throws Exception {
-        if (!open) {
-            throw new Exception();
-        }
         if (data == null && numBytes > 0) {
             throw new NullPointerException();
         }
@@ -287,11 +266,10 @@ public class RecordStoreImpl {
         return nextRecordID;
     }
 
-
     public void deleteRecord(int recordId)
             throws Exception {
         if (!open) {
-            throw new Exception();
+            return;
         }
 
         synchronized (this) {
@@ -308,23 +286,16 @@ public class RecordStoreImpl {
         fireRecordListener(RecordListener.RECORD_DELETE, recordId);
     }
 
-
-    public int getRecordSize(int recordId)
-            throws Exception {
-        if (!open) {
-            throw new Exception();
-        }
-
+    public int getRecordSize(int recordId) {
         synchronized (this) {
             byte[] data = (byte[]) records.get(new Integer(recordId));
             if (data == null) {
                 recordStoreManager.loadRecord(this, recordId);
                 data = (byte[]) records.get(new Integer(recordId));
                 if (data == null) {
-                    throw new Exception();
+                    return 0;
                 }
             }
-
             return data.length;
         }
     }
@@ -342,12 +313,8 @@ public class RecordStoreImpl {
         return recordSize;
     }
 
-
     public byte[] getRecord(int recordId)
             throws Exception {
-        if (!open) {
-            throw new Exception();
-        }
         byte[] data;
         synchronized (this) {
             data = new byte[getRecordSize(recordId)];
@@ -359,7 +326,7 @@ public class RecordStoreImpl {
     public void setRecord(int recordId, byte[] newData, int offset, int numBytes)
             throws Exception {
         if (!open) {
-            throw new Exception();
+            return;
         }
 
         // FIXME fixit
@@ -379,10 +346,9 @@ public class RecordStoreImpl {
         fireRecordListener(RecordListener.RECORD_CHANGE, recordId);
     }
 
-    public RecordEnumerationImpl enumerateRecords(boolean keepUpdated)
-            throws Exception {
+    public RecordEnumerationImpl enumerateRecords(boolean keepUpdated) {
         if (!open) {
-            throw new Exception();
+            return null;
         }
         return new RecordEnumerationImpl(this, keepUpdated);
     }

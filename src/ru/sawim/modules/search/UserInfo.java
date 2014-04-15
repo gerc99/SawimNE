@@ -17,7 +17,6 @@ import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.SawimException;
 import ru.sawim.activities.BaseActivity;
-import ru.sawim.activities.SawimActivity;
 import ru.sawim.comm.Util;
 import ru.sawim.forms.EditInfo;
 import ru.sawim.models.list.VirtualList;
@@ -205,9 +204,9 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
                         break;
 
                     case INFO_MENU_TAKE_AVATAR:
-                        SawimActivity.externalApi.setFragment(activity
+                        BaseActivity.externalApi.setFragment(activity
                                 .getSupportFragmentManager().findFragmentByTag(VirtualListView.TAG));
-                        SawimActivity.externalApi.startCamera(UserInfo.this, 640, 480);
+                        BaseActivity.externalApi.startCamera(UserInfo.this, 640, 480);
                         break;
 
                     case INFO_MENU_REMOVE_AVATAR:
@@ -217,9 +216,9 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
                         break;
 
                     case INFO_MENU_ADD_AVATAR:
-                        SawimActivity.externalApi.setFragment(activity
+                        BaseActivity.externalApi.setFragment(activity
                                 .getSupportFragmentManager().findFragmentByTag(VirtualListView.TAG));
-                        if (SawimActivity.externalApi.pickFile(UserInfo.this)) {
+                        if (BaseActivity.externalApi.pickFile(UserInfo.this)) {
                             return;
                         }
                         break;

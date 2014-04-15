@@ -58,8 +58,6 @@ public class SawimActivity extends BaseActivity {
     public static final String NOTIFY_CAPTCHA = "ru.sawim.notify.captcha";
     private boolean isOpenNewChat = false;
 
-    public static ExternalApi externalApi = new ExternalApi();
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         setTheme(Scheme.isBlack() ? R.style.BaseTheme : R.style.BaseThemeLight);

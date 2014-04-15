@@ -120,7 +120,6 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
                 hideKeyboard();
             }
         });
-        SawimActivity.externalApi.setFragment(this);
     }
 
     public void removeTitleBar() {
@@ -813,6 +812,15 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
                 }
                 adapter.notifyDataSetChanged();
                 getActivity().supportInvalidateOptionsMenu();
+                break;
+
+            case ContactMenu.USER_MENU_FILE_TRANS:
+                BaseActivity.externalApi.setFragment(this);
+                new ContactMenu(protocol, contact).doAction((BaseActivity) getActivity(), ContactMenu.USER_MENU_FILE_TRANS);
+                break;
+            case ContactMenu.USER_MENU_CAM_TRANS:
+                BaseActivity.externalApi.setFragment(this);
+                new ContactMenu(protocol, contact).doAction((BaseActivity) getActivity(), ContactMenu.USER_MENU_CAM_TRANS);
                 break;
 
             case ContactMenu.ACTION_CURRENT_DEL_CHAT:

@@ -30,12 +30,6 @@ public class Updater extends TimerTask {
     }
 
     public void run() {
-        try {
-            RosterHelper.getInstance().timerAction();
-        } catch (OutOfMemoryError out) {
-            // nothing
-        } catch (Exception e) {
-            DebugLog.panic("UIUpdater", e);
-        }
+        RosterHelper.getInstance().timerAction();
     }
 }

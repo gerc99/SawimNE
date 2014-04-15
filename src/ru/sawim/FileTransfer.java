@@ -16,7 +16,6 @@ import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
 import ru.sawim.modules.DebugLog;
 import ru.sawim.modules.fs.FileBrowserListener;
-import ru.sawim.modules.fs.JSR75FileSystem;
 import ru.sawim.modules.photo.PhotoListener;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.util.JLocale;
@@ -47,7 +46,6 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
     private Protocol protocol;
     private Contact cItem;
     private Chat chat;
-    private JSR75FileSystem file;
     private Forms forms;
 
     public FileTransfer(Protocol p, Contact _cItem) {
@@ -138,7 +136,7 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
         if (apply) {
             description = forms.getTextFieldValue(descriptionField);
             sendMode = forms.getSelectorValue(transferMode);
-            //showFileProgress();
+
             if (forms.getSelectorValue(transferMode) == IBB_MODE) {
                 try {
                     protocol.sendFile(this, filename, description);
@@ -216,10 +214,6 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
     }
 
     private void closeFile() {
-        if (null != file) {
-            file.close();
-            file = null;
-        }
         TcpSocket.close(fis);
         fis = null;
     }
@@ -341,8 +335,6 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
                     url = sb.toString();
                 }
             } catch (Exception ex) {
-                ex.printStackTrace();
-                DebugLog.panic(ex);
                 throw new SawimException(194, 0);
             } finally {
                 try {
