@@ -350,8 +350,9 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
             RosterHelper.getInstance().setOnUpdateRoster(this);
             if (SawimApplication.returnFromAcc) {
                 SawimApplication.returnFromAcc = false;
-                if (RosterHelper.getInstance().getCurrentProtocol().getContactItems().size() == 0
-                        && !RosterHelper.getInstance().getCurrentProtocol().isConnecting())
+                Protocol currentProtocol = RosterHelper.getInstance().getCurrentProtocol();
+                if (currentProtocol != null && currentProtocol.getContactItems().size() == 0
+                        && !currentProtocol.isConnecting())
                     Toast.makeText(getActivity(), R.string.press_menu_for_connect, Toast.LENGTH_LONG).show();
                 if (protocolsAdapter != null)
                     protocolsAdapter.notifyDataSetChanged();
@@ -419,7 +420,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
             } catch (FileNotFoundException e) {
             }
             Toast.makeText(getActivity(), R.string.sending_file, Toast.LENGTH_LONG).show();
-            ((SawimActivity) getActivity()).closeActivity();
+            getActivity().finish();
         }
         setMode(MODE_DEFAULT);
     }

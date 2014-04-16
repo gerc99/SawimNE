@@ -84,6 +84,8 @@ public final class Chat {
 
     public void addFileProgress(String caption, String text) {
         addMessage(new MessData(contact, SawimApplication.getCurrentGmtTime(), text, caption, MessData.PROGRESS, false));
+        if (RosterHelper.getInstance().getUpdateChatListener() != null)
+            RosterHelper.getInstance().getUpdateChatListener().updateChat(contact);
     }
 
     public String getMyName() {

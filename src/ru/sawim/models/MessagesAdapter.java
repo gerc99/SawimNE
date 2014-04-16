@@ -30,16 +30,22 @@ import java.util.List;
 public class MessagesAdapter extends BaseAdapter {
 
     private List<MessData> items = new ArrayList<MessData>();
-    private Protocol currentProtocol;
-    private String currentContact;
+    private Chat chat;
 
     private boolean isMultiQuote = false;
     private int position = -1;
 
     public void init(Chat chat) {
-        currentProtocol = chat.getProtocol();
-        currentContact = chat.getContact().getUserId();
-        items = chat.getMessData();
+        this.chat = chat;
+        refreshList(chat.getMessData());
+    }
+
+    public void refreshList(List<MessData> list) {
+        items.clear();
+        for (int i = 0; i < list.size(); ++i) {
+            items.add(list.get(i));
+        }
+        notifyDataSetChanged();
     }
 
     public boolean isMultiQuote() {
@@ -75,7 +81,7 @@ public class MessagesAdapter extends BaseAdapter {
 
     @Override
     public View getView(int index, View convView, ViewGroup viewGroup) {
-        final MessData mData = items.get(index);
+        final MessData mData = getItem(index);
         View row = convView;
         if (row == null) {
             row = new MessageItemView(SawimApplication.getInstance().getBaseContext());
@@ -85,7 +91,7 @@ public class MessagesAdapter extends BaseAdapter {
         String nick = mData.getNick();
         boolean incoming = mData.isIncoming();
 
-        item.setOnTextLinkClickListener(new TextLinkClick(currentProtocol, currentContact));
+        item.setOnTextLinkClickListener(new TextLinkClick(chat.getProtocol(), chat.getContact().getUserId()));
         item.setLinkTextColor(Scheme.getColor(Scheme.THEME_LINKS));
         item.setTypeface(mData.isConfHighLight() ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT);
         item.setBackgroundColor(0);

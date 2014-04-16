@@ -64,7 +64,8 @@ public class SawimActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         supportRequestWindowFeature(Window.FEATURE_PROGRESS);
 
-        if (Intent.ACTION_SEND.startsWith(getIntent().getAction())) {
+        if (getIntent().getAction() != null
+                && getIntent().getAction().equals(Intent.ACTION_SEND)) {
             setContentView(R.layout.main);
             if (findViewById(R.id.fragment_container) != null) {
                 if (savedInstanceState != null) {
@@ -95,8 +96,8 @@ public class SawimActivity extends BaseActivity {
     }
 
     private void handleIntent() {
-        if (getIntent() == null) return;
-        if (Intent.ACTION_SEND.startsWith(getIntent().getAction())) return;
+        if (getIntent() == null || getIntent().getAction() == null) return;
+        if (getIntent().getAction().equals(Intent.ACTION_SEND)) return;
         if (NOTIFY.equals(getIntent().getAction())) {
             Chat current = ChatHistory.instance.chatAt(ChatHistory.instance.getPreferredItem());
             if (current != null)
@@ -168,15 +169,19 @@ public class SawimActivity extends BaseActivity {
         FragmentManager fragmentManager = getSupportFragmentManager();
         StartWindowView startWindowView = (StartWindowView) fragmentManager.findFragmentByTag(StartWindowView.TAG);
         if (RosterHelper.getInstance().getProtocolCount() == 0) {
-            FragmentTransaction transaction = fragmentManager.beginTransaction();
-            if (SawimApplication.isManyPane()) {
-                setContentView(R.layout.main);
-                if (startWindowView == null) {
-                    StartWindowView newFragment = new StartWindowView();
-                    transaction.replace(R.id.fragment_container, newFragment, StartWindowView.TAG);
-                    transaction.commit();
-                    supportInvalidateOptionsMenu();
+            if (Options.getAccountCount() == 0) {
+                FragmentTransaction transaction = fragmentManager.beginTransaction();
+                if (SawimApplication.isManyPane()) {
+                    setContentView(R.layout.main);
+                    if (startWindowView == null) {
+                        StartWindowView newFragment = new StartWindowView();
+                        transaction.replace(R.id.fragment_container, newFragment, StartWindowView.TAG);
+                        transaction.commit();
+                        supportInvalidateOptionsMenu();
+                    }
                 }
+            } else {
+                startActivity(new Intent(this, AccountsListActivity.class));
             }
         } else {
             if (startWindowView != null)
@@ -198,15 +203,9 @@ public class SawimActivity extends BaseActivity {
         SawimFragment formView = (SawimFragment) getSupportFragmentManager().findFragmentByTag(FormView.TAG);
         SawimFragment preferenceFormView = (SawimFragment) getSupportFragmentManager().findFragmentByTag(MainPreferenceView.TAG);
         SawimFragment virtualListView = (SawimFragment) getSupportFragmentManager().findFragmentByTag(VirtualListView.TAG);
-        RosterView rosterView = getRosterView();
         if (chatView != null && chatView.isVisible()) {
-            if (rosterView != null && rosterView.getMode() == RosterView.MODE_SHARE_TEXT) {
+            if (chatView.hasBack())
                 super.onBackPressed();
-                closeActivity();
-            } else {
-                if (chatView.hasBack())
-                    super.onBackPressed();
-            }
         } else if (virtualListView != null) {
             if (virtualListView.hasBack())
                 back();

@@ -505,7 +505,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
             //chatListView.setSelectionFromTop(chat.scrollPosition + 1, chat.offset - (isLastPosition() ? 0 : chat.offset / 2));
             chatListView.setSelectionFromTop(chat.scrollPosition + (isLastPosition() ? 1 : 2), chat.offset);
         }
-        adapter.notifyDataSetChanged();
+        adapter.refreshList(chat.getMessData());
         chatListView.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -652,13 +652,13 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
             case UPDATE_CHAT:
                 updateChatIcon();
                 if (contact == msg.obj)
-                    adapter.notifyDataSetChanged();
+                    adapter.refreshList(chat.getMessData());
                 if (chatsSpinnerAdapter != null && chatDialogFragment != null && chatDialogFragment.isVisible())
                     chatsSpinnerAdapter.refreshList();
                 break;
             case UPDATE_MUC_LIST:
                 if (contact != null && contact.isPresence() == (byte) 1)
-                    adapter.notifyDataSetChanged();
+                    adapter.refreshList(chat.getMessData());
                 if (mucUsersView != null) {
                     if (SawimApplication.isManyPane()
                             || (drawerLayout != null && nickList != null && drawerLayout.isDrawerOpen(nickList))) {

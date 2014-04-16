@@ -52,7 +52,7 @@ public class MessageItemView extends View {
     private boolean isShowDivider = false;
     private int titleHeight;
 
-    private static final HashMap<CharSequence, Layout> layoutHolder = new HashMap<CharSequence, Layout>();
+    private static final HashMap<String, Layout> layoutHolder = new HashMap<String, Layout>();
 
     public MessageItemView(Context context) {
         super(context);
@@ -145,12 +145,10 @@ public class MessageItemView extends View {
 
     public void setText(CharSequence text) {
         this.text = text;
-        repaint();
     }
 
     public void setTextColor(int color) {
         msgTextColor = color;
-        repaint();
     }
 
     public void setLinkTextColor(int color) {
@@ -159,12 +157,10 @@ public class MessageItemView extends View {
 
     public void setTypeface(Typeface typeface) {
         msgTextTypeface = typeface;
-        repaint();
     }
 
     public void setMsgTextSize(int size) {
         msgTextSize = size;
-        repaint();
     }
 
     public static void clearCache() {
