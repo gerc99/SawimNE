@@ -31,6 +31,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
@@ -65,7 +66,7 @@ public class SawimActivity extends BaseActivity {
         supportRequestWindowFeature(Window.FEATURE_PROGRESS);
 
         if (getIntent().getAction() != null
-                && getIntent().getAction().equals(Intent.ACTION_SEND)) {
+                && getIntent().getAction().startsWith(Intent.ACTION_SEND)) {
             setContentView(R.layout.main);
             if (findViewById(R.id.fragment_container) != null) {
                 if (savedInstanceState != null) {
@@ -92,12 +93,15 @@ public class SawimActivity extends BaseActivity {
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+        if (getRosterView() != null &&
+                (getRosterView().getMode() == RosterView.MODE_SHARE_TEXT
+                        || getRosterView().getMode() == RosterView.MODE_SHARE)) return;
         setIntent(intent);
     }
 
     private void handleIntent() {
         if (getIntent() == null || getIntent().getAction() == null) return;
-        if (getIntent().getAction().equals(Intent.ACTION_SEND)) return;
+        if (getIntent().getAction().startsWith(Intent.ACTION_SEND)) return;
         if (NOTIFY.equals(getIntent().getAction())) {
             Chat current = ChatHistory.instance.chatAt(ChatHistory.instance.getPreferredItem());
             if (current != null)

@@ -151,16 +151,16 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
                 break;
             case UPDATE_ROSTER:
                 RosterHelper.getInstance().updateOptions();
-                if (rosterListView.getAdapter() != null) {
-                    ((RosterAdapter) rosterListView.getAdapter()).refreshList();
+                if (getRosterAdapter() != null) {
+                    getRosterAdapter().refreshList();
                 }
                 if (protocolsAdapter != null)
                     protocolsAdapter.notifyDataSetChanged();
                 updateChatImage();
                 break;
             case PUT_INTO_QUEUE:
-                if (rosterListView.getAdapter() != null) {
-                    ((RosterAdapter) rosterListView.getAdapter()).putIntoQueue((Group) msg.obj);
+                if (getRosterAdapter() != null) {
+                    getRosterAdapter().putIntoQueue((Group) msg.obj);
                 }
                 break;
         }
@@ -371,7 +371,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     }
 
     public RosterAdapter getRosterAdapter() {
-        return ((RosterAdapter) rosterListView.getAdapter());
+        return (RosterAdapter) rosterListView.getAdapter();
     }
 
     private void openChat(Protocol p, Contact c) {
@@ -396,6 +396,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
 
     private void sharing(Protocol p, Contact c) {
         Intent intent = getActivity().getIntent();
+        //if (intent == null) return;
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         String type = intent.getType();
         if (type.equals("text/plain")) {
@@ -420,7 +421,6 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
             } catch (FileNotFoundException e) {
             }
             Toast.makeText(getActivity(), R.string.sending_file, Toast.LENGTH_LONG).show();
-            getActivity().finish();
         }
         setMode(MODE_DEFAULT);
     }
@@ -429,20 +429,20 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
         if (getMode() == MODE_SHARE || getMode() == MODE_SHARE_TEXT) {
             if (RosterHelper.getInstance().getCurrPage() == RosterHelper.ACTIVE_CONTACTS) {
-                Object o = rosterListView.getAdapter().getItem(position);
+                Object o = getRosterAdapter().getItem(position);
                 if (o instanceof Chat) {
                     Chat chat = (Chat) o;
                     sharing(chat.getProtocol(), chat.getContact());
                 }
             } else {
-                TreeNode item = (TreeNode) rosterListView.getAdapter().getItem(position);
+                TreeNode item = (TreeNode) getRosterAdapter().getItem(position);
                 if (item.isContact()) {
                     sharing(RosterHelper.getInstance().getCurrentProtocol(), (Contact) item);
                 }
             }
         } else {
             if (RosterHelper.getInstance().getCurrPage() == RosterHelper.ACTIVE_CONTACTS) {
-                Object o = rosterListView.getAdapter().getItem(position);
+                Object o = getRosterAdapter().getItem(position);
                 if (o instanceof Chat) {
                     Chat chat = (Chat) o;
                     openChat(chat.getProtocol(), chat.getContact());
@@ -450,7 +450,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
                         update();
                 }
             } else {
-                TreeNode item = (TreeNode) rosterListView.getAdapter().getItem(position);
+                TreeNode item = (TreeNode) getRosterAdapter().getItem(position);
                 if (item.isContact()) {
                     openChat(RosterHelper.getInstance().getCurrentProtocol(), ((Contact) item));
                     if (SawimApplication.isManyPane())
@@ -459,7 +459,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
             }
         }
         if (RosterHelper.getInstance().getCurrPage() != RosterHelper.ACTIVE_CONTACTS) {
-            TreeNode item = (TreeNode) rosterListView.getAdapter().getItem(position);
+            TreeNode item = (TreeNode) getRosterAdapter().getItem(position);
             if (item.isGroup()) {
                 Group group = (Group) item;
                 group.setExpandFlag(!group.isExpanded());
