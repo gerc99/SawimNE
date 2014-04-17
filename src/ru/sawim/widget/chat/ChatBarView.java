@@ -23,8 +23,7 @@ public class ChatBarView extends IcsLinearLayout {
     SimpleItemView itemView;
 
     public ChatBarView(Context context, View chatsImage) {
-        super(context,
-                com.viewpagerindicator.R.attr.vpiTabPageIndicatorStyle);
+        super(context);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
         setOrientation(HORIZONTAL);
         if (SawimApplication.isManyPane())

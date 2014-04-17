@@ -21,8 +21,7 @@ import ru.sawim.widget.Util;
 public class ChatInputBarView extends IcsLinearLayout {
 
     public ChatInputBarView(Context context, ImageButton menuButton, ImageButton smileButton, EditText messageEditor, ImageButton sendButton) {
-        super(context,
-                com.viewpagerindicator.R.attr.vpiTabPageIndicatorStyle);
+        super(context);
         int padding = Util.dipToPixels(context, 5);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         setOrientation(HORIZONTAL);

@@ -7,11 +7,6 @@ buildscript {
     }
 }
 
-repositories {
-    maven { url "http://dl.bintray.com/populov/maven" }
-    mavenCentral()
-}
-
 apply plugin: 'android'
 task wrapper(type: Wrapper) {
     gradleVersion = '1.10'
@@ -56,7 +51,6 @@ android {
         compile 'com.google.android.gms:play-services:4.1.32'
         compile 'com.android.support:support-v4:19.0.1'
         compile 'com.android.support:appcompat-v7:19.0.1'
-        compile 'com.viewpagerindicator:library:2.4.1@aar'
     }
     // signing config
     if (file("keystore.properties").exists()) {

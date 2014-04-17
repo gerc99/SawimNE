@@ -16,8 +16,7 @@ import ru.sawim.widget.IcsLinearLayout;
 public class ChatListsView extends IcsLinearLayout {
 
     public ChatListsView(Context context, boolean isTablet, View chatListView, View nickList) {
-        super(context,
-                com.viewpagerindicator.R.attr.vpiTabPageIndicatorStyle);
+        super(context);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
         setOrientation(HORIZONTAL);
         layoutParams.weight = 2;

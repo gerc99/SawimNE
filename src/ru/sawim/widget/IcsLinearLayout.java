@@ -14,32 +14,19 @@ import android.view.View;
  * {@link android.widget.FrameLayout} so it can receive the margin.
  */
 public class IcsLinearLayout extends SizeNotifierLinearLayout {
-    private static final int[] LL = new int[]{
-        /* 0 */ android.R.attr.divider,
-        /* 1 */ android.R.attr.showDividers,
-        /* 2 */ android.R.attr.dividerPadding,
-    };
-    private static final int LL_DIVIDER = 0;
-    private static final int LL_SHOW_DIVIDER = 1;
-    private static final int LL_DIVIDER_PADDING = 2;
 
     private Drawable mDivider;
-    private static Drawable mDefDivider;
     private int mDividerWidth;
     private int mDividerHeight;
-    private int mShowDividers;
+    private boolean mShowDividers;
     private int mDividerPadding;
 
     public IcsLinearLayout(Context context, int themeAttr) {
         super(context);
-        TypedArray a = context.obtainStyledAttributes(null, LL, themeAttr, 0);
-        if (mDefDivider == null) {
-            mDefDivider = a.getDrawable(IcsLinearLayout.LL_DIVIDER);
-        }
-        setDividerDrawable(mDefDivider);
-        mDividerPadding = a.getDimensionPixelSize(LL_DIVIDER_PADDING, 0);
-        mShowDividers = a.getInteger(LL_SHOW_DIVIDER, SHOW_DIVIDER_NONE);
-        a.recycle();
+    }
+
+    public IcsLinearLayout(Context context) {
+        super(context);
     }
 
     public void setDividerPadding(int dividerPadding) {
@@ -47,6 +34,7 @@ public class IcsLinearLayout extends SizeNotifierLinearLayout {
     }
 
     public void setDividerDrawable(Drawable divider) {
+        mShowDividers = true;
         mDivider = divider;
         if (divider != null) {
             mDividerWidth = divider.getIntrinsicWidth();
@@ -169,7 +157,7 @@ public class IcsLinearLayout extends SizeNotifierLinearLayout {
         if (childIndex == 0 || childIndex == getChildCount()) {
             return false;
         }
-        if ((mShowDividers & SHOW_DIVIDER_MIDDLE) != 0) {
+        if (mShowDividers) {
             boolean hasVisibleViewBefore = false;
             for (int i = childIndex - 1; i >= 0; i--) {
                 if (getChildAt(i).getVisibility() != GONE) {
