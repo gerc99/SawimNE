@@ -5,9 +5,8 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.widget.Toast;
 import protocol.*;
+import ru.sawim.*;
 import ru.sawim.modules.FileTransfer;
-import ru.sawim.R;
-import ru.sawim.SawimApplication;
 import ru.sawim.activities.BaseActivity;
 import ru.sawim.chat.message.PlainMessage;
 import ru.sawim.comm.StringConvertor;
@@ -309,7 +308,7 @@ public final class Xmpp extends Protocol implements FormListener {
     @Override
     protected Contact loadContact(DataInputStream dis) throws Exception {
         XmppContact contact = (XmppContact) super.loadContact(dis);
-        if (getProfile().userId.endsWith(PUSH_SERVER)) {
+        if (isStreamManagementSupported()) {
             if (contact instanceof XmppServiceContact) {
                 XmppServiceContact serviceContact = (XmppServiceContact) contact;
                 if (serviceContact.isConference()) {
@@ -334,21 +333,22 @@ public final class Xmpp extends Protocol implements FormListener {
     @Override
     protected void saveContact(DataOutputStream dos, Contact contact) throws Exception {
         super.saveContact(dos, contact);
-        if (!getProfile().userId.endsWith(PUSH_SERVER)) return;
-        if (contact instanceof XmppServiceContact) {
-            XmppServiceContact serviceContact = (XmppServiceContact) contact;
-            if (serviceContact.isConference()) {
-                dos.writeUTF(serviceContact.getMyName());
+        if (isStreamManagementSupported()) {
+            if (contact instanceof XmppServiceContact) {
+                XmppServiceContact serviceContact = (XmppServiceContact)contact;
+                if (serviceContact.isConference()) {
+                    dos.writeUTF(serviceContact.getMyName());
+                }
             }
-        }
-        XmppContact xmppContact = (XmppContact) contact;
-        dos.writeInt(xmppContact.subcontacts.size());
-        for (XmppContact.SubContact subContact : xmppContact.subcontacts) {
-            dos.writeByte(subContact.status);
-            dos.writeByte(subContact.client);
-            dos.writeByte(subContact.priority);
-            dos.writeByte(subContact.priorityA);
-            dos.writeUTF(subContact.resource);
+            XmppContact xmppContact = (XmppContact)contact;
+            dos.writeInt(xmppContact.subcontacts.size());
+            for (XmppContact.SubContact subContact : xmppContact.subcontacts) {
+                dos.writeByte(subContact.status);
+                dos.writeByte(subContact.client);
+                dos.writeByte(subContact.priority);
+                dos.writeByte(subContact.priorityA);
+                dos.writeUTF(subContact.resource);
+            }
         }
     }
 
@@ -913,6 +913,12 @@ public final class Xmpp extends Protocol implements FormListener {
             enterDataInvite.back();
             enterDataInvite = null;
         }
+    }
+
+    protected boolean isStreamManagementSupported() {
+        String server = Jid.getDomain(getUserId());
+        return "jabber.ru".equals(server) ||
+               "beta.bggg.net.ru".equals(server);
     }
 }
 

@@ -9,6 +9,7 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import ru.sawim.SawimException;
 import ru.sawim.comm.StringConvertor;
+import ru.sawim.modules.DebugLog;
 
 import java.io.IOException;
 
@@ -89,8 +90,26 @@ public class XmppSession {
             @Override
             public void run() {
                 if (connection.isSessionManagementEnabled() && !StringConvertor.isEmpty(regid)) {
+
                     connection.putPacketIntoQueue("<iq type='set'>" +
                             "<register xmlns='http://sawim.ru/notifications#gcm' regid='" + regid + "' /></iq>");
+                }
+            }
+        }).start();
+    }
+
+    public void enableRebind() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (connection.rebindSupported && !StringConvertor.isEmpty(regid)) {
+                    DebugLog.systemPrintln(regid);
+                    connection.putPacketIntoQueue("<iq type='set' id='p1:rebind'>" +
+                            "<push xmlns='p1:push'><keepalive max='120'/><session duration='1440'/>"+
+                            "<body send='all' groupchat='true' from='name'/>" +
+                            "<offline>true</offline>" +
+                            "<notification><type>gcm</type><id>" + regid + "</id>" +
+                            "</notification><appid>ru.sawim</appid></push></iq>");
                 }
             }
         }).start();
@@ -114,6 +133,7 @@ public class XmppSession {
         _editor.putLong("PacketsIn", 0);
         _editor.putLong("PacketsOut", 0);
         _editor.putString("SessionID", "");
+        _editor.putString("SID", "");
         _editor.commit();
     }
 
@@ -123,6 +143,7 @@ public class XmppSession {
         _editor.putLong("PacketsIn", connection.packetsIn);
         _editor.putLong("PacketsOut", connection.packetsOut);
         _editor.putString("SessionID", connection.smSessionID);
+        _editor.putString("SID", connection.sessionId);
         _editor.commit();
     }
 
@@ -133,6 +154,7 @@ public class XmppSession {
             connection.packetsIn = _prefs.getLong("PacketsIn", 0);
             connection.packetsOut = _prefs.getLong("PacketsOut", 0);
             connection.smSessionID = _prefs.getString("SessionID", "");
+            connection.sessionId = _prefs.getString("SID", "");
         }
     }
 }

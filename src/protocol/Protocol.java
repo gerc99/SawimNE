@@ -27,8 +27,6 @@ abstract public class Protocol {
     private static final int ROSTER_STORAGE_VERSION = 1;
     private static final int RECONNECT_COUNT = 20;
 
-    public static final String PUSH_SERVER = "beta.bggg.net.ru";
-
     private final Object rosterLockObject = new Object();
     public ClientInfo clientInfo;
     protected Roster roster = new Roster();
@@ -397,7 +395,7 @@ abstract public class Protocol {
         Contact contact = createContact(uin, name);
         contact.setGroupId(groupId);
         contact.setBooleanValues(booleanValues);
-        if (profile.userId.endsWith(PUSH_SERVER)) {
+        if (isStreamManagementSupported()) {
             contact.setStatus(dis.readByte(), dis.readUTF());
             contact.setXStatus(dis.readByte(), dis.readUTF());
             contact.setClient(dis.readByte(), null);
@@ -427,7 +425,7 @@ abstract public class Protocol {
         out.writeUTF(contact.getName());
         out.writeInt(contact.getGroupId());
         out.writeByte(contact.getBooleanValues());
-        if (profile.userId.endsWith(PUSH_SERVER)) {
+        if (isStreamManagementSupported()) {
             out.writeByte(contact.getStatusIndex());
             out.writeUTF(StringConvertor.notNull(contact.getStatusText()));
             out.writeByte(contact.getXStatusIndex());
@@ -1134,5 +1132,9 @@ abstract public class Protocol {
             ChatHistory.instance.registerChat(chat);
         }
         return chat;
+    }
+
+    protected boolean isStreamManagementSupported() {
+        return false;
     }
 }

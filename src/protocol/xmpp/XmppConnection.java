@@ -1,26 +1,19 @@
 package protocol.xmpp;
 
+import android.util.Log;
 import protocol.*;
 import protocol.net.ClientConnection;
-import ru.sawim.Options;
-import ru.sawim.R;
-import ru.sawim.SawimApplication;
-import ru.sawim.SawimException;
+import ru.sawim.*;
 import ru.sawim.chat.message.PlainMessage;
 import ru.sawim.chat.message.SystemNotice;
-import ru.sawim.comm.Config;
-import ru.sawim.comm.StringConvertor;
-import ru.sawim.comm.Util;
-import ru.sawim.modules.crypto.MD5;
+import ru.sawim.comm.*;
 import ru.sawim.modules.DebugLog;
-import ru.sawim.roster.RosterHelper;
+import ru.sawim.modules.crypto.MD5;
 import ru.sawim.modules.search.UserInfo;
+import ru.sawim.roster.RosterHelper;
 import ru.sawim.util.JLocale;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
@@ -51,6 +44,11 @@ public final class XmppConnection extends ClientConnection {
     boolean smSupported = false;
     private boolean smEnabled = false;
     String smSessionID = "";
+
+    String sessionId = "";
+    boolean rebindSupported = false;
+    boolean rebindEnabled = false;
+
     long packetsIn;
     long packetsOut;
     XmppSession session;
@@ -389,7 +387,7 @@ public final class XmppConnection extends ClientConnection {
 
         setProgress(30);
         socket.start();
-        if (isSessionManagementEnabled()) {
+        if (isSessionRestored()) {
             usePong();
             setProgress(100);
         } else {
@@ -398,6 +396,22 @@ public final class XmppConnection extends ClientConnection {
             usePong();
             setProgress(60);
         }
+    }
+
+    private boolean tryRebind() throws SawimException {
+        setProgress(50);
+        write("<rebind xmlns='p1:rebind'><jid>" +
+              fullJid_ + "</jid>" +
+                "<sid>" + sessionId  + "</sid></rebind>");
+        XmlNode rebind = readXmlNode(true);
+        if (rebind != null && rebind.is("rebind")) {
+            Log.d("sawim-xml", "[INFO-JABBER] rebound session ID=" + sessionId);
+            rebindEnabled = true;
+            setAuthStatus(true);
+            return true;
+        }
+        DebugLog.systemPrintln("[INFO-JABBER] failed to rebind");
+        return false;
     }
 
     private boolean processInPacket() throws SawimException {
@@ -443,6 +457,11 @@ public final class XmppConnection extends ClientConnection {
     }
 
     private void loginParse(XmlNode x) throws SawimException {
+        if (x.is("stream:stream")) {
+            sessionId = x.getId();
+            session.save();
+            return;
+        }
         if (x.is("stream:features")) {
             parseStreamFeatures(x);
             return;
@@ -562,6 +581,10 @@ public final class XmppConnection extends ClientConnection {
     public void setSessionManagementEnabled(boolean flag) {
         smEnabled = flag;
         session.enable();
+    }
+
+    private boolean isSessionRestored() {
+        return smEnabled || rebindEnabled;
     }
 
     private String generateId(String key) {
@@ -1773,15 +1796,23 @@ public final class XmppConnection extends ClientConnection {
     }
 
     private void parseStreamFeatures(XmlNode x) throws SawimException {
-        XmlNode x2 = null;
+        XmlNode x2;
         if (0 == x.childrenCount()) {
             nonSaslLogin();
             return;
         }
+
         x2 = x.getFirstNode("sm", "urn:xmpp:sm:3");
         if (null != x2) {
             smSupported = true;
         }
+
+        x2 = x.getFirstNode("push", "p1:push");
+        if (x2 != null) {
+            rebindSupported = true;
+            session.enableRebind();
+        }
+
         x2 = x.getFirstNode("starttls");
         if (null != x2) {
             DebugLog.println("starttls");
@@ -1792,6 +1823,14 @@ public final class XmppConnection extends ClientConnection {
         if ((null != x2) && "zlib".equals(x2.getFirstNodeValue("method"))) {
             sendRequest("<compress xmlns='http://jabber.org/protocol/compress'><method>zlib</method></compress>");
             return;
+        }
+
+        x2 = x.getFirstNode("rebind", "p1:rebind");
+        if (x2 != null) {
+            session.load();
+            if (tryRebind()) {
+                return;
+            }
         }
 
         x2 = x.getFirstNode("mechanisms");
