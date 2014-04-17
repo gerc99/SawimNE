@@ -51,7 +51,6 @@ public final class XmppConnection extends ClientConnection {
 
     long packetsIn;
     long packetsOut;
-    XmppSession session;
 
     private UserInfo singleUserInfo;
     private String autoSubscribeDomain;
@@ -158,8 +157,6 @@ public final class XmppConnection extends ClientConnection {
         resource = xmpp.getResource();
         fullJid_ = xmpp.getUserId() + '/' + resource;
         domain_ = Jid.getDomain(fullJid_);
-
-        session = new XmppSession(SawimApplication.getContext(), this);
     }
 
     private void setProgress(int percent) {
@@ -214,14 +211,14 @@ public final class XmppConnection extends ClientConnection {
 
     protected final void ping() throws SawimException {
         if (isSessionManagementEnabled()) {
-            session.save();
+            SawimApplication.getInstance().getXmppSession().save(this);
         }
         write(pingPacket);
     }
 
     protected final void pingForPong() throws SawimException {
         if (isSessionManagementEnabled()) {
-            session.save();
+            SawimApplication.getInstance().getXmppSession().save(this);
         }
         write(forPongPacket);
     }
@@ -459,14 +456,14 @@ public final class XmppConnection extends ClientConnection {
     private void loginParse(XmlNode x) throws SawimException {
         if (x.is("stream:stream")) {
             sessionId = x.getId();
-            session.save();
+            SawimApplication.getInstance().getXmppSession().save(this);
             return;
         }
         if (x.is("stream:features")) {
             parseStreamFeatures(x);
             return;
         } else if (x.is("resumed")) {
-            session.save();
+            SawimApplication.getInstance().getXmppSession().save(this);
             setAuthStatus(true);
             DebugLog.systemPrintln("[INFO-JABBER] Resumed session ID=" + smSessionID);
         } else if (x.is("failed")) {
@@ -476,7 +473,7 @@ public final class XmppConnection extends ClientConnection {
             smSessionID = "";
             packetsIn = 0;
             packetsOut = 0;
-            session.save();
+            SawimApplication.getInstance().getXmppSession().save(this);
             resourceBinding();
         } else if (x.is("compressed")) {
             setStreamCompression();
@@ -551,7 +548,7 @@ public final class XmppConnection extends ClientConnection {
         } else if (x.is("message")) {
             if (isSessionManagementEnabled()) {
                 packetsIn++;
-                session.save();
+                SawimApplication.getInstance().getXmppSession().save(this);
             }
             parseMessage(x);
 
@@ -565,7 +562,7 @@ public final class XmppConnection extends ClientConnection {
         } else if (x.is("enabled")) {
             setSessionManagementEnabled(true);
             smSessionID = x.getAttribute("id");
-            session.save();
+            SawimApplication.getInstance().getXmppSession().save(this);
             DebugLog.systemPrintln("[INFO-JABBER] Session management enabled with ID=" + smSessionID);
         }
     }
@@ -580,7 +577,7 @@ public final class XmppConnection extends ClientConnection {
 
     public void setSessionManagementEnabled(boolean flag) {
         smEnabled = flag;
-        session.enable();
+        SawimApplication.getInstance().getXmppSession().enable(this);
     }
 
     private boolean isSessionRestored() {
@@ -1810,7 +1807,7 @@ public final class XmppConnection extends ClientConnection {
         x2 = x.getFirstNode("push", "p1:push");
         if (x2 != null) {
             rebindSupported = true;
-            session.enableRebind();
+            SawimApplication.getInstance().getXmppSession().enableRebind(this);
         }
 
         x2 = x.getFirstNode("starttls");
@@ -1827,7 +1824,7 @@ public final class XmppConnection extends ClientConnection {
 
         x2 = x.getFirstNode("rebind", "p1:rebind");
         if (x2 != null) {
-            session.load();
+            SawimApplication.getInstance().getXmppSession().load(this);
             if (tryRebind()) {
                 return;
             }
@@ -1894,7 +1891,7 @@ public final class XmppConnection extends ClientConnection {
         }
 
         if (smSupported) {
-            session.load();
+            SawimApplication.getInstance().getXmppSession().load(this);
             if (!smSessionID.equals("")) {
                 sendRequest("<resume xmlns='urn:xmpp:sm:3' previd='" + smSessionID + "' h='" + packetsIn + "' />");
                 return;

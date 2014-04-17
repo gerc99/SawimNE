@@ -176,7 +176,7 @@ public final class Xmpp extends Protocol implements FormListener {
 
     public void disconnect(boolean user) {
         if (user && null != connection) {
-            connection.session.clear();
+            SawimApplication.getInstance().getXmppSession().clear(connection);
             connection.loggedOut();
         }
         super.disconnect(user);
@@ -923,9 +923,8 @@ public final class Xmpp extends Protocol implements FormListener {
     }
 
     protected boolean isStreamManagementSupported() {
-        String server = Jid.getDomain(getUserId());
-        return "jabber.ru".equals(server) ||
-               "beta.bggg.net.ru".equals(server);
+        return SawimApplication.getInstance().getXmppSession()
+                .isStreamManagementSupported(getUserId() + '/' + getResource());
     }
 }
 

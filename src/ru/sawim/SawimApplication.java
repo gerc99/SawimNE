@@ -12,6 +12,7 @@ import android.os.Message;
 import android.view.Surface;
 import android.view.WindowManager;
 import org.microemu.util.AndroidRecordStoreManager;
+import protocol.xmpp.XmppSession;
 import ru.sawim.chat.ChatHistory;
 import ru.sawim.modules.*;
 import ru.sawim.receiver.NetworkStateReceiver;
@@ -53,6 +54,7 @@ public class SawimApplication extends Application {
     public AndroidRecordStoreManager recordStoreManager;
     private final SawimServiceConnection serviceConnection = new SawimServiceConnection();
     private final NetworkStateReceiver networkStateReceiver = new NetworkStateReceiver();
+    private XmppSession xmppSession;
     public boolean isBindService = false;
 
     public static SawimApplication getInstance() {
@@ -76,6 +78,12 @@ public class SawimApplication extends Application {
 
         startApp();
         TextFormatter.init();
+
+        xmppSession = new XmppSession();
+    }
+
+    public XmppSession getXmppSession() {
+        return xmppSession;
     }
 
     private void startService() {
