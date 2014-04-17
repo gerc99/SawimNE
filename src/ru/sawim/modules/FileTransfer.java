@@ -161,7 +161,7 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
     }
 
     private void changeFileProgress(int percent, int message) {
-        SawimNotification.fileProgress(getProgressText(), percent + "%", JLocale.getString(message));
+        SawimNotification.fileProgress(getProgressText(), percent, JLocale.getString(message));
         if (percent == 100) {
             RosterHelper.getInstance().removeTransfer(true);
             SawimNotification.clear(getProgressText());

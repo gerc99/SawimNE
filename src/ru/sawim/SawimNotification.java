@@ -65,7 +65,7 @@ public class SawimNotification {
         return notification.build();
     }
 
-    public static void fileProgress(String filename, String percent, String text) {
+    public static void fileProgress(String filename, int percent, String text) {
         Context context = SawimApplication.getContext();
         Intent intent = new Intent(context, SawimActivity.class);
         intent.setAction(Intent.ACTION_MAIN);
@@ -76,9 +76,14 @@ public class SawimNotification {
         builder.setContentIntent(contentIntent);
         builder.setOngoing(false);
         builder.setContentTitle(filename);
-        builder.setTicker(JLocale.getString(R.string.sending_file));
-        builder.setContentText(percent + " " + text);
-        builder.setSmallIcon(android.R.drawable.stat_sys_download_done);
+        if (percent == 100) {
+            builder.setTicker(JLocale.getString(R.string.sending_complete));
+            builder.setSmallIcon(android.R.drawable.stat_sys_upload_done);
+        } else {
+            builder.setTicker(JLocale.getString(R.string.sending_file));
+            builder.setSmallIcon(android.R.drawable.stat_sys_upload);
+        }
+        builder.setContentText(percent + "% " + text);
         builder.setAutoCancel(true);
         int id = filename.hashCode();
         if (idsMap.containsKey(filename))

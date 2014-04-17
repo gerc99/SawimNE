@@ -355,6 +355,7 @@
     <string name="send_message">New Message</string>
     <string name="send_via">Send via</string>
     <string name="sending_file">Sending file</string>
+    <string name="sending_complete">Sending complete</string>
     <string name="service_discovery">Service discovery</string>
     <string name="service_discovery_add">Add</string>
     <string name="service_discovery_home">Homepage</string>
