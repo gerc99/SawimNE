@@ -657,7 +657,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
                     chatsSpinnerAdapter.refreshList();
                 break;
             case UPDATE_MUC_LIST:
-                if (contact != null && contact.isPresence() == (byte) 1)
+                if (contact != null && contact.isPresence())
                     adapter.refreshList(chat.getMessData());
                 if (mucUsersView != null) {
                     if (SawimApplication.isManyPane()

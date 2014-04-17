@@ -314,6 +314,7 @@ public final class Xmpp extends Protocol implements FormListener {
                 if (serviceContact.isConference()) {
                     String userNick = dis.readUTF();
                     serviceContact.setMyName(userNick);
+                    serviceContact.setPresencesFlag(dis.readBoolean());
                 }
             }
             int subContactSize = dis.readInt();
@@ -338,6 +339,7 @@ public final class Xmpp extends Protocol implements FormListener {
                 XmppServiceContact serviceContact = (XmppServiceContact)contact;
                 if (serviceContact.isConference()) {
                     dos.writeUTF(serviceContact.getMyName());
+                    dos.writeBoolean(serviceContact.isPresence());
                 }
             }
             XmppContact xmppContact = (XmppContact)contact;
@@ -834,6 +836,7 @@ public final class Xmpp extends Protocol implements FormListener {
     private static final int NICK = 0;
     private static final int PASSWORD = 1;
     private static final int AUTOJOIN = 2;
+    private static final int IS_PRESENCES = 3;
 
     private static Forms enterDataInvite = null;
     private static final int JID_MESS_TO = 7;
@@ -869,8 +872,9 @@ public final class Xmpp extends Protocol implements FormListener {
         if (!c.isTemp()) {
             enterData.addCheckBox(AUTOJOIN, R.string.autojoin, c.isAutoJoin());
         }
+        enterData.addCheckBox(IS_PRESENCES, R.string.notice_presence, c.isPresence());
         enterData.show(activity);
-        if (!Jid.isIrcConference(c.getUserId())) {
+        if (isConnected() && !Jid.isIrcConference(c.getUserId())) {
             getConnection().requestConferenceInfo(c.getUserId());
         }
     }
@@ -890,13 +894,16 @@ public final class Xmpp extends Protocol implements FormListener {
                     enterConf.setMyName(enterData.getTextFieldValue(NICK));
                     enterConf.setAutoJoin(!enterConf.isTemp() && enterData.getCheckBoxValue(AUTOJOIN));
                     enterConf.setPassword(enterData.getTextFieldValue(PASSWORD));
+                    enterConf.setPresencesFlag(enterData.getCheckBoxValue(IS_PRESENCES));
 
-                    boolean needUpdate = !enterConf.isTemp();
-                    if (needUpdate) {
-                        getConnection().saveConferences();
-                    }
-                    if (enterConf.isOnline() && !oldNick.equals(enterConf.getMyName())) {
-                        join(enterConf);
+                    if (isConnected()) {
+                        boolean needUpdate = !enterConf.isTemp();
+                        if (needUpdate) {
+                            getConnection().saveConferences();
+                        }
+                        if (enterConf.isOnline() && !oldNick.equals(enterConf.getMyName())) {
+                            join(enterConf);
+                        }
                     }
                 }
             }

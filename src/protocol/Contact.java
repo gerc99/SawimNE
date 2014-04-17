@@ -10,7 +10,6 @@ import ru.sawim.Scheme;
 import ru.sawim.activities.BaseActivity;
 import ru.sawim.chat.Chat;
 import ru.sawim.comm.StringConvertor;
-import ru.sawim.modules.tracking.Tracking;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.roster.TreeNode;
 import ru.sawim.util.JLocale;
@@ -42,17 +41,8 @@ abstract public class Contact extends TreeNode {
 
     public String annotations = null;
 
-    public byte isHistory() {
-        if (Tracking.isTracking(getUserId(), Tracking.GLOBAL) == Tracking.TRUE) {
-            if (Tracking.beginTrackActionItem(this, Tracking.ACTION_HISTORY) == Tracking.TRUE) {
-                return Tracking.TRUE;
-            }
-        }
-        return Tracking.FALSE;
-    }
-
-    public byte isPresence() {
-        return Tracking.FALSE;
+    public boolean isPresence() {
+        return false;
     }
 
     public byte subcontactsS() {
@@ -123,14 +113,6 @@ abstract public class Contact extends TreeNode {
     public void setOfflineStatus() {
         if (isOnline()) {
             setTimeOfChaingingStatus(SawimApplication.getCurrentGmtTime());
-
-            String id = getUserId();
-            if (Tracking.isTrackingEvent(id, Tracking.GLOBAL) == Tracking.TRUE) {
-                if (Tracking.isTracking(id, Tracking.EVENT_EXIT) == Tracking.TRUE) {
-                    Tracking.beginTrackAction(this, Tracking.EVENT_EXIT);
-                }
-            } else if (Tracking.isTracking(id, Tracking.EVENT_EXIT) == Tracking.FALSE) {
-            }
         }
         setStatus(StatusInfo.STATUS_OFFLINE, null);
         setXStatus(XStatusInfo.XSTATUS_NONE, null);
@@ -339,16 +321,7 @@ abstract public class Contact extends TreeNode {
                 menu.add(Menu.NONE, ContactMenu.USER_MENU_REQU_AUTH, Menu.NONE, R.string.requauth);
             }
         }
-        if (!isTemp() && !isConference()) {
-            menu.add(Menu.NONE, ContactMenu.USER_MENU_TRACK, Menu.NONE, R.string.extra_settings);
-        }
         if (isSingleUserContact() || isOnline()) {
-            /*if (ru.sawim.modules.fs.FileSystem.isSupported()) {
-                menu.add(Menu.FIRST, USER_MENU_FILE_TRANS, 2, R.string.ft_name);
-            }
-            if (FileTransfer.isPhotoSupported()) {
-                menu.add(Menu.FIRST, USER_MENU_CAM_TRANS, 2, R.string.ft_cam);
-            }*/
             addChatMenuItems(menu);
         }
     }

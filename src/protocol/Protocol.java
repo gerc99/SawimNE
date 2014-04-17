@@ -14,7 +14,6 @@ import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
 import ru.sawim.io.Storage;
 import ru.sawim.modules.*;
-import ru.sawim.modules.tracking.Tracking;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.modules.search.Search;
 import ru.sawim.modules.search.UserInfo;
@@ -613,15 +612,7 @@ abstract public class Protocol {
                 chat.beginTyping(type);
             }
             if (type && isConnected()) {
-                String id = item.getUserId();
-                if (Tracking.isTrackingEvent(id, Tracking.GLOBAL) == Tracking.TRUE) {
-                    if (Tracking.isTracking(id, Tracking.EVENT_TYPING) == Tracking.TRUE) {
-                        Tracking.beginTrackAction(item, Tracking.EVENT_TYPING);
-                    }
-                } else if (Tracking.isTracking(id, Tracking.EVENT_TYPING) == Tracking.FALSE) {
-                    playNotification(Notify.isSound(Notify.NOTIFY_TYPING), Notify.NOTIFY_TYPING);
-                }
-                //playNotification(Notify.NOTIFY_TYPING);
+                playNotification(Notify.NOTIFY_TYPING);
             }
         }
     }
@@ -920,28 +911,12 @@ abstract public class Protocol {
             if (contact.isAuth() && !contact.isTemp()
                     && message.isWakeUp()) {
                 playNotification(Notify.NOTIFY_ALARM);
-
             } else if (isBlog) {
                 playNotification(Notify.NOTIFY_BLOG);
-
             } else {
-                if (Tracking.isTrackingEvent(id, Tracking.GLOBAL) == Tracking.TRUE) {
-                    if (Tracking.isTracking(id, Tracking.EVENT_MESSAGE) == Tracking.TRUE) {
-                        Tracking.beginTrackAction(contact, Tracking.EVENT_MESSAGE);
-                    }
-                } else if (Tracking.isTracking(id, Tracking.EVENT_MESSAGE) == Tracking.FALSE) {
-                    playNotification(Notify.isSound(Notify.NOTIFY_MESSAGE), Notify.NOTIFY_MESSAGE);
-                }
                 playNotification(Notify.NOTIFY_MESSAGE);
             }
         } else if (isMention) {
-            if (Tracking.isTrackingEvent(id, Tracking.GLOBAL) == Tracking.TRUE) {
-                if (Tracking.isTracking(id, Tracking.EVENT_MESSAGE) == Tracking.TRUE) {
-                    Tracking.beginTrackAction(contact, Tracking.EVENT_MESSAGE);
-                }
-            } else if (Tracking.isTracking(id, Tracking.EVENT_MESSAGE) == Tracking.FALSE) {
-                playNotification(Notify.isSound(Notify.NOTIFY_MULTIMESSAGE), Notify.NOTIFY_MULTIMESSAGE);
-            }
             playNotification(Notify.NOTIFY_MULTIMESSAGE);
         }
     }
@@ -980,10 +955,6 @@ abstract public class Protocol {
 
     public final boolean isReconnect() {
         return isReconnect;
-    }
-
-    public final void playNotification(boolean isSound, int type) {
-        Notify.getSound().playSoundNotification(isSound, type);
     }
 
     public final void playNotification(int type) {
@@ -1100,15 +1071,7 @@ abstract public class Protocol {
             boolean prevAway = getStatusInfo().isOffline(prev);
             boolean currAway = getStatusInfo().isOffline(curr);
             if (!currAway && prevAway) {
-
-                String id = contact.getUserId();
-                if (Tracking.isTrackingEvent(id, Tracking.GLOBAL) == Tracking.TRUE) {
-                    if (Tracking.isTracking(id, Tracking.EVENT_ENTER) == Tracking.TRUE) {
-                        Tracking.beginTrackAction(contact, Tracking.EVENT_ENTER);
-                    }
-                } else if (Tracking.isTracking(id, Tracking.EVENT_ENTER) == Tracking.FALSE) {
-                    Notify.getSound().playSoundNotification(Notify.isSound(Notify.NOTIFY_ONLINE), Notify.NOTIFY_ONLINE);
-                }
+                playNotification(Notify.NOTIFY_ONLINE);
             }
         }
     }

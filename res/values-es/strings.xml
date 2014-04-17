@@ -125,7 +125,6 @@
     <string name="wake">Despertar</string>
     <string name="user_statuses">Estado del usuario</string>
     <string name="info">Información del usuario</string>
-    <string name="extra_settings">Ajustes adicionales</string>
     <string name="set_theme_conference">Establecer el tema de la sala</string>
     <string name="conf_aff_list">Listado de afiliaciones</string>
     <string name="owner_options">Opciones del propietario</string>

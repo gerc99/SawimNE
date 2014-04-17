@@ -152,7 +152,6 @@ public class SawimApplication extends Application {
             Options.loadAccounts();
             RosterHelper.getInstance().initAccounts();
             RosterHelper.getInstance().loadAccounts();
-            ru.sawim.modules.tracking.Tracking.loadTrackingFromRMS();
         } catch (Exception e) {
             DebugLog.panic("init", e);
             DebugLog.instance.activate();

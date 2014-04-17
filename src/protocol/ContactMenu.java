@@ -85,8 +85,7 @@ public class ContactMenu implements TextBoxView.TextBoxListener {
     public static final int USER_MENU_WAKE = 55;
     public static final int USER_MENU_FILE_TRANS = 56;
     public static final int USER_MENU_CAM_TRANS = 57;
-    public static final int USER_MENU_TRACK = 58;
-    public static final int USER_MENU_TRACK_CONF = 59;
+
     public static final int USER_MENU_ANNOTATION = 60;
     public static final int CONFERENCE_DISCONNECT = 61;
     public static final int USER_MENU_CLOSE_CHAT = 62;
@@ -108,13 +107,6 @@ public class ContactMenu implements TextBoxView.TextBoxListener {
 
     public void doAction(final BaseActivity activity, int cmd) {
         switch (cmd) {
-            case USER_MENU_TRACK:
-                new ru.sawim.modules.tracking.TrackingForm(contact.getUserId()).activate();
-                break;
-            case USER_MENU_TRACK_CONF:
-                new ru.sawim.modules.tracking.TrackingForm(contact.getUserId()).activateForConf();
-                break;
-
             case USER_MENU_ANNOTATION: {
                 messageTextbox = new TextBoxView();
                 messageTextbox.setTextBoxListener(this);

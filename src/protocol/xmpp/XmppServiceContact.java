@@ -14,7 +14,6 @@ import ru.sawim.SawimResources;
 import ru.sawim.activities.BaseActivity;
 import ru.sawim.chat.message.SystemNotice;
 import ru.sawim.comm.StringConvertor;
-import ru.sawim.modules.tracking.Tracking;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.util.JLocale;
 import ru.sawim.view.menu.MyMenu;
@@ -40,6 +39,7 @@ public class XmppServiceContact extends XmppContact {
     private String myNick;
     private String baseMyNick;
     private String subject;
+    private boolean isPresence;
 
     public XmppServiceContact(String jid, String name) {
         super(jid, name);
@@ -77,9 +77,7 @@ public class XmppServiceContact extends XmppContact {
                 return 3;
         }
         return 0;
-    }
-
-    ;
+    };
 
     public boolean isAutoJoin() {
         return autojoin;
@@ -139,17 +137,16 @@ public class XmppServiceContact extends XmppContact {
         return super.getLeftIcon(p);
     }
 
-    public byte isPresence() {
-        if (Tracking.isTracking(getUserId(), Tracking.GLOBAL) == Tracking.TRUE) {
-            if (Tracking.beginTrackActionItem(this, Tracking.ACTION_PRESENCE) == Tracking.TRUE) {
-                return Tracking.TRUE;
-            }
-        }
-        return Tracking.FALSE;
+    public boolean isPresence() {
+        return isPresence;
+    }
+
+    public void setPresencesFlag(boolean flag) {
+        isPresence = flag;
     }
 
     public void addPresence(Xmpp xmpp, String nick, String text) {
-        if (isPresence() == Tracking.FALSE)
+        if (!isPresence())
             return;
         xmpp.getChat(this).addPresence(new SystemNotice(xmpp,
                 SystemNotice.SYS_NOTICE_PRESENCE, getUserId(), nick, text));
@@ -184,7 +181,7 @@ public class XmppServiceContact extends XmppContact {
         }
         SubContact sc = getExistSubContact(nick);
         if (null != sc) {
-            if (isPresence() == Tracking.TRUE) {
+            if (isPresence()) {
                 StringBuffer prsnsText = new StringBuffer(0);
                 prsnsText.append(": ").append(xmpp.getStatusInfo().getName(sc.status)).append(" ");
                 prsnsText.append(sc.roleText).append(" ").append(role_Xstatus);
@@ -219,15 +216,6 @@ public class XmppServiceContact extends XmppContact {
         }
     }
 
-    private void playSoundEye() {
-        String id = getUserId();
-        if (Tracking.isTrackingEvent(id, Tracking.GLOBAL) == Tracking.TRUE) {
-            if (Tracking.isTracking(id, Tracking.EVENT_ENTER) == Tracking.TRUE) {
-            }
-        } else if (Tracking.isTracking(id, Tracking.EVENT_ENTER) == Tracking.FALSE) {
-        }
-    }
-
     void nickOffline(Xmpp xmpp, String nick, int code, String reasone, String presenceUnavailable) {
         StringBuffer textPresence = new StringBuffer();
         textPresence.append(": ").append(xmpp.getStatusInfo().getName(StatusInfo.STATUS_OFFLINE)).append(" ").append(presenceUnavailable);
@@ -249,7 +237,7 @@ public class XmppServiceContact extends XmppContact {
                     text += " (" + reasone + ")";
                 }
                 text += '.';
-                playSoundEye();
+                //playSoundEye();
                 textPresence.append(text).append(" ").append(reasone);
                 //ru.sawim.modules.MagicEye.addAction(getProtocol(), getUserId(), nick + " " + text, reasone);
                 xmpp.addMessage(new SystemNotice(xmpp,
@@ -272,10 +260,10 @@ public class XmppServiceContact extends XmppContact {
             int eventCode = 0;
             if (301 == code) {
                 eventCode = R.string.was_baned;
-                playSoundEye();
+                //playSoundEye();
             } else if (307 == code) {
                 eventCode = R.string.was_kicked;
-                playSoundEye();
+                //playSoundEye();
             }
             if (0 != eventCode) {
                 String event = JLocale.getString(eventCode);
@@ -344,7 +332,6 @@ public class XmppServiceContact extends XmppContact {
                 contactMenu.add(Menu.NONE, ContactMenu.GATE_REGISTER, Menu.NONE, R.string.register);
                 contactMenu.add(Menu.NONE, ContactMenu.GATE_UNREGISTER, Menu.NONE, R.string.unregister);
             }
-            contactMenu.add(Menu.NONE, ContactMenu.USER_MENU_TRACK_CONF, Menu.NONE, R.string.extra_settings);
         }
         if (isConference) {
             if (isOnline()) {
@@ -353,8 +340,7 @@ public class XmppServiceContact extends XmppContact {
                 contactMenu.add(Menu.NONE, ContactMenu.CONFERENCE_CONNECT, Menu.NONE, R.string.connect);
                 contactMenu.add(Menu.NONE, ContactMenu.USER_MENU_USERS_LIST, Menu.NONE, R.string.list_of_users);
             }
-            if (protocol.isConnected())
-                contactMenu.add(Menu.NONE, ContactMenu.CONFERENCE_OPTIONS, Menu.NONE, R.string.options);
+            contactMenu.add(Menu.NONE, ContactMenu.CONFERENCE_OPTIONS, Menu.NONE, R.string.options);
             if (isOnline()) {
                 SubContact my = getContact(getMyName());
                 if (null != my) {
@@ -367,7 +353,6 @@ public class XmppServiceContact extends XmppContact {
                     }
                 }
             }
-            contactMenu.add(Menu.NONE, ContactMenu.USER_MENU_TRACK_CONF, Menu.NONE, R.string.extra_settings);
         }
         if ((isOnline() && isConference && canWrite()) || isPrivate) {
             addChatItems(contactMenu);
@@ -444,10 +429,6 @@ public class XmppServiceContact extends XmppContact {
         } else if (isConference && p.isConnected()) {
             new ContactMenu(p, this).doAction(activity, ContactMenu.CONFERENCE_CONNECT);
         }
-    }
-
-    public boolean hasHistory() {
-        return Options.getBoolean(Options.OPTION_HISTORY) && Tracking.isTracking(getUserId(), Tracking.EVENT_ENTER) == Tracking.TRUE;
     }
 
     public final void setPrivateContactStatus(XmppServiceContact conf) {

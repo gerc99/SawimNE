@@ -143,7 +143,6 @@
     <string name="wake">Wake</string>
     <string name="user_statuses">User status</string>
     <string name="info">User info</string>
-    <string name="extra_settings">Extra settings</string>
     <string name="set_theme_conference">Set conference topic</string>
     <string name="conf_aff_list">Affiliations list</string>
     <string name="owner_options">Owner options</string>

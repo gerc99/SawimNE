@@ -338,11 +338,7 @@ public final class Chat {
     }
 
     private boolean isHistory() {
-        boolean useHist = Options.getBoolean(Options.OPTION_HISTORY);
-        if (contact instanceof XmppServiceContact) {
-            return useHist && contact.isHistory() == (byte) 1;
-        }
-        return useHist || contact.isHistory() == (byte) 1;
+        return Options.getBoolean(Options.OPTION_HISTORY);
     }
 
     private String getFrom(Message message) {

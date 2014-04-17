@@ -17,7 +17,6 @@ import ru.sawim.Scheme;
 import ru.sawim.chat.Chat;
 import ru.sawim.chat.ChatHistory;
 import ru.sawim.chat.message.Message;
-import ru.sawim.modules.tracking.Tracking;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.roster.TreeNode;
 import ru.sawim.widget.roster.RosterItemView;
@@ -178,8 +177,6 @@ public class RosterAdapter extends BaseAdapter {
             rosterItemView.itemFourthImage = icClient.getImage().getBitmap();
 
         String id = item.getUserId();
-        if (Tracking.isTrackingEvent(id, Tracking.GLOBAL) == Tracking.TRUE)
-            rosterItemView.itemFifthImage = ((BitmapDrawable) Tracking.getTrackIcon(id)).getBitmap();
     }
 
     public BitmapDrawable getImageChat(Chat chat, boolean showMess) {
