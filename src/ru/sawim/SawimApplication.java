@@ -72,14 +72,14 @@ public class SawimApplication extends Application {
         VERSION = getVersion();
         Thread.setDefaultUncaughtExceptionHandler(ExceptionHandler.inContext(getContext()));
         super.onCreate();
+
+        xmppSession = new XmppSession();
         recordStoreManager = new AndroidRecordStoreManager(getContext());
         startService();
         networkStateReceiver.updateNetworkState(this);
 
         startApp();
         TextFormatter.init();
-
-        xmppSession = new XmppSession();
     }
 
     public XmppSession getXmppSession() {
