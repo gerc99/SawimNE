@@ -243,19 +243,6 @@ public final class Chat {
         return 0 == getMessCount();
     }
 
-    public long getLastMessageTime() {
-        int messageCount = getMessCount();
-        if (messageCount > 0) {
-            for (int i = messageCount - 1; i >= 0; --i) {
-                MessData data = messData.get(i);
-                if (data.isMessage()) {
-                    return data.getTime();
-                }
-            }
-        }
-        return 0;
-    }
-
     public int typeNewMessageIcon = Message.ICON_NONE;
     private short messageCounter = 0;
     private short otherMessageCounter = 0;
@@ -381,6 +368,8 @@ public final class Chat {
             message.setVisibleIcon(mData);
         }
         addMessage(mData);
+        if (mData.isMessage())
+            contact.setLastMessageTime(mData.getTime());
     }
 
     private void addMessage(MessData mData) {

@@ -572,7 +572,7 @@ public final class XmppConnection extends ClientConnection {
     }
 
     public boolean isSessionManagementEnabled() {
-        return smEnabled;
+        return smEnabled || rebindSupported;
     }
 
     public void setSessionManagementEnabled(boolean flag) {
@@ -2383,7 +2383,7 @@ public final class XmppConnection extends ClientConnection {
             if (!StringConvertor.isEmpty(password)) {
                 xNode += "<password>" + Util.xmlEscape(password) + "</password>";
             }
-            long time = conf.hasChat() ? getXmpp().getChat(conf).getLastMessageTime() : 0;
+            long time = conf.hasChat() ? conf.getLastMessageTime() : 0;
 
             if (0 != time)
                 xNode += "<history maxstanzas='20' seconds='" + (SawimApplication.getCurrentGmtTime() - time) + "'/>";
