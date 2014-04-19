@@ -12,6 +12,7 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Environment;
+import android.util.Log;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -82,6 +83,7 @@ public final class ExceptionHandler implements Thread.UncaughtExceptionHandler {
 
     @Override
     public void uncaughtException(Thread thread, Throwable exception) {
+        SawimApplication.getInstance().quit(true);
         final String state = Environment.getExternalStorageState();
         final Date dumpDate = new Date(System.currentTimeMillis());
         if (Environment.MEDIA_MOUNTED.equals(state)) {

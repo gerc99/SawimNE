@@ -396,7 +396,6 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
 
     private void sharing(Protocol p, Contact c) {
         Intent intent = getActivity().getIntent();
-        //if (intent == null) return;
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         String type = intent.getType();
         if (type.equals("text/plain")) {

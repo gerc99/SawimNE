@@ -5,6 +5,7 @@ import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import ru.sawim.ExternalApi;
 import ru.sawim.SawimResources;
 
@@ -21,6 +22,12 @@ public class BaseActivity extends ActionBarActivity {
     }
 
     @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        currentActivity = null;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         currentActivity = this;
         super.onCreate(savedInstanceState);
@@ -31,12 +38,6 @@ public class BaseActivity extends ActionBarActivity {
     protected void onResume() {
         currentActivity = this;
         super.onResume();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        currentActivity = null;
     }
 
     public void resetBar(String title) {
