@@ -16,7 +16,7 @@ import ru.sawim.util.JLocale;
 import ru.sawim.view.menu.MyMenu;
 
 
-abstract public class Contact extends TreeNode {
+abstract public class Contact implements TreeNode {
     public static final ImageList serverListsIcons = ImageList.createImageList("/serverlists.png");
 
     protected String userId;
@@ -92,7 +92,6 @@ abstract public class Contact extends TreeNode {
         return null;
     }
 
-    @Override
     public Icon getLeftIcon(Protocol p) {
         return p.getStatusInfo().getIcon(getStatusIndex());
     }
@@ -274,8 +273,8 @@ abstract public class Contact extends TreeNode {
     }
 
     @Override
-    protected byte getType() {
-        return TreeNode.CONTACT;
+    public byte getType() {
+        return CONTACT;
     }
 
     public final int getNodeWeight() {

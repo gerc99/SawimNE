@@ -12,6 +12,7 @@ import android.os.Message;
 import android.view.Surface;
 import android.view.WindowManager;
 import org.microemu.util.AndroidRecordStoreManager;
+import protocol.Protocol;
 import protocol.xmpp.XmppSession;
 import ru.sawim.chat.ChatHistory;
 import ru.sawim.modules.*;
@@ -117,8 +118,8 @@ public class SawimApplication extends Application {
         serviceConnection.send(Message.obtain(null, SawimService.UPDATE_APP_ICON));
     }
 
-    public void setStatus() {
-        serviceConnection.send(Message.obtain(null, SawimService.SET_STATUS));
+    public void setStatus(Protocol p) {
+        serviceConnection.send(Message.obtain(null, SawimService.SET_STATUS, p));
     }
 
     public void sendNotify(String title, String text) {

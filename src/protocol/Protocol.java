@@ -14,6 +14,7 @@ import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
 import ru.sawim.io.Storage;
 import ru.sawim.modules.*;
+import ru.sawim.roster.ProtocolBranch;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.modules.search.Search;
 import ru.sawim.modules.search.UserInfo;
@@ -584,6 +585,14 @@ abstract public class Protocol {
             return null;
         }
         return new Search(this);
+    }
+
+    private ProtocolBranch branch;
+    public final ProtocolBranch getProtocolBranch() {
+        if (null == branch) {
+            branch = new ProtocolBranch(this);
+        }
+        return branch;
     }
 
     public final Vector getContactItems() {

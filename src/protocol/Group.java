@@ -1,21 +1,18 @@
 package protocol;
 
-import DrawControls.icons.Icon;
-import ru.sawim.SawimResources;
 import ru.sawim.comm.Util;
-import ru.sawim.roster.TreeNode;
+import ru.sawim.roster.TreeBranch;
 
 import java.util.Vector;
 
 
-public class Group extends TreeNode {
+public class Group extends TreeBranch {
 
     private String name;
     private final Vector contacts = new Vector();
     private byte mode;
     private String caption = null;
     private int groupId;
-    private boolean expanded = false;
 
     public static final int NOT_IN_GROUP = -1;
 
@@ -33,15 +30,6 @@ public class Group extends TreeNode {
         setName(name);
         caption = name;
         setMode(Group.MODE_FULL_ACCESS);
-    }
-
-    public final boolean isExpanded() {
-        return expanded;
-    }
-
-    public final void setExpandFlag(boolean value) {
-        expanded = value;
-        //sort();
     }
 
     public final String getName() {
@@ -110,17 +98,12 @@ public class Group extends TreeNode {
     }
 
     @Override
-    public Icon getLeftIcon(Protocol p) {
-        return new Icon(expanded ? SawimResources.groupDownIcon : SawimResources.groupRightIcons);
-    }
-
-    @Override
-    protected byte getType() {
-        return TreeNode.GROUP;
+    public byte getType() {
+        return GROUP;
     }
 
     public final void sort() {
-        if (expanded) {
+        if (isExpanded()) {
             Util.sort(contacts);
         }
     }

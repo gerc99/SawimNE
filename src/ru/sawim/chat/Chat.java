@@ -171,32 +171,27 @@ public final class Chat {
 
     private void fillFromHistory() {
         if (isBlogBot()) return;
-        //if (Options.getBoolean(Options.OPTION_HISTORY)) {
-        if (0 != getMessCount()) return;
-
-        HistoryStorage hist = getHistory();
-        if (hist == null) return;
-
-        hist.openHistory();
-        int recCount = hist.getHistorySize();
-        if (0 == recCount) return;
-
-        for (int i = 0; i < recCount; ++i) {
-            CachedRecord rec = hist.getRecord(i);
-            if (null == rec) {
-                continue;
+        if (isHistory()) {
+            HistoryStorage hist = getHistory();
+            if (hist == null) return;
+            hist.openHistory();
+            int recCount = hist.getHistorySize();
+            for (int i = 0; i < recCount; ++i) {
+                CachedRecord rec = hist.getRecord(i);
+                if (null == rec) {
+                    continue;
+                }
+                long date = Util.createLocalDate(rec.date);
+                PlainMessage message;
+                if (rec.isIncoming()) {
+                    message = new PlainMessage(rec.from, protocol, date, rec.text, true);
+                } else {
+                    message = new PlainMessage(protocol, contact, date, rec.text);
+                }
+                addTextToForm(message, contact.isConference() ? rec.from : getFrom(message), Chat.isHighlight(message.getProcessedText(), contact.getMyName()));
             }
-            long date = Util.createLocalDate(rec.date);
-            PlainMessage message;
-            if (rec.isIncoming()) {
-                message = new PlainMessage(rec.from, protocol, date, rec.text, true);
-            } else {
-                message = new PlainMessage(protocol, contact, date, rec.text);
-            }
-            addTextToForm(message, contact.isConference() ? rec.from : getFrom(message), Chat.isHighlight(message.getProcessedText(), contact.getMyName()));
+            hist.closeHistory();
         }
-        hist.closeHistory();
-        //}
     }
 
     public HistoryStorage getHistory() {
@@ -373,7 +368,8 @@ public final class Chat {
     }
 
     private void addMessage(MessData mData) {
-        messData.add(mData);
+        if (!messData.contains(mData))
+            messData.add(mData);
     }
 
     public void addPresence(SystemNotice message) {

@@ -53,7 +53,7 @@ public class Options {
     public static final int OPTION_NOTIFY_VOLUME = 67;
     public static final int OPTION_ONLINE_NOTIF_MODE = 68;
     public static final int OPTION_CURRENT_PAGE = 69;
-    public static final int OPTION_CURRENT_SPINNER_ITEM = 70;
+    //public static final int OPTION_CURRENT_SPINNER_ITEM = 70;
     public static final int OPTION_VIBRATOR = 75;
     public static final int OPTION_COLOR_SCHEME = 73;
     public static final int OPTION_VISIBILITY_ID = 85;

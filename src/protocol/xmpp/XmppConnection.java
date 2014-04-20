@@ -1806,7 +1806,6 @@ public final class XmppConnection extends ClientConnection {
 
         x2 = x.getFirstNode("push", "p1:push");
         if (x2 != null) {
-            rebindSupported = true;
             SawimApplication.getInstance().getXmppSession().enableRebind(this);
         }
 
@@ -1824,6 +1823,7 @@ public final class XmppConnection extends ClientConnection {
 
         x2 = x.getFirstNode("rebind", "p1:rebind");
         if (x2 != null) {
+            rebindSupported = true;
             SawimApplication.getInstance().getXmppSession().load(this);
             if (tryRebind()) {
                 return;

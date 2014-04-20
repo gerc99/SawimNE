@@ -7,7 +7,9 @@ import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.text.TextPaint;
 import android.text.TextUtils;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
 import ru.sawim.widget.Util;
@@ -41,8 +43,8 @@ public class RosterItemView extends View {
             secondImageX, secondImageY,
             thirdImageX, thirdImageY,
             fourthImageX, fourthImageY,
-            fifthImageX, fifthImageY;
-    private int textX;
+            fifthImageX, fifthImageY,
+            textX;
     public boolean isShowDivider;
 
     public RosterItemView(Context context) {
@@ -155,7 +157,7 @@ public class RosterItemView extends View {
         }
         thirdImageX = secondImageX;
         if (itemThirdImage != null) {
-            thirdImageX += leftPadding;
+            thirdImageX += leftPadding + itemThirdImage.getWidth() + leftPadding;
             thirdImageY = y - (itemThirdImage.getHeight() >> 1);
             textX = thirdImageX + itemThirdImage.getWidth() + leftPadding;
         }

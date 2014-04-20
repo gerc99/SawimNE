@@ -418,7 +418,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
     public void onStart() {
         super.onStart();
         if (contact == null)
-            initChat(RosterHelper.getInstance().getCurrentProtocol(), RosterHelper.getInstance().getCurrentContact());
+            initChat(RosterHelper.getInstance().getCurrentContact().getProtocol(), RosterHelper.getInstance().getCurrentContact());
         else
             openChat(protocol, contact);
         if (SawimApplication.isManyPane()) {

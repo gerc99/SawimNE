@@ -5,8 +5,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 import protocol.Contact;
+import protocol.ContactMenu;
 import ru.sawim.R;
-import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
 import ru.sawim.activities.BaseActivity;
 import ru.sawim.comm.Config;
@@ -22,6 +22,7 @@ import java.util.Vector;
 
 
 public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
+
 
     private boolean isConferenceList = false;
     private int totalCount = 0;
@@ -41,9 +42,10 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
     private static final int COMMAND_ADD = 0;
     private static final int COMMAND_SET = 1;
     private static final int COMMAND_REGISTER = 2;
-    private static final int COMMAND_SEARCH = 3;
-    private static final int COMMAND_SET_SERVER = 4;
-    private static final int COMMAND_HOME = 5;
+    private static final int COMMAND_ADHOC = 3;
+    private static final int COMMAND_SEARCH = 4;
+    private static final int COMMAND_SET_SERVER = 5;
+    private static final int COMMAND_HOME = 6;
 
     public ServiceDiscovery() {
         serverBox = new TextBoxView();
@@ -65,7 +67,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
                     Contact c = xmpp.createTempContact(jid);
                     xmpp.addContact(c);
                     xmpp.getConnection().sendPresence((XmppServiceContact) c);
-                    Toast.makeText(SawimApplication.getContext(), R.string.added, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(activity, R.string.added, Toast.LENGTH_SHORT).show();
                 } else if (Jid.isKnownGate(jid)) {
                     xmpp.getConnection().register(jid);
                 } else {
@@ -104,6 +106,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
                     if (Jid.isGate(jid)) {
                         menu.add(Menu.FIRST, COMMAND_REGISTER, 2, JLocale.getString(R.string.register));
                     }
+                    menu.add(Menu.FIRST, ContactMenu.USER_MENU_ADHOC, 2, JLocale.getString(R.string.adhoc));
                 }
             }
 
@@ -124,6 +127,13 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
 
                         case COMMAND_REGISTER:
                             xmpp.getConnection().register(jid);
+                            break;
+
+                        case COMMAND_ADHOC:
+                            Contact contact = xmpp.createTempContact(jid);
+                            xmpp.addContact(contact);
+                            AdHoc adhoc = new AdHoc(xmpp, (XmppContact) contact);
+                            adhoc.show(activity);
                             break;
                     }
                 }

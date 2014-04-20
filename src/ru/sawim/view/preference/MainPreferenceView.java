@@ -85,24 +85,6 @@ public class MainPreferenceView extends PreferenceFragment {
         });
         rootScreen.addPreference(optionsNetworkScreen);
 
-        final Protocol protocol = RosterHelper.getInstance().getCurrentProtocol();
-        if (protocol != null && protocol.isConnected() && protocol instanceof Xmpp) {
-            final PreferenceScreen accountSettingsScreen = getPreferenceManager().createPreferenceScreen(activity);
-            accountSettingsScreen.setTitle(R.string.account_settings);
-            accountSettingsScreen.setSummary(protocol.getUserId());
-            accountSettingsScreen.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
-                    String serverAddress = Jid.getDomain(protocol.getUserId());
-                    Contact serverContact = protocol.createTempContact(serverAddress);
-                    AdHoc adhoc = new AdHoc((Xmpp) protocol, (XmppContact) serverContact);
-                    adhoc.show(activity);
-                    return false;
-                }
-            });
-            rootScreen.addPreference(accountSettingsScreen);
-        }
-
         final PreferenceScreen optionsInterfaceScreen = getPreferenceManager().createPreferenceScreen(activity);
         optionsInterfaceScreen.setTitle(R.string.options_interface);
         optionsInterfaceScreen.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {

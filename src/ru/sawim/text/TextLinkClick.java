@@ -62,7 +62,7 @@ public class TextLinkClick implements TextLinkClickListener {
                             Clipboard.setClipBoardText(context, finalClickedString);
                             break;
                         case 1:
-                            RosterHelper.getInstance().getCurrentProtocol().getSearchForm().show((BaseActivity) context,
+                            currentProtocol.getSearchForm().show((BaseActivity) context,
                                     Util.getUrlWithoutProtocol(finalClickedString), true);
                             break;
                     }

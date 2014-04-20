@@ -265,19 +265,10 @@ public class SawimActivity extends BaseActivity {
         return chatView;
     }
 
-    private static final int MENU_CONNECT = 0;
-    private static final int MENU_STATUS = 1;
-    private static final int MENU_XSTATUS = 2;
-    private static final int MENU_PRIVATE_STATUS = 3;
-    private static final int MENU_SEND_SMS = 5;
+
     private static final int MENU_SOUND = 6;
     private static final int MENU_OPTIONS = 7;
-    private static final int MENU_QUIT = 14; //OptionsForm
-    private static final int MENU_DISCO = 16;
-    private static final int MENU_NOTES = 17;
-    private static final int MENU_GROUPS = 18;
-    private static final int MENU_MYSELF = 19;
-    private static final int MENU_MICROBLOG = 20;//ManageContactListForm
+    private static final int MENU_QUIT = 14;
     private static final int MENU_DEBUG_LOG = 22;
 
     @Override
@@ -295,43 +286,35 @@ public class SawimActivity extends BaseActivity {
             return true;
         } else if ((rosterView != null && rosterView.isAdded())
                 || (startWindowView != null && startWindowView.isAdded())) {
-            Protocol p = RosterHelper.getInstance().getCurrentProtocol();
-            if (p != null) {
-                int count = RosterHelper.getInstance().getProtocolCount();
-                if (Options.getInt(Options.OPTION_CURRENT_SPINNER_ITEM) != count) {
-                    menu.add(Menu.NONE, MENU_CONNECT, Menu.NONE, R.string.connect)
-                            .setTitle((p.isConnected() || p.isConnecting()) ? R.string.disconnect : R.string.connect);
-                    menu.add(Menu.NONE, MENU_STATUS, Menu.NONE, R.string.status);
-                    if (p.getXStatusInfo() != null)
-                        menu.add(Menu.NONE, MENU_XSTATUS, Menu.NONE, R.string.xstatus);
-                    if ((p instanceof Icq) || (p instanceof Mrim))
-                        menu.add(Menu.NONE, MENU_PRIVATE_STATUS, Menu.NONE, R.string.private_status);
+            Protocol p = RosterHelper.getInstance().getProtocol(0);
+            if (RosterHelper.getInstance().getProtocolCount() == 1 && p != null) {
+                menu.add(Menu.NONE, RosterHelper.MENU_CONNECT, Menu.NONE, R.string.connect)
+                        .setTitle((p.isConnected() || p.isConnecting()) ? R.string.disconnect : R.string.connect);
+                menu.add(Menu.NONE, RosterHelper.MENU_STATUS, Menu.NONE, R.string.status);
+                if (p.getXStatusInfo() != null)
+                    menu.add(Menu.NONE, RosterHelper.MENU_XSTATUS, Menu.NONE, R.string.xstatus);
+                if ((p instanceof Icq) || (p instanceof Mrim))
+                    menu.add(Menu.NONE, RosterHelper.MENU_PRIVATE_STATUS, Menu.NONE, R.string.private_status);
+                if (p instanceof Mrim && p.isConnected()) {
+                    menu.add(Menu.NONE, RosterHelper.MENU_SEND_SMS, Menu.NONE, R.string.send_sms);
                 }
-                for (int i = 0; i < count; ++i) {
-                    Protocol pr = RosterHelper.getInstance().getProtocol(i);
-                    if (pr instanceof Mrim && pr.isConnected()) {
-                        menu.add(Menu.NONE, MENU_SEND_SMS, Menu.NONE, R.string.send_sms);
+                if (p.isConnected()) {
+                    if (p instanceof Xmpp) {
+                        if (((Xmpp) p).hasS2S()) {
+                            menu.add(Menu.NONE, RosterHelper.MENU_DISCO, Menu.NONE, R.string.service_discovery);
+                        }
                     }
-                }
-                if (Options.getInt(Options.OPTION_CURRENT_SPINNER_ITEM) != count) {
-                    if (p.isConnected()) {
+                    menu.add(Menu.NONE, RosterHelper.MENU_GROUPS, Menu.NONE, R.string.manage_contact_list);
+                    if (p instanceof Icq) {
+                        menu.add(Menu.NONE, RosterHelper.MENU_MYSELF, Menu.NONE, R.string.myself);
+                    } else {
                         if (p instanceof Xmpp) {
-                            if (((Xmpp) p).hasS2S()) {
-                                menu.add(Menu.NONE, MENU_DISCO, Menu.NONE, R.string.service_discovery);
-                            }
+                            menu.add(Menu.NONE, RosterHelper.MENU_NOTES, Menu.NONE, R.string.notes);
                         }
-                        menu.add(Menu.NONE, MENU_GROUPS, Menu.NONE, R.string.manage_contact_list);
-                        if (p instanceof Icq) {
-                            menu.add(Menu.NONE, MENU_MYSELF, Menu.NONE, R.string.myself);
-                        } else {
-                            if (p instanceof Xmpp) {
-                                menu.add(Menu.NONE, MENU_NOTES, Menu.NONE, R.string.notes);
-                            }
-                            if (p.hasVCardEditor())
-                                menu.add(Menu.NONE, MENU_MYSELF, Menu.NONE, R.string.myself);
-                            if (p instanceof Mrim)
-                                menu.add(Menu.NONE, MENU_MICROBLOG, Menu.NONE, R.string.microblog);
-                        }
+                        if (p.hasVCardEditor())
+                            menu.add(Menu.NONE, RosterHelper.MENU_MYSELF, Menu.NONE, R.string.myself);
+                        if (p instanceof Mrim)
+                            menu.add(Menu.NONE, RosterHelper.MENU_MICROBLOG, Menu.NONE, R.string.microblog);
                     }
                 }
             }
@@ -348,7 +331,7 @@ public class SawimActivity extends BaseActivity {
         ChatView chatView = getChatView();
         VirtualListView virtualListView = (VirtualListView) getSupportFragmentManager().findFragmentByTag(VirtualListView.TAG);
         if (!SawimApplication.isManyPane()
-                && chatView != null
+                && chatView != null && chatView.getDrawerToggle() != null
                 && chatView.getDrawerToggle().onOptionsItemSelected(item)) {
             return true;
         }
@@ -361,43 +344,13 @@ public class SawimActivity extends BaseActivity {
             chatView.onOptionsItemSelected_(item);
             return true;
         }
-        Protocol p = RosterHelper.getInstance().getCurrentProtocol();
+        if (RosterHelper.getInstance().protocolMenuItemSelected(this, RosterHelper.getInstance().getProtocol(0), item.getItemId())) return true;
         switch (item.getItemId()) {
-            case MENU_CONNECT:
-                SawimApplication.getInstance().setStatus();
-                break;
-            case MENU_STATUS:
-                new StatusesView(p, StatusesView.ADAPTER_STATUS).show(getSupportFragmentManager(), "change-status");
-                break;
-            case MENU_XSTATUS:
-                new XStatusesView().show(getSupportFragmentManager(), "change-xstatus");
-                break;
-            case MENU_PRIVATE_STATUS:
-                new StatusesView(p, StatusesView.ADAPTER_PRIVATESTATUS).show(getSupportFragmentManager(), "change-private-status");
-                break;
-            case MENU_SEND_SMS:
-                new SmsForm(null, null).show(this);
-                break;
             case MENU_SOUND:
                 Notify.getSound().changeSoundMode();
                 break;
             case MENU_OPTIONS:
                 MainPreferenceView.show(this);
-                break;
-            case MENU_DISCO:
-                ((Xmpp) p).getServiceDiscovery().showIt();
-                break;
-            case MENU_NOTES:
-                ((Xmpp) p).getMirandaNotes().showIt();
-                break;
-            case MENU_GROUPS:
-                new ManageContactListForm(p).showMenu(this);
-                break;
-            case MENU_MYSELF:
-                p.showUserInfo(this, p.createTempContact(p.getUserId(), p.getNick()));
-                break;
-            case MENU_MICROBLOG:
-                ((Mrim) p).getMicroBlog().activate();
                 break;
             case MENU_DEBUG_LOG:
                 DebugLog.instance.activate();

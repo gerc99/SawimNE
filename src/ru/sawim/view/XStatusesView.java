@@ -35,8 +35,8 @@ public class XStatusesView extends DialogFragment {
     protected String[] xst_descs = new String[100];
     private Protocol protocol;
 
-    public XStatusesView() {
-        protocol = RosterHelper.getInstance().getCurrentProtocol();
+    public XStatusesView(Protocol p) {
+        protocol = p;
         load();
     }
 

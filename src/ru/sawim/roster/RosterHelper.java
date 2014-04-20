@@ -1,12 +1,23 @@
 package ru.sawim.roster;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.Menu;
 import android.widget.Toast;
 import protocol.*;
 import protocol.icq.Icq;
 import protocol.mrim.Mrim;
+import protocol.xmpp.AdHoc;
+import protocol.xmpp.Jid;
 import protocol.xmpp.Xmpp;
+import protocol.xmpp.XmppContact;
+import ru.sawim.R;
+import ru.sawim.activities.BaseActivity;
+import ru.sawim.forms.ManageContactListForm;
+import ru.sawim.forms.SmsForm;
 import ru.sawim.modules.FileTransfer;
 import ru.sawim.Options;
 import ru.sawim.SawimApplication;
@@ -14,6 +25,9 @@ import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
 import ru.sawim.modules.AutoAbsence;
 import ru.sawim.util.JLocale;
+import ru.sawim.view.StatusesView;
+import ru.sawim.view.XStatusesView;
+import ru.sawim.view.menu.MyMenu;
 
 import java.util.List;
 import java.util.Vector;
@@ -34,7 +48,6 @@ public final class RosterHelper {
     private Contact currentContact;
     private Vector transfers = new Vector();
     private OnUpdateRoster onUpdateRoster;
-    private int currentItemProtocol = 0;
     private TreeNode selectedItem = null;
     public boolean useGroups;
     private boolean hideOffline;
@@ -251,8 +264,7 @@ public final class RosterHelper {
         }
     }
 
-    public void setStatus() {
-        Protocol p = getCurrentProtocol();
+    public void setStatus(Protocol p) {
         p.setStatus((p.isConnected() || p.isConnecting())
                 ? StatusInfo.STATUS_OFFLINE : StatusInfo.STATUS_ONLINE, "");
     }
@@ -314,19 +326,6 @@ public final class RosterHelper {
             p.safeSave();
         }
     }
-
-    /*public void collapseAll() {
-        int count = contactList.getProtocolCount();
-        for (int i = 0; i < count; ++i) {
-            Protocol p = contactList.getProtocol(i);
-            Vector groups = p.getGroupItems();
-            for (int groupIndex = 0; groupIndex < groups.size(); ++groupIndex) {
-                ((TreeBranch) groups.elementAt(groupIndex)).setExpandFlag(false);
-            }
-            p.getNotInListGroup().setExpandFlag(false);
-        }
-        contactList.updateRoster();
-    }*/
 
     public final void markMessages(Contact contact) {
         SawimApplication.getInstance().updateAppIcon();
@@ -391,22 +390,6 @@ public final class RosterHelper {
 
     public void setOnUpdateRoster(OnUpdateRoster l) {
         onUpdateRoster = l;
-    }
-
-    public void setCurrentItemProtocol(int currentItemProtocol) {
-        this.currentItemProtocol = currentItemProtocol;
-    }
-
-    public int getCurrentItemProtocol() {
-        return currentItemProtocol;
-    }
-
-    public final Protocol getCurrentProtocol() {
-        Protocol p = getProtocol(currentItemProtocol);
-        if (getProtocolCount() == 0 || null == p) {
-            p = getProtocol(0);
-        }
-        return p;
     }
 
     public void setCurrPage(int curr) {
@@ -585,9 +568,8 @@ public final class RosterHelper {
             onUpdateRoster.putIntoQueue(group);
     }
 
-    public String getStatusMessage(Contact contact) {
-        String message = "";
-        Protocol protocol = getCurrentProtocol();
+    public String getStatusMessage(Protocol protocol, Contact contact) {
+        String message;
         if (getCurrPage() == RosterHelper.ACTIVE_CONTACTS)
             protocol = contact.getProtocol();
         if (protocol == null || contact == null) return "";
@@ -605,6 +587,108 @@ public final class RosterHelper {
             return message;
         }
         return protocol.getStatusInfo().getName(contact.getStatusIndex());
+    }
+
+    public static final int MENU_CONNECT = 0;
+    public static final int MENU_STATUS = 1;
+    public static final int MENU_XSTATUS = 2;
+    public static final int MENU_PRIVATE_STATUS = 3;
+    public static final int MENU_SEND_SMS = 5;
+    public static final int MENU_DISCO = 16;
+    public static final int MENU_ADHOC = 17;
+    public static final int MENU_NOTES = 18;
+    public static final int MENU_GROUPS = 19;
+    public static final int MENU_MYSELF = 20;
+    public static final int MENU_MICROBLOG = 21;
+
+    public void showProtocolMenu(final BaseActivity activity, final Protocol p) {
+        if (p != null) {
+            final MyMenu menu = new MyMenu(activity);
+            menu.add(p.isConnected() || p.isConnecting() ? R.string.disconnect : R.string.connect, MENU_CONNECT);
+            menu.add(R.string.status, MENU_STATUS);
+            if (p.getXStatusInfo() != null)
+                menu.add(R.string.xstatus, MENU_XSTATUS);
+            if ((p instanceof Icq) || (p instanceof Mrim))
+                menu.add(R.string.private_status, MENU_PRIVATE_STATUS);
+            for (int i = 0; i < count; ++i) {
+                Protocol pr = RosterHelper.getInstance().getProtocol(i);
+                if (pr instanceof Mrim && pr.isConnected()) {
+                    menu.add(R.string.send_sms, MENU_SEND_SMS);
+                }
+            }
+            if (p.isConnected()) {
+                if (p instanceof Xmpp) {
+                    if (((Xmpp) p).hasS2S()) {
+                        menu.add(R.string.service_discovery, MENU_DISCO);
+                    }
+                    menu.add(R.string.account_settings, MENU_ADHOC);
+                }
+                menu.add(R.string.manage_contact_list, MENU_GROUPS);
+                if (p instanceof Icq) {
+                    menu.add(R.string.myself, MENU_MYSELF);
+                } else {
+                    if (p instanceof Xmpp) {
+                        menu.add(R.string.notes, MENU_NOTES);
+                    }
+                    if (p.hasVCardEditor())
+                        menu.add(R.string.myself, MENU_MYSELF);
+                    if (p instanceof Mrim)
+                        menu.add(R.string.microblog, MENU_MICROBLOG);
+                }
+            }
+            AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+            builder.setCancelable(true);
+            builder.setTitle(p.getUserId());
+            builder.setAdapter(menu, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    protocolMenuItemSelected(activity, p, menu.getItem(which).idItem);
+                }
+            });
+            builder.create().show();
+        }
+    }
+
+    public boolean protocolMenuItemSelected(BaseActivity activity, Protocol p, int idItem) {
+        switch (idItem) {
+            case RosterHelper.MENU_CONNECT:
+                SawimApplication.getInstance().setStatus(p);
+                return true;
+            case RosterHelper.MENU_STATUS:
+                new StatusesView(p, StatusesView.ADAPTER_STATUS).show(activity.getSupportFragmentManager(), "change-status");
+                return true;
+            case RosterHelper.MENU_XSTATUS:
+                new XStatusesView(p).show(activity.getSupportFragmentManager(), "change-xstatus");
+                return true;
+            case RosterHelper.MENU_PRIVATE_STATUS:
+                new StatusesView(p, StatusesView.ADAPTER_PRIVATESTATUS).show(activity.getSupportFragmentManager(), "change-private-status");
+                return true;
+            case RosterHelper.MENU_SEND_SMS:
+                new SmsForm(null, null).show(activity);
+                return true;
+            case RosterHelper.MENU_DISCO:
+                ((Xmpp) p).getServiceDiscovery().showIt();
+                return true;
+            case RosterHelper.MENU_ADHOC:
+                String serverAddress = Jid.getDomain(p.getUserId());
+                Contact serverContact = p.createTempContact(serverAddress);
+                AdHoc adhoc = new AdHoc((Xmpp) p, (XmppContact) serverContact);
+                adhoc.show(activity);
+                return true;
+            case RosterHelper.MENU_NOTES:
+                ((Xmpp) p).getMirandaNotes().showIt();
+                return true;
+            case RosterHelper.MENU_GROUPS:
+                new ManageContactListForm(p).showMenu(activity);
+                return true;
+            case RosterHelper.MENU_MYSELF:
+                p.showUserInfo(activity, p.createTempContact(p.getUserId(), p.getNick()));
+                return true;
+            case RosterHelper.MENU_MICROBLOG:
+                ((Mrim) p).getMicroBlog().activate();
+                return true;
+        }
+        return false;
     }
 
     private OnUpdateChat updateChatListener;

@@ -19,22 +19,16 @@ public class HistoryStorage {
     private String storageName;
     private Storage historyStore;
     private int currRecordCount = -1;
-    //private AndroidHistoryStorage androidStorage;
 
     public HistoryStorage(Contact contact) {
         this.contact = contact;
         uniqueUserId = contact.getUserId();
         storageName = getRSName();
-        //androidStorage = new AndroidHistoryStorage(this);
     }
 
     public Contact getContact() {
         return contact;
     }
-
-    //public AndroidHistoryStorage getAndroidStorage() {
-    //    return androidStorage;
-    //}
 
     public static HistoryStorage getHistory(Contact contact) {
         return new HistoryStorage(contact);
@@ -71,32 +65,25 @@ public class HistoryStorage {
 
     public synchronized void addText(final String text, final boolean incoming,
                                      final String from, final long gmtTime) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                boolean isOpened = openHistory(true);
-                if (!isOpened) {
-                    return;
-                }
-                byte type = (byte) (incoming ? 0 : 1);
-                try {
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    DataOutputStream das = new DataOutputStream(baos);
-                    das.writeByte(type);
-                    das.writeUTF(from);
-                    das.writeUTF(text);
-                    das.writeUTF(Util.getLocalDateString(gmtTime, false));
-                    byte[] buffer = baos.toByteArray();
-                    historyStore.addRecord(buffer);
-                } catch (Exception e) {
-                    // do nothing
-                }
-                closeHistory();
-                currRecordCount = -1;
-                //androidStorage.addText(text, incoming, from, gmtTime);
-            }
-        }).start();
-
+        boolean isOpened = openHistory(true);
+        if (!isOpened) {
+            return;
+        }
+        byte type = (byte) (incoming ? 0 : 1);
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            DataOutputStream das = new DataOutputStream(baos);
+            das.writeByte(type);
+            das.writeUTF(from);
+            das.writeUTF(text);
+            das.writeUTF(Util.getLocalDateString(gmtTime, false));
+            byte[] buffer = baos.toByteArray();
+            historyStore.addRecord(buffer);
+        } catch (Exception e) {
+            // do nothing
+        }
+        closeHistory();
+        currRecordCount = -1;
     }
 
     RecordStoreImpl getRS() {
@@ -124,7 +111,6 @@ public class HistoryStorage {
                 // do nothing
             }
         }
-        //currRecordCount = androidStorage.getHistorySize();
         return currRecordCount;
     }
 
@@ -149,7 +135,6 @@ public class HistoryStorage {
             result.date = "";
         }
         return result;
-        //return androidStorage.getRecord(recNo);
     }
 
     public void removeHistory() {

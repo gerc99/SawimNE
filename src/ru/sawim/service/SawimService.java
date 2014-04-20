@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.*;
 import android.util.Log;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+import protocol.Protocol;
 import ru.sawim.Options;
 import ru.sawim.R;
 import ru.sawim.SawimNotification;
@@ -93,7 +94,7 @@ public class SawimService extends Service {
 
     private class IncomingHandler extends Handler {
         @Override
-        public void handleMessage(Message msg) {
+        public void handleMessage(final Message msg) {
             try {
                 switch (msg.what) {
                     case UPDATE_CONNECTION_STATUS:
@@ -110,7 +111,7 @@ public class SawimService extends Service {
                         new AsyncTask<Void, Void, Void>() {
                             @Override
                             protected Void doInBackground(Void... params) {
-                                RosterHelper.getInstance().setStatus();
+                                RosterHelper.getInstance().setStatus((Protocol) msg.obj);
                                 return null;
                             }
                         }.execute(null, null, null);

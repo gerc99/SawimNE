@@ -16,6 +16,7 @@ public class SawimResources {
     public static BitmapDrawable usersIconOn;
     public static BitmapDrawable typingIcon;
     public static Drawable listDivider;
+    public static Drawable ic_menu;
 
     public static final BitmapDrawable authIcon = (BitmapDrawable) SawimApplication.getInstance().getResources()
             .getDrawable(android.R.drawable.stat_notify_error);
@@ -38,6 +39,9 @@ public class SawimResources {
         groupDownIcon = null;
         groupRightIcons = null;
         listDivider = null;
+        ic_menu = null;
+        ic_menu = SawimApplication.getInstance().getResources()
+                .getDrawable(Scheme.isBlack() ? R.drawable.abc_ic_menu_moreoverflow_normal_holo_dark : R.drawable.abc_ic_menu_moreoverflow_normal_holo_light);
         usersIconOn = (BitmapDrawable) SawimApplication.getInstance().getResources()
                 .getDrawable(Scheme.isBlack() ? R.drawable.ic_participants_dark_on : R.drawable.ic_participants_on);
         usersIcon = (BitmapDrawable) SawimApplication.getInstance().getResources().
