@@ -170,7 +170,7 @@ public class SawimApplication extends Application {
 
     public static void updateOptions() {
         SawimResources.initIcons();
-        fontSize = Math.max(Options.getInt(Options.OPTION_FONT_SCHEME), 16);
+        fontSize = Math.max(Options.getInt(Options.OPTION_FONT_SCHEME), 7);
         showStatusLine = Options.getBoolean(Options.OPTION_SHOW_STATUS_LINE);
         hideIconsClient = Options.getBoolean(Options.OPTION_HIDE_ICONS_CLIENTS);
         sortType = Options.getInt(Options.OPTION_CL_SORT_BY);

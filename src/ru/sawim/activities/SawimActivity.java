@@ -65,28 +65,13 @@ public class SawimActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         supportRequestWindowFeature(Window.FEATURE_PROGRESS);
 
-        if (getIntent().getAction() != null
-                && getIntent().getAction().startsWith(Intent.ACTION_SEND)) {
-            setContentView(R.layout.main);
-            if (findViewById(R.id.fragment_container) != null) {
-                if (savedInstanceState != null) {
-                    return;
-                }
-                RosterView rosterView = new RosterView();
-                rosterView.setMode(getIntent().getType().equals("text/plain") ? RosterView.MODE_SHARE_TEXT : RosterView.MODE_SHARE);
-                rosterView.setArguments(getIntent().getExtras());
-                getSupportFragmentManager().beginTransaction()
-                        .add(R.id.fragment_container, rosterView, RosterView.TAG).commit();
-            }
-        } else {
-            setContentView(SawimApplication.isManyPane() ? R.layout.main_twopane : R.layout.main);
-            if (savedInstanceState == null && !SawimApplication.isManyPane()) {
-                RosterView rosterView = new RosterView();
-                rosterView.setMode(RosterView.MODE_DEFAULT);
-                rosterView.setArguments(getIntent().getExtras());
-                getSupportFragmentManager().beginTransaction()
-                        .add(R.id.fragment_container, rosterView, RosterView.TAG).commit();
-            }
+        setContentView(SawimApplication.isManyPane() ? R.layout.main_twopane : R.layout.main);
+        if (savedInstanceState == null && !SawimApplication.isManyPane()) {
+            RosterView rosterView = new RosterView();
+            rosterView.setMode(RosterView.MODE_DEFAULT);
+            rosterView.setArguments(getIntent().getExtras());
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.fragment_container, rosterView, RosterView.TAG).commit();
         }
     }
 
@@ -101,7 +86,12 @@ public class SawimActivity extends BaseActivity {
 
     private void handleIntent() {
         if (getIntent() == null || getIntent().getAction() == null) return;
-        if (getIntent().getAction().startsWith(Intent.ACTION_SEND)) return;
+        if (getIntent().getAction().startsWith(Intent.ACTION_SEND)) {
+            RosterView rosterView = getRosterView();
+            if (rosterView != null)
+                rosterView.setMode(getIntent().getType().equals("text/plain") ? RosterView.MODE_SHARE_TEXT : RosterView.MODE_SHARE);
+            return;
+        }
         if (NOTIFY.equals(getIntent().getAction())) {
             Chat current = ChatHistory.instance.chatAt(ChatHistory.instance.getPreferredItem());
             if (current != null)
