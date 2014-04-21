@@ -265,8 +265,8 @@ public class RosterAdapter extends BaseAdapter {
 
     @Override
     public View getView(int i, View convertView, final ViewGroup viewGroup) {
-        RosterHelper roster = RosterHelper.getInstance();
         final Object o = getItem(i);
+        int itemViewType = getItemViewType(i);
         if (o != null)
             if (type == RosterHelper.ACTIVE_CONTACTS) {
                 if (convertView == null) {
@@ -274,10 +274,10 @@ public class RosterAdapter extends BaseAdapter {
                 }
                 RosterItemView rosterItemView = (RosterItemView) convertView;
                 rosterItemView.setNull();
-                if (o instanceof String) {
+                if (itemViewType == ITEM_GROUP) {
                     rosterItemView.addLayer((String) o);
                 }
-                if (o instanceof Chat) {
+                if (itemViewType == ITEM_CONTACT) {
                     Chat chat = (Chat) o;
                     populateFromContact(rosterItemView, RosterHelper.getInstance(), chat.getProtocol(), chat.getContact());
                 }
@@ -285,7 +285,7 @@ public class RosterAdapter extends BaseAdapter {
                 rosterItemView.repaint();
             } else {
                 final TreeNode treeNode = (TreeNode) o;
-                if (treeNode.getType() == TreeNode.PROTOCOL) {
+                if (itemViewType == ITEM_PROTOCOL) {
                     if (convertView == null) {
                         Context context = SawimApplication.getInstance().getBaseContext();
                         convertView = new LinearLayout(context);
@@ -299,14 +299,9 @@ public class RosterAdapter extends BaseAdapter {
                         LinearLayout.LayoutParams rosterLinearLayout = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
                         rosterLinearLayout.gravity = Gravity.LEFT;
                         rosterLinearLayout.weight = 1;
+                        convertView.setBackgroundColor(Scheme.getColor(Scheme.THEME_ITEM_SELECTED));
                         rosterItemView.setLayoutParams(rosterLinearLayout);
                         imageButton.setImageDrawable(SawimResources.ic_menu);
-                        imageButton.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                RosterHelper.getInstance().showProtocolMenu((BaseActivity) viewGroup.getContext(), ((ProtocolBranch) treeNode).getProtocol());
-                            }
-                        });
                         ((ViewGroup)convertView).setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
                         ((ViewGroup)convertView).addView(rosterItemView);
                         ((ViewGroup)convertView).addView(progressBar);
@@ -314,13 +309,20 @@ public class RosterAdapter extends BaseAdapter {
                     }
                     RosterItemView rosterItemView = (RosterItemView) ((ViewGroup) convertView).getChildAt(0);
                     ProgressBar progressBar = (ProgressBar) ((ViewGroup) convertView).getChildAt(1);
+                    MyImageButton imageButton = (MyImageButton) ((ViewGroup) convertView).getChildAt(2);
                     progressBar.setVisibility(((ProtocolBranch) treeNode).getProtocol().getConnectingProgress() != 100 ? View.VISIBLE : View.GONE);
                     rosterItemView.setNull();
+                    imageButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            RosterHelper.getInstance().showProtocolMenu((BaseActivity) viewGroup.getContext(), ((ProtocolBranch) treeNode).getProtocol());
+                        }
+                    });
                     populateFromProtocol(rosterItemView, (ProtocolBranch) treeNode);
                     setShowDivider(rosterItemView, true);
                     rosterItemView.repaint();
                     return convertView;
-                } else if (treeNode.getType() == TreeNode.GROUP) {
+                } else if (itemViewType == ITEM_GROUP) {
                     if (convertView == null) {
                         convertView = new RosterItemView(SawimApplication.getInstance().getBaseContext());
                     }
@@ -329,13 +331,13 @@ public class RosterAdapter extends BaseAdapter {
                     populateFromGroup(rosterItemView, (Group) treeNode);
                     setShowDivider(rosterItemView, true);
                     rosterItemView.repaint();
-                } else if (treeNode.getType() == TreeNode.CONTACT) {
+                } else if (itemViewType == ITEM_CONTACT) {
                     if (convertView == null) {
                         convertView = new RosterItemView(SawimApplication.getInstance().getBaseContext());
                     }
                     RosterItemView rosterItemView = (RosterItemView) convertView;
                     rosterItemView.setNull();
-                    populateFromContact(rosterItemView, roster, ((Contact) treeNode).getProtocol(), (Contact) treeNode);
+                    populateFromContact(rosterItemView, RosterHelper.getInstance(), ((Contact) treeNode).getProtocol(), (Contact) treeNode);
                     setShowDivider(rosterItemView, true);
                     rosterItemView.repaint();
                 }

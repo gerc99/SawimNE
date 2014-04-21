@@ -17,10 +17,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
-import android.view.ContextMenu;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -278,8 +275,9 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
                 }
             }
         });
-        LinearLayout.LayoutParams protocolsSpinnerLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        LinearLayout.LayoutParams spinnerLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
         LinearLayout.LayoutParams chatsImageLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        chatsImageLP.gravity = Gravity.RIGHT;
         if (SawimApplication.isManyPane()) {
             LinearLayout.LayoutParams rosterBarLayoutLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
             rosterBarLayoutLP.weight = 2;
@@ -288,8 +286,8 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
             barLinearLayout.removeAllViews();
             LinearLayout.LayoutParams barLinearLayoutLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
             barLinearLayout.setLayoutParams(barLinearLayoutLP);
-            protocolsSpinnerLP.weight = 1;
-            rosterModsSpinner.setLayoutParams(protocolsSpinnerLP);
+            spinnerLP.weight = 1;
+            rosterModsSpinner.setLayoutParams(spinnerLP);
             chatsImageLP.weight = 4;
             chatsImage.setLayoutParams(chatsImageLP);
             if (RosterHelper.getInstance().getProtocolCount() > 0)
@@ -303,9 +301,8 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
             actionBar.setCustomView(barLinearLayout);
         } else {
             barLinearLayout.removeAllViews();
-            protocolsSpinnerLP.weight = 9;
-            rosterModsSpinner.setLayoutParams(protocolsSpinnerLP);
-            chatsImageLP.weight = 1;
+            spinnerLP.weight = 1;
+            rosterModsSpinner.setLayoutParams(spinnerLP);
             chatsImage.setLayoutParams(chatsImageLP);
             if (RosterHelper.getInstance().getProtocolCount() > 0)
                 barLinearLayout.addView(rosterModsSpinner);

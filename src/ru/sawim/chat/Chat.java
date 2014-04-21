@@ -33,6 +33,7 @@ public final class Chat {
     public int scrollPosition;
     public int offset;
     public int dividerPosition;
+    public boolean isBottomScroll;
 
     public Chat(Protocol p, Contact item) {
         contact = item;

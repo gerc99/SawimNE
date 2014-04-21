@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.Menu;
 import android.widget.Toast;
 import protocol.*;
@@ -652,6 +653,7 @@ public final class RosterHelper {
     public boolean protocolMenuItemSelected(BaseActivity activity, Protocol p, int idItem) {
         switch (idItem) {
             case RosterHelper.MENU_CONNECT:
+                Log.e("k", ""+p);
                 SawimApplication.getInstance().setStatus(p);
                 return true;
             case RosterHelper.MENU_STATUS:

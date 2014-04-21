@@ -108,10 +108,11 @@ public class SawimService extends Service {
                         SawimService.this.startForeground(R.string.app_name, SawimNotification.get(SawimService.this));
                         break;
                     case SET_STATUS:
+                        final Protocol protocol = (Protocol) msg.obj;
                         new AsyncTask<Void, Void, Void>() {
                             @Override
                             protected Void doInBackground(Void... params) {
-                                RosterHelper.getInstance().setStatus((Protocol) msg.obj);
+                                RosterHelper.getInstance().setStatus(protocol);
                                 return null;
                             }
                         }.execute(null, null, null);

@@ -106,7 +106,13 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         messageEditor = new EditText(activity);
 
         chatBarLayout = new ChatBarView(activity, chatsImage);
-        chatListView = new MyListView(activity);
+        chatListView = new MyListView(activity) {
+            @Override
+            protected void layoutChildren() {
+                super.layoutChildren();
+                setTranscriptMode(ListView.TRANSCRIPT_MODE_NORMAL);
+            }
+        };
         nickList = new MyListView(activity);
         chatListsView = new ChatListsView(activity, SawimApplication.isManyPane(), chatListView, nickList);
         chatInputBarView = new ChatInputBarView(activity, menuButton, smileButton, messageEditor, sendButton);
@@ -445,10 +451,10 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         if (chat == null) return;
         initChat(protocol, contact);
         oldChat = chat.getContact().getUserId();
-        View item = chatListView.getChildAt(0);
         chat.scrollPosition = chatListView.getFirstVisiblePosition();
-        chat.offset = (item == null) ? 0 : Math.abs(item.getBottom());
+        chat.offset = chatListView.getHeight() / 4;
         chat.dividerPosition = chat.getMessCount();
+        chat.isBottomScroll = chat.dividerPosition == chatListView.getLastVisiblePosition() + 1;
         chat.message = getText().length() == 0 ? null : getText();
 
         chat.setVisibleChat(false);
@@ -479,7 +485,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         if (!SawimApplication.isManyPane())
             drawerLayout.setDrawerLockMode(contact.isConference() ?
                     DrawerLayout.LOCK_MODE_UNLOCKED : DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-
+        adapter.refreshList(chat.getMessData());
         setPosition(unreadMessageCount);
         chatListView.setFastScrollEnabled(true);
     }
@@ -502,17 +508,15 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
                 chatListView.setSelection(position);
             }
         } else {
-            //chatListView.setSelectionFromTop(chat.scrollPosition + 1, chat.offset - (isLastPosition() ? 0 : chat.offset / 2));
-            chatListView.setSelectionFromTop(chat.scrollPosition + (isLastPosition() ? 1 : 2), chat.offset);
-        }
-        adapter.refreshList(chat.getMessData());
-        chatListView.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (chatListView != null)
-                    chatListView.setTranscriptMode(ListView.TRANSCRIPT_MODE_NORMAL);
+            if (!chat.isBottomScroll || unreadMessageCount == 0) {
+                chatListView.setSelectionFromTop(chat.scrollPosition + 1, chat.offset);
+            } else {
+                chatListView.setSelectionFromTop(chat.getMessData().size() - unreadMessageCount, chat.offset);
             }
-        }, 700L);
+            if (chat.isBottomScroll && unreadMessageCount == 0 && isLastPosition()) {
+                chatListView.setSelectionFromTop(chat.getMessData().size(), 0);
+            }
+        }
     }
 
     public boolean isLastPosition() {

@@ -268,6 +268,7 @@ public final class XmppConnection extends ClientConnection {
     protected final void loggedOut() {
         try {
             write("<presence type='unavailable'><status>Logged out</status></presence>");
+            write("</stream:stream>");
         } catch (Exception ignored) {
         }
     }

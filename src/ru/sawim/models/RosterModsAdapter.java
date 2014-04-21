@@ -43,7 +43,6 @@ public class RosterModsAdapter extends BaseAdapter {
             convertView.setPadding(paddingW, paddingH, paddingW, paddingH);
         }
         LabelView labelView = (LabelView) convertView;
-        convertView.setBackgroundColor(position == RosterHelper.getInstance().getCurrPage() ? Scheme.getColor(Scheme.THEME_ITEM_SELECTED) : 0);
         labelView.setTextColor(Util.isNeedToFixSpinnerAdapter() ? 0xFF000000 : Scheme.getColor(Scheme.THEME_TEXT));
         labelView.setTextSize(SawimApplication.getFontSize());
         labelView.setText(getItem(position));
