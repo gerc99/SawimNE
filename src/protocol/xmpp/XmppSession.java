@@ -7,6 +7,7 @@ import android.util.Log;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+import ru.sawim.Options;
 import ru.sawim.SawimApplication;
 import ru.sawim.SawimException;
 import ru.sawim.comm.StringConvertor;
@@ -29,7 +30,7 @@ public class XmppSession {
         preferences = context.getSharedPreferences(PREFS_NAME, 0);
         editor = preferences.edit();
         // Check device for Play Services APK. If check succeeds, proceed with GCM registration.
-        if (checkPlayServices()) {
+        if (Options.getBoolean(Options.OPTION_PUSH) && checkPlayServices()) {
             gcm = GoogleCloudMessaging.getInstance(context);
             registerInBackground();
         } else {
@@ -82,11 +83,11 @@ public class XmppSession {
     }
 
     public void enable(final XmppConnection connection) {
+        if (!Options.getBoolean(Options.OPTION_PUSH)) return;
         new Thread(new Runnable() {
             @Override
             public void run() {
                 if (connection.isSessionManagementEnabled() && !StringConvertor.isEmpty(regid)) {
-
                     connection.putPacketIntoQueue("<iq type='set'>" +
                             "<register xmlns='http://sawim.ru/notifications#gcm' regid='" + regid + "' /></iq>");
                 }
@@ -95,6 +96,7 @@ public class XmppSession {
     }
 
     public void enableRebind(final XmppConnection connection) {
+        if (!Options.getBoolean(Options.OPTION_PUSH)) return;
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -112,6 +114,7 @@ public class XmppSession {
     }
 
     public void clear(final XmppConnection connection) {
+        if (!Options.getBoolean(Options.OPTION_PUSH)) return;
         if (connection.isSessionManagementEnabled() && !StringConvertor.isEmpty(regid)) {
             new Thread(new Runnable() {
                 @Override
@@ -134,6 +137,7 @@ public class XmppSession {
     }
 
     public void save(XmppConnection connection) {
+        if (!Options.getBoolean(Options.OPTION_PUSH)) return;
         editor.putBoolean("Enabled" + connection.fullJid_, connection.isSessionManagementEnabled());
         editor.putLong("PacketsIn" + connection.fullJid_, connection.packetsIn);
         editor.putLong("PacketsOut" + connection.fullJid_, connection.packetsOut);
@@ -143,6 +147,7 @@ public class XmppSession {
     }
 
     public void load(XmppConnection connection) {
+        if (!Options.getBoolean(Options.OPTION_PUSH)) return;
         connection.setSessionManagementEnabled(preferences.getBoolean("Enabled" + connection.fullJid_, false));
         connection.packetsIn = preferences.getLong("PacketsIn" + connection.fullJid_, 0);
         connection.packetsOut = preferences.getLong("PacketsOut" + connection.fullJid_, 0);

@@ -522,4 +522,5 @@
     <string name="wake_lock">Support the work when the screen is off</string>
     <string name="domain">Domain</string>
     <string name="account_settings">Account settings</string>
+    <string name="push">Push</string>
 </resources>

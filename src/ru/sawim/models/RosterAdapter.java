@@ -26,6 +26,7 @@ import ru.sawim.widget.MyImageButton;
 import ru.sawim.widget.roster.RosterItemView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
@@ -263,6 +264,7 @@ public class RosterAdapter extends BaseAdapter {
         rosterItemView.isShowDivider = value;
     }
 
+    private HashMap<Integer, View.OnClickListener> protocolMenuButtonClickListenersMap = new HashMap<Integer, View.OnClickListener>();
     @Override
     public View getView(int i, View convertView, final ViewGroup viewGroup) {
         final Object o = getItem(i);
@@ -302,6 +304,18 @@ public class RosterAdapter extends BaseAdapter {
                         convertView.setBackgroundColor(Scheme.getColor(Scheme.THEME_ITEM_SELECTED));
                         rosterItemView.setLayoutParams(rosterLinearLayout);
                         imageButton.setImageDrawable(SawimResources.ic_menu);
+                        View.OnClickListener protocolMenuButtonClickListener = protocolMenuButtonClickListenersMap.get(i);
+                        if (protocolMenuButtonClickListenersMap.get(i) == null) {
+                            protocolMenuButtonClickListener = new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    RosterHelper.getInstance().showProtocolMenu((BaseActivity) viewGroup.getContext(), ((ProtocolBranch) treeNode).getProtocol());
+                                }
+                            };
+                            protocolMenuButtonClickListenersMap.put(i, protocolMenuButtonClickListener);
+
+                        }
+                        imageButton.setOnClickListener(protocolMenuButtonClickListener);
                         ((ViewGroup)convertView).setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
                         ((ViewGroup)convertView).addView(rosterItemView);
                         ((ViewGroup)convertView).addView(progressBar);
@@ -309,15 +323,9 @@ public class RosterAdapter extends BaseAdapter {
                     }
                     RosterItemView rosterItemView = (RosterItemView) ((ViewGroup) convertView).getChildAt(0);
                     ProgressBar progressBar = (ProgressBar) ((ViewGroup) convertView).getChildAt(1);
-                    MyImageButton imageButton = (MyImageButton) ((ViewGroup) convertView).getChildAt(2);
                     progressBar.setVisibility(((ProtocolBranch) treeNode).getProtocol().getConnectingProgress() != 100 ? View.VISIBLE : View.GONE);
                     rosterItemView.setNull();
-                    imageButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            RosterHelper.getInstance().showProtocolMenu((BaseActivity) viewGroup.getContext(), ((ProtocolBranch) treeNode).getProtocol());
-                        }
-                    });
+
                     populateFromProtocol(rosterItemView, (ProtocolBranch) treeNode);
                     setShowDivider(rosterItemView, true);
                     rosterItemView.repaint();

@@ -117,7 +117,6 @@ public class SawimActivity extends BaseActivity {
             if (fragmentManager.getFragments() == null || rosterView == null || chatView == null || rosterView.isVisible()) {
                 if (p == null || c == null) return false;
                 chatView = new ChatView();
-                c.activate(this, p);
                 chatView.initChat(p, c);
                 FragmentTransaction transaction = fragmentManager.beginTransaction();
                 transaction.replace(R.id.fragment_container, chatView, ChatView.TAG);
@@ -130,7 +129,6 @@ public class SawimActivity extends BaseActivity {
             }
             if (chatView.isVisible() && chatView.isLastPosition()) {
                 if (c != null) {
-                    c.activate(this, p);
                     chatView.openChat(p, c);
                     chatView.resume(p.getChat(c));
                     return true;
@@ -140,13 +138,14 @@ public class SawimActivity extends BaseActivity {
             Protocol protocol = null;
             Contact contact = null;
             Chat oldChat = ChatHistory.instance.getChatById(ChatView.getLastChat());
-            if (p != null && c != null && chatView.isLastPosition()) {
+            if (p != null && c != null) {
                 protocol = p;
                 contact = c;
             } else if (oldChat != null) {
                 protocol = oldChat.getProtocol();
                 contact = oldChat.getContact();
             }
+            Log.e(LOG_TAG, protocol+" "+contact);
             if (protocol != null && contact != null) {
                 chatView.openChat(protocol, contact);
                 chatView.resume(chatView.getCurrentChat());

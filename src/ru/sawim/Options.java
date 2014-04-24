@@ -71,6 +71,7 @@ public class Options {
     public static final int OPTION_ANSWERER = 128;
     public static final int OPTION_HIDE_KEYBOARD = 129;
     public static final int OPTION_CL_HIDE_OFFLINE = 130;
+    public static final int OPTION_PUSH = 130;
     public static final int OPTION_USER_GROUPS = 136;
     public static final int OPTION_HISTORY = 137;
     public static final int OPTION_WAKE_LOCK = 143;
@@ -323,6 +324,7 @@ public class Options {
     }
 
     private static void setDefaults() {
+        setBoolean(Options.OPTION_PUSH, false);
         setString(Options.UNAVAILABLE_NESSAGE, "I'll be back");
         setInt(Options.OPTION_CURRENT_PAGE, 0);
         setBoolean(Options.OPTION_INSTANT_RECONNECTION, true);

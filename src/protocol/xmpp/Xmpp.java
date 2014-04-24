@@ -308,15 +308,15 @@ public final class Xmpp extends Protocol implements FormListener {
     @Override
     protected Contact loadContact(DataInputStream dis) throws Exception {
         XmppContact contact = (XmppContact) super.loadContact(dis);
-        if (isStreamManagementSupported()) {
-            if (contact instanceof XmppServiceContact) {
-                XmppServiceContact serviceContact = (XmppServiceContact) contact;
-                if (serviceContact.isConference()) {
-                    String userNick = dis.readUTF();
-                    serviceContact.setMyName(userNick);
-                    serviceContact.setPresencesFlag(dis.readBoolean());
-                }
+        if (contact instanceof XmppServiceContact) {
+            XmppServiceContact serviceContact = (XmppServiceContact) contact;
+            if (serviceContact.isConference()) {
+                String userNick = dis.readUTF();
+                serviceContact.setMyName(userNick);
+                serviceContact.setPresencesFlag(dis.readBoolean());
             }
+        }
+        if (isStreamManagementSupported()) {
             int subContactSize = dis.readInt();
             for (int i = 0; i < subContactSize; ++i) {
                 XmppContact.SubContact subContact = new XmppContact.SubContact();
@@ -334,14 +334,14 @@ public final class Xmpp extends Protocol implements FormListener {
     @Override
     protected void saveContact(DataOutputStream dos, Contact contact) throws Exception {
         super.saveContact(dos, contact);
-        if (isStreamManagementSupported()) {
-            if (contact instanceof XmppServiceContact) {
-                XmppServiceContact serviceContact = (XmppServiceContact)contact;
-                if (serviceContact.isConference()) {
-                    dos.writeUTF(serviceContact.getMyName());
-                    dos.writeBoolean(serviceContact.isPresence());
-                }
+        if (contact instanceof XmppServiceContact) {
+            XmppServiceContact serviceContact = (XmppServiceContact)contact;
+            if (serviceContact.isConference()) {
+                dos.writeUTF(serviceContact.getMyName());
+                dos.writeBoolean(serviceContact.isPresence());
             }
+        }
+        if (isStreamManagementSupported()) {
             XmppContact xmppContact = (XmppContact)contact;
             dos.writeInt(xmppContact.subcontacts.size());
             for (XmppContact.SubContact subContact : xmppContact.subcontacts) {
@@ -923,7 +923,7 @@ public final class Xmpp extends Protocol implements FormListener {
     }
 
     protected boolean isStreamManagementSupported() {
-        return SawimApplication.getInstance().getXmppSession()
+        return Options.getBoolean(Options.OPTION_PUSH) && SawimApplication.getInstance().getXmppSession()
                 .isStreamManagementSupported(getUserId() + '/' + getResource());
     }
 }

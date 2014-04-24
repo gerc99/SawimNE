@@ -106,7 +106,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
                     if (Jid.isGate(jid)) {
                         menu.add(Menu.FIRST, COMMAND_REGISTER, 2, JLocale.getString(R.string.register));
                     }
-                    menu.add(Menu.FIRST, ContactMenu.USER_MENU_ADHOC, 2, JLocale.getString(R.string.adhoc));
+                    menu.add(Menu.FIRST, COMMAND_ADHOC, 2, JLocale.getString(R.string.adhoc));
                 }
             }
 

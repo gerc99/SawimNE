@@ -146,18 +146,18 @@ public class RosterItemView extends View {
 
         firstImageX = leftPadding;
         if (itemFirstImage != null) {
+            secondImageX = firstImageX + itemFirstImage.getWidth() + leftPadding;
             firstImageY = y - (itemFirstImage.getHeight() >> 1);
-            textX = firstImageX + itemFirstImage.getWidth() + leftPadding;
-        }
-        secondImageX = firstImageX;
+            textX = secondImageX;
+        } else
+            secondImageX = firstImageX;
         if (itemSecondImage != null) {
-            secondImageX += leftPadding + itemSecondImage.getWidth();
+            thirdImageX = secondImageX + itemSecondImage.getWidth() + leftPadding;
             secondImageY = y - (itemSecondImage.getHeight() >> 1);
-            textX += itemSecondImage.getWidth() + leftPadding;
-        }
-        thirdImageX = secondImageX;
+            textX = thirdImageX;
+        } else
+            thirdImageX = secondImageX;
         if (itemThirdImage != null) {
-            thirdImageX += leftPadding + itemThirdImage.getWidth() + leftPadding;
             thirdImageY = y - (itemThirdImage.getHeight() >> 1);
             textX = thirdImageX + itemThirdImage.getWidth() + leftPadding;
         }

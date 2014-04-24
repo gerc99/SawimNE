@@ -423,9 +423,11 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
     @Override
     public void onStart() {
         super.onStart();
-        if (contact == null)
-            initChat(RosterHelper.getInstance().getCurrentContact().getProtocol(), RosterHelper.getInstance().getCurrentContact());
-        else
+        Contact currentContact = RosterHelper.getInstance().getCurrentContact();
+        if (contact == null) {
+            if (currentContact != null)
+                initChat(currentContact.getProtocol(), currentContact);
+        } else
             openChat(protocol, contact);
         if (SawimApplication.isManyPane()) {
             if (contact == null)
@@ -508,13 +510,14 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
                 chatListView.setSelection(position);
             }
         } else {
-            if (!chat.isBottomScroll || unreadMessageCount == 0) {
-                chatListView.setSelectionFromTop(chat.scrollPosition + 1, chat.offset);
-            } else {
-                chatListView.setSelectionFromTop(chat.getMessData().size() - unreadMessageCount, chat.offset);
-            }
             if (chat.isBottomScroll && unreadMessageCount == 0 && isLastPosition()) {
-                chatListView.setSelectionFromTop(chat.getMessData().size(), 0);
+                chatListView.setSelectionFromTop(chat.getMessData().size(), -(chat.offset * 4));
+            } else {
+                if (!chat.isBottomScroll || unreadMessageCount == 0) {
+                    chatListView.setSelectionFromTop(chat.scrollPosition + 1, chat.offset);
+                } else {
+                    chatListView.setSelectionFromTop(chat.getMessData().size() - unreadMessageCount, chat.offset);
+                }
             }
         }
     }
@@ -551,6 +554,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
     }
 
     public void initChat(Protocol p, Contact c) {
+        c.activate((BaseActivity) getActivity(), p);
         protocol = p;
         contact = c;
     }

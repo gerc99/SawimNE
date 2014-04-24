@@ -154,6 +154,7 @@ public class OptionsForm implements ControlStateListener {
                 break;
 
             case OPTIONS_PRO:
+                saveOptionBoolean(Options.OPTION_PUSH);
                 saveOptionBoolean(Options.OPTION_HIDE_ICONS_CLIENTS);
                 Options.setInt(Options.OPTION_AA_TIME, form.getSelectorValue(Options.OPTION_AA_TIME) * 5);
                 break;
@@ -245,6 +246,7 @@ public class OptionsForm implements ControlStateListener {
                 break;
 
             case OPTIONS_PRO:
+                setChecked_(R.string.push, Options.OPTION_PUSH);
                 setChecked_(R.string.hide_icons_clients, Options.OPTION_HIDE_ICONS_CLIENTS);
                 form.addSelector(Options.OPTION_AA_TIME, JLocale.getString(R.string.absence)
                         + " " + JLocale.getString(R.string.after_time), JLocale.getString(R.string.off) + "|5 |10 |15 ", Options.getInt(Options.OPTION_AA_TIME) / 5);

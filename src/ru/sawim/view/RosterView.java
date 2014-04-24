@@ -275,21 +275,18 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
                 }
             }
         });
+        LinearLayout.LayoutParams barLinearLayoutLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
         LinearLayout.LayoutParams spinnerLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
         LinearLayout.LayoutParams chatsImageLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
         chatsImageLP.gravity = Gravity.RIGHT;
+        chatsImageLP.weight = 4;
+        spinnerLP.weight = 1;
+        barLinearLayout.removeAllViews();
         if (SawimApplication.isManyPane()) {
             LinearLayout.LayoutParams rosterBarLayoutLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
             rosterBarLayoutLP.weight = 2;
             rosterBarLayout.setLayoutParams(rosterBarLayoutLP);
             rosterBarLayout.removeAllViews();
-            barLinearLayout.removeAllViews();
-            LinearLayout.LayoutParams barLinearLayoutLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-            barLinearLayout.setLayoutParams(barLinearLayoutLP);
-            spinnerLP.weight = 1;
-            rosterModsSpinner.setLayoutParams(spinnerLP);
-            chatsImageLP.weight = 4;
-            chatsImage.setLayoutParams(chatsImageLP);
             if (RosterHelper.getInstance().getProtocolCount() > 0)
                 rosterBarLayout.addView(rosterModsSpinner);
             rosterBarLayout.addView(chatsImage);
@@ -300,15 +297,14 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
             barLinearLayout.addView(chatView.getTitleBar());
             actionBar.setCustomView(barLinearLayout);
         } else {
-            barLinearLayout.removeAllViews();
-            spinnerLP.weight = 1;
-            rosterModsSpinner.setLayoutParams(spinnerLP);
-            chatsImage.setLayoutParams(chatsImageLP);
             if (RosterHelper.getInstance().getProtocolCount() > 0)
                 barLinearLayout.addView(rosterModsSpinner);
             barLinearLayout.addView(chatsImage);
             actionBar.setCustomView(barLinearLayout);
         }
+        barLinearLayout.setLayoutParams(barLinearLayoutLP);
+        rosterModsSpinner.setLayoutParams(spinnerLP);
+        chatsImage.setLayoutParams(chatsImageLP);
     }
 
     @Override
@@ -332,7 +328,8 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         rosterModsSpinner.setSelection(RosterHelper.getInstance().getCurrPage());
 
         if (RosterHelper.getInstance().getProtocolCount() > 0) {
-            RosterHelper.getInstance().setCurrentContact(null);
+            if (!SawimApplication.isManyPane())
+                RosterHelper.getInstance().setCurrentContact(null);
             RosterHelper.getInstance().setOnUpdateRoster(this);
             if (SawimApplication.returnFromAcc) {
                 SawimApplication.returnFromAcc = false;
@@ -360,7 +357,6 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     }
 
     private void openChat(Protocol p, Contact c) {
-        c.activate((BaseActivity) getActivity(), p);
         if (!SawimApplication.isManyPane()) {
             ChatView chatView = new ChatView();
             chatView.initChat(p, c);
@@ -387,7 +383,6 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
             String subjectText = intent.getStringExtra(Intent.EXTRA_SUBJECT);
             String sharingText = intent.getStringExtra(Intent.EXTRA_TEXT);
             ChatView newFragment = new ChatView();
-            c.activate((BaseActivity) getActivity(), p);
             newFragment.initChat(p, c);
             if (sharingText != null)
                 newFragment.setSharingText(subjectText == null ? sharingText : subjectText + "\n" + sharingText);

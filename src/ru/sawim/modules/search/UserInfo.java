@@ -121,7 +121,8 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
         if (null == profileView) {
             return;
         }
-        VirtualListModel profile = profileView.getModel();//new VirtualListModel();
+        VirtualListModel profile = profileView.getModel();
+        if (profile == null) profile = new VirtualListModel();
         updateProfileView(profile);
         if ((null != uin) && !avatarIsLoaded) {
             avatarIsLoaded = true;
