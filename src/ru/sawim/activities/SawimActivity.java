@@ -31,7 +31,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
@@ -43,8 +42,6 @@ import protocol.xmpp.Xmpp;
 import ru.sawim.*;
 import ru.sawim.chat.Chat;
 import ru.sawim.chat.ChatHistory;
-import ru.sawim.forms.ManageContactListForm;
-import ru.sawim.forms.SmsForm;
 import ru.sawim.modules.DebugLog;
 import ru.sawim.modules.Notify;
 import ru.sawim.roster.RosterHelper;
@@ -145,7 +142,6 @@ public class SawimActivity extends BaseActivity {
                 protocol = oldChat.getProtocol();
                 contact = oldChat.getContact();
             }
-            Log.e(LOG_TAG, protocol+" "+contact);
             if (protocol != null && contact != null) {
                 chatView.openChat(protocol, contact);
                 chatView.resume(chatView.getCurrentChat());

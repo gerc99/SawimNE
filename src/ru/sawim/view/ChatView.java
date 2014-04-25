@@ -195,7 +195,8 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
                 }
 
                 public void onDrawerOpened(View view) {
-                    mucUsersView.update();
+                    if (mucUsersView != null)
+                        mucUsersView.update();
                 }
             };
             drawerLayout.setDrawerListener(drawerToggle);
@@ -456,7 +457,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         chat.scrollPosition = chatListView.getFirstVisiblePosition();
         chat.offset = chatListView.getHeight() / 4;
         chat.dividerPosition = chat.getMessCount();
-        chat.isBottomScroll = chat.dividerPosition == chatListView.getLastVisiblePosition() + 1;
+        chat.lastVisiblePosition = chatListView.getLastVisiblePosition() + 1;
         chat.message = getText().length() == 0 ? null : getText();
 
         chat.setVisibleChat(false);
@@ -510,10 +511,11 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
                 chatListView.setSelection(position);
             }
         } else {
-            if (chat.isBottomScroll && unreadMessageCount == 0 && isLastPosition()) {
-                chatListView.setSelectionFromTop(chat.getMessData().size(), -(chat.offset * 4));
+            boolean isBottomScroll = chat.lastVisiblePosition == chat.dividerPosition;
+            if (isBottomScroll && unreadMessageCount == 0 && isLastPosition()) {
+                chatListView.setSelectionFromTop(chat.lastVisiblePosition, -(chat.offset * 4));
             } else {
-                if (!chat.isBottomScroll || unreadMessageCount == 0) {
+                if (!isBottomScroll || unreadMessageCount == 0) {
                     chatListView.setSelectionFromTop(chat.scrollPosition + 1, chat.offset);
                 } else {
                     chatListView.setSelectionFromTop(chat.getMessData().size() - unreadMessageCount, chat.offset);
@@ -1056,7 +1058,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         @Override
         public void afterTextChanged(Editable s) {
             String text = s.subSequence(0, s.length()).toString();
-            if (adapter.isMultiQuote()) {
+            if (adapter != null && adapter.isMultiQuote()) {
                 String clipBoardText = Clipboard.getClipBoardText(getActivity());
                 if (clipBoardText != null && text.equals(clipBoardText)) {
                     destroyMultiCitation();

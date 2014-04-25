@@ -269,7 +269,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
                         }
                     }.show(getFragmentManager().beginTransaction(), "auth");
                 } else {
-                    openChat(current.getProtocol(), current.getContact());
+                    openChat(current.getProtocol(), current.getContact(), null);
                     getActivity().supportInvalidateOptionsMenu();
                     updateRoster();
                 }
@@ -356,10 +356,11 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         return (RosterAdapter) rosterListView.getAdapter();
     }
 
-    private void openChat(Protocol p, Contact c) {
+    private void openChat(Protocol p, Contact c, String sharingText) {
         if (!SawimApplication.isManyPane()) {
             ChatView chatView = new ChatView();
             chatView.initChat(p, c);
+            chatView.setSharingText(sharingText);
             FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.fragment_container, chatView, ChatView.TAG);
             transaction.addToBackStack(null);
@@ -370,6 +371,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
             chatViewTablet.pause(chatViewTablet.getCurrentChat());
             if (c != null) {
                 chatViewTablet.openChat(p, c);
+                chatViewTablet.setSharingText(sharingText);
                 chatViewTablet.resume(chatViewTablet.getCurrentChat());
             }
         }
@@ -382,14 +384,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         if (type.equals("text/plain")) {
             String subjectText = intent.getStringExtra(Intent.EXTRA_SUBJECT);
             String sharingText = intent.getStringExtra(Intent.EXTRA_TEXT);
-            ChatView newFragment = new ChatView();
-            newFragment.initChat(p, c);
-            if (sharingText != null)
-                newFragment.setSharingText(subjectText == null ? sharingText : subjectText + "\n" + sharingText);
-            FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.fragment_container, newFragment, ChatView.TAG);
-            transaction.addToBackStack(null);
-            transaction.commit();
+            openChat(p, c, subjectText == null ? sharingText : subjectText + "\n" + sharingText);
         } else {
             Uri data = intent.getParcelableExtra(Intent.EXTRA_STREAM);
             if (data == null) return;
@@ -424,14 +419,14 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
                 Object o = getRosterAdapter().getItem(position);
                 if (o instanceof Chat) {
                     Chat chat = (Chat) o;
-                    openChat(chat.getProtocol(), chat.getContact());
+                    openChat(chat.getProtocol(), chat.getContact(), null);
                     if (SawimApplication.isManyPane())
                         update();
                 }
             } else {
                 TreeNode item = (TreeNode) getRosterAdapter().getItem(position);
                 if (item.getType() == TreeNode.CONTACT) {
-                    openChat(((Contact) item).getProtocol(), ((Contact) item));
+                    openChat(((Contact) item).getProtocol(), ((Contact) item), null);
                     if (SawimApplication.isManyPane())
                         update();
                 }
