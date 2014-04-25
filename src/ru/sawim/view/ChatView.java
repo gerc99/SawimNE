@@ -45,6 +45,7 @@ import ru.sawim.text.TextFormatter;
 import ru.sawim.util.JLocale;
 import ru.sawim.view.menu.JuickMenu;
 import ru.sawim.view.menu.MyMenu;
+import ru.sawim.widget.FixedEditText;
 import ru.sawim.widget.MyImageButton;
 import ru.sawim.widget.MyListView;
 import ru.sawim.widget.Util;
@@ -103,7 +104,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         menuButton = new MyImageButton(activity);
         smileButton = new MyImageButton(activity);
         sendButton = new MyImageButton(activity);
-        messageEditor = new EditText(activity);
+        messageEditor = new FixedEditText(activity);
 
         chatBarLayout = new ChatBarView(activity, chatsImage);
         chatListView = new MyListView(activity) {
