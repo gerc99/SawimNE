@@ -1,5 +1,6 @@
 package ru.sawim.chat;
 
+import android.util.Log;
 import protocol.Contact;
 import protocol.Protocol;
 import protocol.xmpp.Jid;
@@ -364,7 +365,7 @@ public final class Chat {
             message.setVisibleIcon(mData);
         }
         addMessage(mData);
-        if (mData.isMessage())
+        if (contact.isConference() && mData.isMessage())
             contact.setLastMessageTime(mData.getTime());
     }
 

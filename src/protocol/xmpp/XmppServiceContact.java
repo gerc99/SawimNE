@@ -38,7 +38,7 @@ public class XmppServiceContact extends XmppContact {
     private String password;
     private String myNick;
     private String baseMyNick;
-    private String subject;
+    private static String subject;
     private boolean isPresence;
 
     public XmppServiceContact(String jid, String name) {

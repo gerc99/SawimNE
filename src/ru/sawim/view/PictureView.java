@@ -97,6 +97,15 @@ public class PictureView extends DialogFragment {
 
     @Override
     public void onDestroy() {
+        if (webView != null) {
+            webView.destroyDrawingCache();
+            webView.stopLoading();
+            webView.clearCache(true);
+            webView.clearHistory();
+            webView.clearFormData();
+            webView.destroy();
+            webView = null;
+        }
         super.onDestroy();
         htmlTask = null;
     }

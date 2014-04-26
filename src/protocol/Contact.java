@@ -30,7 +30,7 @@ abstract public class Contact implements TreeNode {
     private String xstatusText = null;
     String version = "";
     public long chaingingStatusTime = 0;
-    private long lastMessageTime;
+    private static long lastMessageTime;
 
     public final boolean isOnline() {
         return (StatusInfo.STATUS_OFFLINE != status);

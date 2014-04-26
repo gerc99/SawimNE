@@ -4,6 +4,7 @@ import android.util.Log;
 import protocol.*;
 import protocol.net.ClientConnection;
 import ru.sawim.*;
+import ru.sawim.chat.message.Message;
 import ru.sawim.chat.message.PlainMessage;
 import ru.sawim.chat.message.SystemNotice;
 import ru.sawim.comm.*;
@@ -1580,7 +1581,6 @@ public final class XmppConnection extends ClientConnection {
             from = fullJid;
         }
         String fromRes = Jid.getResource(fullJid, null);
-
         String subject = msg.getFirstNodeValue(S_SUBJECT);
         String text = msg.getFirstNodeValue(S_BODY);
         if ((null != subject) && (null == text)) {
@@ -1682,7 +1682,7 @@ public final class XmppConnection extends ClientConnection {
                         }
                     }
                 }
-                if ((null != subject) && isConference && isGroupchat) {
+                if (null != subject && isConference && isGroupchat) {
                     String prevSubject = StringConvertor.notNull(conference.getSubject());
                     conference.setSubject(subject);
                     getXmpp().ui_changeContactStatus(conference);
@@ -1700,17 +1700,18 @@ public final class XmppConnection extends ClientConnection {
         final String date = getDate(msg);
         final boolean isOnlineMessage = (null == date);
         long time = isOnlineMessage ? SawimApplication.getCurrentGmtTime() : Util.createGmtDate(date);
-        final PlainMessage message = new PlainMessage(from, getXmpp(), time, text, !isOnlineMessage);
-
+        Message message;
+        if (subject == null)
+            message = new PlainMessage(from, getXmpp(), time, text, !isOnlineMessage);
+        else
+            message = new SystemNotice(getXmpp(), SystemNotice.SYS_NOTICE_MESSAGE, from, text);
         if (null == c) {
             if (isConference && !isGroupchat) {
                 prepareFirstPrivateMessage(from);
             }
-
         } else {
             if (isConference) {
                 final XmppServiceContact conf = (XmppServiceContact) c;
-
                 if (isGroupchat && (null != fromRes)) {
                     if (isOnlineMessage && fromRes.equals(conf.getMyName())) {
                         if (isMessageExist(msg.getId())) {
@@ -1989,9 +1990,6 @@ public final class XmppConnection extends ClientConnection {
         hResp.updateASCII(hA2.getDigestHex());
 
         String quote = "\"";
-        //    if (Profile.PROTOCOL_VK == getXmpp().getProfile().protocolType) {
-        //        quote = "";
-        //    }
         return Util.base64encode(StringConvertor.stringToByteArrayUtf8(
                 new StringBuffer().append("username=\"").append(user).append("\",realm=\"").append(realm)
                         .append("\",nonce=\"").append(nonce).append("\",cnonce=\"").append(cnonce)
@@ -2285,7 +2283,6 @@ public final class XmppConnection extends ClientConnection {
 
     public void getBookmarks() {
         putPacketIntoQueue("<iq type='get' id='0'><query xmlns='jabber:iq:private'><storage xmlns='storage:bookmarks'/></query></iq>");
-        //putPacketIntoQueue("<iq type='get' to='jabber.ru@xmpp.beta.bggg.net.ru' id='0'><query xmlns='jabber:iq:private'><storage xmlns='storage:bookmarks'/></query></iq>");
         if (xep0048) {
             putPacketIntoQueue("<iq type='get' id='1'><pubsub xmlns='http://jabber.org/protocol/pubsub'><items node='storage:bookmarks'/></pubsub></iq>");
         }
@@ -2386,8 +2383,7 @@ public final class XmppConnection extends ClientConnection {
             if (!StringConvertor.isEmpty(password)) {
                 xNode += "<password>" + Util.xmlEscape(password) + "</password>";
             }
-            long time = conf.hasChat() ? conf.getLastMessageTime() : 0;
-
+            long time = conf.getLastMessageTime();
             if (0 != time)
                 xNode += "<history maxstanzas='20' seconds='" + (SawimApplication.getCurrentGmtTime() - time) + "'/>";
 

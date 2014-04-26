@@ -38,9 +38,8 @@ public class RosterModsAdapter extends BaseAdapter {
     public View getDropDownView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
             convertView = new LabelView(parent.getContext());
-            int paddingW = Util.dipToPixels(convertView.getContext(), 10);
             int paddingH = Util.dipToPixels(convertView.getContext(), 15);
-            convertView.setPadding(paddingW, paddingH, paddingW, paddingH);
+            convertView.setPadding(paddingH, paddingH, paddingH, paddingH);
         }
         LabelView labelView = (LabelView) convertView;
         labelView.setTextColor(Util.isNeedToFixSpinnerAdapter() ? 0xFF000000 : Scheme.getColor(Scheme.THEME_TEXT));
@@ -53,6 +52,8 @@ public class RosterModsAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
             convertView = new LabelView(parent.getContext());
+            int paddingH = Util.dipToPixels(convertView.getContext(), 10);
+            convertView.setPadding(paddingH, 0, paddingH, 0);
         }
         LabelView labelView = (LabelView) convertView;
         labelView.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
