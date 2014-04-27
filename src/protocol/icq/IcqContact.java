@@ -39,7 +39,6 @@ public class IcqContact extends Contact {
         setBooleanValue(Contact.SL_IGNORE, false);
         setBooleanValue(Contact.SL_VISIBLE, false);
         setBooleanValue(Contact.SL_INVISIBLE, false);
-
     }
 
     public IcqContact(String uin) {

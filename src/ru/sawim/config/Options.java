@@ -51,9 +51,7 @@ public class Options {
     private void setupSystem() {
         int timeZone = TimeZone.getDefault().getOffset(System.currentTimeMillis()) / 3600000;
         ru.sawim.Options.setInt(ru.sawim.Options.OPTION_GMT_OFFSET, timeZone);
-        ru.sawim.Options.setInt(ru.sawim.Options.OPTION_LOCAL_OFFSET, 0);
     }
-
 
     private Object toValue(int key, String value) {
         if (key < 0) {

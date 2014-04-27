@@ -84,6 +84,10 @@ public class SawimActivity extends BaseActivity {
     private void handleIntent() {
         if (getIntent() == null || getIntent().getAction() == null) return;
         if (getIntent().getAction().startsWith(Intent.ACTION_SEND)) {
+            FragmentManager fm = getSupportFragmentManager();
+            for (int i = 0; i < fm.getBackStackEntryCount(); ++i) {
+                fm.popBackStack();
+            }
             RosterView rosterView = getRosterView();
             if (rosterView != null)
                 rosterView.setMode(getIntent().getType().equals("text/plain") ? RosterView.MODE_SHARE_TEXT : RosterView.MODE_SHARE);
@@ -109,8 +113,8 @@ public class SawimActivity extends BaseActivity {
         FragmentManager fragmentManager = getSupportFragmentManager();
         ChatView chatView = (ChatView) fragmentManager.findFragmentById(R.id.chat_fragment);
         if (chatView == null) {
-            Fragment rosterView = getSupportFragmentManager().findFragmentByTag(RosterView.TAG);
-            chatView = (ChatView) getSupportFragmentManager().findFragmentByTag(ChatView.TAG);
+            Fragment rosterView = fragmentManager.findFragmentByTag(RosterView.TAG);
+            chatView = (ChatView) fragmentManager.findFragmentByTag(ChatView.TAG);
             if (fragmentManager.getFragments() == null || rosterView == null || chatView == null || rosterView.isVisible()) {
                 if (p == null || c == null) return false;
                 chatView = new ChatView();
@@ -188,10 +192,11 @@ public class SawimActivity extends BaseActivity {
 
     @Override
     public void onBackPressed() {
-        SawimFragment chatView = (SawimFragment) getSupportFragmentManager().findFragmentByTag(ChatView.TAG);
-        SawimFragment formView = (SawimFragment) getSupportFragmentManager().findFragmentByTag(FormView.TAG);
-        SawimFragment preferenceFormView = (SawimFragment) getSupportFragmentManager().findFragmentByTag(MainPreferenceView.TAG);
-        SawimFragment virtualListView = (SawimFragment) getSupportFragmentManager().findFragmentByTag(VirtualListView.TAG);
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        SawimFragment chatView = (SawimFragment) fragmentManager.findFragmentByTag(ChatView.TAG);
+        SawimFragment formView = (SawimFragment) fragmentManager.findFragmentByTag(FormView.TAG);
+        SawimFragment preferenceFormView = (SawimFragment) fragmentManager.findFragmentByTag(MainPreferenceView.TAG);
+        SawimFragment virtualListView = (SawimFragment) fragmentManager.findFragmentByTag(VirtualListView.TAG);
         if (chatView != null && chatView.isVisible()) {
             if (chatView.hasBack())
                 super.onBackPressed();

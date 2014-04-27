@@ -60,7 +60,6 @@ public class Options {
     static final int OPTIONS_CURR_ACCOUNT = 86;
     public static final int OPTION_GMT_OFFSET = 87;
     public static final int OPTION_TYPING_MODE = 88;
-    public static final int OPTION_LOCAL_OFFSET = 90;
     public static final int OPTION_CHAT_PRESENSEFONT_SCHEME = 92;
     public static final int OPTION_PRIVATE_STATUS = 93;
     public static final int OPTION_MAX_MSG_COUNT = 94;
@@ -359,7 +358,6 @@ public class Options {
         setBoolean(Options.OPTION_BRING_UP, false);
         int time = TimeZone.getDefault().getOffset(System.currentTimeMillis()) / (1000 * 60 * 60);
         setInt(Options.OPTION_GMT_OFFSET, time);
-        setInt(Options.OPTION_LOCAL_OFFSET, 0);
         setBoolean(OPTION_ALARM, true);
     }
 

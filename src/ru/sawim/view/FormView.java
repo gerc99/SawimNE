@@ -82,8 +82,10 @@ public class FormView extends DialogFragment implements Forms.OnUpdateForm, View
         padding = Util.dipToPixels(getActivity(), 6);
 
         okButton = (Button) v.findViewById(R.id.data_form_ok);
-        okButton.setOnClickListener(this);
         cancelButton = (Button) v.findViewById(R.id.data_form_cancel);
+        if (Util.isNeedToInverseDialogBackground())
+            scrollView.setBackgroundResource(Util.getSystemBackground(getActivity()));
+        okButton.setOnClickListener(this);
         cancelButton.setOnClickListener(this);
         getActivity().supportInvalidateOptionsMenu();
         buildList();

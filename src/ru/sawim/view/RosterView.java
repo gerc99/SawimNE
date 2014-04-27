@@ -397,6 +397,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
             Toast.makeText(getActivity(), R.string.sending_file, Toast.LENGTH_LONG).show();
         }
         setMode(MODE_DEFAULT);
+        getActivity().setIntent(null);
     }
 
     @Override

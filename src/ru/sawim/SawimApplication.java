@@ -194,8 +194,7 @@ public class SawimApplication extends Application {
     }
 
     public static long getCurrentGmtTime() {
-        return System.currentTimeMillis() / 1000
-                + Options.getInt(Options.OPTION_LOCAL_OFFSET) * 3600;
+        return System.currentTimeMillis() / 1000;
     }
 
     public static java.io.InputStream getResourceAsStream(String name) {

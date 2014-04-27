@@ -19,7 +19,6 @@ import ru.sawim.R;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.io.Storage;
 import ru.sawim.models.XStatusesAdapter;
-import ru.sawim.roster.RosterHelper;
 import ru.sawim.widget.Util;
 
 /**

@@ -248,7 +248,7 @@ public class Icq extends Protocol {
                 UpdateContactListAction.ACTION_DEL));
     }
 
-    protected void doAction(Contact contact, int action) {
+    protected void doAction(BaseActivity activity, Contact contact, int action) {
         switch (action) {
             case IcqContact.USER_MENU_REMOVE_ME:
                 sendRemoveMePacket(contact.getUserId());
