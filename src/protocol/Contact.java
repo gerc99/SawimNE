@@ -30,18 +30,9 @@ abstract public class Contact implements TreeNode {
     private String xstatusText = null;
     String version = "";
     public long chaingingStatusTime = 0;
-    private static long lastMessageTime;
 
     public final boolean isOnline() {
         return (StatusInfo.STATUS_OFFLINE != status);
-    }
-
-    public long getLastMessageTime() {
-        return lastMessageTime;
-    }
-
-    public void setLastMessageTime(long time) {
-        lastMessageTime = time;
     }
 
     public void setTimeOfChaingingStatus(long time) {

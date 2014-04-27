@@ -38,8 +38,6 @@ public class XmppServiceContact extends XmppContact {
     private String password;
     private String myNick;
     private String baseMyNick;
-    private static String subject;
-    private boolean isPresence;
 
     public XmppServiceContact(String jid, String name) {
         super(jid, name);
@@ -138,11 +136,11 @@ public class XmppServiceContact extends XmppContact {
     }
 
     public boolean isPresence() {
-        return isPresence;
+        return RosterHelper.getInstance().isPresence(getUserId());
     }
 
     public void setPresencesFlag(boolean flag) {
-        isPresence = flag;
+        RosterHelper.getInstance().setPresencesFlag(getUserId(), flag);
     }
 
     public void addPresence(Xmpp xmpp, String nick, String text) {
@@ -300,13 +298,13 @@ public class XmppServiceContact extends XmppContact {
     public void setSubject(String subject) {
         XmppContact.SubContact c = getContact(getMyName());
         if (isConference && isOnline()) {
-            this.subject = subject;
+            RosterHelper.getInstance().setSubject(getUserId(), subject);
             setStatus(c.status, subject);
         }
     }
 
     public String getSubject() {
-        return subject;
+        return RosterHelper.getInstance().getSubject(getUserId());
     }
 
     public XmppContact.SubContact getContact(String nick) {

@@ -27,6 +27,7 @@ import ru.sawim.view.StatusesView;
 import ru.sawim.view.XStatusesView;
 import ru.sawim.view.menu.MyMenu;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
@@ -687,6 +688,37 @@ public final class RosterHelper {
                 return true;
         }
         return false;
+    }
+
+    private HashMap<String, Long> lastMessagesTimeMap = new HashMap<String, Long>();
+    private HashMap<String, String> subjectsMap = new HashMap<String, String>();
+    private HashMap<String, Boolean> isPresencesFlagsMap = new HashMap<String, Boolean>();
+
+    public boolean isPresence(String id) {
+        if (isPresencesFlagsMap.containsKey(id)) return isPresencesFlagsMap.get(id);
+        else return false;
+    }
+
+    public void setPresencesFlag(String id, boolean flag) {
+        isPresencesFlagsMap.put(id, flag);
+    }
+
+    public String getSubject(String id) {
+        if (subjectsMap.containsKey(id)) return subjectsMap.get(id);
+        else return null;
+    }
+
+    public void setSubject(String id, String subject) {
+        subjectsMap.put(id, subject);
+    }
+
+    public long getLastMessageTime(String id) {
+        if (lastMessagesTimeMap.containsKey(id)) return lastMessagesTimeMap.get(id);
+        else return 0;
+    }
+
+    public void setLastMessageTime(String id, long time) {
+        lastMessagesTimeMap.put(id, time);
     }
 
     private OnUpdateChat updateChatListener;

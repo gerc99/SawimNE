@@ -366,7 +366,7 @@ public final class Chat {
         }
         addMessage(mData);
         if (contact.isConference() && mData.isMessage())
-            contact.setLastMessageTime(mData.getTime());
+            RosterHelper.getInstance().setLastMessageTime(contact.getUserId(), mData.getTime());
     }
 
     private void addMessage(MessData mData) {

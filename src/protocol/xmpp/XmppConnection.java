@@ -2383,7 +2383,7 @@ public final class XmppConnection extends ClientConnection {
             if (!StringConvertor.isEmpty(password)) {
                 xNode += "<password>" + Util.xmlEscape(password) + "</password>";
             }
-            long time = conf.getLastMessageTime();
+            long time = RosterHelper.getInstance().getLastMessageTime(conf.getUserId());
             if (0 != time)
                 xNode += "<history maxstanzas='20' seconds='" + (SawimApplication.getCurrentGmtTime() - time) + "'/>";
 
