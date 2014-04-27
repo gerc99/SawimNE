@@ -81,7 +81,6 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
     private ChatListsView chatListsView;
     private ChatInputBarView chatInputBarView;
     private ChatViewRoot chatViewLayout;
-    private SmileysPopup smileysPopup;
     private MucUsersView mucUsersView;
     private ActionBarDrawerToggle drawerToggle;
     private DrawerLayout drawerLayout;
@@ -118,7 +117,6 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         chatListsView = new ChatListsView(activity, SawimApplication.isManyPane(), chatListView, nickList);
         chatInputBarView = new ChatInputBarView(activity, menuButton, smileButton, messageEditor, sendButton);
         chatViewLayout = new ChatViewRoot(activity, chatListsView, chatInputBarView);
-        smileysPopup = new SmileysPopup(activity, chatViewLayout, messageEditor);
         drawerLayout = new DrawerLayout(activity);
 
         ((BaseActivity) activity).setConfigurationChanged(new BaseActivity.OnConfigurationChanged() {
@@ -161,6 +159,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceStateLog) {
+        final BaseActivity activity = (BaseActivity) getActivity();
         updateChatIcon();
         if (drawerLayout != null && drawerLayout.getParent() != null) {
             ((ViewGroup) drawerLayout.getParent()).removeView(drawerLayout);
@@ -169,7 +168,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
             ((ViewGroup) chatViewLayout.getParent()).removeView(chatViewLayout);
         }
         if (Scheme.isSystemBackground()) {
-            chatViewLayout.setBackgroundResource(Util.getSystemBackground(getActivity()));
+            chatViewLayout.setBackgroundResource(Util.getSystemBackground(activity));
         } else {
             chatViewLayout.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
         }
@@ -178,20 +177,20 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         chatListsView.update();
         chatInputBarView.setImageButtons(menuButton, smileButton, sendButton);
         if (!SawimApplication.isManyPane()) {
-            DrawerLayout.LayoutParams nickListLP = new DrawerLayout.LayoutParams(Util.dipToPixels(getActivity(), 240), DrawerLayout.LayoutParams.MATCH_PARENT);
+            DrawerLayout.LayoutParams nickListLP = new DrawerLayout.LayoutParams(Util.dipToPixels(activity, 240), DrawerLayout.LayoutParams.MATCH_PARENT);
             DrawerLayout.LayoutParams drawerLayoutLP = new DrawerLayout.LayoutParams(DrawerLayout.LayoutParams.MATCH_PARENT, DrawerLayout.LayoutParams.MATCH_PARENT);
             drawerLayout.setDrawerShadow(R.drawable.drawer_shadow, Gravity.START);
             drawerLayout.setScrimColor(Scheme.isBlack() ? 0x55FFFFFF : 0x99000000);
             nickListLP.gravity = Gravity.START;
             drawerLayout.setLayoutParams(drawerLayoutLP);
-            nickList.setBackgroundResource(Util.getSystemBackground(getActivity()));
+            nickList.setBackgroundResource(Util.getSystemBackground(activity));
             nickList.setLayoutParams(nickListLP);
             if (nickList.getParent() != null) {
                 ((ViewGroup) nickList.getParent()).removeView(nickList);
             }
             drawerLayout.addView(chatViewLayout);
             drawerLayout.addView(nickList);
-            drawerToggle = new ActionBarDrawerToggle(getActivity(), drawerLayout, R.drawable.ic_drawer, 0, 0) {
+            drawerToggle = new ActionBarDrawerToggle(activity, drawerLayout, R.drawable.ic_drawer, 0, 0) {
                 public void onDrawerClosed(View view) {
                 }
 
@@ -211,23 +210,22 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
                     new DialogFragment() {
                         @Override
                         public Dialog onCreateDialog(Bundle savedInstanceState) {
-                            final Context context = getActivity();
-                            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
+                            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity);
                             dialogBuilder.setInverseBackgroundForced(Util.isNeedToInverseDialogBackground());
                             dialogBuilder.setMessage(JLocale.getString(R.string.grant) + " " + contact.getName() + "?");
                             dialogBuilder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    new ContactMenu(protocol, contact).doAction(((BaseActivity) getActivity()), ContactMenu.USER_MENU_GRANT_AUTH);
-                                    getActivity().supportInvalidateOptionsMenu();
+                                    new ContactMenu(protocol, contact).doAction(activity, ContactMenu.USER_MENU_GRANT_AUTH);
+                                    activity.supportInvalidateOptionsMenu();
                                     updateRoster();
                                 }
                             });
                             dialogBuilder.setNegativeButton(R.string.deny, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    new ContactMenu(protocol, contact).doAction(((BaseActivity) getActivity()), ContactMenu.USER_MENU_DENY_AUTH);
-                                    getActivity().supportInvalidateOptionsMenu();
+                                    new ContactMenu(protocol, contact).doAction(activity, ContactMenu.USER_MENU_DENY_AUTH);
+                                    activity.supportInvalidateOptionsMenu();
                                     updateRoster();
                                 }
                             });
@@ -247,7 +245,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
                 @Override
                 public void onClick(View view) {
                     if (contact == null || chat == null) return;
-                    final MyMenu menu = new MyMenu(getActivity());
+                    final MyMenu menu = new MyMenu(activity);
                     boolean accessible = chat.getWritable() && (contact.isSingleUserContact() || contact.isOnline());
                     menu.add(getString(adapter.isMultiQuote() ?
                             R.string.disable_multi_citation : R.string.include_multi_citation), ContactMenu.MENU_MULTI_CITATION);
@@ -270,7 +268,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
                     if (!contact.isSingleUserContact() && contact.isOnline()) {
                         menu.add(R.string.leave_chat, ContactMenu.CONFERENCE_DISCONNECT);
                     }
-                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    AlertDialog.Builder builder = new AlertDialog.Builder(activity);
                     builder.setCancelable(true);
                     builder.setTitle(null);
                     builder.setAdapter(menu, new DialogInterface.OnClickListener() {
@@ -287,7 +285,8 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         smileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                smileysPopup.show();
+                hideKeyboard();
+                new SmilesView().show(activity.getSupportFragmentManager(), "show-smiles");
             }
         });
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
@@ -327,12 +326,6 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         messageEditor.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View view, int i, KeyEvent keyEvent) {
-                if (i == KeyEvent.KEYCODE_BACK && smileysPopup != null && smileysPopup.isShown()) {
-                    if (keyEvent.getAction() == KeyEvent.ACTION_UP) {
-                        smileysPopup.hide();
-                    }
-                    return true;
-                }
                 if (sendByEnter) {
                     if (keyEvent.getAction() == KeyEvent.ACTION_DOWN && i == KeyEvent.KEYCODE_ENTER) {
                         send();
@@ -397,7 +390,6 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         chatListsView = null;
         chatInputBarView = null;
         chatViewLayout = null;
-        smileysPopup = null;
         drawerLayout = null;
         adapter = null;
         mucUsersView = null;
@@ -415,9 +407,6 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
                 drawerLayout.closeDrawer(nickList);
                 return true;
             }
-        }
-        if (smileysPopup != null) {
-            return smileysPopup.hide();
         }
         return false;
     }
