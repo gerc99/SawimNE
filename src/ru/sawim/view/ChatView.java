@@ -285,7 +285,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         smileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                hideKeyboard();
+                messageEditor.clearFocus();
                 new SmilesView().show(activity.getSupportFragmentManager(), "show-smiles");
             }
         });
