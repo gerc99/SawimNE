@@ -717,7 +717,7 @@ public final class XmppConnection extends ClientConnection {
                     rosterLoaded = true;
                     TemporaryRoster roster = new TemporaryRoster(xmpp);
                     xmpp.setContactListStub();
-
+                    int contactsCount = iqQuery.childrenCount();
                     while (0 < iqQuery.childrenCount()) {
                         XmlNode itemNode = iqQuery.popChildNode();
                         String jid = itemNode.getAttribute(XmlNode.S_JID);
@@ -733,6 +733,9 @@ public final class XmppConnection extends ClientConnection {
                         String subscription = itemNode.getAttribute("subscription");
                         contact.setBooleanValue(Contact.CONTACT_NO_AUTH, isNoAutorized(subscription));
                         roster.addContact(contact);
+                        if (contactsCount == roster.mergeContacts().size()) {
+                            getProtocol().safeSave();
+                        }
                     }
                     setProgress(70);
                     if (!isConnected()) {
@@ -1355,6 +1358,8 @@ public final class XmppConnection extends ClientConnection {
             updateConfPrivate(conf, fromRes);
             if (RosterHelper.getInstance().getUpdateChatListener() != null)
                 RosterHelper.getInstance().getUpdateChatListener().updateMucList();
+            if (isSessionManagementEnabled())
+                getXmpp().safeSave();
         } else {
             if (!("unavailable").equals(type)) {
                 if ((XStatusInfo.XSTATUS_NONE == contact.getXStatusIndex())
@@ -1388,6 +1393,8 @@ public final class XmppConnection extends ClientConnection {
                 getXmpp().renameContact(contact, getNickFromNode(x));
             }
             getXmpp().ui_changeContactStatus(contact);
+            if (isSessionManagementEnabled())
+                getXmpp().safeSave();
         }
     }
 

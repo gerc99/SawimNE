@@ -45,10 +45,6 @@ abstract public class Protocol {
     private Vector autoGrand = new Vector();
     private Group notInListGroup;
 
-    private String getContactListRS() {
-        return rmsName;
-    }
-
     public abstract String getUserIdName();
 
     public final String getUserId() {
@@ -271,7 +267,7 @@ abstract public class Protocol {
             return;
         }
         try {
-            if (new Storage(getContactListRS()).exist()) {
+            if (new Storage(rmsName).exist()) {
                 load();
             }
         } catch (Exception e) {
@@ -293,7 +289,7 @@ abstract public class Protocol {
             return false;
         }
         synchronized (this) {
-            String storage = getContactListRS();
+            String storage = rmsName;
             try {
                 SawimApplication.getInstance().recordStoreManager.deleteRecordStore(storage);
             } catch (Exception e) {
@@ -315,22 +311,22 @@ abstract public class Protocol {
 
     private void load() throws Exception {
         Roster roster = new Roster();
-        RecordStoreImpl cl = SawimApplication.getInstance().recordStoreManager.openRecordStore(getContactListRS(), false);
-        if (cl == null) return;
+        RecordStoreImpl recordStore = SawimApplication.getInstance().recordStoreManager.openRecordStore(rmsName, true);
+        if (recordStore == null) return;
         try {
             byte[] buf;
             ByteArrayInputStream bais;
             DataInputStream dis;
-            buf = cl.getRecord(1);
+            buf = recordStore.getRecord(1);
             bais = new ByteArrayInputStream(buf);
             dis = new DataInputStream(bais);
             if (dis.readInt() != ROSTER_STORAGE_VERSION) {
                 throw new Exception();
             }
-            loadProtocolData(cl.getRecord(2));
-            for (int marker = 3; marker <= cl.getNumRecords(); ++marker) {
+            loadProtocolData(recordStore.getRecord(2));
+            for (int marker = 3; marker <= recordStore.getNumRecords(); ++marker) {
                 try {
-                    buf = cl.getRecord(marker);
+                    buf = recordStore.getRecord(marker);
                     if ((null == buf) || (0 == buf.length)) {
                         continue;
                     }
@@ -353,20 +349,17 @@ abstract public class Protocol {
             }
             DebugLog.memoryUsage("clload");
         } finally {
-            cl.closeRecordStore();
+            recordStore.closeRecordStore();
         }
         setRoster(roster, false);
     }
 
     private void save(RecordStoreImpl cl) throws Exception {
         if (cl == null) return;
-        ByteArrayOutputStream baos;
-        DataOutputStream dos;
-        byte[] buf;
-        baos = new ByteArrayOutputStream();
-        dos = new DataOutputStream(baos);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        DataOutputStream dos = new DataOutputStream(baos);
         dos.writeInt(ROSTER_STORAGE_VERSION);
-        buf = baos.toByteArray();
+        byte[] buf = baos.toByteArray();
         cl.addRecord(buf, 0, buf.length);
         baos.reset();
         buf = saveProtocolData();
