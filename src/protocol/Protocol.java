@@ -316,6 +316,7 @@ abstract public class Protocol {
     private void load() throws Exception {
         Roster roster = new Roster();
         RecordStoreImpl cl = SawimApplication.getInstance().recordStoreManager.openRecordStore(getContactListRS(), false);
+        if (cl == null) return;
         try {
             byte[] buf;
             ByteArrayInputStream bais;
@@ -358,6 +359,7 @@ abstract public class Protocol {
     }
 
     private void save(RecordStoreImpl cl) throws Exception {
+        if (cl == null) return;
         ByteArrayOutputStream baos;
         DataOutputStream dos;
         byte[] buf;

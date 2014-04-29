@@ -78,7 +78,6 @@ public final class Storage {
     }
 
     public void initRecords(int count) throws Exception {
-
         if (rs.getNumRecords() < count) {
             if ((1 < count) && (0 == rs.getNumRecords())) {
                 byte[] version = StringConvertor.stringToByteArrayUtf8(SawimApplication.VERSION);

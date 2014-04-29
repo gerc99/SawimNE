@@ -370,8 +370,16 @@ public final class Chat {
     }
 
     private void addMessage(MessData mData) {
-        if (!messData.contains(mData))
+        if (!hasMessage(mData))
             messData.add(mData);
+    }
+
+    private boolean hasMessage(MessData mData) {
+        for (int i = 0; i < getMessData().size(); ++i) {
+            if (getMessageDataByIndex(i).getTime() == mData.getTime())
+                return true;
+        }
+        return false;
     }
 
     public void addPresence(SystemNotice message) {

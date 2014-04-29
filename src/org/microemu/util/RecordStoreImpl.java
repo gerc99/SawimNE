@@ -55,8 +55,6 @@ public class RecordStoreImpl {
 
     private transient AndroidRecordStoreManager recordStoreManager;
 
-    private transient Vector recordListeners = new Vector();
-
 
     public RecordStoreImpl(AndroidRecordStoreManager recordStoreManager, String recordStoreName) {
         this.recordStoreManager = recordStoreManager;
@@ -77,7 +75,7 @@ public class RecordStoreImpl {
             throws IOException {
         for (int i = 0; i < fileIdentifier.length; i++) {
             if (dis.read() != fileIdentifier[i]) {
-                throw new IOException();
+                return 0;
             }
         }
         dis.read(); // Major version number
@@ -150,9 +148,6 @@ public class RecordStoreImpl {
         if (!open) {
             return;
         }
-        if (recordListeners != null) {
-            recordListeners.removeAllElements();
-        }
         records.clear();
         open = false;
     }
@@ -164,15 +159,13 @@ public class RecordStoreImpl {
         return recordStoreName;
     }
 
-    public int getVersion()
-            throws Exception {
+    public int getVersion() {
         synchronized (this) {
             return version;
         }
     }
 
-    public int getNumRecords()
-            throws Exception {
+    public int getNumRecords() {
         return size;
     }
 
@@ -182,7 +175,7 @@ public class RecordStoreImpl {
         }
         // TODO include size overhead such as the data structures used to hold the state of the record store
         // Preload all records
-        enumerateRecords(false);
+        rebuild();
 
         int result = 0;
         Enumeration keys = records.keys();
@@ -207,43 +200,31 @@ public class RecordStoreImpl {
         return recordStoreManager.getSizeAvailable(this);
     }
 
-    public long getLastModified()
-            throws Exception {
+    public long getLastModified() {
         synchronized (this) {
             return lastModified;
         }
     }
 
-    public void addRecordListener(RecordListener listener) {
-        if (!recordListeners.contains(listener)) {
-            recordListeners.addElement(listener);
-        }
-    }
-
-    public void removeRecordListener(RecordListener listener) {
-        recordListeners.removeElement(listener);
-    }
-
     public int getNextRecordID() {
         // lastRecordId needs to hold correct number, all records have to be preloaded
-        enumerateRecords(false);
+        rebuild();
 
         synchronized (this) {
             return lastRecordId + 1;
         }
     }
 
-    public int addRecord(byte[] data, int offset, int numBytes)
-            throws Exception {
+    public int addRecord(byte[] data, int offset, int numBytes) {
         if (data == null && numBytes > 0) {
-            throw new NullPointerException();
+            return -1;
         }
         if (numBytes > recordStoreManager.getSizeAvailable(this)) {
-            throw new Exception();
+            return -1;
         }
 
         // lastRecordId needs to hold correct number, all records have to be preloaded
-        enumerateRecords(false);
+        rebuild();
 
         byte[] recordData = new byte[numBytes];
         if (data != null) {
@@ -259,15 +240,19 @@ public class RecordStoreImpl {
             size++;
         }
 
-        recordStoreManager.saveRecord(this, nextRecordID);
+        try {
+            recordStoreManager.saveRecord(this, nextRecordID);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return -1;
+        }
 
-        fireRecordListener(RecordListener.RECORD_ADD, nextRecordID);
+        rebuild();
 
         return nextRecordID;
     }
 
-    public void deleteRecord(int recordId)
-            throws Exception {
+    public void deleteRecord(int recordId) {
         if (!open) {
             return;
         }
@@ -281,9 +266,13 @@ public class RecordStoreImpl {
             size--;
         }
 
-        recordStoreManager.deleteRecord(this, recordId);
+        try {
+            recordStoreManager.deleteRecord(this, recordId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-        fireRecordListener(RecordListener.RECORD_DELETE, recordId);
+        rebuild();
     }
 
     public int getRecordSize(int recordId) {
@@ -300,21 +289,17 @@ public class RecordStoreImpl {
         }
     }
 
-    public int getRecord(int recordId, byte[] buffer, int offset)
-            throws Exception {
+    public int getRecord(int recordId, byte[] buffer, int offset) {
         int recordSize;
         synchronized (this) {
             recordSize = getRecordSize(recordId);
             System.arraycopy(records.get(new Integer(recordId)), 0, buffer, offset, recordSize);
         }
 
-        fireRecordListener(RecordListener.RECORD_READ, recordId);
-
         return recordSize;
     }
 
-    public byte[] getRecord(int recordId)
-            throws Exception {
+    public byte[] getRecord(int recordId) {
         byte[] data;
         synchronized (this) {
             data = new byte[getRecordSize(recordId)];
@@ -323,15 +308,14 @@ public class RecordStoreImpl {
         return data.length < 1 ? null : data;
     }
 
-    public void setRecord(int recordId, byte[] newData, int offset, int numBytes)
-            throws Exception {
+    public void setRecord(int recordId, byte[] newData, int offset, int numBytes) {
         if (!open) {
             return;
         }
 
         // FIXME fixit
         if (numBytes > recordStoreManager.getSizeAvailable(this)) {
-            throw new Exception();
+            return;
         }
         byte[] recordData = new byte[numBytes];
         System.arraycopy(newData, offset, recordData, 0, numBytes);
@@ -342,15 +326,12 @@ public class RecordStoreImpl {
             version++;
             lastModified = System.currentTimeMillis();
         }
-        recordStoreManager.saveRecord(this, recordId);
-        fireRecordListener(RecordListener.RECORD_CHANGE, recordId);
-    }
-
-    public RecordEnumerationImpl enumerateRecords(boolean keepUpdated) {
-        if (!open) {
-            return null;
+        try {
+            recordStoreManager.saveRecord(this, recordId);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        return new RecordEnumerationImpl(this, keepUpdated);
+        rebuild();
     }
 
     public int getHeaderSize() {
@@ -362,21 +343,101 @@ public class RecordStoreImpl {
         return 4 + 4;
     }
 
-    private void fireRecordListener(int type, int recordId) {
-        if (recordListeners != null) {
-            for (Enumeration e = recordListeners.elements(); e.hasMoreElements(); ) {
-                RecordListener l = (RecordListener) e.nextElement();
-                switch (type) {
-                    case RecordListener.RECORD_ADD:
-                        l.recordAdded(this, recordId);
-                        break;
-                    case RecordListener.RECORD_CHANGE:
-                        l.recordChanged(this, recordId);
-                        break;
-                    case RecordListener.RECORD_DELETE:
-                        l.recordDeleted(this, recordId);
+    private Vector enumerationRecords = new Vector();
+    private int currentRecord;
+
+    public int numRecords() {
+        return enumerationRecords.size();
+    }
+
+    public byte[] nextRecord()
+            throws Exception {
+        if (!isOpen() || currentRecord >= numRecords()) {
+            return null;
+        }
+        byte[] result = ((EnumerationRecord) enumerationRecords.elementAt(currentRecord)).value;
+        currentRecord++;
+        return result;
+    }
+
+    public int nextRecordId()
+            throws Exception {
+        if (currentRecord >= numRecords()) {
+            return -1;
+        }
+        int result = ((EnumerationRecord) enumerationRecords.elementAt(currentRecord)).recordId;
+        currentRecord++;
+
+        return result;
+    }
+
+    public byte[] previousRecord()
+            throws Exception {
+        if (!isOpen() || currentRecord < 0) {
+            return null;
+        }
+        currentRecord--;
+        byte[] result = ((EnumerationRecord) enumerationRecords.elementAt(currentRecord)).value;
+        return result;
+    }
+
+    public int previousRecordId()
+            throws Exception {
+        if (currentRecord < 0) {
+            return -1;
+        }
+
+        currentRecord--;
+        int result = ((EnumerationRecord) enumerationRecords.elementAt(currentRecord)).recordId;
+
+        return result;
+    }
+
+    public boolean hasNextElement() {
+        return currentRecord != numRecords();
+    }
+
+    public boolean hasPreviousElement() {
+        return currentRecord != 0;
+    }
+
+    public void reset() {
+        currentRecord = 0;
+    }
+
+    public void rebuild() {
+        enumerationRecords.removeAllElements();
+
+        //
+        // filter
+        //
+        synchronized (this) {
+            try {
+                int recordId = 1;
+                int i = 0;
+                while (i < getNumRecords()) {
+                    try {
+                        byte[] data = getRecord(recordId);
+                        i++;
+                        enumerationRecords.add(new EnumerationRecord(recordId, data));
+                    } catch (Exception e) {
+                    }
+                    recordId++;
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
+        }
+    }
+
+    class EnumerationRecord {
+        int recordId;
+
+        byte[] value;
+
+        EnumerationRecord(int recordId, byte[] value) {
+            this.recordId = recordId;
+            this.value = value;
         }
     }
 }
