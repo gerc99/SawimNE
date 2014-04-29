@@ -112,6 +112,7 @@ public final class Xmpp extends Protocol implements FormListener {
     }
 
     public void rejoin() {
+        if (isStreamManagementSupported()) return;
         for (int i = 0; i < rejoinList.size(); ++i) {
             String jid = (String) rejoinList.elementAt(i);
             XmppServiceContact conf = (XmppServiceContact) getItemByUIN(jid);

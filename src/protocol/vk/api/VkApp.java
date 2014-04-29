@@ -1,6 +1,8 @@
 package protocol.vk.api;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -9,6 +11,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
+import ru.sawim.activities.BaseActivity;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -57,12 +60,13 @@ public class VkApp {
     }
 
     public void showLoginDialog(String email, String password) {
-        new WebClient().oauth(OAUTH_AUTHORIZE_URL, email, password, _listener);
-        /*new Handler(Looper.getMainLooper()).post(new Runnable() {
+        //new WebClient().oauth(OAUTH_AUTHORIZE_URL, email, password, _listener);
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
             public void run() {
-                new VkDialog(BaseActivity.getCurrentActivity(), OAUTH_AUTHORIZE_URL, _listener).show();
+                if (BaseActivity.getCurrentActivity() != null)
+                    new VkDialog(BaseActivity.getCurrentActivity(), OAUTH_AUTHORIZE_URL, _listener).show();
             }
-        });*/
+        });
 
     }
 
@@ -112,6 +116,7 @@ public class VkApp {
 
             //Log.d(Constants.DEBUG_TAG,"response text="+responseText);
         } catch (Exception ioex) {
+            _vkSess.resetAccessToken();
             ru.sawim.modules.DebugLog.panic("uri" + uri, ioex);
             return null;
         }

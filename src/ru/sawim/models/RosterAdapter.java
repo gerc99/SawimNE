@@ -201,6 +201,7 @@ public class RosterAdapter extends BaseAdapter {
     }
 
     void populateFromContact(RosterItemView rosterItemView, RosterHelper roster, Protocol p, Contact item) {
+        if (p == null || item == null) return;
         rosterItemView.itemNameColor = Scheme.getColor(item.getTextTheme());
         rosterItemView.itemNameFont = item.hasChat() ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT;
         rosterItemView.itemName = (item.subcontactsS() == 0) ?
@@ -268,13 +269,13 @@ public class RosterAdapter extends BaseAdapter {
     public View getView(int i, View convertView, final ViewGroup viewGroup) {
         final Object o = getItem(i);
         int itemViewType = getItemViewType(i);
-        if (o != null)
-            if (type == RosterHelper.ACTIVE_CONTACTS) {
-                if (convertView == null) {
-                    convertView = new RosterItemView(SawimApplication.getInstance().getBaseContext());
-                }
-                RosterItemView rosterItemView = (RosterItemView) convertView;
-                rosterItemView.setNull();
+        if (type == RosterHelper.ACTIVE_CONTACTS) {
+            if (convertView == null) {
+                convertView = new RosterItemView(SawimApplication.getInstance().getBaseContext());
+            }
+            RosterItemView rosterItemView = (RosterItemView) convertView;
+            rosterItemView.setNull();
+            if (o != null) {
                 if (itemViewType == ITEM_GROUP) {
                     rosterItemView.addLayer((String) o);
                 }
@@ -283,36 +284,38 @@ public class RosterAdapter extends BaseAdapter {
                     populateFromContact(rosterItemView, RosterHelper.getInstance(), chat.getProtocol(), chat.getContact());
                 }
                 setShowDivider(rosterItemView, getItem(i + 1) instanceof Chat);
-                rosterItemView.repaint();
-            } else {
-                final TreeNode treeNode = (TreeNode) o;
-                if (itemViewType == ITEM_PROTOCOL) {
-                    if (convertView == null) {
-                        Context context = SawimApplication.getInstance().getBaseContext();
-                        convertView = new LinearLayout(context);
-                        RosterItemView rosterItemView = new RosterItemView(context);
-                        MyImageButton imageButton = new MyImageButton(context);
-                        ProgressBar progressBar = new ProgressBar(context, null, android.R.attr.progressBarStyleInverse);
-                        progressBar.setMax(100);
-                        LinearLayout.LayoutParams buttonLinearLayout = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-                        buttonLinearLayout.gravity = Gravity.RIGHT;
-                        imageButton.setLayoutParams(buttonLinearLayout);
-                        LinearLayout.LayoutParams rosterLinearLayout = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-                        rosterLinearLayout.gravity = Gravity.LEFT;
-                        rosterLinearLayout.weight = 1;
-                        convertView.setBackgroundColor(Scheme.getColor(Scheme.THEME_ITEM_SELECTED));
-                        rosterItemView.setLayoutParams(rosterLinearLayout);
-                        imageButton.setImageDrawable(SawimResources.ic_menu);
-                        ((ViewGroup)convertView).setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
-                        ((ViewGroup)convertView).addView(rosterItemView);
-                        ((ViewGroup)convertView).addView(progressBar);
-                        ((ViewGroup)convertView).addView(imageButton);
-                    }
-                    RosterItemView rosterItemView = (RosterItemView) ((ViewGroup) convertView).getChildAt(0);
-                    ProgressBar progressBar = (ProgressBar) ((ViewGroup) convertView).getChildAt(1);
-                    MyImageButton imageButton = (MyImageButton) ((ViewGroup) convertView).getChildAt(2);
+            }
+            rosterItemView.repaint();
+        } else {
+            if (itemViewType == ITEM_PROTOCOL) {
+                if (convertView == null) {
+                    Context context = SawimApplication.getInstance().getBaseContext();
+                    convertView = new LinearLayout(context);
+                    RosterItemView rosterItemView = new RosterItemView(context);
+                    MyImageButton imageButton = new MyImageButton(context);
+                    ProgressBar progressBar = new ProgressBar(context, null, android.R.attr.progressBarStyleInverse);
+                    progressBar.setMax(100);
+                    LinearLayout.LayoutParams buttonLinearLayout = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+                    buttonLinearLayout.gravity = Gravity.RIGHT;
+                    imageButton.setLayoutParams(buttonLinearLayout);
+                    LinearLayout.LayoutParams rosterLinearLayout = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+                    rosterLinearLayout.gravity = Gravity.LEFT;
+                    rosterLinearLayout.weight = 1;
+                    convertView.setBackgroundColor(Scheme.getColor(Scheme.THEME_ITEM_SELECTED));
+                    rosterItemView.setLayoutParams(rosterLinearLayout);
+                    imageButton.setImageDrawable(SawimResources.ic_menu);
+                    ((ViewGroup)convertView).setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
+                    ((ViewGroup)convertView).addView(rosterItemView);
+                    ((ViewGroup)convertView).addView(progressBar);
+                    ((ViewGroup)convertView).addView(imageButton);
+                }
+                RosterItemView rosterItemView = (RosterItemView) ((ViewGroup) convertView).getChildAt(0);
+                ProgressBar progressBar = (ProgressBar) ((ViewGroup) convertView).getChildAt(1);
+                MyImageButton imageButton = (MyImageButton) ((ViewGroup) convertView).getChildAt(2);
+                rosterItemView.setNull();
+                if (o != null) {
+                    final TreeNode treeNode = (TreeNode) o;
                     progressBar.setVisibility(((ProtocolBranch) treeNode).getProtocol().getConnectingProgress() != 100 ? View.VISIBLE : View.GONE);
-                    rosterItemView.setNull();
                     imageButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -321,28 +324,35 @@ public class RosterAdapter extends BaseAdapter {
                     });
                     populateFromProtocol(rosterItemView, (ProtocolBranch) treeNode);
                     setShowDivider(rosterItemView, true);
-                    rosterItemView.repaint();
-                    return convertView;
-                } else if (itemViewType == ITEM_GROUP) {
-                    if (convertView == null) {
-                        convertView = new RosterItemView(SawimApplication.getInstance().getBaseContext());
-                    }
-                    RosterItemView rosterItemView = (RosterItemView) convertView;
-                    rosterItemView.setNull();
+                }
+                rosterItemView.repaint();
+                return convertView;
+            } else if (itemViewType == ITEM_GROUP) {
+                if (convertView == null) {
+                    convertView = new RosterItemView(SawimApplication.getInstance().getBaseContext());
+                }
+                RosterItemView rosterItemView = (RosterItemView) convertView;
+                rosterItemView.setNull();
+                if (o != null) {
+                    final TreeNode treeNode = (TreeNode) o;
                     populateFromGroup(rosterItemView, (Group) treeNode);
                     setShowDivider(rosterItemView, true);
-                    rosterItemView.repaint();
-                } else if (itemViewType == ITEM_CONTACT) {
-                    if (convertView == null) {
-                        convertView = new RosterItemView(SawimApplication.getInstance().getBaseContext());
-                    }
-                    RosterItemView rosterItemView = (RosterItemView) convertView;
-                    rosterItemView.setNull();
+                }
+                rosterItemView.repaint();
+            } else if (itemViewType == ITEM_CONTACT) {
+                if (convertView == null) {
+                    convertView = new RosterItemView(SawimApplication.getInstance().getBaseContext());
+                }
+                RosterItemView rosterItemView = (RosterItemView) convertView;
+                rosterItemView.setNull();
+                if (o != null) {
+                    final TreeNode treeNode = (TreeNode) o;
                     populateFromContact(rosterItemView, RosterHelper.getInstance(), ((Contact) treeNode).getProtocol(), (Contact) treeNode);
                     setShowDivider(rosterItemView, true);
-                    rosterItemView.repaint();
                 }
+                rosterItemView.repaint();
             }
+        }
         return convertView;
     }
 }
