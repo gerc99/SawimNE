@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.*;
 import android.util.Log;
-import com.google.android.gms.gcm.GoogleCloudMessaging;
 import protocol.Protocol;
 import ru.sawim.Options;
 import ru.sawim.R;
@@ -13,11 +12,9 @@ import ru.sawim.SawimNotification;
 import ru.sawim.chat.ChatHistory;
 import ru.sawim.roster.RosterHelper;
 
-import java.io.IOException;
-
 public class SawimService extends Service {
 
-    private static final String LOG_TAG = "SawimService";
+    private static final String LOG_TAG = SawimService.class.getSimpleName();
     private final Messenger messenger = new Messenger(new IncomingHandler());
     private PowerManager.WakeLock wakeLock;
 
@@ -30,7 +27,6 @@ public class SawimService extends Service {
     public void onCreate() {
         super.onCreate();
         Log.i(LOG_TAG, "onStart();");
-        startForeground(R.string.app_name, SawimNotification.get(this));
 
         new Thread(new Runnable() {
             @Override

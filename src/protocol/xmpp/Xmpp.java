@@ -923,7 +923,7 @@ public final class Xmpp extends Protocol implements FormListener {
         }
     }
 
-    protected boolean isStreamManagementSupported() {
+    public boolean isStreamManagementSupported() {
         return Options.getBoolean(Options.OPTION_PUSH) && SawimApplication.getInstance().getXmppSession()
                 .isStreamManagementSupported(getUserId() + '/' + getResource());
     }

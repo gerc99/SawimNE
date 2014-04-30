@@ -78,8 +78,8 @@ public class SawimApplication extends Application {
         startService();
         networkStateReceiver.updateNetworkState(this);
 
-        startApp();
         xmppSession = new XmppSession();
+        startApp();
         TextFormatter.init();
     }
 

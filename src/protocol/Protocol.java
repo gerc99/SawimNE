@@ -1101,7 +1101,7 @@ abstract public class Protocol {
         return chat;
     }
 
-    protected boolean isStreamManagementSupported() {
+    public boolean isStreamManagementSupported() {
         return false;
     }
 }
