@@ -12,6 +12,7 @@ import ru.sawim.chat.message.PlainMessage;
 import ru.sawim.chat.message.SystemNotice;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
+import ru.sawim.forms.PrivateStatusForm;
 import ru.sawim.io.Storage;
 import ru.sawim.modules.*;
 import ru.sawim.roster.ProtocolBranch;
@@ -289,14 +290,13 @@ abstract public class Protocol {
             return false;
         }
         synchronized (this) {
-            String storage = rmsName;
             try {
-                SawimApplication.getInstance().recordStoreManager.deleteRecordStore(storage);
+                SawimApplication.getInstance().recordStoreManager.deleteRecordStore(rmsName);
             } catch (Exception e) {
             }
             RecordStoreImpl cl = null;
             try {
-                cl = SawimApplication.getInstance().recordStoreManager.openRecordStore(storage, true);
+                cl = SawimApplication.getInstance().recordStoreManager.openRecordStore(rmsName, true);
                 save(cl);
             } catch (Exception e) {
                 DebugLog.panic("roster save", e);

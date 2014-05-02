@@ -24,6 +24,7 @@ import ru.sawim.text.TextFormatter;
 
 import java.io.InputStream;
 import java.util.List;
+import java.util.TimeZone;
 
 /**
  * Created with IntelliJ IDEA.
@@ -78,8 +79,30 @@ public class SawimApplication extends Application {
         startService();
         networkStateReceiver.updateNetworkState(this);
 
+        instance.paused = false;
+        ru.sawim.config.HomeDirectory.init();
+        Options.init();
+        Scheme.load();
+        Scheme.setColorScheme(Options.getInt(Options.OPTION_COLOR_SCHEME));
+        updateOptions();
+        Updater.startUIUpdater();
+
         xmppSession = new XmppSession();
-        startApp();
+        try {
+            Notify.getSound().initSounds();
+            gc();
+            Emotions.instance.load();
+            Answerer.getInstance().load();
+            gc();
+
+            Options.loadAccounts();
+            RosterHelper.getInstance().initAccounts();
+            RosterHelper.getInstance().loadAccounts();
+        } catch (Exception e) {
+            DebugLog.panic("init", e);
+            DebugLog.instance.activate();
+        }
+        DebugLog.startTests();
         TextFormatter.init();
     }
 
@@ -140,32 +163,6 @@ public class SawimApplication extends Application {
             version = "unknown";
         }
         return version;
-    }
-
-    private void startApp() {
-        instance.paused = false;
-        ru.sawim.config.HomeDirectory.init();
-        Options.loadOptions();
-        new ru.sawim.config.Options().load();
-        Scheme.load();
-        Scheme.setColorScheme(Options.getInt(Options.OPTION_COLOR_SCHEME));
-        updateOptions();
-        Updater.startUIUpdater();
-        try {
-            Notify.getSound().initSounds();
-            gc();
-            Emotions.instance.load();
-            Answerer.getInstance().load();
-            gc();
-
-            Options.loadAccounts();
-            RosterHelper.getInstance().initAccounts();
-            RosterHelper.getInstance().loadAccounts();
-        } catch (Exception e) {
-            DebugLog.panic("init", e);
-            DebugLog.instance.activate();
-        }
-        DebugLog.startTests();
     }
 
     public static void updateOptions() {

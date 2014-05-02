@@ -734,7 +734,7 @@ public final class XmppConnection extends ClientConnection {
                         contact.setBooleanValue(Contact.CONTACT_NO_AUTH, isNoAutorized(subscription));
                         roster.addContact(contact);
                         if (contactsCount == roster.mergeContacts().size()) {
-                            getProtocol().safeSave();
+                            //getProtocol().safeSave();
                         }
                     }
                     setProgress(70);
@@ -1358,8 +1358,8 @@ public final class XmppConnection extends ClientConnection {
             updateConfPrivate(conf, fromRes);
             if (RosterHelper.getInstance().getUpdateChatListener() != null)
                 RosterHelper.getInstance().getUpdateChatListener().updateMucList();
-            if (isSessionManagementEnabled())
-                getXmpp().safeSave();
+            //if (isSessionManagementEnabled())
+            //    getXmpp().safeSave();
         } else {
             if (!("unavailable").equals(type)) {
                 if ((XStatusInfo.XSTATUS_NONE == contact.getXStatusIndex())
@@ -1393,8 +1393,8 @@ public final class XmppConnection extends ClientConnection {
                 getXmpp().renameContact(contact, getNickFromNode(x));
             }
             getXmpp().ui_changeContactStatus(contact);
-            if (isSessionManagementEnabled())
-                getXmpp().safeSave();
+            //if (isSessionManagementEnabled())
+            //    getXmpp().safeSave();
         }
     }
 

@@ -13,5 +13,5 @@ package ru.sawim.models.form;
  * @author Vladimir Kryukov
  */
 public interface ControlStateListener {
-    void controlStateChanged(int id);
+    void controlStateChanged(String id);
 }

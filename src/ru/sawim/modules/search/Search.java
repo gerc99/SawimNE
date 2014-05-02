@@ -77,8 +77,8 @@ public final class Search implements FormListener, ControlStateListener {
         preferredNick = null;
     }
 
-    public void controlStateChanged(int id) {
-        if (PROFILE == id) {
+    public void controlStateChanged(String id) {
+        if (PROFILE == Integer.valueOf(id)) {
             String userid = searchForm.getTextFieldValue(USERID);
             if (StringConvertor.isEmpty(userid)) {
                 return;

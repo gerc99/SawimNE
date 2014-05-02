@@ -10,9 +10,6 @@ import ru.sawim.util.JLocale;
 
 public class OptionsForm implements ControlStateListener {
 
-    private Forms form;
-    private int currentOptionsForm;
-
     public static final int OPTIONS_NETWORK = 0;
     public static final int OPTIONS_INTERFACE = 1;
     public static final int OPTIONS_SIGNALING = 2;
@@ -20,59 +17,42 @@ public class OptionsForm implements ControlStateListener {
     public static final int OPTIONS_ANSWERER = 4;
     public static final int OPTIONS_PRO = 5;
 
-    private void setChecked(int lngStr, int optValue) {
+    private Forms form;
+    private int currentOptionsForm;
+
+    private void setChecked(int lngStr, String optValue, boolean defValue) {
         form.addCheckBox(optValue, lngStr, Options.getBoolean(optValue));
     }
 
-    private void setChecked_(int lngStr, int optValue) {
+    private void setChecked_(int lngStr, String optValue) {
         form.addCheckBox(optValue, lngStr, Options.getBoolean(optValue));
     }
 
-    private void createNotifyControls(int modeOpt, int title) {
-        form.addCheckBox(modeOpt, title, 0 < Options.getInt(modeOpt));
-    }
-
-    private void saveNotifyControls(int opt) {
+    private void saveNotifyControls(String opt) {
         Options.setInt(opt, form.getCheckBoxValue(opt) ? 2 : 0);
     }
 
-    private void createSelector(int cap, int[] items, int opt) {
-        form.addSelector(opt, cap, items, Options.getInt(opt));
-    }
-
-    private void loadOptionString(int opt, int label) {
-        form.addTextField(opt, label, Options.getString(opt));
-    }
-
-    private void saveOptionString(int opt) {
+    private void saveOptionString(String opt) {
         Options.setString(opt, form.getTextFieldValue(opt));
     }
 
-    private void saveOptionBoolean(int opt) {
+    private void saveOptionBoolean(String opt) {
         Options.setBoolean(opt, form.getCheckBoxValue(opt));
     }
 
-    private void saveOptionSelector(int opt) {
+    private void saveOptionSelector(String opt) {
         Options.setInt(opt, form.getSelectorValue(opt));
     }
 
-    private void loadOptionGauge(int opt, int label) {
-        form.addVolumeControl_(opt, label, Options.getInt(opt));
-    }
-
-    private void loadOptionFontGauge(int opt, int label) {
-        form.addFontVolumeControl(opt, label, Options.getInt(opt));
-    }
-
-    private void saveOptionGauge(int opt) {
+    private void saveOptionGauge(String opt) {
         Options.setInt(opt, form.getVolumeValue(opt));
     }
 
-    private void saveOptionFontGauge(int opt) {
+    private void saveOptionFontGauge(String opt) {
         Options.setInt(opt, form.getGaugeValue(opt));
     }
 
-    private void loadOptionInt(int opt, int label, String variants) {
+    private void loadOptionInt(String opt, int label, String variants) {
         String current = String.valueOf(Options.getInt(opt));
         String[] alts = Util.explode(variants, '|');
         int selected = 0;
@@ -84,24 +64,9 @@ public class OptionsForm implements ControlStateListener {
         form.addSelector(opt, label, alts, selected);
     }
 
-    private void saveOptionInt(int opt) {
+    private void saveOptionInt(String opt) {
         int val = Util.strToIntDef(form.getSelectorString(opt).trim(), 0);
         Options.setInt(opt, val);
-    }
-
-    private void loadOptionInt(int opt, int label, String[] variants, short[] alts) {
-        int current = Options.getInt(opt);
-        int selected = 0;
-        for (int i = 0; i < alts.length; ++i) {
-            if (alts[i] == current) {
-                selected = i;
-            }
-        }
-        form.addSelector(opt, label, variants, selected);
-    }
-
-    private void saveOptionInt(int opt, short[] alts) {
-        Options.setInt(opt, alts[form.getSelectorValue(opt)]);
     }
 
     private void save(int currentOptionsForm) {
@@ -114,27 +79,13 @@ public class OptionsForm implements ControlStateListener {
             case OPTIONS_INTERFACE:
                 String[] colorSchemes = Scheme.getSchemeNames();
                 if (1 < colorSchemes.length) {
-                    saveOptionSelector(Options.OPTION_COLOR_SCHEME);
-                    Scheme.setColorScheme(Options.getInt(Options.OPTION_COLOR_SCHEME));
+                    Scheme.setColorScheme(form.getSelectorValue(Options.OPTION_COLOR_SCHEME));
                 }
-                //if (JLocale.langAvailable.length > 1) {
-                //    int lang = form.getSelectorValue(Options.OPTION_UI_LANGUAGE);
-                //    Options.setString(Options.OPTION_UI_LANGUAGE, JLocale.langAvailable[lang]);
-                //}
-
                 saveOptionFontGauge(Options.OPTION_FONT_SCHEME);
-                //GraphicsEx.setFontScheme(Options.getInt(Options.OPTION_FONT_SCHEME));
-                //saveOptionInt(Options.OPTION_MIN_ITEM_SIZE, minItemMultipliers);
-                //Scheme.updateUI();
-
                 saveOptionBoolean(Options.OPTION_USER_GROUPS);
-                //saveOptionSelector(Options.OPTION_USER_ACCOUNTS);
-                //saveOptionBoolean(Options.OPTION_CL_HIDE_OFFLINE);
-                //saveOptionBoolean(Options.OPTION_SAVE_TEMP_CONTACT);
                 saveOptionBoolean(Options.OPTION_SORT_UP_WITH_MSG);
                 saveOptionBoolean(Options.OPTION_SHOW_STATUS_LINE);
                 saveOptionSelector(Options.OPTION_CL_SORT_BY);
-                //saveOptionBoolean(Options.OPTION_SHOW_PLATFORM);
                 saveOptionBoolean(Options.OPTION_HISTORY);
                 saveOptionBoolean(Options.OPTION_HIDE_KEYBOARD);
                 saveOptionBoolean(Options.OPTION_SIMPLE_INPUT);
@@ -184,8 +135,8 @@ public class OptionsForm implements ControlStateListener {
         form.setCaption(name.toString());
         switch (currentOptionsForm) {
             case OPTIONS_NETWORK:
-                setChecked(R.string.instant_reconnection, Options.OPTION_INSTANT_RECONNECTION);
-                setChecked(R.string.wake_lock, Options.OPTION_WAKE_LOCK);
+                setChecked(R.string.instant_reconnection, Options.OPTION_INSTANT_RECONNECTION, true);
+                setChecked(R.string.wake_lock, Options.OPTION_WAKE_LOCK, false);
                 break;
 
             case OPTIONS_INTERFACE:
@@ -193,56 +144,48 @@ public class OptionsForm implements ControlStateListener {
                 if (colorSchemes.length > 1) {
                     form.addSelector(Options.OPTION_COLOR_SCHEME, R.string.color_scheme, colorSchemes, Options.getInt(Options.OPTION_COLOR_SCHEME));
                 }
-                loadOptionFontGauge(Options.OPTION_FONT_SCHEME, R.string.fonts);
+                form.addFontVolumeControl(Options.OPTION_FONT_SCHEME, R.string.fonts, Options.getInt(Options.OPTION_FONT_SCHEME));
 
                 form.addString(R.string.contact_list, null);
-                setChecked(R.string.show_user_groups, Options.OPTION_USER_GROUPS);
+                setChecked(R.string.show_user_groups, Options.OPTION_USER_GROUPS, true);
 
-                //createSelector("show_user_accounts",
-                //        "no" + "|" + "by_groups" + "|" + "by_windows", Options.OPTION_USER_ACCOUNTS);
-
-                //setChecked("hide_offline", Options.OPTION_CL_HIDE_OFFLINE);
-                //setChecked("save_temp_contacts", Options.OPTION_SAVE_TEMP_CONTACT);
-                setChecked(R.string.show_status_line, Options.OPTION_SHOW_STATUS_LINE);
-                setChecked(R.string.contacts_with_msg_at_top, Options.OPTION_SORT_UP_WITH_MSG);
+                setChecked(R.string.show_status_line, Options.OPTION_SHOW_STATUS_LINE, false);
+                setChecked(R.string.contacts_with_msg_at_top, Options.OPTION_SORT_UP_WITH_MSG, true);
                 int[] sort = {R.string.sort_by_status, R.string.sort_by_online, R.string.sort_by_name};
-                createSelector(R.string.sort_by, sort, Options.OPTION_CL_SORT_BY);
+                form.addSelector(Options.OPTION_CL_SORT_BY, R.string.sort_by, sort, Options.getInt(Options.OPTION_CL_SORT_BY));
 
                 form.addString(R.string.chat, null);
-                //setChecked("show_platform", Options.OPTION_SHOW_PLATFORM);
-                setChecked(R.string.hide_chat_keyboard, Options.OPTION_HIDE_KEYBOARD);
-                setChecked(R.string.use_simple_input, Options.OPTION_SIMPLE_INPUT);
-                setChecked(R.string.use_history, Options.OPTION_HISTORY);
+                setChecked(R.string.hide_chat_keyboard, Options.OPTION_HIDE_KEYBOARD, true);
+                setChecked(R.string.use_simple_input, Options.OPTION_SIMPLE_INPUT, false);
+                setChecked(R.string.use_history, Options.OPTION_HISTORY, false);
                 loadOptionInt(Options.OPTION_MAX_MSG_COUNT, R.string.max_message_count, "10|50|100|250|500|1000");
 
-                loadOptionString(Options.UNAVAILABLE_NESSAGE, R.string.post_outputs);
+                form.addTextField(Options.UNAVAILABLE_NESSAGE, R.string.post_outputs, Options.getString(Options.UNAVAILABLE_NESSAGE));
                 break;
 
             case OPTIONS_SIGNALING:
                 if (Notify.getSound().hasAnySound()) {
-                    loadOptionGauge(Options.OPTION_NOTIFY_VOLUME, R.string.volume);
+                    form.addVolumeControl_(Options.OPTION_NOTIFY_VOLUME, R.string.volume, Options.getInt(Options.OPTION_NOTIFY_VOLUME));
                 }
 
-                createNotifyControls(Options.OPTION_MESS_NOTIF_MODE,
-                        R.string.message_notification);
-                createNotifyControls(Options.OPTION_ONLINE_NOTIF_MODE,
-                        R.string.onl_notification);
-                setChecked(R.string.alarm, Options.OPTION_ALARM);
-                setChecked(R.string.blog_notify, Options.OPTION_BLOG_NOTIFY);
+                form.addCheckBox(Options.OPTION_MESS_NOTIF_MODE, R.string.message_notification, 0 < Options.getInt(Options.OPTION_MESS_NOTIF_MODE));
+                form.addCheckBox(Options.OPTION_ONLINE_NOTIF_MODE, R.string.onl_notification, 0 < Options.getInt(Options.OPTION_ONLINE_NOTIF_MODE));
+                setChecked(R.string.alarm, Options.OPTION_ALARM, true);
+                setChecked(R.string.blog_notify, Options.OPTION_BLOG_NOTIFY, true);
 
                 int[] typingItems = {R.string.no, R.string.typing_incoming, R.string.typing_both};
-                createSelector(R.string.typing_notify, typingItems, Options.OPTION_TYPING_MODE);
+                form.addSelector(Options.OPTION_TYPING_MODE, R.string.typing_notify, typingItems, Options.getInt(Options.OPTION_TYPING_MODE));
                 int[] vibrationItems = {R.string.no, R.string.yes, R.string.when_locked};
-                createSelector(R.string.vibration, vibrationItems, Options.OPTION_VIBRATOR);
-                setChecked(R.string.notify_in_away, Options.OPTION_NOTIFY_IN_AWAY);
+                form.addSelector(Options.OPTION_VIBRATOR, R.string.vibration, vibrationItems, Options.getInt(Options.OPTION_VIBRATOR));
+                setChecked(R.string.notify_in_away, Options.OPTION_NOTIFY_IN_AWAY, true);
                 break;
 
             case OPTIONS_ANTISPAM:
-                setChecked(R.string.on, Options.OPTION_ANTISPAM_ENABLE);
-                loadOptionString(Options.OPTION_ANTISPAM_MSG, R.string.antispam_msg);
-                loadOptionString(Options.OPTION_ANTISPAM_ANSWER, R.string.antispam_answer);
-                loadOptionString(Options.OPTION_ANTISPAM_HELLO, R.string.antispam_hello);
-                loadOptionString(Options.OPTION_ANTISPAM_KEYWORDS, R.string.antispam_keywords);
+                setChecked(R.string.on, Options.OPTION_ANTISPAM_ENABLE, false);
+                form.addTextField(Options.OPTION_ANTISPAM_MSG, R.string.antispam_msg, Options.getString(Options.OPTION_ANTISPAM_MSG));
+                form.addTextField(Options.OPTION_ANTISPAM_ANSWER, R.string.antispam_answer, Options.getString(Options.OPTION_ANTISPAM_ANSWER));
+                form.addTextField(Options.OPTION_ANTISPAM_HELLO, R.string.antispam_hello, Options.getString(Options.OPTION_ANTISPAM_HELLO));
+                form.addTextField(Options.OPTION_ANTISPAM_KEYWORDS, R.string.antispam_keywords, Options.getString(Options.OPTION_ANTISPAM_KEYWORDS));
                 break;
 
             case OPTIONS_PRO:
@@ -260,11 +203,9 @@ public class OptionsForm implements ControlStateListener {
         form.preferenceFormShow(activity);
     }
 
-    public void controlStateChanged(int id) {
-        switch (id) {
-            case Options.OPTION_FONT_SCHEME:
-                saveOptionSelector(Options.OPTION_FONT_SCHEME);
-                break;
+    public void controlStateChanged(String id) {
+        if (id == Options.OPTION_FONT_SCHEME) {
+            saveOptionSelector(Options.OPTION_FONT_SCHEME);
         }
     }
 }

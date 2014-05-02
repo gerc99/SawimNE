@@ -200,8 +200,8 @@ public final class AdHoc implements FormListener, ControlStateListener {
     }
 
     @Override
-    public void controlStateChanged(int id) {
-        if (FORM_RESOURCE == id) {
+    public void controlStateChanged(String id) {
+        if (FORM_RESOURCE == Integer.valueOf(id)) {
             //requestCommandsForCurrentResource();
             // updateForm(false);
         }

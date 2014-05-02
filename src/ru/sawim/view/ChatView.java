@@ -636,6 +636,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
             mucUsersView.init(protocol, (XmppServiceContact) contact);
             mucUsersView.show(this, nickList);
         } else {
+            mucUsersView = null;
             if (SawimApplication.isManyPane()) {
                 nickList.setVisibility(View.GONE);
             } else {

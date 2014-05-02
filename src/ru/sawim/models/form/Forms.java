@@ -12,6 +12,7 @@ import ru.sawim.util.JLocale;
 import ru.sawim.view.FormView;
 import ru.sawim.view.preference.PreferenceFormView;
 
+import java.sql.Struct;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,7 +45,7 @@ public class Forms {
     private String errorString;
 
     public static class Control {
-        public int id;
+        public String id;
         public String description;
         public String label;
         public byte type;
@@ -147,7 +148,7 @@ public class Forms {
             updateFormListener.back();
     }
 
-    private Control create(int controlId, byte type, String label, String desc) {
+    private Control create(String controlId, byte type, String label, String desc) {
         Control c = new Control();
         c.id = controlId;
         c.type = type;
@@ -174,7 +175,7 @@ public class Forms {
         controls.clear();
     }
 
-    public void addSelector(int controlId, int label, String items, int index) {
+    public void addSelector(String controlId, int label, String items, int index) {
         String[] all = Util.explode(items, '|');
         for (int i = 0; i < all.length; ++i) {
             all[i] = all[i];
@@ -182,7 +183,11 @@ public class Forms {
         addSelector(controlId, label, all, index);
     }
 
-    public void addSelector(int controlId, String label, String items, int index) {
+    public void addSelector(int controlId, int label, String items, int index) {
+        addSelector(String.valueOf(controlId), label, items, index);
+    }
+
+    public void addSelector(String controlId, String label, String items, int index) {
         String[] all = Util.explode(items, '|');
         for (int i = 0; i < all.length; ++i) {
             all[i] = all[i];
@@ -193,7 +198,11 @@ public class Forms {
         add(c);
     }
 
-    public void addSelector(int controlId, int label, int[] items, int index) {
+    public void addSelector(int controlId, String label, String items, int index) {
+        addSelector(String.valueOf(controlId), label, items, index);
+    }
+
+    public void addSelector(String controlId, int label, int[] items, int index) {
         String[] all = new String[items.length];
         for (int i = 0; i < all.length; ++i) {
             all[i] = JLocale.getString(items[i]);
@@ -201,87 +210,123 @@ public class Forms {
         addSelector(controlId, label, all, index);
     }
 
-    public void addSelector(int controlId, int label, String[] items, int index) {////////////////
+    public void addSelector(int controlId, int label, int[] items, int index) {
+        addSelector(String.valueOf(controlId), label, items, index);
+    }
+
+    public void addSelector(String controlId, int label, String[] items, int index) {
         Control c = create(controlId, CONTROL_SELECT, null, JLocale.getString(label));
         c.items = items;
         c.current = index % c.items.length;
         add(c);
     }
 
-    public void addVolumeControl_(int controlId, int label, int current) {
+    public void addSelector(int controlId, int label, String[] items, int index) {
+        addSelector(String.valueOf(controlId), label, items, index);
+    }
+
+    public void addVolumeControl_(String controlId, int label, int current) {
         Control c = create(controlId, CONTROL_GAUGE, null, JLocale.getString(label));
         c.level = current / 10;
         add(c);
     }
 
-    public void addFontVolumeControl(int controlId, int label, int current) {
+    public void addFontVolumeControl(String controlId, int label, int current) {
         Control c = create(controlId, CONTROL_GAUGE_FONT, null, JLocale.getString(label));
         c.level = current;
         add(c);
     }
 
-    public void addCheckBox(int controlId, int label, boolean selected) {
+    public void addCheckBox(String controlId, int label, boolean selected) {
         Control c = create(controlId, CONTROL_CHECKBOX, null, JLocale.getString(label));
         c.selected = selected;
         add(c);
     }
 
-    public void addCheckBox(int controlId, String label, boolean selected) {
+    public void addCheckBox(int controlId, int label, boolean selected) {
+        addCheckBox(String.valueOf(controlId), label, selected);
+    }
+
+    public void addCheckBox(String controlId, String label, boolean selected) {
         label = (null == label) ? " " : label;
         Control c = create(controlId, CONTROL_CHECKBOX, null, label);
         c.selected = selected;
         add(c);
     }
 
+    public void addCheckBox(int controlId, String label, boolean selected) {
+        addCheckBox(String.valueOf(controlId), label, selected);
+    }
+
     public void addHeader(int label) {
-        add(create(-1, CONTROL_TEXT, JLocale.getString(label), null));
+        add(create("", CONTROL_TEXT, JLocale.getString(label), null));
     }
 
     public void addString(int label, String text) {
-        add(create(-1, CONTROL_TEXT, JLocale.getString(label), text));
+        add(create("", CONTROL_TEXT, JLocale.getString(label), text));
     }
 
     public void addString(String label, String text) {
-        add(create(-1, CONTROL_TEXT, label, text));
+        add(create("", CONTROL_TEXT, label, text));
     }
 
     public void addString(String text) {
         addString(text, null);
     }
 
-    public void addString_(int controlId, String text) {
+    public void addString_(String controlId, String text) {
         add(create(controlId, CONTROL_TEXT, null, text));
     }
 
-    public void addLink(int controlId, String text) {
+    public void addString_(int controlId, String text) {
+        add(create(String.valueOf(controlId), CONTROL_TEXT, null, text));
+    }
+
+    public void addLink(String controlId, String text) {
         add(create(controlId, CONTROL_LINK, null, text));
     }
 
-    public void addButton(int controlId, String text) {
+    public void addButton(String controlId, String text) {
         add(create(controlId, CONTROL_BUTTON, null, text));
     }
 
+    public void addButton(int controlId, String text) {
+        add(create(String.valueOf(controlId), CONTROL_BUTTON, null, text));
+    }
+
+    public void addTextField(String controlId, int label, String text) {
+        addTextField_(controlId, label, text);
+    }
+
     public void addTextField(int controlId, int label, String text) {
+        addTextField_(String.valueOf(controlId), label, text);
+    }
+
+    public void addTextField(String controlId, String label, String text) {
         addTextField_(controlId, label, text);
     }
 
     public void addTextField(int controlId, String label, String text) {
+        addTextField_(String.valueOf(controlId), label, text);
+    }
+
+    public void addPasswordField(String controlId, int label, String text) {
         addTextField_(controlId, label, text);
     }
 
-    public void addPasswordField(int controlId, int label, String text) {
+    public void addPasswordField(String controlId, String label, String text) {
         addTextField_(controlId, label, text);
     }
 
     public void addPasswordField(int controlId, String label, String text) {
-        addTextField_(controlId, label, text);
+        addTextField_(String.valueOf(controlId), label, text);
     }
 
-    private void addTextField_(int controlId, int label, String text) {
+    private void addTextField_(String controlId, int label, String text) {
         addTextField_(controlId, JLocale.getString(label), text);
     }
 
-    private void addTextField_(int controlId, String label, String text) {
+    private void addTextField_(String controlId, String label, String text) {
         Control c = create(controlId, CONTROL_INPUT, null, label);
         text = StringConvertor.notNull(text);
         c.text = text;
@@ -289,18 +334,18 @@ public class Forms {
     }
 
     public void addDrawable(Drawable img) {
-        Control c = create(-1, CONTROL_IMAGE, null, null);
+        Control c = create("", CONTROL_IMAGE, null, null);
         c.image = img;
         add(c);
     }
 
     public void addBitmap(Bitmap img) {
-        Control c = create(-1, CONTROL_IMAGE, null, null);
+        Control c = create("", CONTROL_IMAGE, null, null);
         c.image = new BitmapDrawable(SawimApplication.getContext().getResources(), img);
         add(c);
     }
 
-    public void remove(int controlId) {
+    public void remove(String controlId) {
         try {
             for (int num = 0; num < controls.size(); ++num) {
                 if ((controls.get(num)).id == controlId) {
@@ -313,7 +358,11 @@ public class Forms {
         }
     }
 
-    public Control get(int controlId) {
+    public void remove(int controlId) {
+        remove(String.valueOf(controlId));
+    }
+
+    public Control get(String controlId) {
         for (int num = 0; num < controls.size(); ++num) {
             if ((controls.get(num)).id == controlId) {
                 return controls.get(num);
@@ -322,16 +371,20 @@ public class Forms {
         return null;
     }
 
-    public boolean hasControl(int controlId) {
+    public boolean hasControl(String controlId) {
         return null != get(controlId);
     }
 
-    public void setTextFieldLabel(int controlId, String desc) {
+    public boolean hasControl(int controlId) {
+        return null != get(String.valueOf(controlId));
+    }
+
+    public void setTextFieldLabel(String controlId, String desc) {
         Control c = get(controlId);
         c.description = desc;
     }
 
-    public int getGaugeValue(int controlId) {
+    public int getGaugeValue(String controlId) {
         try {
             return get(controlId).level;
         } catch (Exception e) {
@@ -340,11 +393,11 @@ public class Forms {
         return 0;
     }
 
-    public int getVolumeValue(int controlId) {
+    public int getVolumeValue(String controlId) {
         return getGaugeValue(controlId) * 10;
     }
 
-    public String getTextFieldValue(int controlId) {
+    public String getTextFieldValue(String controlId) {
         try {
             return get(controlId).text;
         } catch (Exception e) {
@@ -353,7 +406,11 @@ public class Forms {
         return null;
     }
 
-    public int getSelectorValue(int controlId) {
+    public String getTextFieldValue(int controlId) {
+        return getTextFieldValue(String.valueOf(controlId));
+    }
+
+    public int getSelectorValue(String controlId) {
         try {
             return get(controlId).current;
         } catch (Exception e) {
@@ -362,7 +419,11 @@ public class Forms {
         return 0;
     }
 
-    public String getSelectorString(int controlId) {
+    public int getSelectorValue(int controlId) {
+        return getSelectorValue(String.valueOf(controlId));
+    }
+
+    public String getSelectorString(String controlId) {
         try {
             return get(controlId).items[get(controlId).current];
         } catch (Exception e) {
@@ -371,13 +432,21 @@ public class Forms {
         return null;
     }
 
-    public boolean getCheckBoxValue(int controlId) {
+    public String getSelectorString(int controlId) {
+        return getSelectorString(String.valueOf(controlId));
+    }
+
+    public boolean getCheckBoxValue(String controlId) {
         try {
             return get(controlId).selected;
         } catch (Exception e) {
             DebugLog.panic("getChoiceItemValue", e);
         }
         return false;
+    }
+
+    public boolean getCheckBoxValue(int controlId) {
+        return getCheckBoxValue(String.valueOf(controlId));
     }
 
     public void controlUpdated(Control c) {

@@ -10,7 +10,6 @@ import java.util.Vector;
 
 public final class Storage {
     public static final int SLOT_VERSION = 1;
-    public static final int SLOT_OPTIONS = 2;
 
     private RecordStoreImpl rs = null;
     private String name;
