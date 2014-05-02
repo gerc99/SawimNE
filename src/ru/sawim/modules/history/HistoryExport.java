@@ -4,14 +4,13 @@ import protocol.Contact;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.SawimException;
+import ru.sawim.comm.JLocale;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
-import ru.sawim.config.HomeDirectory;
-import ru.sawim.modules.Notify;
-import ru.sawim.modules.fs.FileSystem;
-import ru.sawim.modules.fs.JSR75FileSystem;
+import ru.sawim.io.FileSystem;
+import ru.sawim.io.HomeDirectory;
+import ru.sawim.modules.sound.Notify;
 import ru.sawim.roster.RosterHelper;
-import ru.sawim.util.JLocale;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -21,7 +20,7 @@ class HistoryExport implements Runnable {
     private HistoryStorage exportHistory;
 
     private HistoryStorageList screen;
-    private JSR75FileSystem file;
+    private FileSystem file;
     String contact;
     int currentMessage;
     int messageCount;
@@ -96,7 +95,7 @@ class HistoryExport implements Runnable {
         os.flush();
     }
 
-    private JSR75FileSystem getFile(HistoryStorage storage) {
+    private FileSystem getFile(HistoryStorage storage) {
         return HomeDirectory.getFile(FileSystem.HISTORY + "/" + storage.getUniqueUserId() + ".txt");
     }
 
@@ -104,7 +103,7 @@ class HistoryExport implements Runnable {
         storage.openHistory();
         try {
             if (0 < storage.getHistorySize()) {
-                JSR75FileSystem file = getFile(storage);
+                FileSystem file = getFile(storage);
                 if (file.exists()) {
                     RosterHelper.getInstance().activateWithMsg(SawimApplication.getContext().getString(R.string.file_already_saved));
                 }

@@ -7,9 +7,9 @@ import ru.sawim.Options;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.comm.Config;
+import ru.sawim.comm.JLocale;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
-import ru.sawim.util.JLocale;
 import ru.sawim.view.menu.MyMenu;
 
 import java.util.Vector;

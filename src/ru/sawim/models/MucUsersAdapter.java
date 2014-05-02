@@ -1,6 +1,5 @@
 package ru.sawim.models;
 
-import DrawControls.icons.Icon;
 import android.graphics.Typeface;
 import android.text.TextUtils;
 import android.view.View;
@@ -13,7 +12,8 @@ import ru.sawim.Options;
 import ru.sawim.R;
 import ru.sawim.SawimResources;
 import ru.sawim.Scheme;
-import ru.sawim.util.JLocale;
+import ru.sawim.comm.JLocale;
+import ru.sawim.icons.Icon;
 import ru.sawim.widget.roster.RosterItemView;
 
 import java.util.ArrayList;

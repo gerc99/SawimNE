@@ -1,19 +1,19 @@
 package protocol.mrim;
 
-import DrawControls.icons.Icon;
-import DrawControls.icons.ImageList;
 import protocol.*;
 import ru.sawim.R;
 import ru.sawim.activities.BaseActivity;
 import ru.sawim.chat.message.PlainMessage;
+import ru.sawim.comm.JLocale;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
+import ru.sawim.icons.Icon;
+import ru.sawim.icons.ImageList;
 import ru.sawim.models.list.VirtualList;
 import ru.sawim.models.list.VirtualListModel;
-import ru.sawim.roster.RosterHelper;
 import ru.sawim.modules.search.Search;
 import ru.sawim.modules.search.UserInfo;
-import ru.sawim.util.JLocale;
+import ru.sawim.roster.RosterHelper;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

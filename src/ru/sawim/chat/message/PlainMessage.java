@@ -4,8 +4,8 @@ package ru.sawim.chat.message;
 import protocol.Contact;
 import protocol.Protocol;
 import ru.sawim.R;
+import ru.sawim.comm.JLocale;
 import ru.sawim.comm.StringConvertor;
-import ru.sawim.util.JLocale;
 
 public class PlainMessage extends Message {
 

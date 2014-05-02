@@ -3,8 +3,8 @@
 package protocol.xmpp;
 
 
-import ru.sawim.modules.FileTransfer;
 import ru.sawim.comm.Util;
+import ru.sawim.modules.FileTransfer;
 
 
 public class IBBFileTransfer {

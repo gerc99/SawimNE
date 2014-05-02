@@ -5,14 +5,13 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import ru.sawim.SawimApplication;
 import ru.sawim.activities.BaseActivity;
+import ru.sawim.comm.JLocale;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
 import ru.sawim.modules.DebugLog;
-import ru.sawim.util.JLocale;
 import ru.sawim.view.FormView;
 import ru.sawim.view.preference.PreferenceFormView;
 
-import java.sql.Struct;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -7,13 +7,13 @@ import protocol.Group;
 import protocol.Protocol;
 import ru.sawim.R;
 import ru.sawim.activities.BaseActivity;
+import ru.sawim.comm.JLocale;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
-import ru.sawim.roster.RosterHelper;
 import ru.sawim.modules.search.Search;
-import ru.sawim.util.JLocale;
+import ru.sawim.roster.RosterHelper;
 import ru.sawim.view.TextBoxView;
 import ru.sawim.view.menu.MyMenu;
 

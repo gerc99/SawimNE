@@ -1,6 +1,5 @@
 package ru.sawim.models;
 
-import DrawControls.icons.Icon;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +12,7 @@ import protocol.Profile;
 import protocol.Protocol;
 import ru.sawim.Options;
 import ru.sawim.R;
+import ru.sawim.icons.Icon;
 import ru.sawim.roster.RosterHelper;
 
 

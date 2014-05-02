@@ -1,25 +1,31 @@
 package protocol;
 
-import DrawControls.icons.Icon;
 import org.microemu.util.RecordStoreImpl;
 import protocol.xmpp.XmppContact;
-import ru.sawim.*;
+import ru.sawim.Options;
+import ru.sawim.R;
+import ru.sawim.SawimApplication;
+import ru.sawim.SawimException;
 import ru.sawim.activities.BaseActivity;
 import ru.sawim.chat.Chat;
 import ru.sawim.chat.ChatHistory;
 import ru.sawim.chat.message.Message;
 import ru.sawim.chat.message.PlainMessage;
 import ru.sawim.chat.message.SystemNotice;
+import ru.sawim.comm.JLocale;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
-import ru.sawim.forms.PrivateStatusForm;
+import ru.sawim.icons.Icon;
 import ru.sawim.io.Storage;
-import ru.sawim.modules.*;
-import ru.sawim.roster.ProtocolBranch;
-import ru.sawim.roster.RosterHelper;
+import ru.sawim.modules.Answerer;
+import ru.sawim.modules.AntiSpam;
+import ru.sawim.modules.DebugLog;
+import ru.sawim.modules.FileTransfer;
 import ru.sawim.modules.search.Search;
 import ru.sawim.modules.search.UserInfo;
-import ru.sawim.util.JLocale;
+import ru.sawim.modules.sound.Notify;
+import ru.sawim.roster.ProtocolBranch;
+import ru.sawim.roster.RosterHelper;
 
 import java.io.*;
 import java.util.Vector;
@@ -583,6 +589,7 @@ abstract public class Protocol {
     }
 
     private ProtocolBranch branch;
+
     public final ProtocolBranch getProtocolBranch() {
         if (null == branch) {
             branch = new ProtocolBranch(this);

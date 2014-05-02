@@ -5,11 +5,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import ru.sawim.*;
 import ru.sawim.activities.BaseActivity;
+import ru.sawim.comm.JLocale;
 import ru.sawim.comm.Util;
 import ru.sawim.models.list.VirtualList;
 import ru.sawim.models.list.VirtualListItem;
 import ru.sawim.models.list.VirtualListModel;
-import ru.sawim.util.JLocale;
 
 import java.util.List;
 import java.util.TimeZone;

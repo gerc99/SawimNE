@@ -12,12 +12,12 @@ import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
 import ru.sawim.activities.BaseActivity;
+import ru.sawim.comm.JLocale;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
 import ru.sawim.models.list.VirtualList;
 import ru.sawim.models.list.VirtualListItem;
 import ru.sawim.models.list.VirtualListModel;
-import ru.sawim.util.JLocale;
 
 import java.util.Hashtable;
 

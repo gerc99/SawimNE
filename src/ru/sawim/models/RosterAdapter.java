@@ -1,6 +1,5 @@
 package ru.sawim.models;
 
-import DrawControls.icons.Icon;
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.graphics.Typeface;
@@ -19,6 +18,7 @@ import ru.sawim.activities.BaseActivity;
 import ru.sawim.chat.Chat;
 import ru.sawim.chat.ChatHistory;
 import ru.sawim.chat.message.Message;
+import ru.sawim.icons.Icon;
 import ru.sawim.roster.ProtocolBranch;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.roster.TreeNode;
@@ -26,7 +26,6 @@ import ru.sawim.widget.MyImageButton;
 import ru.sawim.widget.roster.RosterItemView;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
@@ -304,10 +303,10 @@ public class RosterAdapter extends BaseAdapter {
                     convertView.setBackgroundColor(Scheme.getColor(Scheme.THEME_ITEM_SELECTED));
                     rosterItemView.setLayoutParams(rosterLinearLayout);
                     imageButton.setImageDrawable(SawimResources.ic_menu);
-                    ((ViewGroup)convertView).setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
-                    ((ViewGroup)convertView).addView(rosterItemView);
-                    ((ViewGroup)convertView).addView(progressBar);
-                    ((ViewGroup)convertView).addView(imageButton);
+                    ((ViewGroup) convertView).setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
+                    ((ViewGroup) convertView).addView(rosterItemView);
+                    ((ViewGroup) convertView).addView(progressBar);
+                    ((ViewGroup) convertView).addView(imageButton);
                 }
                 RosterItemView rosterItemView = (RosterItemView) ((ViewGroup) convertView).getChildAt(0);
                 ProgressBar progressBar = (ProgressBar) ((ViewGroup) convertView).getChildAt(1);

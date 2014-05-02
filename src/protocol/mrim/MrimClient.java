@@ -1,9 +1,9 @@
 package protocol.mrim;
 
-import DrawControls.icons.ImageList;
 import protocol.ClientInfo;
 import ru.sawim.comm.Config;
 import ru.sawim.comm.StringConvertor;
+import ru.sawim.icons.ImageList;
 import ru.sawim.modules.DebugLog;
 
 

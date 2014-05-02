@@ -1,4 +1,4 @@
-package ru.sawim.util;
+package ru.sawim.comm;
 
 import android.content.res.Resources;
 import ru.sawim.SawimApplication;

@@ -8,8 +8,8 @@ import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
 import ru.sawim.activities.SawimActivity;
 import ru.sawim.chat.ChatHistory;
+import ru.sawim.comm.JLocale;
 import ru.sawim.roster.RosterHelper;
-import ru.sawim.util.JLocale;
 
 import java.util.HashMap;
 

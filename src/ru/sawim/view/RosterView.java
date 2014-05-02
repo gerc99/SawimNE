@@ -31,6 +31,7 @@ import ru.sawim.activities.BaseActivity;
 import ru.sawim.activities.SawimActivity;
 import ru.sawim.chat.Chat;
 import ru.sawim.chat.ChatHistory;
+import ru.sawim.comm.JLocale;
 import ru.sawim.forms.ManageContactListForm;
 import ru.sawim.models.RosterAdapter;
 import ru.sawim.models.RosterModsAdapter;
@@ -39,7 +40,6 @@ import ru.sawim.roster.ProtocolBranch;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.roster.TreeBranch;
 import ru.sawim.roster.TreeNode;
-import ru.sawim.util.JLocale;
 import ru.sawim.widget.MyImageButton;
 import ru.sawim.widget.MyListView;
 import ru.sawim.widget.MySpinner;
@@ -456,7 +456,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         } else {
             TreeNode node = (TreeNode) rosterListView.getAdapter().getItem(contextMenuInfo.position);
             if (node.getType() == TreeNode.PROTOCOL) {
-                  RosterHelper.getInstance().showProtocolMenu((BaseActivity) getActivity(), ((ProtocolBranch) node).getProtocol());
+                RosterHelper.getInstance().showProtocolMenu((BaseActivity) getActivity(), ((ProtocolBranch) node).getProtocol());
             } else if (node.getType() == TreeNode.GROUP) {
                 Protocol p = RosterHelper.getInstance().getProtocol((Group) node);
                 if (p.isConnected()) {

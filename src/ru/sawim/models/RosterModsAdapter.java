@@ -1,14 +1,12 @@
 package ru.sawim.models;
 
-import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
-import ru.sawim.roster.RosterHelper;
-import ru.sawim.util.JLocale;
+import ru.sawim.comm.JLocale;
 import ru.sawim.widget.LabelView;
 import ru.sawim.widget.Util;
 

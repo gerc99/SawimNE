@@ -1,4 +1,4 @@
-package ru.sawim.config;
+package ru.sawim.io;
 
 import protocol.net.TcpSocket;
 import ru.sawim.SawimException;
@@ -15,9 +15,9 @@ import java.io.OutputStream;
  * @author vladimir
  */
 public class HomeDirectory {
-    public static ru.sawim.modules.fs.JSR75FileSystem getFile(String file) {
-        ru.sawim.modules.fs.JSR75FileSystem fs = ru.sawim.modules.fs.FileSystem.getInstance();
-        String home = ru.sawim.modules.fs.FileSystem.getSawimHome();
+    public static FileSystem getFile(String file) {
+        FileSystem fs = FileSystem.getInstance();
+        String home = FileSystem.getSawimHome();
         try {
             fs.openFile(home + file);
         } catch (SawimException ignored) {
@@ -26,7 +26,7 @@ public class HomeDirectory {
     }
 
     public static String getContent(String file) {
-        ru.sawim.modules.fs.JSR75FileSystem fs = getFile(file);
+        FileSystem fs = getFile(file);
         String result = null;
         if (fs.exists()) {
             InputStream stream = null;
@@ -44,7 +44,7 @@ public class HomeDirectory {
     }
 
     public static void putContent(String file, String content) {
-        ru.sawim.modules.fs.JSR75FileSystem fs = getFile(file);
+        FileSystem fs = getFile(file);
         OutputStream stream = null;
         try {
             stream = fs.openOutputStream();
@@ -59,7 +59,7 @@ public class HomeDirectory {
     }
 
     public static boolean exist(String file) {
-        ru.sawim.modules.fs.JSR75FileSystem fs = getFile(file);
+        FileSystem fs = getFile(file);
         boolean exist = fs.exists();
         fs.close();
         return exist;
@@ -67,11 +67,11 @@ public class HomeDirectory {
 
     public static void init() {
         try {
-            String home = ru.sawim.modules.fs.FileSystem.getSawimHome();
-            ru.sawim.modules.fs.JSR75FileSystem fs = ru.sawim.modules.fs.FileSystem.getInstance();
+            String home = FileSystem.getSawimHome();
+            FileSystem fs = FileSystem.getInstance();
             fs.mkdir(home.substring(0, home.length() - 1));
-            fs.mkdir(home + ru.sawim.modules.fs.FileSystem.HISTORY);
-            fs.mkdir(home + ru.sawim.modules.fs.FileSystem.RES);
+            fs.mkdir(home + FileSystem.HISTORY);
+            fs.mkdir(home + FileSystem.RES);
         } catch (Exception ignored) {
         }
     }

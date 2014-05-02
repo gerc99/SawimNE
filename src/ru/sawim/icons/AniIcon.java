@@ -1,4 +1,4 @@
-package DrawControls.icons;
+package ru.sawim.icons;
 
 
 public class AniIcon extends Icon {

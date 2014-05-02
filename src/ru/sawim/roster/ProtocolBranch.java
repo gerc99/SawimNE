@@ -1,10 +1,11 @@
 package ru.sawim.roster;
 
-import DrawControls.icons.Icon;
-import java.util.Vector;
-import protocol.*;
+import protocol.Contact;
+import protocol.Protocol;
 import ru.sawim.Options;
 import ru.sawim.comm.Util;
+
+import java.util.Vector;
 
 public class ProtocolBranch extends TreeBranch {
 
@@ -18,6 +19,7 @@ public class ProtocolBranch extends TreeBranch {
     public boolean isProtocol(Protocol p) {
         return protocol == p;
     }
+
     public Protocol getProtocol() {
         return protocol;
     }
@@ -26,7 +28,7 @@ public class ProtocolBranch extends TreeBranch {
         if (Options.getBoolean(Options.OPTION_CL_HIDE_OFFLINE)) {
             Vector contacts = protocol.getContactItems();
             for (int i = contacts.size() - 1; 0 <= i; --i) {
-                if (((Contact)contacts.elementAt(i)).isVisibleInContactList()) {
+                if (((Contact) contacts.elementAt(i)).isVisibleInContactList()) {
                     return false;
                 }
             }

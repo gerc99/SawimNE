@@ -1,12 +1,12 @@
 package protocol.icq;
 
-import DrawControls.icons.Icon;
-import DrawControls.icons.ImageList;
 import protocol.Contact;
 import protocol.ContactMenu;
 import protocol.Protocol;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
+import ru.sawim.icons.Icon;
+import ru.sawim.icons.ImageList;
 import ru.sawim.view.menu.MyMenu;
 
 public class IcqContact extends Contact {

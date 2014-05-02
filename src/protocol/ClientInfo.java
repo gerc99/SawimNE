@@ -1,8 +1,8 @@
 package protocol;
 
 
-import DrawControls.icons.Icon;
-import DrawControls.icons.ImageList;
+import ru.sawim.icons.Icon;
+import ru.sawim.icons.ImageList;
 
 
 public final class ClientInfo {

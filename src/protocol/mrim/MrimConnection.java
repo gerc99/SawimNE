@@ -13,14 +13,14 @@ import ru.sawim.SawimException;
 import ru.sawim.chat.Chat;
 import ru.sawim.chat.message.PlainMessage;
 import ru.sawim.chat.message.SystemNotice;
+import ru.sawim.comm.JLocale;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
 import ru.sawim.modules.DebugLog;
-import ru.sawim.modules.Notify;
-import ru.sawim.roster.RosterHelper;
 import ru.sawim.modules.search.Search;
 import ru.sawim.modules.search.UserInfo;
-import ru.sawim.util.JLocale;
+import ru.sawim.modules.sound.Notify;
+import ru.sawim.roster.RosterHelper;
 
 import java.util.Vector;
 

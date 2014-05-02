@@ -103,7 +103,7 @@ public class XmppSession {
                 if (connection.rebindSupported && !StringConvertor.isEmpty(regid)) {
                     DebugLog.systemPrintln(regid);
                     connection.putPacketIntoQueue("<iq type='set' id='p1:rebind'>" +
-                            "<push xmlns='p1:push'><keepalive max='120'/><session duration='1440'/>"+
+                            "<push xmlns='p1:push'><keepalive max='120'/><session duration='1440'/>" +
                             "<body send='all' groupchat='true' from='name'/>" +
                             "<offline>true</offline>" +
                             "<notification><type>gcm</type><id>" + regid + "</id>" +

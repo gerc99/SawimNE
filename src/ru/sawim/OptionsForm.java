@@ -1,12 +1,12 @@
 package ru.sawim;
 
 import ru.sawim.activities.BaseActivity;
+import ru.sawim.comm.JLocale;
 import ru.sawim.comm.Util;
 import ru.sawim.models.form.ControlStateListener;
 import ru.sawim.models.form.Forms;
 import ru.sawim.modules.Answerer;
-import ru.sawim.modules.Notify;
-import ru.sawim.util.JLocale;
+import ru.sawim.modules.sound.Notify;
 
 public class OptionsForm implements ControlStateListener {
 
@@ -20,7 +20,7 @@ public class OptionsForm implements ControlStateListener {
     private Forms form;
     private int currentOptionsForm;
 
-    private void setChecked(int lngStr, String optValue, boolean defValue) {
+    private void setChecked(int lngStr, String optValue) {
         form.addCheckBox(optValue, lngStr, Options.getBoolean(optValue));
     }
 
@@ -135,8 +135,8 @@ public class OptionsForm implements ControlStateListener {
         form.setCaption(name.toString());
         switch (currentOptionsForm) {
             case OPTIONS_NETWORK:
-                setChecked(R.string.instant_reconnection, Options.OPTION_INSTANT_RECONNECTION, true);
-                setChecked(R.string.wake_lock, Options.OPTION_WAKE_LOCK, false);
+                setChecked(R.string.instant_reconnection, Options.OPTION_INSTANT_RECONNECTION);
+                setChecked(R.string.wake_lock, Options.OPTION_WAKE_LOCK);
                 break;
 
             case OPTIONS_INTERFACE:
@@ -147,17 +147,17 @@ public class OptionsForm implements ControlStateListener {
                 form.addFontVolumeControl(Options.OPTION_FONT_SCHEME, R.string.fonts, Options.getInt(Options.OPTION_FONT_SCHEME));
 
                 form.addString(R.string.contact_list, null);
-                setChecked(R.string.show_user_groups, Options.OPTION_USER_GROUPS, true);
+                setChecked(R.string.show_user_groups, Options.OPTION_USER_GROUPS);
 
-                setChecked(R.string.show_status_line, Options.OPTION_SHOW_STATUS_LINE, false);
-                setChecked(R.string.contacts_with_msg_at_top, Options.OPTION_SORT_UP_WITH_MSG, true);
+                setChecked(R.string.show_status_line, Options.OPTION_SHOW_STATUS_LINE);
+                setChecked(R.string.contacts_with_msg_at_top, Options.OPTION_SORT_UP_WITH_MSG);
                 int[] sort = {R.string.sort_by_status, R.string.sort_by_online, R.string.sort_by_name};
                 form.addSelector(Options.OPTION_CL_SORT_BY, R.string.sort_by, sort, Options.getInt(Options.OPTION_CL_SORT_BY));
 
                 form.addString(R.string.chat, null);
-                setChecked(R.string.hide_chat_keyboard, Options.OPTION_HIDE_KEYBOARD, true);
-                setChecked(R.string.use_simple_input, Options.OPTION_SIMPLE_INPUT, false);
-                setChecked(R.string.use_history, Options.OPTION_HISTORY, false);
+                setChecked(R.string.hide_chat_keyboard, Options.OPTION_HIDE_KEYBOARD);
+                setChecked(R.string.use_simple_input, Options.OPTION_SIMPLE_INPUT);
+                setChecked(R.string.use_history, Options.OPTION_HISTORY);
                 loadOptionInt(Options.OPTION_MAX_MSG_COUNT, R.string.max_message_count, "10|50|100|250|500|1000");
 
                 form.addTextField(Options.UNAVAILABLE_NESSAGE, R.string.post_outputs, Options.getString(Options.UNAVAILABLE_NESSAGE));
@@ -170,18 +170,18 @@ public class OptionsForm implements ControlStateListener {
 
                 form.addCheckBox(Options.OPTION_MESS_NOTIF_MODE, R.string.message_notification, 0 < Options.getInt(Options.OPTION_MESS_NOTIF_MODE));
                 form.addCheckBox(Options.OPTION_ONLINE_NOTIF_MODE, R.string.onl_notification, 0 < Options.getInt(Options.OPTION_ONLINE_NOTIF_MODE));
-                setChecked(R.string.alarm, Options.OPTION_ALARM, true);
-                setChecked(R.string.blog_notify, Options.OPTION_BLOG_NOTIFY, true);
+                setChecked(R.string.alarm, Options.OPTION_ALARM);
+                setChecked(R.string.blog_notify, Options.OPTION_BLOG_NOTIFY);
 
                 int[] typingItems = {R.string.no, R.string.typing_incoming, R.string.typing_both};
                 form.addSelector(Options.OPTION_TYPING_MODE, R.string.typing_notify, typingItems, Options.getInt(Options.OPTION_TYPING_MODE));
                 int[] vibrationItems = {R.string.no, R.string.yes, R.string.when_locked};
                 form.addSelector(Options.OPTION_VIBRATOR, R.string.vibration, vibrationItems, Options.getInt(Options.OPTION_VIBRATOR));
-                setChecked(R.string.notify_in_away, Options.OPTION_NOTIFY_IN_AWAY, true);
+                setChecked(R.string.notify_in_away, Options.OPTION_NOTIFY_IN_AWAY);
                 break;
 
             case OPTIONS_ANTISPAM:
-                setChecked(R.string.on, Options.OPTION_ANTISPAM_ENABLE, false);
+                setChecked(R.string.on, Options.OPTION_ANTISPAM_ENABLE);
                 form.addTextField(Options.OPTION_ANTISPAM_MSG, R.string.antispam_msg, Options.getString(Options.OPTION_ANTISPAM_MSG));
                 form.addTextField(Options.OPTION_ANTISPAM_ANSWER, R.string.antispam_answer, Options.getString(Options.OPTION_ANTISPAM_ANSWER));
                 form.addTextField(Options.OPTION_ANTISPAM_HELLO, R.string.antispam_hello, Options.getString(Options.OPTION_ANTISPAM_HELLO));

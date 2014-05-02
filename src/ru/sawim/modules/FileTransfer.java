@@ -14,14 +14,14 @@ import ru.sawim.SawimNotification;
 import ru.sawim.activities.BaseActivity;
 import ru.sawim.activities.SawimActivity;
 import ru.sawim.chat.Chat;
+import ru.sawim.comm.JLocale;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
+import ru.sawim.io.FileBrowserListener;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
-import ru.sawim.modules.fs.FileBrowserListener;
 import ru.sawim.modules.photo.PhotoListener;
 import ru.sawim.roster.RosterHelper;
-import ru.sawim.util.JLocale;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

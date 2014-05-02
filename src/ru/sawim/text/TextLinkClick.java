@@ -15,7 +15,6 @@ import ru.sawim.R;
 import ru.sawim.activities.BaseActivity;
 import ru.sawim.comm.Util;
 import ru.sawim.modules.DebugLog;
-import ru.sawim.roster.RosterHelper;
 import ru.sawim.view.PictureView;
 import ru.sawim.view.menu.JuickMenu;
 import ru.sawim.view.tasks.HtmlTask;

@@ -3,12 +3,12 @@
 
 package protocol.icq;
 
-import DrawControls.icons.ImageList;
 import protocol.XStatusInfo;
 import ru.sawim.R;
 import ru.sawim.comm.GUID;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
+import ru.sawim.icons.ImageList;
 
 
 public class IcqXStatus {

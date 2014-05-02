@@ -1,7 +1,6 @@
 package ru.sawim.widget;
 
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.view.View;

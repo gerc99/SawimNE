@@ -15,7 +15,13 @@ import org.microemu.util.AndroidRecordStoreManager;
 import protocol.Protocol;
 import protocol.xmpp.XmppSession;
 import ru.sawim.chat.ChatHistory;
-import ru.sawim.modules.*;
+import ru.sawim.io.FileSystem;
+import ru.sawim.io.HomeDirectory;
+import ru.sawim.modules.Answerer;
+import ru.sawim.modules.AutoAbsence;
+import ru.sawim.modules.DebugLog;
+import ru.sawim.modules.Emotions;
+import ru.sawim.modules.sound.Notify;
 import ru.sawim.receiver.NetworkStateReceiver;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.service.SawimService;
@@ -24,7 +30,6 @@ import ru.sawim.text.TextFormatter;
 
 import java.io.InputStream;
 import java.util.List;
-import java.util.TimeZone;
 
 /**
  * Created with IntelliJ IDEA.
@@ -80,10 +85,9 @@ public class SawimApplication extends Application {
         networkStateReceiver.updateNetworkState(this);
 
         instance.paused = false;
-        ru.sawim.config.HomeDirectory.init();
+        HomeDirectory.init();
         Options.init();
         Scheme.load();
-        Scheme.setColorScheme(Options.getInt(Options.OPTION_COLOR_SCHEME));
         updateOptions();
         Updater.startUIUpdater();
 
@@ -195,7 +199,7 @@ public class SawimApplication extends Application {
     }
 
     public static java.io.InputStream getResourceAsStream(String name) {
-        InputStream in = ru.sawim.modules.fs.FileSystem.openSawimFile(name);
+        InputStream in = new FileSystem().openSawimFile(name);
         if (null == in) {
             try {
                 in = SawimApplication.getInstance().getAssets().open(name.substring(1));

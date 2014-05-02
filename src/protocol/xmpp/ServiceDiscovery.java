@@ -5,17 +5,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 import protocol.Contact;
-import protocol.ContactMenu;
 import ru.sawim.R;
 import ru.sawim.Scheme;
 import ru.sawim.activities.BaseActivity;
 import ru.sawim.comm.Config;
+import ru.sawim.comm.JLocale;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.models.list.VirtualList;
 import ru.sawim.models.list.VirtualListItem;
 import ru.sawim.models.list.VirtualListModel;
 import ru.sawim.roster.RosterHelper;
-import ru.sawim.util.JLocale;
 import ru.sawim.view.TextBoxView;
 
 import java.util.Vector;

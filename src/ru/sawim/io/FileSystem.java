@@ -1,17 +1,47 @@
 
-package ru.sawim.modules.fs;
+package ru.sawim.io;
 
 import org.microemu.util.FileSystemFileConnection;
 import protocol.net.TcpSocket;
 import ru.sawim.SawimException;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public class JSR75FileSystem {
+public class FileSystem {
+
+    public static final String HISTORY = "history";
+    public static final String RES = "res";
 
     private FileSystemFileConnection fileConnection;
+
+    public static String getSawimHome() {
+        return "/e:/sawimne/";
+    }
+
+    public static FileSystem getInstance() {
+        return new FileSystem();
+    }
+
+    public InputStream openSawimFile(String file) {
+        byte[] buffer = null;
+        try {
+            openFile(getSawimHome() + RES + "/" + file);
+            InputStream in = fileConnection.openInputStream();
+            buffer = new byte[in.available()];
+            in.read(buffer);
+            TcpSocket.close(in);
+        } catch (Exception e) {
+            buffer = null;
+        }
+        close();
+        if (null != buffer) {
+            return new ByteArrayInputStream(buffer);
+        }
+        return null;
+    }
 
     public long totalSize() throws Exception {
         return fileConnection.totalSize();
@@ -47,6 +77,10 @@ public class JSR75FileSystem {
         return (null != fileConnection) && fileConnection.exists();
     }
 
+    public InputStream openInputStream() throws IOException {
+        return fileConnection.openInputStream();
+    }
+
     public OutputStream openOutputStream() throws Exception {
         if (fileConnection.exists()) {
             fileConnection.delete();
@@ -64,11 +98,6 @@ public class JSR75FileSystem {
 
     public String getAbsolutePath() throws Exception {
         return fileConnection.getAbsolutePath();
-    }
-
-
-    public InputStream openInputStream() throws Exception {
-        return fileConnection.openInputStream();
     }
 
     public void close() {
@@ -94,7 +123,7 @@ public class JSR75FileSystem {
         InputStream in = null;
         try {
             openFile(path);
-            in = openInputStream();
+            in = fileConnection.openInputStream();
             int fileSize = (int) fileSize();
             content = new byte[fileSize];
             int bReadSum = 0;

@@ -4,8 +4,8 @@ package ru.sawim.chat.message;
 import protocol.Protocol;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
+import ru.sawim.comm.JLocale;
 import ru.sawim.comm.StringConvertor;
-import ru.sawim.util.JLocale;
 
 public class SystemNotice extends Message {
 

@@ -1,4 +1,4 @@
-package DrawControls.icons;
+package ru.sawim.icons;
 
 
 import android.graphics.drawable.BitmapDrawable;

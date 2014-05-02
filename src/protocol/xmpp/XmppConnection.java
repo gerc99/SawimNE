@@ -3,18 +3,26 @@ package protocol.xmpp;
 import android.util.Log;
 import protocol.*;
 import protocol.net.ClientConnection;
-import ru.sawim.*;
+import ru.sawim.Options;
+import ru.sawim.R;
+import ru.sawim.SawimApplication;
+import ru.sawim.SawimException;
 import ru.sawim.chat.message.Message;
 import ru.sawim.chat.message.PlainMessage;
 import ru.sawim.chat.message.SystemNotice;
-import ru.sawim.comm.*;
+import ru.sawim.comm.Config;
+import ru.sawim.comm.JLocale;
+import ru.sawim.comm.StringConvertor;
+import ru.sawim.comm.Util;
 import ru.sawim.modules.DebugLog;
 import ru.sawim.modules.crypto.MD5;
 import ru.sawim.modules.search.UserInfo;
 import ru.sawim.roster.RosterHelper;
-import ru.sawim.util.JLocale;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
@@ -400,8 +408,8 @@ public final class XmppConnection extends ClientConnection {
     private boolean tryRebind() throws SawimException {
         setProgress(50);
         write("<rebind xmlns='p1:rebind'><jid>" +
-              fullJid_ + "</jid>" +
-                "<sid>" + sessionId  + "</sid></rebind>");
+                fullJid_ + "</jid>" +
+                "<sid>" + sessionId + "</sid></rebind>");
         XmlNode rebind = readXmlNode(true);
         if (rebind != null && rebind.is("rebind")) {
             Log.d("sawim-xml", "[INFO-JABBER] rebound session ID=" + sessionId);
@@ -2301,7 +2309,7 @@ public final class XmppConnection extends ClientConnection {
                 + "xmlns:stream='http:/" + "/etherx.jabber.org/streams' "
                 + "version='1.0' "
                 + "to='" + server + "'"
-                + " xml:lang='" + ru.sawim.util.JLocale.getSystemLanguage() + "'>";
+                + " xml:lang='" + JLocale.getSystemLanguage() + "'>";
     }
 
     private void getVCard(String jid) {

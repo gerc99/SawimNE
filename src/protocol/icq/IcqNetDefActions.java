@@ -10,12 +10,8 @@ import ru.sawim.SawimApplication;
 import ru.sawim.SawimException;
 import ru.sawim.chat.message.PlainMessage;
 import ru.sawim.chat.message.SystemNotice;
-import ru.sawim.comm.ArrayReader;
-import ru.sawim.comm.GUID;
-import ru.sawim.comm.StringConvertor;
-import ru.sawim.comm.Util;
+import ru.sawim.comm.*;
 import ru.sawim.modules.DebugLog;
-import ru.sawim.util.JLocale;
 
 public final class IcqNetDefActions {
     public static final int FLAG_HAPPY = 0x0008;

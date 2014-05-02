@@ -2,13 +2,13 @@ package protocol.xmpp;
 
 import ru.sawim.R;
 import ru.sawim.activities.BaseActivity;
+import ru.sawim.comm.JLocale;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
 import ru.sawim.models.form.ControlStateListener;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
 import ru.sawim.roster.RosterHelper;
-import ru.sawim.util.JLocale;
 
 public final class AdHoc implements FormListener, ControlStateListener {
     private XmppContact contact;

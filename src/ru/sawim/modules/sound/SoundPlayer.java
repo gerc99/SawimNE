@@ -5,8 +5,7 @@ import android.content.res.AssetFileDescriptor;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import ru.sawim.SawimApplication;
-import ru.sawim.modules.fs.FileSystem;
-import ru.sawim.modules.fs.JSR75FileSystem;
+import ru.sawim.io.FileSystem;
 
 import java.io.IOException;
 
@@ -30,7 +29,6 @@ public class SoundPlayer implements MediaPlayer.OnCompletionListener {
 
     public void play(String source, int volume) throws IOException {
         AudioManager audioManager = (AudioManager) SawimApplication.getInstance().getSystemService(Context.AUDIO_SERVICE);
-
         if (AudioManager.RINGER_MODE_NORMAL == audioManager.getRingerMode()) {
             playIt(source.substring(1), volume);
         } else {
@@ -57,7 +55,7 @@ public class SoundPlayer implements MediaPlayer.OnCompletionListener {
     }
 
     public static String openFile(String file) {
-        JSR75FileSystem fs = FileSystem.getInstance();
+        FileSystem fs = FileSystem.getInstance();
         String in = null;
         try {
             fs.openFile(FileSystem.getSawimHome() + FileSystem.RES + "/" + file);

@@ -1,8 +1,8 @@
 package protocol.xmpp;
 
-import DrawControls.icons.ImageList;
 import protocol.ClientInfo;
 import ru.sawim.comm.Config;
+import ru.sawim.icons.ImageList;
 
 
 public final class XmppClient {

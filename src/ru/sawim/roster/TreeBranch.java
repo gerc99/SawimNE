@@ -11,9 +11,10 @@ public abstract class TreeBranch implements TreeNode {
     public final boolean isExpanded() {
         return expanded;
     }
+
     /**
      * Expand or collapse tree node.
-     * 
+     * <p/>
      * NOTE: this is not recursive operation!
      */
     public final void setExpandFlag(boolean value) {
@@ -23,5 +24,6 @@ public abstract class TreeBranch implements TreeNode {
 
     public void sort() {
     }
+
     public abstract boolean isEmpty();
 }

@@ -1,6 +1,5 @@
 package ru.sawim.modules.search;
 
-import DrawControls.icons.Icon;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,15 +16,16 @@ import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.SawimException;
 import ru.sawim.activities.BaseActivity;
+import ru.sawim.comm.JLocale;
 import ru.sawim.comm.Util;
 import ru.sawim.forms.EditInfo;
+import ru.sawim.icons.Icon;
+import ru.sawim.io.FileBrowserListener;
 import ru.sawim.models.list.VirtualList;
 import ru.sawim.models.list.VirtualListItem;
 import ru.sawim.models.list.VirtualListModel;
 import ru.sawim.modules.DebugLog;
-import ru.sawim.modules.fs.FileBrowserListener;
 import ru.sawim.modules.photo.PhotoListener;
-import ru.sawim.util.JLocale;
 import ru.sawim.view.VirtualListView;
 
 import java.io.File;

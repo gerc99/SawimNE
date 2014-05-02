@@ -1,11 +1,10 @@
-package ru.sawim.modules;
+package ru.sawim.modules.sound;
 
 import android.content.Context;
 import android.os.Vibrator;
 import ru.sawim.Options;
 import ru.sawim.SawimApplication;
 import ru.sawim.comm.Util;
-import ru.sawim.modules.sound.SoundPlayer;
 
 public class Notify implements Runnable {
 

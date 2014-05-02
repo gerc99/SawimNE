@@ -1,6 +1,5 @@
 package protocol.mrim;
 
-import DrawControls.icons.Icon;
 import android.view.ContextMenu;
 import android.view.Menu;
 import protocol.Contact;
@@ -8,7 +7,8 @@ import protocol.ContactMenu;
 import protocol.Protocol;
 import ru.sawim.R;
 import ru.sawim.activities.BaseActivity;
-import ru.sawim.util.JLocale;
+import ru.sawim.comm.JLocale;
+import ru.sawim.icons.Icon;
 
 public class MrimPhoneContact extends MrimContact {
     static final String PHONE_UIN = "phone";

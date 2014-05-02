@@ -1,10 +1,10 @@
 package protocol.icq;
 
-import DrawControls.icons.ImageList;
 import protocol.ClientInfo;
 import protocol.net.TcpSocket;
 import ru.sawim.SawimApplication;
 import ru.sawim.comm.StringConvertor;
+import ru.sawim.icons.ImageList;
 
 import java.io.DataInputStream;
 import java.io.IOException;

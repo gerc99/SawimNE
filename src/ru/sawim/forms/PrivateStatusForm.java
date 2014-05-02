@@ -3,12 +3,12 @@
 
 package ru.sawim.forms;
 
-import DrawControls.icons.Icon;
-import DrawControls.icons.ImageList;
 import protocol.Protocol;
 import protocol.icq.Icq;
 import protocol.mrim.Mrim;
 import ru.sawim.R;
+import ru.sawim.icons.Icon;
+import ru.sawim.icons.ImageList;
 
 
 public final class PrivateStatusForm {

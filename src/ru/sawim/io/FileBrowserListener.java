@@ -1,7 +1,7 @@
 
 
 
-package ru.sawim.modules.fs;
+package ru.sawim.io;
 
 import ru.sawim.SawimException;
 import ru.sawim.activities.BaseActivity;

@@ -1,7 +1,6 @@
 package ru.sawim.comm;
 
 import ru.sawim.SawimApplication;
-import ru.sawim.util.JLocale;
 
 import java.io.InputStream;
 import java.util.Vector;

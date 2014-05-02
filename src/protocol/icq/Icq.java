@@ -1,7 +1,5 @@
 package protocol.icq;
 
-import DrawControls.icons.Icon;
-import DrawControls.icons.ImageList;
 import protocol.*;
 import protocol.icq.action.*;
 import protocol.icq.packet.Packet;
@@ -13,13 +11,15 @@ import ru.sawim.R;
 import ru.sawim.activities.BaseActivity;
 import ru.sawim.chat.message.PlainMessage;
 import ru.sawim.comm.GUID;
+import ru.sawim.comm.JLocale;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
 import ru.sawim.forms.PrivateStatusForm;
-import ru.sawim.roster.RosterHelper;
+import ru.sawim.icons.Icon;
+import ru.sawim.icons.ImageList;
 import ru.sawim.modules.search.Search;
 import ru.sawim.modules.search.UserInfo;
-import ru.sawim.util.JLocale;
+import ru.sawim.roster.RosterHelper;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

@@ -1,6 +1,5 @@
 package ru.sawim.chat;
 
-import android.util.Log;
 import protocol.Contact;
 import protocol.Protocol;
 import protocol.xmpp.Jid;

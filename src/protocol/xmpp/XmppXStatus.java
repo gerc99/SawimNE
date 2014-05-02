@@ -3,10 +3,10 @@
 
 package protocol.xmpp;
 
-import DrawControls.icons.ImageList;
 import protocol.XStatusInfo;
 import ru.sawim.R;
 import ru.sawim.comm.StringConvertor;
+import ru.sawim.icons.ImageList;
 
 
 public class XmppXStatus {

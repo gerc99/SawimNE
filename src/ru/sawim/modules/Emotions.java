@@ -1,13 +1,13 @@
 package ru.sawim.modules;
 
 
-import DrawControls.icons.AniImageList;
-import DrawControls.icons.Icon;
-import DrawControls.icons.ImageList;
 import android.util.Log;
 import protocol.net.TcpSocket;
 import ru.sawim.SawimApplication;
 import ru.sawim.comm.StringConvertor;
+import ru.sawim.icons.AniImageList;
+import ru.sawim.icons.Icon;
+import ru.sawim.icons.ImageList;
 
 import java.io.DataInputStream;
 import java.io.IOException;

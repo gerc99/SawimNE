@@ -1,6 +1,5 @@
 package ru.sawim.models;
 
-import DrawControls.icons.Icon;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
@@ -14,8 +13,9 @@ import protocol.Protocol;
 import protocol.StatusInfo;
 import ru.sawim.R;
 import ru.sawim.Scheme;
+import ru.sawim.comm.JLocale;
 import ru.sawim.forms.PrivateStatusForm;
-import ru.sawim.util.JLocale;
+import ru.sawim.icons.Icon;
 import ru.sawim.view.StatusesView;
 
 /**

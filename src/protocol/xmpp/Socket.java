@@ -11,9 +11,9 @@ package protocol.xmpp;
 
 import protocol.net.TcpSocket;
 import ru.sawim.SawimException;
+import ru.sawim.modules.DebugLog;
 import ru.sawim.modules.zlib.ZLibInputStream;
 import ru.sawim.modules.zlib.ZLibOutputStream;
-import ru.sawim.modules.DebugLog;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;

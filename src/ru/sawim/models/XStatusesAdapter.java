@@ -1,6 +1,5 @@
 package ru.sawim.models;
 
-import DrawControls.icons.Icon;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
@@ -14,6 +13,7 @@ import protocol.Protocol;
 import protocol.XStatusInfo;
 import ru.sawim.R;
 import ru.sawim.Scheme;
+import ru.sawim.icons.Icon;
 
 /**
  * Created with IntelliJ IDEA.

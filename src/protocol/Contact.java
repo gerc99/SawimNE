@@ -1,7 +1,5 @@
 package protocol;
 
-import DrawControls.icons.Icon;
-import DrawControls.icons.ImageList;
 import android.view.ContextMenu;
 import android.view.Menu;
 import ru.sawim.R;
@@ -9,10 +7,12 @@ import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
 import ru.sawim.activities.BaseActivity;
 import ru.sawim.chat.Chat;
+import ru.sawim.comm.JLocale;
 import ru.sawim.comm.StringConvertor;
+import ru.sawim.icons.Icon;
+import ru.sawim.icons.ImageList;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.roster.TreeNode;
-import ru.sawim.util.JLocale;
 import ru.sawim.view.menu.MyMenu;
 
 

@@ -1,6 +1,5 @@
 package ru.sawim;
 
-import ru.sawim.modules.DebugLog;
 import ru.sawim.roster.RosterHelper;
 
 import java.util.Timer;

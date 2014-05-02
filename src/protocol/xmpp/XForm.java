@@ -1,13 +1,13 @@
 package protocol.xmpp;
 
-import DrawControls.icons.ImageList;
 import android.graphics.Bitmap;
 import ru.sawim.R;
+import ru.sawim.comm.JLocale;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
+import ru.sawim.icons.ImageList;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
-import ru.sawim.util.JLocale;
 
 import java.util.Vector;
 

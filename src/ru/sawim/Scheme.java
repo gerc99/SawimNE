@@ -87,6 +87,7 @@ public class Scheme {
             themeColors[i + 1] = configToTheme(config);
         }
         oldTheme = Options.getInt(Options.OPTION_COLOR_SCHEME);
+        Scheme.setColorScheme(oldTheme);
     }
 
     public static boolean isBlack() {

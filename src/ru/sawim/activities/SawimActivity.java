@@ -39,11 +39,14 @@ import protocol.Protocol;
 import protocol.icq.Icq;
 import protocol.mrim.Mrim;
 import protocol.xmpp.Xmpp;
-import ru.sawim.*;
+import ru.sawim.Options;
+import ru.sawim.R;
+import ru.sawim.SawimApplication;
+import ru.sawim.Scheme;
 import ru.sawim.chat.Chat;
 import ru.sawim.chat.ChatHistory;
 import ru.sawim.modules.DebugLog;
-import ru.sawim.modules.Notify;
+import ru.sawim.modules.sound.Notify;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.view.*;
 import ru.sawim.view.preference.MainPreferenceView;
@@ -334,7 +337,8 @@ public class SawimActivity extends BaseActivity {
             chatView.onOptionsItemSelected_(item);
             return true;
         }
-        if (RosterHelper.getInstance().protocolMenuItemSelected(this, RosterHelper.getInstance().getProtocol(0), item.getItemId())) return true;
+        if (RosterHelper.getInstance().protocolMenuItemSelected(this, RosterHelper.getInstance().getProtocol(0), item.getItemId()))
+            return true;
         switch (item.getItemId()) {
             case MENU_SOUND:
                 Notify.getSound().changeSoundMode();

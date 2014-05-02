@@ -19,9 +19,9 @@ import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.activities.BaseActivity;
 import ru.sawim.activities.SawimActivity;
+import ru.sawim.comm.JLocale;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.roster.RosterHelper;
-import ru.sawim.util.JLocale;
 
 /**
  * Created with IntelliJ IDEA.

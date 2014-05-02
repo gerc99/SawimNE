@@ -1,8 +1,8 @@
 package ru.sawim;
 
-import DrawControls.icons.ImageList;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import ru.sawim.icons.ImageList;
 
 /**
  * Created by admin on 07.01.14.

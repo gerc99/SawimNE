@@ -10,6 +10,7 @@ import protocol.icq.Icq;
 import protocol.mrim.Mrim;
 import ru.sawim.R;
 import ru.sawim.activities.BaseActivity;
+import ru.sawim.comm.JLocale;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
 import ru.sawim.models.form.ControlStateListener;
@@ -18,7 +19,6 @@ import ru.sawim.models.form.Forms;
 import ru.sawim.models.list.VirtualList;
 import ru.sawim.models.list.VirtualListModel;
 import ru.sawim.roster.RosterHelper;
-import ru.sawim.util.JLocale;
 
 import java.util.Vector;
 

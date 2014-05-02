@@ -5,7 +5,6 @@ import android.text.SpannableStringBuilder;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import protocol.Protocol;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.SawimResources;

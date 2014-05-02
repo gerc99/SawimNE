@@ -1,11 +1,11 @@
 package protocol.vk;
 
-import DrawControls.icons.ImageList;
 import protocol.Contact;
 import protocol.Group;
 import protocol.Protocol;
 import protocol.StatusInfo;
 import ru.sawim.chat.message.PlainMessage;
+import ru.sawim.icons.ImageList;
 import ru.sawim.modules.search.Search;
 import ru.sawim.modules.search.UserInfo;
 

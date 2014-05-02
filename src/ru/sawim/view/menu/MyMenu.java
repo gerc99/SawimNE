@@ -8,7 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
-import ru.sawim.util.JLocale;
+import ru.sawim.comm.JLocale;
 
 import java.util.ArrayList;
 import java.util.List;

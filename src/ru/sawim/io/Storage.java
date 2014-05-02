@@ -4,7 +4,10 @@ import org.microemu.util.RecordStoreImpl;
 import ru.sawim.SawimApplication;
 import ru.sawim.comm.StringConvertor;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.util.Vector;
 
 

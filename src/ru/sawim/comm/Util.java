@@ -6,7 +6,6 @@ import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.chat.Chat;
 import ru.sawim.roster.TreeNode;
-import ru.sawim.util.JLocale;
 
 import java.io.ByteArrayOutputStream;
 import java.util.*;

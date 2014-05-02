@@ -1,10 +1,10 @@
 package ru.sawim.models.list;
 
-import DrawControls.icons.Icon;
 import android.graphics.Bitmap;
 import ru.sawim.Scheme;
+import ru.sawim.comm.JLocale;
 import ru.sawim.comm.StringConvertor;
-import ru.sawim.util.JLocale;
+import ru.sawim.icons.Icon;
 
 import java.util.ArrayList;
 import java.util.List;

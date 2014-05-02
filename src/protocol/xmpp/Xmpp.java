@@ -1,22 +1,24 @@
 package protocol.xmpp;
 
-import DrawControls.icons.ImageList;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.widget.Toast;
 import protocol.*;
-import ru.sawim.*;
-import ru.sawim.modules.FileTransfer;
+import ru.sawim.Options;
+import ru.sawim.R;
+import ru.sawim.SawimApplication;
 import ru.sawim.activities.BaseActivity;
 import ru.sawim.chat.message.PlainMessage;
+import ru.sawim.comm.JLocale;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
+import ru.sawim.icons.ImageList;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
-import ru.sawim.roster.RosterHelper;
+import ru.sawim.modules.FileTransfer;
 import ru.sawim.modules.search.Search;
 import ru.sawim.modules.search.UserInfo;
-import ru.sawim.util.JLocale;
+import ru.sawim.roster.RosterHelper;
 import ru.sawim.view.TextBoxView;
 import ru.sawim.view.menu.JuickMenu;
 
@@ -336,14 +338,14 @@ public final class Xmpp extends Protocol implements FormListener {
     protected void saveContact(DataOutputStream dos, Contact contact) throws Exception {
         super.saveContact(dos, contact);
         if (contact instanceof XmppServiceContact) {
-            XmppServiceContact serviceContact = (XmppServiceContact)contact;
+            XmppServiceContact serviceContact = (XmppServiceContact) contact;
             if (serviceContact.isConference()) {
                 dos.writeUTF(serviceContact.getMyName());
                 dos.writeBoolean(serviceContact.isPresence());
             }
         }
         if (isStreamManagementSupported()) {
-            XmppContact xmppContact = (XmppContact)contact;
+            XmppContact xmppContact = (XmppContact) contact;
             dos.writeInt(xmppContact.subcontacts.size());
             for (XmppContact.SubContact subContact : xmppContact.subcontacts) {
                 dos.writeByte(subContact.status);
