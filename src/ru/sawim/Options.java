@@ -11,8 +11,9 @@ import ru.sawim.modules.DebugLog;
 import ru.sawim.roster.RosterHelper;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.TimeZone;
-import java.util.Vector;
 
 public class Options {
     public static final String UNAVAILABLE_NESSAGE = "unavailable_message";
@@ -48,7 +49,6 @@ public class Options {
     public static final String OPTION_BRING_UP = "bring_up";
     public static final String OPTION_ANTISPAM_ENABLE = "antispam_enable";
     public static final String OPTION_HIDE_ICONS_CLIENTS = "hide_icons_clients";
-    //public static final String OPTION_TF_FLAGS = "tf_flags";
     public static final String OPTION_SORT_UP_WITH_MSG = "sort_up_with_msg";
     public static final String OPTION_ALARM = "alarm";
     public static final String OPTION_SHOW_STATUS_LINE = "show_status_line";
@@ -61,13 +61,15 @@ public class Options {
     private static SharedPreferences preferences;
     private static SharedPreferences.Editor editor;
 
-    private static final Vector listOfProfiles = new Vector();
+    private static final List<Profile> listOfProfiles = new ArrayList<Profile>();
 
     public static void init() {
         preferences = SawimApplication.getContext().getSharedPreferences(PREFS_NAME, 0);
         editor = preferences.edit();
-        initAccounts();
-        setDefaults();
+        if (preferences.getAll().isEmpty()) {
+            initAccounts();
+            setDefaults();
+        }
     }
 
     public static synchronized void safeSave() {
@@ -104,7 +106,7 @@ public class Options {
         setBoolean(Options.OPTION_HISTORY, false);
         setInt(Options.OPTION_COLOR_SCHEME, 1);
         setInt(Options.OPTION_FONT_SCHEME, 16);
-        setInt(Options.OPTION_AA_TIME, 3);
+        setInt(Options.OPTION_AA_TIME, 15);
         setBoolean(Options.OPTION_SHOW_STATUS_LINE, false);
         setInt(Options.OPTION_VISIBILITY_ID, 0);
 
@@ -113,6 +115,8 @@ public class Options {
         int time = TimeZone.getDefault().getOffset(System.currentTimeMillis()) / (1000 * 60 * 60);
         setInt(Options.OPTION_GMT_OFFSET, time);
         setBoolean(OPTION_ALARM, true);
+
+        safeSave();
     }
 
     public static String getString(String key) {
@@ -162,12 +166,12 @@ public class Options {
             if (listOfProfiles.size() <= num) {
                 return new Profile();
             }
-            return (Profile) listOfProfiles.elementAt(num);
+            return listOfProfiles.get(num);
         }
     }
 
     public static String getId(int id) {
-        Profile p = (Profile) listOfProfiles.elementAt(id);
+        Profile p = listOfProfiles.get(id);
         return p.userId;
     }
 
@@ -180,6 +184,7 @@ public class Options {
     public static void setCurrentAccount(int num) {
         num = Math.min(num, getAccountCount());
         Options.setInt(Options.OPTIONS_CURR_ACCOUNT, num);
+        safeSave();
     }
 
     public static int getCurrentAccount() {
@@ -189,7 +194,7 @@ public class Options {
     public static void delAccount(int num) {
         RosterHelper.getInstance().removeProtocol(num);
         synchronized (listOfProfiles) {
-            listOfProfiles.removeElementAt(num);
+            listOfProfiles.remove(num);
             int current = getCurrentAccount();
             if (current == num) {
                 current = 0;
@@ -205,7 +210,7 @@ public class Options {
             try {
                 s.open(false);
                 for (; num < listOfProfiles.size(); ++num) {
-                    Profile p = (Profile) listOfProfiles.elementAt(num);
+                    Profile p = listOfProfiles.get(num);
                     s.setRecord(num + 1, writeAccount(p));
                 }
                 for (; num < s.getNumRecords(); ++num) {
@@ -221,10 +226,10 @@ public class Options {
         int size = getAccountCount();
         synchronized (listOfProfiles) {
             if (num < size) {
-                listOfProfiles.setElementAt(account, num);
+                listOfProfiles.add(num, account);
             } else {
                 num = listOfProfiles.size();
-                listOfProfiles.addElement(account);
+                listOfProfiles.add(account);
             }
             saveAccount(num, account);
         }
@@ -243,7 +248,7 @@ public class Options {
         Storage s = new Storage("j-accounts");
         try {
             synchronized (listOfProfiles) {
-                listOfProfiles.removeAllElements();
+                listOfProfiles.clear();
                 s.open(false);
                 int accountCount = s.getNumRecords();
                 for (int i = 0; i < accountCount; ++i) {
@@ -253,7 +258,7 @@ public class Options {
                     }
                     Profile p = readProfile(data);
                     if (!StringConvertor.isEmpty(p.userId)) {
-                        listOfProfiles.addElement(p);
+                        listOfProfiles.add(p);
                     }
                 }
             }
