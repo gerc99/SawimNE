@@ -54,6 +54,7 @@ public final class Storage {
 
     public void open() {
         db = dbHelper.getWritableDatabase();
+        StorageConvertor.convertStorage(name, this);
     }
 
     public void close() {
