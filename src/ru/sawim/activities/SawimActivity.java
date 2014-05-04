@@ -59,7 +59,7 @@ public class SawimActivity extends BaseActivity {
     public static final String NOTIFY_CAPTCHA = "ru.sawim.notify.captcha";
     private boolean isOpenNewChat = false;
 
-    @Override
+    /*@Override
     public void onCreate(Bundle savedInstanceState) {
         setTheme(Scheme.isBlack() ? R.style.BaseTheme : R.style.BaseThemeLight);
         super.onCreate(savedInstanceState);
@@ -73,7 +73,7 @@ public class SawimActivity extends BaseActivity {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.fragment_container, rosterView, RosterView.TAG).commit();
         }
-    }
+    }*/
 
     @Override
     protected void onNewIntent(Intent intent) {

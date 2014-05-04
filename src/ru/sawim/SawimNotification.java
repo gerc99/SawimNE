@@ -17,7 +17,7 @@ import java.util.HashMap;
  * Created by admin on 27.01.14.
  */
 public class SawimNotification {
-
+    private static final int PUSH_NOTIFICATION_ID = 0x10;
     public static final int NOTIFY_ID = 1;
     private static final HashMap<String, Integer> idsMap = new HashMap<String, Integer>();
 
@@ -156,6 +156,25 @@ public class SawimNotification {
             notificationManager.notify(NOTIFY_ID, notification.build());
         }
     }*/
+
+    public static void pushNotification() {
+        Context context = SawimApplication.getContext();
+        Intent intent = new Intent(context, SawimActivity.class);
+        intent.setAction(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_LAUNCHER);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent contentIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
+        builder.setContentIntent(contentIntent);
+        builder.setOngoing(false);
+        builder.setContentTitle(context.getString(R.string.app_name));
+        builder.setTicker("New messages");
+        builder.setSmallIcon(R.drawable.ic_tray_msg);
+        builder.setContentText("You have new unread messages");
+        builder.setAutoCancel(true);
+        ((NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE))
+                .notify(PUSH_NOTIFICATION_ID, builder.build());
+    }
 
     public static void clear(String id) {
         if (idsMap.get(id) == null) return;

@@ -433,10 +433,10 @@ public final class ChatHistory {
     }
 
     public void saveUnreadMessages() {
+        Storage.delete("unread");
         Storage s = new Storage("unread");
         try {
-            s.delete();
-            s.open(true);
+            s.open();
             for (int i = getTotal() - 1; 0 <= i; --i) {
                 Chat chat = chatAt(i);
                 int count = chat.getUnreadMessageCount();
@@ -460,7 +460,7 @@ public final class ChatHistory {
     public void loadUnreadMessages() {
         Storage s = new Storage("unread");
         try {
-            s.open(false);
+            s.open();
             for (int i = 1; i <= s.getNumRecords(); ++i) {
                 DataInputStream in = new DataInputStream(new ByteArrayInputStream(s.getRecord(i)));
                 String account = in.readUTF();
@@ -481,6 +481,6 @@ public final class ChatHistory {
         } catch (Exception ignored) {
         }
         s.close();
-        s.delete();
+        Storage.delete("unread");
     }
 }

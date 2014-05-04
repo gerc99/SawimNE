@@ -2,17 +2,12 @@ package ru.sawim.modules.history;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.view.ContextMenu;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.view.*;
 import android.widget.Toast;
-import org.microemu.util.RecordStoreImpl;
-import ru.sawim.Clipboard;
-import ru.sawim.R;
-import ru.sawim.SawimApplication;
-import ru.sawim.Scheme;
+import ru.sawim.*;
 import ru.sawim.activities.BaseActivity;
 import ru.sawim.comm.JLocale;
+import ru.sawim.io.Storage;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
 import ru.sawim.models.list.VirtualList;
@@ -60,7 +55,6 @@ public final class HistoryStorageList implements Runnable, FormListener {
             public void onCreateOptionsMenu(Menu menu) {
                 menu.add(Menu.FIRST, MENU_FIND, 2, JLocale.getString(R.string.find));
                 menu.add(Menu.FIRST, MENU_CLEAR, 2, JLocale.getString(R.string.clear));
-                menu.add(Menu.FIRST, MENU_INFO, 2, JLocale.getString(R.string.history_info));
                 menu.add(Menu.FIRST, MENU_EXPORT, 2, JLocale.getString(R.string.export));
             }
 
@@ -186,18 +180,6 @@ public final class HistoryStorageList implements Runnable, FormListener {
                 Clipboard.setClipBoardText(activity, record.text);
                 break;
 
-            case MENU_INFO:
-                RecordStoreImpl rs = history.getRS();
-                if (rs == null) break;
-                try {
-                    String sb = JLocale.getString(R.string.hist_cur) + ": " + getSize() + "\n"
-                            + JLocale.getString(R.string.hist_size) + ": " + (rs.getSize() / 1024) + "\n"
-                            + JLocale.getString(R.string.hist_avail) + ": " + (rs.getSizeAvailable() / 1024) + "\n";
-                    Toast.makeText(activity, sb, Toast.LENGTH_SHORT).show();
-                } catch (Exception ignored) {
-                }
-                break;
-
             case MENU_EXPORT:
                 export = new HistoryExport(this);
                 export.export(history);
@@ -217,9 +199,8 @@ public final class HistoryStorageList implements Runnable, FormListener {
     private static final int MENU_FIND = 1;
     private static final int MENU_CLEAR = 2;
     private static final int MENU_COPY_TEXT = 3;
-    private static final int MENU_INFO = 4;
-    private static final int MENU_EXPORT = 5;
-    private static final int MENU_EXPORT_ALL = 6;
+    private static final int MENU_EXPORT = 4;
+    private static final int MENU_EXPORT_ALL = 5;
 
 
     private void moveInList(int offset) {

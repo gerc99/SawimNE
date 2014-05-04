@@ -1,14 +1,12 @@
 package ru.sawim.modules.history;
 
-import org.microemu.util.RecordStoreImpl;
+import android.content.ContentValues;
+import android.util.Log;
 import protocol.Contact;
 import ru.sawim.comm.Util;
 import ru.sawim.io.Storage;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+import java.io.*;
 
 public class HistoryStorage {
 
@@ -16,14 +14,12 @@ public class HistoryStorage {
 
     private Contact contact;
     private String uniqueUserId;
-    private String storageName;
     private Storage historyStore;
     private int currRecordCount = -1;
 
     public HistoryStorage(Contact contact) {
         this.contact = contact;
         uniqueUserId = contact.getUserId();
-        storageName = getRSName();
     }
 
     public Contact getContact() {
@@ -37,10 +33,13 @@ public class HistoryStorage {
     private boolean openHistory(boolean create) {
         if (null == historyStore) {
             try {
-                historyStore = new Storage(storageName);
-                historyStore.open(create);
+                historyStore = new Storage(getRSName());
+                //historyStore = new Storage(getRSName(),
+                //        "create table if not exists messages (_id INTEGER PRIMARY KEY AUTOINCREMENT, incoming integer, author text not null, msgtext text not null, date longer );");
+                historyStore.open();
             } catch (Exception e) {
                 historyStore = null;
+                e.printStackTrace();
                 return false;
             }
         }
@@ -71,6 +70,12 @@ public class HistoryStorage {
         }
         byte type = (byte) (incoming ? 0 : 1);
         try {
+            /*ContentValues values = new ContentValues();
+            values.put("incoming", incoming ? 0 : 1);
+            values.put("author", from);
+            values.put("msgtext", text);
+            values.put("date", Util.getLocalDateString(gmtTime, false));
+            historyStore.addRecord("messages", values);*/
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             DataOutputStream das = new DataOutputStream(baos);
             das.writeByte(type);
@@ -80,19 +85,16 @@ public class HistoryStorage {
             byte[] buffer = baos.toByteArray();
             historyStore.addRecord(buffer);
         } catch (Exception e) {
-            // do nothing
+            e.printStackTrace();
         }
-        closeHistory();
-        currRecordCount = -1;
     }
 
-    RecordStoreImpl getRS() {
-        if (historyStore == null) return null;
-        return historyStore.getRS();
+    Storage getRS() {
+        return historyStore;
     }
 
     private String getRSName() {
-        return Storage.getStorageName(PREFIX + getUniqueUserId());
+        return PREFIX + getUniqueUserId();
     }
 
     String getUniqueUserId() {
@@ -139,20 +141,25 @@ public class HistoryStorage {
 
     public void removeHistory() {
         closeHistory();
-        removeRMS(storageName);
+        removeRMS(getRSName());
     }
 
     private void removeRMS(String rms) {
-        new Storage(rms).delete();
+        Storage.delete(rms);
+    }
+
+    public void dropTable() {
+        historyStore.dropTable();
     }
 
     public void clearAll(boolean except) {
         closeHistory();
-        String exceptRMS = (except ? storageName : null);
+        String exceptRMS = (except ? getRSName() : null);
         String[] stores = Storage.getList();
 
         for (int i = 0; i < stores.length; ++i) {
             String store = stores[i];
+            Log.e("gg", ""+store);
             if (!store.startsWith(PREFIX)) {
                 continue;
             }

@@ -1,26 +1,15 @@
 package protocol;
 
-import org.microemu.util.RecordStoreImpl;
 import protocol.xmpp.XmppContact;
-import ru.sawim.Options;
-import ru.sawim.R;
-import ru.sawim.SawimApplication;
-import ru.sawim.SawimException;
+import ru.sawim.*;
 import ru.sawim.activities.BaseActivity;
 import ru.sawim.chat.Chat;
 import ru.sawim.chat.ChatHistory;
-import ru.sawim.chat.message.Message;
-import ru.sawim.chat.message.PlainMessage;
-import ru.sawim.chat.message.SystemNotice;
-import ru.sawim.comm.JLocale;
-import ru.sawim.comm.StringConvertor;
-import ru.sawim.comm.Util;
+import ru.sawim.chat.message.*;
+import ru.sawim.comm.*;
 import ru.sawim.icons.Icon;
 import ru.sawim.io.Storage;
-import ru.sawim.modules.Answerer;
-import ru.sawim.modules.AntiSpam;
-import ru.sawim.modules.DebugLog;
-import ru.sawim.modules.FileTransfer;
+import ru.sawim.modules.*;
 import ru.sawim.modules.search.Search;
 import ru.sawim.modules.search.UserInfo;
 import ru.sawim.modules.sound.Notify;
@@ -274,9 +263,7 @@ abstract public class Protocol {
             return;
         }
         try {
-            if (new Storage(rmsName).exist()) {
-                load();
-            }
+            load();
         } catch (Exception e) {
             DebugLog.panic("roster load", e);
             setRoster(new Roster(), false);
@@ -297,42 +284,37 @@ abstract public class Protocol {
         }
         synchronized (this) {
             try {
-                SawimApplication.getInstance().recordStoreManager.deleteRecordStore(rmsName);
+                Storage.delete(rmsName);
             } catch (Exception e) {
             }
-            RecordStoreImpl cl = null;
+            Storage storage = new Storage(rmsName);
             try {
-                cl = SawimApplication.getInstance().recordStoreManager.openRecordStore(rmsName, true);
-                save(cl);
+                storage.open();
+                save(storage);
             } catch (Exception e) {
                 DebugLog.panic("roster save", e);
             }
-            try {
-                cl.closeRecordStore();
-            } catch (Exception e) {
-            }
+            storage.close();
         }
         return true;
     }
 
     private void load() throws Exception {
         Roster roster = new Roster();
-        RecordStoreImpl recordStore = SawimApplication.getInstance().recordStoreManager.openRecordStore(rmsName, true);
-        if (recordStore == null) return;
+        Storage storage = new Storage(rmsName);
+        storage.open();
         try {
             byte[] buf;
-            ByteArrayInputStream bais;
-            DataInputStream dis;
-            buf = recordStore.getRecord(1);
-            bais = new ByteArrayInputStream(buf);
-            dis = new DataInputStream(bais);
+            buf = storage.getRecord(1);
+            ByteArrayInputStream bais = new ByteArrayInputStream(buf);
+            DataInputStream dis = new DataInputStream(bais);
             if (dis.readInt() != ROSTER_STORAGE_VERSION) {
                 throw new Exception();
             }
-            loadProtocolData(recordStore.getRecord(2));
-            for (int marker = 3; marker <= recordStore.getNumRecords(); ++marker) {
+            loadProtocolData(storage.getRecord(2));
+            for (int marker = 3; marker <= storage.getNumRecords(); ++marker) {
                 try {
-                    buf = recordStore.getRecord(marker);
+                    buf = storage.getRecord(marker);
                     if ((null == buf) || (0 == buf.length)) {
                         continue;
                     }
@@ -355,21 +337,20 @@ abstract public class Protocol {
             }
             DebugLog.memoryUsage("clload");
         } finally {
-            recordStore.closeRecordStore();
+            storage.close();
         }
         setRoster(roster, false);
     }
 
-    private void save(RecordStoreImpl cl) throws Exception {
-        if (cl == null) return;
+    private void save(Storage storage) throws Exception {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         DataOutputStream dos = new DataOutputStream(baos);
         dos.writeInt(ROSTER_STORAGE_VERSION);
         byte[] buf = baos.toByteArray();
-        cl.addRecord(buf, 0, buf.length);
+        storage.addRecord(buf);
         baos.reset();
         buf = saveProtocolData();
-        cl.addRecord(buf, 0, buf.length);
+        storage.addRecord(buf);
         baos.reset();
         int cItemsCount = roster.getContactItems().size();
         int totalCount = cItemsCount + roster.getGroupItems().size();
@@ -382,7 +363,7 @@ abstract public class Protocol {
             }
             if ((baos.size() >= 4000) || (i == totalCount - 1)) {
                 buf = baos.toByteArray();
-                cl.addRecord(buf, 0, buf.length);
+                storage.addRecord(buf);
                 baos.reset();
             }
         }

@@ -208,7 +208,7 @@ public class Options {
             setCurrentAccount(current);
             Storage s = new Storage("j-accounts");
             try {
-                s.open(false);
+                s.open();
                 for (; num < listOfProfiles.size(); ++num) {
                     Profile p = listOfProfiles.get(num);
                     s.setRecord(num + 1, writeAccount(p));
@@ -249,7 +249,7 @@ public class Options {
         try {
             synchronized (listOfProfiles) {
                 listOfProfiles.clear();
-                s.open(false);
+                s.open();
                 int accountCount = s.getNumRecords();
                 for (int i = 0; i < accountCount; ++i) {
                     byte[] data = s.getRecord(i + 1);
@@ -274,7 +274,7 @@ public class Options {
         }
         Storage s = new Storage("j-accounts");
         try {
-            s.open(true);
+            s.open();
             byte[] hash = writeAccount(account);
             if (num < s.getNumRecords()) {
                 s.setRecord(num + 1, hash);

@@ -133,7 +133,7 @@ public final class Answerer implements FormListener {
     public void load() {
         Storage storage = new Storage("module-answerer");
         try {
-            storage.open(false);
+            storage.open();
             dictionary = storage.loadListOfString();
         } catch (Exception e) {
             dictionary = new Vector();
@@ -149,13 +149,13 @@ public final class Answerer implements FormListener {
     }
 
     private void save() {
+        Storage.delete("module-answerer");
         Storage storage = new Storage("module-answerer");
         try {
-            storage.delete();
             if (0 == dictionary.size()) {
                 return;
             }
-            storage.open(true);
+            storage.open();
             storage.saveListOfString(dictionary);
         } catch (Exception e) {
             DebugLog.panic("answerer dictionary save", e);

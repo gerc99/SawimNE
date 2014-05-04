@@ -1,26 +1,31 @@
 package ru.sawim;
 
-import android.app.ActivityManager;
-import android.app.Application;
-import android.app.NotificationManager;
+import android.app.*;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Environment;
 import android.os.Message;
+import android.util.Log;
 import android.view.Surface;
 import android.view.WindowManager;
-import org.microemu.util.AndroidRecordStoreManager;
 import protocol.Protocol;
+import protocol.xmpp.XmppContact;
 import protocol.xmpp.XmppSession;
 import ru.sawim.chat.ChatHistory;
+import ru.sawim.comm.Util;
 import ru.sawim.io.FileSystem;
 import ru.sawim.io.HomeDirectory;
 import ru.sawim.modules.Answerer;
 import ru.sawim.modules.AutoAbsence;
 import ru.sawim.modules.DebugLog;
 import ru.sawim.modules.Emotions;
+import ru.sawim.modules.history.HistoryStorage;
 import ru.sawim.modules.sound.Notify;
 import ru.sawim.receiver.NetworkStateReceiver;
 import ru.sawim.roster.RosterHelper;
@@ -29,6 +34,7 @@ import ru.sawim.service.SawimServiceConnection;
 import ru.sawim.text.TextFormatter;
 
 import java.io.InputStream;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -58,7 +64,6 @@ public class SawimApplication extends Application {
     public static int autoAbsenceTime;
 
     public static SawimApplication instance;
-    public AndroidRecordStoreManager recordStoreManager;
     private final SawimServiceConnection serviceConnection = new SawimServiceConnection();
     private final NetworkStateReceiver networkStateReceiver = new NetworkStateReceiver();
     private XmppSession xmppSession;
@@ -80,14 +85,13 @@ public class SawimApplication extends Application {
         Thread.setDefaultUncaughtExceptionHandler(ExceptionHandler.inContext(getContext()));
         super.onCreate();
 
-        recordStoreManager = new AndroidRecordStoreManager(getContext());
-        startService();
-        networkStateReceiver.updateNetworkState(this);
+    /*    startService();
+    //    networkStateReceiver.updateNetworkState(this);
 
         instance.paused = false;
-        HomeDirectory.init();
+        HomeDirectory.init();*/
         Options.init();
-        Scheme.load();
+    /*    Scheme.load();
         updateOptions();
         Updater.startUIUpdater();
 
@@ -107,7 +111,76 @@ public class SawimApplication extends Application {
             DebugLog.instance.activate();
         }
         DebugLog.startTests();
-        TextFormatter.init();
+        TextFormatter.init();  */
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                XmppContact contact = new XmppContact("ooooooooo@w.tu", "999");
+                long delay = System.currentTimeMillis();
+                HistoryStorage history = HistoryStorage.getHistory(contact);
+                history.openHistory();
+                history.dropTable();
+                for (int i = 0; i < 10000; ++i) {
+                    history.addText("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", true, "i" + i, 9869905);
+                }
+                history.closeHistory();
+                Log.e("HistoryStorage time", "" + (System.currentTimeMillis() - delay)/1000);
+
+                long delay2 = System.currentTimeMillis();
+                MessagesDbHelper messagesHelper = new MessagesDbHelper(SawimApplication.getContext());
+                SQLiteDatabase db = messagesHelper.getWritableDatabase();
+                db.execSQL("drop table if exists messages;");
+                messagesHelper.onCreate(db);
+                for (int i = 0; i < 10000; ++i) {
+                    ContentValues values = new ContentValues();
+                    values.put("incoming", 0);
+                    values.put("author", "i" + i);
+                    values.put("msgtext", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+                    values.put("date", 9869905);
+                    db.insert("messages", null, values);
+                }
+                messagesHelper.close();
+
+                /*Cursor rowIds = messagesHelper.getIds(db);
+                for (int i = 0; i < 1000; ++i) {
+                    rowIds.moveToPosition(i);
+                    String rowId = rowIds.getString(rowIds.getColumnIndex("id"));
+                    Cursor cursor = messagesHelper.getRowById(db, rowId);
+                    cursor.moveToFirst();
+                    Log.e("get", cursor.getString(cursor.getColumnIndex("author"))+" "+
+                            cursor.getString(cursor.getColumnIndex("message"))+" "+new Date(cursor.getLong(cursor.getColumnIndex("timestamp"))).toLocaleString());
+                }*/
+                Log.e("Database time", ""+(System.currentTimeMillis() - delay2)/1000);
+            }
+        }).start();
+    }
+
+    class MessagesDbHelper extends SQLiteOpenHelper {
+        private String[] allColumns = {"_id", "incoming", "author", "msgtext", "date"};
+
+        public MessagesDbHelper(Context ctx) {
+            super(ctx, "messages.db", null, 6);
+        }
+        @Override
+        public void onCreate(SQLiteDatabase sqLiteDatabase) {
+            //sqLiteDatabase.execSQL("create table messages (id string primary key, timestamp long not null, author text not null, message text not null );");
+            sqLiteDatabase.execSQL("create table messages (_id INTEGER PRIMARY KEY AUTOINCREMENT, incoming integer, author text not null, msgtext text not null, date longer );");
+        }
+
+        @Override
+        public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i2) {
+            sqLiteDatabase.execSQL("drop table if exists messages;");
+            onCreate(sqLiteDatabase);
+        }
+
+        public Cursor getIds(SQLiteDatabase db) {
+            return db.rawQuery("select id from messages limit 1000", new String[]{});
+        }
+
+        public Cursor getRowById(SQLiteDatabase db, String id) {
+            return db.query("messages", allColumns, "id='" + id + "'", null, null, null, null, null);
+        }
     }
 
     public XmppSession getXmppSession() {

@@ -88,7 +88,7 @@ public class XStatusesView extends DialogFragment {
     private void load() {
         try {
             Storage storage = new Storage(getProtocolId() + "-xstatus");
-            storage.open(false);
+            storage.open();
             storage.loadXStatuses(xst_titles, xst_descs);
             storage.close();
         } catch (Exception ignored) {
@@ -114,7 +114,7 @@ public class XStatusesView extends DialogFragment {
             xst_descs[xstatus] = StringConvertor.notNull(desc);
             try {
                 Storage storage = new Storage(getProtocolId() + "-xstatus");
-                storage.open(true);
+                storage.open();
                 storage.saveXStatuses(xst_titles, xst_descs);
                 storage.close();
             } catch (Exception ignored) {

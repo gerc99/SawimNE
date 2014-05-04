@@ -1,6 +1,10 @@
 package ru.sawim.io;
 
-import org.microemu.util.RecordStoreImpl;
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import ru.sawim.SawimApplication;
 import ru.sawim.comm.StringConvertor;
 
@@ -12,119 +16,104 @@ import java.util.Vector;
 
 
 public final class Storage {
-    public static final int SLOT_VERSION = 1;
-
-    private RecordStoreImpl rs = null;
+    private static final String TABLE_NAME = "recordstore";
+    public static final String COLUMN_ID = "_id";
+    private static final String COLUMN_DATA = "data";
+    private SQLiteDatabase db;
+    private DatabaseHelper dbHelper;
     private String name;
 
-    public Storage(String name) {
-        this.name = Storage.getStorageName(name);
+    public static String[] getList() {
+        Context context = SawimApplication.getInstance();
+        return context.databaseList();
     }
 
-    public static String[] getList() {
-        String[] recordStores = SawimApplication.getInstance().recordStoreManager.listRecordStores();
-        if (null == recordStores) {
-            recordStores = new String[0];
+    public static void delete(String recordStoreName) {
+        Context context = SawimApplication.getInstance();
+        context.deleteDatabase(recordStoreName);
+    }
+
+    public void dropTable() {
+        dbHelper.dropTable(db);
+    }
+
+    public Storage(String recordStoreName) {
+        name = recordStoreName;
+        Context context = SawimApplication.getContext();
+        String SQL_CREATE_ENTRIES = "CREATE TABLE " + TABLE_NAME +
+                " (" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                COLUMN_DATA + " BLOB)";
+        dbHelper = new DatabaseHelper(context, recordStoreName, SQL_CREATE_ENTRIES);
+    }
+
+    public Storage(String recordStoreName, String sqlCreateEntries) {
+        name = recordStoreName;
+        Context context = SawimApplication.getContext();
+        dbHelper = new DatabaseHelper(context, recordStoreName, sqlCreateEntries);
+    }
+
+    public void open() {
+        db = dbHelper.getWritableDatabase();
+    }
+
+    public void close() {
+        dbHelper.close();
+    }
+
+    public void addRecord(byte data[]) {
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_DATA, data);
+        db.insert(TABLE_NAME, null, values);
+    }
+
+    public void addRecord(String table, ContentValues values) {
+        db.insert(table, null, values);
+    }
+
+    public byte[] getRecord(int id) {
+        String where = COLUMN_ID + " = " + id;
+        Cursor cursor = db.query(TABLE_NAME, null, where, null, null, null, null);
+        cursor.moveToFirst();
+        return cursor.getBlob(cursor.getColumnIndex(COLUMN_DATA));
+    }
+
+    public void setRecord(int id, byte data[]) {
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_DATA, data);
+        String where = COLUMN_ID + " = " + id;
+        db.update(TABLE_NAME, values, where, null);
+    }
+
+    public void deleteRecord(int id) {
+        String where = COLUMN_ID + " = " + id;
+        db.delete(TABLE_NAME, where, null);
+    }
+
+    public int getNumRecords() {
+        String selectCount = "SELECT COUNT(*) FROM " + TABLE_NAME;
+        Cursor cur = db.rawQuery(selectCount, null);
+        if (cur.moveToFirst()) {
+            return cur.getInt(0);
         }
-        return recordStores;
+        return 0;
     }
 
     public boolean exist() {
         String[] recordStores = Storage.getList();
-        for (int i = 0; i < recordStores.length; ++i) {
-            if (name.equals(recordStores[i])) {
+        for (String recordStore : recordStores) {
+            if (name.equals(recordStore)) {
                 return true;
             }
         }
         return false;
     }
 
-    public static String getStorageName(String name) {
-        return (32 < name.length()) ? name.substring(0, 32) : name;
-    }
-
-    public void delete() {
-        try {
-            SawimApplication.getInstance().recordStoreManager.deleteRecordStore(name);
-        } catch (Exception ignored) {
-        }
-    }
-
-    public boolean isOppened() {
-        return null != rs;
-    }
-
-    public void open(boolean create) throws Exception {
-        if (null == rs) {
-            rs = SawimApplication.getInstance().recordStoreManager.openRecordStore(name, create);
-        }
-    }
-
-    public byte[] getRecord(int recordNum) {
-        if (null == rs) {
-            return null;
-        }
-        try {
-            return rs.getRecord(recordNum);
-        } catch (Exception ignored) {
-        }
-        return null;
-    }
-
-    public void close() {
-        try {
-            rs.closeRecordStore();
-        } catch (Exception ignored) {
-        }
-        rs = null;
-    }
-
-    public void initRecords(int count) throws Exception {
-        if (rs.getNumRecords() < count) {
-            if ((1 < count) && (0 == rs.getNumRecords())) {
-                byte[] version = StringConvertor.stringToByteArrayUtf8(SawimApplication.VERSION);
-                rs.addRecord(version, 0, version.length);
-            }
-            while (rs.getNumRecords() < count) {
-                rs.addRecord(new byte[0], 0, 0);
-            }
-        }
-    }
-
-    public void addRecord(byte[] data) throws Exception {
-        rs.addRecord(data, 0, data.length);
-    }
-
-    public void setRecord(int num, byte[] data) throws Exception {
-        rs.setRecord(num, data, 0, data.length);
-    }
-
-    public void deleteRecord(int num) {
-        try {
-            rs.deleteRecord(num);
-        } catch (Exception ignored) {
-        }
-    }
-
-    private void putRecord(int num, byte[] data) throws Exception {
-        initRecords(num);
-        setRecord(num, data);
-    }
-
-    public int getNumRecords() throws Exception {
-        return rs.getNumRecords();
-    }
-
-    public RecordStoreImpl getRS() {
-        return rs;
-    }
-
-    public void saveListOfString(Vector strings) {
+    public void saveListOfString(Vector<String> strings) {
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             DataOutputStream dos = new DataOutputStream(baos);
-            for (int i = 0; i < strings.size(); ++i) {
-                dos.writeUTF(StringConvertor.notNull((String) strings.elementAt(i)));
+            for (String str : strings) {
+                dos.writeUTF(StringConvertor.notNull(str));
                 addRecord(baos.toByteArray());
                 baos.reset();
             }
@@ -134,7 +123,7 @@ public final class Storage {
     }
 
     public Vector loadListOfString() {
-        Vector strings = new Vector();
+        Vector<String> strings = new Vector<String>(getNumRecords());
         try {
             for (int i = 0; i < getNumRecords(); ++i) {
                 byte[] data = getRecord(i + 1);
@@ -146,29 +135,6 @@ public final class Storage {
         } catch (Exception ignored) {
         }
         return strings;
-    }
-
-    public static byte[] loadSlot(int slotId) {
-        try {
-            Storage storage = new Storage("rms-options");
-            storage.open(false);
-            byte[] slot = storage.getRecord(slotId);
-            storage.close();
-            return slot;
-        } catch (Exception ignored) {
-        }
-        return null;
-    }
-
-    public static void saveSlot(int slotId, byte[] buf) {
-        try {
-            Storage storage = new Storage("rms-options");
-            storage.open(true);
-            storage.initRecords(2);
-            storage.setRecord(slotId, buf);
-            storage.close();
-        } catch (Exception ignored) {
-        }
     }
 
     public void saveXStatuses(String[] titles, String[] descs) {
@@ -194,6 +160,49 @@ public final class Storage {
                 descs[i] = StringConvertor.notNull(dis.readUTF());
             }
         } catch (Exception ignored) {
+        }
+    }
+
+    private void initRecords(int count) throws Exception {
+        if (getNumRecords() < count) {
+            if ((1 < count) && (0 == getNumRecords())) {
+                byte[] version = StringConvertor.stringToByteArrayUtf8(SawimApplication.VERSION);
+                addRecord(version);
+            }
+            while (getNumRecords() < count) {
+                addRecord(new byte[0]);
+            }
+        }
+    }
+
+    private void putRecord(int num, byte[] data) throws Exception {
+        initRecords(num);
+        setRecord(num, data);
+    }
+
+    private static final class DatabaseHelper extends SQLiteOpenHelper {
+
+        private static final int DATABASE_VERSION = 3;
+        private static final String SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS " + TABLE_NAME;
+
+        private String sqlCreateEntries;
+
+        private DatabaseHelper(Context context, String recordStoreName, String sqlCreateEntries) {
+            super(context, recordStoreName, null, DATABASE_VERSION);
+            this.sqlCreateEntries = sqlCreateEntries;
+        }
+
+        public void onCreate(SQLiteDatabase db) {
+            db.execSQL(sqlCreateEntries);
+        }
+
+        public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+            dropTable(db);
+        }
+
+        public void dropTable(SQLiteDatabase db) {
+            db.execSQL(SQL_DELETE_ENTRIES);
+            onCreate(db);
         }
     }
 }
