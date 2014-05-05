@@ -373,7 +373,6 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         super.onDetach();
         MessagesAdapter.clearCache();
         ((BaseActivity) getActivity()).setConfigurationChanged(null);
-        sharingText = null;
         chat = null;
         oldChat = null;
         contact = null;
@@ -1049,6 +1048,9 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         @Override
         public void afterTextChanged(Editable s) {
             String text = s.subSequence(0, s.length()).toString();
+            if (sharingText != null && sharingText.equals(text)) {
+                sharingText = null;
+            }
             if (adapter != null && adapter.isMultiQuote()) {
                 String clipBoardText = Clipboard.getClipBoardText(getActivity());
                 if (clipBoardText != null && text.equals(clipBoardText)) {
