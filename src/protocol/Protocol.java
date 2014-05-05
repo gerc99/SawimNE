@@ -857,7 +857,7 @@ abstract public class Protocol {
         }
         Chat chat = getChat(contact);
         boolean isHighlight = Chat.isHighlight(message.getProcessedText(), contact.getMyName());
-        chat.addMessage(message, !message.isWakeUp(), isHighlight);
+        chat.addMessage(message, isHighlight);
         if (message instanceof SystemNotice) {
             SystemNotice notice = (SystemNotice) message;
             if (SystemNotice.SYS_NOTICE_AUTHREQ == notice.getSysnoteType()) {
@@ -1032,7 +1032,7 @@ abstract public class Protocol {
                 if (!cmdExecuted) {
                     String text = JLocale.getString(R.string.jabber_command_not_found);
                     SystemNotice notice = new SystemNotice(this, SystemNotice.SYS_NOTICE_MESSAGE, to.getUserId(), text);
-                    getChat(to).addMessage(notice, false, false);
+                    getChat(to).addMessage(notice, false);
                 }
                 return;
             }

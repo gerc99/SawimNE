@@ -361,9 +361,6 @@ public class XmppServiceContact extends XmppContact {
         }
         if (!isPrivate) {
             contactMenu.add(Menu.NONE, ContactMenu.USER_MANAGE_CONTACT, Menu.NONE, R.string.manage);
-            if (!isTemp()) {
-                contactMenu.add(Menu.NONE, ContactMenu.USER_MENU_HISTORY, Menu.NONE, R.string.history);
-            }
         }
         if (isOnline()) {
             contactMenu.add(Menu.NONE, ContactMenu.USER_MENU_STATUSES, Menu.NONE, R.string.user_statuses);

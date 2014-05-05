@@ -15,7 +15,6 @@ import ru.sawim.comm.Util;
 import ru.sawim.forms.ManageContactListForm;
 import ru.sawim.modules.FileTransfer;
 import ru.sawim.modules.history.HistoryStorage;
-import ru.sawim.modules.history.HistoryStorageList;
 import ru.sawim.view.TextBoxView;
 import ru.sawim.view.menu.MyMenu;
 
@@ -73,7 +72,7 @@ public class ContactMenu implements TextBoxView.TextBoxListener {
     public static final int USER_MENU_USER_INFO = 43;
     public static final int USER_MENU_MOVE = 44;
     public static final int USER_MENU_STATUSES = 45;
-    public static final int USER_MENU_HISTORY = 46;
+
     public static final int USER_MENU_ADD_USER = 47;
     public static final int USER_MENU_GRANT_AUTH = 48;
     public static final int USER_MENU_DENY_AUTH = 49;
@@ -163,19 +162,6 @@ public class ContactMenu implements TextBoxView.TextBoxListener {
 
             case USER_MENU_RENAME:
                 new ManageContactListForm(protocol, contact).showContactRename(activity);
-                break;
-
-            case USER_MENU_HISTORY:
-                if (contact.hasHistory()) {
-                    HistoryStorage history;
-                    if (contact.hasChat()) {
-                        history = protocol.getChat(contact).getHistory();
-                    } else {
-                        history = HistoryStorage.getHistory(contact);
-                    }
-                    if (history.getHistorySize() > 0)
-                        new HistoryStorageList().show(history);
-                }
                 break;
 
             case USER_MENU_MOVE:

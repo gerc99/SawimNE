@@ -1,21 +1,37 @@
 package ru.sawim.modules.history;
 
 import android.content.ContentValues;
-import android.util.Log;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import protocol.Contact;
+import ru.sawim.SawimApplication;
+import ru.sawim.chat.Chat;
+import ru.sawim.chat.MessData;
+import ru.sawim.chat.message.PlainMessage;
 import ru.sawim.comm.Util;
-import ru.sawim.io.Storage;
-
-import java.io.*;
+import ru.sawim.io.DatabaseHelper;
 
 public class HistoryStorage {
+
+    private static final String CHAT_HISTORY_TABLE = "messages";
+    private static final String COLUMN_ID = "_id";
+    private static final String INCOMING = "incoming";
+    private static final String AUTHOR = "author";
+    private static final String MESSAGE = "msgtext";
+    private static final String DATE = "date";
+    private static final String DB_CREATE = "create table if not exists " +
+            CHAT_HISTORY_TABLE + " (" + COLUMN_ID + " integer primary key autoincrement, " +
+            INCOMING + " integer, " +
+            AUTHOR + " text not null, " +
+            MESSAGE + " text not null, " +
+            DATE + " long not null );";
 
     private static final String PREFIX = "hist";
 
     private Contact contact;
     private String uniqueUserId;
-    private Storage historyStore;
-    private int currRecordCount = -1;
+    private DatabaseHelper dbHelper;
+    private SQLiteDatabase db;
 
     public HistoryStorage(Contact contact) {
         this.contact = contact;
@@ -30,15 +46,13 @@ public class HistoryStorage {
         return new HistoryStorage(contact);
     }
 
-    private boolean openHistory(boolean create) {
-        if (null == historyStore) {
+    public boolean openHistory() {
+        if (null == dbHelper) {
             try {
-                historyStore = new Storage(getRSName());
-                //historyStore = new Storage(getRSName(),
-                //        "create table if not exists messages (_id INTEGER PRIMARY KEY AUTOINCREMENT, incoming integer, author text not null, msgtext text not null, date longer );");
-                historyStore.open();
+                dbHelper = new DatabaseHelper(SawimApplication.getContext(), getDBName(), DB_CREATE, CHAT_HISTORY_TABLE, 3);
+                db = dbHelper.getWritableDatabase();
             } catch (Exception e) {
-                historyStore = null;
+                dbHelper = null;
                 e.printStackTrace();
                 return false;
             }
@@ -46,54 +60,47 @@ public class HistoryStorage {
         return true;
     }
 
-    public void openHistory() {
-        openHistory(false);
-    }
-
     public void closeHistory() {
-        if (null != historyStore) {
-            historyStore.close();
+        if (null != dbHelper) {
+            dbHelper.close();
         }
-        historyStore = null;
-        currRecordCount = -1;
+        dbHelper = null;
     }
 
-    synchronized void closeHistoryView() {
-        closeHistory();
-    }
-
-    public synchronized void addText(final String text, final boolean incoming,
-                                     final String from, final long gmtTime) {
-        boolean isOpened = openHistory(true);
+    public synchronized void addText(MessData md) {
+        boolean isOpened = openHistory();
         if (!isOpened) {
             return;
         }
-        byte type = (byte) (incoming ? 0 : 1);
         try {
-            /*ContentValues values = new ContentValues();
-            values.put("incoming", incoming ? 0 : 1);
-            values.put("author", from);
-            values.put("msgtext", text);
-            values.put("date", Util.getLocalDateString(gmtTime, false));
-            historyStore.addRecord("messages", values);*/
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            DataOutputStream das = new DataOutputStream(baos);
-            das.writeByte(type);
-            das.writeUTF(from);
-            das.writeUTF(text);
-            das.writeUTF(Util.getLocalDateString(gmtTime, false));
-            byte[] buffer = baos.toByteArray();
-            historyStore.addRecord(buffer);
+            ContentValues values = new ContentValues();
+            values.put(INCOMING, md.isIncoming() ? 0 : 1);
+            values.put(AUTHOR, md.getNick());
+            values.put(MESSAGE, md.getText().toString());
+            values.put(DATE, md.getTime());
+            db.insert(CHAT_HISTORY_TABLE, null, values);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    Storage getRS() {
-        return historyStore;
+    public int getHistorySize() {
+        int num = 0;
+        String selectCount = "SELECT COUNT(*) FROM " + CHAT_HISTORY_TABLE;
+        openHistory();
+        try {
+            Cursor cursor = db.rawQuery(selectCount, new String[]{});
+            if (cursor.moveToFirst()) {
+                num = cursor.getInt(0);
+            }
+            cursor.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return num;
     }
 
-    private String getRSName() {
+    private String getDBName() {
         return PREFIX + getUniqueUserId();
     }
 
@@ -101,65 +108,53 @@ public class HistoryStorage {
         return uniqueUserId;
     }
 
-    public int getHistorySize() {
-        if (currRecordCount < 0) {
-            openHistory(false);
-            currRecordCount = 0;
-            try {
-                if (null != historyStore) {
-                    currRecordCount = historyStore.getNumRecords();
-                }
-            } catch (Exception e) {
-                // do nothing
-            }
-        }
-        return currRecordCount;
-    }
-
-    public CachedRecord getRecord(int recNo) {
-        if (null == historyStore) {
-            openHistory(false);
-        }
-        CachedRecord result = new CachedRecord();
+    public void fillFromHistory(Chat chat) {
+        openHistory();
         try {
-            byte[] data = historyStore.getRecord(recNo + 1);
-            ByteArrayInputStream bais = new ByteArrayInputStream(data);
-            DataInputStream dis = new DataInputStream(bais);
-            result.type = dis.readByte();
-            result.from = dis.readUTF();
-            result.text = dis.readUTF();
-            result.date = dis.readUTF();
-
+            Cursor cursor = db.query(CHAT_HISTORY_TABLE, null, null, null, null, null, null);
+            if (cursor.moveToFirst()) {
+                do {
+                    boolean isIncoming = cursor.getInt(cursor.getColumnIndex(INCOMING)) == 0;
+                    String from = cursor.getString(cursor.getColumnIndex(AUTHOR));
+                    String text = cursor.getString(cursor.getColumnIndex(MESSAGE));
+                    long date = Util.createLocalDate(Util.getLocalDateString(cursor.getLong(cursor.getColumnIndex(DATE)), false));
+                    PlainMessage message;
+                    if (isIncoming) {
+                        message = new PlainMessage(from, chat.getProtocol(), date, text, true);
+                    } else {
+                        message = new PlainMessage(chat.getProtocol(), contact, date, text);
+                    }
+                    chat.addTextToForm(message, contact.isConference() ? from : chat.getFrom(message),
+                            false, Chat.isHighlight(message.getProcessedText(), contact.getMyName()), false);
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+            closeHistory();
         } catch (Exception e) {
-            result.type = 0;
-            result.from = "";
-            result.text = "";
-            result.date = "";
+            e.printStackTrace();
         }
-        return result;
     }
 
     public void removeHistory() {
         closeHistory();
-        removeRMS(getRSName());
+        removeRMS(getDBName());
     }
 
     private void removeRMS(String rms) {
-        Storage.delete(rms);
+        SawimApplication.getContext().deleteDatabase(rms);
     }
 
     public void dropTable() {
-        historyStore.dropTable();
+        dbHelper.dropTable(db);
     }
 
     public void clearAll(boolean except) {
         closeHistory();
-        String exceptRMS = (except ? getRSName() : null);
-        String[] stores = Storage.getList();
+        String exceptRMS = (except ? getDBName() : null);
+        String[] stores = SawimApplication.getContext().databaseList();
 
         for (int i = 0; i < stores.length; ++i) {
             String store = stores[i];
-            Log.e("gg", ""+store);
             if (!store.startsWith(PREFIX)) {
                 continue;
             }

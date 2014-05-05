@@ -328,9 +328,6 @@ abstract public class Contact implements TreeNode {
     protected final void addGeneralItems(Protocol protocol, ContextMenu menu) {
         menu.add(Menu.NONE, ContactMenu.USER_MENU_USER_INFO, Menu.NONE, R.string.user_info);
         menu.add(Menu.NONE, ContactMenu.USER_MANAGE_CONTACT, Menu.NONE, R.string.manage);
-        if (!isTemp()) {
-            menu.add(Menu.NONE, ContactMenu.USER_MENU_HISTORY, Menu.NONE, R.string.history);
-        }
         if (isOnline()) {
             menu.add(Menu.NONE, ContactMenu.USER_MENU_STATUSES, Menu.NONE, R.string.statuses);
         }
