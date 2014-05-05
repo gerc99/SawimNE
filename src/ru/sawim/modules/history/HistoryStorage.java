@@ -101,7 +101,7 @@ public class HistoryStorage {
     }
 
     private String getDBName() {
-        return PREFIX + getUniqueUserId();
+        return PREFIX + getUniqueUserId().replace('@', '_').replace('.', '_');
     }
 
     String getUniqueUserId() {

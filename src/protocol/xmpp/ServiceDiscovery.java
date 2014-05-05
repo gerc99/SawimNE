@@ -130,7 +130,6 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
 
                         case COMMAND_ADHOC:
                             Contact contact = xmpp.createTempContact(jid);
-                            xmpp.addContact(contact);
                             AdHoc adhoc = new AdHoc(xmpp, (XmppContact) contact);
                             adhoc.show(activity);
                             break;

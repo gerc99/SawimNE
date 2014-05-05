@@ -1,31 +1,23 @@
 package ru.sawim;
 
 import android.app.*;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Environment;
 import android.os.Message;
-import android.util.Log;
 import android.view.Surface;
 import android.view.WindowManager;
 import protocol.Protocol;
-import protocol.xmpp.XmppContact;
 import protocol.xmpp.XmppSession;
 import ru.sawim.chat.ChatHistory;
-import ru.sawim.comm.Util;
 import ru.sawim.io.FileSystem;
 import ru.sawim.io.HomeDirectory;
 import ru.sawim.modules.Answerer;
 import ru.sawim.modules.AutoAbsence;
 import ru.sawim.modules.DebugLog;
 import ru.sawim.modules.Emotions;
-import ru.sawim.modules.history.HistoryStorage;
 import ru.sawim.modules.sound.Notify;
 import ru.sawim.receiver.NetworkStateReceiver;
 import ru.sawim.roster.RosterHelper;
@@ -34,7 +26,6 @@ import ru.sawim.service.SawimServiceConnection;
 import ru.sawim.text.TextFormatter;
 
 import java.io.InputStream;
-import java.util.Date;
 import java.util.List;
 
 /**

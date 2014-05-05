@@ -1,5 +1,6 @@
 package ru.sawim.chat;
 
+import android.util.Log;
 import protocol.Contact;
 import protocol.Protocol;
 import protocol.xmpp.Jid;
@@ -311,9 +312,10 @@ public final class Chat {
     }
 
     public void addTextToForm(Message message, String from, boolean isSystemNotice, boolean isHighlight, boolean isHistory) {
+        boolean isConference = contact.isConference();
         boolean incoming = message.isIncoming();
         String messageText = message.getProcessedText();
-        messageText = StringConvertor.removeCr(messageText);
+        //messageText = StringConvertor.removeCr(messageText);
         if (StringConvertor.isEmpty(messageText)) {
             return;
         }
@@ -343,12 +345,21 @@ public final class Chat {
         if (isHistory) {
             addTextToHistory(mData);
         }
-        if (contact.isConference() && mData.isMessage())
+        if (isConference && mData.isMessage())
             RosterHelper.getInstance().setLastMessageTime(contact.getUserId(), mData.getTime());
     }
 
     private void addMessage(MessData mData) {
         messData.add(mData);
+    }
+
+    private boolean hasMessage(MessData mData) {
+        for (int i = 0; i < getMessData().size(); ++i) {
+            if (getMessageDataByIndex(i).getTime() == mData.getTime()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void addPresence(SystemNotice message) {
