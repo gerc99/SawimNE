@@ -1,6 +1,5 @@
 package ru.sawim.chat;
 
-import android.util.Log;
 import protocol.Contact;
 import protocol.Protocol;
 import protocol.xmpp.Jid;
@@ -31,7 +30,7 @@ public final class Chat {
     public String message;
     public int scrollPosition;
     public int offset;
-    public int dividerPosition;
+    public int dividerPosition = -1;
     public int lastVisiblePosition;
 
     public Chat(Protocol p, Contact item) {
@@ -351,15 +350,6 @@ public final class Chat {
 
     private void addMessage(MessData mData) {
         messData.add(mData);
-    }
-
-    private boolean hasMessage(MessData mData) {
-        for (int i = 0; i < getMessData().size(); ++i) {
-            if (getMessageDataByIndex(i).getTime() == mData.getTime()) {
-                return true;
-            }
-        }
-        return false;
     }
 
     public void addPresence(SystemNotice message) {

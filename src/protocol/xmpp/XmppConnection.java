@@ -16,6 +16,7 @@ import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
 import ru.sawim.modules.DebugLog;
 import ru.sawim.modules.crypto.MD5;
+import ru.sawim.modules.history.HistoryStorage;
 import ru.sawim.modules.search.UserInfo;
 import ru.sawim.roster.RosterHelper;
 
@@ -1714,7 +1715,7 @@ public final class XmppConnection extends ClientConnection {
         if (subject == null)
             message = new PlainMessage(from, getXmpp(), time, text, !isOnlineMessage);
         else
-            message = new SystemNotice(getXmpp(), SystemNotice.SYS_NOTICE_MESSAGE, from, text);
+            return;//message = new SystemNotice(getXmpp(), SystemNotice.SYS_NOTICE_MESSAGE, from, text);
         if (null == c) {
             if (isConference && !isGroupchat) {
                 prepareFirstPrivateMessage(from);
@@ -2394,6 +2395,11 @@ public final class XmppConnection extends ClientConnection {
                 xNode += "<password>" + Util.xmlEscape(password) + "</password>";
             }
             long time = RosterHelper.getInstance().getLastMessageTime(conf.getUserId());
+            if (time == 0) {
+                HistoryStorage historyStorage = getXmpp().getChat(conf).getHistory();
+                if (historyStorage != null)
+                    time = historyStorage.getLastMessageTime();
+            }
             if (0 != time)
                 xNode += "<history maxstanzas='20' seconds='" + (SawimApplication.getCurrentGmtTime() - time) + "'/>";
 

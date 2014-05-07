@@ -491,11 +491,11 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
     private void setPosition(int unreadMessageCount) {
         boolean hasHistory = chat.getHistory() != null && chat.getHistory().getHistorySize() > 0 && !chat.isBlogBot();
         adapter.setPosition(chat.dividerPosition);
-        if (chat.dividerPosition == 0) {
-            if (contact.isConference() || (!contact.isConference() && !hasHistory)) {
+        int position = chat.getMessData().size() - unreadMessageCount;
+        if (chat.dividerPosition == -1) {
+            if (contact.isConference() || !(contact.isConference() && hasHistory)) {
                 chatListView.setSelection(0);
             } else if (hasHistory) {
-                int position = chat.getMessData().size() - unreadMessageCount;
                 adapter.setPosition(position);
                 chatListView.setSelection(position);
             }
@@ -507,7 +507,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
                 if (!isBottomScroll || unreadMessageCount == 0) {
                     chatListView.setSelectionFromTop(chat.scrollPosition + 1, chat.offset);
                 } else {
-                    chatListView.setSelectionFromTop(chat.getMessData().size() - unreadMessageCount, chat.offset);
+                    chatListView.setSelectionFromTop(position, chat.offset);
                 }
             }
         }

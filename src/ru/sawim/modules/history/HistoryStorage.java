@@ -33,7 +33,7 @@ public class HistoryStorage {
     private DatabaseHelper dbHelper;
     private SQLiteDatabase db;
 
-    public HistoryStorage(Contact contact) {
+    private HistoryStorage(Contact contact) {
         this.contact = contact;
         uniqueUserId = contact.getUserId();
     }
@@ -46,7 +46,7 @@ public class HistoryStorage {
         return new HistoryStorage(contact);
     }
 
-    public boolean openHistory() {
+    private void openHistory() {
         if (null == dbHelper) {
             try {
                 dbHelper = new DatabaseHelper(SawimApplication.getContext(), getDBName(), DB_CREATE, CHAT_HISTORY_TABLE, 3);
@@ -54,13 +54,11 @@ public class HistoryStorage {
             } catch (Exception e) {
                 dbHelper = null;
                 e.printStackTrace();
-                return false;
             }
         }
-        return true;
     }
 
-    public void closeHistory() {
+    private void closeHistory() {
         if (null != dbHelper) {
             dbHelper.close();
         }
@@ -68,8 +66,8 @@ public class HistoryStorage {
     }
 
     public synchronized void addText(MessData md) {
-        boolean isOpened = openHistory();
-        if (!isOpened) {
+        openHistory();
+        if (dbHelper == null) {
             return;
         }
         try {
@@ -106,6 +104,17 @@ public class HistoryStorage {
 
     String getUniqueUserId() {
         return uniqueUserId;
+    }
+
+    public long getLastMessageTime() {
+        openHistory();
+        Cursor latest = db.query(CHAT_HISTORY_TABLE, new String[]{"MAX(" + DATE + ")"}, null, null, null, null, null);
+        long lastMessageTime = 0;
+        if (latest.moveToFirst()) {
+            lastMessageTime = latest.getLong(0);
+        }
+        latest.close();
+        return lastMessageTime;
     }
 
     public void fillFromHistory(Chat chat) {
