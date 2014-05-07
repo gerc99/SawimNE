@@ -172,7 +172,6 @@ public class FormView extends DialogFragment implements Forms.OnUpdateForm, View
             getLastForms().getFormListener()
                     .formAction(getLastForms(), view.equals(okButton));
         hideKeyboard();
-        dismiss();
     }
 
     public boolean hasBack() {
