@@ -33,7 +33,7 @@ public class SawimService extends Service {
             public void run() {
                 ChatHistory.instance.loadUnreadMessages();
             }
-        }).start();
+        },"loadUnreadMessage").start();
         if (RosterHelper.getInstance() != null) {
             RosterHelper.getInstance().autoConnect();
         }

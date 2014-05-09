@@ -115,7 +115,7 @@ public class XmppRegistration implements Runnable, FormListener {
 
     private void requestForm(String domain) {
         this.domain = domain;
-        new Thread(this).start();
+        new Thread(this,"XMPPRegistration").start();
     }
 
     public void formAction(Forms form, boolean apply) {

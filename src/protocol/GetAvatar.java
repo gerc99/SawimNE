@@ -35,7 +35,7 @@ public class GetAvatar implements Runnable {
             url = "http://api.icq.net/expressions/get?f=native&type=buddyIcon&t=" + uin;
         }
         try {
-            new Thread(this).start();
+            new Thread(this,"SetAvatar").start();
             Thread.sleep(10);
         } catch (Exception ignored) {
         }

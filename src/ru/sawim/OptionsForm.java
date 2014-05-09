@@ -1,5 +1,7 @@
 package ru.sawim;
 
+import protocol.Protocol;
+import protocol.xmpp.Xmpp;
 import ru.sawim.activities.BaseActivity;
 import ru.sawim.comm.JLocale;
 import ru.sawim.comm.Util;
@@ -7,6 +9,7 @@ import ru.sawim.models.form.ControlStateListener;
 import ru.sawim.models.form.Forms;
 import ru.sawim.modules.Answerer;
 import ru.sawim.modules.sound.Notify;
+import ru.sawim.roster.RosterHelper;
 
 public class OptionsForm implements ControlStateListener {
 
@@ -204,8 +207,20 @@ public class OptionsForm implements ControlStateListener {
     }
 
     public void controlStateChanged(String id) {
-        if (id == Options.OPTION_FONT_SCHEME) {
+        if (id.equals(Options.OPTION_FONT_SCHEME)) {
             saveOptionSelector(Options.OPTION_FONT_SCHEME);
+        } else if (id.equals(Options.OPTION_PUSH)) {
+            int count = RosterHelper.getInstance().getProtocolCount();
+            for (int i = 0; i < count; ++i) {
+                Protocol p = RosterHelper.getInstance().getProtocol(i);
+                if (p instanceof Xmpp) {
+                    if (form.getCheckBoxValue(Options.OPTION_PUSH)) {
+                        SawimApplication.getInstance().getXmppSession().enable(((Xmpp) p).getConnection());
+                    } else {
+                        ((Xmpp) p).pushDisable();
+                    }
+                }
+            }
         }
     }
 }

@@ -7,6 +7,8 @@ import ru.sawim.Options;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.SawimException;
+import ru.sawim.chat.Chat;
+import ru.sawim.chat.ChatHistory;
 import ru.sawim.chat.message.Message;
 import ru.sawim.chat.message.PlainMessage;
 import ru.sawim.chat.message.SystemNotice;
@@ -395,13 +397,13 @@ public final class XmppConnection extends ClientConnection {
 
         setProgress(30);
         socket.start();
+        write(GET_ROSTER_XML);
+        setProgress(50);
+        usePong();
         if (Options.getBoolean(Options.OPTION_PUSH) && isSessionRestored()) {
-            usePong();
+            getBookmarks();
             setProgress(100);
         } else {
-            write(GET_ROSTER_XML);
-            setProgress(50);
-            usePong();
             setProgress(60);
         }
     }
@@ -480,11 +482,10 @@ public final class XmppConnection extends ClientConnection {
         } else if (x.is("failed")) {
             // expired session
             DebugLog.systemPrintln("[INFO-JABBER] Failed to resume session ID=" + smSessionID);
-            setSessionManagementEnabled(false);
             smSessionID = "";
             packetsIn = 0;
             packetsOut = 0;
-            SawimApplication.getInstance().getXmppSession().save(this);
+            setSessionManagementEnabled(false);
             resourceBinding();
         } else if (x.is("compressed")) {
             setStreamCompression();
@@ -571,9 +572,8 @@ public final class XmppConnection extends ClientConnection {
         } else if (x.is("r")) {
             sendAck();
         } else if (x.is("enabled")) {
-            setSessionManagementEnabled(true);
             smSessionID = x.getAttribute("id");
-            SawimApplication.getInstance().getXmppSession().save(this);
+            setSessionManagementEnabled(true);
             DebugLog.systemPrintln("[INFO-JABBER] Session management enabled with ID=" + smSessionID);
         }
     }
@@ -589,6 +589,7 @@ public final class XmppConnection extends ClientConnection {
     public void setSessionManagementEnabled(boolean flag) {
         smEnabled = flag;
         SawimApplication.getInstance().getXmppSession().enable(this);
+        SawimApplication.getInstance().getXmppSession().save(this);
     }
 
     private boolean isSessionRestored() {
@@ -1153,7 +1154,7 @@ public final class XmppConnection extends ClientConnection {
         XmlNode bs64photo = vCard.getFirstNode("PHOTO");
         bs64photo = (null == bs64photo) ? null : bs64photo.getFirstNode("BINVAL");
         if (null != bs64photo) {
-            new Thread(new AvatarLoader(userInfo, bs64photo)).start();
+            new Thread(new AvatarLoader(userInfo, bs64photo),"XMPPAvatarLoad").start();
         }
         bs64photo = null;
         singleUserInfo = null;
@@ -2395,7 +2396,7 @@ public final class XmppConnection extends ClientConnection {
                 xNode += "<password>" + Util.xmlEscape(password) + "</password>";
             }
             long time = RosterHelper.getInstance().getLastMessageTime(conf.getUserId());
-            if (time == 0) {
+            if (time == 0 && ChatHistory.instance.getChat(conf) == null) {
                 HistoryStorage historyStorage = getXmpp().getChat(conf).getHistory();
                 if (historyStorage != null)
                     time = historyStorage.getLastMessageTime();

@@ -67,7 +67,7 @@ public class MrimContact extends Contact {
     }
 
     public void addChatMenuItems(ContextMenu model) {
-        if (isOnline() && Options.getBoolean(Options.OPTION_ALARM)) {
+        if (isOnline() && Options.getBoolean(Options.OPTION_ALARM) && isSingleUserContact()) {
             model.add(Menu.FIRST, ContactMenu.USER_MENU_WAKE, 2, R.string.wake);
         }
     }

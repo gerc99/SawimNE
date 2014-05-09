@@ -1,26 +1,29 @@
 package ru.sawim.modules.history;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import protocol.Contact;
 import ru.sawim.SawimApplication;
 import ru.sawim.chat.Chat;
 import ru.sawim.chat.MessData;
 import ru.sawim.chat.message.PlainMessage;
 import ru.sawim.comm.Util;
-import ru.sawim.io.DatabaseHelper;
 
 public class HistoryStorage {
 
     private static final String CHAT_HISTORY_TABLE = "messages";
     private static final String COLUMN_ID = "_id";
     private static final String INCOMING = "incoming";
+    private static final String SENDING_STATE = "sanding_state";
     private static final String AUTHOR = "author";
     private static final String MESSAGE = "msgtext";
     private static final String DATE = "date";
     private static final String DB_CREATE = "create table if not exists " +
             CHAT_HISTORY_TABLE + " (" + COLUMN_ID + " integer primary key autoincrement, " +
+            SENDING_STATE + " integer, " +
             INCOMING + " integer, " +
             AUTHOR + " text not null, " +
             MESSAGE + " text not null, " +
@@ -46,16 +49,17 @@ public class HistoryStorage {
         return new HistoryStorage(contact);
     }
 
-    private void openHistory() {
+    private boolean openHistory() {
         if (null == dbHelper) {
             try {
-                dbHelper = new DatabaseHelper(SawimApplication.getContext(), getDBName(), DB_CREATE, CHAT_HISTORY_TABLE, 3);
+                dbHelper = new DatabaseHelper(SawimApplication.getContext(), getDBName(), DB_CREATE, CHAT_HISTORY_TABLE, 4);
                 db = dbHelper.getWritableDatabase();
             } catch (Exception e) {
                 dbHelper = null;
                 e.printStackTrace();
             }
         }
+        return dbHelper != null;
     }
 
     private void closeHistory() {
@@ -66,17 +70,35 @@ public class HistoryStorage {
     }
 
     public synchronized void addText(MessData md) {
-        openHistory();
-        if (dbHelper == null) {
+        if (!openHistory()) {
             return;
         }
         try {
             ContentValues values = new ContentValues();
+            values.put(SENDING_STATE, (int) md.getIconIndex());
             values.put(INCOMING, md.isIncoming() ? 0 : 1);
             values.put(AUTHOR, md.getNick());
             values.put(MESSAGE, md.getText().toString());
             values.put(DATE, md.getTime());
             db.insert(CHAT_HISTORY_TABLE, null, values);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public synchronized void updateText(MessData md) {
+        if (!openHistory()) {
+            return;
+        }
+        try {
+            ContentValues values = new ContentValues();
+            values.put(SENDING_STATE, (int) md.getIconIndex());
+            values.put(INCOMING, md.isIncoming() ? 0 : 1);
+            values.put(AUTHOR, md.getNick());
+            values.put(MESSAGE, md.getText().toString());
+            values.put(DATE, md.getTime());
+            String where = AUTHOR + " = " + md.getNick() + " AND " + MESSAGE + " = " + md.getText().toString();
+            db.update(CHAT_HISTORY_TABLE, values, where, null);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -123,6 +145,7 @@ public class HistoryStorage {
             Cursor cursor = db.query(CHAT_HISTORY_TABLE, null, null, null, null, null, null);
             if (cursor.moveToFirst()) {
                 do {
+                    int sendingState = cursor.getInt(cursor.getColumnIndex(SENDING_STATE));
                     boolean isIncoming = cursor.getInt(cursor.getColumnIndex(INCOMING)) == 0;
                     String from = cursor.getString(cursor.getColumnIndex(AUTHOR));
                     String text = cursor.getString(cursor.getColumnIndex(MESSAGE));
@@ -135,6 +158,7 @@ public class HistoryStorage {
                     }
                     chat.addTextToForm(message, contact.isConference() ? from : chat.getFrom(message),
                             false, Chat.isHighlight(message.getProcessedText(), contact.getMyName()), false);
+                    message.setSendingStateFromHistory(contact.getProtocol(), (byte) sendingState);
                 } while (cursor.moveToNext());
             }
             cursor.close();
@@ -171,6 +195,34 @@ public class HistoryStorage {
                 continue;
             }
             removeRMS(store);
+        }
+    }
+
+    static class DatabaseHelper extends SQLiteOpenHelper {
+
+        private String sqlCreateEntries;
+        private String tableName;
+
+        public DatabaseHelper(Context context, String baseName, String sqlCreateEntries, String tableName, int version) {
+            super(context, baseName, null, version);
+            this.sqlCreateEntries = sqlCreateEntries;
+            this.tableName = tableName;
+        }
+
+        public void onCreate(SQLiteDatabase db) {
+            db.execSQL(sqlCreateEntries);
+        }
+
+        public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+            dropTable(db);
+            if (newVersion > oldVersion) {
+            //    db.execSQL("ALTER TABLE " + tableName + " ADD " + SENDING_STATE + " integer");
+            }
+        }
+
+        public void dropTable(SQLiteDatabase db) {
+            db.execSQL("DROP TABLE IF EXISTS " + tableName);
+            onCreate(db);
         }
     }
 }

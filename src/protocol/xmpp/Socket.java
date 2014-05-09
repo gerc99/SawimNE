@@ -183,6 +183,6 @@ final class Socket implements Runnable {
     }
 
     public void start() {
-        new Thread(this).start();
+        new Thread(this,"XMPPSocet").start();
     }
 }

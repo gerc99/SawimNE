@@ -268,21 +268,6 @@ public final class RosterHelper {
                 ? StatusInfo.STATUS_OFFLINE : StatusInfo.STATUS_ONLINE, "");
     }
 
-    public void addTransfer(FileTransfer ft) {
-        transfers.addElement(ft);
-    }
-
-    public void removeTransfer(boolean cancel) {
-        for (int i = 0; i < transfers.size(); ++i) {
-            FileTransfer ft = (FileTransfer) transfers.elementAt(i);
-            transfers.removeElementAt(i);
-            if (cancel) {
-                ft.cancel();
-            }
-            return;
-        }
-    }
-
     public boolean isConnected() {
         int count = getProtocolCount();
         for (int i = 0; i < count; ++i) {
@@ -366,6 +351,21 @@ public final class RosterHelper {
                 }
             }
         }*/
+    }
+
+    public void addTransfer(FileTransfer ft) {
+        transfers.addElement(ft);
+    }
+
+    public void removeTransfer(boolean cancel) {
+        for (int i = 0; i < transfers.size(); ++i) {
+            FileTransfer ft = (FileTransfer) transfers.elementAt(i);
+            transfers.removeElementAt(i);
+            if (cancel) {
+                ft.cancel();
+            }
+            return;
+        }
     }
 
     public void updateRoster(TreeNode node) {

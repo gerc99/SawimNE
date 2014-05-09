@@ -149,7 +149,7 @@ public class Notify implements Runnable {
         }
         nextPlayTime = next;
         playingType = notType;
-        new Thread(this).start();
+        new Thread(this,"PlayNotify").start();
     }
 
     public void playSoundNotification(int notType) {

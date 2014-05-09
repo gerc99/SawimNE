@@ -43,7 +43,7 @@ public abstract class ClientConnection implements Runnable {
     }
 
     public final void start() {
-        new Thread(this).start();
+        new Thread(this,"ClientConnection").start();
     }
 
     public final void run() {
@@ -153,7 +153,7 @@ public abstract class ClientConnection implements Runnable {
             }
         }
         if (null != msg) {
-            msg.setSendingState(status);
+            msg.setSendingState(getProtocol(), status);
             if (PlainMessage.NOTIFY_FROM_CLIENT == status) {
                 messages.removeElement(msg);
             }

@@ -226,6 +226,7 @@ public class Options {
         int size = getAccountCount();
         synchronized (listOfProfiles) {
             if (num < size) {
+                listOfProfiles.remove(num);
                 listOfProfiles.add(num, account);
             } else {
                 num = listOfProfiles.size();
@@ -282,9 +283,7 @@ public class Options {
                 s.addRecord(hash);
             }
         } catch (Exception e) {
-
             DebugLog.panic("save account #" + num, e);
-
         }
         s.close();
     }

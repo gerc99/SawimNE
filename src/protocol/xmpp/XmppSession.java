@@ -11,7 +11,6 @@ import ru.sawim.Options;
 import ru.sawim.SawimApplication;
 import ru.sawim.SawimException;
 import ru.sawim.comm.StringConvertor;
-import ru.sawim.modules.DebugLog;
 
 import java.io.IOException;
 
@@ -21,6 +20,7 @@ public class XmppSession {
 
     private SharedPreferences preferences;
     private SharedPreferences.Editor editor;
+    boolean isPlayServices;
     GoogleCloudMessaging gcm;
     Context context;
     String regid;
@@ -30,7 +30,8 @@ public class XmppSession {
         preferences = context.getSharedPreferences(PREFS_NAME, 0);
         editor = preferences.edit();
         // Check device for Play Services APK. If check succeeds, proceed with GCM registration.
-        if (Options.getBoolean(Options.OPTION_PUSH) && checkPlayServices()) {
+        isPlayServices = checkPlayServices();
+        if (Options.getBoolean(Options.OPTION_PUSH) && isPlayServices) {
             gcm = GoogleCloudMessaging.getInstance(context);
             registerInBackground();
         } else {
@@ -92,7 +93,7 @@ public class XmppSession {
                             "<register xmlns='http://sawim.ru/notifications#gcm' regid='" + regid + "' /></iq>");
                 }
             }
-        }).start();
+        },"PushEnable").start();
     }
 
     public void enableRebind(final XmppConnection connection) {
@@ -100,34 +101,38 @@ public class XmppSession {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                if (connection.rebindSupported && !StringConvertor.isEmpty(regid)) {
-                    DebugLog.systemPrintln(regid);
-                    connection.putPacketIntoQueue("<iq type='set' id='p1:rebind'>" +
-                            "<push xmlns='p1:push'><keepalive max='120'/><session duration='1440'/>" +
-                            "<body send='all' groupchat='true' from='name'/>" +
-                            "<offline>true</offline>" +
-                            "<notification><type>gcm</type><id>" + regid + "</id>" +
-                            "</notification><appid>ru.sawim</appid></push></iq>");
+                if (connection.rebindSupported) {
+                    Log.i(XmppSession.class.getSimpleName(), "enableRebind regid = " + regid);
+                    if (!isPlayServices) {
+                        connection.putPacketIntoQueue("<iq type='set' id='p1:rebind'>" +
+                                "<push xmlns='p1:push'><keepalive max='120'/><session duration='1440'/>" +
+                                "<body send='all' groupchat='true' from='name'/>" +
+                                "<offline>true</offline><appid>ru.sawim</appid></push></iq>");
+                    } else if (!StringConvertor.isEmpty(regid)) {
+                        connection.putPacketIntoQueue("<iq type='set' id='p1:rebind'>" +
+                                "<push xmlns='p1:push'><keepalive max='120'/><session duration='1440'/>" +
+                                "<body send='all' groupchat='true' from='name'/>" +
+                                "<offline>true</offline>" +
+                                "<notification><type>gcm</type><id>" + regid + "</id></notification>" +
+                                "<appid>ru.sawim</appid></push></iq>");
+                    }
                 }
             }
-        }).start();
+        },"EnableRebind").start();
     }
 
     public void clear(final XmppConnection connection) {
-        if (!Options.getBoolean(Options.OPTION_PUSH)) return;
-        if (connection.isSessionManagementEnabled() && !StringConvertor.isEmpty(regid)) {
-            new Thread(new Runnable() {
+        new Thread(new Runnable() {
                 @Override
                 public void run() {
                     try {
-                        connection.writePacket("<iq type='set'>" +
-                                "<unregister xmlns='http://sawim.ru/notifications#gcm'/></iq>");
-                    } catch (SawimException ignored) {
-                        ignored.printStackTrace();
+                        if (connection != null)
+                            connection.writePacket("<iq type='set'>" +
+                                    "<unregister xmlns='http://sawim.ru/notifications#gcm'/></iq>");
+                    } catch (Exception ignored) {
                     }
                 }
-            }).start();
-        }
+            },"PushUnregister").start();
         editor.putBoolean("Enabled" + connection.fullJid_, false);
         editor.putLong("PacketsIn" + connection.fullJid_, 0);
         editor.putLong("PacketsOut" + connection.fullJid_, 0);
@@ -137,7 +142,6 @@ public class XmppSession {
     }
 
     public void save(XmppConnection connection) {
-        if (!Options.getBoolean(Options.OPTION_PUSH)) return;
         editor.putBoolean("Enabled" + connection.fullJid_, connection.isSessionManagementEnabled());
         editor.putLong("PacketsIn" + connection.fullJid_, connection.packetsIn);
         editor.putLong("PacketsOut" + connection.fullJid_, connection.packetsOut);
@@ -147,7 +151,6 @@ public class XmppSession {
     }
 
     public void load(XmppConnection connection) {
-        if (!Options.getBoolean(Options.OPTION_PUSH)) return;
         connection.setSessionManagementEnabled(preferences.getBoolean("Enabled" + connection.fullJid_, false));
         connection.packetsIn = preferences.getLong("PacketsIn" + connection.fullJid_, 0);
         connection.packetsOut = preferences.getLong("PacketsOut" + connection.fullJid_, 0);

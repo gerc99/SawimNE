@@ -18,7 +18,7 @@ public class SystemNotice extends Message {
     private String reason;
 
     public SystemNotice(Protocol protocol, int _sysnotetype, String _uin, String _reason) {
-        super(SawimApplication.getCurrentGmtTime(), protocol, _uin, true);
+        super(SawimApplication.getCurrentGmtTime(), protocol.getUserId(), _uin, true);
         sysnotetype = _sysnotetype;
         reason = StringConvertor.notNull(_reason);
     }
@@ -26,7 +26,7 @@ public class SystemNotice extends Message {
     private String nick;
 
     public SystemNotice(Protocol protocol, byte _sysnotetype, String _uin, String nick, String _reason) {
-        super(SawimApplication.getCurrentGmtTime(), protocol, _uin, true);
+        super(SawimApplication.getCurrentGmtTime(), protocol.getUserId(), _uin, true);
         sysnotetype = _sysnotetype;
         this.nick = nick;
         reason = StringConvertor.notNull(_reason);

@@ -5,6 +5,7 @@ import protocol.Contact;
 import protocol.Protocol;
 import ru.sawim.SawimResources;
 import ru.sawim.chat.MessData;
+import ru.sawim.modules.history.HistoryStorage;
 import ru.sawim.roster.RosterHelper;
 
 public abstract class Message {
@@ -20,10 +21,9 @@ public abstract class Message {
     public static final byte NOTIFY_FROM_SERVER = ICON_OUT_MSG_FROM_SERVER;
     public static final byte NOTIFY_FROM_CLIENT = ICON_OUT_MSG_FROM_CLIENT;
 
-    protected boolean isIncoming;
-    protected String contactId;
-    protected Contact contact;
-    protected Protocol protocol;
+    private boolean isIncoming;
+    private String contactId;
+    private String myId;
     private String senderName;
     private MessData mData = null;
     private long newDate;
@@ -44,17 +44,17 @@ public abstract class Message {
         return null;
     }
 
-    protected Message(long date, Protocol protocol, String contactId, boolean isIncoming) {
+    protected Message(long date, String myId, String contactId, boolean isIncoming) {
         this.newDate = date;
-        this.protocol = protocol;
+        this.myId = myId;
         this.contactId = contactId;
         this.isIncoming = isIncoming;
     }
 
-    protected Message(long date, Protocol protocol, Contact contact, boolean isIncoming) {
+    protected Message(long date, String myId, Contact contact, boolean isIncoming) {
         this.newDate = date;
-        this.protocol = protocol;
-        this.contact = contact;
+        this.myId = myId;
+        this.contactId = contact.getUserId();
         this.isIncoming = isIncoming;
     }
 
@@ -62,12 +62,25 @@ public abstract class Message {
         this.mData = mData;
     }
 
-    public final void setSendingState(byte state) {
-        if (mData != null && !mData.isMe()) {
+    public final void setSendingState(Protocol protocol, byte state) {
+        if (mData != null) {
+            Contact contact = protocol.getItemByUIN(contactId);
             mData.setIconIndex(state);
+            HistoryStorage historyStorage = protocol.getChat(contact).getHistory();
+            if (historyStorage != null)
+                historyStorage.updateText(mData);
+            if (RosterHelper.getInstance().getUpdateChatListener() != null)
+                RosterHelper.getInstance().getUpdateChatListener().updateChat(contact);
         }
-        if (RosterHelper.getInstance().getUpdateChatListener() != null)
-            RosterHelper.getInstance().getUpdateChatListener().updateChat(contact);
+    }
+
+    public final void setSendingStateFromHistory(Protocol protocol, byte state) {
+        if (mData != null) {
+            Contact contact = protocol.getItemByUIN(contactId);
+            mData.setIconIndex(state);
+            if (RosterHelper.getInstance().getUpdateChatListener() != null)
+                RosterHelper.getInstance().getUpdateChatListener().updateChat(contact);
+        }
     }
 
     public final void setName(String name) {
@@ -75,23 +88,23 @@ public abstract class Message {
     }
 
     public String getContactUin() {
-        return (null == contact) ? contactId : contact.getUserId();
+        return contactId;
     }
 
     public final String getSndrUin() {
-        return isIncoming ? getContactUin() : protocol.getUserId();
+        return isIncoming ? getContactUin() : myId;
     }
 
     public final String getRcvrUin() {
-        return isIncoming ? protocol.getUserId() : getContactUin();
+        return isIncoming ? myId : getContactUin();
     }
 
     public boolean isIncoming() {
         return isIncoming;
     }
 
-    protected final Contact getRcvr() {
-        return (null == contact) ? protocol.getItemByUIN(contactId) : contact;
+    protected final Contact getRcvr(Protocol protocol) {
+        return protocol.getItemByUIN(contactId);
     }
 
     public boolean isOffline() {

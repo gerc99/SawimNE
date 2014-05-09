@@ -2,6 +2,7 @@ package protocol.xmpp;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.util.Log;
 import android.widget.Toast;
 import protocol.*;
 import ru.sawim.Options;
@@ -179,10 +180,14 @@ public final class Xmpp extends Protocol implements FormListener {
 
     public void disconnect(boolean user) {
         if (user && null != connection) {
-            SawimApplication.getInstance().getXmppSession().clear(connection);
+            pushDisable();
             connection.loggedOut();
         }
         super.disconnect(user);
+    }
+
+    public void pushDisable() {
+        SawimApplication.getInstance().getXmppSession().clear(connection);
     }
 
     protected final void userCloseConnection() {
@@ -198,7 +203,7 @@ public final class Xmpp extends Protocol implements FormListener {
     }
 
     protected void setStatusesOffline() {
-        if (connection != null && !connection.isSessionManagementEnabled()) {
+        if (connection != null && !isStreamManagementSupported()) {
             super.setStatusesOffline();
         }
     }
@@ -297,6 +302,7 @@ public final class Xmpp extends Protocol implements FormListener {
 
     protected void s_updateOnlineStatus() {
         connection.setStatus(getProfile().statusIndex, "", PRIORITY);
+        if (isStreamManagementSupported()) return;
         if (isReconnect()) {
             for (int i = 0; i < rejoinList.size(); ++i) {
                 String jid = (String) rejoinList.elementAt(i);

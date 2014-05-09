@@ -32,7 +32,7 @@ public class VkConnection implements Runnable {
     }
 
     public void login() {
-        new Thread(this).start();
+        new Thread(this,"VkLogin").start();
     }
 
     public void logout() {
@@ -49,7 +49,7 @@ public class VkConnection implements Runnable {
     }
 
     private void exec(Runnable task) {
-        new Thread(task).start();
+        new Thread(task,"VkExec").start();
     }
 
     private void sleep(int time) {

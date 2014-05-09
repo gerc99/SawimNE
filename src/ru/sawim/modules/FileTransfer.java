@@ -97,7 +97,7 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
             setData(image == null ? in : new ByteArrayInputStream(image), fileSize);
             if (Util.isImageFile(filename)) {
                 setProgress(0);
-                new Thread(this).start();
+                new Thread(this,"FileTransfer").start();
                 addProgress();
             } else {
                 askForNameDesc(activity);
@@ -147,7 +147,7 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
                 }
             } else {
                 setProgress(0);
-                new Thread(this).start();
+                new Thread(this,"FileTransfer").start();
             }
             addProgress();
             forms.back();
@@ -268,7 +268,7 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
                 } catch (Throwable ignored) {
                 }
             }
-        }).start();
+        },"ShowPreview").start();
     }
 
     private void setFileName(String name) {

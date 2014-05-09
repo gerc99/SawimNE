@@ -37,7 +37,7 @@ public class OpenUriActivity extends ActionBarActivity {
                     }
                     process(uri);
                 }
-            }).start();
+            },"OpenURI").start();
         }
     }
 

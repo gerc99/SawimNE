@@ -337,7 +337,7 @@ public final class Chat {
         }
 
         final MessData mData = new MessData(contact, message.getNewDate(), messageText, from, flags, isHighlight);
-        if (!incoming) {
+        if (!incoming && !mData.isMe()) {
             message.setVisibleIcon(mData);
         }
         addMessage(mData);

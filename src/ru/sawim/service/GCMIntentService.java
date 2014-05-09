@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
-import ru.sawim.SawimApplication;
+import ru.sawim.SawimNotification;
 import ru.sawim.receiver.GCMBroadcastReceiver;
 
 import java.io.UnsupportedEncodingException;
@@ -50,7 +50,7 @@ public class GCMIntentService extends IntentService {
                     try {
                         String message = URLDecoder.decode(msg, "UTF-8");
                         Log.d(LOG_TAG, message);
-                        SawimApplication.getInstance().sendNotify(from, message);
+                        SawimNotification.pushNotification();
                     } catch (UnsupportedEncodingException e) {
                         e.printStackTrace();
                     }

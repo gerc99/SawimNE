@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.text.InputType;
+import android.util.Log;
 import android.view.*;
 import android.widget.*;
 import protocol.Profile;
@@ -62,8 +63,8 @@ public class AccountsListView extends Fragment {
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-        Profile account = accountsListAdapter.getItem(info.position);
-        final int accountID = (int) accountsListAdapter.getItemId(info.position);
+        final int accountID = info.position;
+        Profile account = accountsListAdapter.getItem(accountID);
         final String itemName = account.userId;
         final int protocolType = account.protocolType;
         int num = info.position;
@@ -250,8 +251,8 @@ public class AccountsListView extends Fragment {
                     account.nick = nick;
 
                     int editAccountNum = Options.getAccountIndex(account);
-                    account.isActive = Options.getAccountCount() <= editAccountNum || Options.getAccount(editAccountNum).isActive;
-
+                    account.isActive = Options.getAccountCount() <= editAccountNum
+                            || Options.getAccount(editAccountNum).isActive;
                     if (isEdit) {
                         addAccount(id, account);
                     } else {

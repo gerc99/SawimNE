@@ -493,9 +493,9 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         adapter.setPosition(chat.dividerPosition);
         int position = chat.getMessData().size() - unreadMessageCount;
         if (chat.dividerPosition == -1) {
-            if (contact.isConference() || !(contact.isConference() && hasHistory)) {
+            /*if (contact.isConference() || !(contact.isConference() && hasHistory)) {
                 chatListView.setSelection(0);
-            } else if (hasHistory) {
+            } else */if (hasHistory) {
                 adapter.setPosition(position);
                 chatListView.setSelection(position);
             }
