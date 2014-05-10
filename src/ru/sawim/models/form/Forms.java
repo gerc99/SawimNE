@@ -347,7 +347,7 @@ public class Forms {
     public void remove(String controlId) {
         try {
             for (int num = 0; num < controls.size(); ++num) {
-                if ((controls.get(num)).id == controlId) {
+                if ((controls.get(num)).id.equals(controlId)) {
                     controls.remove(num);
                     invalidate(true);
                     return;
@@ -363,7 +363,7 @@ public class Forms {
 
     public Control get(String controlId) {
         for (int num = 0; num < controls.size(); ++num) {
-            if ((controls.get(num)).id == controlId) {
+            if ((controls.get(num)).id.equals(controlId)) {
                 return controls.get(num);
             }
         }

@@ -88,7 +88,7 @@ public final class Search implements FormListener, ControlStateListener {
             }
             Contact contact = protocol.createTempContact(userid);
             if (null != contact) {
-                //protocol.showUserInfo(contact);
+                protocol.showUserInfo(BaseActivity.getCurrentActivity(), contact);
             }
         }
     }

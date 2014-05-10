@@ -397,13 +397,13 @@ public final class XmppConnection extends ClientConnection {
 
         setProgress(30);
         socket.start();
-        write(GET_ROSTER_XML);
-        setProgress(50);
-        usePong();
         if (Options.getBoolean(Options.OPTION_PUSH) && isSessionRestored()) {
-            getBookmarks();
+            usePong();
             setProgress(100);
         } else {
+            write(GET_ROSTER_XML);
+            setProgress(50);
+            usePong();
             setProgress(60);
         }
     }

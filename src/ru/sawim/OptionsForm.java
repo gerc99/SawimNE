@@ -216,8 +216,9 @@ public class OptionsForm implements ControlStateListener {
                 if (p instanceof Xmpp) {
                     if (form.getCheckBoxValue(Options.OPTION_PUSH)) {
                         SawimApplication.getInstance().getXmppSession().enable(((Xmpp) p).getConnection());
+                        SawimApplication.getInstance().getXmppSession().enableRebind(((Xmpp) p).getConnection());
                     } else {
-                        ((Xmpp) p).pushDisable();
+                        SawimApplication.getInstance().getXmppSession().clear(((Xmpp) p).getConnection());
                     }
                 }
             }

@@ -122,17 +122,17 @@ public class XmppSession {
     }
 
     public void clear(final XmppConnection connection) {
+        if (connection == null) return;
         new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        if (connection != null)
-                            connection.writePacket("<iq type='set'>" +
-                                    "<unregister xmlns='http://sawim.ru/notifications#gcm'/></iq>");
-                    } catch (Exception ignored) {
-                    }
+            @Override
+            public void run() {
+                try {
+                    connection.writePacket("<iq type='set'>" +
+                            "<unregister xmlns='http://sawim.ru/notifications#gcm'/></iq>");
+                } catch (SawimException ignored) {
                 }
-            },"PushUnregister").start();
+            }
+        },"PushUnregister").start();
         editor.putBoolean("Enabled" + connection.fullJid_, false);
         editor.putLong("PacketsIn" + connection.fullJid_, 0);
         editor.putLong("PacketsOut" + connection.fullJid_, 0);
