@@ -399,6 +399,8 @@ public final class XmppConnection extends ClientConnection {
         socket.start();
         if (Options.getBoolean(Options.OPTION_PUSH) && isSessionRestored()) {
             usePong();
+            getXmpp().rejoin();
+            getXmpp().s_updateOnlineStatus();
             setProgress(100);
         } else {
             write(GET_ROSTER_XML);

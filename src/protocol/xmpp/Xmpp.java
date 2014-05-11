@@ -115,11 +115,10 @@ public final class Xmpp extends Protocol implements FormListener {
     }
 
     public void rejoin() {
-        if (isStreamManagementSupported()) return;
         for (int i = 0; i < rejoinList.size(); ++i) {
             String jid = (String) rejoinList.elementAt(i);
             XmppServiceContact conf = (XmppServiceContact) getItemByUIN(jid);
-            if (null != conf && !conf.isOnline()) {
+            if (null != conf) {
                 join(conf);
             }
         }
@@ -321,7 +320,12 @@ public final class Xmpp extends Protocol implements FormListener {
             XmppServiceContact serviceContact = (XmppServiceContact) contact;
             if (serviceContact.isConference()) {
                 String userNick = dis.readUTF();
+                boolean isAutoJoin = dis.readBoolean();
                 serviceContact.setMyName(userNick);
+                serviceContact.setAutoJoin(isAutoJoin);
+                if (isAutoJoin) {
+                    addRejoin(serviceContact.getUserId());
+                }
                 serviceContact.setPresencesFlag(dis.readBoolean());
             }
         }
@@ -347,6 +351,7 @@ public final class Xmpp extends Protocol implements FormListener {
             XmppServiceContact serviceContact = (XmppServiceContact) contact;
             if (serviceContact.isConference()) {
                 dos.writeUTF(serviceContact.getMyName());
+                dos.writeBoolean(serviceContact.isAutoJoin());
                 dos.writeBoolean(serviceContact.isPresence());
             }
         }
@@ -840,14 +845,14 @@ public final class Xmpp extends Protocol implements FormListener {
         getConnection().requestRawXml(xml);
     }
 
-    private static Forms enterData = null;
-    private static XmppServiceContact enterConf = null;
+    private Forms enterData = null;
+    private XmppServiceContact enterConf = null;
     private static final int NICK = 0;
     private static final int PASSWORD = 1;
     private static final int AUTOJOIN = 2;
     private static final int IS_PRESENCES = 3;
 
-    private static Forms enterDataInvite = null;
+    private Forms enterDataInvite = null;
     private static final int JID_MESS_TO = 7;
     private static final int JID_INVITE_TO = 8;
     private static final int REASON_INVITE = 9;

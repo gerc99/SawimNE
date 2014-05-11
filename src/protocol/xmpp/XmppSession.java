@@ -84,6 +84,7 @@ public class XmppSession {
     }
 
     public void enable(final XmppConnection connection) {
+        if (connection == null) return;
         if (!Options.getBoolean(Options.OPTION_PUSH)) return;
         new Thread(new Runnable() {
             @Override
@@ -97,6 +98,7 @@ public class XmppSession {
     }
 
     public void enableRebind(final XmppConnection connection) {
+        if (connection == null) return;
         if (!Options.getBoolean(Options.OPTION_PUSH)) return;
         new Thread(new Runnable() {
             @Override
