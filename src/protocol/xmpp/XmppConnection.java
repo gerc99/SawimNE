@@ -399,7 +399,7 @@ public final class XmppConnection extends ClientConnection {
         socket.start();
         if (Options.getBoolean(Options.OPTION_PUSH) && isSessionRestored()) {
             usePong();
-            getXmpp().rejoin();
+            //getXmpp().rejoin();
             getXmpp().s_updateOnlineStatus();
             setProgress(100);
         } else {
@@ -484,10 +484,11 @@ public final class XmppConnection extends ClientConnection {
         } else if (x.is("failed")) {
             // expired session
             DebugLog.systemPrintln("[INFO-JABBER] Failed to resume session ID=" + smSessionID);
+            setSessionManagementEnabled(false);
             smSessionID = "";
             packetsIn = 0;
             packetsOut = 0;
-            setSessionManagementEnabled(false);
+            SawimApplication.getInstance().getXmppSession().save(this);
             resourceBinding();
         } else if (x.is("compressed")) {
             setStreamCompression();
@@ -574,8 +575,9 @@ public final class XmppConnection extends ClientConnection {
         } else if (x.is("r")) {
             sendAck();
         } else if (x.is("enabled")) {
-            smSessionID = x.getAttribute("id");
             setSessionManagementEnabled(true);
+            smSessionID = x.getAttribute("id");
+            SawimApplication.getInstance().getXmppSession().save(this);
             DebugLog.systemPrintln("[INFO-JABBER] Session management enabled with ID=" + smSessionID);
         }
     }
@@ -591,7 +593,6 @@ public final class XmppConnection extends ClientConnection {
     public void setSessionManagementEnabled(boolean flag) {
         smEnabled = flag;
         SawimApplication.getInstance().getXmppSession().enable(this);
-        SawimApplication.getInstance().getXmppSession().save(this);
     }
 
     private boolean isSessionRestored() {

@@ -15,24 +15,28 @@ import ru.sawim.comm.StringConvertor;
 import java.io.IOException;
 
 public class XmppSession {
+
     private static final String PREFS_NAME = "XMPP:Settings";
     private static final String SENDER_ID = "284764164645";
+
+    private static final String ENABLED = "Enabled";
+    private static final String PACKETS_IN = "PacketsIn";
+    private static final String PACKETS_OUT = "PacketsOut";
+    private static final String SESSION_ID = "SessionID";
+    private static final String SID = "SID";
 
     private SharedPreferences preferences;
     private SharedPreferences.Editor editor;
     boolean isPlayServices;
-    GoogleCloudMessaging gcm;
-    Context context;
     String regid;
 
     public XmppSession() {
-        context = SawimApplication.getContext();
+        Context context = SawimApplication.getContext();
         preferences = context.getSharedPreferences(PREFS_NAME, 0);
         editor = preferences.edit();
         // Check device for Play Services APK. If check succeeds, proceed with GCM registration.
-        isPlayServices = checkPlayServices();
+        isPlayServices = checkPlayServices(context);
         if (Options.getBoolean(Options.OPTION_PUSH) && isPlayServices) {
-            gcm = GoogleCloudMessaging.getInstance(context);
             registerInBackground();
         } else {
             Log.i(XmppSession.class.getSimpleName(), "No valid Google Play Services APK found.");
@@ -44,7 +48,7 @@ public class XmppSession {
      * it doesn't, display a dialog that allows users to download the APK from
      * the Google Play Store or enable it in the device's system settings.
      */
-    private boolean checkPlayServices() {
+    private boolean checkPlayServices(Context context) {
         int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(context);
         if (resultCode != ConnectionResult.SUCCESS) {
             Log.i(XmppSession.class.getSimpleName(), "This device is not supported.");
@@ -66,9 +70,7 @@ public class XmppSession {
             protected String doInBackground(Void... params) {
                 String msg = "";
                 try {
-                    if (gcm == null) {
-                        gcm = GoogleCloudMessaging.getInstance(context);
-                    }
+                    GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(SawimApplication.getContext());
                     regid = gcm.register(SENDER_ID);
                     msg = "Device registered, registration ID=" + regid;
 
@@ -78,6 +80,7 @@ public class XmppSession {
                     // Require the user to click a button again, or perform
                     // exponential back-off.
                 }
+                Log.i(XmppSession.class.getSimpleName(), msg);
                 return msg;
             }
         }.execute(null, null, null);
@@ -94,7 +97,7 @@ public class XmppSession {
                             "<register xmlns='http://sawim.ru/notifications#gcm' regid='" + regid + "' /></iq>");
                 }
             }
-        },"PushEnable").start();
+        }, "PushEnable").start();
     }
 
     public void enableRebind(final XmppConnection connection) {
@@ -107,9 +110,9 @@ public class XmppSession {
                     Log.i(XmppSession.class.getSimpleName(), "enableRebind regid = " + regid);
                     if (!isPlayServices) {
                         connection.putPacketIntoQueue("<iq type='set' id='p1:rebind'>" +
-                                "<push xmlns='p1:push'><keepalive max='120'/><session duration='1440'/>" +
+                                "<push xmlns='p1:push'><keepalive max='120'/><session duration='1440'/>"+
                                 "<body send='all' groupchat='true' from='name'/>" +
-                                "<offline>true</offline><appid>ru.sawim</appid></push></iq>");
+                                "<offline>true</offline></push></iq>");
                     } else if (!StringConvertor.isEmpty(regid)) {
                         connection.putPacketIntoQueue("<iq type='set' id='p1:rebind'>" +
                                 "<push xmlns='p1:push'><keepalive max='120'/><session duration='1440'/>" +
@@ -120,7 +123,7 @@ public class XmppSession {
                     }
                 }
             }
-        },"EnableRebind").start();
+        }, "EnableRebind").start();
     }
 
     public void clear(final XmppConnection connection) {
@@ -134,33 +137,33 @@ public class XmppSession {
                 } catch (SawimException ignored) {
                 }
             }
-        },"PushUnregister").start();
-        editor.putBoolean("Enabled" + connection.fullJid_, false);
-        editor.putLong("PacketsIn" + connection.fullJid_, 0);
-        editor.putLong("PacketsOut" + connection.fullJid_, 0);
-        editor.putString("SessionID" + connection.fullJid_, "");
-        editor.putString("SID" + connection.fullJid_, "");
+        }, "PushUnregister").start();
+        editor.putBoolean(ENABLED + connection.fullJid_, false);
+        editor.putLong(PACKETS_IN + connection.fullJid_, 0);
+        editor.putLong(PACKETS_OUT + connection.fullJid_, 0);
+        editor.putString(SESSION_ID + connection.fullJid_, "");
+        editor.putString(SID + connection.fullJid_, "");
         editor.commit();
     }
 
     public void save(XmppConnection connection) {
-        editor.putBoolean("Enabled" + connection.fullJid_, connection.isSessionManagementEnabled());
-        editor.putLong("PacketsIn" + connection.fullJid_, connection.packetsIn);
-        editor.putLong("PacketsOut" + connection.fullJid_, connection.packetsOut);
-        editor.putString("SessionID" + connection.fullJid_, connection.smSessionID);
-        editor.putString("SID" + connection.fullJid_, connection.sessionId);
+        editor.putBoolean(ENABLED + connection.fullJid_, connection.isSessionManagementEnabled());
+        editor.putLong(PACKETS_IN + connection.fullJid_, connection.packetsIn);
+        editor.putLong(PACKETS_OUT + connection.fullJid_, connection.packetsOut);
+        editor.putString(SESSION_ID + connection.fullJid_, connection.smSessionID);
+        editor.putString(SID + connection.fullJid_, connection.sessionId);
         editor.commit();
     }
 
     public void load(XmppConnection connection) {
-        connection.setSessionManagementEnabled(preferences.getBoolean("Enabled" + connection.fullJid_, false));
-        connection.packetsIn = preferences.getLong("PacketsIn" + connection.fullJid_, 0);
-        connection.packetsOut = preferences.getLong("PacketsOut" + connection.fullJid_, 0);
-        connection.smSessionID = preferences.getString("SessionID" + connection.fullJid_, "");
-        connection.sessionId = preferences.getString("SID" + connection.fullJid_, "");
+        connection.setSessionManagementEnabled(preferences.getBoolean(ENABLED + connection.fullJid_, false));
+        connection.packetsIn = preferences.getLong(PACKETS_IN + connection.fullJid_, 0);
+        connection.packetsOut = preferences.getLong(PACKETS_OUT + connection.fullJid_, 0);
+        connection.smSessionID = preferences.getString(SESSION_ID + connection.fullJid_, "");
+        connection.sessionId = preferences.getString(SID + connection.fullJid_, "");
     }
 
     public boolean isStreamManagementSupported(String jid) {
-        return preferences.getBoolean("Enabled" + jid, false);
+        return preferences.getBoolean(ENABLED + jid, false);
     }
 }
