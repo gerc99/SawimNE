@@ -35,11 +35,13 @@ public class XmppSession {
         preferences = context.getSharedPreferences(PREFS_NAME, 0);
         editor = preferences.edit();
         // Check device for Play Services APK. If check succeeds, proceed with GCM registration.
-        isPlayServices = checkPlayServices(context);
-        if (Options.getBoolean(Options.OPTION_PUSH) && isPlayServices) {
-            registerInBackground();
-        } else {
-            Log.i(XmppSession.class.getSimpleName(), "No valid Google Play Services APK found.");
+        if (Options.getBoolean(Options.OPTION_PUSH)) {
+            isPlayServices = checkPlayServices(context);
+            if (isPlayServices) {
+                registerInBackground();
+            } else {
+                Log.i(XmppSession.class.getSimpleName(), "No valid Google Play Services APK found.");
+            }
         }
     }
 
@@ -57,7 +59,6 @@ public class XmppSession {
         return true;
     }
 
-
     /**
      * Registers the application with GCM servers asynchronously.
      * <p/>
@@ -73,7 +74,6 @@ public class XmppSession {
                     GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(SawimApplication.getContext());
                     regid = gcm.register(SENDER_ID);
                     msg = "Device registered, registration ID=" + regid;
-
                 } catch (IOException ex) {
                     msg = "Error :" + ex.getMessage();
                     // If there is an error, don't just keep trying to register.

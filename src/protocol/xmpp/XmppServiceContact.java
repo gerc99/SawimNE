@@ -197,7 +197,7 @@ public class XmppServiceContact extends XmppContact {
                         SystemNotice.SYS_NOTICE_ERROR, getUserId(), reasone));
             }
             if (!myNick.equals(baseMyNick)) {
-                myNick = baseMyNick;
+                //myNick = baseMyNick;
                 return;
             }
         } else {
