@@ -19,11 +19,11 @@ public class XmppSession {
     private static final String PREFS_NAME = "XMPP:Settings";
     private static final String SENDER_ID = "284764164645";
 
+    private static final String SESSION_ID = "SessionID";
+    private static final String REBIND = "Rebind";
     private static final String ENABLED = "Enabled";
     private static final String PACKETS_IN = "PacketsIn";
     private static final String PACKETS_OUT = "PacketsOut";
-    private static final String SESSION_ID = "SessionID";
-    private static final String SID = "SID";
 
     private SharedPreferences preferences;
     private SharedPreferences.Editor editor;
@@ -126,32 +126,42 @@ public class XmppSession {
         }, "EnableRebind").start();
     }
 
-    public void clear(final XmppConnection connection) {
+    public void pushRegister(final XmppConnection connection) {
+        if (connection == null) return;
+        enable(connection);
+        enableRebind(connection);
+    }
+
+    public void pushUnregister(final XmppConnection connection) {
         if (connection == null) return;
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    connection.writePacket("<iq type='set'>" +
-                            "<unregister xmlns='http://sawim.ru/notifications#gcm'/></iq>");
+                    connection.writePacket("<iq type='set' id='123'><disable xmlns='p1:push'/></iq>");
+                    connection.writePacket("<iq type='set'><unregister xmlns='http://sawim.ru/notifications#gcm'/></iq>");
                 } catch (SawimException ignored) {
                 }
             }
         }, "PushUnregister").start();
+    }
+
+    public void clear(final XmppConnection connection) {
+        if (connection == null) return;
         editor.putBoolean(ENABLED + connection.fullJid_, false);
+        editor.putBoolean(REBIND + connection.fullJid_, false);
         editor.putLong(PACKETS_IN + connection.fullJid_, 0);
         editor.putLong(PACKETS_OUT + connection.fullJid_, 0);
         editor.putString(SESSION_ID + connection.fullJid_, "");
-        editor.putString(SID + connection.fullJid_, "");
         editor.commit();
     }
 
     public void save(XmppConnection connection) {
         editor.putBoolean(ENABLED + connection.fullJid_, connection.isSessionManagementEnabled());
+        editor.putBoolean(REBIND + connection.fullJid_, connection.rebindSupported);
         editor.putLong(PACKETS_IN + connection.fullJid_, connection.packetsIn);
         editor.putLong(PACKETS_OUT + connection.fullJid_, connection.packetsOut);
-        editor.putString(SESSION_ID + connection.fullJid_, connection.smSessionID);
-        editor.putString(SID + connection.fullJid_, connection.sessionId);
+        editor.putString(SESSION_ID + connection.fullJid_, connection.sessionId);
         editor.commit();
     }
 
@@ -159,11 +169,10 @@ public class XmppSession {
         connection.setSessionManagementEnabled(preferences.getBoolean(ENABLED + connection.fullJid_, false));
         connection.packetsIn = preferences.getLong(PACKETS_IN + connection.fullJid_, 0);
         connection.packetsOut = preferences.getLong(PACKETS_OUT + connection.fullJid_, 0);
-        connection.smSessionID = preferences.getString(SESSION_ID + connection.fullJid_, "");
-        connection.sessionId = preferences.getString(SID + connection.fullJid_, "");
+        connection.sessionId = preferences.getString(SESSION_ID + connection.fullJid_, "");
     }
 
     public boolean isStreamManagementSupported(String jid) {
-        return preferences.getBoolean(ENABLED + jid, false);
+        return preferences.getBoolean(REBIND + jid, false) || preferences.getBoolean(ENABLED + jid, false);
     }
 }
