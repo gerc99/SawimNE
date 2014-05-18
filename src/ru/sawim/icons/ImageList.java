@@ -42,9 +42,9 @@ public class ImageList {
         if (null != imgs) {
             return imgs;
         }
+        Vector tmpIcons = new Vector();
         ImageList icons = new ImageList();
         if (resName.equals("/jabber-status.png")) {
-            Vector tmpIcons = new Vector();
             tmpIcons.addElement(new Icon((BitmapDrawable) SawimApplication.getInstance().getResources().
                     getDrawable(R.drawable.online)));
             tmpIcons.addElement(new Icon((BitmapDrawable) SawimApplication.getInstance().getResources().
@@ -53,6 +53,12 @@ public class ImageList {
                     getDrawable(R.drawable.away)));
             tmpIcons.addElement(new Icon((BitmapDrawable) SawimApplication.getInstance().getResources().
                     getDrawable(R.drawable.dnd)));
+            icons.add(tmpIcons);
+        } else if (resName.equals("/vk-status.png")) {
+            tmpIcons.addElement(new Icon((BitmapDrawable) SawimApplication.getInstance().getResources().
+                    getDrawable(R.drawable.vk_online)));
+            tmpIcons.addElement(new Icon((BitmapDrawable) SawimApplication.getInstance().getResources().
+                    getDrawable(R.drawable.vk_offline)));
             icons.add(tmpIcons);
         } else {
             try {

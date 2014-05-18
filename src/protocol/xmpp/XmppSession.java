@@ -148,28 +148,31 @@ public class XmppSession {
 
     public void clear(final XmppConnection connection) {
         if (connection == null) return;
-        editor.putBoolean(ENABLED + connection.fullJid_, false);
-        editor.putBoolean(REBIND + connection.fullJid_, false);
-        editor.putLong(PACKETS_IN + connection.fullJid_, 0);
-        editor.putLong(PACKETS_OUT + connection.fullJid_, 0);
-        editor.putString(SESSION_ID + connection.fullJid_, "");
+        String id = connection.getXmpp().getUserId();
+        editor.putBoolean(ENABLED + id, false);
+        editor.putBoolean(REBIND + id, false);
+        editor.putLong(PACKETS_IN + id, 0);
+        editor.putLong(PACKETS_OUT + id, 0);
+        editor.putString(SESSION_ID + id, "");
         editor.commit();
     }
 
     public void save(XmppConnection connection) {
-        editor.putBoolean(ENABLED + connection.fullJid_, connection.isSessionManagementEnabled());
-        editor.putBoolean(REBIND + connection.fullJid_, connection.rebindSupported);
-        editor.putLong(PACKETS_IN + connection.fullJid_, connection.packetsIn);
-        editor.putLong(PACKETS_OUT + connection.fullJid_, connection.packetsOut);
-        editor.putString(SESSION_ID + connection.fullJid_, connection.sessionId);
+        String id = connection.getXmpp().getUserId();
+        editor.putBoolean(ENABLED + id, connection.isSessionManagementEnabled());
+        editor.putBoolean(REBIND + id, connection.rebindSupported);
+        editor.putLong(PACKETS_IN + id, connection.packetsIn);
+        editor.putLong(PACKETS_OUT + id, connection.packetsOut);
+        editor.putString(SESSION_ID + id, connection.sessionId);
         editor.commit();
     }
 
     public void load(XmppConnection connection) {
-        connection.setSessionManagementEnabled(preferences.getBoolean(ENABLED + connection.fullJid_, false));
-        connection.packetsIn = preferences.getLong(PACKETS_IN + connection.fullJid_, 0);
-        connection.packetsOut = preferences.getLong(PACKETS_OUT + connection.fullJid_, 0);
-        connection.sessionId = preferences.getString(SESSION_ID + connection.fullJid_, "");
+        String id = connection.getXmpp().getUserId();
+        connection.setSessionManagementEnabled(preferences.getBoolean(ENABLED + id, false));
+        connection.packetsIn = preferences.getLong(PACKETS_IN + id, 0);
+        connection.packetsOut = preferences.getLong(PACKETS_OUT + id, 0);
+        connection.sessionId = preferences.getString(SESSION_ID + id, "");
     }
 
     public boolean isStreamManagementSupported(String jid) {
