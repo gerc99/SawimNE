@@ -28,7 +28,7 @@ public final class Chat {
     private boolean visibleChat;
 
     public String message;
-    public int scrollPosition;
+    public int firstVisiblePosition;
     public int offset;
     public int dividerPosition = -1;
     public int lastVisiblePosition;

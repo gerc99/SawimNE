@@ -72,6 +72,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
     private Contact contact;
     private String sharingText;
     private boolean sendByEnter;
+    private int offsetNewMessage;
 
     private RosterAdapter chatsSpinnerAdapter;
     private MessagesAdapter adapter;
@@ -443,11 +444,15 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         if (chat == null) return;
         initChat(protocol, contact);
         oldChat = chat.getContact().getUserId();
-        chat.scrollPosition = chatListView.getFirstVisiblePosition();
-        chat.offset = chatListView.getHeight() / 4;
-        chat.dividerPosition = chat.getMessCount();
-        chat.lastVisiblePosition = chatListView.getLastVisiblePosition() + 1;
         chat.message = getText().length() == 0 ? null : getText();
+
+        View item = chatListView.getChildAt(0);
+        chat.dividerPosition = chat.getMessCount();
+        chat.firstVisiblePosition = chatListView.getFirstVisiblePosition();
+        chat.lastVisiblePosition = chatListView.getLastVisiblePosition() + 1;
+        boolean isBottomScroll = chat.lastVisiblePosition == chat.dividerPosition;
+        chat.offset = (item == null) ? 0 : Math.abs(isBottomScroll ? item.getTop() : item.getBottom());
+        offsetNewMessage = chatListView.getHeight() / 4;
 
         chat.setVisibleChat(false);
         RosterHelper.getInstance().setOnUpdateChat(null);
@@ -490,8 +495,9 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
 
     private void setPosition(int unreadMessageCount) {
         boolean hasHistory = chat.getHistory() != null && chat.getHistory().getHistorySize() > 0 && !chat.isBlogBot();
-        adapter.setPosition(chat.dividerPosition);
         int position = chat.getMessData().size() - unreadMessageCount;
+        boolean isBottomScroll = chat.lastVisiblePosition == chat.dividerPosition;
+        adapter.setPosition(chat.dividerPosition);
         if (chat.dividerPosition == -1) {
             /*if (contact.isConference() || !(contact.isConference() && hasHistory)) {
                 chatListView.setSelection(0);
@@ -500,15 +506,12 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
                 chatListView.setSelection(position);
             }
         } else {
-            boolean isBottomScroll = chat.lastVisiblePosition == chat.dividerPosition;
-            if (isBottomScroll && unreadMessageCount == 0 && isLastPosition()) {
-                chatListView.setSelectionFromTop(chat.lastVisiblePosition, -(chat.offset * 4));
+            if (isBottomScroll && unreadMessageCount != 0) {
+                chatListView.setSelectionFromTop(position, offsetNewMessage);
+            } else if (isBottomScroll) {
+                chatListView.setSelectionFromTop(chat.firstVisiblePosition, -chat.offset);
             } else {
-                if (!isBottomScroll || unreadMessageCount == 0) {
-                    chatListView.setSelectionFromTop(chat.scrollPosition + 1, chat.offset);
-                } else {
-                    chatListView.setSelectionFromTop(position, chat.offset);
-                }
+                chatListView.setSelectionFromTop(chat.firstVisiblePosition + 1, chat.offset);
             }
         }
     }
@@ -525,8 +528,8 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         if (chat.getMessCount() < limit) return;
         if ((0 < limit) && (0 < chat.getMessCount())) {
             while (limit < chat.getMessCount()) {
-                if (chat.scrollPosition > 0)
-                    chat.scrollPosition--;
+                if (chat.firstVisiblePosition > 0)
+                    chat.firstVisiblePosition--;
                 if (chat.dividerPosition > 0)
                     chat.dividerPosition--;
                 chat.getMessData().remove(0);
