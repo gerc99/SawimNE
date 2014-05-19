@@ -7,7 +7,6 @@ import ru.sawim.Options;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.SawimException;
-import ru.sawim.chat.Chat;
 import ru.sawim.chat.ChatHistory;
 import ru.sawim.chat.message.Message;
 import ru.sawim.chat.message.PlainMessage;
@@ -56,15 +55,15 @@ public final class XmppConnection extends ClientConnection {
     private boolean authorized_ = false;
     private boolean rosterLoaded = false;
 
+    String smSessionId = "";
     boolean smSupported = false;
-    private boolean smEnabled = false;
+    boolean smEnabled = false;
+    long smPacketsIn;
+    long smPacketsOut;
 
-    String sessionId = "";
+    String rebindSessionId = "";
     boolean rebindSupported = false;
     boolean rebindEnabled = false;
-
-    long packetsIn;
-    long packetsOut;
 
     private UserInfo singleUserInfo;
     private String autoSubscribeDomain;
@@ -404,7 +403,7 @@ public final class XmppConnection extends ClientConnection {
 
         setProgress(30);
         socket.start();
-        if (Options.getBoolean(Options.OPTION_PUSH) && isSessionRestored()) {
+        if (Options.getBoolean(Options.OPTION_PUSH) && isSessionManagementEnabled()) {
             usePong();
             getXmpp().s_updateOnlineStatus();
             setProgress(100);
@@ -420,10 +419,10 @@ public final class XmppConnection extends ClientConnection {
         setProgress(50);
         write("<rebind xmlns='p1:rebind'><jid>" +
                 fullJid_ + "</jid>" +
-                "<sid>" + sessionId + "</sid></rebind>");
+                "<sid>" + rebindSessionId + "</sid></rebind>");
         XmlNode rebind = readXmlNode(true);
         if (rebind != null && rebind.is("rebind")) {
-            Log.d("sawim-xml", "[INFO-JABBER] rebound session ID=" + sessionId);
+            Log.d("sawim-xml", "[INFO-JABBER] rebound session ID=" + rebindSessionId);
             rebindEnabled = true;
             setAuthStatus(true);
             return true;
@@ -476,8 +475,9 @@ public final class XmppConnection extends ClientConnection {
 
     private void loginParse(XmlNode x) throws SawimException {
         if (x.is("stream:stream")) {
-            sessionId = x.getId();
-            SawimApplication.getInstance().getXmppSession().save(this);
+            if (rebindSupported) {
+                rebindSessionId = x.getId();
+            }
             return;
         }
         if (x.is("stream:features")) {
@@ -486,14 +486,14 @@ public final class XmppConnection extends ClientConnection {
         } else if (x.is("resumed")) {
             SawimApplication.getInstance().getXmppSession().save(this);
             setAuthStatus(true);
-            DebugLog.systemPrintln("[INFO-JABBER] Resumed session ID=" + sessionId);
+            DebugLog.systemPrintln("[INFO-JABBER] Resumed session ID=" + smSessionId);
         } else if (x.is("failed")) {
             // expired session
-            DebugLog.systemPrintln("[INFO-JABBER] Failed to resume session ID=" + sessionId);
+            DebugLog.systemPrintln("[INFO-JABBER] Failed to resume session ID=" + smSessionId);
             setSessionManagementEnabled(false);
-            sessionId = "";
-            packetsIn = 0;
-            packetsOut = 0;
+            smSessionId = "";
+            smPacketsIn = 0;
+            smPacketsOut = 0;
             SawimApplication.getInstance().getXmppSession().save(this);
             resourceBinding();
         } else if (x.is("compressed")) {
@@ -556,19 +556,19 @@ public final class XmppConnection extends ClientConnection {
     private void parse(XmlNode x) throws SawimException {
         if (x.is("iq")) {
             if (isSessionManagementEnabled()) {
-                packetsIn++;
+                smPacketsIn++;
             }
             parseIq(x);
 
         } else if (x.is("presence")) {
             if (isSessionManagementEnabled()) {
-                packetsIn++;
+                smPacketsIn++;
             }
             parsePresence(x);
 
         } else if (x.is("message")) {
             if (isSessionManagementEnabled()) {
-                packetsIn++;
+                smPacketsIn++;
                 SawimApplication.getInstance().getXmppSession().save(this);
             }
             parseMessage(x);
@@ -582,27 +582,23 @@ public final class XmppConnection extends ClientConnection {
             sendAck();
         } else if (x.is("enabled")) {
             setSessionManagementEnabled(true);
-            sessionId = x.getAttribute("id");
+            smSessionId = x.getAttribute("id");
             SawimApplication.getInstance().getXmppSession().save(this);
-            DebugLog.systemPrintln("[INFO-JABBER] Session management enabled with ID=" + sessionId);
+            DebugLog.systemPrintln("[INFO-JABBER] Session management enabled with ID=" + smSessionId);
         }
     }
 
     private void sendAck() {
-        putPacketIntoQueue("<a xmlns='urn:xmpp:sm:3' h='" + String.valueOf(packetsIn) + "'/>");
+        putPacketIntoQueue("<a xmlns='urn:xmpp:sm:3' h='" + String.valueOf(smPacketsIn) + "'/>");
     }
 
     public boolean isSessionManagementEnabled() {
-        return smEnabled;
+        return smEnabled || rebindEnabled;
     }
 
     public void setSessionManagementEnabled(boolean flag) {
         smEnabled = flag;
         SawimApplication.getInstance().getXmppSession().enable(this);
-    }
-
-    private boolean isSessionRestored() {
-        return smEnabled || rebindEnabled;
     }
 
     private String generateId(String key) {
@@ -692,12 +688,17 @@ public final class XmppConnection extends ClientConnection {
         if (IQ_TYPE_RESULT != iqType) {
             return;
         }
-        if (id.startsWith(S_VCARD)) {
-            loadVCard(null, from);
-        }
-        if ((null != xmppForm) && xmppForm.getId().equals(id)) {
-            xmppForm.success();
-            xmppForm = null;
+        if ("p1:rebind".equals(id)) {
+            rebindEnabled = true;
+            DebugLog.systemPrintln("[INFO-JABBER] p1 session management enabled with id = " + rebindSessionId);
+        } else {
+            if (id.startsWith(S_VCARD)) {
+                loadVCard(null, from);
+            }
+            if ((null != xmppForm) && xmppForm.getId().equals(id)) {
+                xmppForm.success();
+                xmppForm = null;
+            }
         }
     }
 
@@ -1917,8 +1918,8 @@ public final class XmppConnection extends ClientConnection {
 
         if (Options.getBoolean(Options.OPTION_PUSH) && smSupported) {
             SawimApplication.getInstance().getXmppSession().load(this);
-            if (!sessionId.equals("")) {
-                sendRequest("<resume xmlns='urn:xmpp:sm:3' previd='" + sessionId + "' h='" + packetsIn + "' />");
+            if (!smSessionId.equals("")) {
+                sendRequest("<resume xmlns='urn:xmpp:sm:3' previd='" + smSessionId + "' h='" + smPacketsIn + "' />");
                 return;
             }
         }
