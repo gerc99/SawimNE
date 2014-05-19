@@ -72,7 +72,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
     private Contact contact;
     private String sharingText;
     private boolean sendByEnter;
-    private int offsetNewMessage;
+    private static int offsetNewMessage;
 
     private RosterAdapter chatsSpinnerAdapter;
     private MessagesAdapter adapter;
@@ -506,12 +506,12 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
                 chatListView.setSelection(position);
             }
         } else {
-            if (isBottomScroll && unreadMessageCount != 0) {
-                chatListView.setSelectionFromTop(position, offsetNewMessage);
-            } else if (isBottomScroll) {
+            if (isBottomScroll && unreadMessageCount == 0) {
                 chatListView.setSelectionFromTop(chat.firstVisiblePosition, -chat.offset);
-            } else {
+            } else if (unreadMessageCount == 0) {
                 chatListView.setSelectionFromTop(chat.firstVisiblePosition + 1, chat.offset);
+            } else {
+                chatListView.setSelectionFromTop(position, offsetNewMessage);
             }
         }
     }

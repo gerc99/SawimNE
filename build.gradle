@@ -48,9 +48,9 @@ android {
         release.setRoot('build-types/release')
     }
     dependencies {
-        compile 'com.google.android.gms:play-services:4.1.32'
+        compile 'com.google.android.gms:play-services:4.3.23'
         compile 'com.android.support:support-v4:19.0.1'
-        compile 'com.android.support:appcompat-v7:19.0.1'
+        compile 'com.android.support:appcompat-v7:+'
     }
     // signing config
     if (file("keystore.properties").exists()) {
