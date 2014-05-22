@@ -47,7 +47,6 @@ import ru.sawim.Scheme;
 import ru.sawim.chat.Chat;
 import ru.sawim.chat.ChatHistory;
 import ru.sawim.modules.DebugLog;
-import ru.sawim.modules.sound.Notify;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.view.*;
 import ru.sawim.view.preference.MainPreferenceView;
@@ -260,7 +259,6 @@ public class SawimActivity extends BaseActivity {
     }
 
 
-    private static final int MENU_SOUND = 6;
     private static final int MENU_OPTIONS = 7;
     private static final int MENU_QUIT = 14;
     private static final int MENU_DEBUG_LOG = 22;
@@ -313,8 +311,6 @@ public class SawimActivity extends BaseActivity {
                     }
                 }
             }
-            menu.add(Menu.NONE, MENU_SOUND, Menu.NONE, Options.getBoolean(Options.OPTION_SILENT_MODE)
-                    ? R.string.sound_on : R.string.sound_off);
             menu.add(Menu.NONE, MENU_OPTIONS, Menu.NONE, R.string.options);
             menu.add(Menu.NONE, MENU_QUIT, Menu.NONE, R.string.quit);
         }
@@ -342,9 +338,6 @@ public class SawimActivity extends BaseActivity {
         if (RosterHelper.getInstance().protocolMenuItemSelected(this, RosterHelper.getInstance().getProtocol(0), item.getItemId()))
             return true;
         switch (item.getItemId()) {
-            case MENU_SOUND:
-                Notify.getSound().changeSoundMode();
-                break;
             case MENU_OPTIONS:
                 MainPreferenceView.show(this);
                 break;

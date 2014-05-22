@@ -19,7 +19,6 @@ import ru.sawim.comm.Util;
 import ru.sawim.modules.DebugLog;
 import ru.sawim.modules.search.Search;
 import ru.sawim.modules.search.UserInfo;
-import ru.sawim.modules.sound.Notify;
 import ru.sawim.roster.RosterHelper;
 
 import java.util.Vector;
@@ -564,7 +563,6 @@ public final class MrimConnection extends ClientConnection {
             String text = packetData.getUcs2String();
             String nick = packetData.getUcs2String();
 
-
             boolean reply = ((MRIM_BLOG_STATUS_REPLY & type) != 0);
             if (reply) {
                 String alert = packetData.getUtf8String();
@@ -572,12 +570,10 @@ public final class MrimConnection extends ClientConnection {
             if (isConnected()) {
                 boolean added = mrim.getMicroBlog().addPost(from, nick, text, postid, reply, time);
                 if (added && !mrim.getUserId().equals(from)) {
-                    mrim.playNotification(Notify.NOTIFY_BLOG);
+                    //mrim.playNotification(Notify.NOTIFY_BLOG);
                 }
             }
-
         } else {
-
             if (MrimPacket.MRIM_CS_NEW_EMAIL == cmd) {
                 packetData.getDWord();
                 String from = packetData.getUcs2String();
@@ -592,7 +588,6 @@ public final class MrimConnection extends ClientConnection {
             } else {
                 DebugLog.println("mrim cmd 0x" + Integer.toHexString((int) cmd));
             }
-
         }
     }
 

@@ -23,11 +23,10 @@ public class Options {
     public static final String OPTION_ANTISPAM_KEYWORDS = "antispam_keywords";
 
     public static final String OPTION_CL_SORT_BY = "cl_sort_by";
-    public static final String OPTION_MESS_NOTIF_MODE = "mess_notify_mode";
-    public static final String OPTION_NOTIFY_VOLUME = "notify_volume";
-    public static final String OPTION_ONLINE_NOTIF_MODE = "online_notify_mode";
+    public static final String OPTION_MESS_NOTIF = "mess_notify";
+    public static final String OPTION_MESS_RINGTONE = "mess_ringtone";
     public static final String OPTION_CURRENT_PAGE = "current_page";
-    public static final String OPTION_VIBRATOR = "vibrator";
+    public static final String OPTION_VIBRATION = "vibration";
     public static final String OPTION_COLOR_SCHEME = "color_scheme";
     public static final String OPTION_VISIBILITY_ID = "visibility_id";
     static final String OPTIONS_CURR_ACCOUNT = "current_account";
@@ -45,7 +44,6 @@ public class Options {
     public static final String OPTION_USER_GROUPS = "user_groups";
     public static final String OPTION_HISTORY = "history";
     public static final String OPTION_WAKE_LOCK = "wake_lock";
-    public static final String OPTION_SILENT_MODE = "silent_mode";
     public static final String OPTION_BRING_UP = "bring_up";
     public static final String OPTION_ANTISPAM_ENABLE = "antispam_enable";
     public static final String OPTION_HIDE_ICONS_CLIENTS = "hide_icons_clients";
@@ -66,6 +64,8 @@ public class Options {
     public static void init() {
         preferences = SawimApplication.getContext().getSharedPreferences(PREFS_NAME, 0);
         editor = preferences.edit();
+        //editor.clear();
+        //editor.commit();
         if (preferences.getAll().isEmpty()) {
             initAccounts();
             setDefaults();
@@ -91,14 +91,11 @@ public class Options {
         setBoolean(Options.OPTION_CL_HIDE_OFFLINE, false);
         setBoolean(Options.OPTION_HIDE_ICONS_CLIENTS, true);
         setBoolean(Options.OPTION_HIDE_KEYBOARD, true);
-        setInt(Options.OPTION_MESS_NOTIF_MODE, 0);
-        setInt(Options.OPTION_ONLINE_NOTIF_MODE, 0);
+        setBoolean(Options.OPTION_MESS_NOTIF, true);
         setInt(Options.OPTION_TYPING_MODE, 0);
         setBoolean(Options.OPTION_BLOG_NOTIFY, true);
         setBoolean(Options.OPTION_NOTIFY_IN_AWAY, true);
-        setInt(Options.OPTION_NOTIFY_VOLUME, 100);
         setInt(Options.OPTION_MAX_MSG_COUNT, 100);
-        setInt(Options.OPTION_VIBRATOR, 1);
         setString(Options.OPTION_ANTISPAM_KEYWORDS, "http sms www @conf");
         setInt(Options.OPTION_PRIVATE_STATUS, PrivateStatusForm.PSTATUS_NOT_INVISIBLE);
         setBoolean(Options.OPTION_ANSWERER, false);
@@ -110,7 +107,6 @@ public class Options {
         setBoolean(Options.OPTION_SHOW_STATUS_LINE, false);
         setInt(Options.OPTION_VISIBILITY_ID, 0);
 
-        setBoolean(Options.OPTION_SILENT_MODE, false);
         setBoolean(Options.OPTION_BRING_UP, false);
         int time = TimeZone.getDefault().getOffset(System.currentTimeMillis()) / (1000 * 60 * 60);
         setInt(Options.OPTION_GMT_OFFSET, time);

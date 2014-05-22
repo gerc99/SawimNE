@@ -179,6 +179,7 @@ public final class Xmpp extends Protocol implements FormListener {
 
     public void disconnect(boolean user) {
         if (user && null != connection) {
+            SawimApplication.getInstance().getXmppSession().clear(connection);
             connection.loggedOut();
         }
         super.disconnect(user);

@@ -18,7 +18,6 @@ import ru.sawim.modules.Answerer;
 import ru.sawim.modules.AutoAbsence;
 import ru.sawim.modules.DebugLog;
 import ru.sawim.modules.Emotions;
-import ru.sawim.modules.sound.Notify;
 import ru.sawim.receiver.NetworkStateReceiver;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.service.SawimService;
@@ -88,7 +87,6 @@ public class SawimApplication extends Application {
 
         xmppSession = new XmppSession();
         try {
-            Notify.getSound().initSounds();
             gc();
             Emotions.instance.load();
             Answerer.getInstance().load();

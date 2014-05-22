@@ -34,6 +34,7 @@ public class Forms {
     public static final byte CONTROL_LINK = 6;
     public static final byte CONTROL_GAUGE_FONT = 7;
     public static final byte CONTROL_BUTTON = 8;
+    public static final byte CONTROL_RINGTONE = 9;
     private OnUpdateForm updateFormListener;
     private FormListener formListener;
     private OnBackPressed backPressedListener;
@@ -48,6 +49,7 @@ public class Forms {
         public String description;
         public String label;
         public byte type;
+        public boolean isActive = true;
 
         public String text; // input
         public boolean selected;// checkbox
@@ -291,6 +293,10 @@ public class Forms {
 
     public void addButton(int controlId, String text) {
         add(create(String.valueOf(controlId), CONTROL_BUTTON, null, text));
+    }
+
+    public void addRingtoneControl(String controlId, String label, String desc) {
+        add(create(controlId, CONTROL_RINGTONE, label, desc));
     }
 
     public void addTextField(String controlId, int label, String text) {

@@ -525,4 +525,6 @@
     <string name="wake_lock">Не дать устройству заснуть и продолжать работу в фоновом режиме</string>
     <string name="domain">Домен</string>
     <string name="account_settings">Настройки аккаунта</string>
+    <string name="notification_ringtone">Звук уведомления</string>
+    <string name="notification_ringtone_summaey">Выберите звук уведомления о новом сообщении</string>
 </resources>

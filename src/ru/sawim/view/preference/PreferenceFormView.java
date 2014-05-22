@@ -1,6 +1,9 @@
 package ru.sawim.view.preference;
 
 import android.content.Context;
+import android.content.Intent;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.*;
 import android.support.v4.app.FragmentTransaction;
@@ -71,118 +74,161 @@ public class PreferenceFormView extends PreferenceFragment {
         List<Forms.Control> controls = forms.controls;
         for (int position = 0; position < controls.size(); ++position) {
             final Forms.Control c = controls.get(position);
-            if (Forms.CONTROL_TEXT == c.type) {
-                PreferenceCategory preferenceCategory = new PreferenceCategory(getActivity());
-                preferenceCategory.setKey("" + c.id);
-                preferenceCategory.setPersistent(false);
-                preferenceCategory.setTitle(getText(c));
-                rootScreen.addPreference(preferenceCategory);
-            } else if (Forms.CONTROL_INPUT == c.type) {
-                EditTextPreference editTextPreference = new EditTextPreference(getActivity());
-                editTextPreference.setKey("" + c.id);
-                editTextPreference.setPersistent(false);
-                editTextPreference.setTitle(getText(c));
-                editTextPreference.setSummary(getText(c));
-                editTextPreference.setText(c.text);
-                editTextPreference.getEditText().addTextChangedListener(new TextWatcher() {
+            switch (c.type) {
+                case Forms.CONTROL_TEXT:
+                    PreferenceCategory preferenceCategory = new PreferenceCategory(getActivity());
+                    preferenceCategory.setKey(c.id);
+                    preferenceCategory.setPersistent(false);
+                    preferenceCategory.setTitle(getText(c));
+                    rootScreen.addPreference(preferenceCategory);
+                    break;
+                case Forms.CONTROL_INPUT:
+                    EditTextPreference editTextPreference = new EditTextPreference(getActivity());
+                    editTextPreference.setKey(c.id);
+                    editTextPreference.setPersistent(false);
+                    editTextPreference.setTitle(getText(c));
+                    editTextPreference.setSummary(getText(c));
+                    editTextPreference.setText(c.text);
+                    editTextPreference.getEditText().addTextChangedListener(new TextWatcher() {
 
-                    public void afterTextChanged(Editable s) {
-                    }
+                        public void afterTextChanged(Editable s) {
+                        }
 
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                    }
+                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                        }
 
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-                        c.text = s.toString();
-                        forms.controlUpdated(c);
-                    }
-                });
-                rootScreen.addPreference(editTextPreference);
-            } else if (Forms.CONTROL_CHECKBOX == c.type) {
-                CheckBoxPreference checkBoxPreference = new CheckBoxPreference(getActivity());
-                checkBoxPreference.setKey("" + c.id);
-                checkBoxPreference.setPersistent(false);
-                checkBoxPreference.setTitle(getText(c));
-                checkBoxPreference.setSummary(getText(c));
-                checkBoxPreference.setChecked(c.selected);
-                checkBoxPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                    public boolean onPreferenceClick(Preference preference) {
-                        c.selected = !c.selected;
-                        forms.controlUpdated(c);
-                        return true;
-                    }
-                });
-                rootScreen.addPreference(checkBoxPreference);
-            } else if (Forms.CONTROL_SELECT == c.type) {
-                ListPreference listPreference = new ListPreference(getActivity());
-                listPreference.setKey("" + c.id);
-                listPreference.setPersistent(false);
-                listPreference.setTitle(getText(c));
-                listPreference.setEntries(c.items);
-                listPreference.setEntryValues(c.items);
-                listPreference.setSummary(c.items[c.current]);
-                listPreference.setValueIndex(c.current);
-                listPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                    @Override
-                    public boolean onPreferenceChange(Preference preference, Object newValue) {
-                        String textValue = newValue.toString();
-                        ListPreference listPreference = (ListPreference) preference;
-                        int index = listPreference.findIndexOfValue(textValue);
-                        c.current = index;
-                        forms.controlUpdated(c);
-                        buildList();
-                        return true;
-                    }
-                });
-                rootScreen.addPreference(listPreference);
-            } else if (Forms.CONTROL_GAUGE == c.type) {
-                SeekBarPreference seekBarPreference = new SeekBarPreference(getActivity());
-                seekBarPreference.setKey("" + c.id);
-                seekBarPreference.setTitle(getText(c));
-                seekBarPreference.setDefaultValue(c.level);
-                seekBarPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                    @Override
-                    public boolean onPreferenceChange(Preference preference, Object newValue) {
-                        c.level = Integer.parseInt(newValue.toString());
-                        forms.controlUpdated(c);
-                        return true;
-                    }
-                });
-                rootScreen.addPreference(seekBarPreference);
-            } else if (Forms.CONTROL_GAUGE_FONT == c.type) {
-                final SeekBarPreference seekBarPreference = new SeekBarPreference(getActivity());
-                seekBarPreference.setKey("" + c.id);
-                seekBarPreference.setTitle(c.description + "(" + c.level + ")");
-                seekBarPreference.setMax(60);
-                seekBarPreference.setDefaultValue(c.level);
-                seekBarPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                    @Override
-                    public boolean onPreferenceChange(Preference preference, Object newValue) {
-                        int value = Integer.parseInt(newValue.toString());
-                        if (value <= 7) {
-                            c.level = 7;
-                        } else c.level = Integer.parseInt(newValue.toString());
-                        seekBarPreference.getSeekBar().setProgress(c.level);
-                        seekBarPreference.setTitleTextSize(c.level);
-                        seekBarPreference.setTitleText(c.description + "(" + c.level + ")");
-                        forms.controlUpdated(c);
-                        return true;
-                    }
-                });
-                rootScreen.addPreference(seekBarPreference);
-            } else if (Forms.CONTROL_IMAGE == c.type) {
-                IconPreferenceScreen iconPreferenceScreen = new IconPreferenceScreen(getActivity());
-                iconPreferenceScreen.setKey("" + c.id);
-                iconPreferenceScreen.setPersistent(false);
-                iconPreferenceScreen.setText(getText(c));
-                iconPreferenceScreen.setIcon(c.image);
-                rootScreen.addPreference(iconPreferenceScreen);
-            } else if (Forms.CONTROL_LINK == c.type) {
-                PreferenceCategory preferenceCategory = new PreferenceCategory(getActivity());
-                preferenceCategory.setKey("" + c.id);
-                preferenceCategory.setPersistent(false);
-                preferenceCategory.setTitle(getText(c));
-                rootScreen.addPreference(preferenceCategory);
+                        public void onTextChanged(CharSequence s, int start, int before, int count) {
+                            c.text = s.toString();
+                            forms.controlUpdated(c);
+                        }
+                    });
+                    rootScreen.addPreference(editTextPreference);
+                    break;
+                case Forms.CONTROL_CHECKBOX:
+                    CheckBoxPreference checkBoxPreference = new CheckBoxPreference(getActivity());
+                    checkBoxPreference.setKey(c.id);
+                    checkBoxPreference.setPersistent(false);
+                    checkBoxPreference.setTitle(getText(c));
+                    checkBoxPreference.setSummary(getText(c));
+                    checkBoxPreference.setChecked(c.selected);
+                    checkBoxPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                        public boolean onPreferenceClick(Preference preference) {
+                            c.selected = !c.selected;
+                            forms.controlUpdated(c);
+                            return true;
+                        }
+                    });
+                    rootScreen.addPreference(checkBoxPreference);
+                    break;
+                case Forms.CONTROL_SELECT:
+                    ListPreference listPreference = new ListPreference(getActivity());
+                    listPreference.setKey(c.id);
+                    listPreference.setPersistent(false);
+                    listPreference.setTitle(getText(c));
+                    listPreference.setEntries(c.items);
+                    listPreference.setEntryValues(c.items);
+                    listPreference.setSummary(c.items[c.current]);
+                    listPreference.setValueIndex(c.current);
+                    listPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                        @Override
+                        public boolean onPreferenceChange(Preference preference, Object newValue) {
+                            String textValue = newValue.toString();
+                            ListPreference listPreference = (ListPreference) preference;
+                            int index = listPreference.findIndexOfValue(textValue);
+                            c.current = index;
+                            forms.controlUpdated(c);
+                            buildList();
+                            return true;
+                        }
+                    });
+                    rootScreen.addPreference(listPreference);
+                    break;
+                case Forms.CONTROL_GAUGE:
+                    SeekBarPreference seekBarPreference = new SeekBarPreference(getActivity());
+                    seekBarPreference.setKey(c.id);
+                    seekBarPreference.setTitle(getText(c));
+                    seekBarPreference.setDefaultValue(c.level);
+                    seekBarPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                        @Override
+                        public boolean onPreferenceChange(Preference preference, Object newValue) {
+                            c.level = Integer.parseInt(newValue.toString());
+                            forms.controlUpdated(c);
+                            return true;
+                        }
+                    });
+                    rootScreen.addPreference(seekBarPreference);
+                    break;
+                case Forms.CONTROL_GAUGE_FONT:
+                    final SeekBarPreference fontSeekBarPreference = new SeekBarPreference(getActivity());
+                    fontSeekBarPreference.setKey(c.id);
+                    fontSeekBarPreference.setTitle(c.description + "(" + c.level + ")");
+                    fontSeekBarPreference.setMax(60);
+                    fontSeekBarPreference.setDefaultValue(c.level);
+                    fontSeekBarPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                        @Override
+                        public boolean onPreferenceChange(Preference preference, Object newValue) {
+                            int value = Integer.parseInt(newValue.toString());
+                            if (value <= 7) {
+                                c.level = 7;
+                            } else c.level = Integer.parseInt(newValue.toString());
+                            fontSeekBarPreference.getSeekBar().setProgress(c.level);
+                            fontSeekBarPreference.setTitleTextSize(c.level);
+                            fontSeekBarPreference.setTitleText(c.description + "(" + c.level + ")");
+                            forms.controlUpdated(c);
+                            return true;
+                        }
+                    });
+                    rootScreen.addPreference(fontSeekBarPreference);
+                    break;
+                case Forms.CONTROL_IMAGE:
+                    IconPreferenceScreen iconPreferenceScreen = new IconPreferenceScreen(getActivity());
+                    iconPreferenceScreen.setKey(c.id);
+                    iconPreferenceScreen.setPersistent(false);
+                    iconPreferenceScreen.setText(getText(c));
+                    iconPreferenceScreen.setIcon(c.image);
+                    rootScreen.addPreference(iconPreferenceScreen);
+                    break;
+                case Forms.CONTROL_LINK:
+                    PreferenceCategory linkPreferenceCategory = new PreferenceCategory(getActivity());
+                    linkPreferenceCategory.setKey(c.id);
+                    linkPreferenceCategory.setPersistent(false);
+                    linkPreferenceCategory.setTitle(getText(c));
+                    rootScreen.addPreference(linkPreferenceCategory);
+                    break;
+                case Forms.CONTROL_RINGTONE:
+                    RingtonePreference ringtonePreference = new RingtonePreference(getActivity()) {
+                        public int mRequestCode = 111;
+
+                        @Override
+                        protected void onClick() {
+                            Intent intent = new Intent(RingtoneManager.ACTION_RINGTONE_PICKER);
+                            onPrepareRingtonePickerIntent(intent);
+                            startActivityForResult(intent, mRequestCode);
+                        }
+
+                        public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
+                            if (requestCode == mRequestCode) {
+                                if (data != null) {
+                                    Uri uri = data.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI);
+                                    if (callChangeListener(uri != null ? uri.toString() : "")) {
+                                        onSaveRingtone(uri);
+                                    }
+                                }
+                                return true;
+                            }
+                            return false;
+                        }
+                    };
+                    ringtonePreference.setKey(c.id);
+                    ringtonePreference.setTitle(c.label);
+                    ringtonePreference.setSummary(c.description);
+                    ringtonePreference.setShowSilent(true);
+                    ringtonePreference.setShowDefault(true);
+                    ringtonePreference.setRingtoneType(RingtoneManager.TYPE_NOTIFICATION);
+                    ringtonePreference.setDefaultValue("content://settings/system/notification_sound");
+                    ringtonePreference.setPersistent(true);
+                    rootScreen.addPreference(ringtonePreference);
+                    break;
             }
         }
     }

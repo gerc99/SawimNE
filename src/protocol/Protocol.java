@@ -12,7 +12,6 @@ import ru.sawim.io.Storage;
 import ru.sawim.modules.*;
 import ru.sawim.modules.search.Search;
 import ru.sawim.modules.search.UserInfo;
-import ru.sawim.modules.sound.Notify;
 import ru.sawim.roster.ProtocolBranch;
 import ru.sawim.roster.RosterHelper;
 
@@ -603,9 +602,6 @@ abstract public class Protocol {
             if (null != chat) {
                 chat.beginTyping(type);
             }
-            if (type && isConnected()) {
-                playNotification(Notify.NOTIFY_TYPING);
-            }
         }
     }
 
@@ -869,7 +865,10 @@ abstract public class Protocol {
             }
         }
         if (!silent) {
-            addMessageNotify(chat, contact, message, isHighlight);
+            if (Options.getBoolean(Options.OPTION_ANSWERER)) {
+                Answerer.getInstance().checkMessage(this, contact, message);
+            }
+            addMessageNotify(contact, message, isHighlight);
         }
         if (chat.typeNewMessageIcon != chat.getNewMessageIcon() || chat.isVisibleChat()) {
             chat.typeNewMessageIcon = chat.getNewMessageIcon();
@@ -883,7 +882,7 @@ abstract public class Protocol {
         }
     }
 
-    private void addMessageNotify(Chat chat, Contact contact, Message message, boolean isHighlight) {
+    private void addMessageNotify(Contact contact, Message message, boolean isHighlight) {
         boolean isPersonal = contact.isSingleUserContact();
         boolean isBlog = isBlogBot(contact.getUserId());
         boolean isMention = false;
@@ -894,22 +893,16 @@ abstract public class Protocol {
                     && msg.startsWith(" ", myName.length() + 1);
             isMention = isHighlight;
         }
-        if (Options.getBoolean(Options.OPTION_ANSWERER)) {
-            Answerer.getInstance().checkMessage(this, contact, message);
-        }
-        String id = contact.getUserId();
         if (message.isOffline()) {
         } else if (isPersonal) {
             if (contact.isAuth() && !contact.isTemp()
-                    && message.isWakeUp()) {
-                playNotification(Notify.NOTIFY_ALARM);
-            } else if (isBlog) {
-                playNotification(Notify.NOTIFY_BLOG);
+                    && message.isWakeUp() && Options.getBoolean(Options.OPTION_ALARM)) {
+                SawimNotification.alarm(message.getProcessedText());
             } else {
-                playNotification(Notify.NOTIFY_MESSAGE);
+                //playNotification(Notify.NOTIFY_MESSAGE);
             }
         } else if (isMention) {
-            playNotification(Notify.NOTIFY_MULTIMESSAGE);
+            //playNotification(Notify.NOTIFY_MULTIMESSAGE);
         }
     }
 
@@ -947,10 +940,6 @@ abstract public class Protocol {
 
     public final boolean isReconnect() {
         return isReconnect;
-    }
-
-    public final void playNotification(int type) {
-        Notify.getSound().playSoundNotification(type);
     }
 
     public final void processException(SawimException e) {
@@ -1063,7 +1052,7 @@ abstract public class Protocol {
             boolean prevAway = getStatusInfo().isOffline(prev);
             boolean currAway = getStatusInfo().isOffline(curr);
             if (!currAway && prevAway) {
-                playNotification(Notify.NOTIFY_ONLINE);
+                //playNotification(Notify.NOTIFY_ONLINE);
             }
         }
     }

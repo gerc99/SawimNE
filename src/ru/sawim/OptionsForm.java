@@ -8,7 +8,6 @@ import ru.sawim.comm.Util;
 import ru.sawim.models.form.ControlStateListener;
 import ru.sawim.models.form.Forms;
 import ru.sawim.modules.Answerer;
-import ru.sawim.modules.sound.Notify;
 import ru.sawim.roster.RosterHelper;
 
 public class OptionsForm implements ControlStateListener {
@@ -25,14 +24,6 @@ public class OptionsForm implements ControlStateListener {
 
     private void setChecked(int lngStr, String optValue) {
         form.addCheckBox(optValue, lngStr, Options.getBoolean(optValue));
-    }
-
-    private void setChecked_(int lngStr, String optValue) {
-        form.addCheckBox(optValue, lngStr, Options.getBoolean(optValue));
-    }
-
-    private void saveNotifyControls(String opt) {
-        Options.setInt(opt, form.getCheckBoxValue(opt) ? 2 : 0);
     }
 
     private void saveOptionString(String opt) {
@@ -97,13 +88,12 @@ public class OptionsForm implements ControlStateListener {
                 break;
 
             case OPTIONS_SIGNALING:
-                saveOptionGauge(Options.OPTION_NOTIFY_VOLUME);
-                saveOptionSelector(Options.OPTION_VIBRATOR);
-                saveNotifyControls(Options.OPTION_ONLINE_NOTIF_MODE);
-                saveNotifyControls(Options.OPTION_MESS_NOTIF_MODE);
-                saveOptionBoolean(Options.OPTION_NOTIFY_IN_AWAY);
+                saveOptionBoolean(Options.OPTION_MESS_NOTIF);
+                saveOptionString(Options.OPTION_MESS_RINGTONE);
+                //saveOptionBoolean(Options.OPTION_BLOG_NOTIFY);
+                saveOptionBoolean(Options.OPTION_VIBRATION);
                 saveOptionBoolean(Options.OPTION_ALARM);
-                saveOptionBoolean(Options.OPTION_BLOG_NOTIFY);
+                //saveOptionBoolean(Options.OPTION_NOTIFY_IN_AWAY);
                 saveOptionSelector(Options.OPTION_TYPING_MODE);
                 break;
 
@@ -167,20 +157,14 @@ public class OptionsForm implements ControlStateListener {
                 break;
 
             case OPTIONS_SIGNALING:
-                if (Notify.getSound().hasAnySound()) {
-                    form.addVolumeControl_(Options.OPTION_NOTIFY_VOLUME, R.string.volume, Options.getInt(Options.OPTION_NOTIFY_VOLUME));
-                }
-
-                form.addCheckBox(Options.OPTION_MESS_NOTIF_MODE, R.string.message_notification, 0 < Options.getInt(Options.OPTION_MESS_NOTIF_MODE));
-                form.addCheckBox(Options.OPTION_ONLINE_NOTIF_MODE, R.string.onl_notification, 0 < Options.getInt(Options.OPTION_ONLINE_NOTIF_MODE));
+                setChecked(R.string.message_notification, Options.OPTION_MESS_NOTIF);
+                form.addRingtoneControl(Options.OPTION_MESS_RINGTONE, JLocale.getString(R.string.notification_ringtone), JLocale.getString(R.string.notification_ringtone_summaey));
+                setChecked(R.string.vibration, Options.OPTION_VIBRATION);
                 setChecked(R.string.alarm, Options.OPTION_ALARM);
-                setChecked(R.string.blog_notify, Options.OPTION_BLOG_NOTIFY);
-
+                //setChecked(R.string.blog_notify, Options.OPTION_BLOG_NOTIFY);
+                //setChecked(R.string.notify_in_away, Options.OPTION_NOTIFY_IN_AWAY);
                 int[] typingItems = {R.string.no, R.string.typing_incoming, R.string.typing_both};
                 form.addSelector(Options.OPTION_TYPING_MODE, R.string.typing_notify, typingItems, Options.getInt(Options.OPTION_TYPING_MODE));
-                int[] vibrationItems = {R.string.no, R.string.yes, R.string.when_locked};
-                form.addSelector(Options.OPTION_VIBRATOR, R.string.vibration, vibrationItems, Options.getInt(Options.OPTION_VIBRATOR));
-                setChecked(R.string.notify_in_away, Options.OPTION_NOTIFY_IN_AWAY);
                 break;
 
             case OPTIONS_ANTISPAM:
@@ -192,8 +176,8 @@ public class OptionsForm implements ControlStateListener {
                 break;
 
             case OPTIONS_PRO:
-                setChecked_(R.string.push, Options.OPTION_PUSH);
-                setChecked_(R.string.hide_icons_clients, Options.OPTION_HIDE_ICONS_CLIENTS);
+                setChecked(R.string.push, Options.OPTION_PUSH);
+                setChecked(R.string.hide_icons_clients, Options.OPTION_HIDE_ICONS_CLIENTS);
                 form.addSelector(Options.OPTION_AA_TIME, JLocale.getString(R.string.absence)
                         + " " + JLocale.getString(R.string.after_time), JLocale.getString(R.string.off) + "|5 |10 |15 ", Options.getInt(Options.OPTION_AA_TIME) / 5);
                 break;

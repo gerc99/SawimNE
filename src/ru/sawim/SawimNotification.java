@@ -5,7 +5,9 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 import ru.sawim.activities.SawimActivity;
 import ru.sawim.chat.ChatHistory;
 import ru.sawim.comm.JLocale;
@@ -17,6 +19,11 @@ import java.util.HashMap;
  * Created by admin on 27.01.14.
  */
 public class SawimNotification {
+
+    private static final int VIBRA_OFF = 0;
+    private static final int VIBRA_ON = 1;
+    private static final int VIBRA_LOCKED_ONLY = 2;
+
     private static final int PUSH_NOTIFICATION_ID = 0x10;
     public static final int NOTIFY_ID = 1;
     private static final HashMap<String, Integer> idsMap = new HashMap<String, Integer>();
@@ -49,6 +56,18 @@ public class SawimNotification {
         PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         if (0 < unread) {
             notification.setLights(0xff00ff00, 300, 1000);
+            if (Options.getBoolean(Options.OPTION_MESS_NOTIF)) {
+                if (Options.getBoolean(Options.OPTION_VIBRATION)) {
+                    int dat = 70;
+                    long[] pattern = {0,3 * dat, dat, dat};
+                    notification.setVibrate(pattern);
+                }
+                String ringtone = Options.getString(Options.OPTION_MESS_RINGTONE);
+                Log.e("kkkkkkkkk", ringtone);
+                if (ringtone != null) {
+                    notification.setSound(Uri.parse(ringtone));
+                }
+            }
         }
         if (0 < allUnread) {
             notification.setNumber(unread);
@@ -63,6 +82,10 @@ public class SawimNotification {
         notification.setContentText(stateMsg);
         notification.setSmallIcon(icon);
         return notification.build();
+    }
+
+    public static void alarm(String processedText) {
+
     }
 
     public static void fileProgress(String filename, int percent, String text) {
