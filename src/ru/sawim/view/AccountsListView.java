@@ -211,7 +211,7 @@ public class AccountsListView extends Fragment {
                 }
                 editPass.setText(account.password);
                 editNick.setText(account.nick);
-                buttonOk.setText(R.string.acc_edit);
+                buttonOk.setText(R.string.save);
             } else {
                 getActivity().setTitle(R.string.acc_add);
                 if (isXmpp) {

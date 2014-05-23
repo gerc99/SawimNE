@@ -63,7 +63,6 @@ public class SawimNotification {
                     notification.setVibrate(pattern);
                 }
                 String ringtone = Options.getString(Options.OPTION_MESS_RINGTONE);
-                Log.e("kkkkkkkkk", ringtone);
                 if (ringtone != null) {
                     notification.setSound(Uri.parse(ringtone));
                 }
@@ -85,7 +84,6 @@ public class SawimNotification {
     }
 
     public static void alarm(String processedText) {
-
     }
 
     public static void fileProgress(String filename, int percent, String text) {
