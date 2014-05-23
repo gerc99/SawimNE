@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.drawable.AnimationDrawable;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import ru.sawim.icons.AniIcon;
@@ -21,6 +22,7 @@ public class SmilesAdapter extends BaseAdapter {
 
     private Context baseContext;
     Emotions emotions;
+    private OnAdapterItemClickListener onItemClickListener;
 
     public SmilesAdapter(Context context) {
         baseContext = context;
@@ -62,6 +64,7 @@ public class SmilesAdapter extends BaseAdapter {
             wr.populateAniFrom((AniIcon) getItem(i));
         else
             wr.populateFrom(getItem(i));
+        wr.click(i);
         return convView;
     }
 
@@ -71,6 +74,20 @@ public class SmilesAdapter extends BaseAdapter {
         if (mAnimation.isRunning()) {
             mAnimation.stop();
             mAnimation.setVisible(false, false);
+        }
+    }
+
+    public void setOnItemClickListener(OnAdapterItemClickListener onItemClickListener) {
+        this.onItemClickListener = onItemClickListener;
+    }
+
+    public static abstract class OnAdapterItemClickListener implements AdapterView.OnItemClickListener {
+
+        public abstract void onItemClick(SmilesAdapter adapter, int position);
+
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            onItemClick((SmilesAdapter) parent.getAdapter(), position);
         }
     }
 
@@ -101,6 +118,16 @@ public class SmilesAdapter extends BaseAdapter {
             if (ic != null) {
                 itemImage.setImageDrawable(ic.getImage());
             }
+        }
+
+        void click(final int position) {
+            itemImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (onItemClickListener != null)
+                        onItemClickListener.onItemClick(SmilesAdapter.this, position);
+                }
+            });
         }
     }
 }

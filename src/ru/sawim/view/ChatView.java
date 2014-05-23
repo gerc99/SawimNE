@@ -82,6 +82,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
     private ChatListsView chatListsView;
     private ChatInputBarView chatInputBarView;
     private ChatViewRoot chatViewLayout;
+    private SmileysPopup smileysPopup;
     private MucUsersView mucUsersView;
     private ActionBarDrawerToggle drawerToggle;
     private DrawerLayout drawerLayout;
@@ -118,6 +119,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         chatListsView = new ChatListsView(activity, SawimApplication.isManyPane(), chatListView, nickList);
         chatInputBarView = new ChatInputBarView(activity, menuButton, smileButton, messageEditor, sendButton);
         chatViewLayout = new ChatViewRoot(activity, chatListsView, chatInputBarView);
+        smileysPopup = new SmileysPopup(activity, chatViewLayout, messageEditor);
         drawerLayout = new DrawerLayout(activity);
 
         ((BaseActivity) activity).setConfigurationChanged(new BaseActivity.OnConfigurationChanged() {
@@ -286,8 +288,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         smileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                messageEditor.clearFocus();
-                new SmilesView().show(activity.getSupportFragmentManager(), "show-smiles");
+                smileysPopup.show();
             }
         });
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
@@ -327,6 +328,12 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         messageEditor.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View view, int i, KeyEvent keyEvent) {
+                if (i == KeyEvent.KEYCODE_BACK && smileysPopup != null && smileysPopup.isShown()) {
+                    if (keyEvent.getAction() == KeyEvent.ACTION_UP) {
+                        smileysPopup.hide();
+                    }
+                    return true;
+                }
                 if (sendByEnter) {
                     if (keyEvent.getAction() == KeyEvent.ACTION_DOWN && i == KeyEvent.KEYCODE_ENTER) {
                         send();
@@ -390,6 +397,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         chatListsView = null;
         chatInputBarView = null;
         chatViewLayout = null;
+        smileysPopup = null;
         drawerLayout = null;
         adapter = null;
         mucUsersView = null;
@@ -407,6 +415,9 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
                 drawerLayout.closeDrawer(nickList);
                 return true;
             }
+        }
+        if (smileysPopup != null) {
+            return smileysPopup.hide();
         }
         return false;
     }
