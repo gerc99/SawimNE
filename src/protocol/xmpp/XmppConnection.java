@@ -1373,8 +1373,10 @@ public final class XmppConnection extends ClientConnection {
             updateConfPrivate(conf, fromRes);
             if (RosterHelper.getInstance().getUpdateChatListener() != null)
                 RosterHelper.getInstance().getUpdateChatListener().updateMucList();
-            if (isSessionManagementEnabled())
+            if (isSessionManagementEnabled()) {
+                getXmpp().needSave();
                 getXmpp().safeSave();
+            }
         } else {
             if (!("unavailable").equals(type)) {
                 if ((XStatusInfo.XSTATUS_NONE == contact.getXStatusIndex())
@@ -1408,8 +1410,10 @@ public final class XmppConnection extends ClientConnection {
                 getXmpp().renameContact(contact, getNickFromNode(x));
             }
             getXmpp().ui_changeContactStatus(contact);
-            if (isSessionManagementEnabled())
+            if (isSessionManagementEnabled()) {
+                getXmpp().needSave();
                 getXmpp().safeSave();
+            }
         }
     }
 
