@@ -689,7 +689,7 @@ public final class XmppConnection extends ClientConnection {
             return;
         }
         if ("p1:rebind".equals(id)) {
-            rebindEnabled = true;
+            //rebindEnabled = true;
             DebugLog.systemPrintln("[INFO-JABBER] p1 session management enabled with id = " + rebindSessionId);
         } else {
             if (id.startsWith(S_VCARD)) {
