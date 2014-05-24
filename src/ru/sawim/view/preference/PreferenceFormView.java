@@ -9,7 +9,6 @@ import android.preference.*;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.inputmethod.InputMethodManager;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
@@ -212,7 +211,6 @@ public class PreferenceFormView extends PreferenceFragment {
                                 if (data != null) {
                                     Uri uri = data.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI);
                                     if (callChangeListener(uri != null ? uri.toString() : "")) {
-                                        Log.e("kkkk", uri.toString());
                                         onSaveRingtone(uri);
                                         c.text = uri.toString();
                                         forms.controlUpdated(c);

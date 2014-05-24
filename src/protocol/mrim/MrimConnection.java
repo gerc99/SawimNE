@@ -253,7 +253,7 @@ public final class MrimConnection extends ClientConnection {
                 if (contact instanceof MrimPhoneContact) {
                     chat.setWritable(false);
                 }
-                chat.addMessage(message, false);
+                chat.addMessage(message, true, false, false);
                 if (!(contact instanceof MrimPhoneContact)) {
                     fromEmail = contact.getUserId();
                 }

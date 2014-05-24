@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.text.InputType;
-import android.util.Log;
 import android.view.*;
 import android.widget.*;
 import protocol.Profile;
@@ -114,7 +113,7 @@ public class AccountsListView extends Fragment {
                                         AccountManager am = AccountManager.get(getActivity());
                                         am.removeAccount(acc, null, null);
                                         if (p != null)
-                                            p.setStatus(StatusInfo.STATUS_OFFLINE, "");
+                                            SawimApplication.getInstance().setStatus(p, StatusInfo.STATUS_OFFLINE, "");
                                         Options.delAccount(accountID);
                                         RosterHelper.getInstance().setCurrentProtocol();
                                         Options.safeSave();

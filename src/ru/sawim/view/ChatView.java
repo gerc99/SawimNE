@@ -309,6 +309,12 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
                 | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
         messageEditor.setHint(R.string.hint_message);
         messageEditor.addTextChangedListener(textWatcher);
+        messageEditor.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                smileysPopup.hide();
+            }
+        });
         messageEditor.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {

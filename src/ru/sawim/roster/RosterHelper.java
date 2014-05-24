@@ -99,7 +99,7 @@ public final class RosterHelper {
         for (int i = 0; i < protocols.length; ++i) {
             Protocol protocol = protocols[i];
             if (null != protocol) {
-                protocol.setStatus(StatusInfo.STATUS_OFFLINE, "");
+                SawimApplication.getInstance().setStatus(protocol, StatusInfo.STATUS_OFFLINE, "");
                 protocol.needSave();
                 protocol.dismiss();
             }
@@ -261,11 +261,6 @@ public final class RosterHelper {
                 p.connect();
             }
         }
-    }
-
-    public void setStatus(Protocol p) {
-        p.setStatus((p.isConnected() || p.isConnecting())
-                ? StatusInfo.STATUS_OFFLINE : StatusInfo.STATUS_ONLINE, "");
     }
 
     public boolean isConnected() {
@@ -651,7 +646,8 @@ public final class RosterHelper {
     public boolean protocolMenuItemSelected(BaseActivity activity, Protocol p, int idItem) {
         switch (idItem) {
             case RosterHelper.MENU_CONNECT:
-                SawimApplication.getInstance().setStatus(p);
+                SawimApplication.getInstance().setStatus(p, (p.isConnected() || p.isConnecting())
+                        ? StatusInfo.STATUS_OFFLINE : StatusInfo.STATUS_ONLINE, "");
                 return true;
             case RosterHelper.MENU_STATUS:
                 new StatusesView(p, StatusesView.ADAPTER_STATUS).show(activity.getSupportFragmentManager(), "change-status");

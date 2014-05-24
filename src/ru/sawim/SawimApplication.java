@@ -138,8 +138,12 @@ public class SawimApplication extends Application {
         serviceConnection.send(Message.obtain(null, SawimService.UPDATE_APP_ICON));
     }
 
-    public void setStatus(Protocol p) {
-        serviceConnection.send(Message.obtain(null, SawimService.SET_STATUS, p));
+    public void setStatus(Protocol p, int statusIndex, String statusMsg) {
+        Object[] objects = new Object[3];
+        objects[0] = p;
+        objects[1] = statusIndex;
+        objects[2] = statusMsg;
+        serviceConnection.send(Message.obtain(null, SawimService.SET_STATUS, objects));
     }
 
     public void sendNotify(String title, String text) {

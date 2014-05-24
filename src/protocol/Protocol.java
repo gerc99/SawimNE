@@ -833,7 +833,9 @@ abstract public class Protocol {
 
     public final void addMessage(Message message, boolean silent) {
         Contact contact = getItemByUIN(message.getSndrUin());
-        if ((null == contact) && (AntiSpam.isSpam(this, message) && contact.isConference())) {
+        boolean isPlain = message instanceof PlainMessage;
+        boolean isSystem = message instanceof SystemNotice;
+        if ((null == contact) && (AntiSpam.isSpam(this, message, isSystem, isPlain) && contact.isConference())) {
             return;
         }
         if (null == contact) {
@@ -847,14 +849,13 @@ abstract public class Protocol {
             return;
         }
         beginTyping(contact, false);
-        boolean isPlain = (message instanceof PlainMessage);
         if (isPlain && isEmptyMessage(message.getText())) {
             return;
         }
         Chat chat = getChat(contact);
         boolean isHighlight = Chat.isHighlight(message.getProcessedText(), contact.getMyName());
-        chat.addMessage(message, isHighlight);
-        if (message instanceof SystemNotice) {
+        chat.addMessage(message, isPlain, isSystem, isHighlight);
+        if (isSystem) {
             SystemNotice notice = (SystemNotice) message;
             if (SystemNotice.SYS_NOTICE_AUTHREQ == notice.getSysnoteType()) {
                 if (autoGrand.contains(contact.getUserId())) {
@@ -1021,7 +1022,7 @@ abstract public class Protocol {
                 if (!cmdExecuted) {
                     String text = JLocale.getString(R.string.jabber_command_not_found);
                     SystemNotice notice = new SystemNotice(this, SystemNotice.SYS_NOTICE_MESSAGE, to.getUserId(), text);
-                    getChat(to).addMessage(notice, false);
+                    getChat(to).addMessage(notice, false, true, false);
                 }
                 return;
             }

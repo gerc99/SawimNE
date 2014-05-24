@@ -51,8 +51,8 @@ public class AntiSpam {
         return false;
     }
 
-    private void denyAuth(Protocol protocol, Message message) {
-        if (message instanceof SystemNotice) {
+    private void denyAuth(Protocol protocol, Message message, boolean isSystem) {
+        if (isSystem) {
             SystemNotice notice = (SystemNotice) message;
             if (SystemNotice.SYS_NOTICE_AUTHREQ == notice.getSysnoteType()) {
                 protocol.autoDenyAuth(message.getSndrUin());
@@ -76,7 +76,7 @@ public class AntiSpam {
         return false;
     }
 
-    public boolean isSpamMessage(Protocol protocol, Message message) {
+    public boolean isSpamMessage(Protocol protocol, Message message, boolean isSystem, boolean isPlain) {
         if (!Options.getBoolean(Options.OPTION_ANTISPAM_ENABLE)) {
             return false;
         }
@@ -84,17 +84,14 @@ public class AntiSpam {
         if (isChecked(uin)) {
             return false;
         }
-        denyAuth(protocol, message);
-        if (!(message instanceof PlainMessage)) {
+        denyAuth(protocol, message, isSystem);
+        if (!isPlain) {
             return true;
         }
-
         String msg = message.getText();
-
         if (msg.length() < 256) {
             //MagicEye.addAction(protocol, uin, "antispam", msg);
         }
-
         if (message.isOffline()) {
             return true;
         }
@@ -111,13 +108,13 @@ public class AntiSpam {
         return true;
     }
 
-    public static boolean isSpam(Protocol protocol, Message message) {
+    public static boolean isSpam(Protocol protocol, Message message, boolean isSystem, boolean isPlain) {
         if (Options.getBoolean(Options.OPTION_ANTISPAM_ENABLE))
             if (antiSpam.containsKeywords(message.getText())) {
-                antiSpam.denyAuth(protocol, message);
+                antiSpam.denyAuth(protocol, message, isSystem);
                 return true;
             }
-        return antiSpam.isSpamMessage(protocol, message);
+        return antiSpam.isSpamMessage(protocol, message, isSystem, isPlain);
     }
 }
 

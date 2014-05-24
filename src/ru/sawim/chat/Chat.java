@@ -363,12 +363,12 @@ public final class Chat {
         }
     }
 
-    public void addMessage(Message message, boolean isHighlight) {
+    public void addMessage(Message message, boolean isPlain, boolean isSystem, boolean isHighlight) {
         if (getMessCount() <= 1)
             ChatHistory.instance.registerChat(this);
         boolean inc = !isVisibleChat();
         String from = getFrom(message);
-        if (message instanceof PlainMessage) {
+        if (isPlain) {
             addTextToForm(message, from, false, isHighlight, isHistory());
             if (inc) {
                 messageCounter = inc(messageCounter);
@@ -377,7 +377,7 @@ public final class Chat {
                     messageCounter--;
                 }
             }
-        } else if (message instanceof SystemNotice) {
+        } else if (isSystem) {
             SystemNotice notice = (SystemNotice) message;
             if (SystemNotice.SYS_NOTICE_AUTHREQ == notice.getSysnoteType()) {
                 inc = true;
