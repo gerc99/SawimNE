@@ -1,7 +1,7 @@
 package ru.sawim.view;
 
 import android.app.Activity;
-import android.graphics.Rect;
+import android.content.res.Configuration;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
@@ -66,13 +66,11 @@ public class SmileysPopup {
             popupWindow.showAtLocation(rootView, Gravity.BOTTOM, 0, 0);
             popupWindow.getContentView().setPadding(0, 0, 0, 0);
         } else {
-            Rect rect = new Rect();
-            rootView.getWindowVisibleDisplayFrame(rect);
-            int keyBoardHeight = (rect.height() - this.editText.getHeight()) / 2;
-            //popupWindow.setHeight(keyBoardHeight);
-            //popupWindow.showAtLocation(rootView, Gravity.TOP, rect.left, rect.top + keyBoardHeight);
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-            lp.height = keyBoardHeight;
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            if (activity.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+                lp.weight = 2;
+            }
             smileysView.setLayoutParams(lp);
             rootView.addView(smileysView);
         }

@@ -97,11 +97,11 @@ public class SawimService extends Service {
                         updateLock();
                         break;
                     case UPDATE_APP_ICON:
-                        SawimService.this.startForeground(R.string.app_name, SawimNotification.get(SawimService.this));
+                        SawimService.this.startForeground(R.string.app_name, SawimNotification.get(SawimService.this, false));
                         break;
                     case SEND_NOTIFY:
                         //SawimNotification.sendNotify(SawimService.this, ((String[])msg.obj)[0], ((String[])msg.obj)[1]);
-                        SawimService.this.startForeground(R.string.app_name, SawimNotification.get(SawimService.this));
+                        SawimService.this.startForeground(R.string.app_name, SawimNotification.get(SawimService.this, (boolean)((Object[])msg.obj)[2]));
                         break;
                     case SET_STATUS:
                         final Protocol protocol = (Protocol) ((Object[]) msg.obj)[0];

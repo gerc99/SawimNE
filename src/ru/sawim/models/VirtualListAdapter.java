@@ -11,6 +11,7 @@ import android.widget.TextView;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
+import ru.sawim.models.list.VirtualList;
 import ru.sawim.models.list.VirtualListItem;
 import ru.sawim.text.TextLinkClick;
 import ru.sawim.widget.MyTextView;
@@ -28,12 +29,14 @@ import java.util.List;
 public class VirtualListAdapter extends BaseAdapter {
 
     private Context baseContext;
+    private VirtualList list;
     private LayoutInflater inf;
     private List<VirtualListItem> items = new ArrayList<VirtualListItem>();
     private int selectedItem = -1;
 
-    public VirtualListAdapter(Context context) {
+    public VirtualListAdapter(Context context, VirtualList list) {
         this.baseContext = context;
+        this.list = list;
         inf = LayoutInflater.from(baseContext);
     }
 
@@ -88,7 +91,7 @@ public class VirtualListAdapter extends BaseAdapter {
 
         holder.labelView.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
         holder.descView.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
-        holder.descView.setOnTextLinkClickListener(new TextLinkClick(null, ""));
+        holder.descView.setOnTextLinkClickListener(new TextLinkClick(list.getProtocol(), ""));
 
         holder.labelView.setVisibility(TextView.GONE);
         holder.descView.setVisibility(TextView.GONE);

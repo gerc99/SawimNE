@@ -61,7 +61,7 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
         super.onActivityCreated(savedInstanceState);
         Activity currentActivity = getActivity();
         currentActivity.setTitle(list.getCaption());
-        adapter = new VirtualListAdapter(currentActivity);
+        adapter = new VirtualListAdapter(currentActivity, list);
         lv = (MyListView) currentActivity.findViewById(R.id.list_view);
         lv.setAdapter(adapter);
         lv.setOnItemClickListener(new ListView.OnItemClickListener() {

@@ -1,7 +1,6 @@
 package ru.sawim.text;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -39,17 +38,17 @@ public class TextLinkClick implements TextLinkClickListener {
     @Override
     public void onTextLinkClick(View textView, String clickedString, boolean isLongTap) {
         if (clickedString.length() == 0) return;
-        final Context context = BaseActivity.getCurrentActivity();
+        final BaseActivity activity = BaseActivity.getCurrentActivity();
         boolean isJuick = clickedString.startsWith("@") || clickedString.startsWith("#");
         if (isJuick) {
-            new JuickMenu((BaseActivity) context, currentProtocol, currentContact, clickedString).show();
+            new JuickMenu(activity, currentProtocol, currentContact, clickedString).show();
             return;
         }
         if (isLongTap || Jid.isJID(clickedString)) {
             CharSequence[] items = new CharSequence[2];
-            items[0] = context.getString(R.string.copy);
-            items[1] = context.getString(R.string.add_contact);
-            final AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            items[0] = activity.getString(R.string.copy);
+            items[1] = activity.getString(R.string.add_contact);
+            final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
             builder.setCancelable(true);
             builder.setTitle(R.string.url_menu);
             final String finalClickedString = clickedString;
@@ -58,10 +57,10 @@ public class TextLinkClick implements TextLinkClickListener {
                 public void onClick(DialogInterface dialog, int which) {
                     switch (which) {
                         case 0:
-                            Clipboard.setClipBoardText(context, finalClickedString);
+                            Clipboard.setClipBoardText(activity, finalClickedString);
                             break;
                         case 1:
-                            currentProtocol.getSearchForm().show((BaseActivity) context,
+                            currentProtocol.getSearchForm().show(activity,
                                     Util.getUrlWithoutProtocol(finalClickedString), true);
                             break;
                     }
@@ -81,14 +80,14 @@ public class TextLinkClick implements TextLinkClickListener {
                     || Util.isImageFile(clickedString)) {
                 PictureView pictureView = new PictureView();
                 pictureView.setLink(clickedString);
-                FragmentTransaction transaction = ((BaseActivity) context).getSupportFragmentManager().beginTransaction();
+                FragmentTransaction transaction = (activity).getSupportFragmentManager().beginTransaction();
                 transaction.add(pictureView, PictureView.TAG);
                 transaction.commitAllowingStateLoss();
             } else {
                 Uri uri = Uri.parse(clickedString);
                 Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                intent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
-                context.startActivity(intent);
+                intent.putExtra(Browser.EXTRA_APPLICATION_ID, activity.getPackageName());
+                activity.startActivity(intent);
             }
         }
     }

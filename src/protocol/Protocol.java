@@ -865,45 +865,43 @@ abstract public class Protocol {
                 }
             }
         }
+        boolean notifyMessage = false;
         if (!silent) {
             if (Options.getBoolean(Options.OPTION_ANSWERER)) {
                 Answerer.getInstance().checkMessage(this, contact, message);
             }
-            addMessageNotify(contact, message, isHighlight);
+            boolean isPersonal = contact.isSingleUserContact();
+            boolean isBlog = isBlogBot(contact.getUserId());
+            boolean isMention = false;
+            if (!isPersonal && !message.isOffline() && (contact instanceof XmppContact)) {
+                String msg = message.getText();
+                String myName = contact.getMyName();
+                isPersonal = msg.startsWith(myName)
+                        && msg.startsWith(" ", myName.length() + 1);
+                isMention = isHighlight;
+            }
+            if (message.isOffline()) {
+            } else if (isPersonal) {
+                if (contact.isAuth() && !contact.isTemp()
+                        && message.isWakeUp() && Options.getBoolean(Options.OPTION_ALARM)) {
+                    SawimNotification.alarm(message.getProcessedText());
+                } else {
+                    //playNotification(Notify.NOTIFY_MESSAGE);
+                    notifyMessage = true;
+                }
+            } else if (isMention) {
+                //playNotification(Notify.NOTIFY_MULTIMESSAGE);
+            }
         }
         if (chat.typeNewMessageIcon != chat.getNewMessageIcon() || chat.isVisibleChat()) {
             chat.typeNewMessageIcon = chat.getNewMessageIcon();
             if (contact != RosterHelper.getInstance().getCurrentContact() || !chat.isVisibleChat()) {
-                SawimApplication.getInstance().sendNotify(contact.getUserId(), message.getText());
+                SawimApplication.getInstance().sendNotify(contact.getUserId(), message.getText(), notifyMessage);
             }
             if (RosterHelper.getInstance().getUpdateChatListener() != null)
                 RosterHelper.getInstance().getUpdateChatListener().updateChat(contact);
             RosterHelper.getInstance().updateRoster(contact);
             RosterHelper.getInstance().updateBarProtocols();
-        }
-    }
-
-    private void addMessageNotify(Contact contact, Message message, boolean isHighlight) {
-        boolean isPersonal = contact.isSingleUserContact();
-        boolean isBlog = isBlogBot(contact.getUserId());
-        boolean isMention = false;
-        if (!isPersonal && !message.isOffline() && (contact instanceof XmppContact)) {
-            String msg = message.getText();
-            String myName = contact.getMyName();
-            isPersonal = msg.startsWith(myName)
-                    && msg.startsWith(" ", myName.length() + 1);
-            isMention = isHighlight;
-        }
-        if (message.isOffline()) {
-        } else if (isPersonal) {
-            if (contact.isAuth() && !contact.isTemp()
-                    && message.isWakeUp() && Options.getBoolean(Options.OPTION_ALARM)) {
-                SawimNotification.alarm(message.getProcessedText());
-            } else {
-                //playNotification(Notify.NOTIFY_MESSAGE);
-            }
-        } else if (isMention) {
-            //playNotification(Notify.NOTIFY_MULTIMESSAGE);
         }
     }
 

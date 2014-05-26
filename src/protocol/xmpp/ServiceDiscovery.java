@@ -22,7 +22,6 @@ import java.util.Vector;
 
 public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
 
-
     private boolean isConferenceList = false;
     private int totalCount = 0;
 
@@ -55,6 +54,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
         isMucUsers(false);
         screen = VirtualList.getInstance();
         xmpp = protocol;
+        screen.setProtocol(xmpp);
         screen.setModel(model);
         screen.setCaption(JLocale.getString(R.string.service_discovery));
         groupItem = model.createNewParser(true);

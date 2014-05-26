@@ -28,7 +28,7 @@ public class SawimNotification {
     public static final int NOTIFY_ID = 1;
     private static final HashMap<String, Integer> idsMap = new HashMap<String, Integer>();
 
-    public static Notification get(Context context) {
+    public static Notification get(Context context, boolean silent) {
         int unread = ChatHistory.instance.getPersonalUnreadMessageCount(false);
         int allUnread = ChatHistory.instance.getPersonalUnreadMessageCount(true);
         CharSequence stateMsg = "";
@@ -56,7 +56,7 @@ public class SawimNotification {
         PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         if (0 < unread) {
             notification.setLights(0xff00ff00, 300, 1000);
-            if (Options.getBoolean(Options.OPTION_MESS_NOTIF)) {
+            if (Options.getBoolean(Options.OPTION_MESS_NOTIF) && silent) {
                 if (Options.getBoolean(Options.OPTION_VIBRATION)) {
                     int dat = 70;
                     long[] pattern = {0,3 * dat, dat, dat};
