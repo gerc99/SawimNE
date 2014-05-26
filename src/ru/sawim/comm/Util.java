@@ -25,45 +25,10 @@ public class Util {
         return stream.size();
     }
 
-    public void reset() {
-        try {
-            stream.reset();
-        } catch (Exception ignored) {
-        }
-    }
-
-    public void writeZeroes(int count) {
-        for (int i = 0; i < count; ++i) {
-            writeByte(0);
-        }
-    }
-
     public void writeWordBE(int value) {
         try {
             stream.write(((value & 0xFF00) >> 8) & 0xFF);
             stream.write(value & 0xFF);
-        } catch (Exception ignored) {
-        }
-    }
-
-    public void writeWordLE(int value) {
-        try {
-            stream.write(value & 0xFF);
-            stream.write(((value & 0xFF00) >> 8) & 0xFF);
-        } catch (Exception ignored) {
-        }
-    }
-
-    public void writeByteArray(byte[] array) {
-        try {
-            stream.write(array);
-        } catch (Exception ignored) {
-        }
-    }
-
-    public void writeByteArray(byte[] array, int offset, int length) {
-        try {
-            stream.write(array, offset, length);
         } catch (Exception ignored) {
         }
     }
@@ -79,29 +44,9 @@ public class Util {
         }
     }
 
-    public void writeDWordLE(long longValue) {
-        try {
-            int value = (int) longValue;
-            stream.write(value & 0x000000FF);
-            stream.write(((value & 0x0000FF00) >> 8) & 0xFF);
-            stream.write(((value & 0x00FF0000) >> 16) & 0xFF);
-            stream.write(((value & 0xFF000000) >> 24) & 0xFF);
-        } catch (Exception ignored) {
-        }
-    }
-
     public void writeByte(int value) {
         try {
             stream.write(value);
-        } catch (Exception ignored) {
-        }
-    }
-
-    public void writeShortLenAndUtf8String(String value) {
-        byte[] raw = StringConvertor.stringToByteArrayUtf8(value);
-        writeByte(raw.length);
-        try {
-            stream.write(raw, 0, raw.length);
         } catch (Exception ignored) {
         }
     }
@@ -123,130 +68,20 @@ public class Util {
         }
     }
 
-    public void writeProfileAsciizTLV(int type, String value) {
-        value = StringConvertor.notNull(value);
-
-        byte[] raw = StringConvertor.stringToByteArray1251(value);
-        writeWordLE(type);
-        writeWordLE(raw.length + 3);
-        writeWordLE(raw.length + 1);
-        writeByteArray(raw);
-        writeByte(0);
-    }
-
-    public void writeTlvECombo(int type, String value, int code) {
-        value = StringConvertor.notNull(value);
-        writeWordLE(type);
-        byte[] raw = StringConvertor.stringToByteArray(value);
-        writeWordLE(raw.length + 4);
-        writeWordLE(raw.length + 1);
-        try {
-            stream.write(raw, 0, raw.length);
-            stream.write(0);
-            stream.write(code);
-        } catch (Exception ignored) {
-        }
-    }
-
-    public void writeTLV(int type, byte[] data) {
-        writeWordBE(type);
-        int length = (null == data) ? 0 : data.length;
-        writeWordBE(length);
-        if (length > 0) {
-            try {
-                stream.write(data, 0, data.length);
-            } catch (Exception ignored) {
-            }
-        }
-    }
-
-    public void writeTLVWord(int type, int wordValue) {
-        writeWordBE(type);
-        writeWordBE(2);
-        writeWordBE(wordValue);
-    }
-
-    public void writeTLVDWord(int type, long wordValue) {
-        writeWordBE(type);
-        writeWordBE(4);
-        writeDWordBE(wordValue);
-    }
-
-    public void writeTLVByte(int type, int wordValue) {
-        writeWordBE(type);
-        writeWordBE(1);
-        writeByte(wordValue);
-    }
-
-
     private static final byte[] PASSENC_KEY = {(byte) 0xF3, (byte) 0x26, (byte) 0x81, (byte) 0xC4,
             (byte) 0x39, (byte) 0x86, (byte) 0xDB, (byte) 0x92,
             (byte) 0x71, (byte) 0xA3, (byte) 0xB9, (byte) 0xE6,
             (byte) 0x53, (byte) 0x7A, (byte) 0x95, (byte) 0x7C};
-
-
-    public static int getByte(byte[] buf, int off) {
-        return ((int) buf[off]) & 0x000000FF;
-    }
-
-    public static void putByte(byte[] buf, int off, int val) {
-        buf[off] = (byte) (val & 0x000000FF);
-    }
-
-    public static int getWordLE(byte[] buf, int off) {
-        int val = (((int) buf[off])) & 0x000000FF;
-        return val | (((int) buf[++off]) << 8) & 0x0000FF00;
-    }
 
     public static int getWordBE(byte[] buf, int off) {
         int val = (((int) buf[off]) << 8) & 0x0000FF00;
         return val | (((int) buf[++off])) & 0x000000FF;
     }
 
-    public static void putWordLE(byte[] buf, int off, int val) {
-        buf[off] = (byte) ((val) & 0x000000FF);
-        buf[++off] = (byte) ((val >> 8) & 0x000000FF);
-    }
-
     public static void putWordBE(byte[] buf, int off, int val) {
         buf[off] = (byte) ((val >> 8) & 0x000000FF);
         buf[++off] = (byte) ((val) & 0x000000FF);
     }
-
-    public static long getDWordLE(byte[] buf, int off) {
-        long val;
-
-        val = (((long) buf[off])) & 0x000000FF;
-        val |= (((long) buf[++off]) << 8) & 0x0000FF00;
-        val |= (((long) buf[++off]) << 16) & 0x00FF0000;
-        val |= (((long) buf[++off]) << 24) & 0xFF000000;
-        return val;
-    }
-
-    public static long getDWordBE(byte[] buf, int off) {
-        long val;
-        val = (((long) buf[off]) << 24) & 0xFF000000;
-        val |= (((long) buf[++off]) << 16) & 0x00FF0000;
-        val |= (((long) buf[++off]) << 8) & 0x0000FF00;
-        val |= (((long) buf[++off])) & 0x000000FF;
-        return val;
-    }
-
-    public static void putDWordLE(byte[] buf, int off, long val) {
-
-        buf[off] = (byte) ((val) & 0x00000000000000FF);
-        buf[++off] = (byte) ((val >> 8) & 0x00000000000000FF);
-        buf[++off] = (byte) ((val >> 16) & 0x00000000000000FF);
-        buf[++off] = (byte) ((val >> 24) & 0x00000000000000FF);
-    }
-
-    public static void putDWordBE(byte[] buf, int off, long val) {
-        buf[off] = (byte) ((val >> 24) & 0x00000000000000FF);
-        buf[++off] = (byte) ((val >> 16) & 0x00000000000000FF);
-        buf[++off] = (byte) ((val >> 8) & 0x00000000000000FF);
-        buf[++off] = (byte) ((val) & 0x00000000000000FF);
-    }
-
 
     public static byte[] decipherPassword(byte[] buf) {
         byte[] ret = new byte[buf.length];
@@ -352,18 +187,6 @@ public class Util {
         } catch (Exception ignored) {
             return 0;
         }
-    }
-
-    public static long createCurrentLocalTime() {
-        return gmtTimeToLocalTime(SawimApplication.getCurrentGmtTime());
-    }
-
-    public static String getLocalDayOfWeek_(long gmtTime) {
-        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
-        cal.setTime(new Date(Util.gmtTimeToLocalTime(gmtTime) * 1000));
-        String[] days = {"", "sunday", "monday", "tuesday", "wednesday",
-                "thursday", "friday", "saturday"};
-        return days[cal.get(Calendar.DAY_OF_WEEK)];
     }
 
     public static String getLocalDateString(long gmtDate, boolean onlyTime) {
@@ -651,39 +474,12 @@ public class Util {
         return result.toString();
     }
 
-    private static final String base64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-
     public static byte[] base64decode(String str) {
         return Base64.decode(StringConvertor.notNull(str), Base64.DEFAULT);
     }
 
-    // Replacing it with Android impl will broke authorization.
     public static String base64encode(final byte[] data) {
-        char[] out = new char[((data.length + 2) / 3) * 4];
-        for (int i = 0, index = 0; i < data.length; i += 3, index += 4) {
-            boolean quad = false;
-            boolean trip = false;
-
-            int val = (0xFF & data[i]);
-            val <<= 8;
-            if ((i + 1) < data.length) {
-                val |= (0xFF & data[i + 1]);
-                trip = true;
-            }
-            val <<= 8;
-            if ((i + 2) < data.length) {
-                val |= (0xFF & data[i + 2]);
-                quad = true;
-            }
-            out[index + 3] = base64.charAt(quad ? (val & 0x3F) : 64);
-            val >>= 6;
-            out[index + 2] = base64.charAt(trip ? (val & 0x3F) : 64);
-            val >>= 6;
-            out[index + 1] = base64.charAt(val & 0x3F);
-            val >>= 6;
-            out[index + 0] = base64.charAt(val & 0x3F);
-        }
-        return new String(out);
+        return Base64.encodeToString(data, Base64.DEFAULT);
     }
 
     public static String decodeBase64(String src) {

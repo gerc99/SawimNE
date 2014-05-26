@@ -16,7 +16,6 @@ public class SawimService extends Service {
 
     private static final String LOG_TAG = SawimService.class.getSimpleName();
     private final Messenger messenger = new Messenger(new IncomingHandler());
-    private PowerManager.WakeLock wakeLock;
 
     public static final int UPDATE_CONNECTION_STATUS = 1;
     public static final int UPDATE_APP_ICON = 2;
@@ -42,8 +41,6 @@ public class SawimService extends Service {
     @Override
     public void onDestroy() {
         Log.i(LOG_TAG, "onDestroy();");
-        release();
-        stopForeground(true);
     }
 
     @Override
@@ -56,52 +53,17 @@ public class SawimService extends Service {
         return messenger.getBinder();
     }
 
-    private void updateLock() {
-        if (!Options.getBoolean(Options.OPTION_WAKE_LOCK)) {
-            release();
-            return;
-        }
-        RosterHelper cl = RosterHelper.getInstance();
-        boolean need = cl.isConnected() || cl.isConnecting();
-        if (need) {
-            if (!isHeld()) acquire();
-        } else {
-            if (isHeld()) release();
-        }
-    }
-
-    private void acquire() {
-        if (wakeLock == null) {
-            PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
-            wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK | PowerManager.ON_AFTER_RELEASE, LOG_TAG);
-        } else {
-            wakeLock.acquire();
-        }
-    }
-
-    private void release() {
-        if (isHeld()) wakeLock.release();
-        wakeLock = null;
-    }
-
-    private boolean isHeld() {
-        return (null != wakeLock) && wakeLock.isHeld();
-    }
-
     private class IncomingHandler extends Handler {
         @Override
         public void handleMessage(final Message msg) {
             try {
                 switch (msg.what) {
                     case UPDATE_CONNECTION_STATUS:
-                        updateLock();
                         break;
                     case UPDATE_APP_ICON:
-                        SawimService.this.startForeground(R.string.app_name, SawimNotification.get(SawimService.this, false));
                         break;
                     case SEND_NOTIFY:
-                        //SawimNotification.sendNotify(SawimService.this, ((String[])msg.obj)[0], ((String[])msg.obj)[1]);
-                        SawimService.this.startForeground(R.string.app_name, SawimNotification.get(SawimService.this, (boolean)((Object[])msg.obj)[2]));
+                        SawimNotification.sendNotify(SawimService.this, (String)((Object[])msg.obj)[0], (String)((Object[])msg.obj)[1], (boolean)((Object[])msg.obj)[2]);
                         break;
                     case SET_STATUS:
                         final Protocol protocol = (Protocol) ((Object[]) msg.obj)[0];

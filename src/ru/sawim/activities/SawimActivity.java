@@ -25,7 +25,6 @@
 
 package ru.sawim.activities;
 
-import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -37,8 +36,6 @@ import android.view.MenuItem;
 import android.view.Window;
 import protocol.Contact;
 import protocol.Protocol;
-import protocol.icq.Icq;
-import protocol.mrim.Mrim;
 import protocol.xmpp.Xmpp;
 import ru.sawim.Options;
 import ru.sawim.R;
@@ -260,7 +257,6 @@ public class SawimActivity extends BaseActivity {
 
 
     private static final int MENU_OPTIONS = 7;
-    private static final int MENU_QUIT = 14;
     private static final int MENU_DEBUG_LOG = 22;
 
     @Override
@@ -285,11 +281,6 @@ public class SawimActivity extends BaseActivity {
                 menu.add(Menu.NONE, RosterHelper.MENU_STATUS, Menu.NONE, R.string.status);
                 if (p.getXStatusInfo() != null)
                     menu.add(Menu.NONE, RosterHelper.MENU_XSTATUS, Menu.NONE, R.string.xstatus);
-                if ((p instanceof Icq) || (p instanceof Mrim))
-                    menu.add(Menu.NONE, RosterHelper.MENU_PRIVATE_STATUS, Menu.NONE, R.string.private_status);
-                if (p instanceof Mrim && p.isConnected()) {
-                    menu.add(Menu.NONE, RosterHelper.MENU_SEND_SMS, Menu.NONE, R.string.send_sms);
-                }
                 if (p.isConnected()) {
                     if (p instanceof Xmpp) {
                         if (((Xmpp) p).hasS2S()) {
@@ -298,21 +289,14 @@ public class SawimActivity extends BaseActivity {
                         menu.add(Menu.NONE, RosterHelper.MENU_ADHOC, Menu.NONE, R.string.account_settings);
                     }
                     menu.add(Menu.NONE, RosterHelper.MENU_GROUPS, Menu.NONE, R.string.manage_contact_list);
-                    if (p instanceof Icq) {
-                        menu.add(Menu.NONE, RosterHelper.MENU_MYSELF, Menu.NONE, R.string.myself);
-                    } else {
-                        if (p instanceof Xmpp) {
-                            menu.add(Menu.NONE, RosterHelper.MENU_NOTES, Menu.NONE, R.string.notes);
-                        }
-                        if (p.hasVCardEditor())
-                            menu.add(Menu.NONE, RosterHelper.MENU_MYSELF, Menu.NONE, R.string.myself);
-                        if (p instanceof Mrim)
-                            menu.add(Menu.NONE, RosterHelper.MENU_MICROBLOG, Menu.NONE, R.string.microblog);
+                    if (p instanceof Xmpp) {
+                        menu.add(Menu.NONE, RosterHelper.MENU_NOTES, Menu.NONE, R.string.notes);
                     }
+                    if (p.hasVCardEditor())
+                        menu.add(Menu.NONE, RosterHelper.MENU_MYSELF, Menu.NONE, R.string.myself);
                 }
             }
             menu.add(Menu.NONE, MENU_OPTIONS, Menu.NONE, R.string.options);
-            menu.add(Menu.NONE, MENU_QUIT, Menu.NONE, R.string.quit);
         }
         return super.onPrepareOptionsMenu(menu);
     }
@@ -343,12 +327,6 @@ public class SawimActivity extends BaseActivity {
                 break;
             case MENU_DEBUG_LOG:
                 DebugLog.instance.activate();
-                break;
-            case MENU_QUIT:
-                SawimApplication.getInstance().quit(false);
-                SawimApplication.getInstance().stopService();
-                finish();
-                System.exit(0);
                 break;
         }
         return super.onOptionsItemSelected(item);

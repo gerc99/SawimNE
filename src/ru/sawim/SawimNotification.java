@@ -138,7 +138,7 @@ public class SawimNotification {
                 .notify(id, builder.build());
     }
 
-    /*public static void sendNotify(Context context, final String title, final String text) {
+    public static void sendNotify(Context context, final String title, final String text, boolean silent) {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         long when = 0;
         int icon = R.drawable.ic_tray_msg;
@@ -147,7 +147,7 @@ public class SawimNotification {
         int allUnread = ChatHistory.instance.getPersonalUnreadMessageCount(true);
         if (0 < allUnread) {
             NotificationCompat.Builder notification = new NotificationCompat.Builder(context);
-            CharSequence contentTitle = context.getText(R.string.notify_title);
+            CharSequence contentTitle = title;
             CharSequence contentText = null;
             Intent notificationIntent = new Intent(context, SawimActivity.class);
             notificationIntent.setAction(SawimActivity.NOTIFY);
@@ -160,7 +160,20 @@ public class SawimNotification {
             //notification.setVibrate(vibraPattern);
             if (0 < unread) {
                 notification.setLights(0xff00ff00, 300, 1000);
-                //notification.number = unread;
+                if (Options.getBoolean(Options.OPTION_MESS_NOTIF) && silent) {
+                    if (Options.getBoolean(Options.OPTION_VIBRATION)) {
+                        int dat = 70;
+                        long[] pattern = {0,3 * dat, dat, dat};
+                        notification.setVibrate(pattern);
+                    }
+                    String ringtone = Options.getString(Options.OPTION_MESS_RINGTONE);
+                    if (ringtone != null) {
+                        notification.setSound(Uri.parse(ringtone));
+                    }
+                }
+            }
+            if (0 < allUnread) {
+                notification.setNumber(unread);
                 contentText = String.format((String) context.getText(R.string.unread_messages), unread);
             }
             contentText = ChatHistory.instance.getLastMessage(contentText.toString());
@@ -176,7 +189,7 @@ public class SawimNotification {
             //notification.setStyle(style);
             notificationManager.notify(NOTIFY_ID, notification.build());
         }
-    }*/
+    }
 
     public static void pushNotification() {
         Context context = SawimApplication.getContext();
@@ -199,7 +212,11 @@ public class SawimNotification {
 
     public static void clear(String id) {
         if (idsMap.get(id) == null) return;
-        ((NotificationManager) SawimApplication.getContext().getSystemService(Context.NOTIFICATION_SERVICE)).cancel(idsMap.get(id));
+        clear(idsMap.get(id));
         idsMap.remove(id);
+    }
+
+    public static void clear(int id) {
+        ((NotificationManager) SawimApplication.getContext().getSystemService(Context.NOTIFICATION_SERVICE)).cancel(id);
     }
 }

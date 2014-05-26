@@ -156,11 +156,7 @@ public class StartWindowView extends Fragment {
                 serverText.setVisibility(TextView.GONE);
                 editServer.setVisibility(EditText.GONE);
             }
-            if (type == Profile.PROTOCOL_ICQ) {
-                editLogin.setInputType(InputType.TYPE_CLASS_NUMBER);
-            } else {
-                editLogin.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
-            }
+            editLogin.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
             Button buttonOk = (Button) dialogLogin.findViewById(R.id.ButtonOK);
             final int finalProtocolIndex = protocolIndex;
             buttonOk.setOnClickListener(new View.OnClickListener() {

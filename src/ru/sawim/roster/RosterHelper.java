@@ -6,8 +6,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.widget.Toast;
 import protocol.*;
-import protocol.icq.Icq;
-import protocol.mrim.Mrim;
 import protocol.xmpp.AdHoc;
 import protocol.xmpp.Jid;
 import protocol.xmpp.Xmpp;
@@ -15,12 +13,12 @@ import protocol.xmpp.XmppContact;
 import ru.sawim.Options;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
+import ru.sawim.SawimNotification;
 import ru.sawim.activities.BaseActivity;
 import ru.sawim.comm.JLocale;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
 import ru.sawim.forms.ManageContactListForm;
-import ru.sawim.forms.SmsForm;
 import ru.sawim.modules.AutoAbsence;
 import ru.sawim.modules.FileTransfer;
 import ru.sawim.view.StatusesView;
@@ -159,20 +157,8 @@ public final class RosterHelper {
         Protocol protocol = null;
         byte type = getProtocolType(account);
         switch (getRealType(type)) {
-            case Profile.PROTOCOL_ICQ:
-                protocol = new Icq();
-                break;
-
-            case Profile.PROTOCOL_MRIM:
-                protocol = new Mrim();
-                break;
-
             case Profile.PROTOCOL_JABBER:
                 protocol = new Xmpp();
-                break;
-
-            case Profile.PROTOCOL_VK_API:
-                protocol = new protocol.vk.Vk();
                 break;
         }
         if (null == protocol) {
@@ -307,7 +293,7 @@ public final class RosterHelper {
     }
 
     public final void markMessages(Contact contact) {
-        SawimApplication.getInstance().updateAppIcon();
+        SawimNotification.clear(SawimNotification.NOTIFY_ID);
         if (getUpdateChatListener() != null)
             getUpdateChatListener().updateChat(contact);
     }
@@ -593,7 +579,6 @@ public final class RosterHelper {
     public static final int MENU_NOTES = 18;
     public static final int MENU_GROUPS = 19;
     public static final int MENU_MYSELF = 20;
-    public static final int MENU_MICROBLOG = 21;
 
     public void showProtocolMenu(final BaseActivity activity, final Protocol p) {
         if (p != null) {
@@ -602,12 +587,10 @@ public final class RosterHelper {
             menu.add(R.string.status, MENU_STATUS);
             if (p.getXStatusInfo() != null)
                 menu.add(R.string.xstatus, MENU_XSTATUS);
-            if ((p instanceof Icq) || (p instanceof Mrim))
-                menu.add(R.string.private_status, MENU_PRIVATE_STATUS);
             for (int i = 0; i < count; ++i) {
                 Protocol pr = RosterHelper.getInstance().getProtocol(i);
-                if (pr instanceof Mrim && pr.isConnected()) {
-                    menu.add(R.string.send_sms, MENU_SEND_SMS);
+                if (pr.isConnected()) {
+                    //menu.add(R.string.send_sms, MENU_SEND_SMS);
                 }
             }
             if (p.isConnected()) {
@@ -618,17 +601,11 @@ public final class RosterHelper {
                     menu.add(R.string.account_settings, MENU_ADHOC);
                 }
                 menu.add(R.string.manage_contact_list, MENU_GROUPS);
-                if (p instanceof Icq) {
-                    menu.add(R.string.myself, MENU_MYSELF);
-                } else {
-                    if (p instanceof Xmpp) {
-                        menu.add(R.string.notes, MENU_NOTES);
-                    }
-                    if (p.hasVCardEditor())
-                        menu.add(R.string.myself, MENU_MYSELF);
-                    if (p instanceof Mrim)
-                        menu.add(R.string.microblog, MENU_MICROBLOG);
+                if (p instanceof Xmpp) {
+                    menu.add(R.string.notes, MENU_NOTES);
                 }
+                if (p.hasVCardEditor())
+                    menu.add(R.string.myself, MENU_MYSELF);
             }
             AlertDialog.Builder builder = new AlertDialog.Builder(activity);
             builder.setCancelable(true);
@@ -659,7 +636,7 @@ public final class RosterHelper {
                 new StatusesView(p, StatusesView.ADAPTER_PRIVATESTATUS).show(activity.getSupportFragmentManager(), "change-private-status");
                 return true;
             case RosterHelper.MENU_SEND_SMS:
-                new SmsForm(null, null).show(activity);
+
                 return true;
             case RosterHelper.MENU_DISCO:
                 ((Xmpp) p).getServiceDiscovery().showIt();
@@ -678,9 +655,6 @@ public final class RosterHelper {
                 return true;
             case RosterHelper.MENU_MYSELF:
                 p.showUserInfo(activity, p.createTempContact(p.getUserId(), p.getNick()));
-                return true;
-            case RosterHelper.MENU_MICROBLOG:
-                ((Mrim) p).getMicroBlog().activate();
                 return true;
         }
         return false;

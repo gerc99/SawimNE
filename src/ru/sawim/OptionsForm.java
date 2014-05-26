@@ -66,8 +66,6 @@ public class OptionsForm implements ControlStateListener {
     private void save(int currentOptionsForm) {
         switch (currentOptionsForm) {
             case OPTIONS_NETWORK:
-                saveOptionBoolean(Options.OPTION_INSTANT_RECONNECTION);
-                saveOptionBoolean(Options.OPTION_WAKE_LOCK);
                 break;
 
             case OPTIONS_INTERFACE:
@@ -98,7 +96,6 @@ public class OptionsForm implements ControlStateListener {
                 break;
 
             case OPTIONS_PRO:
-                saveOptionBoolean(Options.OPTION_PUSH);
                 saveOptionBoolean(Options.OPTION_HIDE_ICONS_CLIENTS);
                 Options.setInt(Options.OPTION_AA_TIME, form.getSelectorValue(Options.OPTION_AA_TIME) * 5);
                 break;
@@ -128,8 +125,6 @@ public class OptionsForm implements ControlStateListener {
         form.setCaption(name.toString());
         switch (currentOptionsForm) {
             case OPTIONS_NETWORK:
-                setChecked(R.string.instant_reconnection, Options.OPTION_INSTANT_RECONNECTION);
-                setChecked(R.string.wake_lock, Options.OPTION_WAKE_LOCK);
                 break;
 
             case OPTIONS_INTERFACE:
@@ -176,7 +171,6 @@ public class OptionsForm implements ControlStateListener {
                 break;
 
             case OPTIONS_PRO:
-                setChecked(R.string.push, Options.OPTION_PUSH);
                 setChecked(R.string.hide_icons_clients, Options.OPTION_HIDE_ICONS_CLIENTS);
                 form.addSelector(Options.OPTION_AA_TIME, JLocale.getString(R.string.absence)
                         + " " + JLocale.getString(R.string.after_time), JLocale.getString(R.string.off) + "|5 |10 |15 ", Options.getInt(Options.OPTION_AA_TIME) / 5);
@@ -193,18 +187,6 @@ public class OptionsForm implements ControlStateListener {
     public void controlStateChanged(String id) {
         if (id.equals(Options.OPTION_FONT_SCHEME)) {
             saveOptionSelector(Options.OPTION_FONT_SCHEME);
-        } else if (id.equals(Options.OPTION_PUSH)) {
-            int count = RosterHelper.getInstance().getProtocolCount();
-            for (int i = 0; i < count; ++i) {
-                Protocol p = RosterHelper.getInstance().getProtocol(i);
-                if (p instanceof Xmpp) {
-                    if (form.getCheckBoxValue(Options.OPTION_PUSH)) {
-                        SawimApplication.getInstance().getXmppSession().pushRegister(((Xmpp) p).getConnection());
-                    } else {
-                        SawimApplication.getInstance().getXmppSession().pushUnregister(((Xmpp) p).getConnection());
-                    }
-                }
-            }
         }
     }
 }

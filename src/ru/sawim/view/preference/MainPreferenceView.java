@@ -67,7 +67,7 @@ public class MainPreferenceView extends PreferenceFragment {
         });
         rootScreen.addPreference(accountsScreen);
 
-        final PreferenceScreen optionsNetworkScreen = getPreferenceManager().createPreferenceScreen(activity);
+        /*final PreferenceScreen optionsNetworkScreen = getPreferenceManager().createPreferenceScreen(activity);
         optionsNetworkScreen.setTitle(R.string.options_network);
         optionsNetworkScreen.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
@@ -76,7 +76,7 @@ public class MainPreferenceView extends PreferenceFragment {
                 return false;
             }
         });
-        rootScreen.addPreference(optionsNetworkScreen);
+        rootScreen.addPreference(optionsNetworkScreen);*/
 
         final PreferenceScreen optionsInterfaceScreen = getPreferenceManager().createPreferenceScreen(activity);
         optionsInterfaceScreen.setTitle(R.string.options_interface);

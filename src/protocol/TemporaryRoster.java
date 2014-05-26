@@ -1,6 +1,5 @@
 package protocol;
 
-import protocol.mrim.MrimPhoneContact;
 import protocol.xmpp.XmppServiceContact;
 
 import java.util.Vector;
@@ -86,9 +85,6 @@ public class TemporaryRoster {
             for (int i = existContacts.length - 1; 0 <= i; --i) {
                 o = existContacts[i];
                 if (null == o) {
-                    continue;
-                }
-                if (o instanceof MrimPhoneContact) {
                     continue;
                 }
                 g = null;

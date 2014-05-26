@@ -231,19 +231,6 @@ abstract public class Protocol {
 
     protected abstract void denyAuth(String userId);
 
-    protected abstract void s_setPrivateStatus();
-
-    public final byte getPrivateStatus() {
-        return privateStatus;
-    }
-
-    public final void setPrivateStatus(byte status) {
-        privateStatus = status;
-        if (isConnected()) {
-            s_setPrivateStatus();
-        }
-    }
-
     public final void requestAuth(Contact contact) {
         requestAuth(contact.getUserId());
         autoGrandAuth(contact.getUserId());
@@ -689,7 +676,6 @@ abstract public class Protocol {
 
     private void initStatus() {
         setLastStatusChangeTime();
-        setPrivateStatus((byte) Options.getInt(Options.OPTION_PRIVATE_STATUS));
     }
 
     private void ui_removeFromAnyGroup(Contact c) {
@@ -944,7 +930,7 @@ abstract public class Protocol {
     public final void processException(SawimException e) {
         DebugLog.println("process exception: " + e.getMessage());
         RosterHelper.getInstance().activateWithMsg(getUserId() + "\n" + e.getMessage());
-        if (!SawimApplication.getInstance().isNetworkAvailable() && Options.getBoolean(Options.OPTION_INSTANT_RECONNECTION)) {
+        if (!SawimApplication.getInstance().isNetworkAvailable()) {
             e = new SawimException(123, 0);
         }
         if (e.isReconnectable()) {

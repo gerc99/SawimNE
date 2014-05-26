@@ -50,16 +50,14 @@ public class NetworkStateReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent networkIntent) {
-        if (Options.getBoolean(Options.OPTION_INSTANT_RECONNECTION)) {
-            try {
-                if (updateNetworkState(context)) {
-                    resetConnections();
-                    if (isNetworkAvailable) {
-                        restoreConnections();
-                    }
+        try {
+            if (updateNetworkState(context)) {
+                resetConnections();
+                if (isNetworkAvailable) {
+                    restoreConnections();
                 }
-            } catch (Exception ignored) {
             }
+        } catch (Exception ignored) {
         }
     }
 

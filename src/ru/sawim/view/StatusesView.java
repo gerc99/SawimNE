@@ -10,7 +10,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import protocol.Protocol;
-import ru.sawim.Options;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.models.StatusesAdapter;
@@ -40,8 +39,6 @@ public class StatusesView extends DialogFragment {
         ListView lv = (ListView) dialogView.findViewById(R.id.statuses_view);
         if (type == ADAPTER_STATUS)
             statusesAdapter.setSelectedItem(protocol.getProfile().statusIndex);
-        else
-            statusesAdapter.setSelectedItem(protocol.getPrivateStatus());
         lv.setAdapter(statusesAdapter);
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -49,10 +46,6 @@ public class StatusesView extends DialogFragment {
                 if (type == ADAPTER_STATUS) {
                     int currItem = protocol.getStatusInfo().applicableStatuses[i];
                     SawimApplication.getInstance().setStatus(protocol, currItem, null);
-                } else {
-                    protocol.setPrivateStatus((byte) i);
-                    Options.setInt(Options.OPTION_PRIVATE_STATUS, i);
-                    Options.safeSave();
                 }
                 dismiss();
             }

@@ -5,7 +5,6 @@ import protocol.Profile;
 import protocol.StatusInfo;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
-import ru.sawim.forms.PrivateStatusForm;
 import ru.sawim.io.Storage;
 import ru.sawim.modules.DebugLog;
 import ru.sawim.roster.RosterHelper;
@@ -32,7 +31,6 @@ public class Options {
     static final String OPTIONS_CURR_ACCOUNT = "current_account";
     public static final String OPTION_GMT_OFFSET = "gmt_offset";
     public static final String OPTION_TYPING_MODE = "typing_mode";
-    public static final String OPTION_PRIVATE_STATUS = "private_status";
     public static final String OPTION_MAX_MSG_COUNT = "max_msg_count";
     public static final String OPTION_AA_TIME = "aa_time";
     public static final String OPTION_FONT_SCHEME = "font_scheme";
@@ -40,10 +38,8 @@ public class Options {
     public static final String OPTION_ANSWERER = "answer";
     public static final String OPTION_HIDE_KEYBOARD = "hide_keyboard";
     public static final String OPTION_CL_HIDE_OFFLINE = "cl_hide_offline";
-    public static final String OPTION_PUSH = "push";
     public static final String OPTION_USER_GROUPS = "user_groups";
     public static final String OPTION_HISTORY = "history";
-    public static final String OPTION_WAKE_LOCK = "wake_lock";
     public static final String OPTION_BRING_UP = "bring_up";
     public static final String OPTION_ANTISPAM_ENABLE = "antispam_enable";
     public static final String OPTION_HIDE_ICONS_CLIENTS = "hide_icons_clients";
@@ -52,7 +48,6 @@ public class Options {
     public static final String OPTION_SHOW_STATUS_LINE = "show_status_line";
     public static final String OPTION_NOTIFY_IN_AWAY = "notify_in_away";
     public static final String OPTION_BLOG_NOTIFY = "blog_notify";
-    public static final String OPTION_INSTANT_RECONNECTION = "instant_reconnection";
     public static final String OPTION_SIMPLE_INPUT = "simple_input";
 
     private static final String PREFS_NAME = "SAWIM:Settings";
@@ -81,11 +76,8 @@ public class Options {
     }
 
     private static void setDefaults() {
-        setBoolean(Options.OPTION_PUSH, false);
         setString(Options.UNAVAILABLE_NESSAGE, "I'll be back");
         setInt(Options.OPTION_CURRENT_PAGE, 0);
-        setBoolean(Options.OPTION_INSTANT_RECONNECTION, true);
-        setBoolean(Options.OPTION_WAKE_LOCK, false);
         setInt(Options.OPTION_CL_SORT_BY, 0);
         setBoolean(Options.OPTION_SORT_UP_WITH_MSG, true);
         setBoolean(Options.OPTION_CL_HIDE_OFFLINE, false);
@@ -97,7 +89,6 @@ public class Options {
         setBoolean(Options.OPTION_NOTIFY_IN_AWAY, true);
         setInt(Options.OPTION_MAX_MSG_COUNT, 100);
         setString(Options.OPTION_ANTISPAM_KEYWORDS, "http sms www @conf");
-        setInt(Options.OPTION_PRIVATE_STATUS, PrivateStatusForm.PSTATUS_NOT_INVISIBLE);
         setBoolean(Options.OPTION_ANSWERER, false);
         setBoolean(Options.OPTION_USER_GROUPS, true);
         setBoolean(Options.OPTION_HISTORY, false);

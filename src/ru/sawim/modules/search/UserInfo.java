@@ -7,8 +7,6 @@ import android.widget.Toast;
 import protocol.Contact;
 import protocol.Protocol;
 import protocol.StatusInfo;
-import protocol.icq.Icq;
-import protocol.mrim.Mrim;
 import protocol.net.TcpSocket;
 import protocol.xmpp.Xmpp;
 import ru.sawim.Clipboard;
@@ -126,12 +124,7 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
         updateProfileView(profile);
         if ((null != uin) && !avatarIsLoaded) {
             avatarIsLoaded = true;
-            boolean hasAvatarItem = false;
-            hasAvatarItem |= (protocol instanceof Mrim);
-            hasAvatarItem |= (protocol instanceof Icq);
-            if (hasAvatarItem) {
-                protocol.getAvatar(this);
-            }
+            protocol.getAvatar(this);
         }
         profileView.setModel(profile);
         profileView.updateModel();
@@ -297,31 +290,27 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
 
     public boolean isEditable() {
         boolean isEditable = false;
-        isEditable |= (protocol instanceof Icq);
         isEditable |= (protocol instanceof Xmpp);
         return isEditable && protocol.getUserId().equals(uin)
                 && protocol.isConnected();
     }
 
     private Icon getStatusAsIcon() {
-        if (protocol instanceof Icq) {
-            byte statusIndex = StatusInfo.STATUS_NA;
-            switch (Util.strToIntDef(status, -1)) {
-                case 0:
-                    statusIndex = StatusInfo.STATUS_OFFLINE;
-                    break;
-                case 1:
-                    statusIndex = StatusInfo.STATUS_ONLINE;
-                    break;
-                case 2:
-                    statusIndex = StatusInfo.STATUS_INVISIBLE;
-                    break;
-                default:
-                    return null;
-            }
-            return protocol.getStatusInfo().getIcon(statusIndex);
+        byte statusIndex = StatusInfo.STATUS_NA;
+        switch (Util.strToIntDef(status, -1)) {
+            case 0:
+                statusIndex = StatusInfo.STATUS_OFFLINE;
+                break;
+            case 1:
+                statusIndex = StatusInfo.STATUS_ONLINE;
+                break;
+            case 2:
+                statusIndex = StatusInfo.STATUS_INVISIBLE;
+                break;
+            default:
+                return null;
         }
-        return null;
+        return protocol.getStatusInfo().getIcon(statusIndex);
     }
 
 

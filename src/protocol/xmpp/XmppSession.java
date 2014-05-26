@@ -36,13 +36,11 @@ public class XmppSession {
         preferences = context.getSharedPreferences(PREFS_NAME, 0);
         editor = preferences.edit();
         // Check device for Play Services APK. If check succeeds, proceed with GCM registration.
-        if (Options.getBoolean(Options.OPTION_PUSH)) {
-            isPlayServices = checkPlayServices(context);
-            if (isPlayServices) {
-                registerInBackground();
-            } else {
-                Log.i(XmppSession.class.getSimpleName(), "No valid Google Play Services APK found.");
-            }
+        isPlayServices = checkPlayServices(context);
+        if (isPlayServices) {
+            registerInBackground();
+        } else {
+            Log.i(XmppSession.class.getSimpleName(), "No valid Google Play Services APK found.");
         }
     }
 
@@ -89,7 +87,6 @@ public class XmppSession {
 
     public void enable(final XmppConnection connection) {
         if (connection == null) return;
-        if (!Options.getBoolean(Options.OPTION_PUSH)) return;
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -103,7 +100,6 @@ public class XmppSession {
 
     public void enableRebind(final XmppConnection connection) {
         if (connection == null) return;
-        if (!Options.getBoolean(Options.OPTION_PUSH)) return;
         new Thread(new Runnable() {
             @Override
             public void run() {

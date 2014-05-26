@@ -14,7 +14,6 @@ import protocol.StatusInfo;
 import ru.sawim.R;
 import ru.sawim.Scheme;
 import ru.sawim.comm.JLocale;
-import ru.sawim.forms.PrivateStatusForm;
 import ru.sawim.icons.Icon;
 import ru.sawim.view.StatusesView;
 
@@ -45,14 +44,14 @@ public class StatusesAdapter extends BaseAdapter {
     public int getCount() {
         if (type == StatusesView.ADAPTER_STATUS)
             return statusInfo.applicableStatuses.length;
-        else return PrivateStatusForm.statusIds(protocol).length;
+        else return 0;
     }
 
     @Override
     public Integer getItem(int i) {
         if (type == StatusesView.ADAPTER_STATUS)
             return (int) statusInfo.applicableStatuses[i];
-        else return PrivateStatusForm.statusIds(protocol)[i];
+        else return 0;
     }
 
     @Override
@@ -109,9 +108,6 @@ public class StatusesAdapter extends BaseAdapter {
                 } else {
                     itemImage.setVisibility(ImageView.GONE);
                 }
-            } else {
-                itemStatus.setText(JLocale.getString(PrivateStatusForm.statusNames()[item]));
-                itemImage.setImageDrawable(PrivateStatusForm.privateStatusIcons.iconAt(item).getImage());
             }
             if (item == selectedItem) {
                 itemStatus.setTypeface(Typeface.DEFAULT_BOLD);

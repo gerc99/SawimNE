@@ -403,7 +403,7 @@ public final class XmppConnection extends ClientConnection {
 
         setProgress(30);
         socket.start();
-        if (Options.getBoolean(Options.OPTION_PUSH) && isSessionManagementEnabled()) {
+        if (isSessionManagementEnabled()) {
             usePong();
             getXmpp().s_updateOnlineStatus();
             setProgress(100);
@@ -772,10 +772,8 @@ public final class XmppConnection extends ClientConnection {
                     getBookmarks();
                     putPacketIntoQueue("<iq type='get' id='getnotes'><query xmlns='jabber:iq:private'><storage xmlns='storage:rosternotes'/></query></iq>");
 
-                    if (Options.getBoolean(Options.OPTION_PUSH)) {
-                        if (smSupported && !isSessionManagementEnabled()) {
-                            putPacketIntoQueue("<enable xmlns='urn:xmpp:sm:3' resume='true' />");
-                        }
+                    if (smSupported && !isSessionManagementEnabled()) {
+                        putPacketIntoQueue("<enable xmlns='urn:xmpp:sm:3' resume='true' />");
                     }
                     setProgress(100);
 
@@ -1852,7 +1850,7 @@ public final class XmppConnection extends ClientConnection {
         }
 
         x2 = x.getFirstNode("rebind", "p1:rebind");
-        if (Options.getBoolean(Options.OPTION_PUSH) && x2 != null) {
+        if (x2 != null) {
             rebindSupported = true;
             SawimApplication.getInstance().getXmppSession().load(this);
             if (tryRebind()) {
@@ -1920,7 +1918,7 @@ public final class XmppConnection extends ClientConnection {
             return;
         }
 
-        if (Options.getBoolean(Options.OPTION_PUSH) && smSupported) {
+        if (smSupported) {
             SawimApplication.getInstance().getXmppSession().load(this);
             if (!smSessionId.equals("")) {
                 sendRequest("<resume xmlns='urn:xmpp:sm:3' previd='" + smSessionId + "' h='" + smPacketsIn + "' />");

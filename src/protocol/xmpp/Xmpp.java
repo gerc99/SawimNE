@@ -494,9 +494,6 @@ public final class Xmpp extends Protocol implements FormListener {
         return resource;
     }
 
-    protected void s_setPrivateStatus() {
-    }
-
     void removeMe(String uin) {
         connection.sendUnsubscribed(uin);
     }
@@ -933,7 +930,7 @@ public final class Xmpp extends Protocol implements FormListener {
     }
 
     public boolean isStreamManagementSupported() {
-        return Options.getBoolean(Options.OPTION_PUSH) && SawimApplication.getInstance().getXmppSession()
+        return SawimApplication.getInstance().getXmppSession()
                 .isStreamManagementSupported(getUserId() + '/' + getResource());
     }
 }
