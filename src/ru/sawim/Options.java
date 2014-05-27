@@ -91,7 +91,8 @@ public class Options {
         setBoolean(Options.OPTION_CL_HIDE_OFFLINE, false);
         setBoolean(Options.OPTION_HIDE_ICONS_CLIENTS, true);
         setBoolean(Options.OPTION_HIDE_KEYBOARD, true);
-        setString(Options.OPTION_MESS_NOTIF, "content://settings/system/notification_sound");
+        setBoolean(Options.OPTION_MESS_NOTIF, true);
+        setString(Options.OPTION_MESS_RINGTONE, "content://settings/system/notification_sound");
         setInt(Options.OPTION_TYPING_MODE, 0);
         setBoolean(Options.OPTION_BLOG_NOTIFY, true);
         setBoolean(Options.OPTION_NOTIFY_IN_AWAY, true);
