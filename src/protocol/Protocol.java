@@ -55,8 +55,7 @@ abstract public class Protocol {
     }
 
     public final String getNick() {
-        String nick = profile.nick;
-        return (nick.length() == 0) ? JLocale.getString(R.string.me) : nick;
+        return JLocale.getString(R.string.me);
     }
 
     public final Profile getProfile() {
@@ -66,13 +65,6 @@ abstract public class Protocol {
     public final void setProfile(Profile account) {
         profile = account;
         String rawUin = StringConvertor.notNull(account.userId);
-        if (!StringConvertor.isEmpty(rawUin)) {
-            byte type = account.protocolType;
-            String domain = getDefaultDomain(type);
-            if ((null != domain) && (-1 == rawUin.indexOf('@'))) {
-                rawUin += domain;
-            }
-        }
         userid = StringConvertor.isEmpty(rawUin) ? "" : processUin(rawUin);
         if (!StringConvertor.isEmpty(account.password)) {
             setPassword(null);
@@ -88,24 +80,6 @@ abstract public class Protocol {
 
     public final void setPassword(String pass) {
         password = pass;
-    }
-
-    private String getDefaultDomain(byte type) {
-        switch (type) {
-            case Profile.PROTOCOL_GTALK:
-                return "@gmail.com";
-            case Profile.PROTOCOL_FACEBOOK:
-                return "@chat.facebook.com";
-            case Profile.PROTOCOL_LJ:
-                return "@livejournal.com";
-            case Profile.PROTOCOL_YANDEX:
-                return "@ya.ru";
-            case Profile.PROTOCOL_QIP:
-                return "@qip.ru";
-            case Profile.PROTOCOL_ODNOKLASSNIKI:
-                return "@odnoklassniki.ru";
-        }
-        return null;
     }
 
     protected String processUin(String uin) {

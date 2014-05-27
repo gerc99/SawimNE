@@ -163,18 +163,16 @@ public class SawimActivity extends BaseActivity {
         StartWindowView startWindowView = (StartWindowView) fragmentManager.findFragmentByTag(StartWindowView.TAG);
         if (RosterHelper.getInstance().getProtocolCount() == 0) {
             if (Options.getAccountCount() == 0) {
-                FragmentTransaction transaction = fragmentManager.beginTransaction();
                 if (SawimApplication.isManyPane()) {
                     setContentView(R.layout.main);
                     if (startWindowView == null) {
                         StartWindowView newFragment = new StartWindowView();
+                        FragmentTransaction transaction = fragmentManager.beginTransaction();
                         transaction.replace(R.id.fragment_container, newFragment, StartWindowView.TAG);
                         transaction.commit();
                         supportInvalidateOptionsMenu();
                     }
                 }
-            } else {
-                startActivity(new Intent(this, AccountsListActivity.class));
             }
         } else {
             if (startWindowView != null)
@@ -283,9 +281,7 @@ public class SawimActivity extends BaseActivity {
                     menu.add(Menu.NONE, RosterHelper.MENU_XSTATUS, Menu.NONE, R.string.xstatus);
                 if (p.isConnected()) {
                     if (p instanceof Xmpp) {
-                        if (((Xmpp) p).hasS2S()) {
-                            menu.add(Menu.NONE, RosterHelper.MENU_DISCO, Menu.NONE, R.string.service_discovery);
-                        }
+                        menu.add(Menu.NONE, RosterHelper.MENU_DISCO, Menu.NONE, R.string.service_discovery);
                         menu.add(Menu.NONE, RosterHelper.MENU_ADHOC, Menu.NONE, R.string.account_settings);
                     }
                     menu.add(Menu.NONE, RosterHelper.MENU_GROUPS, Menu.NONE, R.string.manage_contact_list);

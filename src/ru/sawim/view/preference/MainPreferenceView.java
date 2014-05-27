@@ -8,11 +8,11 @@ import android.support.v4.app.FragmentTransaction;
 import ru.sawim.OptionsForm;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
-import ru.sawim.activities.AccountsListActivity;
 import ru.sawim.activities.BaseActivity;
 import ru.sawim.comm.JLocale;
 import ru.sawim.view.AboutProgramView;
 import ru.sawim.view.SawimFragment;
+import ru.sawim.view.StartWindowView;
 
 /**
  * Created by admin on 25.01.14.
@@ -61,7 +61,10 @@ public class MainPreferenceView extends PreferenceFragment {
         accountsScreen.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                startActivity(new Intent(activity, AccountsListActivity.class));
+                StartWindowView newFragment = new StartWindowView();
+                FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                transaction.replace(R.id.fragment_container, newFragment, StartWindowView.TAG);
+                transaction.commit();
                 return false;
             }
         });

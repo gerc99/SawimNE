@@ -76,10 +76,8 @@ public class XmppRegistration implements Runnable, FormListener {
             XmlNode n = connection.newAccountRegister(xml);
             if (("result").equals(n.getAttribute("type"))) {
                 Profile account = new Profile();
-                account.protocolType = Profile.PROTOCOL_JABBER;
                 account.userId = username + "@" + domain;
                 account.password = password;
-                account.nick = "";
                 account.isActive = true;
                 listener.addAccount(Options.getAccountCount(), account);
 

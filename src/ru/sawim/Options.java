@@ -83,7 +83,8 @@ public class Options {
         setBoolean(Options.OPTION_CL_HIDE_OFFLINE, false);
         setBoolean(Options.OPTION_HIDE_ICONS_CLIENTS, true);
         setBoolean(Options.OPTION_HIDE_KEYBOARD, true);
-        setString(Options.OPTION_MESS_NOTIF, "content://settings/system/notification_sound");
+        setBoolean(Options.OPTION_MESS_NOTIF, true);
+        setString(Options.OPTION_MESS_RINGTONE, "content://settings/system/notification_sound");
         setInt(Options.OPTION_TYPING_MODE, 0);
         setBoolean(Options.OPTION_BLOG_NOTIFY, true);
         setBoolean(Options.OPTION_NOTIFY_IN_AWAY, true);
@@ -279,10 +280,8 @@ public class Options {
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             DataOutputStream dos = new DataOutputStream(baos);
-            dos.writeByte(account.protocolType);
             dos.writeUTF(StringConvertor.notNull(account.userId));
             dos.writeUTF(StringConvertor.notNull(account.password));
-            dos.writeUTF(StringConvertor.notNull(account.nick));
             dos.writeByte(account.statusIndex);
             dos.writeUTF(StringConvertor.notNull(account.statusMessage));
             dos.writeByte(account.xstatusIndex);
@@ -305,10 +304,8 @@ public class Options {
             ByteArrayInputStream bais = new ByteArrayInputStream(buf);
             DataInputStream dis = new DataInputStream(bais);
 
-            p.protocolType = dis.readByte();
             p.userId = dis.readUTF();
             p.password = dis.readUTF();
-            p.nick = dis.readUTF();
             p.statusIndex = dis.readByte();
             p.statusMessage = dis.readUTF();
             p.xstatusIndex = dis.readByte();

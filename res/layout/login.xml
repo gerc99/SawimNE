@@ -41,25 +41,19 @@
                   android:singleLine="true"
                   android:inputType="textPassword"
                   android:layout_below="@+id/acc_pass_text" android:padding="10dp"/>
-        <TextView android:layout_alignParentLeft="false"
-                  android:layout_height="wrap_content"
-                  android:id="@+id/acc_nick_text"
-                  android:layout_width="wrap_content"
-                  android:text="@string/acc_nick"
-                  android:textStyle="bold"
-                  android:layout_below="@+id/edit_password" android:layout_alignParentRight="false"
-                  android:layout_centerHorizontal="true"/>
-        <EditText android:id="@+id/edit_nick"
-                  android:layout_height="wrap_content"
-                  android:layout_width="fill_parent"
-                  android:singleLine="true"
-                  android:layout_below="@+id/acc_nick_text" android:padding="10dp"/>
         <Button android:id="@+id/ButtonOK"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/acc_add"
                 android:layout_gravity="center_horizontal"
                 android:layout_centerHorizontal="true"
-                android:layout_below="@+id/edit_nick"/>
+                android:layout_below="@+id/edit_password"/>
+        <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/registration_jid"
+                android:id="@+id/reg_jid" android:layout_gravity="center_horizontal"
+                android:textSize="20dp" android:layout_alignParentBottom="true" android:layout_centerHorizontal="true"
+                android:layout_below="@+id/ButtonOK"/>
     </RelativeLayout>
 </ScrollView>

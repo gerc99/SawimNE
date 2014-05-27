@@ -344,7 +344,7 @@ public final class XmppConnection extends ClientConnection {
 
     private String[] getHostAndPort(String server) {
         // TODO: legacy SSL
-        String defaultServer = getXmpp().getDefaultServer(domain_);
+        String defaultServer = domain_;
 
         String[] url = Util.explode(server, ':');
         String[] socketUrl = new String[2];
@@ -380,9 +380,8 @@ public final class XmppConnection extends ClientConnection {
         setProgress(0);
         initFeatures();
         protocol.net.SrvResolver resolver = new protocol.net.SrvResolver();
-        String server = Config.getConfigValue(domain_, "/jabber-servers.txt");
-        String defaultServer = getXmpp().getDefaultServer(domain_);
-        if (StringConvertor.isEmpty(server) && (null == defaultServer)) {
+        String server = domain_;
+        if (StringConvertor.isEmpty(server)) {
             server = resolver.getXmpp(domain_);
         }
         if (StringConvertor.isEmpty(server)) {

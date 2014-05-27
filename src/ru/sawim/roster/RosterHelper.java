@@ -55,18 +55,9 @@ public final class RosterHelper {
         return instance;
     }
 
-    public byte getProtocolType(Profile account) {
-        for (int i = 0; i < Profile.protocolTypes.length; ++i) {
-            if (account.protocolType == Profile.protocolTypes[i]) {
-                return account.protocolType;
-            }
-        }
-        return Profile.protocolTypes[0];
-    }
-
     private boolean is(Protocol protocol, Profile profile) {
         Profile exist = protocol.getProfile();
-        return exist == profile || (exist.protocolType == profile.protocolType) && exist.userId.equals(profile.userId);
+        return exist == profile && exist.userId.equals(profile.userId);
     }
 
     public void addProtocols(Vector accounts) {
@@ -140,30 +131,8 @@ public final class RosterHelper {
         }
     }
 
-    private byte getRealType(byte type) {
-        switch (type) {
-            case Profile.PROTOCOL_GTALK:
-            case Profile.PROTOCOL_FACEBOOK:
-            case Profile.PROTOCOL_LJ:
-            case Profile.PROTOCOL_YANDEX:
-            case Profile.PROTOCOL_QIP:
-            case Profile.PROTOCOL_ODNOKLASSNIKI:
-                return Profile.PROTOCOL_JABBER;
-        }
-        return type;
-    }
-
     private void addProtocol(Profile account, boolean load) {
-        Protocol protocol = null;
-        byte type = getProtocolType(account);
-        switch (getRealType(type)) {
-            case Profile.PROTOCOL_JABBER:
-                protocol = new Xmpp();
-                break;
-        }
-        if (null == protocol) {
-            return;
-        }
+        Protocol protocol = new Xmpp();
         protocol.setProfile(account);
         protocol.init();
         if (load) {
@@ -177,8 +146,7 @@ public final class RosterHelper {
         for (int i = 0; i < count; ++i) {
             Protocol p = getProtocol(i);
             if (p.getProfile() != null)
-                if (p.getProfile().protocolType == profile.protocolType)
-                    return p;
+                return p;
         }
         return null;
     }
@@ -595,9 +563,7 @@ public final class RosterHelper {
             }
             if (p.isConnected()) {
                 if (p instanceof Xmpp) {
-                    if (((Xmpp) p).hasS2S()) {
-                        menu.add(R.string.service_discovery, MENU_DISCO);
-                    }
+                    menu.add(R.string.service_discovery, MENU_DISCO);
                     menu.add(R.string.account_settings, MENU_ADHOC);
                 }
                 menu.add(R.string.manage_contact_list, MENU_GROUPS);

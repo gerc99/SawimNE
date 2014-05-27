@@ -48,12 +48,9 @@ public final class Xmpp extends Protocol implements FormListener {
         bots.add(JuickMenu.PSTO);
         bots.add(JuickMenu.POINT);
 
-        byte type = getProfile().protocolType;
-        ImageList icons = createStatusIcons(type);
+        ImageList icons = ImageList.createImageList("/jabber-status.png");
         final int[] statusIconIndex = {1, 0, 2, 0, -1, -1, -1, -1, -1, 2, -1, 3, -1, -1, 1};
-        final int[] statusOtherIconIndex = {1, 0, 3, 4, -1, -1, -1, -1, -1, 6, -1, 5, -1, -1, 1};
-        info = new StatusInfo(icons, type == Profile.PROTOCOL_JABBER ? statusIconIndex : statusOtherIconIndex,
-                type == Profile.PROTOCOL_JABBER ? statuses : statusesOther);
+        info = new StatusInfo(icons, statusIconIndex, statuses);
         xstatusInfo = Xmpp.xStatus.getInfo();
         clientInfo = XmppClient.get();
     }
@@ -64,45 +61,6 @@ public final class Xmpp extends Protocol implements FormListener {
             StatusInfo.STATUS_AWAY,
             StatusInfo.STATUS_DND
     };
-
-    private static final byte[] statusesOther = {
-            StatusInfo.STATUS_OFFLINE,
-            StatusInfo.STATUS_CHAT,
-            StatusInfo.STATUS_ONLINE,
-            StatusInfo.STATUS_AWAY,
-            StatusInfo.STATUS_XA,
-            StatusInfo.STATUS_DND
-    };
-
-    private ImageList createStatusIcons(byte type) {
-        String file = "jabber";
-        switch (type) {
-            case Profile.PROTOCOL_GTALK:
-                file = "gtalk";
-                break;
-            case Profile.PROTOCOL_FACEBOOK:
-                file = "facebook";
-                break;
-            case Profile.PROTOCOL_LJ:
-                file = "livejournal";
-                break;
-            case Profile.PROTOCOL_YANDEX:
-                file = "ya";
-                break;
-            case Profile.PROTOCOL_QIP:
-                file = "qip";
-                break;
-            case Profile.PROTOCOL_ODNOKLASSNIKI:
-                file = "ok";
-                break;
-        }
-        ImageList icons = ImageList.createImageList("/" + file + "-status.png");
-        if (0 < icons.size()) {
-            return icons;
-        }
-
-        return ImageList.createImageList("/jabber-status.png");
-    }
 
     public void addRejoin(String jid) {
         if (!rejoinList.contains(jid)) {
@@ -156,25 +114,6 @@ public final class Xmpp extends Protocol implements FormListener {
 
     public XmppConnection getConnection() {
         return connection;
-    }
-
-    public boolean hasS2S() {
-        switch (getProfile().protocolType) {
-            case Profile.PROTOCOL_FACEBOOK:
-            case Profile.PROTOCOL_ODNOKLASSNIKI:
-                return false;
-        }
-        return true;
-    }
-
-    public boolean hasVCardEditor() {
-        switch (getProfile().protocolType) {
-            case Profile.PROTOCOL_FACEBOOK:
-            case Profile.PROTOCOL_LJ:
-            case Profile.PROTOCOL_ODNOKLASSNIKI:
-                return false;
-        }
-        return true;
     }
 
     public void disconnect(boolean user) {
@@ -275,11 +214,7 @@ public final class Xmpp extends Protocol implements FormListener {
     }
 
     private String getDefaultName() {
-        String nick = getProfile().nick;
-        if (StringConvertor.isEmpty(nick)) {
-            return Jid.getNick(getUserId());
-        }
-        return nick;
+        return Jid.getNick(getUserId());
     }
 
     protected void sendSomeMessage(PlainMessage msg) {
@@ -439,52 +374,6 @@ public final class Xmpp extends Protocol implements FormListener {
         return nonPdd ? "xmpp.yandex.ru" : "domain-xmpp.ya.ru";
     }
 
-    String getDefaultServer(String domain) {
-        switch (getProfile().protocolType) {
-            case Profile.PROTOCOL_GTALK:
-                return "talk.google.com";
-            case Profile.PROTOCOL_FACEBOOK:
-                return "chat.facebook.com";
-            case Profile.PROTOCOL_LJ:
-                return "livejournal.com";
-            case Profile.PROTOCOL_YANDEX:
-                return getYandexDomain(domain);
-            case Profile.PROTOCOL_QIP:
-                return "webim.qip.ru";
-            case Profile.PROTOCOL_ODNOKLASSNIKI:
-                return "xmpp.odnoklassniki.ru";
-        }
-
-        if ("jabber.ru".equals(domain)) {
-            return domain;
-        }
-        if ("xmpp.ru".equals(domain)) {
-            return domain;
-        }
-        if ("ya.ru".equals(domain)) {
-            return "xmpp.yandex.ru";
-        }
-        if ("gmail.com".equals(domain)) {
-            return "talk.google.com";
-        }
-        if ("qip.ru".equals(domain)) {
-            return "webim.qip.ru";
-        }
-        if ("livejournal.com".equals(domain)) {
-            return "livejournal.com";
-        }
-        if ("api.com".equals(domain)) {
-            return "vkmessenger.com";
-        }
-        if ("vkontakte.ru".equals(domain)) {
-            return "vkmessenger.com";
-        }
-        if ("chat.facebook.com".equals(domain)) {
-            return domain;
-        }
-        return null;
-    }
-
     protected String processUin(String uin) {
         resource = Jid.getResource(uin, "Sawim");
         return Jid.getBareJid(uin);
@@ -542,9 +431,6 @@ public final class Xmpp extends Protocol implements FormListener {
 
     protected void s_sendTypingNotify(Contact to, boolean isTyping) {
         if (to instanceof XmppServiceContact) {
-            return;
-        }
-        if (Profile.PROTOCOL_LJ == getProfile().protocolType) {
             return;
         }
         XmppContact c = (XmppContact) to;

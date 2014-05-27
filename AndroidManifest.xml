@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="ru.sawim"
-          android:versionCode="24"
-          android:versionName="1.3.5"
+          android:versionCode="25"
+          android:versionName="1.5.5"
           android:installLocation="auto">
     <uses-feature android:name="android.hardware.camera" android:required="false"/>
     <uses-feature android:name="android.hardware.camera.autofocus" android:required="false"/>
@@ -68,12 +68,6 @@
                   android:configChanges="orientation|keyboardHidden"
                   android:launchMode="standard">
         </activity>
-        <activity android:name=".activities.AccountsListActivity"
-                  android:theme="@style/BaseTheme"
-                  android:windowSoftInputMode="stateAlwaysHidden|adjustResize"
-                  android:configChanges="orientation|keyboardHidden|screenSize"
-                  android:launchMode="singleTask"/>
-
         <service android:enabled="true" android:name=".service.SawimService" android:stopWithTask="true"/>
         <receiver android:name=".receiver.GCMBroadcastReceiver"
                   android:permission="com.google.android.c2dm.permission.SEND">
