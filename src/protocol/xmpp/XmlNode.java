@@ -53,11 +53,11 @@ public final class XmlNode {
     }
 
     private void putAttribute(String key, String value) {
-        if (S_JID.equals(key)) {
+        /*if (S_JID.equals(key)) {
             key = S_JID;
         } else if (S_NAME.equals(key)) {
             key = S_NAME;
-        }
+        }*/
         attribs.put(key, value);
     }
 
@@ -78,7 +78,6 @@ public final class XmlNode {
     public String getId() {
         return getAttribute(S_ID);
     }
-
 
     public static XmlNode parse(Socket socket) throws SawimException {
         char ch = socket.readChar();

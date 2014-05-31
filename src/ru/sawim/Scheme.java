@@ -1,5 +1,6 @@
 package ru.sawim;
 
+import android.util.Log;
 import ru.sawim.comm.Config;
 import ru.sawim.comm.Util;
 
@@ -86,16 +87,16 @@ public class Scheme {
             themeNames[i + 1] = config.getName();
             themeColors[i + 1] = configToTheme(config);
         }
-        oldTheme = Options.getInt(Options.OPTION_COLOR_SCHEME);
+        oldTheme = getThemeId(Options.getString(Options.OPTION_COLOR_SCHEME));
         Scheme.setColorScheme(oldTheme);
     }
 
     public static boolean isBlack() {
-        return isBlack[Options.getInt(Options.OPTION_COLOR_SCHEME)];
+        return isBlack[getThemeId(Options.getString(Options.OPTION_COLOR_SCHEME))];
     }
 
     public static boolean isSystemBackground() {
-        return isSystemBackground[Options.getInt(Options.OPTION_COLOR_SCHEME)];
+        return isSystemBackground[getThemeId(Options.getString(Options.OPTION_COLOR_SCHEME))];
     }
 
     private static int[] configToTheme(Config config) {
@@ -132,7 +133,7 @@ public class Scheme {
         if (themeNames.length <= schemeNum) {
             schemeNum = 0;
         }
-        Options.setInt(Options.OPTION_COLOR_SCHEME, schemeNum);
+        Options.setString(Options.OPTION_COLOR_SCHEME, themeNames[schemeNum]);
         setColorScheme(themeColors[schemeNum]);
     }
 
@@ -140,7 +141,17 @@ public class Scheme {
         System.arraycopy(scheme, 0, currentTheme, 0, currentTheme.length);
     }
 
+    public static int getThemeId(String theme) {
+        for (int i = 0; i < themeNames.length; ++i) {
+            if (theme.equals(themeNames[i])) {
+                return i;
+            }
+        }
+        return 0;
+    }
+
     public static boolean isChangeTheme(int newTheme) {
+        Log.e("kkkkkkk", oldTheme+" "+newTheme);
         if (oldTheme != newTheme) {
             oldTheme = newTheme;
             return true;

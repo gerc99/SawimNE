@@ -68,7 +68,7 @@
                   android:configChanges="orientation|keyboardHidden"
                   android:launchMode="standard">
         </activity>
-        <service android:enabled="true" android:name=".service.SawimService" android:stopWithTask="true"/>
+        <service android:name=".service.SawimService"/>
         <receiver android:name=".receiver.GCMBroadcastReceiver"
                   android:permission="com.google.android.c2dm.permission.SEND">
             <intent-filter>

@@ -167,9 +167,10 @@ public class SawimNotification {
                         notification.setVibrate(pattern);
                     }
                     String ringtone = Options.getString(Options.OPTION_MESS_RINGTONE);
-                    if (ringtone != null) {
-                        notification.setSound(Uri.parse(ringtone));
+                    if (ringtone == null) {
+                        ringtone = "content://settings/system/notification_sound";
                     }
+                    notification.setSound(Uri.parse(ringtone));
                 }
             }
             if (0 < allUnread) {
@@ -178,7 +179,7 @@ public class SawimNotification {
             }
             contentText = ChatHistory.instance.getLastMessage(contentText.toString());
             notification.setWhen(when);
-            notification.setDefaults(android.app.Notification.DEFAULT_ALL);
+            //notification.setDefaults(android.app.Notification.DEFAULT_ALL);
             notification.setContentIntent(contentIntent);
             notification.setContentTitle(contentTitle);
             notification.setContentText(contentText);

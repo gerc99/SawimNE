@@ -511,7 +511,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
     }
 
     private void setPosition(int unreadMessageCount) {
-        boolean hasHistory = chat.getHistory() != null && chat.getHistory().getHistorySize() > 0 && !chat.isBlogBot();
+        boolean hasHistory = chat.getHistory() != null && chat.getHistory().getStartHistorySize() > 0 && !chat.isBlogBot();
         int position = chat.getMessData().size() - unreadMessageCount;
         boolean isBottomScroll = chat.lastVisiblePosition == chat.dividerPosition;
         adapter.setPosition(chat.dividerPosition);

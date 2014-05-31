@@ -1,6 +1,7 @@
 package ru.sawim;
 
 import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import protocol.Profile;
 import protocol.StatusInfo;
 import ru.sawim.comm.StringConvertor;
@@ -50,17 +51,14 @@ public class Options {
     public static final String OPTION_BLOG_NOTIFY = "blog_notify";
     public static final String OPTION_SIMPLE_INPUT = "simple_input";
 
-    private static final String PREFS_NAME = "SAWIM:Settings";
     private static SharedPreferences preferences;
     private static SharedPreferences.Editor editor;
 
     private static final List<Profile> listOfProfiles = new ArrayList<Profile>();
 
     public static void init() {
-        preferences = SawimApplication.getContext().getSharedPreferences(PREFS_NAME, 0);
+        preferences = PreferenceManager.getDefaultSharedPreferences(SawimApplication.getContext());
         editor = preferences.edit();
-        //editor.clear();
-        //editor.commit();
         if (preferences.getAll().isEmpty()) {
             initAccounts();
             setDefaults();
@@ -84,7 +82,6 @@ public class Options {
         setBoolean(Options.OPTION_HIDE_ICONS_CLIENTS, true);
         setBoolean(Options.OPTION_HIDE_KEYBOARD, true);
         setBoolean(Options.OPTION_MESS_NOTIF, true);
-        setString(Options.OPTION_MESS_RINGTONE, "content://settings/system/notification_sound");
         setInt(Options.OPTION_TYPING_MODE, 0);
         setBoolean(Options.OPTION_BLOG_NOTIFY, true);
         setBoolean(Options.OPTION_NOTIFY_IN_AWAY, true);
@@ -93,7 +90,6 @@ public class Options {
         setBoolean(Options.OPTION_ANSWERER, false);
         setBoolean(Options.OPTION_USER_GROUPS, true);
         setBoolean(Options.OPTION_HISTORY, false);
-        setInt(Options.OPTION_COLOR_SCHEME, 1);
         setInt(Options.OPTION_FONT_SCHEME, 16);
         setInt(Options.OPTION_AA_TIME, 15);
         setBoolean(Options.OPTION_SHOW_STATUS_LINE, false);
