@@ -52,6 +52,7 @@ public class MainPreferenceView extends PreferenceFragment {
                 StartWindowView newFragment = new StartWindowView();
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
                 transaction.replace(R.id.fragment_container, newFragment, StartWindowView.TAG);
+                transaction.addToBackStack(null);
                 transaction.commit();
                 return false;
             }
