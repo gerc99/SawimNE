@@ -151,7 +151,6 @@ public class Scheme {
     }
 
     public static boolean isChangeTheme(int newTheme) {
-        Log.e("kkkkkkk", oldTheme+" "+newTheme);
         if (oldTheme != newTheme) {
             oldTheme = newTheme;
             return true;

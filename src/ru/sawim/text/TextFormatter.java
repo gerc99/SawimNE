@@ -6,6 +6,7 @@ import android.text.style.ImageSpan;
 import protocol.Contact;
 import ru.sawim.Scheme;
 import ru.sawim.modules.Emotions;
+import ru.sawim.roster.RosterHelper;
 import ru.sawim.view.menu.JuickMenu;
 
 import java.util.ArrayList;
@@ -46,7 +47,7 @@ public class TextFormatter {
         final int linkColor = Scheme.getColor(Scheme.THEME_LINKS);
         SpannableStringBuilder builder = new SpannableStringBuilder(text);
         if (contact != null) {
-            String userId = contact.getProtocol().getUniqueUserId(contact);
+            String userId = RosterHelper.getInstance().getProtocol().getUniqueUserId(contact);
             if (userId.startsWith(JuickMenu.JUICK) || userId.startsWith(JuickMenu.JUBO)) {
                 getTextWithLinks(builder, linkColor, JuickMenu.MODE_JUICK);
             } else if (userId.startsWith(JuickMenu.PSTO) || userId.startsWith(JuickMenu.POINT)) {

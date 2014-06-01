@@ -982,7 +982,7 @@ public final class XmppConnection extends ClientConnection {
             String jid = Jid.isConference(from) ? from : Jid.getBareJid(from);
             //MagicEye.addAction(xmpp, jid, "get_time");
 
-            int gmtOffset = Options.getInt(Options.OPTION_GMT_OFFSET);
+            int gmtOffset = SawimApplication.gmtOffset;
             putPacketIntoQueue("<iq type='result' to='" + Util.xmlEscape(from)
                     + "' id='" + Util.xmlEscape(id) + "'>"
                     + "<time xmlns='urn:xmpp:time'><tzo>"
@@ -1523,13 +1523,13 @@ public final class XmppConnection extends ClientConnection {
                     PlainMessage.NOTIFY_FROM_CLIENT);
             return;
         }
-        if (0 < Options.getInt(Options.OPTION_TYPING_MODE)) {
+        if (0 < Options.getInt(R.array.typing_array, Options.OPTION_TYPING_MODE)) {
             getXmpp().beginTyping(from, messageEvent.contains(S_COMPOSING));
         }
     }
 
     private void parseChatState(XmlNode message, String from) {
-        if (0 < Options.getInt(Options.OPTION_TYPING_MODE)) {
+        if (0 < Options.getInt(R.array.typing_array, Options.OPTION_TYPING_MODE)) {
             if (message.contains(S_ACTIVE)
                     || message.contains("gone")
                     || message.contains(S_PAUSED)
@@ -2343,7 +2343,7 @@ public final class XmppConnection extends ClientConnection {
         }
 
         String chatState = "";
-        if ((1 < Options.getInt(Options.OPTION_TYPING_MODE)) && S_CHAT.equals(type)) {
+        if ((1 < Options.getInt(R.array.typing_array, Options.OPTION_TYPING_MODE)) && S_CHAT.equals(type)) {
             chatState = getChatStateTag(S_ACTIVE);
         }
         putPacketIntoQueue("<message to='" + Util.xmlEscape(to) + "'"
@@ -2742,7 +2742,7 @@ public final class XmppConnection extends ClientConnection {
         features.addElement("http://jabber.org/protocol/activity+notify");
 
 
-        if (0 < Options.getInt(Options.OPTION_TYPING_MODE)) {
+        if (0 < Options.getInt(R.array.typing_array, Options.OPTION_TYPING_MODE)) {
             features.addElement("http://jabber.org/protocol/chatstates");
         }
 

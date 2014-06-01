@@ -7,35 +7,46 @@
     <PreferenceScreen android:title="@string/options_interface">
         <ListPreference
                 android:key="color_scheme"
-                android:title="@string/color_scheme"/>
+                android:title="@string/color_scheme"
+                android:defaultValue="1"/>
         <ru.sawim.view.preference.SeekBarPreference android:title="@string/fonts"
-                                                    android:key="font_scheme"/>
+                                                    android:key="font_scheme"
+                                                    android:defaultValue="18"/>
         <PreferenceCategory android:title="@string/contact_list"/>
         <CheckBoxPreference android:title="@string/show_user_groups"
-                            android:key="user_groups"/>
+                            android:key="user_groups"
+                            android:defaultValue="true"/>
         <CheckBoxPreference android:title="@string/show_status_line"
-                            android:key="show_status_line"/>
+                            android:key="show_status_line"
+                            android:defaultValue="true"/>
         <CheckBoxPreference android:title="@string/contacts_with_msg_at_top"
-                            android:key="sort_up_with_msg"/>
+                            android:key="sort_up_with_msg"
+                            android:defaultValue="true"/>
         <ListPreference
                 android:key="cl_sort_by"
                 android:title="@string/sort_by"
                 android:entries="@array/sort_by_array"
-                android:entryValues="@array/sort_by_array"/>
+                android:entryValues="@array/sort_by_array"
+                android:defaultValue="1"/>
         <PreferenceCategory android:title="@string/chat"/>
         <CheckBoxPreference android:title="@string/hide_chat_keyboard"
-                            android:key="hide_keyboard"/>
+                            android:key="hide_keyboard"
+                            android:defaultValue="true"/>
         <CheckBoxPreference android:title="@string/use_simple_input"
-                            android:key="simple_input"/>
+                            android:key="simple_input"
+                            android:defaultValue="false"/>
         <CheckBoxPreference android:title="@string/use_history"
-                            android:key="history"/>
+                            android:key="history"
+                            android:defaultValue="false"/>
         <ListPreference
                 android:key="max_msg_count"
                 android:title="@string/max_message_count"
                 android:entries="@array/max_message_array"
-                android:entryValues="@array/max_message_array"/>
+                android:entryValues="@array/max_message_array"
+                android:defaultValue="1"/>
         <EditTextPreference android:key="unavailable_message"
-                            android:title="@string/post_outputs"/>
+                            android:title="@string/post_outputs"
+                            android:defaultValue="I\'\ll be back"/>
     </PreferenceScreen>
 
     <PreferenceScreen android:title="@string/options_signaling">
@@ -68,7 +79,8 @@
         <EditTextPreference android:key="antispam_hello"
                             android:title="@string/antispam_hello"/>
         <EditTextPreference android:key="antispam_keywords"
-                            android:title="@string/antispam_keywords"/>
+                            android:title="@string/antispam_keywords"
+                android:defaultValue="http sms www @conf"/>
     </PreferenceScreen>
 
     <PreferenceScreen android:title="@string/answerer" android:key="answerer">

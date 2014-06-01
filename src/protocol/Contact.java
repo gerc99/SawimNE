@@ -87,10 +87,6 @@ abstract public class Contact implements TreeNode {
         return p.getStatusInfo().getIcon(getStatusIndex());
     }
 
-    public Protocol getProtocol() {
-        return RosterHelper.getInstance().getProtocol(this);
-    }
-
     public final void setXStatus(int index, String text) {
         xstatus = index;
         xstatusText = (XStatusInfo.XSTATUS_NONE == index) ? null : text;

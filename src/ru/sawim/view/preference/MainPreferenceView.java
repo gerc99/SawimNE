@@ -45,7 +45,6 @@ public class MainPreferenceView extends PreferenceFragment {
     }
 
     private void buildList() {
-        final BaseActivity activity = (BaseActivity) getActivity();
         getPreferenceScreen().findPreference("options_account").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
@@ -87,7 +86,7 @@ public class MainPreferenceView extends PreferenceFragment {
         getPreferenceScreen().findPreference("about_program").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                new AboutProgramView().show(activity.getSupportFragmentManager(), AboutProgramView.TAG);
+                new AboutProgramView().show(getActivity().getSupportFragmentManager(), AboutProgramView.TAG);
                 return false;
             }
         });

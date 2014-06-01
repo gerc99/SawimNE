@@ -293,7 +293,7 @@ public class XmppServiceContact extends XmppContact {
 
     public Contact getPrivateContact(String nick) {
         String jid = Jid.realJidToSawimJid(getUserId() + "/" + nick);
-        return getProtocol().createTempContact(jid);
+        return RosterHelper.getInstance().getProtocol().createTempContact(jid);
     }
 
     public void setSubject(String subject) {

@@ -53,7 +53,7 @@ public class XmppRegistration implements Runnable, FormListener {
     }
 
     public interface OnAddAccount {
-        void addAccount(int num, Profile acc);
+        void addAccount(Profile acc);
     }
 
     public void run() {
@@ -78,8 +78,7 @@ public class XmppRegistration implements Runnable, FormListener {
                 Profile account = new Profile();
                 account.userId = username + "@" + domain;
                 account.password = password;
-                account.isActive = true;
-                listener.addAccount(Options.getAccountCount(), account);
+                listener.addAccount(account);
 
             } else {
                 error = connection.getError(n.getFirstNode("error"));

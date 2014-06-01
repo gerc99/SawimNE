@@ -143,7 +143,7 @@ abstract public class Protocol {
             }
             updateContacts(notInListGroup);
         }
-        if (RosterHelper.getInstance().getProtocolCount() == 0) return;
+        if (!Options.hasAccount()) return;
         RosterHelper.getInstance().updateRoster();
         if (needSave)
             needSave();
@@ -961,7 +961,7 @@ abstract public class Protocol {
 
     public final void sendTypingNotify(Contact to, boolean isTyping) {
         if (isConnected() && isMeVisible(to)
-                && (1 < Options.getInt(Options.OPTION_TYPING_MODE))) {
+                && (1 < Options.getInt(R.array.typing_array, Options.OPTION_TYPING_MODE))) {
             s_sendTypingNotify(to, isTyping);
         }
     }

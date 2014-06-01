@@ -300,11 +300,11 @@ public class Util {
     }
 
     public static long gmtTimeToLocalTime(long gmtTime) {
-        return gmtTime + Options.getInt(Options.OPTION_GMT_OFFSET) * 3600L;
+        return gmtTime + SawimApplication.gmtOffset * 3600L;
     }
 
     public static long localTimeToGmtTime(long localTime) {
-        return localTime - Options.getInt(Options.OPTION_GMT_OFFSET) * 3600L;
+        return localTime - SawimApplication.gmtOffset * 3600L;
     }
 
     public static String longitudeToString(long seconds) {

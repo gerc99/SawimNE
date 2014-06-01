@@ -434,7 +434,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         Contact currentContact = RosterHelper.getInstance().getCurrentContact();
         if (contact == null) {
             if (currentContact != null)
-                initChat(currentContact.getProtocol(), currentContact);
+                initChat(RosterHelper.getInstance().getProtocol(), currentContact);
         } else
             openChat(protocol, contact);
         if (SawimApplication.isManyPane()) {
@@ -485,7 +485,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         RosterHelper.getInstance().setOnUpdateChat(this);
         int unreadMessageCount = chat.getUnreadMessageCount();
         chat.resetUnreadMessages();
-        removeMessages(Options.getInt(Options.OPTION_MAX_MSG_COUNT));
+        removeMessages(Options.getInt(R.array.max_message_array, Options.OPTION_MAX_MSG_COUNT));
         if (sharingText != null) {
             if (null != chat.message) {
                 chat.message += " " + sharingText;

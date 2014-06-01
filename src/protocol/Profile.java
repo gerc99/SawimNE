@@ -3,7 +3,6 @@ package protocol;
 public final class Profile {
     public String userId = "";
     public String password = "";
-    public boolean isActive;
 
     public byte statusIndex = StatusInfo.STATUS_OFFLINE;
     public String statusMessage;

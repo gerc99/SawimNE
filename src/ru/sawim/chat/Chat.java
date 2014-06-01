@@ -7,6 +7,7 @@ import protocol.xmpp.Xmpp;
 import protocol.xmpp.XmppContact;
 import protocol.xmpp.XmppServiceContact;
 import ru.sawim.Options;
+import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.chat.message.Message;
 import ru.sawim.chat.message.PlainMessage;
@@ -207,14 +208,6 @@ public final class Chat {
         } else {
             ChatHistory.instance.unregisterChat(Chat.this);
         }
-    }
-
-    public void removeOldMessages() {
-        removeMessages(Options.getInt(Options.OPTION_MAX_MSG_COUNT));
-    }
-
-    public void removeMessagesAtCursor(int currPoss) {
-        removeMessages(messData.size() - currPoss - 1);
     }
 
     public boolean empty() {

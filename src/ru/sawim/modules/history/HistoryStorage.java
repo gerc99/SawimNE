@@ -6,11 +6,13 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import protocol.Contact;
+import protocol.Roster;
 import ru.sawim.SawimApplication;
 import ru.sawim.chat.Chat;
 import ru.sawim.chat.MessData;
 import ru.sawim.chat.message.PlainMessage;
 import ru.sawim.comm.Util;
+import ru.sawim.roster.RosterHelper;
 
 public class HistoryStorage {
 
@@ -164,7 +166,7 @@ public class HistoryStorage {
                     }
                     chat.addTextToForm(message, contact.isConference() ? from : chat.getFrom(message),
                             false, Chat.isHighlight(message.getProcessedText(), contact.getMyName()), false);
-                    message.setSendingStateFromHistory(contact.getProtocol(), (byte) sendingState);
+                    message.setSendingStateFromHistory(RosterHelper.getInstance().getProtocol(), (byte) sendingState);
                 } while (cursor.moveToNext());
             }
             cursor.close();

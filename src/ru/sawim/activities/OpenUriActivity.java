@@ -80,10 +80,7 @@ public class OpenUriActivity extends ActionBarActivity {
     }
 
     private Xmpp getFirstXmpp() {
-        for (Protocol p : RosterHelper.getInstance().getProtocols()) {
-            if (p instanceof Xmpp) return (Xmpp) p;
-        }
-        return null;
+        return (Xmpp) RosterHelper.getInstance().getProtocol();
     }
 
     private void alert() {

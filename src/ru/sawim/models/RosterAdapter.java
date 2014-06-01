@@ -110,41 +110,23 @@ public class RosterAdapter extends BaseAdapter {
 
     public void refreshList() {
         RosterHelper roster = RosterHelper.getInstance();
-        final int count = roster.getProtocolCount();
         items.clear();
         if (type == RosterHelper.ACTIVE_CONTACTS) {
             ChatHistory.instance.sort();
-            for (int i = 0; i < roster.getProtocolCount(); ++i) {
-                ChatHistory.instance.addLayerToListOfChats(roster.getProtocol(i), items);
-            }
+            ChatHistory.instance.addLayerToListOfChats(roster.getProtocol(), items);
         } else {
-            if (count > 1) {
-                for (int i = 0; i < count; ++i) {
-                    Protocol p = roster.getProtocol(i);
-                    if (p == null) return;
-                    /*while (!updateQueue.isEmpty()) {
-                        Group group = (Group) updateQueue.firstElement();
-                        updateQueue.removeElementAt(0);
-                        synchronized (p.getRosterLockObject()) {
-                            roster.updateGroup(group);
-                        }
-                    }*/
-                    ProtocolBranch root = p.getProtocolBranch();
-                    items.add(root);
-                    if (!root.isExpanded()) continue;
-                    if (roster.useGroups) {
-                        roster.rebuildFlatItemsWG(p, items);
-                    } else {
-                        roster.rebuildFlatItemsWOG(p, items);
-                    }
+            /*while (!updateQueue.isEmpty()) {
+                Group group = (Group) updateQueue.firstElement();
+                updateQueue.removeElementAt(0);
+                synchronized (p.getRosterLockObject()) {
+                    roster.updateGroup(group);
                 }
+            } */
+            Protocol p = roster.getProtocol();
+            if (roster.useGroups) {
+                roster.rebuildFlatItemsWG(p, items);
             } else {
-                Protocol p = roster.getProtocol(0);
-                if (roster.useGroups) {
-                    roster.rebuildFlatItemsWG(p, items);
-                } else {
-                    roster.rebuildFlatItemsWOG(p, items);
-                }
+                roster.rebuildFlatItemsWOG(p, items);
             }
         }
         notifyDataSetChanged();
@@ -346,7 +328,7 @@ public class RosterAdapter extends BaseAdapter {
                 rosterItemView.setNull();
                 if (o != null) {
                     final TreeNode treeNode = (TreeNode) o;
-                    populateFromContact(rosterItemView, RosterHelper.getInstance(), ((Contact) treeNode).getProtocol(), (Contact) treeNode);
+                    populateFromContact(rosterItemView, RosterHelper.getInstance(), RosterHelper.getInstance().getProtocol(), (Contact) treeNode);
                     setShowDivider(rosterItemView, true);
                 }
                 rosterItemView.repaint();

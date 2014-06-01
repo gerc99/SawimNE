@@ -37,11 +37,8 @@ public class NetworkStateReceiver extends BroadcastReceiver {
     }
 
     private void resetConnections() {
-        int count = RosterHelper.getInstance().getProtocolCount();
-        for (int i = 0; i < count; ++i) {
-            Protocol p = RosterHelper.getInstance().getProtocol(i);
-            p.disconnect(false);
-        }
+        Protocol p = RosterHelper.getInstance().getProtocol();
+        p.disconnect(false);
     }
 
     private void restoreConnections() {

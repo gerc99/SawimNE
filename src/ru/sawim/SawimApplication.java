@@ -26,6 +26,7 @@ import ru.sawim.text.TextFormatter;
 
 import java.io.InputStream;
 import java.util.List;
+import java.util.TimeZone;
 
 /**
  * Created with IntelliJ IDEA.
@@ -52,6 +53,7 @@ public class SawimApplication extends Application {
     public static int sortType;
     public static boolean hideIconsClient;
     public static int autoAbsenceTime;
+    public static int gmtOffset;
 
     public static SawimApplication instance;
     private final SawimServiceConnection serviceConnection = new SawimServiceConnection();
@@ -84,7 +86,7 @@ public class SawimApplication extends Application {
         Scheme.load();
         updateOptions();
         Updater.startUIUpdater();
-
+        gmtOffset = TimeZone.getDefault().getOffset(System.currentTimeMillis()) / (1000 * 60 * 60);
         xmppSession = new XmppSession();
         try {
             gc();
@@ -168,11 +170,11 @@ public class SawimApplication extends Application {
 
     public static void updateOptions() {
         SawimResources.initIcons();
-        fontSize = Math.max(Options.getInt(Options.OPTION_FONT_SCHEME), 7);
+        fontSize = Math.max(Options.getInt(Options.OPTION_FONT_SCHEME), 18);
         showStatusLine = Options.getBoolean(Options.OPTION_SHOW_STATUS_LINE);
         hideIconsClient = Options.getBoolean(Options.OPTION_HIDE_ICONS_CLIENTS);
-        sortType = Options.getInt(Options.OPTION_CL_SORT_BY);
-        autoAbsenceTime = Options.getInt(Options.OPTION_AA_TIME) * 60;
+        sortType = Options.getInt(R.array.sort_by_array, Options.OPTION_CL_SORT_BY);
+        autoAbsenceTime = Options.getInt(R.array.absence_array, Options.OPTION_AA_TIME) * 60;
     }
 
     public static boolean isManyPane() {

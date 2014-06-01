@@ -161,22 +161,17 @@ public class SawimActivity extends BaseActivity {
         SawimApplication.maximize();
         FragmentManager fragmentManager = getSupportFragmentManager();
         StartWindowView startWindowView = (StartWindowView) fragmentManager.findFragmentByTag(StartWindowView.TAG);
-        if (RosterHelper.getInstance().getProtocolCount() == 0) {
-            if (Options.getAccountCount() == 0) {
-                if (SawimApplication.isManyPane()) {
-                    setContentView(R.layout.main);
-                    if (startWindowView == null) {
-                        StartWindowView newFragment = new StartWindowView();
-                        FragmentTransaction transaction = fragmentManager.beginTransaction();
-                        transaction.replace(R.id.fragment_container, newFragment, StartWindowView.TAG);
-                        transaction.commit();
-                        supportInvalidateOptionsMenu();
-                    }
+        if (!Options.hasAccount()) {
+            if (SawimApplication.isManyPane()) {
+                setContentView(R.layout.main);
+                if (startWindowView == null) {
+                    StartWindowView newFragment = new StartWindowView();
+                    FragmentTransaction transaction = fragmentManager.beginTransaction();
+                    transaction.replace(R.id.fragment_container, newFragment, StartWindowView.TAG);
+                    transaction.commit();
+                    supportInvalidateOptionsMenu();
                 }
             }
-        } else {
-            if (startWindowView != null)
-                fragmentManager.popBackStack();
         }
         handleIntent();
         if (!isOpenNewChat && SawimApplication.isManyPane()) openChat(null, null, true);
@@ -272,8 +267,8 @@ public class SawimActivity extends BaseActivity {
             return true;
         } else if ((rosterView != null && rosterView.isAdded())
                 || (startWindowView != null && startWindowView.isAdded())) {
-            Protocol p = RosterHelper.getInstance().getProtocol(0);
-            if (RosterHelper.getInstance().getProtocolCount() == 1 && p != null) {
+            Protocol p = RosterHelper.getInstance().getProtocol();
+            if (Options.hasAccount() && p != null) {
                 menu.add(Menu.NONE, RosterHelper.MENU_CONNECT, Menu.NONE, R.string.connect)
                         .setTitle((p.isConnected() || p.isConnecting()) ? R.string.disconnect : R.string.connect);
                 menu.add(Menu.NONE, RosterHelper.MENU_STATUS, Menu.NONE, R.string.status);
@@ -315,7 +310,7 @@ public class SawimActivity extends BaseActivity {
             chatView.onOptionsItemSelected_(item);
             return true;
         }
-        if (RosterHelper.getInstance().protocolMenuItemSelected(this, RosterHelper.getInstance().getProtocol(0), item.getItemId()))
+        if (RosterHelper.getInstance().protocolMenuItemSelected(this, RosterHelper.getInstance().getProtocol(), item.getItemId()))
             return true;
         switch (item.getItemId()) {
             case MENU_OPTIONS:

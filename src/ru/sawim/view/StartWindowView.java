@@ -54,7 +54,7 @@ public class StartWindowView extends Fragment {
         loginText.setText("ID");
         serverText.setVisibility(TextView.VISIBLE);
         editServer.setVisibility(EditText.VISIBLE);
-        final Profile account = Options.getAccount(0);
+        final Profile account = Options.getAccount();
         getActivity().setTitle(R.string.acc_edit);
         if (StringConvertor.isEmpty(account.userId)) {
             editServer.setText(SawimApplication.DEFAULT_SERVER);
@@ -72,7 +72,7 @@ public class StartWindowView extends Fragment {
                 String login = editLogin.getText().toString();
                 String server = editServer.getText().toString();
                 String password = editPass.getText().toString();
-                Profile account = new Profile();
+                Profile account = Options.getAccount();
                 if (login.indexOf('@') + 1 > 0) //isServer
                     account.userId = login;
                 else
@@ -81,15 +81,12 @@ public class StartWindowView extends Fragment {
                     return;
                 }
                 account.password = password;
-                account.isActive = true;
-                addAccount(0, account);
+                addAccount(account);
                 if (login.length() > 0 && password.length() > 0) {
-                    if (RosterHelper.getInstance().getProtocolCount() > 0) {
-                        ((SawimActivity) getActivity()).recreateActivity();
-                    } else {
-                        if (SawimApplication.isManyPane())
-                            getActivity().getSupportFragmentManager().popBackStack();
-                    }
+                    ((SawimActivity) getActivity()).recreateActivity();
+                } else {
+                    if (SawimApplication.isManyPane())
+                        getActivity().getSupportFragmentManager().popBackStack();
                 }
             }
         });
@@ -102,8 +99,8 @@ public class StartWindowView extends Fragment {
                 xmppRegistration.setListener(new XmppRegistration.OnAddAccount() {
 
                     @Override
-                    public void addAccount(int num, Profile acc) {
-                        addAccount(num, acc);
+                    public void addAccount(Profile acc) {
+                        addAccount(acc);
                     }
                 });
                 xmppRegistration.init().show((BaseActivity) getActivity());
@@ -119,8 +116,8 @@ public class StartWindowView extends Fragment {
         getActivity().supportInvalidateOptionsMenu();
     }
 
-    public void addAccount(int num, Profile acc) {
-        Options.setAccount(num, acc);
+    public void addAccount(Profile acc) {
+        Options.saveAccount(acc);
         RosterHelper.getInstance().setCurrentProtocol();
     }
 

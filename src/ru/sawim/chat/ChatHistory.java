@@ -44,13 +44,13 @@ public final class ChatHistory {
                 hasLayer = true;
             }
         }
-        if (RosterHelper.getInstance().getProtocolCount() == 1) {
+        //if (RosterHelper.getInstance().getProtocolCount() == 1) {
             items.remove(0);
-            return;
-        }
-        if (!hasLayer) {
-            items.remove(items.size() - 1);
-        }
+        //    return;
+        //}
+        //if (!hasLayer) {
+        //    items.remove(items.size() - 1);
+        //}
     }
 
     public Chat chatAt(int index) {
@@ -444,7 +444,6 @@ public final class ChatHistory {
                     MessData message = chat.getUnreadMessage(j);
                     ByteArrayOutputStream out = new ByteArrayOutputStream();
                     DataOutputStream o = new DataOutputStream(out);
-                    o.writeUTF(chat.getProtocol().getUserId());
                     o.writeUTF(chat.getContact().getUserId());
                     o.writeUTF(message.getNick());
                     o.writeUTF(message.getText().toString());
@@ -463,12 +462,11 @@ public final class ChatHistory {
             s.open();
             for (int i = 1; i <= s.getNumRecords(); ++i) {
                 DataInputStream in = new DataInputStream(new ByteArrayInputStream(s.getRecord(i)));
-                String account = in.readUTF();
                 String userId = in.readUTF();
                 String nick = in.readUTF();
                 String text = in.readUTF();
                 long time = in.readLong();
-                Protocol protocol = RosterHelper.getInstance().getProtocol(account);
+                Protocol protocol = RosterHelper.getInstance().getProtocol();
                 if (null == protocol) {
                     continue;
                 }
