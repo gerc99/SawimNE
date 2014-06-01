@@ -8,12 +8,8 @@ import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
 import ru.sawim.io.Storage;
 import ru.sawim.modules.DebugLog;
-import ru.sawim.roster.RosterHelper;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.TimeZone;
 
 public class Options {
     public static final String UNAVAILABLE_NESSAGE = "unavailable_message";
@@ -118,13 +114,15 @@ public class Options {
         Storage s = new Storage("j-accounts");
         try {
             s.open();
-            byte[] data = s.getRecord(1);
-            if ((null == data) || (0 == data.length)) {
-                return;
-            }
-            Profile p = readProfile(data);
-            if (!StringConvertor.isEmpty(p.userId)) {
-                profile = p;
+            if (s.getNumRecords() > 0) {
+                byte[] data = s.getRecord(1);
+                if ((null == data) || (0 == data.length)) {
+                    return;
+                }
+                Profile p = readProfile(data);
+                if (!StringConvertor.isEmpty(p.userId)) {
+                    profile = p;
+                }
             }
         } catch (Exception e) {
             DebugLog.panic("load accounts", e);
@@ -137,18 +135,17 @@ public class Options {
             return;
         }
         Storage s = new Storage("j-accounts");
-        /*try {
+        try {
             s.open();
             byte[] hash = writeAccount(account);
-            if (0 == hash.length) return;
-            if (profile == null) {
+            if (s.getNumRecords() == 0) {
                 s.addRecord(hash);
             } else {
                 s.setRecord(1, hash);
             }
         } catch (Exception e) {
             DebugLog.panic("save account", e);
-        }*/
+        }
         s.close();
     }
 

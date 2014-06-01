@@ -77,15 +77,13 @@ public final class RosterHelper {
 
     public void setCurrentProtocol() {
         Profile p = Options.getAccount();
-        if (p != null)
-            addProtocols(p);
+        addProtocols(p);
         updateRoster();
     }
 
     public void initAccounts() {
         Profile p = Options.getAccount();
-        if (p != null)
-            addProtocol(p, false);
+        addProtocol(p, false);
     }
 
     public void loadAccounts() {
