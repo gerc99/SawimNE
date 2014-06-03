@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.text.Layout;
 import android.text.Spannable;
 import android.text.StaticLayout;
@@ -13,6 +14,7 @@ import android.text.TextPaint;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
+import ru.sawim.R;
 import ru.sawim.Scheme;
 import ru.sawim.text.InternalURLSpan;
 import ru.sawim.text.TextLinkClickListener;
@@ -29,6 +31,7 @@ import java.util.HashMap;
 public class MessageItemView extends View {
 
     private static final TextPaint textPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
+    private boolean isIncoming;
     private String msgTimeText;
     private String nickText;
     private int nickColor;
@@ -52,10 +55,17 @@ public class MessageItemView extends View {
     private boolean isShowDivider = false;
     private int titleHeight;
 
+    private static Drawable backgroundDrawableIn;
+    private static Drawable backgroundDrawableOut;
+
     private static final HashMap<String, Layout> layoutHolder = new HashMap<String, Layout>();
 
     public MessageItemView(Context context) {
         super(context);
+        if (backgroundDrawableIn == null) {
+            backgroundDrawableIn = context.getResources().getDrawable(Scheme.isBlack() ? R.drawable.msg_in_dark : R.drawable.msg_in);
+            backgroundDrawableOut = context.getResources().getDrawable(Scheme.isBlack() ? R.drawable.msg_out_dark : R.drawable.msg_out);
+        }
         textPaint.setAntiAlias(true);
     }
 
@@ -125,6 +135,10 @@ public class MessageItemView extends View {
         textY = getPaddingTop() - (int) textPaint.ascent();
     }
 
+    public void setIncoming(boolean incoming) {
+        this.isIncoming = incoming;
+    }
+
     public void setNick(int nickColor, int nickSize, Typeface nickTypeface, String nickText) {
         this.nickColor = nickColor;
         this.nickSize = nickSize;
@@ -180,6 +194,13 @@ public class MessageItemView extends View {
             textPaint.setColor(Scheme.getColor(Scheme.THEME_TEXT));
             canvas.drawLine(getPaddingLeft(), getScrollY() - 2, stopX, getScrollY() - 2, textPaint);
         }
+        if (isIncoming) {
+            setDrawableBounds(backgroundDrawableIn, 0, 0, getWidth(), getHeight());
+            backgroundDrawableIn.draw(canvas);
+        } else {
+            setDrawableBounds(backgroundDrawableOut, 0, 0, getWidth(), getHeight());
+            backgroundDrawableOut.draw(canvas);
+        }
 
         if (nickText != null) {
             textPaint.setColor(nickColor);
@@ -216,6 +237,10 @@ public class MessageItemView extends View {
     public void setShowDivider(boolean showDivider) {
         isShowDivider = showDivider;
         textPaint.setStrokeWidth((int) (4 * getResources().getDisplayMetrics().density + 0.5f));
+    }
+
+    private void setDrawableBounds(Drawable drawable, int x, int y, int w, int h) {
+        drawable.setBounds(x, y, x + w, y + h);
     }
 
     @Override
