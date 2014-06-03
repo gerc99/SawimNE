@@ -3,7 +3,7 @@ package ru.sawim.models.list;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
-import protocol.xmpp.Xmpp;
+import protocol.Protocol;
 import ru.sawim.activities.BaseActivity;
 import ru.sawim.view.VirtualListView;
 
@@ -15,7 +15,7 @@ public class VirtualList {
     private OnBuildOptionsMenu buildOptionsMenu;
     private OnBuildContextMenu buildContextMenu;
     private OnClickListListener itemClickListListener;
-    private Xmpp protocol;
+    private Protocol protocol;
 
     public static VirtualList getInstance() {
         if (instance == null) {
@@ -70,11 +70,11 @@ public class VirtualList {
         virtualListListener = l;
     }
 
-    public void setProtocol(Xmpp protocol) {
+    public void setProtocol(Protocol protocol) {
         this.protocol = protocol;
     }
 
-    public Xmpp getProtocol() {
+    public Protocol getProtocol() {
         return protocol;
     }
 

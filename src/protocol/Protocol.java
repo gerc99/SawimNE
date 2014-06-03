@@ -1,6 +1,8 @@
 package protocol;
 
-import protocol.xmpp.XmppContact;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.widget.Toast;
 import ru.sawim.*;
 import ru.sawim.activities.BaseActivity;
 import ru.sawim.chat.Chat;
@@ -8,17 +10,23 @@ import ru.sawim.chat.ChatHistory;
 import ru.sawim.chat.message.*;
 import ru.sawim.comm.*;
 import ru.sawim.icons.Icon;
+import ru.sawim.icons.ImageList;
 import ru.sawim.io.Storage;
+import ru.sawim.models.form.FormListener;
+import ru.sawim.models.form.Forms;
 import ru.sawim.modules.*;
 import ru.sawim.modules.search.Search;
 import ru.sawim.modules.search.UserInfo;
 import ru.sawim.roster.ProtocolBranch;
 import ru.sawim.roster.RosterHelper;
+import ru.sawim.view.TextBoxView;
+import ru.sawim.view.menu.JuickMenu;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Vector;
 
-abstract public class Protocol {
+public class Protocol implements FormListener {
     private static final int ROSTER_STORAGE_VERSION = 1;
     private static final int RECONNECT_COUNT = 20;
 
@@ -30,7 +38,6 @@ abstract public class Protocol {
     private Profile profile;
     private String password;
     private String userid = "";
-    private byte privateStatus = 0;
     private String rmsName = null;
     private boolean isReconnect;
     private int reconnect_attempts;
@@ -40,7 +47,828 @@ abstract public class Protocol {
     private Vector autoGrand = new Vector();
     private Group notInListGroup;
 
-    public abstract String getUserIdName();
+    public final static int PRIORITY = 50;
+    private Connection connection;
+    private Vector rejoinList = new Vector();
+    private String resource;
+    private ServiceDiscovery disco = null;
+    private AffiliationListConf alistc = null;
+    private MirandaNotes notes = null;
+    public static final XStatus xStatus = new XStatus();
+    private final ArrayList<String> bots = new ArrayList<String>();
+
+    protected void initStatusInfo() {
+        bots.add(JuickMenu.JUICK);
+        bots.add(JuickMenu.PSTO);
+        bots.add(JuickMenu.POINT);
+
+        ImageList icons = ImageList.createImageList("/jabber-status.png");
+        final int[] statusIconIndex = {1, 0, 2, 0, -1, -1, -1, -1, -1, 2, -1, 3, -1, -1, 1};
+        info = new StatusInfo(icons, statusIconIndex, statuses);
+        xstatusInfo = Protocol.xStatus.getInfo();
+        clientInfo = Client.get();
+    }
+
+    private static final byte[] statuses = {
+            StatusInfo.STATUS_OFFLINE,
+            StatusInfo.STATUS_ONLINE,
+            StatusInfo.STATUS_AWAY,
+            StatusInfo.STATUS_DND
+    };
+
+    public void addRejoin(String jid) {
+        if (!rejoinList.contains(jid)) {
+            rejoinList.addElement(jid);
+        }
+    }
+
+    public void removeRejoin(String jid) {
+        rejoinList.removeElement(jid);
+    }
+
+    public void rejoin() {
+        for (int i = 0; i < rejoinList.size(); ++i) {
+            String jid = (String) rejoinList.elementAt(i);
+            ServiceContact conf = (ServiceContact) getItemByUIN(jid);
+            if (null != conf) {
+                join(conf);
+            }
+        }
+    }
+
+    public boolean isEmpty() {
+        return StringConvertor.isEmpty(userid) || (getUserId().indexOf('@') <= 0);
+    }
+
+    public boolean isConnected() {
+        return (null != connection) && connection.isConnected();
+    }
+
+    public boolean isBlogBot(String jid) {
+        return bots.contains(getUniqueUserId(jid));
+    }
+
+    public String getUniqueUserId(Contact c) {
+        return getUniqueUserId(c.getUserId());
+    }
+
+    public String getUniqueUserId(String userId) {
+        if (isContactOverGate(userId)) {
+            return Jid.getNick(userId).replace('%', '@').replace("\\40", "@");
+        }
+        return userId.replace('%', '@');
+    }
+
+    public void startConnection() {
+        connection = new Connection();
+        connection.setXmpp(this);
+        connection.start();
+    }
+
+    public Connection getConnection() {
+        return connection;
+    }
+
+    public void disconnect(boolean user) {
+        if (user && null != connection) {
+            SawimApplication.getInstance().getSession().clear(connection);
+            connection.loggedOut();
+        }
+        setConnectingProgress(-1);
+        if (user) {
+            userCloseConnection();
+        }
+        setStatusesOffline();
+        closeConnection();
+        RosterHelper.getInstance().updateBarProtocols();
+        RosterHelper.getInstance().updateProgressBar();
+        RosterHelper.getInstance().updateRoster();
+        SawimApplication.getInstance().updateConnectionState();
+        RosterHelper.getInstance().updateConnectionStatus();
+        if (user) {
+            DebugLog.println("disconnect " + getUserId());
+        }
+    }
+
+    protected final void userCloseConnection() {
+        //rejoinList.removeAllElements();
+    }
+
+    protected final void closeConnection() {
+        Connection c = connection;
+        connection = null;
+        if (null != c) {
+            c.disconnect();
+        }
+    }
+
+    protected void setStatusesOffline() {
+        if (connection != null && !isStreamManagementSupported()) {
+            for (int i = roster.getContactItems().size() - 1; i >= 0; --i) {
+                Contact c = roster.getContactItems().elementAt(i);
+                c.setOfflineStatus();
+            }
+            synchronized (rosterLockObject) {
+                if (RosterHelper.getInstance().useGroups) {
+                    for (int i = roster.getGroupItems().size() - 1; i >= 0; --i) {
+                        (roster.getGroupItems().elementAt(i)).updateGroupData();
+                    }
+                }
+            }
+        }
+    }
+
+    private int getNextGroupId() {
+        while (true) {
+            int id = Util.nextRandInt() % 0x1000;
+            for (int i = getGroupItems().size() - 1; i >= 0; --i) {
+                Group group = (Group) getGroupItems().elementAt(i);
+                if (group.getId() == id) {
+                    id = -1;
+                    break;
+                }
+            }
+            if (0 <= id) {
+                return id;
+            }
+        }
+    }
+
+    public static final int GENERAL_GROUP = R.string.group_general;
+    public static final int GATE_GROUP = R.string.group_transports;
+    public static final int CONFERENCE_GROUP = R.string.group_conferences;
+
+    public final Group createGroup(String name) {
+        Group group = new Group(name);
+        group.setGroupId(getNextGroupId());
+        int mode = Group.MODE_FULL_ACCESS;
+        if (JLocale.getString(Protocol.CONFERENCE_GROUP).equals(name)) {
+            mode &= ~Group.MODE_EDITABLE;
+            mode |= Group.MODE_TOP;
+        } else if (JLocale.getString(Protocol.GATE_GROUP).equals(name)) {
+            mode &= ~Group.MODE_EDITABLE;
+            mode |= Group.MODE_BOTTOM;
+        }
+        group.setMode(mode);
+        return group;
+    }
+
+    public final Group getOrCreateGroup(String groupName) {
+        if (StringConvertor.isEmpty(groupName)) {
+            return null;
+        }
+        Group group = getGroup(groupName);
+        if (null == group) {
+            group = createGroup(groupName);
+            addGroup(group);
+        }
+        return group;
+    }
+
+    protected final Contact createContact(String jid, String name) {
+        name = (null == name) ? jid : name;
+        jid = Jid.realJidToSawimJid(jid);
+
+        boolean isGate = (-1 == jid.indexOf('@'));
+        boolean isConference = Jid.isConference(jid);
+        if (isGate || isConference) {
+            ServiceContact c = new ServiceContact(jid, name);
+            if (c.isConference()) {
+                c.setGroup(getOrCreateGroup(c.getDefaultGroupName()));
+                c.setMyName(getDefaultName());
+
+            } else if (isConference) {
+                ServiceContact conf = (ServiceContact) getItemByUIN(Jid.getBareJid(jid));
+                if (null != conf) {
+                    c.setPrivateContactStatus(conf);
+                    c.setMyName(conf.getMyName());
+                }
+            }
+            return c;
+        }
+        return new Contact(jid, name);
+    }
+
+    private String getDefaultName() {
+        return Jid.getNick(getUserId());
+    }
+
+    protected void sendSomeMessage(PlainMessage msg) {
+        getConnection().sendMessage(msg);
+    }
+
+    protected final void s_searchUsers(Search cont) {
+        UserInfo userInfo = new UserInfo(this);
+        userInfo.uin = cont.getSearchParam(Search.UIN);
+        if (null != userInfo.uin) {
+            cont.addResult(userInfo);
+        }
+        cont.finished();
+    }
+
+    protected void s_updateOnlineStatus() {
+        connection.setStatus(getProfile().statusIndex, "", PRIORITY);
+        if (isStreamManagementSupported()) return;
+        if (isReconnect()) {
+            for (int i = 0; i < rejoinList.size(); ++i) {
+                String jid = (String) rejoinList.elementAt(i);
+                ServiceContact c = (ServiceContact) getItemByUIN(jid);
+                if (null != c && !c.isOnline()) {
+                    connection.sendPresence(c);
+                }
+            }
+        }
+    }
+
+    protected Contact loadContact(DataInputStream dis) throws Exception {
+        String uin = dis.readUTF();
+        String name = dis.readUTF();
+        int groupId = dis.readInt();
+        byte booleanValues = dis.readByte();
+        Contact contact = createContact(uin, name);
+        contact.setGroupId(groupId);
+        contact.setBooleanValues(booleanValues);
+        if (isStreamManagementSupported()) {
+            contact.setStatus(dis.readByte(), dis.readUTF());
+            contact.setXStatus(dis.readByte(), dis.readUTF());
+            contact.setClient(dis.readByte(), null);
+        }
+        if (contact instanceof ServiceContact) {
+            ServiceContact serviceContact = (ServiceContact) contact;
+            if (serviceContact.isConference()) {
+                String userNick = dis.readUTF();
+                boolean isAutoJoin = dis.readBoolean();
+                serviceContact.setMyName(userNick);
+                serviceContact.setAutoJoin(isAutoJoin);
+                if (isAutoJoin) {
+                    addRejoin(serviceContact.getUserId());
+                }
+                serviceContact.setPresencesFlag(dis.readBoolean());
+            }
+        }
+        if (isStreamManagementSupported()) {
+            int subContactSize = dis.readInt();
+            for (int i = 0; i < subContactSize; ++i) {
+                Contact.SubContact subContact = new Contact.SubContact();
+                subContact.status = dis.readByte();
+                subContact.client = dis.readByte();
+                subContact.priority = dis.readByte();
+                subContact.priorityA = dis.readByte();
+                subContact.resource = dis.readUTF();
+                contact.subcontacts.add(subContact);
+            }
+        }
+        return contact;
+    }
+
+    protected void saveContact(DataOutputStream out, Contact contact) throws Exception {
+        out.writeByte(0);
+        out.writeUTF(contact.getUserId());
+        out.writeUTF(contact.getName());
+        out.writeInt(contact.getGroupId());
+        out.writeByte(contact.getBooleanValues());
+        if (isStreamManagementSupported()) {
+            out.writeByte(contact.getStatusIndex());
+            out.writeUTF(StringConvertor.notNull(contact.getStatusText()));
+            out.writeByte(contact.getXStatusIndex());
+            out.writeUTF(StringConvertor.notNull(contact.getXStatusText()));
+            out.writeByte(contact.clientIndex);
+        }
+        if (contact instanceof ServiceContact) {
+            ServiceContact serviceContact = (ServiceContact) contact;
+            if (serviceContact.isConference()) {
+                out.writeUTF(serviceContact.getMyName());
+                out.writeBoolean(serviceContact.isAutoJoin());
+                out.writeBoolean(serviceContact.isPresence());
+            }
+        }
+        if (isStreamManagementSupported()) {
+            Contact xmppContact = (Contact) contact;
+            out.writeInt(xmppContact.subcontacts.size());
+            for (Contact.SubContact subContact : xmppContact.subcontacts) {
+                out.writeByte(subContact.status);
+                out.writeByte(subContact.client);
+                out.writeByte(subContact.priority);
+                out.writeByte(subContact.priorityA);
+                out.writeUTF(subContact.resource);
+            }
+        }
+    }
+
+    void setConfContactStatus(ServiceContact conf, String resource, byte status, String statusText, int role, int priorityA, String roleText) {
+        conf.__setStatus(resource, role, priorityA, status, statusText, roleText);
+    }
+
+    void setContactStatus(Contact c, String resource, byte status, String text, int priority) {
+        c.__setStatus(resource, priority, 0, status, text, null);
+    }
+
+    protected final void s_addedContact(Contact contact) {
+        connection.updateContact((Contact) contact);
+    }
+
+    protected final void s_removedContact(Contact contact) {
+        if (!contact.isTemp()) {
+            boolean unregister = Jid.isGate(contact.getUserId())
+                    && !Jid.getDomain(getUserId()).equals(contact.getUserId());
+            if (unregister) {
+                getConnection().unregister(contact.getUserId());
+            }
+            connection.removeContact(contact.getUserId());
+            if (unregister) {
+                getConnection().removeGateContacts(contact.getUserId());
+            }
+        }
+        if (contact.isOnline() && !contact.isSingleUserContact()) {
+            getConnection().sendPresenceUnavailable(contact.getUserId());
+        }
+    }
+
+    protected final void s_renameGroup(Group group, String name) {
+        group.setName(name);
+        connection.updateContacts(getContactItems());
+    }
+
+    protected final void s_moveContact(Contact contact, Group to) {
+        Group fromGroup = getGroup(contact);
+        RosterHelper.getInstance().removeFromGroup(this, fromGroup, contact);
+        contact.setGroup(to);
+        connection.updateContact((Contact) contact);
+    }
+
+    protected final void s_renameContact(Contact contact, String name) {
+        contact.setName(name);
+        connection.updateContact((Contact) contact);
+    }
+
+    public void grandAuth(String uin) {
+        connection.sendSubscribed(uin);
+    }
+
+    public void denyAuth(String uin) {
+        connection.sendUnsubscribed(uin);
+    }
+
+    public void autoDenyAuth(String uin) {
+        denyAuth(uin);
+    }
+
+    public void requestAuth(String uin) {
+        connection.requestSubscribe(uin);
+    }
+
+    private String getYandexDomain(String domain) {
+        boolean nonPdd = "ya.ru".equals(domain)
+                || "narod.ru".equals(domain)
+                || domain.startsWith("yandex.");
+        return nonPdd ? "xmpp.yandex.ru" : "domain-xmpp.ya.ru";
+    }
+
+    protected String processUin(String uin) {
+        resource = Jid.getResource(uin, "Sawim");
+        return Jid.getBareJid(uin);
+    }
+
+    public String getResource() {
+        return resource;
+    }
+
+    void removeMe(String uin) {
+        connection.sendUnsubscribed(uin);
+    }
+
+    public ServiceDiscovery getServiceDiscovery() {
+        if (null == disco) {
+            disco = new ServiceDiscovery();
+        }
+        disco.init(this);
+        return disco;
+    }
+
+    public AffiliationListConf getAffiliationListConf() {
+        if (null == alistc) {
+            alistc = new AffiliationListConf();
+        }
+        alistc.init(this);
+        return alistc;
+    }
+
+    public MirandaNotes getMirandaNotes() {
+        if (null == notes) {
+            notes = new MirandaNotes();
+        }
+        notes.init(this);
+        return notes;
+    }
+
+    public String getUserIdName() {
+        return "JID";
+    }
+
+    public void sendFile(FileTransfer transfer, String filename, String description) {
+        getConnection().setIBB(new IBBFileTransfer(filename, description, transfer));
+    }
+
+    protected void s_updateXStatus() {
+        connection.setXStatus();
+    }
+
+    public void saveUserInfo(UserInfo userInfo) {
+        if (isConnected()) {
+            getConnection().saveVCard(userInfo);
+        }
+    }
+
+    protected void s_sendTypingNotify(Contact to, boolean isTyping) {
+        if (to instanceof ServiceContact) {
+            return;
+        }
+        Contact c = (Contact) to;
+        Contact.SubContact s = c.getCurrentSubContact();
+        if (null != s) {
+            connection.sendTypingNotify(to.getUserId() + "/" + s.resource, isTyping);
+        }
+    }
+
+    public boolean isContactOverGate(String jid) {
+        if (Jid.isGate(jid)) {
+            return false;
+        }
+        Vector all = getContactItems();
+        for (int i = all.size() - 1; 0 <= i; --i) {
+            Contact c = (Contact) all.elementAt(i);
+            if (Jid.isGate(c.getUserId())) {
+                if (jid.endsWith(c.getUserId())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public void leave(ServiceContact conf) {
+        if (conf.isOnline()) {
+            getConnection().sendPresenceUnavailable(conf.getUserId() + "/" + conf.getMyName());
+            conf.nickOffline(this, conf.getMyName(), 0, null, null);
+
+            Vector all = getContactItems();
+            String conferenceJid = conf.getUserId() + '/';
+            for (int i = all.size() - 1; 0 <= i; --i) {
+                Contact c = (Contact) all.elementAt(i);
+                if (c.getUserId().startsWith(conferenceJid) && !c.hasUnreadMessage()) {
+                    removeContact(c);
+                }
+            }
+        }
+    }
+
+    public void join(ServiceContact c) {
+        String jid = c.getUserId();
+        if (!c.isOnline()) {
+            setContactStatus(c, c.getMyName(), StatusInfo.STATUS_ONLINE, "", 0);
+            c.doJoining();
+        }
+        if (connection == null) return;
+        connection.sendPresence(c);
+        String password = c.getPassword();
+        if (Jid.isIrcConference(jid) && !StringConvertor.isEmpty(password)) {
+            String nickserv = jid.substring(jid.indexOf('%') + 1) + "/NickServ";
+            connection.sendMessage(nickserv, "/quote NickServ IDENTIFY " + password);
+            connection.sendMessage(nickserv, "IDENTIFY " + password);
+        }
+    }
+
+    protected void doAction(BaseActivity activity, Contact c, int cmd) {
+        final Contact contact = (Contact) c;
+        switch (cmd) {
+            case ContactMenu.GATE_CONNECT:
+                getConnection().sendPresence((ServiceContact) contact);
+                RosterHelper.getInstance().updateRoster();
+                break;
+
+            case ContactMenu.GATE_DISCONNECT:
+                getConnection().sendPresenceUnavailable(c.getUserId());
+                RosterHelper.getInstance().updateRoster();
+                break;
+
+            case ContactMenu.GATE_REGISTER:
+                getConnection().register(c.getUserId());
+                break;
+
+            case ContactMenu.GATE_UNREGISTER:
+                getConnection().unregister(c.getUserId());
+                getConnection().removeGateContacts(c.getUserId());
+                RosterHelper.getInstance().updateRoster();
+                break;
+
+            case ContactMenu.GATE_ADD:
+                Search s = this.getSearchForm();
+                s.setXmppGate(c.getUserId());
+                s.show(activity, "", false);
+                break;
+
+            case ContactMenu.USER_MENU_USERS_LIST:
+                if (contact.isOnline() || !isConnected()) {
+                } else {
+                    ServiceDiscovery sd = getServiceDiscovery();
+                    sd.setServer(contact.getUserId());
+                    sd.isMucUsers(true);
+                    sd.showIt();
+                }
+                break;
+            case ContactMenu.COMMAND_TITLE:
+                TextBoxView textbox = new TextBoxView();
+                textbox.setString("/title " + c.getStatusText());
+                textbox.setTextBoxListener(new TextBoxView.TextBoxListener() {
+                    @Override
+                    public void textboxAction(TextBoxView box, boolean ok) {
+                        sendMessage(contact, box.getString(), true);
+                    }
+                });
+                textbox.show(activity.getSupportFragmentManager(), "title_conf");
+                break;
+
+            case ContactMenu.CONFERENCE_CONNECT:
+                join((ServiceContact) c);
+                break;
+
+            case ContactMenu.CONFERENCE_OPTIONS:
+                showOptionsForm(activity, (ServiceContact) c);
+                break;
+
+            case ContactMenu.CONFERENCE_OWNER_OPTIONS:
+                connection.requestOwnerForm(c.getUserId());
+                break;
+            case ContactMenu.CONFERENCE_OWNERS:
+                AffiliationListConf alc = getAffiliationListConf();
+                alc.setServer(c.getUserId(), c.getMyName());
+                getConnection().requestAffiliationListConf(c.getUserId(), "owner");
+                alc.showIt();
+                break;
+            case ContactMenu.CONFERENCE_ADMINS:
+                AffiliationListConf al = getAffiliationListConf();
+                al.setServer(c.getUserId(), c.getMyName());
+                getConnection().requestAffiliationListConf(c.getUserId(), "admin");
+                al.showIt();
+                break;
+            case ContactMenu.CONFERENCE_MEMBERS:
+                AffiliationListConf affiliationListConf = getAffiliationListConf();
+                affiliationListConf.setServer(c.getUserId(), c.getMyName());
+                getConnection().requestAffiliationListConf(c.getUserId(), "member");
+                affiliationListConf.showIt();
+                break;
+            case ContactMenu.CONFERENCE_INBAN:
+                AffiliationListConf aff = getAffiliationListConf();
+                aff.setServer(c.getUserId(), c.getMyName());
+                getConnection().requestAffiliationListConf(c.getUserId(), "outcast");
+                aff.showIt();
+                break;
+
+            case ContactMenu.CONFERENCE_DISCONNECT:
+                leave((ServiceContact) c);
+                break;
+
+            case ContactMenu.CONFERENCE_ADD:
+                addContact(c);
+                RosterHelper.getInstance().updateRoster();
+                break;
+
+            case ContactMenu.USER_MENU_CONNECTIONS:
+                showListOfSubcontacts(activity, contact);
+                break;
+            case ContactMenu.USER_INVITE:
+                try {
+                    showInviteForm(activity, c.getUserId() + '/' + c.getCurrentSubContact().resource);
+                } catch (Exception e) {
+                }
+                break;
+
+            case ContactMenu.USER_MENU_SEEN:
+                getConnection().showContactSeen(c.getUserId());
+                RosterHelper.getInstance().updateRoster();
+                break;
+
+            case ContactMenu.USER_MENU_ADHOC:
+                AdHoc adhoc = new AdHoc(this, contact);
+                adhoc.show(activity);
+                break;
+
+            case ContactMenu.USER_MENU_REMOVE_ME:
+                removeMe(c.getUserId());
+                RosterHelper.getInstance().updateRoster();
+                break;
+
+        }
+    }
+
+    public void showListOfSubcontacts(BaseActivity activity, final Contact c) {
+        final Vector items = new Vector();
+        int selected = 0;
+        for (int i = 0; i < c.subcontacts.size(); ++i) {
+            Contact.SubContact contact = c.subcontacts.elementAt(i);
+            items.add(contact.resource);
+            if (contact.resource.equals(c.currentResource)) {
+                selected = i;
+            }
+        }
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setCancelable(true);
+        builder.setTitle(c.getName());
+        builder.setSingleChoiceItems(Util.vectorToArray(items), selected, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                c.setActiveResource((String) items.get(which));
+                RosterHelper.getInstance().updateRoster();
+                dialog.dismiss();
+            }
+        });
+        builder.create().show();
+    }
+
+    public void showUserInfo(BaseActivity activity, Contact contact) {
+        if (!contact.isSingleUserContact()) {
+            doAction(activity, contact, ContactMenu.USER_MENU_USERS_LIST);
+            return;
+        }
+
+        String realJid = contact.getUserId();
+        if (Jid.isConference(realJid) && (-1 != realJid.indexOf('/'))) {
+            ServiceContact conference = (ServiceContact) getItemByUIN(Jid.getBareJid(realJid));
+            if (conference != null) {
+                String r = conference.getRealJid(Jid.getResource(realJid, ""));
+                if (!StringConvertor.isEmpty(r)) {
+                    realJid = r;
+                }
+            }
+        }
+        UserInfo data;
+        if (isConnected()) {
+            data = getConnection().getUserInfo(contact);
+            data.uin = realJid;
+            data.createProfileView(contact.getName());
+            data.setProfileViewToWait();
+
+        } else {
+            data = new UserInfo(this, contact.getUserId());
+            data.uin = realJid;
+            data.nick = contact.getName();
+            data.createProfileView(contact.getName());
+            data.updateProfileView();
+        }
+        data.showProfile(activity);
+    }
+
+    public void updateStatusView(StatusView statusView, Contact contact) {
+        if (statusView.getContact() != contact) {
+            return;
+        }
+        String statusMessage = contact.getStatusText();
+
+        String xstatusMessage = "";
+        if (XStatusInfo.XSTATUS_NONE != contact.getXStatusIndex()) {
+            xstatusMessage = contact.getXStatusText();
+            String s = StringConvertor.notNull(statusMessage);
+            if (!StringConvertor.isEmpty(xstatusMessage)
+                    && s.startsWith(xstatusMessage)) {
+                xstatusMessage = statusMessage;
+                statusMessage = null;
+            }
+        }
+
+        statusView.initUI();
+        statusView.addContactStatus();
+        statusView.addStatusText(statusMessage);
+
+        if (XStatusInfo.XSTATUS_NONE != contact.getXStatusIndex()) {
+            statusView.addXStatus();
+            statusView.addStatusText(xstatusMessage);
+        }
+        if (contact.isSingleUserContact()) {
+            statusView.addClient();
+        }
+        statusView.addTime();
+    }
+
+    public void showStatus(Contact contact) {
+        StatusView statusView = RosterHelper.getInstance().getStatusView();
+        try {
+            if (contact.isOnline() && contact.isSingleUserContact()) {
+                String jid = contact.getUserId();
+                if (!(contact instanceof ServiceContact)) {
+                    jid += '/' + contact.getCurrentSubContact().resource;
+                }
+                if (contact instanceof ServiceContact) {
+                    statusView.setUserRole(contact.getCurrentSubContact().roleText);
+                }
+                getConnection().requestClientVersion(jid);
+            }
+        } catch (Exception ignored) {
+        }
+
+        statusView.init(this, contact);
+        updateStatusView(statusView, contact);
+        statusView.showIt();
+    }
+
+    public void saveAnnotations(String xml) {
+        getConnection().requestRawXml(xml);
+    }
+
+    private Forms enterData = null;
+    private ServiceContact enterConf = null;
+    private static final int NICK = 0;
+    private static final int PASSWORD = 1;
+    private static final int AUTOJOIN = 2;
+    private static final int IS_PRESENCES = 3;
+
+    private Forms enterDataInvite = null;
+    private static final int JID_MESS_TO = 7;
+    private static final int JID_INVITE_TO = 8;
+    private static final int REASON_INVITE = 9;
+
+    public String onlineConference(Vector v) {
+        String list[] = new String[v.size()];
+        String items = "";
+        for (int i = 1; i < v.size(); ++i) {
+            Contact c = (Contact) v.elementAt(i);
+            if (c.isConference() && c.isOnline()) {
+                list[i] = c.getUserId();
+                items += "|" + list[i];
+            }
+        }
+        return items.substring(1);
+    }
+
+    public final void showInviteForm(BaseActivity activity, String jid) {
+        enterDataInvite = new Forms(R.string.invite, this, true);
+        enterDataInvite.addSelector(JID_MESS_TO, R.string.conference, onlineConference(getContactItems()), 1);
+        enterDataInvite.addTextField(JID_INVITE_TO, R.string.jid, jid);
+        enterDataInvite.addTextField(REASON_INVITE, R.string.reason, "");
+        enterDataInvite.show(activity);
+    }
+
+    void showOptionsForm(BaseActivity activity, ServiceContact c) {
+        enterConf = c;
+        enterData = new Forms(R.string.conference, this, false);
+        enterData.addTextField(NICK, R.string.nick, c.getMyName());
+        enterData.addTextField(PASSWORD, R.string.password, c.getPassword());
+        if (!c.isTemp()) {
+            enterData.addCheckBox(AUTOJOIN, R.string.autojoin, c.isAutoJoin());
+        }
+        enterData.addCheckBox(IS_PRESENCES, R.string.notice_presence, c.isPresence());
+        enterData.show(activity);
+        if (isConnected() && !Jid.isIrcConference(c.getUserId())) {
+            getConnection().requestConferenceInfo(c.getUserId());
+        }
+    }
+
+    void setConferenceInfo(String jid, String description) {
+        if (null != enterData && enterConf.getUserId().equals(jid)) {
+            enterData.addString(R.string.description, description);
+            enterData.invalidate(true);
+        }
+    }
+
+    public void formAction(Forms form, boolean apply) {
+        if (enterData == form) {
+            if (apply) {
+                if (enterConf.isConference()) {
+                    String oldNick = enterConf.getMyName();
+                    enterConf.setMyName(enterData.getTextFieldValue(NICK));
+                    enterConf.setAutoJoin(!enterConf.isTemp() && enterData.getCheckBoxValue(AUTOJOIN));
+                    enterConf.setPassword(enterData.getTextFieldValue(PASSWORD));
+                    enterConf.setPresencesFlag(enterData.getCheckBoxValue(IS_PRESENCES));
+
+                    if (isConnected()) {
+                        boolean needUpdate = !enterConf.isTemp();
+                        if (needUpdate) {
+                            getConnection().saveConferences();
+                        }
+                        if (enterConf.isOnline() && !oldNick.equals(enterConf.getMyName())) {
+                            join(enterConf);
+                        }
+                    }
+                }
+            }
+            enterData.back();
+            enterData = null;
+            enterConf = null;
+        }
+        if (enterDataInvite == form) {
+            if (apply) {
+                String[] onlineConferenceI = Util.explode(onlineConference(getContactItems()), '|');
+                getConnection().sendInvite(onlineConferenceI[enterDataInvite.getSelectorValue(JID_MESS_TO)], enterDataInvite.getTextFieldValue(JID_INVITE_TO), enterDataInvite.getTextFieldValue(REASON_INVITE));
+                Toast.makeText(SawimApplication.getContext(), R.string.invitation_sent, Toast.LENGTH_LONG).show();
+            }
+            enterDataInvite.back();
+            enterDataInvite = null;
+        }
+    }
+
+    public boolean isStreamManagementSupported() {
+        return SawimApplication.getInstance().getSession()
+                .isStreamManagementSupported(getUserId() + '/' + getResource());
+    }
 
     public final String getUserId() {
         return userid;
@@ -48,10 +876,6 @@ abstract public class Protocol {
 
     protected final void setUserId(String userId) {
         userid = userId;
-    }
-
-    public boolean isEmpty() {
-        return StringConvertor.isEmpty(userid);
     }
 
     public final String getNick() {
@@ -82,10 +906,6 @@ abstract public class Protocol {
         password = pass;
     }
 
-    protected String processUin(String uin) {
-        return uin;
-    }
-
     public final XStatusInfo getXStatusInfo() {
         return xstatusInfo;
     }
@@ -97,8 +917,6 @@ abstract public class Protocol {
         initStatusInfo();
         initStatus();
     }
-
-    protected abstract void initStatusInfo();
 
     public boolean hasVCardEditor() {
         return true;
@@ -193,18 +1011,6 @@ abstract public class Protocol {
         RosterHelper.getInstance().updateProgressBar();
     }
 
-    public void sendFile(FileTransfer transfer, String filename, String description) {
-    }
-
-    public void getAvatar(UserInfo userInfo) {
-    }
-
-    protected abstract void requestAuth(String userId);
-
-    protected abstract void grandAuth(String userId);
-
-    protected abstract void denyAuth(String userId);
-
     public final void requestAuth(Contact contact) {
         requestAuth(contact.getUserId());
         autoGrandAuth(contact.getUserId());
@@ -264,8 +1070,7 @@ abstract public class Protocol {
         Storage storage = new Storage(rmsName);
         storage.open();
         try {
-            byte[] buf;
-            buf = storage.getRecord(1);
+            byte[] buf = storage.getRecord(1);
             ByteArrayInputStream bais = new ByteArrayInputStream(buf);
             DataInputStream dis = new DataInputStream(bais);
             if (dis.readInt() != ROSTER_STORAGE_VERSION) {
@@ -329,22 +1134,6 @@ abstract public class Protocol {
         }
     }
 
-    protected Contact loadContact(DataInputStream dis) throws Exception {
-        String uin = dis.readUTF();
-        String name = dis.readUTF();
-        int groupId = dis.readInt();
-        byte booleanValues = dis.readByte();
-        Contact contact = createContact(uin, name);
-        contact.setGroupId(groupId);
-        contact.setBooleanValues(booleanValues);
-        if (isStreamManagementSupported()) {
-            contact.setStatus(dis.readByte(), dis.readUTF());
-            contact.setXStatus(dis.readByte(), dis.readUTF());
-            contact.setClient(dis.readByte(), null);
-        }
-        return contact;
-    }
-
     protected Group loadGroup(DataInputStream dis) throws Exception {
         int groupId = dis.readInt();
         String name = dis.readUTF();
@@ -361,45 +1150,21 @@ abstract public class Protocol {
         return new byte[0];
     }
 
-    protected void saveContact(DataOutputStream out, Contact contact) throws Exception {
-        out.writeByte(0);
-        out.writeUTF(contact.getUserId());
-        out.writeUTF(contact.getName());
-        out.writeInt(contact.getGroupId());
-        out.writeByte(contact.getBooleanValues());
-        if (isStreamManagementSupported()) {
-            out.writeByte(contact.getStatusIndex());
-            out.writeUTF(StringConvertor.notNull(contact.getStatusText()));
-            out.writeByte(contact.getXStatusIndex());
-            out.writeUTF(StringConvertor.notNull(contact.getXStatusText()));
-            out.writeByte(contact.clientIndex);
-        }
-    }
-
     protected void saveGroup(DataOutputStream out, Group group) throws Exception {
         out.writeInt(group.getId());
         out.writeUTF(group.getName());
         out.writeBoolean(group.isExpanded());
     }
 
-    protected void s_removeContact(Contact contact) {
-    }
-
-    protected void s_removedContact(Contact contact) {
-    }
-
     public final void removeContact(Contact contact) {
         if (contact.isTemp()) {
         } else if (isConnected()) {
-            s_removeContact(contact);
         } else {
             return;
         }
         removeLocalContact(contact);
         RosterHelper.getInstance().updateRoster();
     }
-
-    abstract protected void s_renameContact(Contact contact, String name);
 
     public final void renameContact(Contact contact, String name) {
         if (StringConvertor.isEmpty(name)) {
@@ -420,21 +1185,12 @@ abstract public class Protocol {
         needSave();
     }
 
-    abstract protected void s_moveContact(Contact contact, Group to);
-
     public final void moveContactTo(Contact contact, Group to) {
         s_moveContact(contact, to);
         cl_moveContact(contact, to);
     }
 
-    protected void s_addContact(Contact contact) {
-    }
-
-    protected void s_addedContact(Contact contact) {
-    }
-
     public final void addContact(Contact contact) {
-        s_addContact(contact);
         contact.setTempFlag(false);
         cl_addContact(contact);
         needSave();
@@ -445,15 +1201,10 @@ abstract public class Protocol {
         cl_addContact(contact);
     }
 
-    abstract protected void s_removeGroup(Group group);
-
     public final void removeGroup(Group group) {
-        s_removeGroup(group);
         cl_removeGroup(group);
         needSave();
     }
-
-    abstract protected void s_renameGroup(Group group, String name);
 
     public final void renameGroup(Group group, String name) {
         s_renameGroup(group, name);
@@ -462,43 +1213,10 @@ abstract public class Protocol {
         needSave();
     }
 
-    abstract protected void s_addGroup(Group group);
-
     public final void addGroup(Group group) {
-        s_addGroup(group);
         cl_addGroup(group);
         needSave();
     }
-
-    abstract public boolean isConnected();
-
-    public abstract void startConnection();
-
-    abstract protected void closeConnection();
-
-    protected void userCloseConnection() {
-    }
-
-    public void disconnect(boolean user) {
-        setConnectingProgress(-1);
-        if (user) {
-            userCloseConnection();
-        }
-        setStatusesOffline();
-        closeConnection();
-        RosterHelper.getInstance().updateBarProtocols();
-        RosterHelper.getInstance().updateProgressBar();
-        RosterHelper.getInstance().updateRoster();
-        SawimApplication.getInstance().updateConnectionState();
-        RosterHelper.getInstance().updateConnectionStatus();
-        if (user) {
-            DebugLog.println("disconnect " + getUserId());
-        }
-    }
-
-    abstract public Group createGroup(String name);
-
-    abstract protected Contact createContact(String uin, String name);
 
     public final Contact createTempContact(String uin, String name) {
         Contact contact = getItemByUIN(uin);
@@ -515,8 +1233,6 @@ abstract public class Protocol {
     public final Contact createTempContact(String uin) {
         return createTempContact(uin, uin);
     }
-
-    abstract protected void s_searchUsers(Search cont);
 
     public final void searchUsers(Search cont) {
         s_searchUsers(cont);
@@ -566,20 +1282,6 @@ abstract public class Protocol {
         }
     }
 
-    protected void setStatusesOffline() {
-        for (int i = roster.getContactItems().size() - 1; i >= 0; --i) {
-            Contact c = roster.getContactItems().elementAt(i);
-            c.setOfflineStatus();
-        }
-        synchronized (rosterLockObject) {
-            if (RosterHelper.getInstance().useGroups) {
-                for (int i = roster.getGroupItems().size() - 1; i >= 0; --i) {
-                    (roster.getGroupItems().elementAt(i)).updateGroupData();
-                }
-            }
-        }
-    }
-
     public final Contact getItemByUIN(String uid) {
         return roster.getItemByUID(uid);
     }
@@ -603,8 +1305,6 @@ abstract public class Protocol {
     public final StatusInfo getStatusInfo() {
         return info;
     }
-
-    protected abstract void s_updateOnlineStatus();
 
     public final void setOnlineStatus(int statusIndex, String msg) {
         setOnlineStatus(statusIndex, msg, true);
@@ -635,8 +1335,6 @@ abstract public class Protocol {
             connect();
         }
     }
-
-    protected abstract void s_updateXStatus();
 
     public final void setXStatus(int xstatus, String title, String desc) {
         profile.xstatusIndex = (byte) xstatus;
@@ -833,7 +1531,7 @@ abstract public class Protocol {
             boolean isPersonal = contact.isSingleUserContact();
             boolean isBlog = isBlogBot(contact.getUserId());
             boolean isMention = false;
-            if (!isPersonal && !message.isOffline() && (contact instanceof XmppContact)) {
+            if (!isPersonal && !message.isOffline()) {
                 String msg = message.getText();
                 String myName = contact.getMyName();
                 isPersonal = msg.startsWith(myName)
@@ -863,10 +1561,6 @@ abstract public class Protocol {
             RosterHelper.getInstance().updateRoster(contact);
             RosterHelper.getInstance().updateBarProtocols();
         }
-    }
-
-    protected boolean isBlogBot(String userId) {
-        return false;
     }
 
     public final boolean isBot(Contact contact) {
@@ -940,23 +1634,15 @@ abstract public class Protocol {
     public final void dismiss() {
         disconnect(false);
         userCloseConnection();
-        ChatHistory.instance.unregisterChats(this);
+        ChatHistory.instance.unregisterChats();
         safeSave();
         profile = null;
         roster.setNull();
         roster = null;
     }
 
-    public void autoDenyAuth(String uin) {
-    }
-
-    public abstract void saveUserInfo(UserInfo info);
-
     public boolean isMeVisible(Contact to) {
         return true;
-    }
-
-    protected void s_sendTypingNotify(Contact to, boolean isTyping) {
     }
 
     public final void sendTypingNotify(Contact to, boolean isTyping) {
@@ -966,8 +1652,6 @@ abstract public class Protocol {
         }
     }
 
-    protected abstract void sendSomeMessage(PlainMessage msg);
-
     public final void sendMessage(Contact to, String msg, boolean addToChat) {
         msg = StringConvertor.trim(msg);
         if (StringConvertor.isEmpty(msg)) {
@@ -975,8 +1659,8 @@ abstract public class Protocol {
         }
         PlainMessage plainMsg = new PlainMessage(this, to, SawimApplication.getCurrentGmtTime(), msg);
         if (isConnected()) {
-            if (msg.startsWith("/") && !msg.startsWith("/me ") && !msg.startsWith("/wakeup") && (to instanceof XmppContact)) {
-                boolean cmdExecuted = ((XmppContact) to).execCommand(this, msg);
+            if (msg.startsWith("/") && !msg.startsWith("/me ") && !msg.startsWith("/wakeup")) {
+                boolean cmdExecuted = to.execCommand(this, msg);
                 if (!cmdExecuted) {
                     String text = JLocale.getString(R.string.jabber_command_not_found);
                     SystemNotice notice = new SystemNotice(this, SystemNotice.SYS_NOTICE_MESSAGE, to.getUserId(), text);
@@ -989,15 +1673,6 @@ abstract public class Protocol {
         if (addToChat) {
             getChat(to).addMyMessage(plainMsg);
         }
-    }
-
-    protected void doAction(BaseActivity activity, Contact contact, int cmd) {
-    }
-
-    public void showUserInfo(BaseActivity activity, Contact contact) {
-    }
-
-    public void showStatus(Contact contact) {
     }
 
     public final void setContactStatus(Contact contact, byte status, String text) {
@@ -1016,14 +1691,6 @@ abstract public class Protocol {
         }
     }
 
-    public String getUniqueUserId(Contact contact) {
-        return contact.getUserId();
-    }
-
-    public String getUniqueUserId(String userId) {
-        return userId;
-    }
-
     public final Chat getChat(Contact contact) {
         Chat chat = ChatHistory.instance.getChat(contact);
         if (null == chat) {
@@ -1035,9 +1702,5 @@ abstract public class Protocol {
             ChatHistory.instance.registerChat(chat);
         }
         return chat;
-    }
-
-    public boolean isStreamManagementSupported() {
-        return false;
     }
 }

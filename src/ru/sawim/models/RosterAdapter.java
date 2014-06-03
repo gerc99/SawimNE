@@ -163,7 +163,7 @@ public class RosterAdapter extends BaseAdapter {
             }
         }
 
-        BitmapDrawable messIcon = ChatHistory.instance.getUnreadMessageIcon(o.getProtocol());
+        BitmapDrawable messIcon = ChatHistory.instance.getUnreadMessageIcon();
         if (!o.isExpanded() && messIcon != null)
             rosterItemView.itemFourthImage = messIcon.getBitmap();
     }
@@ -327,8 +327,7 @@ public class RosterAdapter extends BaseAdapter {
                 RosterItemView rosterItemView = (RosterItemView) convertView;
                 rosterItemView.setNull();
                 if (o != null) {
-                    final TreeNode treeNode = (TreeNode) o;
-                    populateFromContact(rosterItemView, RosterHelper.getInstance(), RosterHelper.getInstance().getProtocol(), (Contact) treeNode);
+                    populateFromContact(rosterItemView, RosterHelper.getInstance(), RosterHelper.getInstance().getProtocol(), (Contact) o);
                     setShowDivider(rosterItemView, true);
                 }
                 rosterItemView.repaint();

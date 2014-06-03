@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import protocol.Contact;
 import protocol.Group;
 import protocol.Protocol;
+import protocol.Protocol;
 import ru.sawim.R;
 import ru.sawim.activities.BaseActivity;
 import ru.sawim.comm.JLocale;
@@ -91,11 +92,7 @@ public final class ManageContactListForm implements FormListener, TextBoxView.Te
                 && ((null == group) || group.hasMode(Group.MODE_NEW_CONTACTS));
         if (canAdd) {
             menu.add(R.string.add_user, ADD_USER);
-            if ((protocol instanceof protocol.xmpp.Xmpp)) {
-                menu.add(R.string.add_conference, ADD_CONFERENCE);
-            } else {
-                menu.add(R.string.search_user, SEARCH_USER);
-            }
+            menu.add(R.string.add_conference, ADD_CONFERENCE);
         }
         menu.add(R.string.add_group, ADD_GROUP);
         if (null != group) {

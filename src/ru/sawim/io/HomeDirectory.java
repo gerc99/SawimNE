@@ -1,6 +1,6 @@
 package ru.sawim.io;
 
-import protocol.net.TcpSocket;
+import protocol.TcpSocket;
 import ru.sawim.SawimException;
 import ru.sawim.comm.StringConvertor;
 

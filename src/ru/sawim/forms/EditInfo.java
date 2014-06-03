@@ -1,6 +1,7 @@
 package ru.sawim.forms;
 
 import protocol.Protocol;
+import protocol.Protocol;
 import ru.sawim.R;
 import ru.sawim.activities.BaseActivity;
 import ru.sawim.models.form.FormListener;
@@ -35,32 +36,22 @@ public class EditInfo implements FormListener {
     }
 
     public EditInfo init() {
-        final boolean isXmpp = (protocol instanceof protocol.xmpp.Xmpp);
         form = new Forms(R.string.editform, this, false);
 
         form.addTextField(_NickNameItem, R.string.nick, userInfo.nick);
         form.addTextField(_FirstNameItem, R.string.firstname, userInfo.firstName);
         form.addTextField(_LastNameItem, R.string.lastname, userInfo.lastName);
 
-        if (!isXmpp) {
-            int[] sexItem = {-1, R.string.female, R.string.male};
-            form.addSelector(_SexItem, R.string.gender, sexItem, userInfo.gender);
-        }
-
         form.addTextField(_BdayItem, R.string.birth_day, userInfo.birthDay);
 
-        if (isXmpp) {
-            form.addTextField(_EmailItem, R.string.email, userInfo.email);
-            form.addTextField(_CellPhoneItem, R.string.cell_phone, userInfo.cellPhone);
-        }
+        form.addTextField(_EmailItem, R.string.email, userInfo.email);
+        form.addTextField(_CellPhoneItem, R.string.cell_phone, userInfo.cellPhone);
 
         form.addTextField(_HomePageItem, R.string.home_page, userInfo.homePage);
 
         form.addHeader(R.string.home_info);
 
-        if (isXmpp) {
-            form.addTextField(_AddrItem, R.string.addr, userInfo.homeAddress);
-        }
+        form.addTextField(_AddrItem, R.string.addr, userInfo.homeAddress);
 
         form.addTextField(_CityItem, R.string.city, userInfo.homeCity);
         form.addTextField(_StateItem, R.string.state, userInfo.homeState);
@@ -70,10 +61,8 @@ public class EditInfo implements FormListener {
         form.addTextField(_WorkDepartmentItem, R.string.depart, userInfo.workDepartment);
         form.addTextField(_WorkPositionItem, R.string.position, userInfo.workPosition);
 
-        if (isXmpp) {
-            form.addTextField(_WorkPhoneItem, R.string.phone, userInfo.workPhone);
-            form.addTextField(_AboutItem, R.string.notes, userInfo.about);
-        }
+        form.addTextField(_WorkPhoneItem, R.string.phone, userInfo.workPhone);
+        form.addTextField(_AboutItem, R.string.notes, userInfo.about);
 
         return this;
     }
@@ -95,24 +84,16 @@ public class EditInfo implements FormListener {
             destroy();
 
         } else {
-            boolean isXmpp = (protocol instanceof protocol.xmpp.Xmpp);
             userInfo.nick = form.getTextFieldValue(_NickNameItem);
             userInfo.birthDay = form.getTextFieldValue(_BdayItem);
-            if (isXmpp) {
-                userInfo.email = form.getTextFieldValue(_EmailItem);
-                userInfo.cellPhone = form.getTextFieldValue(_CellPhoneItem);
-            }
+            userInfo.email = form.getTextFieldValue(_EmailItem);
+            userInfo.cellPhone = form.getTextFieldValue(_CellPhoneItem);
 
             userInfo.firstName = form.getTextFieldValue(_FirstNameItem);
             userInfo.lastName = form.getTextFieldValue(_LastNameItem);
-            if (!isXmpp) {
-                userInfo.gender = (byte) form.getSelectorValue(_SexItem);
-            }
+            userInfo.gender = (byte) form.getSelectorValue(_SexItem);
             userInfo.homePage = form.getTextFieldValue(_HomePageItem);
-
-            if (isXmpp) {
-                userInfo.homeAddress = form.getTextFieldValue(_AddrItem);
-            }
+            userInfo.homeAddress = form.getTextFieldValue(_AddrItem);
 
             userInfo.homeCity = form.getTextFieldValue(_CityItem);
             userInfo.homeState = form.getTextFieldValue(_StateItem);
@@ -121,10 +102,8 @@ public class EditInfo implements FormListener {
             userInfo.workDepartment = form.getTextFieldValue(_WorkDepartmentItem);
             userInfo.workPosition = form.getTextFieldValue(_WorkPositionItem);
 
-            if (isXmpp) {
-                userInfo.workPhone = form.getTextFieldValue(_WorkPhoneItem);
-                userInfo.about = form.getTextFieldValue(_AboutItem);
-            }
+            userInfo.workPhone = form.getTextFieldValue(_WorkPhoneItem);
+            userInfo.about = form.getTextFieldValue(_AboutItem);
 
             userInfo.updateProfileView();
             protocol.saveUserInfo(userInfo);

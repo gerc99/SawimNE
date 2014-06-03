@@ -1,4 +1,4 @@
-package protocol.net;
+package protocol;
 
 import android.net.SSLCertificateSocketFactory;
 import ru.sawim.SawimException;

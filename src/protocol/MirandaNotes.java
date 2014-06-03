@@ -1,4 +1,4 @@
-package protocol.xmpp;
+package protocol;
 
 import android.support.v4.view.MenuItemCompat;
 import android.view.ContextMenu;
@@ -28,13 +28,13 @@ public final class MirandaNotes {
     private static final int MENU_COPY = 3;
     private static final int MENU_COPY_ALL = 4;
 
-    private Xmpp xmpp;
+    private Protocol xmpp;
     private Vector notes = new Vector();
 
     private VirtualList screen;
     private VirtualListModel model;
 
-    void init(Xmpp protocol) {
+    void init(Protocol protocol) {
         screen = VirtualList.getInstance();
         model = new VirtualListModel();
         screen.setCaption(JLocale.getString(R.string.notes));

@@ -1,6 +1,6 @@
 
 
-package protocol.xmpp;
+package protocol;
 
 
 import ru.sawim.comm.Util;
@@ -22,9 +22,9 @@ public class IBBFileTransfer {
         this.fileName = name;
         this.fileDesc = desc;
         this.ft = ft;
-        XmppContact c = (XmppContact) ft.getReceiver();
+        Contact c = ft.getReceiver();
         this.to = c.getUserId();
-        if (!(c instanceof XmppServiceContact)) {
+        if (!(c instanceof ServiceContact)) {
             String resource = c.getCurrentSubContact().resource;
             this.to += '/' + resource;
         }

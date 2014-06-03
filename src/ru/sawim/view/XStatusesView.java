@@ -12,7 +12,7 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import protocol.Protocol;
-import protocol.xmpp.Xmpp;
+import protocol.Protocol;
 import ru.sawim.R;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.io.Storage;
@@ -85,7 +85,7 @@ public class XStatusesView extends DialogFragment {
 
     private void load() {
         try {
-            Storage storage = new Storage(getProtocolId() + "-xstatus");
+            Storage storage = new Storage("jabber-xstatus");
             storage.open();
             storage.loadXStatuses(xst_titles, xst_descs);
             storage.close();
@@ -93,19 +93,12 @@ public class XStatusesView extends DialogFragment {
         }
     }
 
-    private String getProtocolId() {
-        if (protocol instanceof Xmpp) {
-            return "jabber";
-        }
-        return "";
-    }
-
     private final void setXStatus(int xstatus, String title, String desc) {
         if (0 <= xstatus) {
             xst_titles[xstatus] = StringConvertor.notNull(title);
             xst_descs[xstatus] = StringConvertor.notNull(desc);
             try {
-                Storage storage = new Storage(getProtocolId() + "-xstatus");
+                Storage storage = new Storage("jabber-xstatus");
                 storage.open();
                 storage.saveXStatuses(xst_titles, xst_descs);
                 storage.close();

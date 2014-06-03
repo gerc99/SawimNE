@@ -2,7 +2,7 @@
 package ru.sawim.io;
 
 import org.microemu.util.FileSystemFileConnection;
-import protocol.net.TcpSocket;
+import protocol.TcpSocket;
 import ru.sawim.SawimException;
 
 import java.io.ByteArrayInputStream;

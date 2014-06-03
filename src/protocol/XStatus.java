@@ -1,7 +1,7 @@
 
 
 
-package protocol.xmpp;
+package protocol;
 
 import protocol.XStatusInfo;
 import ru.sawim.R;
@@ -9,7 +9,7 @@ import ru.sawim.comm.StringConvertor;
 import ru.sawim.icons.ImageList;
 
 
-public class XmppXStatus {
+public class XStatus {
     private XStatusInfo info;
 
     public static final int TYPE_X = 0x1000;
@@ -100,7 +100,7 @@ public class XmppXStatus {
             R.string.xstatus_rambler_journal
     };
 
-    public XmppXStatus() {
+    public XStatus() {
         ImageList xstatusIcons = ImageList.createImageList("/jabber-xstatus.png");
         info = new XStatusInfo(xstatusIcons, xstatusNames);
     }

@@ -1,10 +1,9 @@
-package protocol.xmpp;
+package protocol;
 
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
-import protocol.Contact;
 import ru.sawim.R;
 import ru.sawim.Scheme;
 import ru.sawim.activities.BaseActivity;
@@ -25,7 +24,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
     private boolean isConferenceList = false;
     private int totalCount = 0;
 
-    private Xmpp xmpp;
+    private Protocol xmpp;
     private String serverJid;
     private TextBoxView serverBox;
     private TextBoxView searchBox;
@@ -50,7 +49,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
         searchBox = new TextBoxView();
     }
 
-    public void init(Xmpp protocol) {
+    public void init(Protocol protocol) {
         isMucUsers(false);
         screen = VirtualList.getInstance();
         xmpp = protocol;
@@ -65,7 +64,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
                 if (Jid.isConference(jid)) {
                     Contact c = xmpp.createTempContact(jid);
                     xmpp.addContact(c);
-                    xmpp.getConnection().sendPresence((XmppServiceContact) c);
+                    xmpp.getConnection().sendPresence((ServiceContact) c);
                     Toast.makeText(activity, R.string.added, Toast.LENGTH_SHORT).show();
                 } else if (Jid.isKnownGate(jid)) {
                     xmpp.getConnection().register(jid);
@@ -130,7 +129,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
 
                         case COMMAND_ADHOC:
                             Contact contact = xmpp.createTempContact(jid);
-                            AdHoc adhoc = new AdHoc(xmpp, (XmppContact) contact);
+                            AdHoc adhoc = new AdHoc(xmpp, contact);
                             adhoc.show(activity);
                             break;
                     }
@@ -279,7 +278,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
         Vector all = xmpp.getContactItems();
         boolean notEmpty = false;
         for (int i = 0; i < all.size(); ++i) {
-            XmppContact contact = (XmppContact) all.elementAt(i);
+            Contact contact = (Contact) all.elementAt(i);
             if (contact.isConference()) {
                 addUnique(contact.getName(), contact.getUserId());
                 notEmpty = true;

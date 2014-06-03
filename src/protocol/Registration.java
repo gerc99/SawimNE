@@ -1,7 +1,5 @@
-package protocol.xmpp;
+package protocol;
 
-import protocol.Profile;
-import ru.sawim.Options;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.SawimException;
@@ -12,9 +10,9 @@ import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
 
 
-public class XmppRegistration implements Runnable, FormListener {
+public class Registration implements Runnable, FormListener {
     private XForm form;
-    private XmppConnection connection;
+    private Connection connection;
     private byte type;
     private String id;
 
@@ -40,7 +38,7 @@ public class XmppRegistration implements Runnable, FormListener {
     }
 
     private String getServer(String domain) {
-        protocol.net.SrvResolver r = new protocol.net.SrvResolver();
+        SrvResolver r = new SrvResolver();
         String server = r.getXmpp(domain);
         r.close();
         return StringConvertor.isEmpty(server) ? (domain + ":5222") : server;
@@ -59,7 +57,7 @@ public class XmppRegistration implements Runnable, FormListener {
     public void run() {
         String error = null;
         try {
-            connection = new XmppConnection();
+            connection = new Connection();
             String[] xmppHost = Util.explode(getServer(domain), ':');
             XmlNode xform = connection.newAccountConnect(domain, xmppHost[0], Integer.parseInt(xmppHost[1]));
             id = "reg1";

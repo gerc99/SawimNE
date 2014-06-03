@@ -20,18 +20,14 @@ import android.support.v7.app.ActionBar;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.*;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
-import protocol.Contact;
-import protocol.ContactMenu;
+import protocol.*;
 import protocol.Protocol;
-import protocol.StatusInfo;
-import protocol.xmpp.Jid;
-import protocol.xmpp.MirandaNotes;
-import protocol.xmpp.Xmpp;
-import protocol.xmpp.XmppServiceContact;
+import protocol.ServiceContact;
 import ru.sawim.*;
 import ru.sawim.activities.BaseActivity;
 import ru.sawim.activities.SawimActivity;
@@ -649,10 +645,10 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
             nickList.setVisibility(View.VISIBLE);
         else if (drawerLayout.isDrawerOpen(nickList))
             drawerLayout.closeDrawer(nickList);
-        boolean isConference = contact instanceof XmppServiceContact && contact.isConference();
+        boolean isConference = contact instanceof ServiceContact && contact.isConference();
         if (isConference) {
             mucUsersView = new MucUsersView();
-            mucUsersView.init(protocol, (XmppServiceContact) contact);
+            mucUsersView.init(protocol, (ServiceContact) contact);
             mucUsersView.show(this, nickList);
         } else {
             mucUsersView = null;
@@ -768,7 +764,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
                     return;
                 }
                 if (mucUsersView != null) {
-                    XmppServiceContact xmppServiceContact = ((XmppServiceContact) contact);
+                    ServiceContact xmppServiceContact = ((ServiceContact) contact);
                     if (xmppServiceContact.getName().equals(mData.getNick())) return;
                     if (xmppServiceContact.getContact(mData.getNick()) == null) {
                         Toast.makeText(getActivity(), getString(R.string.contact_walked), Toast.LENGTH_LONG).show();
@@ -881,9 +877,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
             menu.add(Menu.FIRST, ContactMenu.COMMAND_INFO, 0, R.string.info);
             menu.add(Menu.FIRST, ContactMenu.COMMAND_STATUS, 0, R.string.user_statuses);
         }
-        if (protocol instanceof Xmpp) {
-            menu.add(Menu.FIRST, ContactMenu.ACTION_TO_NOTES, 0, R.string.add_to_notes);
-        }
+        menu.add(Menu.FIRST, ContactMenu.ACTION_TO_NOTES, 0, R.string.add_to_notes);
         if (!Options.getBoolean(Options.OPTION_HISTORY) && chat.hasHistory()) {
             menu.add(Menu.FIRST, ContactMenu.ACTION_ADD_TO_HISTORY, 0, R.string.add_to_history);
         }
@@ -922,9 +916,9 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
 
             case ContactMenu.COMMAND_PRIVATE:
                 String jid = Jid.realJidToSawimJid(contact.getUserId() + "/" + nick);
-                XmppServiceContact c = (XmppServiceContact) protocol.getItemByUIN(jid);
+                ServiceContact c = (ServiceContact) protocol.getItemByUIN(jid);
                 if (null == c) {
-                    c = (XmppServiceContact) protocol.createTempContact(jid);
+                    c = (ServiceContact) protocol.createTempContact(jid);
                     protocol.addTempContact(c);
                 }
                 pause(getCurrentChat());
@@ -933,10 +927,10 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
                 getActivity().supportInvalidateOptionsMenu();
                 break;
             case ContactMenu.COMMAND_INFO:
-                protocol.showUserInfo((BaseActivity) getActivity(), ((XmppServiceContact) contact).getPrivateContact(nick));
+                protocol.showUserInfo((BaseActivity) getActivity(), ((ServiceContact) contact).getPrivateContact(nick));
                 break;
             case ContactMenu.COMMAND_STATUS:
-                protocol.showStatus(((XmppServiceContact) contact).getPrivateContact(nick));
+                protocol.showStatus(((ServiceContact) contact).getPrivateContact(nick));
                 break;
 
             case ContactMenu.ACTION_ADD_TO_HISTORY:
@@ -944,7 +938,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
                 break;
 
             case ContactMenu.ACTION_TO_NOTES:
-                MirandaNotes notes = ((Xmpp) protocol).getMirandaNotes();
+                MirandaNotes notes = protocol.getMirandaNotes();
                 notes.showIt();
                 MirandaNotes.Note note = notes.addEmptyNote();
                 note.tags = md.getNick() + " " + md.strTime;

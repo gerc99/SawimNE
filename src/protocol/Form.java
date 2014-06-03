@@ -1,14 +1,17 @@
-package protocol.xmpp;
+package protocol;
 
+import protocol.XForm;
+import protocol.XmlNode;
+import protocol.Protocol;
 import ru.sawim.R;
 import ru.sawim.comm.Util;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
 import ru.sawim.roster.RosterHelper;
 
-final class XmppForm implements FormListener {
+final class Form implements FormListener {
     private XForm form;
-    private Xmpp xmpp;
+    private Protocol xmpp;
     private String jid;
     private String id;
 
@@ -18,7 +21,7 @@ final class XmppForm implements FormListener {
     public final static byte TYPE_NONE = 3;
     private byte type = TYPE_CAPTCHA;
 
-    public XmppForm(byte formType, Xmpp protocol, String resourceJid) {
+    public Form(byte formType, Protocol protocol, String resourceJid) {
         xmpp = protocol;
         jid = resourceJid;
         type = formType;

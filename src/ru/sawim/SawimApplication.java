@@ -10,7 +10,7 @@ import android.os.Message;
 import android.view.Surface;
 import android.view.WindowManager;
 import protocol.Protocol;
-import protocol.xmpp.XmppSession;
+import protocol.Session;
 import ru.sawim.chat.ChatHistory;
 import ru.sawim.io.FileSystem;
 import ru.sawim.io.HomeDirectory;
@@ -58,7 +58,7 @@ public class SawimApplication extends Application {
     public static SawimApplication instance;
     private final SawimServiceConnection serviceConnection = new SawimServiceConnection();
     private final NetworkStateReceiver networkStateReceiver = new NetworkStateReceiver();
-    private XmppSession xmppSession;
+    private Session session;
     public boolean isBindService = false;
 
     public static SawimApplication getInstance() {
@@ -87,7 +87,7 @@ public class SawimApplication extends Application {
         updateOptions();
         Updater.startUIUpdater();
         gmtOffset = TimeZone.getDefault().getOffset(System.currentTimeMillis()) / (1000 * 60 * 60);
-        xmppSession = new XmppSession();
+        session = new Session();
         try {
             gc();
             Emotions.instance.load();
@@ -105,8 +105,8 @@ public class SawimApplication extends Application {
         TextFormatter.init();
     }
 
-    public XmppSession getXmppSession() {
-        return xmppSession;
+    public Session getSession() {
+        return session;
     }
 
     private void startService() {

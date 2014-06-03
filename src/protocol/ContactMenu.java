@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.view.ContextMenu;
 import android.widget.Toast;
-import protocol.xmpp.Xmpp;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.activities.BaseActivity;
@@ -243,7 +242,7 @@ public class ContactMenu implements TextBoxView.TextBoxListener {
                     }
                 }
                 xml.append("</storage></query></iq>");
-                ((Xmpp) protocol).saveAnnotations(xml.toString());
+                protocol.saveAnnotations(xml.toString());
             }
             messageTextbox.back();
             return;

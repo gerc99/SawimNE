@@ -1,4 +1,4 @@
-package protocol.xmpp;
+package protocol;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -7,14 +7,13 @@ import android.util.Log;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
-import ru.sawim.Options;
 import ru.sawim.SawimApplication;
 import ru.sawim.SawimException;
 import ru.sawim.comm.StringConvertor;
 
 import java.io.IOException;
 
-public class XmppSession {
+public class Session {
     private static final String PREFS_NAME = "XMPP:Settings";
     private static final String SENDER_ID = "284764164645";
 
@@ -31,7 +30,7 @@ public class XmppSession {
     boolean isPlayServices;
     String regid;
 
-    public XmppSession() {
+    public Session() {
         Context context = SawimApplication.getContext();
         preferences = context.getSharedPreferences(PREFS_NAME, 0);
         editor = preferences.edit();
@@ -40,7 +39,7 @@ public class XmppSession {
         if (isPlayServices) {
             registerInBackground();
         } else {
-            Log.i(XmppSession.class.getSimpleName(), "No valid Google Play Services APK found.");
+            Log.i(Session.class.getSimpleName(), "No valid Google Play Services APK found.");
         }
     }
 
@@ -52,7 +51,7 @@ public class XmppSession {
     private boolean checkPlayServices(Context context) {
         int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(context);
         if (resultCode != ConnectionResult.SUCCESS) {
-            Log.i(XmppSession.class.getSimpleName(), "This device is not supported.");
+            Log.i(Session.class.getSimpleName(), "This device is not supported.");
             return false;
         }
         return true;
@@ -79,13 +78,13 @@ public class XmppSession {
                     // Require the user to click a button again, or perform
                     // exponential back-off.
                 }
-                Log.i(XmppSession.class.getSimpleName(), msg);
+                Log.i(Session.class.getSimpleName(), msg);
                 return msg;
             }
         }.execute(null, null, null);
     }
 
-    public void enable(final XmppConnection connection) {
+    public void enable(final Connection connection) {
         if (connection == null) return;
         new Thread(new Runnable() {
             @Override
@@ -98,13 +97,13 @@ public class XmppSession {
         }, "PushEnable").start();
     }
 
-    public void enableRebind(final XmppConnection connection) {
+    public void enableRebind(final Connection connection) {
         if (connection == null) return;
         new Thread(new Runnable() {
             @Override
             public void run() {
                 if (connection.rebindSupported) {
-                    Log.i(XmppSession.class.getSimpleName(), "enableRebind regid = " + regid);
+                    Log.i(Session.class.getSimpleName(), "enableRebind regid = " + regid);
                     if (!isPlayServices) {
                         connection.putPacketIntoQueue("<iq type='set' id='p1:rebind'>" +
                                 "<push xmlns='p1:push'><keepalive max='120'/><session duration='1440'/>"+
@@ -123,13 +122,13 @@ public class XmppSession {
         }, "EnableRebind").start();
     }
 
-    public void pushRegister(final XmppConnection connection) {
+    public void pushRegister(final Connection connection) {
         if (connection == null) return;
         enable(connection);
         enableRebind(connection);
     }
 
-    public void pushUnregister(final XmppConnection connection) {
+    public void pushUnregister(final Connection connection) {
         if (connection == null) return;
         new Thread(new Runnable() {
             @Override
@@ -143,7 +142,7 @@ public class XmppSession {
         }, "PushUnregister").start();
     }
 
-    public void clear(final XmppConnection connection) {
+    public void clear(final Connection connection) {
         if (connection == null) {
             return;
         }
@@ -163,7 +162,7 @@ public class XmppSession {
         Log.d("sawim-session", "Clear session for " + accountId);
     }
 
-    public void save(XmppConnection connection) {
+    public void save(Connection connection) {
         String accountId = connection.fullJid_;
 
         editor.putBoolean(REBIND_ENABLED + accountId, connection.rebindEnabled);
@@ -183,7 +182,7 @@ public class XmppSession {
         Log.d("sawim-session", "rebindSessionId = " + connection.rebindSessionId);
     }
 
-    public void load(XmppConnection connection) {
+    public void load(Connection connection) {
         String accountId = connection.fullJid_;
 
         connection.rebindEnabled = preferences.getBoolean(REBIND_ENABLED + accountId, false);

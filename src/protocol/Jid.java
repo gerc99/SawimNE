@@ -1,4 +1,4 @@
-package protocol.xmpp;
+package protocol;
 
 
 import java.util.regex.Matcher;

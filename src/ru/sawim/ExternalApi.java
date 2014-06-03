@@ -13,7 +13,7 @@ import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
-import protocol.net.TcpSocket;
+import protocol.TcpSocket;
 import ru.sawim.activities.BaseActivity;
 import ru.sawim.io.FileBrowserListener;
 import ru.sawim.modules.DebugLog;

@@ -6,7 +6,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 import protocol.Contact;
 import protocol.Protocol;
-import protocol.xmpp.XmppContact;
+import protocol.Contact;
 import ru.sawim.Options;
 import ru.sawim.R;
 import ru.sawim.activities.BaseActivity;
@@ -176,8 +176,7 @@ public final class Answerer implements FormListener {
 
             if (contact.isConference()) {
                 if (msgOfConf.equalsIgnoreCase(getItemQuestion)) {
-                    XmppContact toContact = (XmppContact) contact;
-                    protocol.sendMessage(toContact, message.getName() + ru.sawim.chat.Chat.ADDRESS + getItemAnswer, true);
+                    protocol.sendMessage(contact, message.getName() + ru.sawim.chat.Chat.ADDRESS + getItemAnswer, true);
                 }
             } else {
                 if (msg.equalsIgnoreCase(getItemQuestion)) {

@@ -6,10 +6,9 @@ import android.os.Handler;
 import android.os.Looper;
 import android.widget.Toast;
 import protocol.*;
-import protocol.xmpp.AdHoc;
-import protocol.xmpp.Jid;
-import protocol.xmpp.Xmpp;
-import protocol.xmpp.XmppContact;
+import protocol.AdHoc;
+import protocol.Jid;
+import protocol.Protocol;
 import ru.sawim.Options;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
@@ -68,11 +67,6 @@ public final class RosterHelper {
         if (null != profile) {
             addProtocol(profile, true);
         }
-        if (null != protocol) {
-            SawimApplication.getInstance().setStatus(protocol, StatusInfo.STATUS_OFFLINE, "");
-            protocol.needSave();
-            protocol.dismiss();
-        }
     }
 
     public void setCurrentProtocol() {
@@ -92,7 +86,7 @@ public final class RosterHelper {
     }
 
     private void addProtocol(Profile account, boolean load) {
-        Protocol protocol = new Xmpp();
+        Protocol protocol = new Protocol();
         protocol.setProfile(account);
         protocol.init();
         if (load) {
@@ -425,14 +419,10 @@ public final class RosterHelper {
                 //menu.add(R.string.send_sms, MENU_SEND_SMS);
             }
             if (p.isConnected()) {
-                if (p instanceof Xmpp) {
-                    menu.add(R.string.service_discovery, MENU_DISCO);
-                    menu.add(R.string.account_settings, MENU_ADHOC);
-                }
+                menu.add(R.string.service_discovery, MENU_DISCO);
+                menu.add(R.string.account_settings, MENU_ADHOC);
                 menu.add(R.string.manage_contact_list, MENU_GROUPS);
-                if (p instanceof Xmpp) {
-                    menu.add(R.string.notes, MENU_NOTES);
-                }
+                menu.add(R.string.notes, MENU_NOTES);
                 if (p.hasVCardEditor())
                     menu.add(R.string.myself, MENU_MYSELF);
             }
@@ -468,16 +458,16 @@ public final class RosterHelper {
 
                 return true;
             case RosterHelper.MENU_DISCO:
-                ((Xmpp) p).getServiceDiscovery().showIt();
+                p.getServiceDiscovery().showIt();
                 return true;
             case RosterHelper.MENU_ADHOC:
                 String serverAddress = Jid.getDomain(p.getUserId());
                 Contact serverContact = p.createTempContact(serverAddress);
-                AdHoc adhoc = new AdHoc((Xmpp) p, (XmppContact) serverContact);
+                AdHoc adhoc = new AdHoc(p, serverContact);
                 adhoc.show(activity);
                 return true;
             case RosterHelper.MENU_NOTES:
-                ((Xmpp) p).getMirandaNotes().showIt();
+                p.getMirandaNotes().showIt();
                 return true;
             case RosterHelper.MENU_GROUPS:
                 new ManageContactListForm(p).showMenu(activity);

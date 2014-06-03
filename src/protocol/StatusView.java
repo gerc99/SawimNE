@@ -2,7 +2,6 @@ package protocol;
 
 import android.view.ContextMenu;
 import android.view.Menu;
-import protocol.xmpp.XmppServiceContact;
 import ru.sawim.Clipboard;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
@@ -56,7 +55,7 @@ public final class StatusView {
         if (!contact.isSingleUserContact()) {
             return;
         }
-        if (contact instanceof XmppServiceContact) {
+        if (contact instanceof ServiceContact) {
             return;
         }
         long signonTime = contact.chaingingStatusTime;

@@ -1,4 +1,4 @@
-package protocol.xmpp;
+package protocol;
 
 import ru.sawim.SawimException;
 import ru.sawim.comm.StringConvertor;

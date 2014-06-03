@@ -7,9 +7,8 @@
  * and open the template in the editor.
  */
 
-package protocol.xmpp;
+package protocol;
 
-import protocol.net.TcpSocket;
 import ru.sawim.SawimException;
 import ru.sawim.modules.DebugLog;
 import ru.sawim.modules.zlib.ZLibInputStream;

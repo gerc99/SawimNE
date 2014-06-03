@@ -1,5 +1,6 @@
-package protocol.xmpp;
+package protocol;
 
+import protocol.XmlNode;
 import ru.sawim.modules.search.UserInfo;
 
 public class AvatarLoader implements Runnable {

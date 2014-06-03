@@ -5,9 +5,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.app.ActionBarActivity;
 import protocol.Contact;
+import protocol.Jid;
 import protocol.Protocol;
-import protocol.xmpp.Jid;
-import protocol.xmpp.Xmpp;
 import ru.sawim.R;
 import ru.sawim.roster.RosterHelper;
 
@@ -59,7 +58,7 @@ public class OpenUriActivity extends ActionBarActivity {
             jid = path.substring(0, path.indexOf('?'));
         }
         ru.sawim.modules.DebugLog.println("open xmpp " + path + " " + jid);
-        Xmpp xmpp = getFirstXmpp();
+        Protocol xmpp = RosterHelper.getInstance().getProtocol();
         if (null == xmpp) {
             alert();
             return;
@@ -77,10 +76,6 @@ public class OpenUriActivity extends ActionBarActivity {
         } catch (Exception e) {
             ru.sawim.modules.DebugLog.panic("uri", e);
         }
-    }
-
-    private Xmpp getFirstXmpp() {
-        return (Xmpp) RosterHelper.getInstance().getProtocol();
     }
 
     private void alert() {

@@ -1,11 +1,11 @@
-package protocol.xmpp;
+package protocol;
 
 import protocol.ClientInfo;
 import ru.sawim.comm.Config;
 import ru.sawim.icons.ImageList;
 
 
-public final class XmppClient {
+public final class Client {
     private static final ImageList clientIcons = ImageList.createImageList("/jabber-clients.png");
     private static final String[] clientCaps;
     private static final String[] clientNames;

@@ -1,4 +1,4 @@
-package protocol.xmpp;
+package protocol;
 
 import android.graphics.Bitmap;
 import ru.sawim.R;
@@ -270,7 +270,7 @@ final class XForm {
             form.addPasswordField(num, label, value);
 
         } else if (S_BOOLEAN.equals(type)) {
-            form.addCheckBox(num, label, XmppConnection.isTrue(value));
+            form.addCheckBox(num, label, Connection.isTrue(value));
 
         } else if (S_JID_SINGLE.equals(type)) {
             form.addTextField(num, label, value);

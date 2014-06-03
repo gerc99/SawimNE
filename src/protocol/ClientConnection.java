@@ -1,4 +1,4 @@
-package protocol.net;
+package protocol;
 
 import protocol.Protocol;
 import ru.sawim.SawimApplication;

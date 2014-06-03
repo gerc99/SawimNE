@@ -1,11 +1,7 @@
-package protocol.xmpp;
+package protocol;
 
 import android.view.ContextMenu;
 import android.view.Menu;
-import protocol.Contact;
-import protocol.ContactMenu;
-import protocol.Protocol;
-import protocol.StatusInfo;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.SawimResources;
@@ -19,7 +15,7 @@ import ru.sawim.view.menu.MyMenu;
 
 import java.util.Vector;
 
-public class XmppServiceContact extends XmppContact {
+public class ServiceContact extends Contact {
 
     public static final byte AFFILIATION_NONE = (byte) 0;
     public static final byte AFFILIATION_MEMBER = (byte) 1;
@@ -38,7 +34,7 @@ public class XmppServiceContact extends XmppContact {
     private String myNick;
     private String baseMyNick;
 
-    public XmppServiceContact(String jid, String name) {
+    public ServiceContact(String jid, String name) {
         super(jid, name);
 
         isGate = Jid.isGate(jid);
@@ -144,21 +140,21 @@ public class XmppServiceContact extends XmppContact {
         RosterHelper.getInstance().setPresencesFlag(getUserId(), flag);
     }
 
-    public void addPresence(Xmpp xmpp, String nick, String text) {
+    public void addPresence(Protocol xmpp, String nick, String text) {
         if (!isPresence())
             return;
         xmpp.getChat(this).addPresence(new SystemNotice(xmpp,
                 SystemNotice.SYS_NOTICE_PRESENCE, getUserId(), nick, text));
     }
 
-    void nickChainged(Xmpp xmpp, String oldNick, String newNick) {
+    void nickChainged(Protocol xmpp, String oldNick, String newNick) {
         if (isConference) {
             if (baseMyNick.equals(oldNick)) {
                 setMyName(newNick);
                 baseMyNick = newNick;
             }
             String jid = Jid.realJidToSawimJid(getUserId() + "/" + oldNick);
-            XmppServiceContact c = (XmppServiceContact) xmpp.getItemByUIN(jid);
+            ServiceContact c = (ServiceContact) xmpp.getItemByUIN(jid);
             if (null != c) {
                 c.nickChainged(xmpp, oldNick, newNick);
             }
@@ -169,12 +165,12 @@ public class XmppServiceContact extends XmppContact {
         }
     }
 
-    void nickOnline(Xmpp xmpp, String nick, String role_Xstatus) {
+    void nickOnline(Protocol xmpp, String nick, String role_Xstatus) {
         if (hasChat()) {
             xmpp.getChat(this).setWritable(canWrite());
         }
         if (myNick.equals(nick)) {
-            XmppContact.SubContact c = getContact(getMyName());
+            Contact.SubContact c = getContact(getMyName());
             setStatus(c.status, getStatusText());
             xmpp.addRejoin(getUserId());
         }
@@ -189,7 +185,7 @@ public class XmppServiceContact extends XmppContact {
         }
     }
 
-    void nickError(Xmpp xmpp, String nick, int code, String reasone) {
+    void nickError(Protocol xmpp, String nick, int code, String reasone) {
         boolean isConnected = (StatusInfo.STATUS_ONLINE == getStatusIndex());
         if (409 == code) {
             if (!StringConvertor.isEmpty(reasone)) {
@@ -215,7 +211,7 @@ public class XmppServiceContact extends XmppContact {
         }
     }
 
-    void nickOffline(Xmpp xmpp, String nick, int code, String reasone, String presenceUnavailable) {
+    void nickOffline(Protocol xmpp, String nick, int code, String reasone, String presenceUnavailable) {
         StringBuffer textPresence = new StringBuffer();
         textPresence.append(": ").append(xmpp.getStatusInfo().getName(StatusInfo.STATUS_OFFLINE)).append(" ").append(presenceUnavailable);
         if (getMyName().equals(nick)) {
@@ -283,10 +279,10 @@ public class XmppServiceContact extends XmppContact {
 
     public final String getDefaultGroupName() {
         if (isConference) {
-            return JLocale.getString(Xmpp.CONFERENCE_GROUP);
+            return JLocale.getString(Protocol.CONFERENCE_GROUP);
         }
         if (isGate) {
-            return JLocale.getString(Xmpp.GATE_GROUP);
+            return JLocale.getString(Protocol.GATE_GROUP);
         }
         return null;
     }
@@ -297,7 +293,7 @@ public class XmppServiceContact extends XmppContact {
     }
 
     public void setSubject(String subject) {
-        XmppContact.SubContact c = getContact(getMyName());
+        Contact.SubContact c = getContact(getMyName());
         if (isConference && isOnline()) {
             RosterHelper.getInstance().setSubject(getUserId(), subject);
             setStatus(c.status, subject);
@@ -308,12 +304,12 @@ public class XmppServiceContact extends XmppContact {
         return RosterHelper.getInstance().getSubject(getUserId());
     }
 
-    public XmppContact.SubContact getContact(String nick) {
+    public Contact.SubContact getContact(String nick) {
         if (StringConvertor.isEmpty(nick)) {
             return null;
         }
         for (int i = 0; i < subcontacts.size(); ++i) {
-            XmppContact.SubContact contact = subcontacts.elementAt(i);
+            Contact.SubContact contact = subcontacts.elementAt(i);
             if (nick.equals(contact.resource)) {
                 return contact;
             }
@@ -426,12 +422,12 @@ public class XmppServiceContact extends XmppContact {
         }
     }
 
-    public final void setPrivateContactStatus(XmppServiceContact conf) {
+    public final void setPrivateContactStatus(ServiceContact conf) {
         String nick = Jid.getResource(getUserId(), "");
         SubContact sc = (null == conf) ? null : conf.getExistSubContact(nick);
         if (null == sc) {
             setOfflineStatus();
-            setClient(XmppClient.CLIENT_NONE, null);
+            setClient(Client.CLIENT_NONE, null);
         } else {
             if (subcontacts.isEmpty()) {
                 subcontacts.addElement(sc);

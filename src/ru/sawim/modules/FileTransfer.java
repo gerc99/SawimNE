@@ -6,7 +6,7 @@ import android.util.Log;
 import org.json.JSONObject;
 import protocol.Contact;
 import protocol.Protocol;
-import protocol.net.TcpSocket;
+import protocol.TcpSocket;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.SawimException;
@@ -125,10 +125,8 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
         forms.addString(String.format("%s: %s", JLocale.getString(R.string.filename), filename), null);
         forms.addTextField(descriptionField, R.string.description, "");
         String items = "jimm.net.ru|www.jimm.net.ru|jimm.org";
-        if (cItem instanceof protocol.xmpp.XmppContact) {
-            if (cItem.isSingleUserContact() && cItem.isOnline()) {
-                items += "|ibb";
-            }
+        if (cItem.isSingleUserContact() && cItem.isOnline()) {
+            items += "|ibb";
         }
         forms.addSelector(transferMode, R.string.send_via, items, 0);
         forms.addString(String.format("%s: %d KB", JLocale.getString(R.string.size), getFileSize() / 1024), null);

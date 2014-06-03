@@ -7,8 +7,8 @@ import android.widget.Toast;
 import protocol.Contact;
 import protocol.Protocol;
 import protocol.StatusInfo;
-import protocol.net.TcpSocket;
-import protocol.xmpp.Xmpp;
+import protocol.XmlNode;
+import protocol.TcpSocket;
 import ru.sawim.Clipboard;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
@@ -38,7 +38,7 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
     private boolean searchResult = false;
     public byte[] avatar;
     public String status;
-    public protocol.xmpp.XmlNode vCard;
+    public XmlNode vCard;
     public final String realUin;
 
     public String localName, uin, nick, email, homeCity, firstName, lastName, homeState, homePhones, homeFax, homeAddress, cellPhone, homePage,
@@ -124,7 +124,6 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
         updateProfileView(profile);
         if ((null != uin) && !avatarIsLoaded) {
             avatarIsLoaded = true;
-            protocol.getAvatar(this);
         }
         profileView.setModel(profile);
         profileView.updateModel();
@@ -182,11 +181,9 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
             public void onCreateOptionsMenu(Menu menu) {
                 if (isEditable()) {
                     menu.add(Menu.FIRST, INFO_MENU_EDIT, 2, R.string.edit);
-                    if (protocol instanceof Xmpp) {
-                        menu.add(Menu.FIRST, INFO_MENU_TAKE_AVATAR, 2, R.string.take_photo);
-                        menu.add(Menu.FIRST, INFO_MENU_ADD_AVATAR, 2, R.string.add_from_fs);
-                        menu.add(Menu.FIRST, INFO_MENU_REMOVE_AVATAR, 2, R.string.remove);
-                    }
+                    menu.add(Menu.FIRST, INFO_MENU_TAKE_AVATAR, 2, R.string.take_photo);
+                    menu.add(Menu.FIRST, INFO_MENU_ADD_AVATAR, 2, R.string.add_from_fs);
+                    menu.add(Menu.FIRST, INFO_MENU_REMOVE_AVATAR, 2, R.string.remove);
                 }
             }
 
@@ -289,9 +286,7 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
     }
 
     public boolean isEditable() {
-        boolean isEditable = false;
-        isEditable |= (protocol instanceof Xmpp);
-        return isEditable && protocol.getUserId().equals(uin)
+        return protocol.getUserId().equals(uin)
                 && protocol.isConnected();
     }
 

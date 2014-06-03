@@ -8,7 +8,7 @@ import android.provider.Browser;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import protocol.Protocol;
-import protocol.xmpp.Jid;
+import protocol.Jid;
 import ru.sawim.Clipboard;
 import ru.sawim.R;
 import ru.sawim.activities.BaseActivity;

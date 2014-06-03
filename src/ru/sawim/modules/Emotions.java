@@ -2,7 +2,7 @@ package ru.sawim.modules;
 
 
 import android.util.Log;
-import protocol.net.TcpSocket;
+import protocol.TcpSocket;
 import ru.sawim.SawimApplication;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.icons.AniImageList;

@@ -1,7 +1,5 @@
 package protocol;
 
-import protocol.xmpp.XmppServiceContact;
-
 import java.util.Vector;
 
 
@@ -88,7 +86,7 @@ public class TemporaryRoster {
                     continue;
                 }
                 g = null;
-                if (o instanceof XmppServiceContact) {
+                if (o instanceof ServiceContact) {
                     if (o.isSingleUserContact()) {
                         continue;
                     }

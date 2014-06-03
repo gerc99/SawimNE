@@ -18,8 +18,9 @@
  ********************************************************************************
  Author: Vladimir Kryukov
  *******************************************************************************/
-package protocol.net;
+package protocol;
 
+import protocol.TcpSocket;
 import ru.sawim.comm.Util;
 
 import java.io.ByteArrayInputStream;

@@ -67,8 +67,8 @@ public class Options {
     }
 
     public static int getInt(int entriesResId, String key) {
-        String s = preferences.getString(key, "");
         String[] entries = SawimApplication.getContext().getResources().getStringArray(entriesResId);
+        String s = preferences.getString(key, entries[1]);
         for (int i = 0; i < entries.length; ++i) {
             if (entries[i].equals(s)) return i;
         }
@@ -189,7 +189,6 @@ public class Options {
                     p.statusIndex = StatusInfo.STATUS_OFFLINE;
                 }
             }
-            p.statusIndex = StatusInfo.STATUS_OFFLINE;
             bais.close();
         } catch (IOException ex) {
             DebugLog.panic("read account", ex);

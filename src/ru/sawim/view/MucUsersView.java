@@ -5,9 +5,7 @@ import android.content.DialogInterface;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import protocol.ContactMenu;
-import protocol.Protocol;
-import protocol.xmpp.*;
+import protocol.*;
 import ru.sawim.R;
 import ru.sawim.activities.BaseActivity;
 import ru.sawim.models.MucUsersAdapter;
@@ -27,24 +25,24 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
     private TextBoxView banTextbox;
     private TextBoxView kikTextbox;
     private Protocol protocol;
-    private XmppServiceContact xmppServiceContact;
+    private ServiceContact xmppServiceContact;
 
-    public void init(Protocol protocol, XmppServiceContact xmppServiceContact) {
+    public void init(Protocol protocol, ServiceContact xmppServiceContact) {
         this.protocol = protocol;
         this.xmppServiceContact = xmppServiceContact;
     }
 
     public void show(final ChatView chatView, ListView nickList) {
         final BaseActivity activity = (BaseActivity) chatView.getActivity();
-        usersAdapter.init((Xmpp) protocol, xmppServiceContact);
+        usersAdapter.init(protocol, xmppServiceContact);
         nickList.setAdapter(usersAdapter);
         nickList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 final Object o = usersAdapter.getItem(position);
                 chatView.hasBack();
-                if (o instanceof XmppContact.SubContact) {
-                    XmppContact.SubContact c = (XmppContact.SubContact) o;
+                if (o instanceof Contact.SubContact) {
+                    Contact.SubContact c = (Contact.SubContact) o;
                     chatView.insert(c.resource + ", ");
                     chatView.showKeyboard();
                 }
@@ -73,13 +71,13 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
                     public void onClick(DialogInterface dialog, int which) {
                         currMucNik = nick;
                         chatView.hasBack();
-                        XmppContact.SubContact subContact = xmppServiceContact.getExistSubContact(nick);
+                        Contact.SubContact subContact = xmppServiceContact.getExistSubContact(nick);
                         switch (menu.getItem(which).idItem) {
                             case ContactMenu.COMMAND_PRIVATE:
                                 String jid = Jid.realJidToSawimJid(xmppServiceContact.getUserId() + "/" + nick);
-                                XmppServiceContact c = (XmppServiceContact) protocol.getItemByUIN(jid);
+                                ServiceContact c = (ServiceContact) protocol.getItemByUIN(jid);
                                 if (null == c) {
-                                    c = (XmppServiceContact) protocol.createTempContact(jid);
+                                    c = (ServiceContact) protocol.createTempContact(jid);
                                     protocol.addTempContact(c);
                                 }
                                 chatView.pause(chatView.getCurrentChat());
@@ -95,12 +93,12 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
                                 break;
                             case ContactMenu.USER_INVITE:
                                 try {
-                                    ((Xmpp) protocol).showInviteForm(activity, xmppServiceContact.getUserId() + '/' + subContact.resource);
+                                    protocol.showInviteForm(activity, xmppServiceContact.getUserId() + '/' + subContact.resource);
                                 } catch (Exception e) {
                                 }
                                 break;
                             case ContactMenu.GATE_COMMANDS:
-                                AdHoc adhoc = new AdHoc((Xmpp) protocol, xmppServiceContact);
+                                AdHoc adhoc = new AdHoc(protocol, xmppServiceContact);
                                 adhoc.setResource(subContact.resource);
                                 adhoc.show(activity);
                                 break;
@@ -128,45 +126,45 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
         int myRole = usersAdapter.getRole(xmppServiceContact.getMyName());
         final int role = usersAdapter.getRole(nick);
         final int affiliation = usersAdapter.getAffiliation(nick);
-        if (myAffiliation == XmppServiceContact.AFFILIATION_OWNER)
+        if (myAffiliation == ServiceContact.AFFILIATION_OWNER)
             myAffiliation++;
-        if (XmppServiceContact.ROLE_MODERATOR == myRole) {
-            if (XmppServiceContact.ROLE_MODERATOR > role) {
+        if (ServiceContact.ROLE_MODERATOR == myRole) {
+            if (ServiceContact.ROLE_MODERATOR > role) {
                 menu.add(R.string.to_kick, ContactMenu.COMMAND_KICK);
             }
-            if (myAffiliation >= XmppServiceContact.AFFILIATION_ADMIN && affiliation < myAffiliation) {
+            if (myAffiliation >= ServiceContact.AFFILIATION_ADMIN && affiliation < myAffiliation) {
                 menu.add(R.string.to_ban, ContactMenu.COMMAND_BAN);
             }
-            if (affiliation < XmppServiceContact.AFFILIATION_ADMIN) {
-                if (role == XmppServiceContact.ROLE_VISITOR) {
+            if (affiliation < ServiceContact.AFFILIATION_ADMIN) {
+                if (role == ServiceContact.ROLE_VISITOR) {
                     menu.add(R.string.to_voice, ContactMenu.COMMAND_VOICE);
                 } else {
                     menu.add(R.string.to_devoice, ContactMenu.COMMAND_DEVOICE);
                 }
             }
         }
-        if (myAffiliation >= XmppServiceContact.AFFILIATION_ADMIN) {
-            if (affiliation < XmppServiceContact.AFFILIATION_ADMIN) {
-                if (role == XmppServiceContact.ROLE_MODERATOR) {
+        if (myAffiliation >= ServiceContact.AFFILIATION_ADMIN) {
+            if (affiliation < ServiceContact.AFFILIATION_ADMIN) {
+                if (role == ServiceContact.ROLE_MODERATOR) {
                     menu.add(R.string.to_voice, ContactMenu.COMMAND_VOICE);
                 } else {
                     menu.add(R.string.to_moder, ContactMenu.COMMAND_MODER);
                 }
             }
             if (affiliation < myAffiliation) {
-                if (affiliation != XmppServiceContact.AFFILIATION_NONE) {
+                if (affiliation != ServiceContact.AFFILIATION_NONE) {
                     menu.add(R.string.to_none, ContactMenu.COMMAND_NONE);
                 }
-                if (affiliation != XmppServiceContact.AFFILIATION_MEMBER) {
+                if (affiliation != ServiceContact.AFFILIATION_MEMBER) {
                     menu.add(R.string.to_member, ContactMenu.COMMAND_MEMBER);
                 }
             }
         }
-        if (myAffiliation >= XmppServiceContact.AFFILIATION_OWNER) {
-            if (affiliation != XmppServiceContact.AFFILIATION_ADMIN) {
+        if (myAffiliation >= ServiceContact.AFFILIATION_OWNER) {
+            if (affiliation != ServiceContact.AFFILIATION_ADMIN) {
                 menu.add(R.string.to_admin, ContactMenu.COMMAND_ADMIN);
             }
-            if (affiliation != XmppServiceContact.AFFILIATION_OWNER) {
+            if (affiliation != ServiceContact.AFFILIATION_OWNER) {
                 menu.add(R.string.to_owner, ContactMenu.COMMAND_OWNER);
             }
         }

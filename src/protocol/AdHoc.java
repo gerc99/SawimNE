@@ -1,4 +1,4 @@
-package protocol.xmpp;
+package protocol;
 
 import ru.sawim.R;
 import ru.sawim.activities.BaseActivity;
@@ -11,8 +11,8 @@ import ru.sawim.models.form.Forms;
 import ru.sawim.roster.RosterHelper;
 
 public final class AdHoc implements FormListener, ControlStateListener {
-    private XmppContact contact;
-    private Xmpp protocol;
+    private Contact contact;
+    private Protocol protocol;
     private String jid = "";
     private String[] nodes;
     private String[] names;
@@ -21,7 +21,7 @@ public final class AdHoc implements FormListener, ControlStateListener {
     private static final int FORM_COMMAND = 2;
     private Forms commandsListForm;
 
-    public AdHoc(Xmpp protocol, XmppContact contact) {
+    public AdHoc(Protocol protocol, Contact contact) {
         this.protocol = protocol;
         this.contact = contact;
         this.jid = contact.getUserId() + "/" + contact.currentResource;
@@ -50,7 +50,7 @@ public final class AdHoc implements FormListener, ControlStateListener {
     private String[] getResources() {
         String[] resources = new String[contact.subcontacts.size()];
         for (int i = resources.length - 1; 0 <= i; --i) {
-            XmppContact.SubContact sub = contact.subcontacts.elementAt(i);
+            Contact.SubContact sub = contact.subcontacts.elementAt(i);
             resources[i] = sub.resource;
         }
         return resources;
@@ -98,7 +98,7 @@ public final class AdHoc implements FormListener, ControlStateListener {
             }
 
         } else if (1 == contact.subcontacts.size()) {
-            XmppContact.SubContact sub = contact.subcontacts.elementAt(0);
+            Contact.SubContact sub = contact.subcontacts.elementAt(0);
             if (StringConvertor.isEmpty(sub.resource)) {
                 jid = contact.getUserId();
             } else {

@@ -1,13 +1,10 @@
 package ru.sawim.chat;
 
-import protocol.Contact;
+import protocol.*;
 import protocol.Protocol;
-import protocol.xmpp.Jid;
-import protocol.xmpp.Xmpp;
-import protocol.xmpp.XmppContact;
-import protocol.xmpp.XmppServiceContact;
+import protocol.Contact;
+import protocol.ServiceContact;
 import ru.sawim.Options;
-import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.chat.message.Message;
 import ru.sawim.chat.message.PlainMessage;
@@ -89,7 +86,7 @@ public final class Chat {
     }
 
     public String getMyName() {
-        if (contact instanceof XmppServiceContact) {
+        if (contact instanceof ServiceContact) {
             String nick = contact.getMyName();
             if (null != nick) return nick;
         }
@@ -143,14 +140,12 @@ public final class Chat {
     }
 
     public boolean isBlogBot() {
-        return contact instanceof XmppContact && ((Xmpp) protocol).isBlogBot(contact.getUserId());
+        return protocol.isBlogBot(contact.getUserId());
     }
 
     public boolean isHuman() {
         boolean service = isBlogBot() || protocol.isBot(contact);
-        if (contact instanceof XmppContact) {
-            service |= Jid.isGate(contact.getUserId());
-        }
+        service |= Jid.isGate(contact.getUserId());
         return !service && contact.isSingleUserContact();
     }
 
@@ -195,19 +190,6 @@ public final class Chat {
 
     public void clear() {
         messData.clear();
-    }
-
-    public void removeMessages(final int limit) {
-        if (messData.size() < limit) {
-            return;
-        }
-        if ((0 < limit) && (0 < messData.size())) {
-            while (limit < messData.size()) {
-                messData.remove(0);
-            }
-        } else {
-            ChatHistory.instance.unregisterChat(Chat.this);
-        }
     }
 
     public boolean empty() {
@@ -352,7 +334,6 @@ public final class Chat {
         addMessage(new MessData(contact, message.getNewDate(), messageText, message.getName(), MessData.PRESENCE, false));
         if (!isVisibleChat()) {
             contact.updateChatState(this);
-            ChatHistory.instance.updateChatList();
         }
     }
 
@@ -383,7 +364,6 @@ public final class Chat {
         }
         if (inc) {
             contact.updateChatState(this);
-            ChatHistory.instance.updateChatList();
         }
     }
 

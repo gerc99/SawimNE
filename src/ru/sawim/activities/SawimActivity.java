@@ -36,7 +36,7 @@ import android.view.MenuItem;
 import android.view.Window;
 import protocol.Contact;
 import protocol.Protocol;
-import protocol.xmpp.Xmpp;
+import protocol.Protocol;
 import ru.sawim.Options;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
@@ -275,14 +275,10 @@ public class SawimActivity extends BaseActivity {
                 if (p.getXStatusInfo() != null)
                     menu.add(Menu.NONE, RosterHelper.MENU_XSTATUS, Menu.NONE, R.string.xstatus);
                 if (p.isConnected()) {
-                    if (p instanceof Xmpp) {
-                        menu.add(Menu.NONE, RosterHelper.MENU_DISCO, Menu.NONE, R.string.service_discovery);
-                        menu.add(Menu.NONE, RosterHelper.MENU_ADHOC, Menu.NONE, R.string.account_settings);
-                    }
+                    menu.add(Menu.NONE, RosterHelper.MENU_DISCO, Menu.NONE, R.string.service_discovery);
+                    menu.add(Menu.NONE, RosterHelper.MENU_ADHOC, Menu.NONE, R.string.account_settings);
                     menu.add(Menu.NONE, RosterHelper.MENU_GROUPS, Menu.NONE, R.string.manage_contact_list);
-                    if (p instanceof Xmpp) {
-                        menu.add(Menu.NONE, RosterHelper.MENU_NOTES, Menu.NONE, R.string.notes);
-                    }
+                    menu.add(Menu.NONE, RosterHelper.MENU_NOTES, Menu.NONE, R.string.notes);
                     if (p.hasVCardEditor())
                         menu.add(Menu.NONE, RosterHelper.MENU_MYSELF, Menu.NONE, R.string.myself);
                 }

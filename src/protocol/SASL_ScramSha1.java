@@ -1,6 +1,7 @@
-package protocol.xmpp;
+package protocol;
 
 
+import protocol.Jid;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
 import ru.sawim.modules.crypto.HMACSHA1;

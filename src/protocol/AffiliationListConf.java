@@ -1,4 +1,4 @@
-package protocol.xmpp;
+package protocol;
 
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,7 +20,7 @@ import java.util.Vector;
 
 public final class AffiliationListConf implements FormListener, TextBoxView.TextBoxListener {
 
-    private Xmpp xmpp;
+    private Protocol xmpp;
     private String serverJid;
     private TextBoxView searchBox;
     private Vector jids = new Vector();
@@ -34,7 +34,7 @@ public final class AffiliationListConf implements FormListener, TextBoxView.Text
     private static final int COMMAND_ADD = 0;
     private static final int COMMAND_SEARCH = 1;
 
-    public void init(Xmpp protocol) {
+    public void init(Protocol protocol) {
         xmpp = protocol;
         searchBox = new TextBoxView();
         screen.setCaption(JLocale.getString(R.string.conf_aff_list));

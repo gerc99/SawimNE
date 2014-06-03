@@ -1,6 +1,5 @@
 package protocol;
 
-import protocol.net.TcpSocket;
 import ru.sawim.modules.search.UserInfo;
 
 import java.io.ByteArrayOutputStream;
