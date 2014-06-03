@@ -1524,13 +1524,13 @@ public class Protocol implements FormListener {
             }
         }
         boolean notifyMessage = false;
+        boolean isPersonal = contact.isSingleUserContact();
+        boolean isBlog = isBlogBot(contact.getUserId());
+        boolean isMention = false;
         if (!silent) {
             if (Options.getBoolean(Options.OPTION_ANSWERER)) {
                 Answerer.getInstance().checkMessage(this, contact, message);
             }
-            boolean isPersonal = contact.isSingleUserContact();
-            boolean isBlog = isBlogBot(contact.getUserId());
-            boolean isMention = false;
             if (!isPersonal && !message.isOffline()) {
                 String msg = message.getText();
                 String myName = contact.getMyName();
@@ -1551,16 +1551,18 @@ public class Protocol implements FormListener {
                 //playNotification(Notify.NOTIFY_MULTIMESSAGE);
             }
         }
-        if (chat.typeNewMessageIcon != chat.getNewMessageIcon() || chat.isVisibleChat()) {
+        boolean isNewMessageIcon = chat.typeNewMessageIcon != chat.getNewMessageIcon();
+        if ((isNewMessageIcon || (isNewMessageIcon && SawimApplication.isManyPane()))
+                && isPersonal || isMention) {
+            SawimApplication.getInstance().sendNotify(contact.getUserId(), message.getText(), notifyMessage);
+        }
+        if (isNewMessageIcon) {
             chat.typeNewMessageIcon = chat.getNewMessageIcon();
-            if (contact != RosterHelper.getInstance().getCurrentContact() || !chat.isVisibleChat()) {
-                SawimApplication.getInstance().sendNotify(contact.getUserId(), message.getText(), notifyMessage);
-            }
-            if (RosterHelper.getInstance().getUpdateChatListener() != null)
-                RosterHelper.getInstance().getUpdateChatListener().updateChat(contact);
             RosterHelper.getInstance().updateRoster(contact);
             RosterHelper.getInstance().updateBarProtocols();
         }
+        if (RosterHelper.getInstance().getUpdateChatListener() != null)
+            RosterHelper.getInstance().getUpdateChatListener().updateChat(contact);
     }
 
     public final boolean isBot(Contact contact) {
