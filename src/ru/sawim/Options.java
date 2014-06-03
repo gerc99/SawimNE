@@ -40,7 +40,6 @@ public class Options {
     public static final String OPTION_ANSWERER = "answer";
     public static final String OPTION_HIDE_KEYBOARD = "hide_keyboard";
     public static final String OPTION_CL_HIDE_OFFLINE = "cl_hide_offline";
-    public static final String OPTION_PUSH = "push";
     public static final String OPTION_USER_GROUPS = "user_groups";
     public static final String OPTION_HISTORY = "history";
     public static final String OPTION_WAKE_LOCK = "wake_lock";
@@ -81,7 +80,6 @@ public class Options {
     }
 
     private static void setDefaults() {
-        setBoolean(Options.OPTION_PUSH, false);
         setString(Options.UNAVAILABLE_NESSAGE, "I'll be back");
         setInt(Options.OPTION_CURRENT_PAGE, 0);
         setBoolean(Options.OPTION_INSTANT_RECONNECTION, true);
