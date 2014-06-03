@@ -481,7 +481,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         RosterHelper.getInstance().setOnUpdateChat(this);
         int unreadMessageCount = chat.getUnreadMessageCount();
         chat.resetUnreadMessages();
-        removeMessages(Options.getInt(R.array.max_message_array, Options.OPTION_MAX_MSG_COUNT));
+        removeMessages(Integer.valueOf(Options.getString(Options.OPTION_MAX_MSG_COUNT)));
         if (sharingText != null) {
             if (null != chat.message) {
                 chat.message += " " + sharingText;

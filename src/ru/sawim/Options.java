@@ -68,7 +68,7 @@ public class Options {
 
     public static int getInt(int entriesResId, String key) {
         String[] entries = SawimApplication.getContext().getResources().getStringArray(entriesResId);
-        String s = preferences.getString(key, entries[1]);
+        String s = preferences.getString(key, entries[0]);
         for (int i = 0; i < entries.length; ++i) {
             if (entries[i].equals(s)) return i;
         }

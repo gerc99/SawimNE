@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 import protocol.Contact;
 import protocol.Roster;
 import ru.sawim.SawimApplication;
@@ -97,12 +98,8 @@ public class HistoryStorage {
         try {
             ContentValues values = new ContentValues();
             values.put(SENDING_STATE, (int) md.getIconIndex());
-            values.put(INCOMING, md.isIncoming() ? 0 : 1);
-            values.put(AUTHOR, md.getNick());
-            values.put(MESSAGE, md.getText().toString());
-            values.put(DATE, md.getTime());
-            String where = AUTHOR + " = " + md.getNick() + " AND " + MESSAGE + " = " + md.getText().toString();
-            db.update(CHAT_HISTORY_TABLE, values, where, null);
+            String wh = COLUMN_ID + "='" + md.getNick() + "' AND " + MESSAGE + "='" + md.getText().toString() + "'";
+            db.update(CHAT_HISTORY_TABLE, values, wh, null);
         } catch (Exception e) {
             e.printStackTrace();
         }
