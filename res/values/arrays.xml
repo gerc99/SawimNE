@@ -67,10 +67,4 @@
         <item>@string/typing_incoming</item>
         <item>@string/typing_both</item>
     </string-array>
-    <string-array name="absence_array">
-        <item>@string/off</item>
-        <item>5</item>
-        <item>10</item>
-        <item>15</item>
-    </string-array>
 </resources>

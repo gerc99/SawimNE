@@ -24,7 +24,6 @@ public class Options {
     public static final String OPTION_CURRENT_PAGE = "current_page";
     public static final String OPTION_VIBRATION = "vibration";
     public static final String OPTION_COLOR_SCHEME = "color_scheme";
-    public static final String OPTION_VISIBILITY_ID = "visibility_id";
     public static final String OPTION_TYPING_MODE = "typing_mode";
     public static final String OPTION_MAX_MSG_COUNT = "max_msg_count";
     public static final String OPTION_FONT_SCHEME = "font_scheme";
@@ -60,14 +59,13 @@ public class Options {
 
     private static void setDefaults() {
         setString(Options.UNAVAILABLE_NESSAGE, "I'll be back");
-        setInt(Options.OPTION_CURRENT_PAGE, 0);
-        setInt(Options.OPTION_CL_SORT_BY, 0);
+        setString(Options.OPTION_CL_SORT_BY, SawimApplication.getContext().getString(R.string.sort_by_status));
         setBoolean(Options.OPTION_SORT_UP_WITH_MSG, true);
         setBoolean(Options.OPTION_CL_HIDE_OFFLINE, false);
         setBoolean(Options.OPTION_HIDE_KEYBOARD, true);
         setBoolean(Options.OPTION_MESS_NOTIF, true);
         setString(Options.OPTION_MESS_RINGTONE, "content://settings/system/notification_sound");
-        setInt(Options.OPTION_TYPING_MODE, 0);
+        setString(Options.OPTION_TYPING_MODE, SawimApplication.getContext().getString(R.string.typing_both));
         setBoolean(Options.OPTION_BLOG_NOTIFY, true);
         setBoolean(Options.OPTION_NOTIFY_IN_AWAY, true);
         setString(Options.OPTION_MAX_MSG_COUNT, "100");
@@ -75,10 +73,9 @@ public class Options {
         setBoolean(Options.OPTION_ANSWERER, false);
         setBoolean(Options.OPTION_USER_GROUPS, true);
         setBoolean(Options.OPTION_HISTORY, false);
-        setInt(Options.OPTION_COLOR_SCHEME, 1);
+        setString(Options.OPTION_COLOR_SCHEME, "Light Holo");
         setInt(Options.OPTION_FONT_SCHEME, 16);
         setBoolean(Options.OPTION_SHOW_STATUS_LINE, false);
-        setInt(Options.OPTION_VISIBILITY_ID, 0);
 
         setBoolean(OPTION_ALARM, true);
 
