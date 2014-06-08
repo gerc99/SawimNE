@@ -33,6 +33,7 @@ import ru.sawim.chat.Chat;
 import ru.sawim.chat.ChatHistory;
 import ru.sawim.comm.JLocale;
 import ru.sawim.forms.ManageContactListForm;
+import ru.sawim.listener.OnUpdateRoster;
 import ru.sawim.models.RosterAdapter;
 import ru.sawim.models.RosterModsAdapter;
 import ru.sawim.modules.FileTransfer;
@@ -57,7 +58,7 @@ import java.io.InputStream;
  * Time: 19:58
  * To change this template use File | Settings | File Templates.
  */
-public class RosterView extends Fragment implements ListView.OnItemClickListener, RosterHelper.OnUpdateRoster, Handler.Callback {
+public class RosterView extends Fragment implements ListView.OnItemClickListener, OnUpdateRoster, Handler.Callback {
 
     public static final String TAG = RosterView.class.getSimpleName();
 
@@ -316,7 +317,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     public void onResume() {
         super.onResume();
         resume();
-        if (!SawimApplication.isManyPane() && Scheme.setChangeTheme(Scheme.getThemeId(Options.getString(Options.OPTION_COLOR_SCHEME)))) {
+        if (!SawimApplication.isManyPane() && Scheme.isChangeTheme(Scheme.getThemeId(Options.getString(Options.OPTION_COLOR_SCHEME)))) {
             ((SawimActivity) getActivity()).recreateActivity();
         }
     }

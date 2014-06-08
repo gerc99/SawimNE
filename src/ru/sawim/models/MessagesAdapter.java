@@ -28,7 +28,7 @@ import java.util.List;
  */
 public class MessagesAdapter extends BaseAdapter {
 
-    private List<MessData> items = new ArrayList<MessData>();
+    private List<MessData> items;
     private Chat chat;
 
     private boolean isMultiQuote = false;
@@ -36,14 +36,13 @@ public class MessagesAdapter extends BaseAdapter {
 
     public void init(Chat chat) {
         this.chat = chat;
-        refreshList(chat.getMessData());
+        items = new ArrayList<MessData>();
+        items.addAll(chat.getMessData());
+        notifyDataSetChanged();
     }
 
-    public void refreshList(List<MessData> list) {
-        items.clear();
-        for (int i = 0; i < list.size(); ++i) {
-            items.add(list.get(i));
-        }
+    public void add(MessData messData) {
+        items.add(messData);
         notifyDataSetChanged();
     }
 

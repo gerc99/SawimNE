@@ -62,7 +62,6 @@ public class Scheme {
     private static int[][] themeColors;
     private static String[] themeNames;
     private static int oldTheme;
-    private static boolean isChangeTheme;
 
     public static void load() {
         setColorScheme(baseTheme);
@@ -150,17 +149,12 @@ public class Scheme {
         return 0;
     }
 
-    public static boolean setChangeTheme(int newTheme) {
+    public static boolean isChangeTheme(int newTheme) {
         if (oldTheme != newTheme) {
             oldTheme = newTheme;
-            isChangeTheme = true;
             return true;
         }
         return false;
-    }
-
-    public static boolean isChangeTheme() {
-        return isChangeTheme;
     }
 
     public static int getColor(byte color) {

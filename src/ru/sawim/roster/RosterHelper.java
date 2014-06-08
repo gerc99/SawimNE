@@ -18,6 +18,8 @@ import ru.sawim.comm.JLocale;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
 import ru.sawim.forms.ManageContactListForm;
+import ru.sawim.listener.OnUpdateChat;
+import ru.sawim.listener.OnUpdateRoster;
 import ru.sawim.modules.AutoAbsence;
 import ru.sawim.modules.FileTransfer;
 import ru.sawim.view.StatusesView;
@@ -156,7 +158,7 @@ public final class RosterHelper {
     public final void markMessages(Contact contact) {
         SawimNotification.clear(SawimNotification.NOTIFY_ID);
         if (getUpdateChatListener() != null)
-            getUpdateChatListener().updateChat(contact);
+            getUpdateChatListener().updateChat();
     }
 
     public void updateConnectionStatus() {
@@ -520,21 +522,4 @@ public final class RosterHelper {
         return updateChatListener;
     }
 
-    public interface OnUpdateChat {
-        void updateChat(Contact contact);
-
-        void updateMucList();
-
-        void pastText(String s);
-    }
-
-    public interface OnUpdateRoster {
-        void updateRoster();
-
-        void updateBarProtocols();
-
-        void updateProgressBar();
-
-        void putIntoQueue(Group g);
-    }
 }

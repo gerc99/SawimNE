@@ -69,8 +69,9 @@ public abstract class Message {
             HistoryStorage historyStorage = protocol.getChat(contact).getHistory();
             if (historyStorage != null)
                 historyStorage.updateText(mData);
-            if (RosterHelper.getInstance().getUpdateChatListener() != null)
-                RosterHelper.getInstance().getUpdateChatListener().updateChat(contact);
+            if (RosterHelper.getInstance().getUpdateChatListener() != null) {
+                RosterHelper.getInstance().getUpdateChatListener().updateMessages();
+            }
         }
     }
 
@@ -78,8 +79,9 @@ public abstract class Message {
         if (mData != null) {
             Contact contact = protocol.getItemByUIN(contactId);
             mData.setIconIndex(state);
-            if (RosterHelper.getInstance().getUpdateChatListener() != null)
-                RosterHelper.getInstance().getUpdateChatListener().updateChat(contact);
+            if (RosterHelper.getInstance().getUpdateChatListener() != null) {
+                RosterHelper.getInstance().getUpdateChatListener().updateMessages();
+            }
         }
     }
 

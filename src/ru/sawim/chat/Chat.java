@@ -82,7 +82,7 @@ public final class Chat {
     public void addFileProgress(String caption, String text) {
         addMessage(new MessData(contact, SawimApplication.getCurrentGmtTime(), text, caption, MessData.PROGRESS, false));
         if (RosterHelper.getInstance().getUpdateChatListener() != null)
-            RosterHelper.getInstance().getUpdateChatListener().updateChat(contact);
+            RosterHelper.getInstance().getUpdateChatListener().updateChat();
     }
 
     public String getMyName() {
@@ -325,6 +325,8 @@ public final class Chat {
 
     private void addMessage(MessData mData) {
         messData.add(mData);
+        if (RosterHelper.getInstance().getUpdateChatListener() != null)
+            RosterHelper.getInstance().getUpdateChatListener().addMessage(contact, mData);
     }
 
     public void addPresence(SystemNotice message) {
@@ -373,6 +375,8 @@ public final class Chat {
             ChatHistory.instance.registerChat(this);
         resetUnreadMessages();
         addTextToForm(message, from, true, false, isHistory());
+        if (RosterHelper.getInstance().getUpdateChatListener() != null)
+            RosterHelper.getInstance().getUpdateChatListener().updateChat();
     }
 
     public Contact getContact() {

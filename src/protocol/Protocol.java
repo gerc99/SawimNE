@@ -29,6 +29,8 @@ import java.util.Vector;
 public class Protocol implements FormListener {
     private static final int ROSTER_STORAGE_VERSION = 1;
     private static final int RECONNECT_COUNT = 20;
+    private static final String RESOURCE = "Jabber";
+    public final static int PRIORITY = 50;
 
     private final Object rosterLockObject = new Object();
     protected Roster roster = new Roster();
@@ -46,7 +48,6 @@ public class Protocol implements FormListener {
     private Vector autoGrand = new Vector();
     private Group notInListGroup;
 
-    public final static int PRIORITY = 50;
     private Connection connection;
     private Vector rejoinList = new Vector();
     private String resource;
@@ -392,7 +393,7 @@ public class Protocol implements FormListener {
 
     protected final void s_renameContact(Contact contact, String name) {
         contact.setName(name);
-        connection.updateContact((Contact) contact);
+        connection.updateContact(contact);
     }
 
     public void grandAuth(String uin) {
@@ -411,15 +412,8 @@ public class Protocol implements FormListener {
         connection.requestSubscribe(uin);
     }
 
-    private String getYandexDomain(String domain) {
-        boolean nonPdd = "ya.ru".equals(domain)
-                || "narod.ru".equals(domain)
-                || domain.startsWith("yandex.");
-        return nonPdd ? "xmpp.yandex.ru" : "domain-xmpp.ya.ru";
-    }
-
     protected String processUin(String uin) {
-        resource = Jid.getResource(uin, "Sawim");
+        resource = Jid.getResource(uin, RESOURCE);
         return Jid.getBareJid(uin);
     }
 
@@ -477,8 +471,7 @@ public class Protocol implements FormListener {
         if (to instanceof ServiceContact) {
             return;
         }
-        Contact c = (Contact) to;
-        Contact.SubContact s = c.getCurrentSubContact();
+        Contact.SubContact s = to.getCurrentSubContact();
         if (null != s) {
             connection.sendTypingNotify(to.getUserId() + "/" + s.resource, isTyping);
         }
@@ -533,7 +526,7 @@ public class Protocol implements FormListener {
     }
 
     protected void doAction(BaseActivity activity, Contact c, int cmd) {
-        final Contact contact = (Contact) c;
+        final Contact contact = c;
         switch (cmd) {
             case ContactMenu.GATE_CONNECT:
                 getConnection().sendPresence((ServiceContact) contact);
@@ -1262,7 +1255,7 @@ public class Protocol implements FormListener {
             beginTyping(item, type);
             RosterHelper.getInstance().updateRoster();
             if (RosterHelper.getInstance().getUpdateChatListener() != null)
-                RosterHelper.getInstance().getUpdateChatListener().updateChat(item);
+                RosterHelper.getInstance().getUpdateChatListener().updateChat();
         }
     }
 
@@ -1396,7 +1389,7 @@ public class Protocol implements FormListener {
         }
         RosterHelper.getInstance().updateRoster(contact);
         if (RosterHelper.getInstance().getUpdateChatListener() != null)
-            RosterHelper.getInstance().getUpdateChatListener().updateChat(contact);
+            RosterHelper.getInstance().getUpdateChatListener().updateChat();
     }
 
     private void cl_addContact(Contact contact) {
@@ -1556,7 +1549,7 @@ public class Protocol implements FormListener {
             RosterHelper.getInstance().updateBarProtocols();
         }
         if (RosterHelper.getInstance().getUpdateChatListener() != null)
-            RosterHelper.getInstance().getUpdateChatListener().updateChat(contact);
+            RosterHelper.getInstance().getUpdateChatListener().updateChat();
     }
 
     public final boolean isBot(Contact contact) {

@@ -20,7 +20,6 @@ import android.support.v7.app.ActionBar;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.*;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -35,6 +34,7 @@ import ru.sawim.chat.Chat;
 import ru.sawim.chat.ChatHistory;
 import ru.sawim.chat.MessData;
 import ru.sawim.comm.JLocale;
+import ru.sawim.listener.OnUpdateChat;
 import ru.sawim.models.MessagesAdapter;
 import ru.sawim.models.RosterAdapter;
 import ru.sawim.roster.RosterHelper;
@@ -57,7 +57,7 @@ import ru.sawim.widget.chat.ChatViewRoot;
  * Time: 20:30
  * To change this template use File | Settings | File Templates.
  */
-public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat, Handler.Callback {
+public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Callback {
 
     public static final String TAG = ChatView.class.getSimpleName();
 
@@ -89,8 +89,10 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
     private ChatBarView chatBarLayout;
 
     private Handler handler;
-    private static final int UPDATE_CHAT = 0;
-    private static final int UPDATE_MUC_LIST = 1;
+    private static final int ADD_MESSAGE = 0;
+    private static final int UPDATE_MESSAGES = 1;
+    private static final int UPDATE_CHAT = 3;
+    private static final int UPDATE_MUC_LIST = 4;
 
     @Override
     public void onAttach(Activity activity) {
@@ -495,7 +497,7 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         if (!SawimApplication.isManyPane())
             drawerLayout.setDrawerLockMode(contact.isConference() ?
                     DrawerLayout.LOCK_MODE_UNLOCKED : DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-        adapter.refreshList(chat.getMessData());
+        //adapter.refreshList(chat.getMessData());
         setPosition(unreadMessageCount);
         chatListView.setFastScrollEnabled(true);
     }
@@ -669,16 +671,22 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
     @Override
     public boolean handleMessage(Message msg) {
         switch (msg.what) {
+            case ADD_MESSAGE:
+                Contact c = (Contact) ((Object[]) msg.obj)[0];
+                MessData mess = (MessData) ((Object[]) msg.obj)[1];
+                if (contact == c) {
+                    adapter.add(mess);
+                }
+                break;
+            case UPDATE_MESSAGES:
+                adapter.notifyDataSetChanged();
+                break;
             case UPDATE_CHAT:
                 updateChatIcon();
-                if (contact == msg.obj)
-                    adapter.refreshList(chat.getMessData());
                 if (chatsSpinnerAdapter != null && chatDialogFragment != null && chatDialogFragment.isVisible())
                     chatsSpinnerAdapter.refreshList();
                 break;
             case UPDATE_MUC_LIST:
-                if (contact != null && contact.isPresence())
-                    adapter.refreshList(chat.getMessData());
                 if (mucUsersView != null) {
                     if (SawimApplication.isManyPane()
                             || (drawerLayout != null && nickList != null && drawerLayout.isDrawerOpen(nickList))) {
@@ -691,8 +699,21 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
     }
 
     @Override
-    public void updateChat(final Contact contact) {
-        handler.sendMessage(Message.obtain(handler, UPDATE_CHAT, contact));
+    public void addMessage(Contact contact, MessData mess) {
+        Object[] o = new Object[2];
+        o[0] = contact;
+        o[1] = mess;
+        handler.sendMessage(Message.obtain(handler, ADD_MESSAGE, o));
+    }
+
+    @Override
+    public void updateMessages() {
+        handler.sendMessage(Message.obtain(handler, UPDATE_MESSAGES));
+    }
+
+    @Override
+    public void updateChat() {
+        handler.sendMessage(Message.obtain(handler, UPDATE_CHAT));
     }
 
     @Override
@@ -982,7 +1003,6 @@ public class ChatView extends SawimFragment implements RosterHelper.OnUpdateChat
         resetText();
         chat.message = null;
         adapter.setPosition(-1);
-        updateChat(contact);
     }
 
     private boolean canAdd(String what) {

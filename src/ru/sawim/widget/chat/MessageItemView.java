@@ -15,6 +15,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 import ru.sawim.R;
+import ru.sawim.SawimResources;
 import ru.sawim.Scheme;
 import ru.sawim.text.InternalURLSpan;
 import ru.sawim.text.TextLinkClickListener;
@@ -47,7 +48,6 @@ public class MessageItemView extends View {
 
     private int textY;
 
-    private Layout layout;
     private CharSequence text;
     private TextLinkClickListener listener;
     private boolean isSecondTap;
@@ -55,21 +55,10 @@ public class MessageItemView extends View {
     private boolean isShowDivider = false;
     private int titleHeight;
 
-    private static Drawable backgroundDrawableIn;
-    private static Drawable backgroundDrawableOut;
-
     private static final HashMap<String, Layout> layoutHolder = new HashMap<String, Layout>();
 
     public MessageItemView(Context context) {
         super(context);
-        if (Scheme.isChangeTheme()) {
-            backgroundDrawableIn = null;
-            backgroundDrawableOut = null;
-        }
-        if (backgroundDrawableIn == null) {
-            backgroundDrawableIn = context.getResources().getDrawable(Scheme.isBlack() ? R.drawable.msg_in_dark : R.drawable.msg_in);
-            backgroundDrawableOut = context.getResources().getDrawable(Scheme.isBlack() ? R.drawable.msg_out_dark : R.drawable.msg_out);
-        }
         textPaint.setAntiAlias(true);
     }
 
@@ -77,12 +66,12 @@ public class MessageItemView extends View {
         textPaint.setTextSize(size * getResources().getDisplayMetrics().scaledDensity);
     }
 
-    public void makeLayout(int specSize) {
-        if (specSize <= 0) return;
+    private Layout makeLayout(int specSize) {
+        if (specSize <= 0) return null;
         try {
-            layout = new StaticLayout(text, textPaint, specSize, Layout.Alignment.ALIGN_NORMAL, 1.0F, 0.0F, false);
+            return new StaticLayout(text, textPaint, specSize, Layout.Alignment.ALIGN_NORMAL, 1.0F, 0.0F, false);
         } catch (ArrayIndexOutOfBoundsException e) {
-            layout = new StaticLayout(text.toString(), textPaint, specSize, Layout.Alignment.ALIGN_NORMAL, 1.0F, 0.0F, false);
+            return new StaticLayout(text.toString(), textPaint, specSize, Layout.Alignment.ALIGN_NORMAL, 1.0F, 0.0F, false);
         }
     }
 
@@ -92,14 +81,14 @@ public class MessageItemView extends View {
         int width = MeasureSpec.getSize(widthMeasureSpec);
         int height = isAddTitleView ? measureHeight(heightMeasureSpec) : getPaddingTop() + getPaddingBottom();
         int layoutWidth = width - getPaddingRight() - getPaddingLeft();
-        layout = layoutHolder.get(text.toString());
+        Layout layout = layoutHolder.get(text.toString());
         if (layout == null) {
-            makeLayout(layoutWidth);
+            layout = makeLayout(layoutWidth);
             layoutHolder.put(text.toString(), layout);
         } else {
             if (layout.getWidth() != layoutWidth) {
                 layoutHolder.clear();
-                makeLayout(layoutWidth);
+                layout = makeLayout(layoutWidth);
                 layoutHolder.put(text.toString(), layout);
             }
         }
@@ -199,11 +188,11 @@ public class MessageItemView extends View {
             canvas.drawLine(getPaddingLeft(), getScrollY() - 2, stopX, getScrollY() - 2, textPaint);
         }
         if (isIncoming) {
-            setDrawableBounds(backgroundDrawableIn, 0, 0, getWidth(), getHeight());
-            backgroundDrawableIn.draw(canvas);
+            setDrawableBounds(SawimResources.backgroundDrawableIn, 0, 0, getWidth(), getHeight());
+            SawimResources.backgroundDrawableIn.draw(canvas);
         } else {
-            setDrawableBounds(backgroundDrawableOut, 0, 0, getWidth(), getHeight());
-            backgroundDrawableOut.draw(canvas);
+            setDrawableBounds(SawimResources.backgroundDrawableOut, 0, 0, getWidth(), getHeight());
+            SawimResources.backgroundDrawableOut.draw(canvas);
         }
 
         if (nickText != null) {
@@ -226,6 +215,7 @@ public class MessageItemView extends View {
             canvas.drawBitmap(checkImage,
                     stopX - checkImage.getWidth(), getPaddingTop() + checkImage.getHeight() / 2, null);
         }
+        Layout layout = layoutHolder.get(text.toString());
         if (layout != null) {
             canvas.save();
             textPaint.setColor(msgTextColor);
@@ -253,6 +243,7 @@ public class MessageItemView extends View {
     }
 
     private int getLineForVertical(int vertical) {
+        Layout layout = layoutHolder.get(text.toString());
         int high = layout.getLineCount(), low = -1, guess;
         while (high - low > 1) {
             guess = (high + low) / 2;
@@ -277,6 +268,7 @@ public class MessageItemView extends View {
             int line = getLineForVertical(y);
             if (line < 0) return super.onTouchEvent(event);
 
+            Layout layout = layoutHolder.get(text.toString());
             int off = layout.getOffsetForHorizontal(line, x);
             final InternalURLSpan[] urlSpans = buffer.getSpans(off, off, InternalURLSpan.class);
             if (action == MotionEvent.ACTION_CANCEL || action == MotionEvent.ACTION_OUTSIDE) {
