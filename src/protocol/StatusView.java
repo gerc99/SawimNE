@@ -33,14 +33,9 @@ public final class StatusView {
     }
 
     public void addClient() {
-        if ((ClientInfo.CLI_NONE != contact.clientIndex)
-                && (null != protocol.clientInfo)) {
-            addPlain(protocol.clientInfo.getIcon(contact.clientIndex),
-                    (protocol.clientInfo.getName(contact.clientIndex)
-                            + " " + contact.version).trim());
-        }
-        addPlain(null, clientVersion);
-        addPlain(null, userRole);
+        addPlain(contact.version.trim());
+        addPlain(clientVersion);
+        addPlain(userRole);
     }
 
     public void setClientVersion(String version) {
@@ -69,6 +64,10 @@ public final class StatusView {
                 addInfo(R.string.li_signoff_time, Util.getLocalDateString(signonTime, today));
             }
         }
+    }
+
+    public void addPlain(String str) {
+        addPlain(null, str);
     }
 
     public void addPlain(Icon img, String str) {

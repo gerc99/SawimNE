@@ -30,7 +30,6 @@ public class Contact implements TreeNode {
     private int booleanValues;
     private byte status = StatusInfo.STATUS_OFFLINE;
     private String statusText = null;
-    public short clientIndex = ClientInfo.CLI_NONE;
     private int xstatus = XStatusInfo.XSTATUS_NONE;
     private String xstatusText = null;
     String version = "";
@@ -181,8 +180,6 @@ public class Contact implements TreeNode {
         public String roleText;
         public String realJid;
 
-        public short client = ClientInfo.CLI_NONE;
-
         public byte status;
         public byte priority;
         public byte priorityA;
@@ -298,15 +295,6 @@ public class Contact implements TreeNode {
         }
     }
 
-    public void setClient(String resource, String caps) {
-        SubContact c = getExistSubContact(resource);
-        if (null != c) {
-            c.client = Client.createClient(caps);
-        }
-        SubContact cur = getCurrentSubContact();
-        setClient((null == cur) ? ClientInfo.CLI_NONE : cur.client, null);
-    }
-
     public void setXStatus(String id, String text) {
         setXStatus(Protocol.xStatus.createXStatus(id), text);
     }
@@ -331,7 +319,6 @@ public class Contact implements TreeNode {
         } else {
             setStatus(cur.status, cur.statusText);
         }
-        setClient((null == cur) ? ClientInfo.CLI_NONE : cur.client, null);
     }
 
     public boolean isSingleUserContact() {
@@ -399,8 +386,7 @@ public class Contact implements TreeNode {
         return xstatusText;
     }
 
-    public void setClient(short clientNum, String ver) {
-        clientIndex = clientNum;
+    public void setClient(String ver) {
         version = StringConvertor.notNull(ver);
     }
 

@@ -86,16 +86,6 @@
     <PreferenceScreen android:title="@string/answerer" android:key="answerer">
     </PreferenceScreen>
 
-    <PreferenceScreen android:title="@string/options_pro">
-        <CheckBoxPreference android:title="@string/hide_icons_clients"
-                            android:key="hide_icons_clients"/>
-        <ListPreference
-                android:key="aa_time"
-                android:title="@string/absence"
-                android:entries="@array/absence_array"
-                android:entryValues="@array/absence_array"/>
-    </PreferenceScreen>
-
     <PreferenceScreen android:title="@string/about_program" android:key="about_program">
     </PreferenceScreen>
 

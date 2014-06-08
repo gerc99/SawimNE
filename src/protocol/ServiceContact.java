@@ -427,7 +427,6 @@ public class ServiceContact extends Contact {
         SubContact sc = (null == conf) ? null : conf.getExistSubContact(nick);
         if (null == sc) {
             setOfflineStatus();
-            setClient(Client.CLIENT_NONE, null);
         } else {
             if (subcontacts.isEmpty()) {
                 subcontacts.addElement(sc);
@@ -435,7 +434,6 @@ public class ServiceContact extends Contact {
                 subcontacts.setElementAt(sc, 0);
             }
             setStatus(sc.status, sc.statusText);
-            setClient(sc.client, null);
         }
     }
 }

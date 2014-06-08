@@ -27,7 +27,6 @@ public class Options {
     public static final String OPTION_VISIBILITY_ID = "visibility_id";
     public static final String OPTION_TYPING_MODE = "typing_mode";
     public static final String OPTION_MAX_MSG_COUNT = "max_msg_count";
-    public static final String OPTION_AA_TIME = "aa_time";
     public static final String OPTION_FONT_SCHEME = "font_scheme";
 
     public static final String OPTION_ANSWERER = "answer";
@@ -35,7 +34,6 @@ public class Options {
     public static final String OPTION_CL_HIDE_OFFLINE = "cl_hide_offline";
     public static final String OPTION_USER_GROUPS = "user_groups";
     public static final String OPTION_HISTORY = "history";
-    public static final String OPTION_BRING_UP = "bring_up";
     public static final String OPTION_ANTISPAM_ENABLE = "antispam_enable";
     public static final String OPTION_SORT_UP_WITH_MSG = "sort_up_with_msg";
     public static final String OPTION_ALARM = "alarm";
@@ -66,7 +64,6 @@ public class Options {
         setInt(Options.OPTION_CL_SORT_BY, 0);
         setBoolean(Options.OPTION_SORT_UP_WITH_MSG, true);
         setBoolean(Options.OPTION_CL_HIDE_OFFLINE, false);
-        setBoolean(Options.OPTION_HIDE_ICONS_CLIENTS, true);
         setBoolean(Options.OPTION_HIDE_KEYBOARD, true);
         setBoolean(Options.OPTION_MESS_NOTIF, true);
         setString(Options.OPTION_MESS_RINGTONE, "content://settings/system/notification_sound");
@@ -80,11 +77,9 @@ public class Options {
         setBoolean(Options.OPTION_HISTORY, false);
         setInt(Options.OPTION_COLOR_SCHEME, 1);
         setInt(Options.OPTION_FONT_SCHEME, 16);
-        setInt(Options.OPTION_AA_TIME, 15);
         setBoolean(Options.OPTION_SHOW_STATUS_LINE, false);
         setInt(Options.OPTION_VISIBILITY_ID, 0);
 
-        setBoolean(Options.OPTION_BRING_UP, false);
         setBoolean(OPTION_ALARM, true);
 
         safeSave();

@@ -8,6 +8,8 @@ import ru.sawim.roster.RosterHelper;
 
 public final class AutoAbsence {
 
+    private static final int AUTO_ABSENCE_TIME = 15 * 60;
+
     private static AutoAbsence instance;
     private Protocol protocol;
     private Profile profile;
@@ -34,7 +36,7 @@ public final class AutoAbsence {
     }
 
     public final void updateTime() {
-        if (0 < activityOutTime && SawimApplication.isPaused() && SawimApplication.autoAbsenceTime > 0) {
+        if (0 < activityOutTime && SawimApplication.isPaused()) {
             if (activityOutTime < SawimApplication.getCurrentGmtTime()) {
                 activityOutTime = -1;
                 away();
@@ -82,9 +84,7 @@ public final class AutoAbsence {
 
     public final void userActivity() {
         if (!SawimApplication.isPaused()) {
-            activityOutTime = SawimApplication.autoAbsenceTime > 0
-                    ? SawimApplication.getCurrentGmtTime() + SawimApplication.autoAbsenceTime
-                    : -1;
+            activityOutTime = SawimApplication.getCurrentGmtTime() + AUTO_ABSENCE_TIME;
         }
     }
 

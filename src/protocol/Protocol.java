@@ -31,7 +31,6 @@ public class Protocol implements FormListener {
     private static final int RECONNECT_COUNT = 20;
 
     private final Object rosterLockObject = new Object();
-    public ClientInfo clientInfo;
     protected Roster roster = new Roster();
     protected StatusInfo info;
     protected XStatusInfo xstatusInfo;
@@ -66,7 +65,6 @@ public class Protocol implements FormListener {
         final int[] statusIconIndex = {1, 0, 2, 0, -1, -1, -1, -1, -1, 2, -1, 3, -1, -1, 1};
         info = new StatusInfo(icons, statusIconIndex, statuses);
         xstatusInfo = Protocol.xStatus.getInfo();
-        clientInfo = Client.get();
     }
 
     private static final byte[] statuses = {
@@ -291,7 +289,6 @@ public class Protocol implements FormListener {
         if (isStreamManagementSupported()) {
             contact.setStatus(dis.readByte(), dis.readUTF());
             contact.setXStatus(dis.readByte(), dis.readUTF());
-            contact.setClient(dis.readByte(), null);
         }
         if (contact instanceof ServiceContact) {
             ServiceContact serviceContact = (ServiceContact) contact;
@@ -311,7 +308,6 @@ public class Protocol implements FormListener {
             for (int i = 0; i < subContactSize; ++i) {
                 Contact.SubContact subContact = new Contact.SubContact();
                 subContact.status = dis.readByte();
-                subContact.client = dis.readByte();
                 subContact.priority = dis.readByte();
                 subContact.priorityA = dis.readByte();
                 subContact.resource = dis.readUTF();
@@ -332,7 +328,6 @@ public class Protocol implements FormListener {
             out.writeUTF(StringConvertor.notNull(contact.getStatusText()));
             out.writeByte(contact.getXStatusIndex());
             out.writeUTF(StringConvertor.notNull(contact.getXStatusText()));
-            out.writeByte(contact.clientIndex);
         }
         if (contact instanceof ServiceContact) {
             ServiceContact serviceContact = (ServiceContact) contact;
@@ -343,11 +338,10 @@ public class Protocol implements FormListener {
             }
         }
         if (isStreamManagementSupported()) {
-            Contact xmppContact = (Contact) contact;
+            Contact xmppContact = contact;
             out.writeInt(xmppContact.subcontacts.size());
             for (Contact.SubContact subContact : xmppContact.subcontacts) {
                 out.writeByte(subContact.status);
-                out.writeByte(subContact.client);
                 out.writeByte(subContact.priority);
                 out.writeByte(subContact.priorityA);
                 out.writeUTF(subContact.resource);

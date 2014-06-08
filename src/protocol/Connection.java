@@ -1354,7 +1354,7 @@ public final class Connection extends ClientConnection {
                 if (null != realJid) {
                     conf.setRealJid(fromRes, Jid.getBareJid(realJid));
                 }
-                contact.setClient(fromRes, x.getFirstNodeAttribute("c", S_NODE));
+                contact.setClient(x.getFirstNodeAttribute("c", S_NODE));
                 if (303 == code) {
                     conf.addPresence(getXmpp(), fromRes, ": " + JLocale.getString(R.string.change_nick) + " " + StringConvertor.notNull(newNick));
                 }
@@ -1398,7 +1398,7 @@ public final class Connection extends ClientConnection {
             getXmpp().setContactStatus(contact, fromRes, nativeStatus2StatusIndex(type), statusString, priority);
             contact.updateMainStatus(getXmpp());
             if (contact.isOnline()) {
-                contact.setClient(fromRes, x.getFirstNodeAttribute("c", S_NODE));
+                contact.setClient(x.getFirstNodeAttribute("c", S_NODE));
             }
             if (contact.getUserId().equals(contact.getName())) {
                 getXmpp().renameContact(contact, getNickFromNode(x));

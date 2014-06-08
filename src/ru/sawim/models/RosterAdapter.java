@@ -226,10 +226,6 @@ public class RosterAdapter extends BaseAdapter {
                 rosterItemView.itemThirdImage = SawimResources.authIcon.getBitmap();
             }
         }
-
-        Icon icClient = (null != p.clientInfo) ? p.clientInfo.getIcon(item.clientIndex) : null;
-        if (icClient != null && !SawimApplication.hideIconsClient)
-            rosterItemView.itemFourthImage = icClient.getImage().getBitmap();
     }
 
     public BitmapDrawable getImageChat(Chat chat, boolean showMess) {
