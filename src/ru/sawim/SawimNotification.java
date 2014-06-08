@@ -1,17 +1,14 @@
 package ru.sawim;
 
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
-import android.util.Log;
 import ru.sawim.activities.SawimActivity;
 import ru.sawim.chat.ChatHistory;
 import ru.sawim.comm.JLocale;
-import ru.sawim.roster.RosterHelper;
 
 import java.util.HashMap;
 
@@ -27,61 +24,6 @@ public class SawimNotification {
     private static final int PUSH_NOTIFICATION_ID = 0x10;
     public static final int NOTIFY_ID = 1;
     private static final HashMap<String, Integer> idsMap = new HashMap<String, Integer>();
-
-    public static Notification get(Context context, boolean silent) {
-        int unread = ChatHistory.instance.getPersonalUnreadMessageCount(false);
-        int allUnread = ChatHistory.instance.getPersonalUnreadMessageCount(true);
-        CharSequence stateMsg = "";
-
-        final int icon;
-        if (0 < allUnread) {
-            icon = R.drawable.ic_tray_msg;
-        } else if (RosterHelper.getInstance().isConnected()) {
-            icon = R.drawable.ic_tray_on;
-            stateMsg = context.getText(R.string.online);
-        } else {
-            icon = R.drawable.ic_tray_off;
-            if (RosterHelper.getInstance().isConnecting()) {
-                stateMsg = context.getText(R.string.connecting);
-            } else {
-                stateMsg = context.getText(R.string.offline);
-            }
-        }
-
-        long when = 0;
-        NotificationCompat.Builder notification = new NotificationCompat.Builder(context);
-        Intent notificationIntent = new Intent(context, SawimActivity.class);
-        notificationIntent.setAction(SawimActivity.NOTIFY);
-        notificationIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        if (0 < unread) {
-            notification.setLights(0xff00ff00, 300, 1000);
-            if (Options.getBoolean(Options.OPTION_MESS_NOTIF) && silent) {
-                if (Options.getBoolean(Options.OPTION_VIBRATION)) {
-                    int dat = 70;
-                    long[] pattern = {0,3 * dat, dat, dat};
-                    notification.setVibrate(pattern);
-                }
-                String ringtone = Options.getString(Options.OPTION_MESS_RINGTONE);
-                if (ringtone != null) {
-                    notification.setSound(Uri.parse(ringtone));
-                }
-            }
-        }
-        if (0 < allUnread) {
-            notification.setNumber(unread);
-            stateMsg = String.format((String) context.getText(R.string.unread_messages), unread);
-        }
-        stateMsg = ChatHistory.instance.getLastMessage(stateMsg.toString());
-        notification.setAutoCancel(true);
-        notification.setWhen(when);
-        //notification.setDefaults(android.app.Notification.DEFAULT_ALL);
-        notification.setContentIntent(contentIntent);
-        notification.setContentTitle(context.getString(R.string.app_name));
-        notification.setContentText(stateMsg);
-        notification.setSmallIcon(icon);
-        return notification.build();
-    }
 
     public static void alarm(String processedText) {
     }
@@ -167,9 +109,6 @@ public class SawimNotification {
                         notification.setVibrate(pattern);
                     }
                     String ringtone = Options.getString(Options.OPTION_MESS_RINGTONE);
-                    if (ringtone == null) {
-                        ringtone = "content://settings/system/notification_sound";
-                    }
                     notification.setSound(Uri.parse(ringtone));
                 }
             }

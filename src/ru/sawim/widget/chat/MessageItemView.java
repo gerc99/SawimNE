@@ -62,6 +62,10 @@ public class MessageItemView extends View {
 
     public MessageItemView(Context context) {
         super(context);
+        if (Scheme.isChangeTheme()) {
+            backgroundDrawableIn = null;
+            backgroundDrawableOut = null;
+        }
         if (backgroundDrawableIn == null) {
             backgroundDrawableIn = context.getResources().getDrawable(Scheme.isBlack() ? R.drawable.msg_in_dark : R.drawable.msg_in);
             backgroundDrawableOut = context.getResources().getDrawable(Scheme.isBlack() ? R.drawable.msg_out_dark : R.drawable.msg_out);

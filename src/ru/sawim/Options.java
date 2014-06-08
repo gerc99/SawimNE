@@ -37,7 +37,6 @@ public class Options {
     public static final String OPTION_HISTORY = "history";
     public static final String OPTION_BRING_UP = "bring_up";
     public static final String OPTION_ANTISPAM_ENABLE = "antispam_enable";
-    public static final String OPTION_HIDE_ICONS_CLIENTS = "hide_icons_clients";
     public static final String OPTION_SORT_UP_WITH_MSG = "sort_up_with_msg";
     public static final String OPTION_ALARM = "alarm";
     public static final String OPTION_SHOW_STATUS_LINE = "show_status_line";
@@ -52,10 +51,43 @@ public class Options {
     public static void init() {
         preferences = PreferenceManager.getDefaultSharedPreferences(SawimApplication.getContext());
         editor = preferences.edit();
+        if (preferences.getAll().isEmpty()) {
+            setDefaults();
+        }
     }
 
     public static void safeSave() {
         editor.commit();
+    }
+
+    private static void setDefaults() {
+        setString(Options.UNAVAILABLE_NESSAGE, "I'll be back");
+        setInt(Options.OPTION_CURRENT_PAGE, 0);
+        setInt(Options.OPTION_CL_SORT_BY, 0);
+        setBoolean(Options.OPTION_SORT_UP_WITH_MSG, true);
+        setBoolean(Options.OPTION_CL_HIDE_OFFLINE, false);
+        setBoolean(Options.OPTION_HIDE_ICONS_CLIENTS, true);
+        setBoolean(Options.OPTION_HIDE_KEYBOARD, true);
+        setBoolean(Options.OPTION_MESS_NOTIF, true);
+        setString(Options.OPTION_MESS_RINGTONE, "content://settings/system/notification_sound");
+        setInt(Options.OPTION_TYPING_MODE, 0);
+        setBoolean(Options.OPTION_BLOG_NOTIFY, true);
+        setBoolean(Options.OPTION_NOTIFY_IN_AWAY, true);
+        setString(Options.OPTION_MAX_MSG_COUNT, "100");
+        setString(Options.OPTION_ANTISPAM_KEYWORDS, "http sms www @conf");
+        setBoolean(Options.OPTION_ANSWERER, false);
+        setBoolean(Options.OPTION_USER_GROUPS, true);
+        setBoolean(Options.OPTION_HISTORY, false);
+        setInt(Options.OPTION_COLOR_SCHEME, 1);
+        setInt(Options.OPTION_FONT_SCHEME, 16);
+        setInt(Options.OPTION_AA_TIME, 15);
+        setBoolean(Options.OPTION_SHOW_STATUS_LINE, false);
+        setInt(Options.OPTION_VISIBILITY_ID, 0);
+
+        setBoolean(Options.OPTION_BRING_UP, false);
+        setBoolean(OPTION_ALARM, true);
+
+        safeSave();
     }
 
     public static String getString(String key) {

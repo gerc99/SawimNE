@@ -316,7 +316,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     public void onResume() {
         super.onResume();
         resume();
-        if (!SawimApplication.isManyPane() && Scheme.isChangeTheme(Scheme.getThemeId(Options.getString(Options.OPTION_COLOR_SCHEME)))) {
+        if (!SawimApplication.isManyPane() && Scheme.setChangeTheme(Scheme.getThemeId(Options.getString(Options.OPTION_COLOR_SCHEME)))) {
             ((SawimActivity) getActivity()).recreateActivity();
         }
     }

@@ -121,7 +121,7 @@ public class HistoryStorage {
         return num;
     }
 
-    public int getStartHistorySize() {
+    public int getFirstMessageCount() {
         return startHistorySize;
     }
 
