@@ -35,6 +35,7 @@ public class HistoryStorage {
     private String uniqueUserId;
     private DatabaseHelper dbHelper;
     private SQLiteDatabase db;
+    private int firstMessageCount;
 
     private HistoryStorage(Contact contact) {
         this.contact = contact;
@@ -54,6 +55,7 @@ public class HistoryStorage {
             try {
                 dbHelper = new DatabaseHelper(SawimApplication.getContext(), getDBName(), DB_CREATE, CHAT_HISTORY_TABLE, 4);
                 db = dbHelper.getWritableDatabase();
+                firstMessageCount = getHistorySize();
             } catch (Exception e) {
                 dbHelper = null;
                 e.printStackTrace();
@@ -114,6 +116,10 @@ public class HistoryStorage {
             e.printStackTrace();
         }
         return num;
+    }
+
+    public int getFirstMessageCount() {
+        return firstMessageCount;
     }
 
     private String getDBName() {
