@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Sawim NE</string>
+    <string name="app_name">Sawim</string>
     <string name="unread_messages">Unread messages: %d</string>
     <string name="takePhotoButton">OK</string>
     <string name="offline">Offline</string>
