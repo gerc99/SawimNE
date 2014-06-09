@@ -32,7 +32,6 @@ public class Options {
     public static final String OPTION_HIDE_KEYBOARD = "hide_keyboard";
     public static final String OPTION_CL_HIDE_OFFLINE = "cl_hide_offline";
     public static final String OPTION_USER_GROUPS = "user_groups";
-    public static final String OPTION_HISTORY = "history";
     public static final String OPTION_ANTISPAM_ENABLE = "antispam_enable";
     public static final String OPTION_SORT_UP_WITH_MSG = "sort_up_with_msg";
     public static final String OPTION_ALARM = "alarm";
@@ -72,7 +71,6 @@ public class Options {
         setString(Options.OPTION_ANTISPAM_KEYWORDS, "http sms www @conf");
         setBoolean(Options.OPTION_ANSWERER, false);
         setBoolean(Options.OPTION_USER_GROUPS, true);
-        setBoolean(Options.OPTION_HISTORY, false);
         setString(Options.OPTION_COLOR_SCHEME, "Light Holo");
         setInt(Options.OPTION_FONT_SCHEME, 16);
         setBoolean(Options.OPTION_SHOW_STATUS_LINE, false);

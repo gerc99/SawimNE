@@ -159,7 +159,9 @@ public class Session {
 
         editor.commit();
 
-        Log.d("sawim-session", "Clear session for " + accountId);
+        if (Connection.DEBUGLOG) {
+            Log.d("sawim-session", "Clear session for " + accountId);
+        }
     }
 
     public void save(Connection connection) {
@@ -175,11 +177,13 @@ public class Session {
 
         editor.commit();
 
-        Log.d("sawim-session", "Saved session for " + accountId);
-        Log.d("sawim-session", "smEnabled = " + connection.smEnabled);
-        Log.d("sawim-session", "smSessionId = " + connection.smSessionId);
-        Log.d("sawim-session", "rebindEnabled = " + connection.rebindEnabled);
-        Log.d("sawim-session", "rebindSessionId = " + connection.rebindSessionId);
+        if (Connection.DEBUGLOG) {
+            Log.d("sawim-session", "Saved session for " + accountId);
+            Log.d("sawim-session", "smEnabled = " + connection.smEnabled);
+            Log.d("sawim-session", "smSessionId = " + connection.smSessionId);
+            Log.d("sawim-session", "rebindEnabled = " + connection.rebindEnabled);
+            Log.d("sawim-session", "rebindSessionId = " + connection.rebindSessionId);
+        }
     }
 
     public void load(Connection connection) {
@@ -193,17 +197,21 @@ public class Session {
         connection.smPacketsOut = preferences.getLong(SM_PACKETS_OUT + accountId, 0);
         connection.smSessionId = preferences.getString(SM_SESSION_ID + accountId, "");
 
-        Log.d("sawim-session", "Loaded session for " + accountId);
-        Log.d("sawim-session", "smEnabled = " + connection.smEnabled);
-        Log.d("sawim-session", "smSessionId = " + connection.smSessionId);
-        Log.d("sawim-session", "rebindEnabled = " + connection.rebindEnabled);
-        Log.d("sawim-session", "rebindSessionId = " + connection.rebindSessionId);
+        if (Connection.DEBUGLOG) {
+            Log.d("sawim-session", "Loaded session for " + accountId);
+            Log.d("sawim-session", "smEnabled = " + connection.smEnabled);
+            Log.d("sawim-session", "smSessionId = " + connection.smSessionId);
+            Log.d("sawim-session", "rebindEnabled = " + connection.rebindEnabled);
+            Log.d("sawim-session", "rebindSessionId = " + connection.rebindSessionId);
+        }
     }
 
     public boolean isStreamManagementSupported(String accountId) {
-        Log.d("sawim-session", "Checking session supporting for " + accountId);
-        Log.d("sawim-session", "smEnabled = " + preferences.getBoolean(SM_ENABLED + accountId, false));
-        Log.d("sawim-session", "rebindEnabled = " + preferences.getBoolean(REBIND_ENABLED + accountId, false));
+        if (Connection.DEBUGLOG) {
+            Log.d("sawim-session", "Checking session supporting for " + accountId);
+            Log.d("sawim-session", "smEnabled = " + preferences.getBoolean(SM_ENABLED + accountId, false));
+            Log.d("sawim-session", "rebindEnabled = " + preferences.getBoolean(REBIND_ENABLED + accountId, false));
+        }
 
         return preferences.getBoolean(REBIND_ENABLED + accountId, false) ||
                preferences.getBoolean(SM_ENABLED + accountId, false);

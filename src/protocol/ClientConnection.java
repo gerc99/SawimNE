@@ -1,6 +1,5 @@
 package protocol;
 
-import protocol.Protocol;
 import ru.sawim.SawimApplication;
 import ru.sawim.SawimException;
 import ru.sawim.chat.message.Message;

@@ -37,6 +37,7 @@ import ru.sawim.comm.JLocale;
 import ru.sawim.listener.OnUpdateChat;
 import ru.sawim.models.MessagesAdapter;
 import ru.sawim.models.RosterAdapter;
+import ru.sawim.modules.history.HistoryStorage;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.text.TextFormatter;
 import ru.sawim.view.menu.JuickMenu;
@@ -49,6 +50,8 @@ import ru.sawim.widget.chat.ChatBarView;
 import ru.sawim.widget.chat.ChatInputBarView;
 import ru.sawim.widget.chat.ChatListsView;
 import ru.sawim.widget.chat.ChatViewRoot;
+
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -515,11 +518,11 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
         adapter.setPosition(chat.dividerPosition);
         if (chat.dividerPosition == -1) {
             int position = historySize - unreadMessageCount + 1;
-            if (contact.isConference() || !(contact.isConference() && hasHistory)) {
-                chatListView.setSelection(0);
-            } else if (hasHistory) {
+            if (hasHistory) {
                 adapter.setPosition(position);
                 chatListView.setSelection(position);
+            } else {
+                chatListView.setSelection(0);
             }
         } else {
             int position = chat.getMessData().size() - unreadMessageCount;
@@ -644,6 +647,24 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
         chatListView.setOnCreateContextMenuListener(this);
         chatListView.setOnItemClickListener(chatClick);
         chatListView.setFocusable(true);
+        chatListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                if (firstVisibleItem == 0) {
+                    HistoryStorage historyStorage = chat.getHistory();
+                    int oldCount = adapter.getCount();
+                    if (historyStorage != null && historyStorage.getHistorySize() != oldCount) {
+                        List<MessData> oldMessageList = historyStorage.getNextListMessages(chat, oldCount);
+                        adapter.addTopMessages(oldMessageList);
+                        chatListView.setSelection(oldMessageList.size() + 1);
+                    }
+                }
+            }
+        });
     }
 
     private void initMucUsers() {
@@ -903,9 +924,6 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
             menu.add(Menu.FIRST, ContactMenu.COMMAND_STATUS, 0, R.string.user_statuses);
         }
         menu.add(Menu.FIRST, ContactMenu.ACTION_TO_NOTES, 0, R.string.add_to_notes);
-        if (!Options.getBoolean(Options.OPTION_HISTORY) && chat.hasHistory()) {
-            menu.add(Menu.FIRST, ContactMenu.ACTION_ADD_TO_HISTORY, 0, R.string.add_to_history);
-        }
         contact.addChatMenuItems(menu);
     }
 
@@ -956,10 +974,6 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                 break;
             case ContactMenu.COMMAND_STATUS:
                 protocol.showStatus(((ServiceContact) contact).getPrivateContact(nick));
-                break;
-
-            case ContactMenu.ACTION_ADD_TO_HISTORY:
-                chat.addTextToHistory(md);
                 break;
 
             case ContactMenu.ACTION_TO_NOTES:

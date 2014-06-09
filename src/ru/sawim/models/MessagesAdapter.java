@@ -46,6 +46,11 @@ public class MessagesAdapter extends BaseAdapter {
         notifyDataSetChanged();
     }
 
+    public void addTopMessages(List<MessData> newMessageList) {
+        items.addAll(0, newMessageList);
+        notifyDataSetChanged();
+    }
+
     public boolean isMultiQuote() {
         return isMultiQuote;
     }

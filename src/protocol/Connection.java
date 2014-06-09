@@ -30,7 +30,7 @@ import java.util.Vector;
 
 public final class Connection extends ClientConnection {
 
-    private static final boolean DEBUGLOG = false;
+    public static final boolean DEBUGLOG = false;
 
     private Socket socket;
     private Protocol protocol;
@@ -418,7 +418,7 @@ public final class Connection extends ClientConnection {
                 "<sid>" + rebindSessionId + "</sid></rebind>");
         XmlNode rebind = readXmlNode(true);
         if (rebind != null && rebind.is("rebind")) {
-            Log.d("sawim-xml", "[INFO-JABBER] rebound session ID=" + rebindSessionId);
+            DebugLog.systemPrintln("[INFO-JABBER] rebound session ID=" + rebindSessionId);
             rebindEnabled = true;
             setAuthStatus(true);
             return true;

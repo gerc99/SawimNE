@@ -35,9 +35,6 @@
         <CheckBoxPreference android:title="@string/use_simple_input"
                             android:key="simple_input"
                             android:defaultValue="false"/>
-        <CheckBoxPreference android:title="@string/use_history"
-                            android:key="history"
-                            android:defaultValue="false"/>
         <ListPreference
                 android:key="max_msg_count"
                 android:title="@string/max_message_count"

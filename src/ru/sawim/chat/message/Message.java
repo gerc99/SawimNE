@@ -1,6 +1,7 @@
 package ru.sawim.chat.message;
 
 import android.graphics.drawable.BitmapDrawable;
+import android.util.Log;
 import protocol.Contact;
 import protocol.Protocol;
 import ru.sawim.SawimResources;
@@ -69,16 +70,6 @@ public abstract class Message {
             HistoryStorage historyStorage = protocol.getChat(contact).getHistory();
             if (historyStorage != null)
                 historyStorage.updateText(mData);
-            if (RosterHelper.getInstance().getUpdateChatListener() != null) {
-                RosterHelper.getInstance().getUpdateChatListener().updateMessages();
-            }
-        }
-    }
-
-    public final void setSendingStateFromHistory(Protocol protocol, byte state) {
-        if (mData != null) {
-            Contact contact = protocol.getItemByUIN(contactId);
-            mData.setIconIndex(state);
             if (RosterHelper.getInstance().getUpdateChatListener() != null) {
                 RosterHelper.getInstance().getUpdateChatListener().updateMessages();
             }

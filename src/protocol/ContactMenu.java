@@ -46,7 +46,6 @@ public class ContactMenu implements TextBoxView.TextBoxListener {
     public static final int CONFERENCE_INBAN = 22;
 
     public static final int MENU_COPY_TEXT = 23;
-    public static final int ACTION_ADD_TO_HISTORY = 24;
     public static final int ACTION_TO_NOTES = 25;
     public static final int ACTION_QUOTE = 26;
 

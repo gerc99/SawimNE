@@ -54,6 +54,7 @@ public class MessageItemView extends View {
     private boolean isLongTap;
     private boolean isShowDivider = false;
     private int titleHeight;
+    Layout layout;
 
     private static final HashMap<String, Layout> layoutHolder = new HashMap<String, Layout>();
 
@@ -66,12 +67,12 @@ public class MessageItemView extends View {
         textPaint.setTextSize(size * getResources().getDisplayMetrics().scaledDensity);
     }
 
-    private Layout makeLayout(int specSize) {
-        if (specSize <= 0) return null;
+    private void makeLayout(int specSize) {
+        if (specSize <= 0) return;
         try {
-            return new StaticLayout(text, textPaint, specSize, Layout.Alignment.ALIGN_NORMAL, 1.0F, 0.0F, false);
+            layout = new StaticLayout(text, textPaint, specSize, Layout.Alignment.ALIGN_NORMAL, 1.0F, 0.0F, false);
         } catch (ArrayIndexOutOfBoundsException e) {
-            return new StaticLayout(text.toString(), textPaint, specSize, Layout.Alignment.ALIGN_NORMAL, 1.0F, 0.0F, false);
+            layout = new StaticLayout(text.toString(), textPaint, specSize, Layout.Alignment.ALIGN_NORMAL, 1.0F, 0.0F, false);
         }
     }
 
@@ -81,14 +82,14 @@ public class MessageItemView extends View {
         int width = MeasureSpec.getSize(widthMeasureSpec);
         int height = isAddTitleView ? measureHeight(heightMeasureSpec) : getPaddingTop() + getPaddingBottom();
         int layoutWidth = width - getPaddingRight() - getPaddingLeft();
-        Layout layout = layoutHolder.get(text.toString());
+        layout = layoutHolder.get(text.toString());
         if (layout == null) {
-            layout = makeLayout(layoutWidth);
+            makeLayout(layoutWidth);
             layoutHolder.put(text.toString(), layout);
         } else {
             if (layout.getWidth() != layoutWidth) {
                 layoutHolder.clear();
-                layout = makeLayout(layoutWidth);
+                makeLayout(layoutWidth);
                 layoutHolder.put(text.toString(), layout);
             }
         }
@@ -215,7 +216,6 @@ public class MessageItemView extends View {
             canvas.drawBitmap(checkImage,
                     stopX - checkImage.getWidth(), getPaddingTop() + checkImage.getHeight() / 2, null);
         }
-        Layout layout = layoutHolder.get(text.toString());
         if (layout != null) {
             canvas.save();
             textPaint.setColor(msgTextColor);
@@ -243,7 +243,6 @@ public class MessageItemView extends View {
     }
 
     private int getLineForVertical(int vertical) {
-        Layout layout = layoutHolder.get(text.toString());
         int high = layout.getLineCount(), low = -1, guess;
         while (high - low > 1) {
             guess = (high + low) / 2;
@@ -268,7 +267,6 @@ public class MessageItemView extends View {
             int line = getLineForVertical(y);
             if (line < 0) return super.onTouchEvent(event);
 
-            Layout layout = layoutHolder.get(text.toString());
             int off = layout.getOffsetForHorizontal(line, x);
             final InternalURLSpan[] urlSpans = buffer.getSpans(off, off, InternalURLSpan.class);
             if (action == MotionEvent.ACTION_CANCEL || action == MotionEvent.ACTION_OUTSIDE) {

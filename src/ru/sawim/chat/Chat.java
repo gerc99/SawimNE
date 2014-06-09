@@ -4,7 +4,6 @@ import protocol.*;
 import protocol.Protocol;
 import protocol.Contact;
 import protocol.ServiceContact;
-import ru.sawim.Options;
 import ru.sawim.SawimApplication;
 import ru.sawim.chat.message.Message;
 import ru.sawim.chat.message.PlainMessage;
@@ -34,7 +33,6 @@ public final class Chat {
     public Chat(Protocol p, Contact item) {
         contact = item;
         protocol = p;
-        fillFromHistory();
     }
 
     void setContact(Contact item) {
@@ -82,7 +80,7 @@ public final class Chat {
     public void addFileProgress(String caption, String text) {
         addMessage(new MessData(contact, SawimApplication.getCurrentGmtTime(), text, caption, MessData.PROGRESS, false));
         if (RosterHelper.getInstance().getUpdateChatListener() != null)
-            RosterHelper.getInstance().getUpdateChatListener().updateChat();
+            RosterHelper.getInstance().getUpdateChatListener().updateMessages();
     }
 
     public String getMyName() {
@@ -162,15 +160,6 @@ public final class Chat {
 
     public boolean hasHistory() {
         return contact.hasHistory();
-    }
-
-    private void fillFromHistory() {
-        if (isBlogBot()) return;
-        if (isHistory()) {
-            HistoryStorage hist = getHistory();
-            if (hist == null) return;
-            hist.fillFromHistory(this);
-        }
     }
 
     public HistoryStorage getHistory() {
@@ -271,10 +260,6 @@ public final class Chat {
         getHistory().addText(md);
     }
 
-    private boolean isHistory() {
-        return Options.getBoolean(Options.OPTION_HISTORY);
-    }
-
     public String getFrom(Message message) {
         String senderName = message.getName();
         if (null == senderName) {
@@ -285,19 +270,18 @@ public final class Chat {
         return senderName;
     }
 
-    public void addTextToForm(Message message, String from, boolean isSystemNotice, boolean isHighlight, boolean isHistory) {
-        boolean isConference = contact.isConference();
+    public MessData buildMessage(Message message, String from, boolean isSystemNotice, boolean isHighlight) {
         boolean incoming = message.isIncoming();
         String messageText = message.getProcessedText();
         //messageText = StringConvertor.removeCr(messageText);
         if (StringConvertor.isEmpty(messageText)) {
-            return;
+            return null;
         }
         boolean isMe = messageText.startsWith(PlainMessage.CMD_ME);
         if (isMe) {
             messageText = messageText.substring(4);
             if (0 == messageText.length()) {
-                return;
+                return null;
             }
         }
         short flags = 0;
@@ -315,18 +299,24 @@ public final class Chat {
         if (!incoming && !mData.isMe()) {
             message.setVisibleIcon(mData);
         }
-        addMessage(mData);
-        if (isHistory) {
-            addTextToHistory(mData);
-        }
-        if (isConference && mData.isMessage())
-            RosterHelper.getInstance().setLastMessageTime(contact.getUserId(), mData.getTime());
+        return mData;
     }
 
-    private void addMessage(MessData mData) {
+    private void addTextToFormAndHistory(Message message, String from, boolean isSystemNotice, boolean isHighlight) {
+        final MessData mData = buildMessage(message, from, isSystemNotice, isHighlight);
+        addMessage(mData);
+        addTextToHistory(mData);
+    }
+
+    public void addMessage(MessData mData) {
         messData.add(mData);
-        if (RosterHelper.getInstance().getUpdateChatListener() != null)
+        if (RosterHelper.getInstance().getUpdateChatListener() != null) {
             RosterHelper.getInstance().getUpdateChatListener().addMessage(contact, mData);
+            RosterHelper.getInstance().getUpdateChatListener().updateMessages();
+        }
+        boolean isConference = contact.isConference();
+        if (isConference && mData.isMessage())
+            RosterHelper.getInstance().setLastMessageTime(contact.getUserId(), mData.getTime());
     }
 
     public void addPresence(SystemNotice message) {
@@ -345,7 +335,7 @@ public final class Chat {
         boolean inc = !isVisibleChat();
         String from = getFrom(message);
         if (isPlain) {
-            addTextToForm(message, from, false, isHighlight, isHistory());
+            addTextToFormAndHistory(message, from, false, isHighlight);
             if (inc) {
                 messageCounter = inc(messageCounter);
                 if (!contact.isSingleUserContact() && !isHighlight) {
@@ -362,7 +352,7 @@ public final class Chat {
                 sysNoticeCounter = inc(sysNoticeCounter);
             }
             //MagicEye.addAction(protocol, contact.getUserId(), message.getText());
-            addTextToForm(message, from, true, isHighlight, isHistory());
+            addTextToFormAndHistory(message, from, true, isHighlight);
         }
         if (inc) {
             contact.updateChatState(this);
@@ -374,7 +364,7 @@ public final class Chat {
         if (getMessCount() <= 1)
             ChatHistory.instance.registerChat(this);
         resetUnreadMessages();
-        addTextToForm(message, from, true, false, isHistory());
+        addTextToFormAndHistory(message, from, true, false);
         if (RosterHelper.getInstance().getUpdateChatListener() != null)
             RosterHelper.getInstance().getUpdateChatListener().updateChat();
     }
