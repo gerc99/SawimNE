@@ -21,13 +21,13 @@ public class ChatListsView extends IcsLinearLayout {
         setOrientation(HORIZONTAL);
         layoutParams.weight = 2;
         setLayoutParams(layoutParams);
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
         if (isTablet)
             lp.weight = 1;
         addViewInLayout(chatListView, 0, lp);
 
         if (isTablet) {
-            lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
             lp.weight = 3;
             addViewInLayout(nickList, 1, lp);
         }

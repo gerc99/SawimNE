@@ -70,16 +70,7 @@ public abstract class Message {
             if (historyStorage != null)
                 historyStorage.updateText(mData);
             if (RosterHelper.getInstance().getUpdateChatListener() != null)
-                RosterHelper.getInstance().getUpdateChatListener().updateChat(contact);
-        }
-    }
-
-    public final void setSendingStateFromHistory(Protocol protocol, byte state) {
-        if (mData != null) {
-            Contact contact = protocol.getItemByUIN(contactId);
-            mData.setIconIndex(state);
-            if (RosterHelper.getInstance().getUpdateChatListener() != null)
-                RosterHelper.getInstance().getUpdateChatListener().updateChat(contact);
+                RosterHelper.getInstance().getUpdateChatListener().updateMessages();
         }
     }
 

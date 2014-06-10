@@ -1,10 +1,11 @@
 package ru.sawim.chat;
 
+import android.text.Layout;
+import android.text.SpannableStringBuilder;
 import protocol.Contact;
 import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
 import ru.sawim.chat.message.Message;
-import ru.sawim.comm.Util;
 import ru.sawim.text.TextFormatter;
 
 public final class MessData {
@@ -17,7 +18,7 @@ public final class MessData {
     private final boolean confHighLight;
     private boolean isHighLight;
 
-    private CharSequence parsedText;
+    public Layout layout;
 
     public static final short INCOMING = 2;
     public static final short ME = 4;
@@ -32,10 +33,16 @@ public final class MessData {
         this.time = time;
         this.rowData = flags;
         boolean today = (SawimApplication.getCurrentGmtTime() - 24 * 60 * 60 < time);
-        strTime = Util.getLocalDateString(time, today);
+        strTime = ru.sawim.comm.Util.getLocalDateString(time, today);
 
         confHighLight = (isIncoming() && !currentContact.isSingleUserContact() && isHighLight());
-        parsedText = TextFormatter.getInstance().parsedText(currentContact, text);
+        CharSequence parsedText = TextFormatter.getInstance().parsedText(currentContact, text);
+        if (isMe()) {
+            parsedText = new SpannableStringBuilder().append("* ").append(nick).append(" ").append(parsedText);
+        } else if (isPresence()) {
+            parsedText = new SpannableStringBuilder().append(strTime).append(" ").append(nick).append(parsedText);
+        }
+        layout = TextFormatter.getInstance().buildLayout(parsedText, isMe(), isPresence(), isIncoming());
     }
 
     public long getTime() {
@@ -47,7 +54,7 @@ public final class MessData {
     }
 
     public CharSequence getText() {
-        return parsedText;
+        return layout.getText();
     }
 
     public boolean isIncoming() {

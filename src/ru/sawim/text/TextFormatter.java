@@ -1,12 +1,16 @@
 package ru.sawim.text;
 
-import android.text.Spannable;
-import android.text.SpannableStringBuilder;
+import android.graphics.Paint;
+import android.graphics.Typeface;
+import android.text.*;
 import android.text.style.ImageSpan;
+import android.util.DisplayMetrics;
 import protocol.Contact;
+import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
 import ru.sawim.modules.Emotions;
 import ru.sawim.view.menu.JuickMenu;
+import ru.sawim.widget.Util;
 
 import java.util.ArrayList;
 import java.util.regex.Matcher;
@@ -20,6 +24,8 @@ import java.util.regex.Pattern;
  * To change this template use File | Settings | File Templates.
  */
 public class TextFormatter {
+
+    public static final TextPaint textPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
 
     private Pattern juickPattern = Pattern.compile("(#[0-9]+(/[0-9]+)?)");
     private Pattern pstoPattern = Pattern.compile("(#[\\w]+(/[0-9]+)?)");
@@ -40,6 +46,24 @@ public class TextFormatter {
 
     private TextFormatter() {
         smilesPattern = compilePattern();
+    }
+
+    public Layout buildLayout(CharSequence parsedText, boolean isMe, boolean isPresence, boolean isIncoming) {
+        DisplayMetrics displayMetrics = SawimApplication.getContext().getResources().getDisplayMetrics();
+        textPaint.setAntiAlias(true);
+        textPaint.linkColor = Scheme.getColor(Scheme.THEME_LINKS);
+        if (isMe || isPresence) {
+            textPaint.setTextSize((SawimApplication.getFontSize() - 2) * displayMetrics.scaledDensity);
+        } else {
+            textPaint.setTextSize(SawimApplication.getFontSize() * displayMetrics.scaledDensity);
+        }
+        try {
+            return new StaticLayout(parsedText, textPaint, displayMetrics.widthPixels
+                    - Util.dipToPixels(SawimApplication.getContext(), isIncoming ? 9 : 19), Layout.Alignment.ALIGN_NORMAL, 1.0F, 0.0F, false);
+        } catch (ArrayIndexOutOfBoundsException e) {
+            return new StaticLayout(parsedText.toString(), textPaint, displayMetrics.widthPixels
+                    - Util.dipToPixels(SawimApplication.getContext(), isIncoming ? 9 : 19), Layout.Alignment.ALIGN_NORMAL, 1.0F, 0.0F, false);
+        }
     }
 
     public CharSequence parsedText(final Contact contact, final CharSequence text) {

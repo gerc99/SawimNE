@@ -591,7 +591,7 @@ abstract public class Protocol {
             beginTyping(item, type);
             RosterHelper.getInstance().updateRoster();
             if (RosterHelper.getInstance().getUpdateChatListener() != null)
-                RosterHelper.getInstance().getUpdateChatListener().updateChat(item);
+                RosterHelper.getInstance().getUpdateChatListener().updateChat();
         }
     }
 
@@ -744,7 +744,7 @@ abstract public class Protocol {
         }
         RosterHelper.getInstance().updateRoster(contact);
         if (RosterHelper.getInstance().getUpdateChatListener() != null)
-            RosterHelper.getInstance().getUpdateChatListener().updateChat(contact);
+            RosterHelper.getInstance().getUpdateChatListener().updateChat();
     }
 
     private void cl_addContact(Contact contact) {
@@ -903,8 +903,6 @@ abstract public class Protocol {
             RosterHelper.getInstance().updateRoster(contact);
             RosterHelper.getInstance().updateBarProtocols();
         }
-        if (RosterHelper.getInstance().getUpdateChatListener() != null)
-            RosterHelper.getInstance().getUpdateChatListener().updateChat(contact);
     }
 
     protected boolean isBlogBot(String userId) {

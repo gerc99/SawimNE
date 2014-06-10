@@ -12,6 +12,9 @@ import ru.sawim.chat.MessData;
 import ru.sawim.chat.message.PlainMessage;
 import ru.sawim.comm.Util;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class HistoryStorage {
 
     private static final String CHAT_HISTORY_TABLE = "messages";
@@ -95,11 +98,51 @@ public class HistoryStorage {
         try {
             ContentValues values = new ContentValues();
             values.put(SENDING_STATE, (int) md.getIconIndex());
-            String wh = COLUMN_ID + "='" + md.getNick() + "' AND " + MESSAGE + "='" + md.getText().toString() + "'";
+            String wh = AUTHOR + "='" + md.getNick() + "' AND " + MESSAGE + "='" + md.getText().toString() + "'";
             db.update(CHAT_HISTORY_TABLE, values, wh, null);
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public List<MessData> getNextListMessages(Chat chat, int offset) {
+        String selectCount = "select * from (select * from "
+                + CHAT_HISTORY_TABLE + " order by " + COLUMN_ID
+                + " DESC limit 5 OFFSET " + offset + ") order by " + COLUMN_ID + " ASC";
+        List<MessData> messDataList = new ArrayList<MessData>();
+        try {
+            openHistory();
+            Cursor cursor = db.rawQuery(selectCount, new String[]{});
+            if (cursor.moveToFirst()) {
+                do {
+                    messDataList.add(buildMessage(chat, cursor));
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return messDataList;
+    }
+
+    private MessData buildMessage(Chat chat, Cursor cursor) {
+        int sendingState = cursor.getInt(cursor.getColumnIndex(SENDING_STATE));
+        boolean isIncoming = cursor.getInt(cursor.getColumnIndex(INCOMING)) == 0;
+        String from = cursor.getString(cursor.getColumnIndex(AUTHOR));
+        String text = cursor.getString(cursor.getColumnIndex(MESSAGE));
+        long date = Util.createLocalDate(Util.getLocalDateString(cursor.getLong(cursor.getColumnIndex(DATE)), false));
+        PlainMessage message;
+        if (isIncoming) {
+            message = new PlainMessage(from, chat.getProtocol(), date, text, true);
+        } else {
+            message = new PlainMessage(chat.getProtocol(), contact, date, text);
+        }
+        MessData messData = chat.buildMessage(message, contact.isConference() ? from : chat.getFrom(message),
+                false, Chat.isHighlight(message.getProcessedText(), contact.getMyName()));
+        if (!message.isIncoming() && !messData.isMe()) {
+            messData.setIconIndex((byte) sendingState);
+        }
+        return messData;
     }
 
     public int getHistorySize() {
@@ -139,35 +182,6 @@ public class HistoryStorage {
         }
         latest.close();
         return lastMessageTime;
-    }
-
-    public void fillFromHistory(Chat chat) {
-        openHistory();
-        try {
-            Cursor cursor = db.query(CHAT_HISTORY_TABLE, null, null, null, null, null, null);
-            if (cursor.moveToFirst()) {
-                do {
-                    int sendingState = cursor.getInt(cursor.getColumnIndex(SENDING_STATE));
-                    boolean isIncoming = cursor.getInt(cursor.getColumnIndex(INCOMING)) == 0;
-                    String from = cursor.getString(cursor.getColumnIndex(AUTHOR));
-                    String text = cursor.getString(cursor.getColumnIndex(MESSAGE));
-                    long date = Util.createLocalDate(Util.getLocalDateString(cursor.getLong(cursor.getColumnIndex(DATE)), false));
-                    PlainMessage message;
-                    if (isIncoming) {
-                        message = new PlainMessage(from, chat.getProtocol(), date, text, true);
-                    } else {
-                        message = new PlainMessage(chat.getProtocol(), contact, date, text);
-                    }
-                    chat.addTextToForm(message, contact.isConference() ? from : chat.getFrom(message),
-                            false, Chat.isHighlight(message.getProcessedText(), contact.getMyName()), false);
-                    message.setSendingStateFromHistory(contact.getProtocol(), (byte) sendingState);
-                } while (cursor.moveToNext());
-            }
-            cursor.close();
-            closeHistory();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     public void removeHistory() {

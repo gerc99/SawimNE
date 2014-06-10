@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.text.Layout;
 import android.text.Spannable;
 import android.text.StaticLayout;
@@ -13,8 +14,10 @@ import android.text.TextPaint;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
+import ru.sawim.SawimResources;
 import ru.sawim.Scheme;
 import ru.sawim.text.InternalURLSpan;
+import ru.sawim.text.TextFormatter;
 import ru.sawim.text.TextLinkClickListener;
 
 import java.util.HashMap;
@@ -29,6 +32,8 @@ import java.util.HashMap;
 public class MessageItemView extends View {
 
     private static final TextPaint textPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
+
+    private boolean isIncoming;
     private String msgTimeText;
     private String nickText;
     private int nickColor;
@@ -45,14 +50,11 @@ public class MessageItemView extends View {
     private int textY;
 
     private Layout layout;
-    private CharSequence text;
     private TextLinkClickListener listener;
     private boolean isSecondTap;
     private boolean isLongTap;
     private boolean isShowDivider = false;
     private int titleHeight;
-
-    private static final HashMap<String, Layout> layoutHolder = new HashMap<String, Layout>();
 
     public MessageItemView(Context context) {
         super(context);
@@ -63,13 +65,17 @@ public class MessageItemView extends View {
         textPaint.setTextSize(size * getResources().getDisplayMetrics().scaledDensity);
     }
 
-    public void makeLayout(int specSize) {
-        if (specSize <= 0) return;
+    public static StaticLayout makeLayout(CharSequence text, int specSize) {
+        if (specSize <= 0) return null;
         try {
-            layout = new StaticLayout(text, textPaint, specSize, Layout.Alignment.ALIGN_NORMAL, 1.0F, 0.0F, false);
+            return new StaticLayout(text, TextFormatter.textPaint, specSize, Layout.Alignment.ALIGN_NORMAL, 1.0F, 0.0F, false);
         } catch (ArrayIndexOutOfBoundsException e) {
-            layout = new StaticLayout(text.toString(), textPaint, specSize, Layout.Alignment.ALIGN_NORMAL, 1.0F, 0.0F, false);
+            return new StaticLayout(text.toString(), TextFormatter.textPaint, specSize, Layout.Alignment.ALIGN_NORMAL, 1.0F, 0.0F, false);
         }
+    }
+
+    public void setLayout(Layout layout) {
+        this.layout = layout;
     }
 
     @Override
@@ -78,16 +84,10 @@ public class MessageItemView extends View {
         int width = MeasureSpec.getSize(widthMeasureSpec);
         int height = isAddTitleView ? measureHeight(heightMeasureSpec) : getPaddingTop() + getPaddingBottom();
         int layoutWidth = width - getPaddingRight() - getPaddingLeft();
-        layout = layoutHolder.get(text.toString());
-        if (layout == null) {
-            makeLayout(layoutWidth);
-            layoutHolder.put(text.toString(), layout);
-        } else {
-            if (layout.getWidth() != layoutWidth) {
-                layoutHolder.clear();
-                makeLayout(layoutWidth);
-                layoutHolder.put(text.toString(), layout);
-            }
+        if (layout.getWidth() - getPaddingLeft() != layoutWidth) {
+            CharSequence text = layout.getText();
+            layout = null;
+            layout = makeLayout(text, layoutWidth);
         }
         titleHeight = isAddTitleView ? height - getPaddingTop() : getPaddingTop();
         if (layout != null)
@@ -99,8 +99,8 @@ public class MessageItemView extends View {
         int result = 0;
         int specMode = MeasureSpec.getMode(measureSpec);
         int specSize = MeasureSpec.getSize(measureSpec);
-        int ascent = (int) textPaint.ascent();
-        int descent = (int) textPaint.descent();
+        int ascent = (int) TextFormatter.textPaint.ascent();
+        int descent = (int) TextFormatter.textPaint.descent();
         if (specMode == MeasureSpec.EXACTLY) {
             result = specSize;
         } else {
@@ -125,6 +125,10 @@ public class MessageItemView extends View {
         textY = getPaddingTop() - (int) textPaint.ascent();
     }
 
+    public void setIncoming(boolean incoming) {
+        this.isIncoming = incoming;
+    }
+
     public void setNick(int nickColor, int nickSize, Typeface nickTypeface, String nickText) {
         this.nickColor = nickColor;
         this.nickSize = nickSize;
@@ -143,10 +147,6 @@ public class MessageItemView extends View {
         checkImage = image;
     }
 
-    public void setText(CharSequence text) {
-        this.text = text;
-    }
-
     public void setTextColor(int color) {
         msgTextColor = color;
     }
@@ -163,10 +163,6 @@ public class MessageItemView extends View {
         msgTextSize = size;
     }
 
-    public static void clearCache() {
-        layoutHolder.clear();
-    }
-
     public void repaint() {
         requestLayout();
         invalidate();
@@ -179,6 +175,13 @@ public class MessageItemView extends View {
         if (isShowDivider) {
             textPaint.setColor(Scheme.getColor(Scheme.THEME_TEXT));
             canvas.drawLine(getPaddingLeft(), getScrollY() - 2, stopX, getScrollY() - 2, textPaint);
+        }
+        if (isIncoming) {
+            setDrawableBounds(SawimResources.backgroundDrawableIn, 0, 0, getWidth(), getHeight());
+            SawimResources.backgroundDrawableIn.draw(canvas);
+        } else {
+            setDrawableBounds(SawimResources.backgroundDrawableOut, 0, 0, getWidth(), getHeight());
+            SawimResources.backgroundDrawableOut.draw(canvas);
         }
 
         if (nickText != null) {
@@ -203,10 +206,10 @@ public class MessageItemView extends View {
         }
         if (layout != null) {
             canvas.save();
-            textPaint.setColor(msgTextColor);
-            textPaint.setTextAlign(Paint.Align.LEFT);
-            setTextSize(msgTextSize);
-            textPaint.setTypeface(msgTextTypeface);
+            TextFormatter.textPaint.setColor(msgTextColor);
+            TextFormatter.textPaint.setTextAlign(Paint.Align.LEFT);
+            TextFormatter.textPaint.setTextSize(msgTextSize * getResources().getDisplayMetrics().scaledDensity);
+            TextFormatter.textPaint.setTypeface(msgTextTypeface);
             canvas.translate(getPaddingLeft(), titleHeight);
             layout.draw(canvas);
             canvas.restore();
@@ -215,7 +218,11 @@ public class MessageItemView extends View {
 
     public void setShowDivider(boolean showDivider) {
         isShowDivider = showDivider;
-        textPaint.setStrokeWidth((int) (4 * getResources().getDisplayMetrics().density + 0.5f));
+        textPaint.setStrokeWidth((int) (4 * (getResources().getDisplayMetrics().density + 0.5f)));
+    }
+
+    private void setDrawableBounds(Drawable drawable, int x, int y, int w, int h) {
+        drawable.setBounds(x, y, x + w, y + h);
     }
 
     @Override
@@ -237,9 +244,9 @@ public class MessageItemView extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (text == null) return super.onTouchEvent(event);
-        if (text instanceof Spannable) {
-            Spannable buffer = (Spannable) text;
+        if (layout.getText() == null) return super.onTouchEvent(event);
+        if (layout.getText() instanceof Spannable) {
+            Spannable buffer = (Spannable) layout.getText();
             int action = event.getAction();
             int x = (int) event.getX();
             int y = (int) event.getY();

@@ -5,6 +5,8 @@ import android.content.DialogInterface;
 import android.os.Handler;
 import android.os.Looper;
 import android.widget.Toast;
+import listener.OnUpdateChat;
+import listener.OnUpdateRoster;
 import protocol.*;
 import protocol.icq.Icq;
 import protocol.mrim.Mrim;
@@ -309,7 +311,7 @@ public final class RosterHelper {
     public final void markMessages(Contact contact) {
         SawimApplication.getInstance().updateAppIcon();
         if (getUpdateChatListener() != null)
-            getUpdateChatListener().updateChat(contact);
+            getUpdateChatListener().updateChat();
     }
 
     public void updateConnectionStatus() {
@@ -725,23 +727,5 @@ public final class RosterHelper {
 
     public OnUpdateChat getUpdateChatListener() {
         return updateChatListener;
-    }
-
-    public interface OnUpdateChat {
-        void updateChat(Contact contact);
-
-        void updateMucList();
-
-        void pastText(String s);
-    }
-
-    public interface OnUpdateRoster {
-        void updateRoster();
-
-        void updateBarProtocols();
-
-        void updateProgressBar();
-
-        void putIntoQueue(Group g);
     }
 }

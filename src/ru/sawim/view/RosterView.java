@@ -22,6 +22,7 @@ import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
+import listener.OnUpdateRoster;
 import protocol.Contact;
 import protocol.ContactMenu;
 import protocol.Group;
@@ -57,7 +58,7 @@ import java.io.InputStream;
  * Time: 19:58
  * To change this template use File | Settings | File Templates.
  */
-public class RosterView extends Fragment implements ListView.OnItemClickListener, RosterHelper.OnUpdateRoster, Handler.Callback {
+public class RosterView extends Fragment implements ListView.OnItemClickListener, OnUpdateRoster, Handler.Callback {
 
     public static final String TAG = RosterView.class.getSimpleName();
 

@@ -17,6 +17,8 @@ public class SawimResources {
     public static BitmapDrawable typingIcon;
     public static Drawable listDivider;
     public static Drawable ic_menu;
+    public static Drawable backgroundDrawableIn;
+    public static Drawable backgroundDrawableOut;
 
     public static final BitmapDrawable authIcon = (BitmapDrawable) SawimApplication.getInstance().getResources()
             .getDrawable(android.R.drawable.stat_notify_error);
@@ -39,20 +41,26 @@ public class SawimResources {
         groupDownIcon = null;
         groupRightIcons = null;
         listDivider = null;
+        backgroundDrawableIn = null;
+        backgroundDrawableOut = null;
         ic_menu = null;
         ic_menu = SawimApplication.getInstance().getResources()
                 .getDrawable(Scheme.isBlack() ? R.drawable.abc_ic_menu_moreoverflow_normal_holo_dark : R.drawable.abc_ic_menu_moreoverflow_normal_holo_light);
         usersIconOn = (BitmapDrawable) SawimApplication.getInstance().getResources()
                 .getDrawable(Scheme.isBlack() ? R.drawable.ic_participants_dark_on : R.drawable.ic_participants_on);
-        usersIcon = (BitmapDrawable) SawimApplication.getInstance().getResources().
-                getDrawable(Scheme.isBlack() ? R.drawable.ic_participants_dark : R.drawable.ic_participants_light);
-        typingIcon = (BitmapDrawable) SawimApplication.getInstance().getResources().
-                getDrawable(Scheme.isBlack() ? R.drawable.ic_typing_dark : R.drawable.ic_typing_light);
-        groupDownIcon = (BitmapDrawable) SawimApplication.getInstance().getResources().
-                getDrawable(Scheme.isBlack() ? R.drawable.ic_collapsed_dark : R.drawable.ic_collapsed_light);
-        groupRightIcons = (BitmapDrawable) SawimApplication.getInstance().getResources().
-                getDrawable(Scheme.isBlack() ? R.drawable.ic_expanded_dark : R.drawable.ic_expanded_light);
-        listDivider = SawimApplication.getInstance().getResources().
-                getDrawable(Scheme.isBlack() ? R.drawable.abc_list_divider_holo_dark : R.drawable.abc_list_divider_holo_light);
+        usersIcon = (BitmapDrawable) SawimApplication.getInstance().getResources()
+                .getDrawable(Scheme.isBlack() ? R.drawable.ic_participants_dark : R.drawable.ic_participants_light);
+        typingIcon = (BitmapDrawable) SawimApplication.getInstance().getResources()
+                .getDrawable(Scheme.isBlack() ? R.drawable.ic_typing_dark : R.drawable.ic_typing_light);
+        groupDownIcon = (BitmapDrawable) SawimApplication.getInstance().getResources()
+                .getDrawable(Scheme.isBlack() ? R.drawable.ic_collapsed_dark : R.drawable.ic_collapsed_light);
+        groupRightIcons = (BitmapDrawable) SawimApplication.getInstance().getResources()
+                .getDrawable(Scheme.isBlack() ? R.drawable.ic_expanded_dark : R.drawable.ic_expanded_light);
+        listDivider = SawimApplication.getInstance().getResources()
+                .getDrawable(Scheme.isBlack() ? R.drawable.abc_list_divider_holo_dark : R.drawable.abc_list_divider_holo_light);
+        backgroundDrawableIn = SawimApplication.getInstance().getResources()
+                .getDrawable(Scheme.isBlack() ? R.drawable.msg_in_dark : R.drawable.msg_in);
+        backgroundDrawableOut = SawimApplication.getInstance().getResources()
+                .getDrawable(Scheme.isBlack() ? R.drawable.msg_out_dark : R.drawable.msg_out);
     }
 }
