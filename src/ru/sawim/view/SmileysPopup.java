@@ -66,11 +66,8 @@ public class SmileysPopup {
             popupWindow.showAtLocation(rootView, Gravity.BOTTOM, 0, 0);
             popupWindow.getContentView().setPadding(0, 0, 0, 0);
         } else {
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            if (activity.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-                lp.weight = 2;
-            }
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+            lp.weight = (float) 2.5;
             smileysView.setLayoutParams(lp);
             rootView.addView(smileysView);
         }

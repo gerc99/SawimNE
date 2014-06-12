@@ -20,7 +20,6 @@ import android.support.v7.app.ActionBar;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.*;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -393,7 +392,6 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     @Override
     public void onDetach() {
         super.onDetach();
-        Log.e(TAG, "onDetach");
         ((BaseActivity) getActivity()).setConfigurationChanged(null);
         chat = null;
         oldChat = null;
@@ -439,14 +437,12 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     @Override
     public void onStart() {
         super.onStart();
-        Log.e(TAG, "onStart ");
         Contact currentContact = RosterHelper.getInstance().getCurrentContact();
         if (contact == null) {
             if (currentContact != null)
                 initChat(currentContact.getProtocol(), currentContact);
         } else {
             openChat(protocol, contact);
-            Log.e(TAG, "openChat "+chat);
         }
         if (SawimApplication.isManyPane()) {
             if (contact == null)
@@ -469,7 +465,6 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     }
 
     public void pause(Chat chat) {
-        Log.e(TAG, "pause");
         if (chat == null) return;
         initChat(protocol, contact);
         oldChat = chat.getContact().getUserId();
@@ -490,7 +485,6 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     }
 
     public void resume(Chat chat) {
-        Log.e(TAG, "resume");
         resetBar();
         if (chat == null) return;
         chat.setVisibleChat(true);
@@ -514,7 +508,6 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                     DrawerLayout.LOCK_MODE_UNLOCKED : DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         adapter.addAll(chat.getMessData());
         updateChat();
-        Log.e(TAG, "resume "+chat.getMessData().size());
         setPosition(unreadMessageCount);
         chatListView.setFastScrollEnabled(true);
     }

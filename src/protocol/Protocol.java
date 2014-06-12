@@ -894,13 +894,11 @@ abstract public class Protocol {
             }
         }
         boolean isNewMessageIcon = chat.typeNewMessageIcon != chat.getNewMessageIcon();
-        if ((isNewMessageIcon || (isNewMessageIcon && SawimApplication.isManyPane()))
-                && isPersonal || isMention) {
-            if (!chat.isVisibleChat())
-                SawimApplication.getInstance().sendNotify(contact.getUserId(), message.getText(), notifyMessage);
-        }
         if (isNewMessageIcon) {
             chat.typeNewMessageIcon = chat.getNewMessageIcon();
+
+            SawimApplication.getInstance().sendNotify(contact.getUserId(), message.getText(), notifyMessage && !chat.isVisibleChat());
+
             RosterHelper.getInstance().updateRoster(contact);
             RosterHelper.getInstance().updateBarProtocols();
         }
