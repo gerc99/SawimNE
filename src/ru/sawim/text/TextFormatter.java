@@ -48,7 +48,7 @@ public class TextFormatter {
         smilesPattern = compilePattern();
     }
 
-    public Layout buildLayout(CharSequence parsedText, boolean isMe, boolean isPresence, boolean isIncoming) {
+    public Layout buildLayout(CharSequence parsedText, boolean isMe, boolean isPresence) {
         DisplayMetrics displayMetrics = SawimApplication.getContext().getResources().getDisplayMetrics();
         textPaint.setAntiAlias(true);
         textPaint.linkColor = Scheme.getColor(Scheme.THEME_LINKS);
@@ -59,10 +59,10 @@ public class TextFormatter {
         }
         try {
             return new StaticLayout(parsedText, textPaint, displayMetrics.widthPixels
-                    - Util.dipToPixels(SawimApplication.getContext(), isIncoming ? 9 : 19), Layout.Alignment.ALIGN_NORMAL, 1.0F, 0.0F, false);
+                    - Util.dipToPixels(SawimApplication.getContext(), 28), Layout.Alignment.ALIGN_NORMAL, 1.0F, 0.0F, false);
         } catch (ArrayIndexOutOfBoundsException e) {
             return new StaticLayout(parsedText.toString(), textPaint, displayMetrics.widthPixels
-                    - Util.dipToPixels(SawimApplication.getContext(), isIncoming ? 9 : 19), Layout.Alignment.ALIGN_NORMAL, 1.0F, 0.0F, false);
+                    - Util.dipToPixels(SawimApplication.getContext(), 28), Layout.Alignment.ALIGN_NORMAL, 1.0F, 0.0F, false);
         }
     }
 

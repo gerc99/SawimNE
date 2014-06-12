@@ -896,7 +896,8 @@ abstract public class Protocol {
         boolean isNewMessageIcon = chat.typeNewMessageIcon != chat.getNewMessageIcon();
         if ((isNewMessageIcon || (isNewMessageIcon && SawimApplication.isManyPane()))
                 && isPersonal || isMention) {
-            SawimApplication.getInstance().sendNotify(contact.getUserId(), message.getText(), notifyMessage);
+            if (!chat.isVisibleChat())
+                SawimApplication.getInstance().sendNotify(contact.getUserId(), message.getText(), notifyMessage);
         }
         if (isNewMessageIcon) {
             chat.typeNewMessageIcon = chat.getNewMessageIcon();

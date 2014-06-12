@@ -345,6 +345,7 @@ public final class Chat {
         if (RosterHelper.getInstance().getUpdateChatListener() != null) {
             RosterHelper.getInstance().getUpdateChatListener().addMessage(contact, mData);
             RosterHelper.getInstance().getUpdateChatListener().updateMessages();
+            RosterHelper.getInstance().getUpdateChatListener().updateChat();
         }
         boolean isConference = contact.isConference();
         if (isConference && mData.isMessage())
@@ -399,8 +400,6 @@ public final class Chat {
             ChatHistory.instance.registerChat(this);
         resetUnreadMessages();
         addTextToForm(message, from, true, false, isHistory());
-        if (RosterHelper.getInstance().getUpdateChatListener() != null)
-            RosterHelper.getInstance().getUpdateChatListener().updateChat();
     }
 
     public Contact getContact() {

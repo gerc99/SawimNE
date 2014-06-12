@@ -122,7 +122,7 @@ public class MessageItemView extends View {
     }
 
     private void computeCoordinates(int viewWidth, int viewHeight) {
-        textY = getPaddingTop() - (int) textPaint.ascent();
+        textY = getPaddingTop() - (int) TextFormatter.textPaint.ascent();
     }
 
     public void setIncoming(boolean incoming) {

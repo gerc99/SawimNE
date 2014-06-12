@@ -36,7 +36,7 @@ public class MessagesAdapter extends BaseAdapter {
     public void init(Chat chat) {
         this.chat = chat;
         items = new ArrayList<MessData>();
-        items.addAll(chat.getMessData());
+        addAll(chat.getMessData());
     }
 
     public void add(MessData messData) {
@@ -46,6 +46,12 @@ public class MessagesAdapter extends BaseAdapter {
 
     public void addTopMessages(List<MessData> newMessageList) {
         items.addAll(0, newMessageList);
+        notifyDataSetChanged();
+    }
+
+    public void addAll(List<MessData> newMessageList) {
+        items.clear();
+        items.addAll(newMessageList);
         notifyDataSetChanged();
     }
 

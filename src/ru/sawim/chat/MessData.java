@@ -42,7 +42,7 @@ public final class MessData {
         } else if (isPresence()) {
             parsedText = new SpannableStringBuilder().append(strTime).append(" ").append(nick).append(parsedText);
         }
-        layout = TextFormatter.getInstance().buildLayout(parsedText, isMe(), isPresence(), isIncoming());
+        layout = TextFormatter.getInstance().buildLayout(parsedText, isMe(), isPresence());
     }
 
     public long getTime() {

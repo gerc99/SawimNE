@@ -20,6 +20,7 @@ import android.support.v7.app.ActionBar;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.*;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -392,6 +393,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     @Override
     public void onDetach() {
         super.onDetach();
+        Log.e(TAG, "onDetach");
         ((BaseActivity) getActivity()).setConfigurationChanged(null);
         chat = null;
         oldChat = null;
@@ -437,12 +439,15 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     @Override
     public void onStart() {
         super.onStart();
+        Log.e(TAG, "onStart ");
         Contact currentContact = RosterHelper.getInstance().getCurrentContact();
         if (contact == null) {
             if (currentContact != null)
                 initChat(currentContact.getProtocol(), currentContact);
-        } else
+        } else {
             openChat(protocol, contact);
+            Log.e(TAG, "openChat "+chat);
+        }
         if (SawimApplication.isManyPane()) {
             if (contact == null)
                 chatViewLayout.showHint();
@@ -464,6 +469,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     }
 
     public void pause(Chat chat) {
+        Log.e(TAG, "pause");
         if (chat == null) return;
         initChat(protocol, contact);
         oldChat = chat.getContact().getUserId();
@@ -484,6 +490,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     }
 
     public void resume(Chat chat) {
+        Log.e(TAG, "resume");
         resetBar();
         if (chat == null) return;
         chat.setVisibleChat(true);
@@ -505,7 +512,9 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
         if (!SawimApplication.isManyPane())
             drawerLayout.setDrawerLockMode(contact.isConference() ?
                     DrawerLayout.LOCK_MODE_UNLOCKED : DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-        //adapter.refreshList(chat.getMessData());
+        adapter.addAll(chat.getMessData());
+        updateChat();
+        Log.e(TAG, "resume "+chat.getMessData().size());
         setPosition(unreadMessageCount);
         chatListView.setFastScrollEnabled(true);
     }
@@ -583,12 +592,14 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     public void openChat(Protocol p, Contact c) {
         chatViewLayout.hideHint();
         initChat(p, c);
-        chat = protocol.getChat(contact);
-        lastChat = chat.getContact().getUserId();
+
+        Chat newChat = protocol.getChat(contact);
+        lastChat = newChat.getContact().getUserId();
         if (oldChat != null && oldChat.equals(lastChat)) {
             chatListView.setTranscriptMode(ListView.TRANSCRIPT_MODE_DISABLED);
             return;
         }
+        chat = newChat;
         initLabel();
         initList();
         initMucUsers();
@@ -695,12 +706,14 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
             case ADD_MESSAGE:
                 Contact c = (Contact) ((Object[]) msg.obj)[0];
                 MessData mess = (MessData) ((Object[]) msg.obj)[1];
-                if (contact == c) {
+                if (adapter != null && contact == c) {
                     adapter.add(mess);
                 }
                 break;
             case UPDATE_MESSAGES:
-                adapter.notifyDataSetChanged();
+                if (adapter != null) {
+                    adapter.notifyDataSetChanged();
+                }
                 break;
             case UPDATE_CHAT:
                 updateChatIcon();
@@ -716,12 +729,15 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                 }
                 break;
             case LOAD_STORY:
-                HistoryStorage historyStorage = chat.getHistory();
-                int oldCount = adapter.getCount();
-                if (historyStorage != null && historyStorage.getHistorySize() != oldCount) {
-                    List<MessData> oldMessageList = historyStorage.getNextListMessages(chat, oldCount);
-                    adapter.addTopMessages(oldMessageList);
-                    chatListView.setSelection(oldMessageList.size() + 1);
+                if (chat != null) {
+                    HistoryStorage historyStorage = chat.getHistory();
+                    int oldCount = adapter.getCount();
+                    if (historyStorage != null && historyStorage.getHistorySize() != oldCount) {
+                        List<MessData> oldMessageList = historyStorage.getNextListMessages(chat, oldCount);
+                        chat.getMessData().addAll(0, oldMessageList);
+                        adapter.addTopMessages(oldMessageList);
+                        chatListView.setSelection(oldMessageList.size() + 1);
+                    }
                 }
                 break;
         }
