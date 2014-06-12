@@ -1,24 +1,22 @@
 
 package ru.sawim.io;
 
-import org.microemu.util.FileSystemFileConnection;
+import android.os.Environment;
 import protocol.net.TcpSocket;
 import ru.sawim.SawimException;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 
 public class FileSystem {
 
     public static final String HISTORY = "history";
-    public static final String RES = "res";
+    public static final String RES = "res/";
+    public static final String AVATARS = "avatars/";
 
-    private FileSystemFileConnection fileConnection;
+    File file;
 
     public static String getSawimHome() {
-        return "/e:/sawimne/";
+        return "/sawimne/";
     }
 
     public static FileSystem getInstance() {
@@ -26,10 +24,10 @@ public class FileSystem {
     }
 
     public InputStream openSawimFile(String file) {
-        byte[] buffer = null;
+        byte[] buffer;
         try {
-            openFile(getSawimHome() + RES + "/" + file);
-            InputStream in = fileConnection.openInputStream();
+            openFile(getCardDir().getAbsolutePath() + getSawimHome() + RES + file);
+            InputStream in = openInputStream();
             buffer = new byte[in.available()];
             in.read(buffer);
             TcpSocket.close(in);
@@ -43,18 +41,14 @@ public class FileSystem {
         return null;
     }
 
-    public long totalSize() throws Exception {
-        return fileConnection.totalSize();
-    }
-
-    public void openFile(String file) throws SawimException {
+    public void openFile(String path) throws SawimException {
         try {
-            fileConnection = FileSystemFileConnection.open("file://" + file);
+            file = new File(path);
         } catch (SecurityException e) {
-            fileConnection = null;
+            file = null;
             throw new SawimException(193, 1);
         } catch (Exception e) {
-            fileConnection = null;
+            file = null;
             e.printStackTrace();
             throw new SawimException(191, 1);
         }
@@ -62,68 +56,89 @@ public class FileSystem {
 
     public void mkdir(String path) {
         try {
-            FileSystemFileConnection fc = FileSystemFileConnection.open("file://" + path);
+            file = new File(getCardDir().getAbsolutePath(), path);
             try {
-                fc.mkdir();
+                if (!file.mkdir()) {
+                    throw new IOException("Can't create directory " + file.getAbsolutePath());
+                }
             } finally {
-                fc.close();
+                close();
             }
         } catch (IOException e) {
-
         }
     }
 
     public boolean exists() {
-        return (null != fileConnection) && fileConnection.exists();
+        return (null != file) && file.exists();
+    }
+
+    public static File getCardDir() {
+        File ext = Environment.getExternalStorageDirectory();
+        if (isAccessible(ext)) return ext;
+        if (isAccessible(new File("/sdcard"))) return new File("/sdcard");
+        if (isAccessible(new File("/mnt/sdcard"))) return new File("/mnt/sdcard");
+        if (isAccessible(new File("/mnt/ext_card"))) return new File("/mnt/ext_card");
+        return null;
+    }
+
+    private static boolean isAccessible(File file) {
+        if ((null == file) || !file.exists() || file.isHidden() || !file.isDirectory() || !file.canRead()) {
+            return false;
+        }
+        return true;
+    }
+
+    public File getFile() {
+        return file;
     }
 
     public InputStream openInputStream() throws IOException {
-        return fileConnection.openInputStream();
+        return new FileInputStream(file);
     }
 
     public OutputStream openOutputStream() throws Exception {
-        if (fileConnection.exists()) {
-            fileConnection.delete();
+        if (file.exists()) {
+            if (!file.delete()) {
+                throw new IOException("Unable to delete " + file.getAbsolutePath());
+            }
         }
-        fileConnection.create();
-        return fileConnection.openOutputStream();
+        if (!file.createNewFile()) {
+            throw new IOException("File already exists  " + file.getAbsolutePath());
+        }
+        return new FileOutputStream(file);
     }
 
     public OutputStream openForAppendOutputStream() throws Exception {
-        if (!fileConnection.exists()) {
-            fileConnection.create();
+        if (!file.exists()) {
+            if (!file.createNewFile()) {
+                throw new IOException("File already exists  " + file.getAbsolutePath());
+            }
         }
-        return fileConnection.openOutputStream(true);
+        return new FileOutputStream(file, true);
     }
 
     public String getAbsolutePath() throws Exception {
-        return fileConnection.getAbsolutePath();
+        return file.getAbsolutePath();
     }
 
     public void close() {
-        try {
-            if (null != fileConnection) {
-                fileConnection.close();
-            }
-            fileConnection = null;
-        } catch (Exception e) {
-        }
+        file = null;
     }
 
     public long fileSize() throws Exception {
-        return (null == fileConnection) ? -1 : fileConnection.fileSize();
+        return (null == file) ? -1 : file.length();
     }
 
     public String getName() {
-        return (null == fileConnection) ? null : fileConnection.getName();
+        return (null == file) ? null : file.getName();
     }
 
     public byte[] getFileContent(String path) {
         byte[] content = null;
         InputStream in = null;
         try {
-            openFile(path);
-            in = fileConnection.openInputStream();
+            openFile(getCardDir().getAbsolutePath() + path);
+            in = openInputStream();
             int fileSize = (int) fileSize();
             content = new byte[fileSize];
             int bReadSum = 0;

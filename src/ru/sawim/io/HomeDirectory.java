@@ -17,7 +17,7 @@ import java.io.OutputStream;
 public class HomeDirectory {
     public static FileSystem getFile(String file) {
         FileSystem fs = FileSystem.getInstance();
-        String home = FileSystem.getSawimHome();
+        String home = fs.getCardDir().getAbsolutePath() + FileSystem.getSawimHome();
         try {
             fs.openFile(home + file);
         } catch (SawimException ignored) {

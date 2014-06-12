@@ -21,6 +21,7 @@ import ru.sawim.comm.Util;
 import ru.sawim.forms.EditInfo;
 import ru.sawim.icons.Icon;
 import ru.sawim.io.FileBrowserListener;
+import ru.sawim.io.FileSystem;
 import ru.sawim.models.list.VirtualList;
 import ru.sawim.models.list.VirtualListItem;
 import ru.sawim.models.list.VirtualListModel;
@@ -262,13 +263,20 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
 
                     case INFO_MENU_SAVE_AVATAR:
                         byte[] buffer = avatar;
-                        File file = new File(SawimApplication.PATH_AVATARS);
-                        if (!file.exists())
-                            file.mkdirs();
+                        FileSystem fileSystem = new FileSystem();
+                        String path = fileSystem.getCardDir().getAbsolutePath() + FileSystem.getSawimHome() + FileSystem.AVATARS;
+                        try {
+                            fileSystem.openFile(path);
+                            File file = fileSystem.getFile();
+                            if (!file.exists())
+                                file.mkdirs();
+                        } catch (SawimException e) {
+                            e.printStackTrace();
+                        }
 
                         try {
                             if (buffer != null) {
-                                String avatar = SawimApplication.PATH_AVATARS + realUin.replace("/", "%") + ".png";
+                                String avatar = path + realUin.replace("/", "%") + ".png";
                                 FileOutputStream fos = new FileOutputStream(avatar);
                                 fos.write(buffer);
                                 fos.close();
