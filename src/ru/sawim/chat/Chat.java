@@ -168,7 +168,7 @@ public final class Chat {
     }
 
     public HistoryStorage getHistory() {
-        if (null == history && hasHistory()) {
+        if (null == history && hasHistory() && isHistory()) {
             history = HistoryStorage.getHistory(contact);
         }
         return history;

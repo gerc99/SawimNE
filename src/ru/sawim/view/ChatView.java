@@ -502,11 +502,16 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
         }
         messageEditor.setText(chat.message);
         messageEditor.setSelection(messageEditor.getText().length());
-        updateChatIcon();
-        if (!SawimApplication.isManyPane())
+
+        if (!SawimApplication.isManyPane()) {
             drawerLayout.setDrawerLockMode(contact.isConference() ?
                     DrawerLayout.LOCK_MODE_UNLOCKED : DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-        adapter.addAll(chat.getMessData());
+        }
+        if (chat.empty()) {
+            loadStory();
+        } else {
+            adapter.addAll(chat.getMessData());
+        }
         updateChat();
         setPosition(unreadMessageCount);
         chatListView.setFastScrollEnabled(true);
@@ -523,7 +528,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
         boolean hasHistory = historySize > 0 && !chat.isBlogBot();
         boolean isBottomScroll = chat.lastVisiblePosition == chat.dividerPosition;
         adapter.setPosition(chat.dividerPosition);
-        if (chat.dividerPosition == -1) {
+        /*if (chat.dividerPosition == -1) {
             int position = historySize - unreadMessageCount + 1;
             if (hasHistory) {
                 adapter.setPosition(position);
@@ -531,7 +536,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
             } else {
                 chatListView.setSelection(0);
             }
-        } else {
+        } else {*/
             int position = chat.getMessData().size() - unreadMessageCount;
             if (isBottomScroll && unreadMessageCount == 0) {
                 chatListView.setSelectionFromTop(chat.firstVisiblePosition, -chat.offset);
@@ -542,7 +547,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                     chatListView.setSelectionFromTop(position, offsetNewMessage);
                 }
             }
-        }
+        //}
     }
 
     public boolean isLastPosition() {
@@ -668,7 +673,6 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                 }
             }
         });
-        loadStory();
     }
 
     private void initMucUsers() {
@@ -725,7 +729,9 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                 if (chat != null) {
                     HistoryStorage historyStorage = chat.getHistory();
                     int oldCount = adapter.getCount();
-                    if (historyStorage != null && historyStorage.getHistorySize() != oldCount) {
+                    if (historyStorage != null
+                            && historyStorage.getHistorySize() > 0
+                            && historyStorage.getHistorySize() != oldCount) {
                         List<MessData> oldMessageList = historyStorage.getNextListMessages(chat, oldCount);
                         chat.getMessData().addAll(0, oldMessageList);
                         adapter.addTopMessages(oldMessageList);
