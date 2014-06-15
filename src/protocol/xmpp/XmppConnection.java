@@ -1,6 +1,5 @@
 package protocol.xmpp;
 
-import android.util.Log;
 import protocol.*;
 import protocol.net.ClientConnection;
 import ru.sawim.Options;
@@ -292,7 +291,7 @@ public final class XmppConnection extends ClientConnection {
 
     private void write(String xml) throws SawimException {
         if (DEBUGLOG)
-            Log.d("XML", "[OUT]:\n" + xml);
+            DebugLog.println("[OUT]:\n" + xml);
         write(StringConvertor.stringToByteArrayUtf8(xml));
     }
 
@@ -303,7 +302,7 @@ public final class XmppConnection extends ClientConnection {
     private XmlNode readXmlNode(boolean notEmpty) throws SawimException {
         XmlNode node = socket.readNode(notEmpty);
         if (DEBUGLOG && node != null)
-            Log.d("XML", "[IN]:\n" + node.toString());
+            DebugLog.println("[IN]:\n" + node.toString());
         return node;
     }
 
@@ -422,7 +421,7 @@ public final class XmppConnection extends ClientConnection {
                 "<sid>" + rebindSessionId + "</sid></rebind>");
         XmlNode rebind = readXmlNode(true);
         if (rebind != null && rebind.is("rebind")) {
-            Log.d("sawim-xml", "[INFO-JABBER] rebound session ID=" + rebindSessionId);
+            DebugLog.println("[INFO-JABBER] rebound session ID=" + rebindSessionId);
             rebindEnabled = true;
             setAuthStatus(true);
             return true;
@@ -2465,6 +2464,28 @@ public final class XmppConnection extends ClientConnection {
                 + xXml
                 + "</presence>";
         putPacketIntoQueue(xml);
+        //if (!AutoAbsence.getInstance().isChangeStatus())
+        setConferencesXStatus(status, msg, priority);
+    }
+
+    void setConferencesXStatus(String status, String msg, int priority) {
+        String xml;
+        Vector contacts = getXmpp().getContactItems();
+        for (int i = 0; i < contacts.size(); ++i) {
+            XmppContact contact = (XmppContact) contacts.elementAt(i);
+            if (contact instanceof XmppContact) {
+                if ((contact).isConference() && contact.isOnline()) {
+                    if (0 <= priority) {
+                        xml = "<presence to='" + Util.xmlEscape(contact.getUserId()) + "'>";
+                        xml += (StringConvertor.isEmpty(status) ? "" : "<show>" + status + "</show>");
+                        xml += (StringConvertor.isEmpty(msg) ? "" : "<status>" + Util.xmlEscape(msg) + "</status>");
+                        xml += getCaps() + "</presence>";
+                        putPacketIntoQueue(xml);
+
+                    }
+                }
+            }
+        }
     }
 
     public void sendSubscribed(String jid) {
