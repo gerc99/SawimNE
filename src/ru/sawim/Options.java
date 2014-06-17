@@ -63,8 +63,6 @@ public class Options {
     public static void init() {
         preferences = SawimApplication.getContext().getSharedPreferences(PREFS_NAME, 0);
         editor = preferences.edit();
-        //editor.clear();
-        //editor.commit();
         if (preferences.getAll().isEmpty()) {
             initAccounts();
             setDefaults();

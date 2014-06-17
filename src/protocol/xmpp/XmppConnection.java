@@ -32,7 +32,7 @@ import java.util.Vector;
 
 public final class XmppConnection extends ClientConnection {
 
-    private static final boolean DEBUGLOG = false;
+    public static final boolean DEBUGLOG = false;
 
     private Socket socket;
     private Xmpp protocol;
@@ -1722,11 +1722,11 @@ public final class XmppConnection extends ClientConnection {
         final String date = getDate(msg);
         final boolean isOnlineMessage = (null == date);
         long time = isOnlineMessage ? SawimApplication.getCurrentGmtTime() : Util.createGmtDate(date);
-        Message message;
+        Message message = null;
         if (subject == null)
             message = new PlainMessage(from, getXmpp(), time, text, !isOnlineMessage);
-        else
-            return;//message = new SystemNotice(getXmpp(), SystemNotice.SYS_NOTICE_MESSAGE, from, text);
+        else if (!isGroupchat)
+            message = new SystemNotice(getXmpp(), SystemNotice.SYS_NOTICE_MESSAGE, from, text);
         if (null == c) {
             if (isConference && !isGroupchat) {
                 prepareFirstPrivateMessage(from);
@@ -1745,15 +1745,16 @@ public final class XmppConnection extends ClientConnection {
                             return;
                         }
                     }
-                    message.setName(conf.getNick(fromRes));
+                    if (message != null)
+                        message.setName(conf.getNick(fromRes));
                 }
 
             } else {
                 c.setActiveResource(fromRes);
             }
         }
-
-        getXmpp().addMessage(message, S_HEADLINE.equals(type));
+        if (message != null)
+            getXmpp().addMessage(message, S_HEADLINE.equals(type));
     }
 
     private void parseBlogMessage(String to, XmlNode msg, String text, String botNick) {
