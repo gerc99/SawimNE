@@ -7,6 +7,7 @@ import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
 import ru.sawim.chat.message.Message;
 import ru.sawim.text.TextFormatter;
+import ru.sawim.widget.chat.MessageItemView;
 
 public final class MessData {
 
@@ -42,7 +43,7 @@ public final class MessData {
         } else if (isPresence()) {
             parsedText = new SpannableStringBuilder().append(strTime).append(" ").append(nick).append(parsedText);
         }
-        layout = TextFormatter.getInstance().buildLayout(parsedText, isMe(), isPresence());
+        layout = MessageItemView.buildLayout(parsedText);
     }
 
     public long getTime() {

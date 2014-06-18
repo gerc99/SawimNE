@@ -11,16 +11,16 @@ import android.text.Layout;
 import android.text.Spannable;
 import android.text.StaticLayout;
 import android.text.TextPaint;
+import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
+import ru.sawim.SawimApplication;
 import ru.sawim.SawimResources;
 import ru.sawim.Scheme;
 import ru.sawim.text.InternalURLSpan;
-import ru.sawim.text.TextFormatter;
 import ru.sawim.text.TextLinkClickListener;
-
-import java.util.HashMap;
+import ru.sawim.widget.Util;
 
 /**
  * Created with IntelliJ IDEA.
@@ -31,9 +31,14 @@ import java.util.HashMap;
  */
 public class MessageItemView extends View {
 
+    private static final TextPaint messageTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
     private static final TextPaint textPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
 
-    private boolean isIncoming;
+    public static final byte BACKGROUND_NONE = 0;
+    public static final byte BACKGROUND_INCOMING = 1;
+    public static final byte BACKGROUND_OUTCOMING = 2;
+
+    private byte backgroundIndex = BACKGROUND_NONE;
     private String msgTimeText;
     private String nickText;
     private int nickColor;
@@ -65,17 +70,25 @@ public class MessageItemView extends View {
         textPaint.setTextSize(size * getResources().getDisplayMetrics().scaledDensity);
     }
 
-    public static StaticLayout makeLayout(CharSequence text, int specSize) {
-        if (specSize <= 0) return null;
-        try {
-            return new StaticLayout(text, TextFormatter.textPaint, specSize, Layout.Alignment.ALIGN_NORMAL, 1.0F, 0.0F, false);
-        } catch (ArrayIndexOutOfBoundsException e) {
-            return new StaticLayout(text.toString(), TextFormatter.textPaint, specSize, Layout.Alignment.ALIGN_NORMAL, 1.0F, 0.0F, false);
-        }
-    }
-
     public void setLayout(Layout layout) {
         this.layout = layout;
+    }
+
+    public static Layout buildLayout(CharSequence parsedText) {
+        DisplayMetrics displayMetrics = SawimApplication.getContext().getResources().getDisplayMetrics();
+        messageTextPaint.setAntiAlias(true);
+        messageTextPaint.linkColor = Scheme.getColor(Scheme.THEME_LINKS);
+        messageTextPaint.setTextSize((SawimApplication.getFontSize()) * displayMetrics.scaledDensity);
+        return makeLayout(parsedText, displayMetrics.widthPixels - Util.dipToPixels(SawimApplication.getContext(), 28));
+    }
+
+    private static StaticLayout makeLayout(CharSequence text, int specSize) {
+        if (specSize <= 0) return null;
+        try {
+            return new StaticLayout(text, messageTextPaint, specSize, Layout.Alignment.ALIGN_NORMAL, 1.0F, 0.0F, false);
+        } catch (ArrayIndexOutOfBoundsException e) {
+            return new StaticLayout(text.toString(), messageTextPaint, specSize, Layout.Alignment.ALIGN_NORMAL, 1.0F, 0.0F, false);
+        }
     }
 
     @Override
@@ -84,10 +97,8 @@ public class MessageItemView extends View {
         int width = MeasureSpec.getSize(widthMeasureSpec);
         int height = isAddTitleView ? measureHeight(heightMeasureSpec) : getPaddingTop() + getPaddingBottom();
         int layoutWidth = width - getPaddingRight() - getPaddingLeft();
-        if (layout.getWidth() - getPaddingLeft() != layoutWidth) {
-            CharSequence text = layout.getText();
-            layout = null;
-            layout = makeLayout(text, layoutWidth);
+        if (layout.getWidth() != layoutWidth) {
+            layout = makeLayout(layout.getText(), layoutWidth);
         }
         titleHeight = isAddTitleView ? height - getPaddingTop() : getPaddingTop();
         if (layout != null)
@@ -99,8 +110,8 @@ public class MessageItemView extends View {
         int result = 0;
         int specMode = MeasureSpec.getMode(measureSpec);
         int specSize = MeasureSpec.getSize(measureSpec);
-        int ascent = (int) TextFormatter.textPaint.ascent();
-        int descent = (int) TextFormatter.textPaint.descent();
+        int ascent = (int) messageTextPaint.ascent();
+        int descent = (int) messageTextPaint.descent();
         if (specMode == MeasureSpec.EXACTLY) {
             result = specSize;
         } else {
@@ -122,11 +133,11 @@ public class MessageItemView extends View {
     }
 
     private void computeCoordinates(int viewWidth, int viewHeight) {
-        textY = getPaddingTop() - (int) TextFormatter.textPaint.ascent();
+        textY = getPaddingTop() - (int) messageTextPaint.ascent();
     }
 
-    public void setIncoming(boolean incoming) {
-        this.isIncoming = incoming;
+    public void setBackgroundIndex(byte backgroundIndex) {
+        this.backgroundIndex = backgroundIndex;
     }
 
     public void setNick(int nickColor, int nickSize, Typeface nickTypeface, String nickText) {
@@ -176,10 +187,10 @@ public class MessageItemView extends View {
             textPaint.setColor(Scheme.getColor(Scheme.THEME_TEXT));
             canvas.drawLine(getPaddingLeft(), getScrollY() - 2, stopX, getScrollY() - 2, textPaint);
         }
-        if (isIncoming) {
+        if (backgroundIndex == BACKGROUND_INCOMING) {
             setDrawableBounds(SawimResources.backgroundDrawableIn, 0, 0, getWidth(), getHeight());
             SawimResources.backgroundDrawableIn.draw(canvas);
-        } else {
+        } else if (backgroundIndex == BACKGROUND_OUTCOMING) {
             setDrawableBounds(SawimResources.backgroundDrawableOut, 0, 0, getWidth(), getHeight());
             SawimResources.backgroundDrawableOut.draw(canvas);
         }
@@ -206,10 +217,10 @@ public class MessageItemView extends View {
         }
         if (layout != null) {
             canvas.save();
-            TextFormatter.textPaint.setColor(msgTextColor);
-            TextFormatter.textPaint.setTextAlign(Paint.Align.LEFT);
-            TextFormatter.textPaint.setTextSize(msgTextSize * getResources().getDisplayMetrics().scaledDensity);
-            TextFormatter.textPaint.setTypeface(msgTextTypeface);
+            messageTextPaint.setColor(msgTextColor);
+            messageTextPaint.setTextAlign(Paint.Align.LEFT);
+            messageTextPaint.setTextSize(msgTextSize * getResources().getDisplayMetrics().scaledDensity);
+            messageTextPaint.setTypeface(msgTextTypeface);
             canvas.translate(getPaddingLeft(), titleHeight);
             layout.draw(canvas);
             canvas.restore();
