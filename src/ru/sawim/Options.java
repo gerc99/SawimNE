@@ -51,7 +51,6 @@ public class Options {
     public static final String OPTION_SHOW_STATUS_LINE = "show_status_line";
     public static final String OPTION_NOTIFY_IN_AWAY = "notify_in_away";
     public static final String OPTION_BLOG_NOTIFY = "blog_notify";
-    public static final String OPTION_INSTANT_RECONNECTION = "instant_reconnection";
     public static final String OPTION_SIMPLE_INPUT = "simple_input";
 
     private static final String PREFS_NAME = "SAWIM:Settings";
@@ -80,7 +79,6 @@ public class Options {
     private static void setDefaults() {
         setString(Options.UNAVAILABLE_NESSAGE, "I'll be back");
         setInt(Options.OPTION_CURRENT_PAGE, 0);
-        setBoolean(Options.OPTION_INSTANT_RECONNECTION, true);
         setBoolean(Options.OPTION_WAKE_LOCK, false);
         setInt(Options.OPTION_CL_SORT_BY, 0);
         setBoolean(Options.OPTION_SORT_UP_WITH_MSG, true);

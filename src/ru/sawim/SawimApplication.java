@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Message;
 import android.view.Surface;
 import android.view.WindowManager;
@@ -17,7 +19,6 @@ import ru.sawim.modules.Answerer;
 import ru.sawim.modules.AutoAbsence;
 import ru.sawim.modules.DebugLog;
 import ru.sawim.modules.Emotions;
-import ru.sawim.receiver.NetworkStateReceiver;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.service.SawimService;
 import ru.sawim.service.SawimServiceConnection;
@@ -53,7 +54,6 @@ public class SawimApplication extends Application {
 
     public static SawimApplication instance;
     private final SawimServiceConnection serviceConnection = new SawimServiceConnection();
-    private final NetworkStateReceiver networkStateReceiver = new NetworkStateReceiver();
     private XmppSession xmppSession;
     public boolean isBindService = false;
 
@@ -74,7 +74,7 @@ public class SawimApplication extends Application {
         super.onCreate();
 
         startService();
-        networkStateReceiver.updateNetworkState(this);
+        updateNetworkState(this);
 
         instance.paused = false;
         HomeDirectory.init();
@@ -111,7 +111,6 @@ public class SawimApplication extends Application {
         }
         if (!isBindService) {
             isBindService = true;
-            registerReceiver(networkStateReceiver, networkStateReceiver.getFilter());
             bindService(new Intent(this, SawimService.class), serviceConnection, BIND_AUTO_CREATE);
         }
     }
@@ -120,7 +119,6 @@ public class SawimApplication extends Application {
         if (isBindService) {
             isBindService = false;
             unbindService(serviceConnection);
-            unregisterReceiver(networkStateReceiver);
         }
         if (isRunService()) {
             stopService(new Intent(this, SawimService.class));
@@ -137,10 +135,7 @@ public class SawimApplication extends Application {
     }
 
     public void setStatus(Protocol p, int statusIndex, String statusMsg) {
-        Object[] objects = new Object[3];
-        objects[0] = p;
-        objects[1] = statusIndex;
-        objects[2] = statusMsg;
+        Object[] objects = new Object[]{p, statusIndex, statusMsg};
         serviceConnection.send(Message.obtain(null, SawimService.SET_STATUS, objects));
     }
 
@@ -150,7 +145,37 @@ public class SawimApplication extends Application {
     }
 
     public boolean isNetworkAvailable() {
-        return networkStateReceiver.isNetworkAvailable();
+        return isNetworkAvailable;
+    }
+
+    private String previousNetworkType = null;
+    private boolean isNetworkAvailable = false;
+
+    private boolean modeNotChanged(String networkType) {
+        return (null == previousNetworkType)
+                ? (null == networkType)
+                : previousNetworkType.equals(networkType);
+    }
+
+    public boolean updateNetworkState(Context context) {
+        String networkType = getConnectionType(context);
+        if (modeNotChanged(networkType)) return false;
+        previousNetworkType = networkType;
+        isNetworkAvailable = (null != networkType);
+        return true;
+    }
+
+    private String getConnectionType(Context context) {
+        try {
+            ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+            if ((null != activeNetwork) && activeNetwork.isConnected()) {
+                return activeNetwork.getTypeName();
+            }
+            return null;
+        } catch (Exception ignored) {
+            return "";
+        }
     }
 
     private String getVersion() {

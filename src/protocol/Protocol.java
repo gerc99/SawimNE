@@ -943,7 +943,7 @@ abstract public class Protocol {
     public final void processException(SawimException e) {
         DebugLog.println("process exception: " + e.getMessage());
         RosterHelper.getInstance().activateWithMsg(getUserId() + "\n" + e.getMessage());
-        if (!SawimApplication.getInstance().isNetworkAvailable() && Options.getBoolean(Options.OPTION_INSTANT_RECONNECTION)) {
+        if (!SawimApplication.getInstance().isNetworkAvailable()) {
             e = new SawimException(123, 0);
         }
         if (e.isReconnectable()) {

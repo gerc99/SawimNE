@@ -66,7 +66,6 @@ public class OptionsForm implements ControlStateListener {
     private void save(int currentOptionsForm) {
         switch (currentOptionsForm) {
             case OPTIONS_NETWORK:
-                saveOptionBoolean(Options.OPTION_INSTANT_RECONNECTION);
                 saveOptionBoolean(Options.OPTION_WAKE_LOCK);
                 break;
 
@@ -127,7 +126,6 @@ public class OptionsForm implements ControlStateListener {
         form.setCaption(name.toString());
         switch (currentOptionsForm) {
             case OPTIONS_NETWORK:
-                setChecked(R.string.instant_reconnection, Options.OPTION_INSTANT_RECONNECTION);
                 setChecked(R.string.wake_lock, Options.OPTION_WAKE_LOCK);
                 break;
 
