@@ -70,7 +70,6 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     public static final String TAG = ChatView.class.getSimpleName();
 
     private Chat chat;
-    private String oldChat;
     private static String lastChat;
     private Protocol protocol;
     private Contact contact;
@@ -394,7 +393,6 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
         super.onDetach();
         ((BaseActivity) getActivity()).setConfigurationChanged(null);
         chat = null;
-        oldChat = null;
         contact = null;
         protocol = null;
         handler = null;
@@ -467,7 +465,6 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     public void pause(Chat chat) {
         if (chat == null) return;
         initChat(protocol, contact);
-        oldChat = chat.getContact().getUserId();
         chat.message = getText().length() == 0 ? null : getText();
 
         View item = chatListView.getChildAt(0);
@@ -591,7 +588,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
 
         Chat newChat = protocol.getChat(contact);
         lastChat = newChat.getContact().getUserId();
-        if (oldChat != null && oldChat.equals(lastChat)) {
+        if (chat != null && chat.getContact().getUserId().equals(lastChat)) {
             chatListView.setTranscriptMode(ListView.TRANSCRIPT_MODE_DISABLED);
             return;
         }
