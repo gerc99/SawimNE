@@ -507,14 +507,14 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
             drawerLayout.setDrawerLockMode(contact.isConference() ?
                     DrawerLayout.LOCK_MODE_UNLOCKED : DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         }
+        updateChat();
+        setPosition(unreadMessageCount);
+        chatListView.setFastScrollEnabled(true);
         if (chat.empty()) {
             loadStory();
         } else {
             adapter.addAll(chat.getMessData());
         }
-        updateChat();
-        setPosition(unreadMessageCount);
-        chatListView.setFastScrollEnabled(true);
     }
 
     @Override
@@ -562,8 +562,6 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
         if (chat.getMessCount() < limit) return;
         if ((0 < limit) && (0 < chat.getMessCount())) {
             while (limit < chat.getMessCount()) {
-                if (chat.firstVisiblePosition > 0)
-                    chat.firstVisiblePosition--;
                 if (chat.dividerPosition > 0)
                     chat.dividerPosition--;
                 chat.getMessData().remove(0);
