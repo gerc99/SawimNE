@@ -913,6 +913,9 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
 
             case ContactMenu.ACTION_CURRENT_DEL_CHAT:
                 ChatHistory.instance.unregisterChat(chat);
+                chat.setVisibleChat(false);
+                RosterHelper.getInstance().setOnUpdateChat(null);
+                chat = null;
                 if (!SawimApplication.isManyPane())
                     getActivity().getSupportFragmentManager().popBackStack();
                 break;
@@ -923,11 +926,18 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
 
             case ContactMenu.ACTION_DEL_ALL_CHATS:
                 ChatHistory.instance.removeAll(null);
+                chat.setVisibleChat(false);
+                RosterHelper.getInstance().setOnUpdateChat(null);
+                chat = null;
                 if (!SawimApplication.isManyPane())
                     getActivity().getSupportFragmentManager().popBackStack();
                 break;
 
             case ContactMenu.CONFERENCE_DISCONNECT:
+                ChatHistory.instance.unregisterChat(chat);
+                chat.setVisibleChat(false);
+                RosterHelper.getInstance().setOnUpdateChat(null);
+                chat = null;
                 new ContactMenu(protocol, contact).doAction((BaseActivity) getActivity(), ContactMenu.CONFERENCE_DISCONNECT);
                 if (!SawimApplication.isManyPane())
                     getActivity().getSupportFragmentManager().popBackStack();
