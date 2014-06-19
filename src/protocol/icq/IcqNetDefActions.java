@@ -136,9 +136,7 @@ public final class IcqNetDefActions {
                     String uin = StringConvertor.byteArrayToAsciiString(
                             buf.getArray(uin_len), 0, uin_len);
                     int flag = buf.getWordBE();
-                    if (Options.getInt(Options.OPTION_TYPING_MODE) > 0) {
-                        getIcq().beginTyping(uin, (0x0002 == flag));
-                    }
+                    getIcq().beginTyping(uin, (0x0002 == flag));
                 } else {
                     unknownPacket(packet);
                 }

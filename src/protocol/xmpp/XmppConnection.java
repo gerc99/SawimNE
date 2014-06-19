@@ -1522,21 +1522,17 @@ public final class XmppConnection extends ClientConnection {
                     PlainMessage.NOTIFY_FROM_CLIENT);
             return;
         }
-        if (0 < Options.getInt(Options.OPTION_TYPING_MODE)) {
-            getXmpp().beginTyping(from, messageEvent.contains(S_COMPOSING));
-        }
+        getXmpp().beginTyping(from, messageEvent.contains(S_COMPOSING));
     }
 
     private void parseChatState(XmlNode message, String from) {
-        if (0 < Options.getInt(Options.OPTION_TYPING_MODE)) {
-            if (message.contains(S_ACTIVE)
-                    || message.contains("gone")
-                    || message.contains(S_PAUSED)
-                    || message.contains("inactive")) {
-                getXmpp().beginTyping(from, false);
-            } else if (message.contains(S_COMPOSING)) {
-                getXmpp().beginTyping(from, true);
-            }
+        if (message.contains(S_ACTIVE)
+                || message.contains("gone")
+                || message.contains(S_PAUSED)
+                || message.contains("inactive")) {
+            getXmpp().beginTyping(from, false);
+        } else if (message.contains(S_COMPOSING)) {
+            getXmpp().beginTyping(from, true);
         }
     }
 
@@ -2343,7 +2339,7 @@ public final class XmppConnection extends ClientConnection {
         }
 
         String chatState = "";
-        if ((1 < Options.getInt(Options.OPTION_TYPING_MODE)) && S_CHAT.equals(type)) {
+        if (S_CHAT.equals(type)) {
             chatState = getChatStateTag(S_ACTIVE);
         }
         putPacketIntoQueue("<message to='" + Util.xmlEscape(to) + "'"
@@ -2764,9 +2760,7 @@ public final class XmppConnection extends ClientConnection {
         features.addElement("http://jabber.org/protocol/activity+notify");
 
 
-        if (0 < Options.getInt(Options.OPTION_TYPING_MODE)) {
-            features.addElement("http://jabber.org/protocol/chatstates");
-        }
+        features.addElement("http://jabber.org/protocol/chatstates");
 
         features.addElement("http://jabber.org/protocol/disco#info");
 

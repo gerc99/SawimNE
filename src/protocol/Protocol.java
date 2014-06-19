@@ -999,8 +999,7 @@ abstract public class Protocol {
     }
 
     public final void sendTypingNotify(Contact to, boolean isTyping) {
-        if (isConnected() && isMeVisible(to)
-                && (1 < Options.getInt(Options.OPTION_TYPING_MODE))) {
+        if (isConnected() && isMeVisible(to)) {
             s_sendTypingNotify(to, isTyping);
         }
     }

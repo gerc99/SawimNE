@@ -371,10 +371,6 @@ public final class MrimConnection extends ClientConnection {
     }
 
     private void beginTyping(MrimContact c, boolean flag) {
-
-        if (Options.getInt(Options.OPTION_TYPING_MODE) == 0) {
-            return;
-        }
         long now = SawimApplication.getCurrentGmtTime();
         inTypingTask(now);
         for (int i = 0; i < typingTasks.length; ++i) {

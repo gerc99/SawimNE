@@ -31,7 +31,6 @@ public class Options {
     public static final String OPTION_VISIBILITY_ID = "visibility_id";
     static final String OPTIONS_CURR_ACCOUNT = "current_account";
     public static final String OPTION_GMT_OFFSET = "gmt_offset";
-    public static final String OPTION_TYPING_MODE = "typing_mode";
     public static final String OPTION_PRIVATE_STATUS = "private_status";
     public static final String OPTION_MAX_MSG_COUNT = "max_msg_count";
     public static final String OPTION_AA_TIME = "aa_time";
@@ -87,7 +86,6 @@ public class Options {
         setBoolean(Options.OPTION_HIDE_KEYBOARD, true);
         setBoolean(Options.OPTION_MESS_NOTIF, true);
         setString(Options.OPTION_MESS_RINGTONE, "content://settings/system/notification_sound");
-        setInt(Options.OPTION_TYPING_MODE, 0);
         setBoolean(Options.OPTION_BLOG_NOTIFY, true);
         setBoolean(Options.OPTION_NOTIFY_IN_AWAY, true);
         setInt(Options.OPTION_MAX_MSG_COUNT, 100);

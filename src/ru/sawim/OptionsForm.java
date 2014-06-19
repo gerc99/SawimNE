@@ -93,7 +93,6 @@ public class OptionsForm implements ControlStateListener {
                 saveOptionBoolean(Options.OPTION_VIBRATION);
                 saveOptionBoolean(Options.OPTION_ALARM);
                 //saveOptionBoolean(Options.OPTION_NOTIFY_IN_AWAY);
-                saveOptionSelector(Options.OPTION_TYPING_MODE);
                 break;
 
             case OPTIONS_PRO:
@@ -160,8 +159,6 @@ public class OptionsForm implements ControlStateListener {
                 setChecked(R.string.alarm, Options.OPTION_ALARM);
                 //setChecked(R.string.blog_notify, Options.OPTION_BLOG_NOTIFY);
                 //setChecked(R.string.notify_in_away, Options.OPTION_NOTIFY_IN_AWAY);
-                int[] typingItems = {R.string.no, R.string.typing_incoming, R.string.typing_both};
-                form.addSelector(Options.OPTION_TYPING_MODE, R.string.typing_notify, typingItems, Options.getInt(Options.OPTION_TYPING_MODE));
                 break;
 
             case OPTIONS_ANTISPAM:

@@ -509,9 +509,7 @@ public class ConnectAction extends IcqAction {
 
     private SnacPacket getIcbmPacket() {
         long flags = 0x0003;
-        if (0 != Options.getInt(Options.OPTION_TYPING_MODE)) {
-            flags |= 0x0B;
-        }
+        flags |= 0x0B;
 
         Util icbm = new Util();
         icbm.writeWordBE(0x0000);

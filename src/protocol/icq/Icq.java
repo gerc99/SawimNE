@@ -628,9 +628,7 @@ public class Icq extends Protocol {
             guids.addElement(x);
         }
 
-        if (Options.getInt(Options.OPTION_TYPING_MODE) > 0) {
-            guids.addElement(GUID.CAP_MTN);
-        }
+        guids.addElement(GUID.CAP_MTN);
 
         byte extStatus = IcqStatusInfo.getExtStatus(getProfile().statusIndex);
         int extStatusCount = (0 == extStatus ? 0 : 1);
