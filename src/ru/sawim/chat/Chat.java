@@ -332,20 +332,19 @@ public final class Chat {
         return mData;
     }
 
-    public void addTextToForm(Message message, String from, boolean isSystemNotice, boolean isHighlight, boolean isHistory) {
-        final MessData mData = buildMessage(message, from, isSystemNotice, isHighlight);
+    private void addTextToForm(Message message, String from, boolean isSystemNotice, boolean isHighlight, boolean isHistory) {
+        MessData mData = buildMessage(message, from, isSystemNotice, isHighlight);
         addMessage(mData);
         if (isHistory) {
             addTextToHistory(mData);
         }
     }
 
-    public void addMessage(MessData mData) {
+    private void addMessage(MessData mData) {
         messData.add(mData);
         if (RosterHelper.getInstance().getUpdateChatListener() != null) {
             RosterHelper.getInstance().getUpdateChatListener().addMessage(contact, mData);
             RosterHelper.getInstance().getUpdateChatListener().updateMessages();
-            RosterHelper.getInstance().getUpdateChatListener().updateChat();
         }
         boolean isConference = contact.isConference();
         if (isConference && mData.isMessage())
@@ -360,6 +359,9 @@ public final class Chat {
         if (!isVisibleChat()) {
             contact.updateChatState(this);
             ChatHistory.instance.updateChatList();
+            if (RosterHelper.getInstance().getUpdateChatListener() != null) {
+                RosterHelper.getInstance().getUpdateChatListener().updateChat();
+            }
         }
     }
 
@@ -369,7 +371,6 @@ public final class Chat {
         boolean inc = !isVisibleChat();
         String from = getFrom(message);
         if (isPlain) {
-            addTextToForm(message, from, false, isHighlight, isHistory());
             if (inc) {
                 messageCounter = inc(messageCounter);
                 if (!contact.isSingleUserContact() && !isHighlight) {
@@ -377,6 +378,7 @@ public final class Chat {
                     messageCounter--;
                 }
             }
+            addTextToForm(message, from, false, isHighlight, isHistory());
         } else if (isSystem) {
             SystemNotice notice = (SystemNotice) message;
             if (SystemNotice.SYS_NOTICE_AUTHREQ == notice.getSysnoteType()) {
@@ -391,6 +393,9 @@ public final class Chat {
         if (inc) {
             contact.updateChatState(this);
             ChatHistory.instance.updateChatList();
+            if (RosterHelper.getInstance().getUpdateChatListener() != null) {
+                RosterHelper.getInstance().getUpdateChatListener().updateChat();
+            }
         }
     }
 
@@ -400,6 +405,9 @@ public final class Chat {
             ChatHistory.instance.registerChat(this);
         resetUnreadMessages();
         addTextToForm(message, from, true, false, isHistory());
+        if (RosterHelper.getInstance().getUpdateChatListener() != null) {
+            RosterHelper.getInstance().getUpdateChatListener().updateChat();
+        }
     }
 
     public Contact getContact() {
