@@ -85,7 +85,6 @@ public class Options {
         setBoolean(Options.OPTION_HIDE_ICONS_CLIENTS, true);
         setBoolean(Options.OPTION_HIDE_KEYBOARD, true);
         setBoolean(Options.OPTION_MESS_NOTIF, true);
-        setString(Options.OPTION_MESS_RINGTONE, "content://settings/system/notification_sound");
         setBoolean(Options.OPTION_BLOG_NOTIFY, true);
         setBoolean(Options.OPTION_NOTIFY_IN_AWAY, true);
         setInt(Options.OPTION_MAX_MSG_COUNT, 100);

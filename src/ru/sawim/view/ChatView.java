@@ -100,6 +100,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     private static final int UPDATE_MESSAGES = 1;
     private static final int UPDATE_CHAT = 3;
     private static final int UPDATE_MUC_LIST = 4;
+    private static final int LOAD_STORY = 5;
 
     @Override
     public void onAttach(Activity activity) {
@@ -654,7 +655,6 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
         chatListView.setTranscriptMode(ListView.TRANSCRIPT_MODE_NORMAL);
         chatListView.setOnCreateContextMenuListener(this);
         chatListView.setOnItemClickListener(chatClick);
-        chatListView.setFocusable(true);
         chatListView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
@@ -719,6 +719,20 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                     }
                 }
                 break;
+            case LOAD_STORY:
+                if (chat != null) {
+                    HistoryStorage historyStorage = chat.getHistory();
+                    int oldCount = adapter.getCount();
+                    if (historyStorage != null
+                            && historyStorage.getHistorySize() > 0
+                            && historyStorage.getHistorySize() != oldCount) {
+                        historyStorage.addNextListMessages(adapter.getItems(), chat, oldCount);
+                        adapter.notifyDataSetChanged();
+                        chatListView.setSelection(adapter.getCount() - oldCount + 1);
+                        adapter.setPosition(-1);
+                    }
+                }
+                break;
         }
         return false;
     }
@@ -744,19 +758,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     }
 
     private void loadStory() {
-        if (chat != null) {
-            HistoryStorage historyStorage = chat.getHistory();
-            int oldCount = adapter.getCount();
-            if (historyStorage != null
-                    && historyStorage.getHistorySize() > 0
-                    && historyStorage.getHistorySize() != oldCount) {
-                List<MessData> oldMessageList = historyStorage.getNextListMessages(chat, oldCount);
-                chat.getMessData().addAll(0, oldMessageList);
-                adapter.addTopMessages(oldMessageList);
-                chatListView.setSelection(oldMessageList.size() + 1);
-                adapter.setPosition(-1);
-            }
-        }
+        handler.sendMessage(Message.obtain(handler, LOAD_STORY));
     }
 
     private void updateChatIcon() {

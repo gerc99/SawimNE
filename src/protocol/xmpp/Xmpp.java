@@ -915,6 +915,8 @@ public final class Xmpp extends Protocol implements FormListener {
                             join(enterConf);
                         }
                     }
+                    needSave();
+                    safeSave();
                 }
             }
             enterData.back();

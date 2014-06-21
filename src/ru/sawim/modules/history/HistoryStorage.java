@@ -105,31 +105,23 @@ public class HistoryStorage {
         }
     }
 
-    public List<MessData> getNextListMessages(final Chat chat, int offset) {
-        final String selectCount = "select * from (select * from "
-                + CHAT_HISTORY_TABLE + " order by " + COLUMN_ID
-                + " DESC limit 25 OFFSET " + offset + ") order by " + COLUMN_ID + " ASC";
-        final List<MessData> messDataList = new ArrayList<MessData>();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    openHistory();
-                    Cursor cursor = db.rawQuery(selectCount, new String[]{});
-                    if (cursor.moveToFirst()) {
-                        do {
-                            MessData mess = buildMessage(chat, cursor);
-                            messDataList.add(mess);
-                        } while (cursor.moveToNext());
-                    }
-                    cursor.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+    public void addNextListMessages(List<MessData> messDataList, final Chat chat, int offset) {
+        final String selectCount = "select * from " + CHAT_HISTORY_TABLE
+                + " order by " + COLUMN_ID
+                + " DESC limit 5 OFFSET " + offset;
+        try {
+            openHistory();
+            Cursor cursor = db.rawQuery(selectCount, new String[]{});
+            if (cursor.moveToFirst()) {
+                do {
+                    MessData mess = buildMessage(chat, cursor);
+                    messDataList.add(0, mess);
+                } while (cursor.moveToNext());
             }
-        }).start();
-
-        return messDataList;
+            cursor.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private MessData buildMessage(Chat chat, Cursor cursor) {

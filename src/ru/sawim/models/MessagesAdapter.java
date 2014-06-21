@@ -4,12 +4,14 @@ import android.graphics.Typeface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import protocol.Contact;
 import ru.sawim.SawimApplication;
 import ru.sawim.SawimResources;
 import ru.sawim.Scheme;
 import ru.sawim.chat.Chat;
 import ru.sawim.chat.MessData;
 import ru.sawim.chat.message.Message;
+import ru.sawim.roster.RosterHelper;
 import ru.sawim.text.TextLinkClick;
 import ru.sawim.widget.Util;
 import ru.sawim.widget.chat.MessageItemView;
@@ -27,13 +29,11 @@ import java.util.List;
 public class MessagesAdapter extends BaseAdapter {
 
     private List<MessData> items;
-    private Chat chat;
 
     private boolean isMultiQuote = false;
     private int position = -1;
 
     public void init(Chat chat) {
-        this.chat = chat;
         items = new ArrayList<MessData>();
         addAll(chat.getMessData());
     }
@@ -43,15 +43,14 @@ public class MessagesAdapter extends BaseAdapter {
         notifyDataSetChanged();
     }
 
-    public void addTopMessages(List<MessData> newMessageList) {
-        items.addAll(0, newMessageList);
-        notifyDataSetChanged();
-    }
-
     public void addAll(List<MessData> newMessageList) {
         items.clear();
         items.addAll(newMessageList);
         notifyDataSetChanged();
+    }
+
+    public List getItems() {
+        return items;
     }
 
     public boolean isMultiQuote() {
@@ -84,15 +83,15 @@ public class MessagesAdapter extends BaseAdapter {
     @Override
     public View getView(int index, View convView, ViewGroup viewGroup) {
         final MessData mData = getItem(index);
-        View row = convView;
-        if (row == null) {
-            row = new MessageItemView(SawimApplication.getInstance().getBaseContext());
+        MessageItemView item = (MessageItemView) convView;
+        if (item == null) {
+            item = new MessageItemView(SawimApplication.getInstance().getBaseContext());
+            Contact contact = RosterHelper.getInstance().getCurrentContact();
+            item.setOnTextLinkClickListener(new TextLinkClick(contact.getProtocol(), contact.getUserId()));
         }
-        MessageItemView item = (MessageItemView) row;
         String nick = mData.getNick();
         boolean incoming = mData.isIncoming();
 
-        item.setOnTextLinkClickListener(new TextLinkClick(chat.getProtocol(), chat.getContact().getUserId()));
         item.setLinkTextColor(Scheme.getColor(Scheme.THEME_LINKS));
         item.setTypeface(mData.isConfHighLight() ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT);
         item.setBackgroundColor(0);
