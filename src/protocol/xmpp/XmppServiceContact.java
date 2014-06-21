@@ -6,6 +6,7 @@ import protocol.Contact;
 import protocol.ContactMenu;
 import protocol.Protocol;
 import protocol.StatusInfo;
+import ru.sawim.Options;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.SawimResources;
@@ -137,11 +138,12 @@ public class XmppServiceContact extends XmppContact {
     }
 
     public boolean isPresence() {
-        return RosterHelper.getInstance().isPresence(getUserId());
+        return Options.getBoolean("presence_" + getUserId());
     }
 
     public void setPresencesFlag(boolean flag) {
-        RosterHelper.getInstance().setPresencesFlag(getUserId(), flag);
+        Options.setBoolean("presence_" + getUserId(), flag);
+        Options.safeSave();
     }
 
     public void addPresence(Xmpp xmpp, String nick, String text) {

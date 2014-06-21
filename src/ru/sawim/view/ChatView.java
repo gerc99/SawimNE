@@ -909,12 +909,20 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                 chat.setVisibleChat(false);
                 RosterHelper.getInstance().setOnUpdateChat(null);
                 chat = null;
-                if (!SawimApplication.isManyPane())
+                if (SawimApplication.isManyPane()) {
+                    adapter.getItems().clear();
+                    updateMessages();
+                } else {
                     getActivity().getSupportFragmentManager().popBackStack();
+                }
                 break;
 
             case ContactMenu.ACTION_DEL_ALL_CHATS_EXCEPT_CUR:
                 ChatHistory.instance.removeAll(chat);
+                if (SawimApplication.isManyPane()) {
+                    adapter.getItems().clear();
+                    updateMessages();
+                }
                 break;
 
             case ContactMenu.ACTION_DEL_ALL_CHATS:
@@ -922,8 +930,12 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                 chat.setVisibleChat(false);
                 RosterHelper.getInstance().setOnUpdateChat(null);
                 chat = null;
-                if (!SawimApplication.isManyPane())
+                if (SawimApplication.isManyPane()) {
+                    adapter.getItems().clear();
+                    updateMessages();
+                } else {
                     getActivity().getSupportFragmentManager().popBackStack();
+                }
                 break;
 
             case ContactMenu.CONFERENCE_DISCONNECT:
@@ -932,8 +944,12 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                 RosterHelper.getInstance().setOnUpdateChat(null);
                 chat = null;
                 new ContactMenu(protocol, contact).doAction((BaseActivity) getActivity(), ContactMenu.CONFERENCE_DISCONNECT);
-                if (!SawimApplication.isManyPane())
+                if (SawimApplication.isManyPane()) {
+                    adapter.getItems().clear();
+                    updateMessages();
+                } else {
                     getActivity().getSupportFragmentManager().popBackStack();
+                }
                 break;
 
             default:

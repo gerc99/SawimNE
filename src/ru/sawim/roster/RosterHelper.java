@@ -690,16 +690,6 @@ public final class RosterHelper {
 
     private HashMap<String, Long> lastMessagesTimeMap = new HashMap<String, Long>();
     private HashMap<String, String> subjectsMap = new HashMap<String, String>();
-    private HashMap<String, Boolean> isPresencesFlagsMap = new HashMap<String, Boolean>();
-
-    public boolean isPresence(String id) {
-        if (isPresencesFlagsMap.containsKey(id)) return isPresencesFlagsMap.get(id);
-        else return false;
-    }
-
-    public void setPresencesFlag(String id, boolean flag) {
-        isPresencesFlagsMap.put(id, flag);
-    }
 
     public String getSubject(String id) {
         if (subjectsMap.containsKey(id)) return subjectsMap.get(id);

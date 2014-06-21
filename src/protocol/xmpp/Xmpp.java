@@ -322,7 +322,6 @@ public final class Xmpp extends Protocol implements FormListener {
                 if (isAutoJoin) {
                     addRejoin(serviceContact.getUserId());
                 }
-                serviceContact.setPresencesFlag(dis.readBoolean());
             }
         }
         if (isStreamManagementSupported()) {
@@ -348,7 +347,6 @@ public final class Xmpp extends Protocol implements FormListener {
             if (serviceContact.isConference()) {
                 dos.writeUTF(serviceContact.getMyName());
                 dos.writeBoolean(serviceContact.isAutoJoin());
-                dos.writeBoolean(serviceContact.isPresence());
             }
         }
         if (isStreamManagementSupported()) {
