@@ -108,7 +108,7 @@ public class HistoryStorage {
     public void addNextListMessages(List<MessData> messDataList, final Chat chat, int offset) {
         final String selectCount = "select * from " + CHAT_HISTORY_TABLE
                 + " order by " + COLUMN_ID
-                + " DESC limit 5 OFFSET " + offset;
+                + " DESC limit 25 OFFSET " + offset;
         try {
             openHistory();
             Cursor cursor = db.rawQuery(selectCount, new String[]{});

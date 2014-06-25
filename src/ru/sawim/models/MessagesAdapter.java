@@ -33,7 +33,7 @@ public class MessagesAdapter extends BaseAdapter {
     private boolean isMultiQuote = false;
     private int position = -1;
 
-    public void init(Chat chat) {
+    public MessagesAdapter(Chat chat) {
         items = new ArrayList<MessData>();
         addAll(chat.getMessData());
     }
@@ -134,7 +134,7 @@ public class MessagesAdapter extends BaseAdapter {
             item.setTypeface(Typeface.DEFAULT_BOLD);
             item.setBackgroundColor(Scheme.getColor(Scheme.THEME_ITEM_SELECTED));
         }
-        item.setShowDivider(position == index && index > 0 && position != getCount());
+        item.setShowDivider(position == index);
         item.repaint();
         return item;
     }

@@ -73,7 +73,7 @@ public class Util {
 
     public static int dipToPixels(Context context, int dipValue) {
         Resources r = context.getResources();
-        int px = (int) (dipValue * r.getDisplayMetrics().density);
+        int px = (int) (dipValue * r.getDisplayMetrics().density + 0.5f);
         return px;
     }
 

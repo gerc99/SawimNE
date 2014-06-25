@@ -229,7 +229,7 @@ public class MessageItemView extends View {
 
     public void setShowDivider(boolean showDivider) {
         isShowDivider = showDivider;
-        textPaint.setStrokeWidth((int) (4 * (getResources().getDisplayMetrics().density + 0.5f)));
+        textPaint.setStrokeWidth(Util.dipToPixels(getContext(), 4));
     }
 
     private void setDrawableBounds(Drawable drawable, int x, int y, int w, int h) {

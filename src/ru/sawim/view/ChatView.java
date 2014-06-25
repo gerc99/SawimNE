@@ -73,6 +73,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     private static String lastChat;
     private Protocol protocol;
     private Contact contact;
+    private int unreadMessageCount;
     private String sharingText;
     private boolean sendByEnter;
     private static int offsetNewMessage;
@@ -118,7 +119,8 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
             @Override
             protected void layoutChildren() {
                 super.layoutChildren();
-                setTranscriptMode(ListView.TRANSCRIPT_MODE_NORMAL);
+                if (chat != null && chat.getContact().getUserId().equals(lastChat))
+                    setTranscriptMode(ListView.TRANSCRIPT_MODE_NORMAL);
             }
         };
         nickList = new MyListView(activity);
@@ -468,7 +470,10 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
         chat.message = getText().length() == 0 ? null : getText();
 
         View item = chatListView.getChildAt(0);
-        chat.dividerPosition = chat.getMessCount();
+        if (chat.getMessCount() == 0)
+            chat.dividerPosition = adapter.getCount();
+        else
+            chat.dividerPosition = adapter.getItems().indexOf(chat.getMessData().get(chat.getMessCount() - 1)) + 1;
         chat.firstVisiblePosition = chatListView.getFirstVisiblePosition();
         chat.lastVisiblePosition = chatListView.getLastVisiblePosition() + 1;
         boolean isBottomScroll = chat.lastVisiblePosition == chat.dividerPosition;
@@ -487,7 +492,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
         chat.setVisibleChat(true);
         ChatHistory.instance.registerChat(chat);
         RosterHelper.getInstance().setOnUpdateChat(this);
-        int unreadMessageCount = chat.getUnreadMessageCount();
+        unreadMessageCount = chat.getUnreadMessageCount();
         chat.resetUnreadMessages();
         removeMessages(Options.getInt(Options.OPTION_MAX_MSG_COUNT));
         if (sharingText != null) {
@@ -505,13 +510,13 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                     DrawerLayout.LOCK_MODE_UNLOCKED : DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         }
         updateChat();
-        setPosition(unreadMessageCount);
-        chatListView.setFastScrollEnabled(true);
         if (chat.empty()) {
-            loadStory();
+            loadStory(false);
         } else {
             adapter.addAll(chat.getMessData());
         }
+        chatListView.setFastScrollEnabled(true);
+        setPosition(unreadMessageCount);
     }
 
     @Override
@@ -648,8 +653,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     }
 
     private void initList() {
-        adapter = new MessagesAdapter();
-        adapter.init(chat);
+        adapter = new MessagesAdapter(chat);
         chatListView.setAdapter(adapter);
         chatListView.setStackFromBottom(true);
         chatListView.setTranscriptMode(ListView.TRANSCRIPT_MODE_NORMAL);
@@ -663,7 +667,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
                 if (visibleItemCount > 0 && firstVisibleItem == 0) {
-                    loadStory();
+                    loadStory(true);
                 }
             }
         });
@@ -720,16 +724,23 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                 }
                 break;
             case LOAD_STORY:
+                boolean isScroll = (boolean) msg.obj;
                 if (chat != null) {
                     HistoryStorage historyStorage = chat.getHistory();
-                    int oldCount = adapter.getCount();
-                    if (historyStorage != null
-                            && historyStorage.getHistorySize() > 0
-                            && historyStorage.getHistorySize() != oldCount) {
-                        historyStorage.addNextListMessages(adapter.getItems(), chat, oldCount);
-                        adapter.notifyDataSetChanged();
-                        chatListView.setSelection(adapter.getCount() - oldCount + 1);
-                        adapter.setPosition(-1);
+                    if (historyStorage != null) {
+                        int historySize = historyStorage.getHistorySize();
+                        int oldCount = adapter.getCount();
+                        if (historySize > 0 && historySize != oldCount) {
+                            if (isScroll) {
+                                chatListView.setTranscriptMode(ListView.TRANSCRIPT_MODE_DISABLED);
+                            }
+                            historyStorage.addNextListMessages(adapter.getItems(), chat, oldCount);
+                            adapter.setPosition(adapter.getCount() - unreadMessageCount);
+                            adapter.notifyDataSetChanged();
+                            if (isScroll) {
+                                chatListView.setSelection(adapter.getCount() - oldCount + 1);
+                            }
+                        }
                     }
                 }
                 break;
@@ -757,8 +768,8 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
         handler.sendEmptyMessage(UPDATE_MUC_LIST);
     }
 
-    private void loadStory() {
-        handler.sendMessage(Message.obtain(handler, LOAD_STORY));
+    private void loadStory(boolean isScroll) {
+        handler.sendMessage(Message.obtain(handler, LOAD_STORY, isScroll));
     }
 
     private void updateChatIcon() {
