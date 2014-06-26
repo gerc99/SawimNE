@@ -35,7 +35,6 @@ public class MessagesAdapter extends BaseAdapter {
 
     public MessagesAdapter(Chat chat) {
         items = new ArrayList<MessData>();
-        addAll(chat.getMessData());
     }
 
     public void add(MessData messData) {

@@ -163,12 +163,8 @@ public final class Chat {
         return writeMessageTo(getMyName().equals(nick) ? null : nick);
     }
 
-    public boolean hasHistory() {
-        return contact.hasHistory();
-    }
-
     public HistoryStorage getHistory() {
-        if (null == history && hasHistory() && isHistory()) {
+        if (null == history && isHistory()) {
             history = HistoryStorage.getHistory(contact);
         }
         return history;

@@ -313,8 +313,4 @@ public class XmppContact extends Contact {
     public boolean isSingleUserContact() {
         return true;
     }
-
-    public boolean hasHistory() {
-        return !isTemp();
-    }
 }

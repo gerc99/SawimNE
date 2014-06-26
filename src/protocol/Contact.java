@@ -238,10 +238,6 @@ abstract public class Contact implements TreeNode {
         return true;
     }
 
-    public boolean hasHistory() {
-        return !isTemp() && isSingleUserContact();
-    }
-
     public boolean isVisibleInContactList() {
         return isOnline() || hasChat() || isTemp();
     }

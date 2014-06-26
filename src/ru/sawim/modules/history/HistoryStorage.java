@@ -12,7 +12,6 @@ import ru.sawim.chat.MessData;
 import ru.sawim.chat.message.PlainMessage;
 import ru.sawim.comm.Util;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class HistoryStorage {
@@ -31,6 +30,7 @@ public class HistoryStorage {
             AUTHOR + " text not null, " +
             MESSAGE + " text not null, " +
             DATE + " long not null );";
+    public static final int LIMIT = 25;
 
     private static final String PREFIX = "hist";
 
@@ -108,7 +108,8 @@ public class HistoryStorage {
     public void addNextListMessages(List<MessData> messDataList, final Chat chat, int offset) {
         final String selectCount = "select * from " + CHAT_HISTORY_TABLE
                 + " order by " + COLUMN_ID
-                + " DESC limit 25 OFFSET " + offset;
+                + " DESC limit " + LIMIT
+                + " OFFSET " + offset;
         try {
             openHistory();
             Cursor cursor = db.rawQuery(selectCount, new String[]{});
