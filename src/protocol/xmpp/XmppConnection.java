@@ -54,16 +54,6 @@ public final class XmppConnection extends ClientConnection {
     private boolean authorized_ = false;
     private boolean rosterLoaded = false;
 
-    String smSessionId = "";
-    boolean smSupported = false;
-    boolean smEnabled = false;
-    long smPacketsIn;
-    long smPacketsOut;
-
-    String rebindSessionId = "";
-    boolean rebindSupported = false;
-    boolean rebindEnabled = false;
-
     private UserInfo singleUserInfo;
     private String autoSubscribeDomain;
     private XmppForm xmppForm;
@@ -222,16 +212,10 @@ public final class XmppConnection extends ClientConnection {
     }
 
     protected final void ping() throws SawimException {
-        if (isSessionManagementEnabled()) {
-            SawimApplication.getInstance().getXmppSession().save(this);
-        }
         write(pingPacket);
     }
 
     protected final void pingForPong() throws SawimException {
-        if (isSessionManagementEnabled()) {
-            SawimApplication.getInstance().getXmppSession().save(this);
-        }
         write(forPongPacket);
     }
 
@@ -269,8 +253,6 @@ public final class XmppConnection extends ClientConnection {
     }
 
     protected final void closeSocket() {
-        if (!isSessionManagementEnabled())
-            loggedOut();
         if (socket != null) {
             socket.close();
             socket = null;
@@ -402,32 +384,10 @@ public final class XmppConnection extends ClientConnection {
 
         setProgress(30);
         socket.start();
-        if (isSessionManagementEnabled()) {
-            usePong();
-            getXmpp().s_updateOnlineStatus();
-            setProgress(100);
-        } else {
-            write(GET_ROSTER_XML);
-            setProgress(50);
-            usePong();
-            setProgress(60);
-        }
-    }
-
-    private boolean tryRebind() throws SawimException {
+        write(GET_ROSTER_XML);
         setProgress(50);
-        write("<rebind xmlns='p1:rebind'><jid>" +
-                fullJid_ + "</jid>" +
-                "<sid>" + rebindSessionId + "</sid></rebind>");
-        XmlNode rebind = readXmlNode(true);
-        if (rebind != null && rebind.is("rebind")) {
-            DebugLog.println("[INFO-JABBER] rebound session ID=" + rebindSessionId);
-            rebindEnabled = true;
-            setAuthStatus(true);
-            return true;
-        }
-        DebugLog.systemPrintln("[INFO-JABBER] failed to rebind");
-        return false;
+        usePong();
+        setProgress(60);
     }
 
     private boolean processInPacket() throws SawimException {
@@ -473,28 +433,9 @@ public final class XmppConnection extends ClientConnection {
     }
 
     private void loginParse(XmlNode x) throws SawimException {
-        if (x.is("stream:stream")) {
-            if (rebindSupported) {
-                rebindSessionId = x.getId();
-            }
-            return;
-        }
         if (x.is("stream:features")) {
             parseStreamFeatures(x);
             return;
-        } else if (x.is("resumed")) {
-            SawimApplication.getInstance().getXmppSession().save(this);
-            setAuthStatus(true);
-            DebugLog.systemPrintln("[INFO-JABBER] Resumed session ID=" + smSessionId);
-        } else if (x.is("failed")) {
-            // expired session
-            DebugLog.systemPrintln("[INFO-JABBER] Failed to resume session ID=" + smSessionId);
-            setSessionManagementEnabled(false);
-            smSessionId = "";
-            smPacketsIn = 0;
-            smPacketsOut = 0;
-            SawimApplication.getInstance().getXmppSession().save(this);
-            resourceBinding();
         } else if (x.is("compressed")) {
             setStreamCompression();
             return;
@@ -554,22 +495,12 @@ public final class XmppConnection extends ClientConnection {
 
     private void parse(XmlNode x) throws SawimException {
         if (x.is("iq")) {
-            if (isSessionManagementEnabled()) {
-                smPacketsIn++;
-            }
             parseIq(x);
 
         } else if (x.is("presence")) {
-            if (isSessionManagementEnabled()) {
-                smPacketsIn++;
-            }
             parsePresence(x);
 
         } else if (x.is("message")) {
-            if (isSessionManagementEnabled()) {
-                smPacketsIn++;
-                SawimApplication.getInstance().getXmppSession().save(this);
-            }
             parseMessage(x);
 
         } else if (x.is("stream:error")) {
@@ -577,26 +508,7 @@ public final class XmppConnection extends ClientConnection {
 
             XmlNode err = (null == x.childAt(0)) ? x : x.childAt(0);
             DebugLog.systemPrintln("[INFO-JABBER] Stream error!: " + err.name + "," + err.value);
-        } else if (x.is("r")) {
-            sendAck();
-        } else if (x.is("enabled")) {
-            setSessionManagementEnabled(true);
-            smSessionId = x.getAttribute("id");
-            SawimApplication.getInstance().getXmppSession().save(this);
-            DebugLog.systemPrintln("[INFO-JABBER] Session management enabled with ID=" + smSessionId);
         }
-    }
-
-    private void sendAck() {
-        putPacketIntoQueue("<a xmlns='urn:xmpp:sm:3' h='" + String.valueOf(smPacketsIn) + "'/>");
-    }
-
-    public boolean isSessionManagementEnabled() {
-        return smEnabled || rebindEnabled;
-    }
-
-    public void setSessionManagementEnabled(boolean flag) {
-        smEnabled = flag;
     }
 
     private String generateId(String key) {
@@ -686,17 +598,12 @@ public final class XmppConnection extends ClientConnection {
         if (IQ_TYPE_RESULT != iqType) {
             return;
         }
-        if ("p1:rebind".equals(id)) {
-            //rebindEnabled = true;
-            DebugLog.systemPrintln("[INFO-JABBER] p1 session management enabled with id = " + rebindSessionId);
-        } else {
-            if (id.startsWith(S_VCARD)) {
-                loadVCard(null, from);
-            }
-            if ((null != xmppForm) && xmppForm.getId().equals(id)) {
-                xmppForm.success();
-                xmppForm = null;
-            }
+        if (id.startsWith(S_VCARD)) {
+            loadVCard(null, from);
+        }
+        if ((null != xmppForm) && xmppForm.getId().equals(id)) {
+            xmppForm.success();
+            xmppForm = null;
         }
     }
 
@@ -770,9 +677,6 @@ public final class XmppConnection extends ClientConnection {
                     getBookmarks();
                     putPacketIntoQueue("<iq type='get' id='getnotes'><query xmlns='jabber:iq:private'><storage xmlns='storage:rosternotes'/></query></iq>");
 
-                    if (smSupported && !isSessionManagementEnabled()) {
-                        putPacketIntoQueue("<enable xmlns='urn:xmpp:sm:3' resume='true' />");
-                    }
                     setProgress(100);
 
                 } else if (IQ_TYPE_SET == iqType) {
@@ -1369,10 +1273,6 @@ public final class XmppConnection extends ClientConnection {
             updateConfPrivate(conf, fromRes);
             if (RosterHelper.getInstance().getUpdateChatListener() != null)
                 RosterHelper.getInstance().getUpdateChatListener().updateMucList();
-            if (isSessionManagementEnabled()) {
-                getXmpp().needSave();
-                getXmpp().safeSave();
-            }
         } else {
             if (!("unavailable").equals(type)) {
                 if ((XStatusInfo.XSTATUS_NONE == contact.getXStatusIndex())
@@ -1406,10 +1306,6 @@ public final class XmppConnection extends ClientConnection {
                 getXmpp().renameContact(contact, getNickFromNode(x));
             }
             getXmpp().ui_changeContactStatus(contact);
-            if (isSessionManagementEnabled()) {
-                getXmpp().needSave();
-                getXmpp().safeSave();
-            }
         }
     }
 
@@ -1822,16 +1718,6 @@ public final class XmppConnection extends ClientConnection {
             return;
         }
 
-        x2 = x.getFirstNode("sm", "urn:xmpp:sm:3");
-        if (null != x2) {
-            smSupported = true;
-        }
-
-        x2 = x.getFirstNode("push", "p1:push");
-        if (x2 != null) {
-            SawimApplication.getInstance().getXmppSession().enableRebind(this);
-        }
-
         x2 = x.getFirstNode("starttls");
         if (null != x2) {
             DebugLog.println("starttls");
@@ -1842,15 +1728,6 @@ public final class XmppConnection extends ClientConnection {
         if ((null != x2) && "zlib".equals(x2.getFirstNodeValue("method"))) {
             sendRequest("<compress xmlns='http://jabber.org/protocol/compress'><method>zlib</method></compress>");
             return;
-        }
-
-        x2 = x.getFirstNode("rebind", "p1:rebind");
-        if (x2 != null) {
-            rebindSupported = true;
-            SawimApplication.getInstance().getXmppSession().load(this);
-            if (tryRebind()) {
-                return;
-            }
         }
 
         x2 = x.getFirstNode("mechanisms");
@@ -1912,33 +1789,20 @@ public final class XmppConnection extends ClientConnection {
             sendRequest(auth);
             return;
         }
-
-        if (smSupported) {
-            SawimApplication.getInstance().getXmppSession().load(this);
-            if (!smSessionId.equals("")) {
-                sendRequest("<resume xmlns='urn:xmpp:sm:3' previd='" + smSessionId + "' h='" + smPacketsIn + "' />");
-                return;
-            }
-        }
-
         if (x.contains("bind")) {
-            resourceBinding();
+            DebugLog.systemPrintln("[INFO-JABBER] Send bind request");
+            sendRequest("<iq type='set' id='bind'>"
+                    + "<bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'>"
+                    + "<resource>" + Util.xmlEscape(resource) + "</resource>"
+                    + "</bind>"
+                    + "</iq>");
+            return;
         }
         x2 = x.getFirstNode("auth", "http://jabber.org/features/iq-auth");
         if (null != x2) {
             nonSaslLogin();
             return;
         }
-    }
-
-    private void resourceBinding() throws SawimException {
-        DebugLog.systemPrintln("[INFO-JABBER] Send bind request");
-        sendRequest("<iq type='set' id='bind'>"
-                + "<bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'>"
-                + "<resource>" + Util.xmlEscape(resource) + "</resource>"
-                + "</bind>"
-                + "</iq>");
-        return;
     }
 
     private void parseChallenge(XmlNode x) throws SawimException {

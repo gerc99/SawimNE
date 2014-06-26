@@ -177,14 +177,6 @@ public final class Xmpp extends Protocol implements FormListener {
         return true;
     }
 
-    public void disconnect(boolean user) {
-        if (user && null != connection) {
-            SawimApplication.getInstance().getXmppSession().clear(connection);
-            connection.loggedOut();
-        }
-        super.disconnect(user);
-    }
-
     protected final void userCloseConnection() {
         //rejoinList.removeAllElements();
     }
@@ -194,12 +186,6 @@ public final class Xmpp extends Protocol implements FormListener {
         connection = null;
         if (null != c) {
             c.disconnect();
-        }
-    }
-
-    protected void setStatusesOffline() {
-        if (connection != null && !isStreamManagementSupported()) {
-            super.setStatusesOffline();
         }
     }
 
@@ -297,7 +283,6 @@ public final class Xmpp extends Protocol implements FormListener {
 
     protected void s_updateOnlineStatus() {
         connection.setStatus(getProfile().statusIndex, "", PRIORITY);
-        if (isStreamManagementSupported()) return;
         if (isReconnect()) {
             for (int i = 0; i < rejoinList.size(); ++i) {
                 String jid = (String) rejoinList.elementAt(i);
@@ -319,21 +304,6 @@ public final class Xmpp extends Protocol implements FormListener {
                 boolean isAutoJoin = dis.readBoolean();
                 serviceContact.setMyName(userNick);
                 serviceContact.setAutoJoin(isAutoJoin);
-                if (isAutoJoin) {
-                    addRejoin(serviceContact.getUserId());
-                }
-            }
-        }
-        if (isStreamManagementSupported()) {
-            int subContactSize = dis.readInt();
-            for (int i = 0; i < subContactSize; ++i) {
-                XmppContact.SubContact subContact = new XmppContact.SubContact();
-                subContact.status = dis.readByte();
-                subContact.client = dis.readByte();
-                subContact.priority = dis.readByte();
-                subContact.priorityA = dis.readByte();
-                subContact.resource = dis.readUTF();
-                contact.subcontacts.add(subContact);
             }
         }
         return contact;
@@ -347,17 +317,6 @@ public final class Xmpp extends Protocol implements FormListener {
             if (serviceContact.isConference()) {
                 dos.writeUTF(serviceContact.getMyName());
                 dos.writeBoolean(serviceContact.isAutoJoin());
-            }
-        }
-        if (isStreamManagementSupported()) {
-            XmppContact xmppContact = (XmppContact) contact;
-            dos.writeInt(xmppContact.subcontacts.size());
-            for (XmppContact.SubContact subContact : xmppContact.subcontacts) {
-                dos.writeByte(subContact.status);
-                dos.writeByte(subContact.client);
-                dos.writeByte(subContact.priority);
-                dos.writeByte(subContact.priorityA);
-                dos.writeUTF(subContact.resource);
             }
         }
     }
@@ -930,11 +889,6 @@ public final class Xmpp extends Protocol implements FormListener {
             enterDataInvite.back();
             enterDataInvite = null;
         }
-    }
-
-    public boolean isStreamManagementSupported() {
-        return SawimApplication.getInstance().getXmppSession()
-                .isStreamManagementSupported(getUserId() + '/' + getResource());
     }
 }
 

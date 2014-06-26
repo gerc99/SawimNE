@@ -376,11 +376,6 @@ abstract public class Protocol {
         Contact contact = createContact(uin, name);
         contact.setGroupId(groupId);
         contact.setBooleanValues(booleanValues);
-        if (isStreamManagementSupported()) {
-            contact.setStatus(dis.readByte(), dis.readUTF());
-            contact.setXStatus(dis.readByte(), dis.readUTF());
-            contact.setClient(dis.readByte(), null);
-        }
         return contact;
     }
 
@@ -406,13 +401,6 @@ abstract public class Protocol {
         out.writeUTF(contact.getName());
         out.writeInt(contact.getGroupId());
         out.writeByte(contact.getBooleanValues());
-        if (isStreamManagementSupported()) {
-            out.writeByte(contact.getStatusIndex());
-            out.writeUTF(StringConvertor.notNull(contact.getStatusText()));
-            out.writeByte(contact.getXStatusIndex());
-            out.writeUTF(StringConvertor.notNull(contact.getXStatusText()));
-            out.writeByte(contact.clientIndex);
-        }
     }
 
     protected void saveGroup(DataOutputStream out, Group group) throws Exception {
@@ -1073,9 +1061,5 @@ abstract public class Protocol {
             ChatHistory.instance.registerChat(chat);
         }
         return chat;
-    }
-
-    public boolean isStreamManagementSupported() {
-        return false;
     }
 }
