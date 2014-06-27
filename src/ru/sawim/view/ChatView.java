@@ -384,7 +384,9 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     @Override
     public void onDetach() {
         super.onDetach();
-        if (chat.empty()) ChatHistory.instance.unregisterChat(chat);
+        if (chat != null) {
+            if (chat.empty()) ChatHistory.instance.unregisterChat(chat);
+        }
         ((BaseActivity) getActivity()).setConfigurationChanged(null);
         chat = null;
         contact = null;
@@ -708,12 +710,17 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                         int oldCount = adapter.getCount();
                         if (historySize > 0 && historySize != oldCount) {
                             historyStorage.addNextListMessages(adapter.getItems(), chat, oldCount);
-                            adapter.setPosition(adapter.getCount() - unreadMessageCount);
+                            int position = adapter.getCount() - unreadMessageCount;
+                            adapter.setPosition(position);
                             adapter.notifyDataSetChanged();
                             if (isScroll) {
                                 chatListView.setSelection(adapter.getCount() - oldCount + 1);
                             } else {
-                                chatListView.setSelectionFromTop(chat.firstVisiblePosition + 1 + HistoryStorage.LIMIT, chat.offset);
+                                if (unreadMessageCount == 0) {
+                                    chatListView.setSelectionFromTop(chat.firstVisiblePosition + 1 + HistoryStorage.LIMIT, chat.offset);
+                                } else {
+                                    chatListView.setSelectionFromTop(position, offsetNewMessage);
+                                }
                             }
                         }
                     }

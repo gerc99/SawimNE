@@ -30,7 +30,7 @@ public class HistoryStorage {
             AUTHOR + " text not null, " +
             MESSAGE + " text not null, " +
             DATE + " long not null );";
-    public static final int LIMIT = 25;
+    public static final int LIMIT = 15;
 
     private static final String PREFIX = "hist";
 
