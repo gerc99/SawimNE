@@ -354,6 +354,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     }
 
     public RosterAdapter getRosterAdapter() {
+        if (rosterListView == null) return null;
         return (RosterAdapter) rosterListView.getAdapter();
     }
 

@@ -2050,7 +2050,6 @@ public final class XmppConnection extends ClientConnection {
         }
     }
 
-
     public String getConferenceStorage() {
         StringBuilder xml = new StringBuilder();
         Vector contacts = getXmpp().getContactItems();
@@ -2223,7 +2222,6 @@ public final class XmppConnection extends ClientConnection {
         }
         sendMessage(to, msg, type, false, generateId());
     }
-
 
     void sendMessage(PlainMessage message) {
         String to = message.getRcvrUin();

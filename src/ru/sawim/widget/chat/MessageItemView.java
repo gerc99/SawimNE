@@ -12,6 +12,7 @@ import android.text.Spannable;
 import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -64,6 +65,7 @@ public class MessageItemView extends View {
     public MessageItemView(Context context) {
         super(context);
         textPaint.setAntiAlias(true);
+        messageTextPaint.setAntiAlias(true);
     }
 
     public void setTextSize(int size) {
@@ -76,9 +78,8 @@ public class MessageItemView extends View {
 
     public static Layout buildLayout(CharSequence parsedText) {
         DisplayMetrics displayMetrics = SawimApplication.getContext().getResources().getDisplayMetrics();
-        messageTextPaint.setAntiAlias(true);
         messageTextPaint.linkColor = Scheme.getColor(Scheme.THEME_LINKS);
-        messageTextPaint.setTextSize((SawimApplication.getFontSize()) * displayMetrics.scaledDensity);
+        messageTextPaint.setTextSize(SawimApplication.getFontSize() * displayMetrics.scaledDensity);
         return makeLayout(parsedText, displayMetrics.widthPixels - Util.dipToPixels(SawimApplication.getContext(), 28));
     }
 
@@ -98,6 +99,7 @@ public class MessageItemView extends View {
         int height = isAddTitleView ? measureHeight(heightMeasureSpec) : getPaddingTop() + getPaddingBottom();
         int layoutWidth = width - getPaddingRight() - getPaddingLeft();
         if (layout.getWidth() != layoutWidth) {
+            messageTextPaint.setTextSize((SawimApplication.getFontSize()) * getResources().getDisplayMetrics().scaledDensity);
             layout = makeLayout(layout.getText(), layoutWidth);
         }
         titleHeight = isAddTitleView ? height - getPaddingTop() : getPaddingTop();
@@ -229,7 +231,7 @@ public class MessageItemView extends View {
 
     public void setShowDivider(boolean showDivider) {
         isShowDivider = showDivider;
-        textPaint.setStrokeWidth(Util.dipToPixels(getContext(), 4));
+        textPaint.setStrokeWidth(Util.dipToPixels(getContext(), 5));
     }
 
     private void setDrawableBounds(Drawable drawable, int x, int y, int w, int h) {

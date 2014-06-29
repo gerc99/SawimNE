@@ -58,6 +58,10 @@ public final class MessData {
         return layout.getText();
     }
 
+    public short getRowData() {
+        return rowData;
+    }
+
     public boolean isIncoming() {
         return (rowData & INCOMING) != 0;
     }

@@ -27,14 +27,14 @@ public final class Clipboard {
 
     public static String serialize(boolean isSubstring, boolean incoming, String header, CharSequence text) {
         StringBuffer sb = new StringBuffer();
-        sb.append('[').append(header).append(']').append('\n');
+        sb.append("[ ").append(header).append(" ]").append('\n');
         insertQuotingChars(sb, text, isSubstring, incoming ? '\u00bb' : '\u00ab');
         return sb.toString();
     }
 
     public static String serialize(boolean isSubstring, boolean incoming, String header1, String header2, CharSequence text) {
         StringBuffer sb = new StringBuffer();
-        sb.append('[').append(header1).append(" ").append(header2).append(']').append('\n');
+        sb.append("[ ").append(header1).append(" ").append(header2).append(" ]").append('\n');
         insertQuotingChars(sb, text, isSubstring, incoming ? '\u00bb' : '\u00ab');
         return sb.toString();
     }

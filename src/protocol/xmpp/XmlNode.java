@@ -79,7 +79,6 @@ public final class XmlNode {
         return getAttribute(S_ID);
     }
 
-
     public static XmlNode parse(Socket socket) throws SawimException {
         char ch = socket.readChar();
         if ('<' != ch) {

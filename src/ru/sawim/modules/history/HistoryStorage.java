@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 import protocol.Contact;
 import ru.sawim.SawimApplication;
 import ru.sawim.chat.Chat;
@@ -16,6 +17,7 @@ import java.util.List;
 
 public class HistoryStorage {
 
+    private static final int VERSION = 5;
     private static final String CHAT_HISTORY_TABLE = "messages";
     private static final String COLUMN_ID = "_id";
     private static final String INCOMING = "incoming";
@@ -23,14 +25,15 @@ public class HistoryStorage {
     private static final String AUTHOR = "author";
     private static final String MESSAGE = "msgtext";
     private static final String DATE = "date";
+    private static final String ROW_DATA = "row_data";
     private static final String DB_CREATE = "create table if not exists " +
             CHAT_HISTORY_TABLE + " (" + COLUMN_ID + " integer primary key autoincrement, " +
             SENDING_STATE + " integer, " +
             INCOMING + " integer, " +
             AUTHOR + " text not null, " +
             MESSAGE + " text not null, " +
-            DATE + " long not null );";
-    public static final int LIMIT = 15;
+            DATE + " long not null, " +
+            ROW_DATA + " integer);";
 
     private static final String PREFIX = "hist";
 
@@ -56,7 +59,7 @@ public class HistoryStorage {
     private boolean openHistory() {
         if (null == dbHelper) {
             try {
-                dbHelper = new DatabaseHelper(SawimApplication.getContext(), getDBName(), DB_CREATE, CHAT_HISTORY_TABLE, 4);
+                dbHelper = new DatabaseHelper(SawimApplication.getContext(), getDBName(), DB_CREATE, CHAT_HISTORY_TABLE, VERSION);
                 db = dbHelper.getWritableDatabase();
                 firstMessageCount = getHistorySize();
             } catch (Exception e) {
@@ -85,6 +88,7 @@ public class HistoryStorage {
             values.put(AUTHOR, md.getNick());
             values.put(MESSAGE, md.getText().toString());
             values.put(DATE, md.getTime());
+            values.put(ROW_DATA, md.getRowData());
             db.insert(CHAT_HISTORY_TABLE, null, values);
         } catch (Exception e) {
             e.printStackTrace();
@@ -105,10 +109,10 @@ public class HistoryStorage {
         }
     }
 
-    public void addNextListMessages(List<MessData> messDataList, final Chat chat, int offset) {
+    public void addNextListMessages(List<MessData> messDataList, final Chat chat, int limit, int offset) {
         final String selectCount = "select * from " + CHAT_HISTORY_TABLE
                 + " order by " + COLUMN_ID
-                + " DESC limit " + LIMIT
+                + " DESC limit " + limit
                 + " OFFSET " + offset;
         try {
             openHistory();
@@ -131,14 +135,24 @@ public class HistoryStorage {
         String from = cursor.getString(cursor.getColumnIndex(AUTHOR));
         String text = cursor.getString(cursor.getColumnIndex(MESSAGE));
         long date = Util.createLocalDate(Util.getLocalDateString(cursor.getLong(cursor.getColumnIndex(DATE)), false));
+        short rowData = cursor.getShort(cursor.getColumnIndex(ROW_DATA));
         PlainMessage message;
+        if ((rowData & MessData.ME) != 0) {
+            text = text.substring(from.length() + 2);
+        }
         if (isIncoming) {
             message = new PlainMessage(from, chat.getProtocol(), date, text, true);
         } else {
             message = new PlainMessage(chat.getProtocol(), contact, date, text);
         }
-        MessData messData = chat.buildMessage(message, contact.isConference() ? from : chat.getFrom(message),
-                false, Chat.isHighlight(message.getProcessedText(), contact.getMyName()));
+        MessData messData;
+        if (rowData == 0) {
+            messData = chat.buildMessage(message, contact.isConference() ? from : chat.getFrom(message),
+                    false, Chat.isHighlight(message.getProcessedText(), contact.getMyName()));
+        } else {
+            messData = chat.buildMessage(message, contact.isConference() ? from : chat.getFrom(message),
+                    rowData, Chat.isHighlight(message.getProcessedText(), contact.getMyName()));
+        }
         if (!message.isIncoming() && !messData.isMe()) {
             messData.setIconIndex((byte) sendingState);
         }
@@ -230,9 +244,9 @@ public class HistoryStorage {
         }
 
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            dropTable(db);
-            if (newVersion > oldVersion) {
-            //    db.execSQL("ALTER TABLE " + tableName + " ADD " + SENDING_STATE + " integer");
+            //dropTable(db);
+            if (oldVersion < 5 && newVersion >= 5) {
+                db.execSQL("ALTER TABLE " + tableName + " ADD " + ROW_DATA + " integer");
             }
         }
 

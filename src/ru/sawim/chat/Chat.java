@@ -32,6 +32,7 @@ public final class Chat {
     public int offset;
     public int dividerPosition = -1;
     public int lastVisiblePosition;
+    public int oldMessageCount;
 
     public Chat(Protocol p, Contact item) {
         contact = item;
@@ -328,9 +329,34 @@ public final class Chat {
         return mData;
     }
 
+    public MessData buildMessage(Message message, String from, short flags, boolean isHighlight) {
+        boolean incoming = message.isIncoming();
+        String messageText = message.getProcessedText();
+        //messageText = StringConvertor.removeCr(messageText);
+        if (StringConvertor.isEmpty(messageText)) {
+            return null;
+        }
+        boolean isMe = messageText.startsWith(PlainMessage.CMD_ME);
+        if (isMe) {
+            messageText = messageText.substring(4);
+            if (0 == messageText.length()) {
+                return null;
+            }
+        }
+
+        final MessData mData = new MessData(contact, message.getNewDate(), messageText, from, flags, isHighlight);
+        if (!incoming && !mData.isMe()) {
+            message.setVisibleIcon(mData);
+        }
+        return mData;
+    }
+
     private void addTextToForm(Message message, String from, boolean isSystemNotice, boolean isHighlight, boolean isHistory) {
         MessData mData = buildMessage(message, from, isSystemNotice, isHighlight);
         addMessage(mData);
+        boolean isConference = contact.isConference();
+        if (isConference && mData.isMessage() && (mData.getIconIndex() == Message.NOTIFY_FROM_SERVER && !message.isIncoming()))
+            RosterHelper.getInstance().setLastMessageTime(contact.getUserId(), mData.getTime());
         if (isHistory) {
             addTextToHistory(mData);
         }
@@ -342,9 +368,6 @@ public final class Chat {
             RosterHelper.getInstance().getUpdateChatListener().addMessage(contact, mData);
             RosterHelper.getInstance().getUpdateChatListener().updateMessages();
         }
-        boolean isConference = contact.isConference();
-        if (isConference && mData.isMessage())
-            RosterHelper.getInstance().setLastMessageTime(contact.getUserId(), mData.getTime());
     }
 
     public void addPresence(SystemNotice message) {
