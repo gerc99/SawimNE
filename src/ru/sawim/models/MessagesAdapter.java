@@ -97,8 +97,8 @@ public class MessagesAdapter extends BaseAdapter {
         item.setLayout(mData.layout);
         if (mData.isMe() || mData.isPresence()) {
             item.setBackgroundIndex(MessageItemView.BACKGROUND_NONE);
-            item.setPadding(Util.dipToPixels(item.getContext(), 14),
-                    Util.dipToPixels(item.getContext(), 7), Util.dipToPixels(item.getContext(), 14), Util.dipToPixels(item.getContext(), 9));
+            item.setPadding(Util.dipToPixels(item.getContext(), 19),
+                    Util.dipToPixels(item.getContext(), 7), Util.dipToPixels(item.getContext(), 19), Util.dipToPixels(item.getContext(), 9));
             item.setNick(0, 0, null, null);
             item.setMsgTime(0, 0, null, null);
             item.setCheckImage(null);
@@ -113,10 +113,10 @@ public class MessagesAdapter extends BaseAdapter {
             if (incoming) {
                 item.setBackgroundIndex(MessageItemView.BACKGROUND_INCOMING);
                 item.setPadding(Util.dipToPixels(item.getContext(), 18),
-                        Util.dipToPixels(item.getContext(), 7), Util.dipToPixels(item.getContext(), 10), Util.dipToPixels(item.getContext(), 9));
+                        Util.dipToPixels(item.getContext(), 7), Util.dipToPixels(item.getContext(), 20), Util.dipToPixels(item.getContext(), 9));
             } else {
                 item.setBackgroundIndex(MessageItemView.BACKGROUND_OUTCOMING);
-                item.setPadding(Util.dipToPixels(item.getContext(), 10),
+                item.setPadding(Util.dipToPixels(item.getContext(), 20),
                         Util.dipToPixels(item.getContext(), 7), Util.dipToPixels(item.getContext(), 18), Util.dipToPixels(item.getContext(), 9));
             }
             item.setTextSize(SawimApplication.getFontSize());

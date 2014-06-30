@@ -1103,6 +1103,14 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
         resetText();
         chat.message = null;
         adapter.setPosition(-1);
+        chatListView.post(new Runnable() {
+            @Override
+            public void run() {
+                if (chatListView.getLastVisiblePosition() + 1 == adapter.getCount()) {
+                    chatListView.setSelection(adapter.getCount() - 1);
+                }
+            }
+        });
     }
 
     private boolean canAdd(String what) {

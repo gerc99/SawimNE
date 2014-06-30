@@ -12,7 +12,6 @@ import android.text.Spannable;
 import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -80,7 +79,7 @@ public class MessageItemView extends View {
         DisplayMetrics displayMetrics = SawimApplication.getContext().getResources().getDisplayMetrics();
         messageTextPaint.linkColor = Scheme.getColor(Scheme.THEME_LINKS);
         messageTextPaint.setTextSize(SawimApplication.getFontSize() * displayMetrics.scaledDensity);
-        return makeLayout(parsedText, displayMetrics.widthPixels - Util.dipToPixels(SawimApplication.getContext(), 28));
+        return makeLayout(parsedText, displayMetrics.widthPixels - Util.dipToPixels(SawimApplication.getContext(), 38));
     }
 
     private static StaticLayout makeLayout(CharSequence text, int specSize) {
@@ -190,10 +189,10 @@ public class MessageItemView extends View {
             canvas.drawLine(getPaddingLeft(), getScrollY() - 2, stopX, getScrollY() - 2, textPaint);
         }
         if (backgroundIndex == BACKGROUND_INCOMING) {
-            setDrawableBounds(SawimResources.backgroundDrawableIn, 0, 0, getWidth(), getHeight());
+            setDrawableBounds(SawimResources.backgroundDrawableIn, 0, getPaddingTop() / 2, getWidth() - getPaddingRight() / 2, getHeight() - getPaddingBottom() / 2);
             SawimResources.backgroundDrawableIn.draw(canvas);
         } else if (backgroundIndex == BACKGROUND_OUTCOMING) {
-            setDrawableBounds(SawimResources.backgroundDrawableOut, 0, 0, getWidth(), getHeight());
+            setDrawableBounds(SawimResources.backgroundDrawableOut, getPaddingLeft() - getPaddingLeft() / 2, getPaddingTop() / 2, getWidth() - getPaddingLeft() + getPaddingRight() / 2, getHeight() - getPaddingBottom() / 2);
             SawimResources.backgroundDrawableOut.draw(canvas);
         }
 
