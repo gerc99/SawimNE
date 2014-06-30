@@ -195,7 +195,7 @@ public final class MirandaNotes {
     public class Note {
         private String title;
         public String tags;
-        public CharSequence text;
+        public CharSequence text = "";
     }
 
     private class NoteEditor implements FormListener {
