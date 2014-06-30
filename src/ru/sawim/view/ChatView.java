@@ -478,6 +478,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
         chat.offset = (item == null) ? 0 : Math.abs(isBottomScroll ? item.getTop() : item.getBottom());
         chat.oldMessageCount = adapter.getCount();
         if (chat.lastVisiblePosition == chat.oldMessageCount) {
+            unreadMessageCount = 0;
             chat.oldMessageCount = 0;
         }
         offsetNewMessage = chatListView.getHeight() / 4;
@@ -579,9 +580,8 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
         if (chat != null && chat.getContact().getUserId().equals(lastChat)) {
             isOldChat = true;
             chat.oldMessageCount = 0;
-            int startPos = chat.getMessData().indexOf(adapter.getItems().get(adapter.getCount() - 1)) + 1;
-            for (int i = startPos; i < chat.getMessCount(); ++i) {
-                adapter.getItems().add(chat.getMessData().get(i));
+            for (int i = chat.getUnreadMessageCount(); i > 0; --i) {
+                adapter.getItems().add(chat.getMessData().get(chat.getMessCount() - i));
             }
             adapter.notifyDataSetChanged();
             return;
@@ -729,7 +729,9 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                             } else if (unreadMessageCount > 0) {
                                 limit = unreadMessageCount;
                             }
+                            boolean isNewChat = !isOldChat;
                             if (isOldChat) {
+                                isOldChat = false;
                                 limit = 0;
                                 oldCount = 0;
                             }
@@ -738,16 +740,20 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                             adapter.setPosition(position);
                             adapter.notifyDataSetChanged();
                             if (isScroll) {
-                                chatListView.setSelection(adapter.getCount() - oldCount + 1);
+                                chatListView.setSelectionFromTop(adapter.getCount() - oldCount + 1, offsetNewMessage);
                             } else {
                                 if (unreadMessageCount == 0) {
-                                    chatListView.setSelectionFromTop(chat.firstVisiblePosition + 1, chat.offset);
+                                    if (chat.lastVisiblePosition == chat.dividerPosition || (chat.oldMessageCount == 0 && isNewChat)) {
+                                        chatListView.setSelectionFromTop(position, offsetNewMessage);
+                                    } else {
+                                        chatListView.setSelectionFromTop(chat.firstVisiblePosition + 1, chat.offset);
+                                    }
                                 } else {
                                     chatListView.setSelectionFromTop(position, offsetNewMessage);
                                 }
                             }
                             if (unreadMessageCount > 0) {
-                                chatListView.setSelection(position);
+                                chatListView.setSelectionFromTop(position, offsetNewMessage);
                             }
                         }
                     }
