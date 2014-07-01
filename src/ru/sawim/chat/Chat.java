@@ -84,7 +84,7 @@ public final class Chat {
     public void addFileProgress(String caption, String text) {
         addMessage(new MessData(contact, SawimApplication.getCurrentGmtTime(), text, caption, MessData.PROGRESS, false));
         if (RosterHelper.getInstance().getUpdateChatListener() != null)
-            RosterHelper.getInstance().getUpdateChatListener().updateMessages();
+            RosterHelper.getInstance().getUpdateChatListener().updateMessages(contact);
     }
 
     public String getMyName() {
@@ -366,7 +366,7 @@ public final class Chat {
         messData.add(mData);
         if (RosterHelper.getInstance().getUpdateChatListener() != null) {
             RosterHelper.getInstance().getUpdateChatListener().addMessage(contact, mData);
-            RosterHelper.getInstance().getUpdateChatListener().updateMessages();
+            RosterHelper.getInstance().getUpdateChatListener().updateMessages(contact);
         }
     }
 

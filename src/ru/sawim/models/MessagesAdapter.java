@@ -8,7 +8,6 @@ import protocol.Contact;
 import ru.sawim.SawimApplication;
 import ru.sawim.SawimResources;
 import ru.sawim.Scheme;
-import ru.sawim.chat.Chat;
 import ru.sawim.chat.MessData;
 import ru.sawim.chat.message.Message;
 import ru.sawim.roster.RosterHelper;
@@ -33,7 +32,7 @@ public class MessagesAdapter extends BaseAdapter {
     private boolean isMultiQuote = false;
     private int position = -1;
 
-    public MessagesAdapter(Chat chat) {
+    public MessagesAdapter() {
         items = new ArrayList<MessData>();
     }
 

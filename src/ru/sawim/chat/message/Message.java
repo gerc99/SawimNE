@@ -70,7 +70,7 @@ public abstract class Message {
             if (historyStorage != null)
                 historyStorage.updateText(mData);
             if (RosterHelper.getInstance().getUpdateChatListener() != null)
-                RosterHelper.getInstance().getUpdateChatListener().updateMessages();
+                RosterHelper.getInstance().getUpdateChatListener().updateMessages(contact);
         }
     }
 

@@ -10,7 +10,7 @@ public interface OnUpdateChat {
 
     void addMessage(Contact contact, MessData mess);
 
-    void updateMessages();
+    void updateMessages(Contact contact);
 
     void updateChat();
 
