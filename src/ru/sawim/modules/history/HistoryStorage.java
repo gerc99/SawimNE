@@ -5,11 +5,11 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 import protocol.Contact;
 import ru.sawim.SawimApplication;
 import ru.sawim.chat.Chat;
 import ru.sawim.chat.MessData;
+import ru.sawim.chat.message.Message;
 import ru.sawim.chat.message.PlainMessage;
 import ru.sawim.comm.Util;
 
@@ -189,13 +189,21 @@ public class HistoryStorage {
 
     public long getLastMessageTime() {
         openHistory();
-        Cursor latest = db.query(CHAT_HISTORY_TABLE, new String[]{"MAX(" + DATE + ")"}, null, null, null, null, null);
-        long lastMessageTime = 0;
-        if (latest.moveToFirst()) {
-            lastMessageTime = latest.getLong(0);
+        Cursor cursor = db.query(CHAT_HISTORY_TABLE, null, null, null, null, null, null);
+        if (cursor.moveToLast()) {
+            do {
+                boolean isIncoming = cursor.getInt(cursor.getColumnIndex(INCOMING)) == 0;
+                int sendingState = cursor.getInt(cursor.getColumnIndex(SENDING_STATE));
+                short rowData = cursor.getShort(cursor.getColumnIndex(ROW_DATA));
+                boolean isMessage = (rowData & MessData.PRESENCE) == 0 && (rowData & MessData.SERVICE) == 0 && (rowData & MessData.PROGRESS) == 0;
+                if ((isMessage && sendingState == Message.NOTIFY_FROM_SERVER && !isIncoming) || isMessage) {
+                    long date = Util.createLocalDate(Util.getLocalDateString(cursor.getLong(cursor.getColumnIndex(DATE)), false));
+                    return date;
+                }
+            } while (cursor.moveToNext());
         }
-        latest.close();
-        return lastMessageTime;
+        cursor.close();
+        return 0;
     }
 
     public void removeHistory() {

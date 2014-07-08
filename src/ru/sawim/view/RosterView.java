@@ -329,8 +329,6 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         rosterModsSpinner.setSelection(RosterHelper.getInstance().getCurrPage());
 
         if (RosterHelper.getInstance().getProtocolCount() > 0) {
-            if (!SawimApplication.isManyPane())
-                RosterHelper.getInstance().setCurrentContact(null);
             RosterHelper.getInstance().setOnUpdateRoster(this);
             if (SawimApplication.returnFromAcc) {
                 SawimApplication.returnFromAcc = false;
@@ -359,15 +357,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     }
 
     private void openChat(Protocol p, Contact c, String sharingText) {
-        if (!SawimApplication.isManyPane()) {
-            ChatView chatView = new ChatView();
-            chatView.initChat(p, c);
-            chatView.setSharingText(sharingText);
-            FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.fragment_container, chatView, ChatView.TAG);
-            transaction.addToBackStack(null);
-            transaction.commit();
-        } else {
+        if (SawimApplication.isManyPane()) {
             ChatView chatViewTablet = (ChatView) getActivity().getSupportFragmentManager()
                     .findFragmentById(R.id.chat_fragment);
             chatViewTablet.pause(chatViewTablet.getCurrentChat());
@@ -376,6 +366,14 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
                 chatViewTablet.setSharingText(sharingText);
                 chatViewTablet.resume(chatViewTablet.getCurrentChat());
             }
+        } else {
+            ChatView chatView = new ChatView();
+            chatView.initChat(p, c);
+            chatView.setSharingText(sharingText);
+            FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.fragment_container, chatView, ChatView.TAG);
+            transaction.addToBackStack(null);
+            transaction.commit();
         }
     }
 

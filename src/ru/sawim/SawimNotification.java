@@ -61,10 +61,9 @@ public class SawimNotification {
                     notification.setVibrate(pattern);
                 }
                 String ringtone = Options.getString(Options.OPTION_MESS_RINGTONE);
-                if (ringtone.isEmpty()) {
-                    ringtone = "content://settings/system/notification_sound";
+                if (!ringtone.isEmpty()) {
+                    notification.setSound(Uri.parse(ringtone));
                 }
-                notification.setSound(Uri.parse(ringtone));
             }
         }
         if (0 < allUnread) {

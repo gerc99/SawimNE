@@ -7,6 +7,8 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.view.Surface;
 import android.view.WindowManager;
@@ -55,6 +57,8 @@ public class SawimApplication extends Application {
     private final SawimServiceConnection serviceConnection = new SawimServiceConnection();
     public boolean isBindService = false;
 
+    private Handler uiHandler;
+
     public static SawimApplication getInstance() {
         return instance;
     }
@@ -70,6 +74,7 @@ public class SawimApplication extends Application {
         VERSION = getVersion();
         Thread.setDefaultUncaughtExceptionHandler(ExceptionHandler.inContext(getContext()));
         super.onCreate();
+        uiHandler = new Handler(Looper.getMainLooper());
 
         startService();
         updateNetworkState(this);
@@ -96,6 +101,10 @@ public class SawimApplication extends Application {
         }
         DebugLog.startTests();
         TextFormatter.init();
+    }
+
+    public Handler getUiHandler() {
+        return uiHandler;
     }
 
     private void startService() {
@@ -218,7 +227,7 @@ public class SawimApplication extends Application {
     }
 
     public static long getCurrentGmtTime() {
-        return System.currentTimeMillis() / 1000;
+        return System.currentTimeMillis() / 1000 + 0;
     }
 
     public static java.io.InputStream getResourceAsStream(String name) {

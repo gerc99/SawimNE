@@ -652,6 +652,7 @@ abstract public class Protocol {
     }
 
     public final void setStatus(int statusIndex, String msg) {
+        if (profile == null) return;
         boolean connected = StatusInfo.STATUS_OFFLINE != profile.statusIndex;
         boolean connecting = StatusInfo.STATUS_OFFLINE != statusIndex;
         if (connected && !connecting) {

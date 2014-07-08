@@ -355,7 +355,7 @@ public final class Chat {
         MessData mData = buildMessage(message, from, isSystemNotice, isHighlight);
         addMessage(mData);
         boolean isConference = contact.isConference();
-        if (isConference && mData.isMessage() && (mData.getIconIndex() == Message.NOTIFY_FROM_SERVER && !message.isIncoming()))
+        if (isConference && ((mData.isMessage() && mData.getIconIndex() == Message.NOTIFY_FROM_SERVER && !message.isIncoming()) || mData.isMessage()))
             RosterHelper.getInstance().setLastMessageTime(contact.getUserId(), mData.getTime());
         if (isHistory) {
             addTextToHistory(mData);

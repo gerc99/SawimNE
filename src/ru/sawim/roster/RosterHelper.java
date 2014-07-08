@@ -244,7 +244,7 @@ public final class RosterHelper {
     }
 
     public void activateWithMsg(final String message) {
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
+        SawimApplication.getInstance().getUiHandler().post(new Runnable() {
             @Override
             public void run() {
                 Toast.makeText(SawimApplication.getContext(), message, Toast.LENGTH_LONG).show();

@@ -39,6 +39,7 @@ import ru.sawim.activities.SawimActivity;
 import ru.sawim.chat.Chat;
 import ru.sawim.chat.ChatHistory;
 import ru.sawim.chat.MessData;
+import ru.sawim.chat.message.PlainMessage;
 import ru.sawim.comm.JLocale;
 import ru.sawim.models.MessagesAdapter;
 import ru.sawim.models.RosterAdapter;
@@ -67,7 +68,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
 
     public static final String TAG = ChatView.class.getSimpleName();
 
-    private static final int HISTORY_MESSAGES_LIMIT = 25;
+    private static final int HISTORY_MESSAGES_LIMIT = 20;
 
     private static final int ADD_MESSAGE = 0;
     private static final int UPDATE_MESSAGES = 1;
@@ -77,14 +78,13 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     private Handler handler;
 
     private Chat chat;
+    private String oldChat;
     private static String lastChat;
-    private Protocol protocol;
-    private Contact contact;
+    private boolean isOldChat;
     private int unreadMessageCount;
     private String sharingText;
     private boolean sendByEnter;
     private static int offsetNewMessage;
-    private boolean isOldChat;
 
     private RosterAdapter chatsSpinnerAdapter;
     private MessagesAdapter adapter;
@@ -151,7 +151,9 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
             ActionBar actionBar = ((BaseActivity) getActivity()).getSupportActionBar();
             removeTitleBar();
             actionBar.setDisplayShowTitleEnabled(false);
-            if (contact != null) {
+
+            if (chat != null) {
+                Contact contact = chat.getContact();
                 actionBar.setDisplayShowHomeEnabled(contact.isConference());
                 actionBar.setDisplayUseLogoEnabled(contact.isConference());
                 actionBar.setDisplayHomeAsUpEnabled(contact.isConference());
@@ -216,6 +218,8 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                     new DialogFragment() {
                         @Override
                         public Dialog onCreateDialog(Bundle savedInstanceState) {
+                            final Protocol protocol = chat.getProtocol();
+                            final Contact contact = chat.getContact();
                             AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity);
                             dialogBuilder.setInverseBackgroundForced(Util.isNeedToInverseDialogBackground());
                             dialogBuilder.setMessage(JLocale.getString(R.string.grant) + " " + contact.getName() + "?");
@@ -250,7 +254,8 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
             menuButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (contact == null || chat == null) return;
+                    if (chat == null) return;
+                    Contact contact = chat.getContact();
                     final MyMenu menu = new MyMenu(activity);
                     boolean accessible = chat.getWritable() && (contact.isSingleUserContact() || contact.isOnline());
                     menu.add(getString(adapter.isMultiQuote() ?
@@ -366,7 +371,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
             sendButton.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
-                    insert("/me ");
+                    insert(PlainMessage.CMD_ME);
                     showKeyboard();
                     return true;
                 }
@@ -388,13 +393,13 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     @Override
     public void onDetach() {
         super.onDetach();
-        if (chat != null) {
-            if (adapter.isEmpty()) ChatHistory.instance.unregisterChat(chat);
-        }
         ((BaseActivity) getActivity()).setConfigurationChanged(null);
-        chat = null;
-        contact = null;
-        protocol = null;
+        if (chat != null) {
+            if (adapter.isEmpty()) {
+                ChatHistory.instance.unregisterChat(chat);
+            }
+            chat = null;
+        }
         handler = null;
         chatsImage = null;
         menuButton = null;
@@ -436,14 +441,14 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     public void onStart() {
         super.onStart();
         Contact currentContact = RosterHelper.getInstance().getCurrentContact();
-        if (contact == null) {
+        if (chat == null) {
             if (currentContact != null)
                 initChat(currentContact.getProtocol(), currentContact);
         } else {
-            openChat(protocol, contact);
+            openChat(chat.getProtocol(), chat.getContact());
         }
         if (SawimApplication.isManyPane()) {
-            if (contact == null)
+            if (chat == null)
                 chatViewLayout.showHint();
         } else {
             getActivity().supportInvalidateOptionsMenu();
@@ -464,7 +469,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
 
     public void pause(Chat chat) {
         if (chat == null) return;
-        initChat(protocol, contact);
+        initChat(chat.getProtocol(), chat.getContact());
         chat.message = getText().length() == 0 ? null : getText();
 
         View item = chatListView.getChildAt(0);
@@ -507,7 +512,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
         messageEditor.setSelection(messageEditor.getText().length());
 
         if (!SawimApplication.isManyPane()) {
-            drawerLayout.setDrawerLockMode(contact.isConference() ?
+            drawerLayout.setDrawerLockMode(chat.getContact().isConference() ?
                     DrawerLayout.LOCK_MODE_UNLOCKED : DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         }
         updateChat();
@@ -545,8 +550,8 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
 
     private void removeMessages(final int limit) {
         if (chat.getMessCount() < limit) return;
-        if (0 < limit && 0 < chat.getMessCount()
-                && chat.dividerPosition == chat.lastVisiblePosition) {
+        boolean isBottomScroll = chat.lastVisiblePosition == chat.dividerPosition;
+        if (0 < limit && 0 < chat.getMessCount() && isBottomScroll) {
             while (limit < chat.getMessCount()) {
                 if (chat.dividerPosition > 0) {
                     chat.dividerPosition--;
@@ -569,19 +574,17 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
 
     public void initChat(Protocol p, Contact c) {
         c.activate((BaseActivity) getActivity(), p);
-        protocol = p;
-        contact = c;
+        chat = p.getChat(c);
     }
 
     public void openChat(Protocol p, Contact c) {
         chatViewLayout.hideHint();
         initChat(p, c);
 
-        Chat newChat = protocol.getChat(contact);
-        lastChat = newChat.getContact().getUserId();
-        isOldChat = false;
-        if (chat != null && chat.getContact().getUserId().equals(lastChat)) {
-            isOldChat = true;
+        lastChat = chat.getContact().getUserId();
+        isOldChat = oldChat != null && oldChat.equals(lastChat);
+
+        if (isOldChat) {
             chat.oldMessageCount = 0;
             for (int i = chat.getUnreadMessageCount(); i > 0; --i) {
                 adapter.getItems().add(chat.getMessData().get(chat.getMessCount() - i));
@@ -589,7 +592,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
             adapter.notifyDataSetChanged();
             return;
         }
-        chat = newChat;
+        oldChat = chat.getContact().getUserId();
         ChatHistory.instance.registerChat(chat);
         initLabel();
         initList();
@@ -608,7 +611,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
         chatsSpinnerAdapter = new RosterAdapter();
         chatsSpinnerAdapter.setType(RosterHelper.ACTIVE_CONTACTS);
         chatBarLayout.updateLabelIcon(chatsSpinnerAdapter.getImageChat(chat, false));
-        chatBarLayout.updateTextView(contact.getName());
+        chatBarLayout.updateTextView(chat.getContact().getName());
         chatBarLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -671,10 +674,10 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
             nickList.setVisibility(View.VISIBLE);
         else if (drawerLayout.isDrawerOpen(nickList))
             drawerLayout.closeDrawer(nickList);
-        boolean isConference = contact instanceof XmppServiceContact && contact.isConference();
+        boolean isConference = chat.getContact() instanceof XmppServiceContact && chat.getContact().isConference();
         if (isConference) {
             mucUsersView = new MucUsersView();
-            mucUsersView.init(protocol, (XmppServiceContact) contact);
+            mucUsersView.init(chat.getProtocol(), (XmppServiceContact) chat.getContact());
             mucUsersView.show(this, nickList);
         } else {
             mucUsersView = null;
@@ -694,13 +697,13 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
             case ADD_MESSAGE:
                 Contact c = (Contact) ((Object[]) msg.obj)[0];
                 MessData mess = (MessData) ((Object[]) msg.obj)[1];
-                if (adapter != null && contact == c) {
+                if (chat != null && chat.getContact() == c) {
                     adapter.add(mess);
                 }
                 break;
             case UPDATE_MESSAGES:
                 Contact contact = (Contact) msg.obj;
-                if (adapter != null && this.contact == contact) {
+                if (chat != null && chat.getContact() == contact) {
                     adapter.notifyDataSetChanged();
                     if (chatListView.getLastVisiblePosition() + 1 == adapter.getCount() - 1) {
                         chatListView.setSelectionFromTop(adapter.getCount(), offsetNewMessage);
@@ -729,10 +732,12 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                         int historySize = historyStorage.getHistorySize();
                         int oldCount = adapter.getCount();
                         if (historySize > 0 && historySize != oldCount) {
+                            boolean hasUnreadMessages = unreadMessageCount > 0;
+                            boolean isBottomScroll = chat.lastVisiblePosition == chat.dividerPosition;
                             int limit = HISTORY_MESSAGES_LIMIT;
                             if (chat.oldMessageCount > 0) {
                                 limit = chat.oldMessageCount;
-                            } else if (unreadMessageCount > 0 && chat.lastVisiblePosition != 0) {
+                            } else if (hasUnreadMessages && (isBottomScroll || 0 == chat.dividerPosition) && !isScroll) {
                                 limit = unreadMessageCount;
                             }
                             boolean isNewChat = !isOldChat;
@@ -748,17 +753,13 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                             if (isScroll) {
                                 chatListView.setSelection(adapter.getCount() - oldCount + 1);
                             } else {
-                                if (unreadMessageCount == 0) {
-                                    if (chat.lastVisiblePosition == chat.dividerPosition || chat.oldMessageCount == 0 && isNewChat) {
+                                if (hasUnreadMessages) {
+                                    chatListView.setSelectionFromTop(position, offsetNewMessage);
+                                } else {
+                                    if (isBottomScroll || chat.oldMessageCount == 0 && isNewChat) {
                                         chatListView.setSelectionFromTop(position, offsetNewMessage);
                                     } else {
                                         chatListView.setSelectionFromTop(chat.firstVisiblePosition + 1, chat.offset);
-                                    }
-                                } else if (unreadMessageCount > 0 || chat.lastVisiblePosition == chat.dividerPosition) {
-                                    if (chat.lastVisiblePosition == chat.dividerPosition) {
-                                        chatListView.setSelectionFromTop(position, offsetNewMessage);
-                                    } else if (isNewChat && chat.lastVisiblePosition != 0) {
-                                        chatListView.setSelectionFromTop(chat.firstVisiblePosition, chat.offset);
                                     }
                                 }
                             }
@@ -797,9 +798,9 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     private void updateChatIcon() {
         if (chatBarLayout == null) return;
         Drawable icMess = ChatHistory.instance.getUnreadMessageIcon();
-        if (contact != null && !SawimApplication.isManyPane()) {
+        if (chat != null && !SawimApplication.isManyPane()) {
             ((BaseActivity) getActivity()).getSupportActionBar()
-                    .setIcon(StatusInfo.STATUS_OFFLINE == contact.getStatusIndex() ? SawimResources.usersIcon : SawimResources.usersIconOn);
+                    .setIcon(StatusInfo.STATUS_OFFLINE == chat.getContact().getStatusIndex() ? SawimResources.usersIcon : SawimResources.usersIconOn);
             if (icMess == null) {
                 chatBarLayout.setVisibilityChatsImage(View.GONE);
             } else {
@@ -808,7 +809,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
             }
         }
         if (chatsSpinnerAdapter != null && chat != null)
-            chatBarLayout.updateLabelIcon(contact.isConference() ? null : chatsSpinnerAdapter.getImageChat(chat, false));
+            chatBarLayout.updateLabelIcon(chat.getContact().isConference() ? null : chatsSpinnerAdapter.getImageChat(chat, false));
     }
 
     private void updateRoster() {
@@ -849,6 +850,8 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     private ListView.OnItemClickListener chatClick = new ListView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+            final Protocol protocol = chat.getProtocol();
+            final Contact contact = chat.getContact();
             MessData mData = (MessData) adapterView.getAdapter().getItem(position);
             String msg = mData.getText().toString();
             if (adapter.isMultiQuote()) {
@@ -891,6 +894,8 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
 
     public void onPrepareOptionsMenu_(Menu menu) {
         if (chat == null) return;
+        final Protocol protocol = chat.getProtocol();
+        final Contact contact = chat.getContact();
         menu.clear();
         boolean accessible = chat.getWritable() && (contact.isSingleUserContact() || contact.isOnline());
         menu.add(Menu.FIRST, ContactMenu.MENU_MULTI_CITATION, 2, getString(adapter.isMultiQuote() ?
@@ -922,6 +927,8 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     }
 
     private void onOptionsItemSelected(int id) {
+        final Protocol protocol = chat.getProtocol();
+        final Contact contact = chat.getContact();
         switch (id) {
             case ContactMenu.MENU_MULTI_CITATION:
                 if (adapter.isMultiQuote()) {
@@ -1000,6 +1007,8 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, android.view.ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
+        final Protocol protocol = chat.getProtocol();
+        final Contact contact = chat.getContact();
         menu.add(Menu.FIRST, ContactMenu.MENU_COPY_TEXT, 0, android.R.string.copy);
         menu.add(Menu.FIRST, ContactMenu.ACTION_QUOTE, 0, R.string.quote);
         if (mucUsersView != null) {
@@ -1021,6 +1030,8 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         final MessData md = adapter.getItem(info.position);
         if (md == null) return super.onContextItemSelected(item);
+        final Protocol protocol = chat.getProtocol();
+        final Contact contact = chat.getContact();
         String nick = md.getNick();
         CharSequence msg = md.getText();
         switch (item.getItemId()) {
@@ -1183,7 +1194,9 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                     return;
                 }
             }*/
-            if (protocol == null || contact == null) return;
+            if (chat == null) return;
+            final Protocol protocol = chat.getProtocol();
+            final Contact contact = chat.getContact();
             int length = s.length();
             if (length > 0) {
                 if (!compose) {

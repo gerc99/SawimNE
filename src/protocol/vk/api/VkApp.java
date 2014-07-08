@@ -11,6 +11,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
+import ru.sawim.SawimApplication;
 import ru.sawim.activities.BaseActivity;
 
 import java.io.IOException;
@@ -61,7 +62,7 @@ public class VkApp {
 
     public void showLoginDialog(String email, String password) {
         //new WebClient().oauth(OAUTH_AUTHORIZE_URL, email, password, _listener);
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
+        SawimApplication.getInstance().getUiHandler().post(new Runnable() {
             public void run() {
                 if (BaseActivity.getCurrentActivity() != null)
                     new VkDialog(BaseActivity.getCurrentActivity(), OAUTH_AUTHORIZE_URL, _listener).show();
