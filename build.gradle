@@ -3,7 +3,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.9.+'
+        classpath 'com.android.tools.build:gradle:0.11.+'
     }
 }
 
@@ -12,9 +12,14 @@ task wrapper(type: Wrapper) {
     gradleVersion = '1.11'
 }
 
+dependencies {
+    compile 'com.android.support:support-v4:19+'
+    compile 'com.android.support:appcompat-v7:19+'
+}
+
 android {
     compileSdkVersion 19
-    buildToolsVersion "19.0.3"
+    buildToolsVersion "19.1"
     defaultConfig {
         minSdkVersion 9
         targetSdkVersion 19
@@ -50,10 +55,6 @@ android {
         // by a similar customization.
         debug.setRoot('build-types/debug')
         release.setRoot('build-types/release')
-    }
-    dependencies {
-        compile 'com.android.support:support-v4:19.0.1'
-        compile 'com.android.support:appcompat-v7:+'
     }
     // signing config
     if (file("keystore.properties").exists()) {
