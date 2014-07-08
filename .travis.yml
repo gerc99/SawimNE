@@ -17,3 +17,6 @@ android:
 before_install:
   # Fix Gradle output
   - export TERM=dumb
+
+script:
+  - ./gradlew check
