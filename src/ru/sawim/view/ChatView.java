@@ -24,7 +24,7 @@ import android.view.*;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
-import listener.OnUpdateChat;
+import ru.sawim.listener.OnUpdateChat;
 import protocol.Contact;
 import protocol.ContactMenu;
 import protocol.Protocol;

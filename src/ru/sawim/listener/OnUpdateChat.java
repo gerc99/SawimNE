@@ -1,4 +1,4 @@
-package listener;
+package ru.sawim.listener;
 
 import protocol.Contact;
 import ru.sawim.chat.MessData;

@@ -2,11 +2,9 @@ package ru.sawim.roster;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.os.Handler;
-import android.os.Looper;
 import android.widget.Toast;
-import listener.OnUpdateChat;
-import listener.OnUpdateRoster;
+import ru.sawim.listener.OnUpdateChat;
+import ru.sawim.listener.OnUpdateRoster;
 import protocol.*;
 import protocol.icq.Icq;
 import protocol.mrim.Mrim;

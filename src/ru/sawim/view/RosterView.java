@@ -22,7 +22,7 @@ import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
-import listener.OnUpdateRoster;
+import ru.sawim.listener.OnUpdateRoster;
 import protocol.Contact;
 import protocol.ContactMenu;
 import protocol.Group;
