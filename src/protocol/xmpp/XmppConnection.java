@@ -688,7 +688,6 @@ public final class XmppConnection extends ClientConnection {
 
                         } else if ((S_REMOVE).equals(subscription)) {
                             xmpp.removeLocalContact(xmpp.getItemByUIN(jid));
-
                         } else {
                             String name = itemNode.getAttribute(XmlNode.S_NAME);
                             Contact contact = xmpp.createTempContact(jid);
@@ -697,6 +696,7 @@ public final class XmppConnection extends ClientConnection {
                                 group = contact.getDefaultGroupName();
                             }
                             contact.setName(name);
+                            RosterHelper.getInstance().removeFromGroup(xmpp, xmpp.getGroup(contact), contact);
                             contact.setGroup(xmpp.getOrCreateGroup(group));
                             contact.setTempFlag(false);
                             contact.setBooleanValue(Contact.CONTACT_NO_AUTH, isNoAutorized(subscription));
