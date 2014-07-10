@@ -541,7 +541,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     }
 
     public boolean isLastPosition() {
-        return chat != null && chat.dividerPosition == chat.getMessCount();
+        return chat != null && chatListView.getLastVisiblePosition() == adapter.getCount() - 1;
     }
 
     public void setSharingText(String text) {

@@ -107,13 +107,7 @@ public class SawimService extends Service {
                         final Protocol protocol = (Protocol) ((Object[]) msg.obj)[0];
                         final int statusIndex = (int) ((Object[]) msg.obj)[1];
                         final String statusMsg = (String) ((Object[]) msg.obj)[2];
-                        new AsyncTask<Void, Void, Void>() {
-                            @Override
-                            protected Void doInBackground(Void... params) {
-                                protocol.setStatus(statusIndex, statusMsg);
-                                return null;
-                            }
-                        }.execute(null, null, null);
+                        protocol.setStatus(statusIndex, statusMsg);
                         break;
                 }
             } catch (Exception e) {

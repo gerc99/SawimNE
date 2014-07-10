@@ -227,7 +227,7 @@ public class SawimApplication extends Application {
     }
 
     public static long getCurrentGmtTime() {
-        return System.currentTimeMillis() / 1000 + 0;
+        return System.currentTimeMillis() / 1000;
     }
 
     public static java.io.InputStream getResourceAsStream(String name) {
