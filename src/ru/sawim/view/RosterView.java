@@ -357,6 +357,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     }
 
     private void openChat(Protocol p, Contact c, String sharingText) {
+        c.activate((BaseActivity) getActivity(), p);
         if (SawimApplication.isManyPane()) {
             ChatView chatViewTablet = (ChatView) getActivity().getSupportFragmentManager()
                     .findFragmentById(R.id.chat_fragment);

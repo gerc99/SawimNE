@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -441,6 +442,9 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     public void onStart() {
         super.onStart();
         Contact currentContact = RosterHelper.getInstance().getCurrentContact();
+        if (chat == null && !SawimApplication.isManyPane()) {
+            chat = currentContact.getProtocol().getChat(currentContact);
+        }
         if (chat == null) {
             if (currentContact != null)
                 initChat(currentContact.getProtocol(), currentContact);
@@ -464,6 +468,8 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     @Override
     public void onResume() {
         super.onResume();
+        boolean isOldChatInTablet = chat != null && chat.getContact() == RosterHelper.getInstance().getCurrentContact() && SawimApplication.isManyPane();
+        if (isOldChatInTablet) return;
         resume(chat);
     }
 
@@ -472,20 +478,23 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
         initChat(chat.getProtocol(), chat.getContact());
         chat.message = getText().length() == 0 ? null : getText();
 
-        View item = chatListView.getChildAt(0);
-        if (chat.getMessCount() == 0)
-            chat.dividerPosition = adapter.getCount();
-        else
-            chat.dividerPosition = adapter.getItems().indexOf(chat.getMessData().get(chat.getMessCount() - 1)) + 1;
+        if (adapter != null) {
+            if (chat.getMessCount() == 0) {
+                chat.dividerPosition = adapter.getCount();
+            } else {
+                chat.dividerPosition = adapter.getItems().indexOf(chat.getMessData().get(chat.getMessCount() - 1)) + 1;
+            }
+            chat.oldMessageCount = adapter.getCount();
+        }
         chat.firstVisiblePosition = chatListView.getFirstVisiblePosition();
         chat.lastVisiblePosition = chatListView.getLastVisiblePosition() + 1;
         boolean isBottomScroll = chat.lastVisiblePosition == chat.dividerPosition;
-        chat.offset = (item == null) ? 0 : Math.abs(isBottomScroll ? item.getTop() : item.getBottom());
-        chat.oldMessageCount = adapter.getCount();
         if (chat.lastVisiblePosition == chat.oldMessageCount) {
             unreadMessageCount = 0;
             chat.oldMessageCount = 0;
         }
+        View item = chatListView.getChildAt(0);
+        chat.offset = (item == null) ? 0 : Math.abs(isBottomScroll ? item.getTop() : item.getBottom());
         offsetNewMessage = chatListView.getHeight() / 4;
 
         chat.setVisibleChat(false);
@@ -527,11 +536,12 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
 
     private void setPosition() {
         adapter.setPosition(chat.dividerPosition);
+        boolean hasUnreadMessages = unreadMessageCount > 0;
         boolean isBottomScroll = chat.lastVisiblePosition == chat.dividerPosition;
         int position = chat.getMessCount() - unreadMessageCount;
-        if (isBottomScroll && unreadMessageCount == 0) {
+        if (isBottomScroll && !hasUnreadMessages) {
             chatListView.setSelectionFromTop(chat.firstVisiblePosition, -chat.offset);
-        } else if (unreadMessageCount == 0 || !isBottomScroll) {
+        } else if (!hasUnreadMessages || !isBottomScroll) {
             chatListView.setSelectionFromTop(chat.firstVisiblePosition + 1, chat.offset);
         } else {
             if (isBottomScroll) {
@@ -726,7 +736,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                 break;
             case LOAD_STORY:
                 boolean isScroll = (boolean) msg.obj;
-                if (chat != null) {
+                if (chat != null && adapter != null) {
                     HistoryStorage historyStorage = chat.getHistory();
                     if (historyStorage != null) {
                         int historySize = historyStorage.getHistorySize();
@@ -796,24 +806,31 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     }
 
     private void updateChatIcon() {
-        if (chatBarLayout == null) return;
+        if (chat == null || chatBarLayout == null) return;
         Drawable icMess = ChatHistory.instance.getUnreadMessageIcon();
-        if (chat != null && !SawimApplication.isManyPane()) {
-            ((BaseActivity) getActivity()).getSupportActionBar()
-                    .setIcon(StatusInfo.STATUS_OFFLINE == chat.getContact().getStatusIndex() ? SawimResources.usersIcon : SawimResources.usersIconOn);
+        BitmapDrawable confIcon = StatusInfo.STATUS_OFFLINE == chat.getContact().getStatusIndex()
+                ? SawimResources.usersIcon : SawimResources.usersIconOn;
+        if (SawimApplication.isManyPane()) {
+            if (chatsSpinnerAdapter != null) {
+                chatBarLayout.updateLabelIcon(chat.getContact().isConference() ? confIcon : chatsSpinnerAdapter.getImageChat(chat, false));
+            }
+        } else {
+            ((BaseActivity) getActivity()).getSupportActionBar().setIcon(confIcon);
             if (icMess == null) {
                 chatBarLayout.setVisibilityChatsImage(View.GONE);
             } else {
                 chatBarLayout.setVisibilityChatsImage(View.VISIBLE);
                 chatsImage.setImageDrawable(icMess);
             }
+            if (chatsSpinnerAdapter != null) {
+                chatBarLayout.updateLabelIcon(chat.getContact().isConference() ? null : chatsSpinnerAdapter.getImageChat(chat, false));
+            }
         }
-        if (chatsSpinnerAdapter != null && chat != null)
-            chatBarLayout.updateLabelIcon(chat.getContact().isConference() ? null : chatsSpinnerAdapter.getImageChat(chat, false));
+
     }
 
     private void updateRoster() {
-        RosterView rosterView = (RosterView) ChatView.this.getFragmentManager().findFragmentById(R.id.roster_fragment);
+        RosterView rosterView = (RosterView) getFragmentManager().findFragmentById(R.id.roster_fragment);
         if (rosterView != null)
             rosterView.update();
     }
@@ -894,7 +911,6 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
 
     public void onPrepareOptionsMenu_(Menu menu) {
         if (chat == null) return;
-        final Protocol protocol = chat.getProtocol();
         final Contact contact = chat.getContact();
         menu.clear();
         boolean accessible = chat.getWritable() && (contact.isSingleUserContact() || contact.isOnline());
