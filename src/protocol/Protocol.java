@@ -937,7 +937,7 @@ abstract public class Protocol {
                 RosterHelper.getInstance().updateProgressBar();
             }
             try {
-                int sleep = 2 * 60;
+                int sleep = 10;
                 Thread.sleep(sleep * 1000);
             } catch (Exception ignored) {
             }
@@ -945,6 +945,7 @@ abstract public class Protocol {
                 disconnect(false);
                 startConnection();
             }
+            return;
         }
         disconnect(false);
         setOnlineStatus(StatusInfo.STATUS_OFFLINE, null);
