@@ -213,7 +213,7 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
         if (isCanceled()) {
             return;
         }
-        changeFileProgress(0, R.string.error);
+        changeFileProgress(-1, R.string.error);
     }
 
     private void closeFile() {
