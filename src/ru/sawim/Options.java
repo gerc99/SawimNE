@@ -23,7 +23,6 @@ public class Options {
     public static final String OPTION_ANTISPAM_KEYWORDS = "antispam_keywords";
 
     public static final String OPTION_CL_SORT_BY = "cl_sort_by";
-    public static final String OPTION_MESS_NOTIF = "mess_notify";
     public static final String OPTION_MESS_RINGTONE = "mess_ringtone";
     public static final String OPTION_CURRENT_PAGE = "current_page";
     public static final String OPTION_VIBRATION = "vibration";
@@ -84,8 +83,7 @@ public class Options {
         setBoolean(Options.OPTION_CL_HIDE_OFFLINE, false);
         setBoolean(Options.OPTION_HIDE_ICONS_CLIENTS, true);
         setBoolean(Options.OPTION_HIDE_KEYBOARD, true);
-        setBoolean(Options.OPTION_MESS_NOTIF, true);
-        setString(Options.OPTION_MESS_RINGTONE, "content://settings/system/notification_sound");
+        setString(Options.OPTION_MESS_RINGTONE, SawimNotification.SOUND_DEFAULT);
         setBoolean(Options.OPTION_BLOG_NOTIFY, true);
         setBoolean(Options.OPTION_NOTIFY_IN_AWAY, true);
         setInt(Options.OPTION_MAX_MSG_COUNT, 100);

@@ -273,8 +273,7 @@ public class SawimActivity extends BaseActivity {
         if (virtualListView != null && virtualListView.isAdded()) {
             virtualListView.onPrepareOptionsMenu_(menu);
             return true;
-        } else if (chatView != null && chatView.isResumed()
-                && chatView.isAdded() && !SawimApplication.isManyPane()) {
+        } else if (chatView != null && chatView.isAdded() && !SawimApplication.isManyPane()) {
             chatView.onPrepareOptionsMenu_(menu);
             return true;
         } else if ((rosterView != null && rosterView.isAdded())

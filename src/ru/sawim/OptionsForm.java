@@ -87,7 +87,6 @@ public class OptionsForm implements ControlStateListener {
                 break;
 
             case OPTIONS_SIGNALING:
-                saveOptionBoolean(Options.OPTION_MESS_NOTIF);
                 saveOptionString(Options.OPTION_MESS_RINGTONE);
                 //saveOptionBoolean(Options.OPTION_BLOG_NOTIFY);
                 saveOptionBoolean(Options.OPTION_VIBRATION);
@@ -153,7 +152,6 @@ public class OptionsForm implements ControlStateListener {
                 break;
 
             case OPTIONS_SIGNALING:
-                setChecked(R.string.message_notification, Options.OPTION_MESS_NOTIF);
                 form.addRingtoneControl(Options.OPTION_MESS_RINGTONE, JLocale.getString(R.string.notification_ringtone), JLocale.getString(R.string.notification_ringtone_summaey));
                 setChecked(R.string.vibration, Options.OPTION_VIBRATION);
                 setChecked(R.string.alarm, Options.OPTION_ALARM);

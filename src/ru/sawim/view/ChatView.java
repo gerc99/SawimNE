@@ -716,7 +716,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                 if (chat != null && chat.getContact() == contact) {
                     adapter.notifyDataSetChanged();
                     if (chatListView.getLastVisiblePosition() + 1 == adapter.getCount() - 1) {
-                        chatListView.setSelectionFromTop(adapter.getCount(), offsetNewMessage);
+                        chatListView.setSelectionFromTop(adapter.getCount(), chatListView.getHeight() / 4);
                         chat.oldMessageCount = 0;
                     }
                 }
