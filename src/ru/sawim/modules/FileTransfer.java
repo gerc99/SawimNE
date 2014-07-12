@@ -213,7 +213,7 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
         if (isCanceled()) {
             return;
         }
-        changeFileProgress(0, R.string.error);
+        changeFileProgress(-1, R.string.error);
     }
 
     private void closeFile() {
@@ -316,26 +316,34 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
                 out.flush();
                 out.close();
 
-                if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                    responseIn = conn.getInputStream();
-                    StringBuilder sb = new StringBuilder();
-                    Scanner scanner = new Scanner(responseIn);
-                    while (scanner.hasNext()) {
-                        sb.append(scanner.next());
+                int responseCode = conn.getResponseCode();
+                switch (responseCode) {
+                    case HttpURLConnection.HTTP_OK: {
+                        responseIn = conn.getInputStream();
+                        StringBuilder sb = new StringBuilder();
+                        Scanner scanner = new Scanner(responseIn);
+                        while (scanner.hasNext()) {
+                            sb.append(scanner.next());
+                        }
+                        JSONObject root = new JSONObject(sb.toString());
+                        url = root.getJSONObject("data").getString("link");
+                        break;
                     }
-
-                    JSONObject root = new JSONObject(sb.toString());
-                    url = root.getJSONObject("data").getString("link");
-                } else {
-                    Log.i(TAG, "responseCode=" + conn.getResponseCode());
-                    responseIn = conn.getErrorStream();
-                    StringBuilder sb = new StringBuilder();
-                    Scanner scanner = new Scanner(responseIn);
-                    while (scanner.hasNext()) {
-                        sb.append(scanner.next() + "\n");
+                    case HttpURLConnection.HTTP_BAD_GATEWAY: {
+                        throw new SawimException(194, 0);
                     }
-                    Log.i(TAG, "error response: " + sb.toString());
-                    url = sb.toString();
+                    default: {
+                        Log.i(TAG, "responseCode=" + conn.getResponseCode());
+                        responseIn = conn.getErrorStream();
+                        StringBuilder sb = new StringBuilder();
+                        Scanner scanner = new Scanner(responseIn);
+                        while (scanner.hasNext()) {
+                            sb.append(scanner.next()).append('\n');
+                        }
+                        Log.i(TAG, "error response: " + sb.toString());
+                        url = sb.toString();
+                        break;
+                    }
                 }
             } catch (Exception ex) {
                 throw new SawimException(194, 0);

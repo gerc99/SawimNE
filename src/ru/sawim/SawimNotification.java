@@ -98,15 +98,22 @@ public class SawimNotification {
         builder.setContentIntent(contentIntent);
         builder.setOngoing(false);
         builder.setContentTitle(filename);
-        if (percent == 100) {
-            builder.setTicker(JLocale.getString(R.string.sending_complete));
-            builder.setSmallIcon(android.R.drawable.stat_sys_upload_done);
+        if (percent != -1) {
+            if (percent == 100) {
+                builder.setTicker(JLocale.getString(R.string.sending_complete));
+                builder.setSmallIcon(android.R.drawable.stat_sys_upload_done);
+            } else {
+                builder.setTicker(JLocale.getString(R.string.sending_file));
+                builder.setSmallIcon(android.R.drawable.stat_sys_upload);
+            }
+            builder.setContentText(percent + "% " + text);
+            builder.setAutoCancel(true);
         } else {
-            builder.setTicker(JLocale.getString(R.string.sending_file));
-            builder.setSmallIcon(android.R.drawable.stat_sys_upload);
+            builder.setSmallIcon(android.R.drawable.stat_sys_upload_done);
+            builder.setContentText(text);
+            builder.setTicker(text);
+            builder.setAutoCancel(false);
         }
-        builder.setContentText(percent + "% " + text);
-        builder.setAutoCancel(true);
         int id = filename.hashCode();
         if (idsMap.containsKey(filename))
             id = idsMap.get(filename);
