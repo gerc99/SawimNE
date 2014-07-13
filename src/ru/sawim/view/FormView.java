@@ -160,22 +160,16 @@ public class FormView extends DialogFragment implements Forms.OnUpdateForm, View
         });
     }
 
-    private void hideKeyboard() {
-        if (getActivity().getCurrentFocus() != null)
-            ((InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE))
-                    .hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), 0);
-    }
-
     @Override
     public void onClick(View view) {
         if (getLastForms().getFormListener() != null)
             getLastForms().getFormListener()
                     .formAction(getLastForms(), view.equals(okButton));
-        hideKeyboard();
+        Util.hideKeyboard(getActivity());
     }
 
     public boolean hasBack() {
-        hideKeyboard();
+        Util.hideKeyboard(getActivity());
         return getLastForms().getBackPressedListener() == null || getLastForms().getBackPressedListener().back();
     }
 
@@ -312,7 +306,7 @@ public class FormView extends DialogFragment implements Forms.OnUpdateForm, View
                     button.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            hideKeyboard();
+                            Util.hideKeyboard(getActivity());
                             getLastForms().controlUpdated(c);
                         }
                     });

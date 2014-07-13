@@ -22,6 +22,7 @@ import ru.sawim.activities.SawimActivity;
 import ru.sawim.comm.JLocale;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.roster.RosterHelper;
+import ru.sawim.widget.Util;
 
 /**
  * Created with IntelliJ IDEA.
@@ -192,6 +193,7 @@ public class StartWindowView extends Fragment {
                     if (login.length() > 0 && password.length() > 0) {
                         getFragmentManager().popBackStack();
                         back();
+                        Util.hideKeyboard(getActivity());
                     }
                 }
             });

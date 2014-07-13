@@ -14,6 +14,7 @@ import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.activities.BaseActivity;
 import ru.sawim.models.form.Forms;
+import ru.sawim.widget.Util;
 
 import java.util.List;
 
@@ -58,14 +59,8 @@ public class PreferenceFormView extends PreferenceFragment {
         ((BaseActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
-    private void hideKeyboard() {
-        if (getActivity().getCurrentFocus() != null)
-            ((InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE))
-                    .hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), 0);
-    }
-
     public boolean hasBack() {
-        hideKeyboard();
+        Util.hideKeyboard(getActivity());
         return forms.getBackPressedListener() != null && forms.getBackPressedListener().back();
     }
 

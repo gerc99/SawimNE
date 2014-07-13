@@ -10,6 +10,7 @@ import android.graphics.Matrix;
 import android.os.Build;
 import android.util.DisplayMetrics;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.LinearLayout;
 import ru.sawim.Scheme;
 
@@ -53,6 +54,12 @@ public class Util {
             v.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, 1));
         v.setBackgroundColor(color);
         return v;
+    }
+
+    public static void hideKeyboard(Activity activity) {
+        if (activity.getCurrentFocus() != null)
+            ((InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE))
+                    .hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
     }
 
     public static int getSystemBackground(Context context) {

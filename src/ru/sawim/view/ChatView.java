@@ -83,6 +83,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     private static String lastChat;
     private boolean isOldChat;
     private int unreadMessageCount;
+    private int oldUnreadMessageCount;
     private String sharingText;
     private boolean sendByEnter;
     private static int offsetNewMessage;
@@ -489,6 +490,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
         boolean isBottomScroll = chat.lastVisiblePosition == chat.dividerPosition;
         if (chat.lastVisiblePosition == chat.oldMessageCount) {
             unreadMessageCount = 0;
+            oldUnreadMessageCount = 0;
             chat.oldMessageCount = 0;
         }
         View item = chatListView.getChildAt(0);
@@ -508,6 +510,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
         chat.setVisibleChat(true);
         RosterHelper.getInstance().setOnUpdateChat(this);
         unreadMessageCount = chat.getUnreadMessageCount();
+        oldUnreadMessageCount = unreadMessageCount;
         chat.resetUnreadMessages();
         removeMessages(Options.getInt(Options.OPTION_MAX_MSG_COUNT) + unreadMessageCount);
         if (sharingText != null) {
@@ -551,7 +554,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     }
 
     public boolean isLastPosition() {
-        return chat != null && chatListView.getLastVisiblePosition() == adapter.getCount() - 1;
+        return adapter != null && chatListView.getLastVisiblePosition() == adapter.getCount() - 1;
     }
 
     public void setSharingText(String text) {
@@ -664,22 +667,24 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
         chatListView.setOnCreateContextMenuListener(this);
         chatListView.setOnItemClickListener(chatClick);
         chatListView.setOnScrollListener(new AbsListView.OnScrollListener() {
-            int firstVisibleItem;
-            boolean nowIsScroll;
+            int oldFirstVisibleItem = -1;
+            boolean isScroll;
 
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
-                nowIsScroll = scrollState > 0;
+                isScroll = scrollState > 0;
             }
 
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                if (this.firstVisibleItem != firstVisibleItem) {
-                    this.firstVisibleItem = firstVisibleItem;
+                if (oldFirstVisibleItem != firstVisibleItem) {
+                    oldFirstVisibleItem = firstVisibleItem;
                     if (visibleItemCount > 0 && firstVisibleItem == 0) {
-                        loadStory(nowIsScroll);
-                        nowIsScroll = false;
+                        loadStory(isScroll);
+                        isScroll = false;
                     }
+                } else {
+                    oldFirstVisibleItem = -1;
                 }
             }
         });
@@ -747,13 +752,14 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                         if (historySize > 0 && historySize != oldCount) {
                             boolean hasUnreadMessages = unreadMessageCount > 0;
                             boolean isBottomScroll = chat.lastVisiblePosition == chat.dividerPosition;
+                            boolean isNewChat = !isOldChat;
                             int limit = HISTORY_MESSAGES_LIMIT;
                             if (chat.oldMessageCount > 0) {
                                 limit = chat.oldMessageCount;
-                            } else if (hasUnreadMessages && (isBottomScroll || 0 == chat.dividerPosition) && !isScroll) {
+                            } else if (oldUnreadMessageCount > 0 && (isBottomScroll || 0 == chat.dividerPosition) && !isScroll) {
                                 limit = unreadMessageCount;
+                                oldUnreadMessageCount = 0;
                             }
-                            boolean isNewChat = !isOldChat;
                             if (isOldChat) {
                                 isOldChat = false;
                                 limit = 0;

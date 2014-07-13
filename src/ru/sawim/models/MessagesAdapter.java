@@ -30,7 +30,7 @@ public class MessagesAdapter extends BaseAdapter {
     private List<MessData> items;
 
     private boolean isMultiQuote = false;
-    private int position = -1;
+    private int position;
 
     public MessagesAdapter() {
         items = new ArrayList<MessData>();

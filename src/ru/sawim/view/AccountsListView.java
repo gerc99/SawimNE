@@ -1,6 +1,5 @@
 package ru.sawim.view;
 
-import android.accounts.AccountManager;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -18,6 +17,7 @@ import ru.sawim.SawimApplication;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.models.AccountsAdapter;
 import ru.sawim.roster.RosterHelper;
+import ru.sawim.widget.Util;
 
 /**
  * Created with IntelliJ IDEA.
@@ -109,9 +109,6 @@ public class AccountsListView extends Fragment {
                                     @Override
                                     public void onClick(DialogInterface dialog, int id) {
                                         Protocol p = RosterHelper.getInstance().getProtocol(Options.getAccount(accountID));
-                                        android.accounts.Account acc = new android.accounts.Account(Options.getId(accountID), getString(R.string.app_name));
-                                        AccountManager am = AccountManager.get(getActivity());
-                                        am.removeAccount(acc, null, null);
                                         if (p != null)
                                             SawimApplication.getInstance().setStatus(p, StatusInfo.STATUS_OFFLINE, "");
                                         Options.delAccount(accountID);
@@ -258,8 +255,10 @@ public class AccountsListView extends Fragment {
                         account.isActive = true;
                         addAccount(Options.getAccountCount() + 1, account);
                     }
-                    if (login.length() > 0 && password.length() > 0)
+                    if (login.length() > 0 && password.length() > 0) {
                         getFragmentManager().popBackStack();
+                        Util.hideKeyboard(getActivity());
+                    }
                 }
             });
             return dialogLogin;
