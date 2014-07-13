@@ -1,6 +1,8 @@
 package ru.sawim;
 
+import android.content.Context;
 import android.content.SharedPreferences;
+import android.provider.Settings;
 import protocol.Profile;
 import protocol.StatusInfo;
 import ru.sawim.comm.StringConvertor;
@@ -58,7 +60,7 @@ public class Options {
     private static final List<Profile> listOfProfiles = new ArrayList<Profile>();
 
     public static void init() {
-        preferences = SawimApplication.getContext().getSharedPreferences(PREFS_NAME, 0);
+        preferences = SawimApplication.getContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         editor = preferences.edit();
         if (preferences.getAll().isEmpty()) {
             initAccounts();
@@ -83,7 +85,7 @@ public class Options {
         setBoolean(Options.OPTION_CL_HIDE_OFFLINE, false);
         setBoolean(Options.OPTION_HIDE_ICONS_CLIENTS, true);
         setBoolean(Options.OPTION_HIDE_KEYBOARD, true);
-        setString(Options.OPTION_MESS_RINGTONE, SawimNotification.SOUND_DEFAULT);
+        setString(Options.OPTION_MESS_RINGTONE, Settings.System.DEFAULT_NOTIFICATION_URI.toString());
         setBoolean(Options.OPTION_BLOG_NOTIFY, true);
         setBoolean(Options.OPTION_NOTIFY_IN_AWAY, true);
         setInt(Options.OPTION_MAX_MSG_COUNT, 100);
@@ -108,6 +110,10 @@ public class Options {
 
     public static String getString(String key) {
         return preferences.getString(key, "");
+    }
+
+    public static String getString(String key, String value) {
+        return preferences.getString(key, value);
     }
 
     public static int getInt(String key) {

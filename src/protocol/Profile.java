@@ -26,7 +26,7 @@ public final class Profile {
             + "|" + SawimApplication.getContext().getString(R.string.classmates)
             + "|LiveJournal"
             + "|GTalk"
-            + "|Ya.Online"
+            + "|Yandex"
             + "|QIP"
     ).substring(1), '|');
     public static final byte[] protocolTypes = new byte[]{

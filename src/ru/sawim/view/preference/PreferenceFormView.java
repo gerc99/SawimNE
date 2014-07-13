@@ -212,7 +212,9 @@ public class PreferenceFormView extends PreferenceFragment {
                                     Uri uri = data.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI);
                                     if (callChangeListener(uri != null ? uri.toString() : "")) {
                                         onSaveRingtone(uri);
-                                        c.text = uri.toString();
+                                        if (uri != null) {
+                                            c.text = uri.toString();
+                                        }
                                         forms.controlUpdated(c);
                                     }
                                 }

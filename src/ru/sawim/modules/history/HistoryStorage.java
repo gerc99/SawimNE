@@ -70,7 +70,7 @@ public class HistoryStorage {
         return dbHelper != null;
     }
 
-    private void closeHistory() {
+    public void closeHistory() {
         if (null != dbHelper) {
             dbHelper.close();
         }
@@ -180,7 +180,7 @@ public class HistoryStorage {
     }
 
     private String getDBName() {
-        return PREFIX + getUniqueUserId().replace('@', '_').replace('.', '_');
+        return PREFIX + getUniqueUserId().replace('@', '_').replace('.', '_').replace('/', '_');
     }
 
     String getUniqueUserId() {
@@ -197,7 +197,7 @@ public class HistoryStorage {
                 short rowData = cursor.getShort(cursor.getColumnIndex(ROW_DATA));
                 boolean isMessage = (rowData & MessData.PRESENCE) == 0 && (rowData & MessData.SERVICE) == 0 && (rowData & MessData.PROGRESS) == 0;
                 if ((isMessage && sendingState == Message.NOTIFY_FROM_SERVER && !isIncoming) || isMessage) {
-                    long date = Util.createLocalDate(Util.getLocalDateString(cursor.getLong(cursor.getColumnIndex(DATE)), false));
+                    long date = cursor.getLong(cursor.getColumnIndex(DATE));
                     return date;
                 }
             } while (cursor.moveToNext());

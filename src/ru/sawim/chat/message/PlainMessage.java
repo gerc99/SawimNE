@@ -15,8 +15,6 @@ public class PlainMessage extends Message {
     public static final String CMD_WAKEUP = "/wakeup";
     public static final String CMD_ME = "/me ";
 
-    public static final int MESSAGE_LIMIT = 1024;
-
     public PlainMessage(String contactUin, Protocol protocol, long date, String text, boolean offline) {
         super(date, protocol.getUserId(), contactUin, true);
         if (text.length() > 0 && '\n' == text.charAt(0)) {

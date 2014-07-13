@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 import ru.sawim.activities.SawimActivity;
 import ru.sawim.chat.ChatHistory;
 import ru.sawim.comm.JLocale;
@@ -22,8 +23,6 @@ public class SawimNotification {
     private static final int VIBRA_OFF = 0;
     private static final int VIBRA_ON = 1;
     private static final int VIBRA_LOCKED_ONLY = 2;
-
-    public static String SOUND_DEFAULT = "content://settings/system/notification_sound";
 
     public static final int NOTIFY_ID = 1;
     private static final HashMap<String, Integer> idsMap = new HashMap<String, Integer>();
@@ -62,11 +61,10 @@ public class SawimNotification {
                     long[] pattern = {0,3 * dat, dat, dat};
                     notification.setVibrate(pattern);
                 }
-                String ringtone = Options.getString(Options.OPTION_MESS_RINGTONE);
-                if (ringtone.isEmpty()) {
-                    ringtone = SOUND_DEFAULT;
+                String ringtone = Options.getString(Options.OPTION_MESS_RINGTONE, null);
+                if (ringtone != null) {
+                    notification.setSound(Uri.parse(ringtone));
                 }
-                notification.setSound(Uri.parse(ringtone));
             }
         }
         if (0 < allUnread) {

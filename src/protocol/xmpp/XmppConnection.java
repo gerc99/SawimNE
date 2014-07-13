@@ -1589,11 +1589,7 @@ public final class XmppConnection extends ClientConnection {
                 if (null != xMuc) {
                     int code = Util.strToIntDef(xMuc.getFirstNodeAttribute(S_STATUS, S_CODE), 0);
                     if (code == 100) {
-                        boolean prevWarning = conference.warning;
-                        conference.warning = true;
-                        if (prevWarning == conference.warning) {
-                            return;
-                        }
+                        return;
                     }
                 }
                 if (null != subject && isConference && isGroupchat) {

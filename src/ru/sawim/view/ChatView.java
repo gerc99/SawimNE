@@ -599,7 +599,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
             for (int i = chat.getUnreadMessageCount(); i > 0; --i) {
                 adapter.getItems().add(chat.getMessData().get(chat.getMessCount() - i));
             }
-            adapter.notifyDataSetChanged();
+            updateMessages();
             return;
         }
         oldChat = chat.getContact().getUserId();
@@ -664,26 +664,33 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
         chatListView.setOnCreateContextMenuListener(this);
         chatListView.setOnItemClickListener(chatClick);
         chatListView.setOnScrollListener(new AbsListView.OnScrollListener() {
-            boolean isScroll;
+            int firstVisibleItem;
+            boolean nowIsScroll;
+
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
-                isScroll = scrollState != -1;
+                nowIsScroll = scrollState > 0;
             }
 
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                if (visibleItemCount > 0 && firstVisibleItem == 0) {
-                    loadStory(isScroll);
+                if (this.firstVisibleItem != firstVisibleItem) {
+                    this.firstVisibleItem = firstVisibleItem;
+                    if (visibleItemCount > 0 && firstVisibleItem == 0) {
+                        loadStory(nowIsScroll);
+                        nowIsScroll = false;
+                    }
                 }
             }
         });
     }
 
     private void initMucUsers() {
-        if (SawimApplication.isManyPane())
+        if (SawimApplication.isManyPane()) {
             nickList.setVisibility(View.VISIBLE);
-        else if (drawerLayout.isDrawerOpen(nickList))
+        } else if (drawerLayout.isDrawerOpen(nickList)) {
             drawerLayout.closeDrawer(nickList);
+        }
         boolean isConference = chat.getContact() instanceof XmppServiceContact && chat.getContact().isConference();
         if (isConference) {
             mucUsersView = new MucUsersView();
@@ -714,11 +721,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
             case UPDATE_MESSAGES:
                 Contact contact = (Contact) msg.obj;
                 if (chat != null && chat.getContact() == contact) {
-                    adapter.notifyDataSetChanged();
-                    if (chatListView.getLastVisiblePosition() + 1 == adapter.getCount() - 1) {
-                        chatListView.setSelectionFromTop(adapter.getCount(), chatListView.getHeight() / 4);
-                        chat.oldMessageCount = 0;
-                    }
+                    updateMessages();
                 }
                 break;
             case UPDATE_CHAT:
@@ -803,6 +806,14 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
 
     private void loadStory(boolean isScroll) {
         handler.sendMessage(Message.obtain(handler, LOAD_STORY, isScroll));
+    }
+
+    private void updateMessages() {
+        adapter.notifyDataSetChanged();
+        if (chatListView.getLastVisiblePosition() + 1 == adapter.getCount() - 1) {
+            chatListView.setSelectionFromTop(adapter.getCount(), chatListView.getHeight() / 4);
+            chat.oldMessageCount = 0;
+        }
     }
 
     private void updateChatIcon() {
@@ -973,7 +984,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                 chat = null;
                 if (SawimApplication.isManyPane()) {
                     adapter.getItems().clear();
-                    updateMessages(contact);
+                    updateMessages();
                 } else {
                     getActivity().getSupportFragmentManager().popBackStack();
                 }
@@ -983,7 +994,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                 ChatHistory.instance.removeAll(chat);
                 if (SawimApplication.isManyPane()) {
                     adapter.getItems().clear();
-                    updateMessages(contact);
+                    updateMessages();
                 }
                 break;
 
@@ -994,7 +1005,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                 chat = null;
                 if (SawimApplication.isManyPane()) {
                     adapter.getItems().clear();
-                    updateMessages(contact);
+                    updateMessages();
                 } else {
                     getActivity().getSupportFragmentManager().popBackStack();
                 }
@@ -1008,7 +1019,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                 new ContactMenu(protocol, contact).doAction((BaseActivity) getActivity(), ContactMenu.CONFERENCE_DISCONNECT);
                 if (SawimApplication.isManyPane()) {
                     adapter.getItems().clear();
-                    updateMessages(contact);
+                    updateMessages();
                 } else {
                     getActivity().getSupportFragmentManager().popBackStack();
                 }

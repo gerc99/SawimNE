@@ -8,6 +8,7 @@ import ru.sawim.chat.message.PlainMessage;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
 import ru.sawim.io.Storage;
+import ru.sawim.modules.history.HistoryStorage;
 import ru.sawim.roster.RosterHelper;
 
 import java.io.ByteArrayInputStream;
@@ -177,6 +178,7 @@ public final class ChatHistory {
     public void unregisterChat(Chat item) {
         if (null == item) return;
         if (item.message != null) return;
+        closeHistory(item);
         historyTable.remove(item);
         item.clear();
         Contact c = item.getContact();
@@ -191,12 +193,21 @@ public final class ChatHistory {
         for (int i = getTotal() - 1; 0 <= i; --i) {
             Chat key = chatAt(i);
             if (key.getProtocol() == p) {
+                closeHistory(key);
                 historyTable.remove(key);
                 key.clear();
                 key.getContact().updateChatState(null);
             }
         }
         RosterHelper.getInstance().markMessages(null);
+    }
+
+    private void closeHistory(Chat chat) {
+        HistoryStorage historyStorage = chat.getHistory();
+        boolean hasHistory = historyStorage != null && historyStorage.getFirstMessageCount() > 0;
+        if (hasHistory) {
+            historyStorage.closeHistory();
+        }
     }
 
     private void removeChat(Chat chat) {

@@ -30,7 +30,6 @@ public class XmppServiceContact extends XmppContact {
     public static final byte ROLE_PARTICIPANT = (byte) 0;
     public static final byte ROLE_MODERATOR = (byte) 1;
 
-    public boolean warning = false;
     private boolean isPrivate;
     private boolean isConference;
     private boolean isGate;
