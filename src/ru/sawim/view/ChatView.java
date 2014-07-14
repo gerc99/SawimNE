@@ -443,7 +443,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     public void onStart() {
         super.onStart();
         Contact currentContact = RosterHelper.getInstance().getCurrentContact();
-        if (chat == null && !SawimApplication.isManyPane()) {
+        if (chat == null && currentContact != null && !SawimApplication.isManyPane()) {
             chat = currentContact.getProtocol().getChat(currentContact);
         }
         if (chat == null) {
@@ -469,6 +469,9 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     @Override
     public void onResume() {
         super.onResume();
+        boolean isOldChatInTablet = chat != null && chat.getContact() == RosterHelper.getInstance()
+                .getCurrentContact() && SawimApplication.isManyPane();
+        if (isOldChatInTablet) return;
         resume(chat);
     }
 
@@ -505,8 +508,6 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     public void resume(Chat chat) {
         resetBar();
         if (chat == null) return;
-        boolean isOldChatInTablet = chat.getContact() == RosterHelper.getInstance().getCurrentContact() && SawimApplication.isManyPane();
-        if (isOldChatInTablet) return;
         chat.setVisibleChat(true);
         RosterHelper.getInstance().setOnUpdateChat(this);
         unreadMessageCount = chat.getUnreadMessageCount();

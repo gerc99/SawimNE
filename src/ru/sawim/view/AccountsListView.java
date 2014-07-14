@@ -215,11 +215,6 @@ public class AccountsListView extends Fragment {
                 }
                 buttonOk.setText(R.string.acc_add);
             }
-            if (type == Profile.PROTOCOL_ICQ) {
-                editLogin.setInputType(InputType.TYPE_CLASS_NUMBER);
-            } else {
-                editLogin.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
-            }
             final int finalProtocolIndex = protocolIndex;
             buttonOk.setOnClickListener(new View.OnClickListener() {
 

@@ -527,4 +527,5 @@
     <string name="account_settings">Настройки аккаунта</string>
     <string name="notification_ringtone">Звук уведомления</string>
     <string name="notification_ringtone_summaey">Выберите звук уведомления о новом сообщении</string>
+    <string name="new_subject">Новая тема</string>
 </resources>

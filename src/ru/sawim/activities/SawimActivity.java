@@ -134,7 +134,6 @@ public class SawimActivity extends BaseActivity {
                     && chatView.isLastPosition()) {
                 if (c != null) {
                     chatView.openChat(p, c);
-                    chatView.resume(p.getChat(c));
                     return true;
                 }
             }

@@ -1545,8 +1545,11 @@ public final class XmppConnection extends ClientConnection {
         }
         text = StringConvertor.trim(text);
 
+        Message message = null;
+        final String date = getDate(msg);
+        final boolean isOnlineMessage = (null == date);
+        long time = isOnlineMessage ? SawimApplication.getCurrentGmtTime() : Util.createGmtDate(date);
         final XmppContact c = (XmppContact) getXmpp().getItemByUIN(from);
-
         if (msg.contains(S_ERROR)) {
             final String errorText = getError(msg.getFirstNode(S_ERROR));
             if (null != errorText) {
@@ -1597,8 +1600,11 @@ public final class XmppConnection extends ClientConnection {
                     conference.setSubject(subject);
                     getXmpp().ui_changeContactStatus(conference);
                     fromRes = null;
-                    if (prevSubject.equals(subject)) {
+                    boolean isOldSubject = prevSubject.equals(subject);
+                    if (isOldSubject) {
                         return;
+                    } else if (!StringConvertor.isEmpty(prevSubject) && !isOldSubject) {
+                        message = new SystemNotice(getXmpp(), SystemNotice.SYS_NOTICE_CUSTOM, from, JLocale.getString(R.string.new_subject), text);
                     }
                 }
             }
@@ -1606,14 +1612,9 @@ public final class XmppConnection extends ClientConnection {
         if (StringConvertor.isEmpty(text)) {
             return;
         }
-
-        final String date = getDate(msg);
-        final boolean isOnlineMessage = (null == date);
-        long time = isOnlineMessage ? SawimApplication.getCurrentGmtTime() : Util.createGmtDate(date);
-        Message message = null;
         if (subject == null)
             message = new PlainMessage(from, getXmpp(), time, text, !isOnlineMessage);
-        else if (!isGroupchat)
+        if (!isGroupchat)
             message = new SystemNotice(getXmpp(), SystemNotice.SYS_NOTICE_MESSAGE, from, text);
         if (null == c) {
             if (isConference && !isGroupchat) {
