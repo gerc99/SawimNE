@@ -27,16 +27,6 @@ public class SawimService extends Service {
     public void onCreate() {
         super.onCreate();
         Log.i(LOG_TAG, "onStart();");
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                ChatHistory.instance.loadUnreadMessages();
-            }
-        },"loadUnreadMessage").start();
-        if (RosterHelper.getInstance() != null) {
-            RosterHelper.getInstance().autoConnect();
-        }
     }
 
     @Override

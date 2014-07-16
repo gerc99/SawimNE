@@ -63,6 +63,7 @@ public class HistoryStorage {
                 db = dbHelper.getWritableDatabase();
                 firstMessageCount = getHistorySize();
             } catch (Exception e) {
+                db = null;
                 dbHelper = null;
                 e.printStackTrace();
             }
@@ -109,7 +110,37 @@ public class HistoryStorage {
         }
     }
 
-    public void addNextListMessages(List<MessData> messDataList, final Chat chat, int limit, int offset) {
+    public long getLastMessageTime() {
+        long lastMessageTime = 0;
+        openHistory();
+        Cursor cursor = db.query(CHAT_HISTORY_TABLE, null, null, null, null, null, null);
+        if (cursor.moveToLast()) {
+            do {
+                boolean isIncoming = cursor.getInt(cursor.getColumnIndex(INCOMING)) == 0;
+                int sendingState = cursor.getInt(cursor.getColumnIndex(SENDING_STATE));
+                short rowData = cursor.getShort(cursor.getColumnIndex(ROW_DATA));
+                boolean isMessage = (rowData & MessData.PRESENCE) == 0 && (rowData & MessData.SERVICE) == 0 && (rowData & MessData.PROGRESS) == 0;
+                if ((isMessage && sendingState == Message.NOTIFY_FROM_SERVER && !isIncoming) || isMessage) {
+                    lastMessageTime = cursor.getLong(cursor.getColumnIndex(DATE));
+                }
+            } while (cursor.moveToPrevious());
+        }
+        cursor.close();
+        return lastMessageTime;
+    }
+
+    public MessData getLastMessage(Chat chat) {
+        MessData lastMessage = null;
+        openHistory();
+        Cursor cursor = db.query(CHAT_HISTORY_TABLE, null, null, null, null, null, null);
+        if (cursor.moveToLast()) {
+            lastMessage = buildMessage(chat, cursor);
+        }
+        cursor.close();
+        return lastMessage;
+    }
+
+    public void addNextListMessages(List<MessData> messDataList, final Chat chat, int limit, int offset, boolean addedAtTheBeginning) {
         final String selectCount = "select * from " + CHAT_HISTORY_TABLE
                 + " order by " + COLUMN_ID
                 + " DESC limit " + limit
@@ -117,11 +148,20 @@ public class HistoryStorage {
         try {
             openHistory();
             Cursor cursor = db.rawQuery(selectCount, new String[]{});
-            if (cursor.moveToFirst()) {
-                do {
-                    MessData mess = buildMessage(chat, cursor);
-                    messDataList.add(0, mess);
-                } while (cursor.moveToNext());
+            if (addedAtTheBeginning) {
+                if (cursor.moveToFirst()) {
+                    do {
+                        MessData mess = buildMessage(chat, cursor);
+                        messDataList.add(0, mess);
+                    } while (cursor.moveToNext());
+                }
+            } else {
+                if (cursor.moveToLast()) {
+                    do {
+                        MessData mess = buildMessage(chat, cursor);
+                        messDataList.add(mess);
+                    } while (cursor.moveToPrevious());
+                }
             }
             cursor.close();
         } catch (Exception e) {
@@ -185,25 +225,6 @@ public class HistoryStorage {
 
     String getUniqueUserId() {
         return uniqueUserId;
-    }
-
-    public long getLastMessageTime() {
-        openHistory();
-        Cursor cursor = db.query(CHAT_HISTORY_TABLE, null, null, null, null, null, null);
-        if (cursor.moveToLast()) {
-            do {
-                boolean isIncoming = cursor.getInt(cursor.getColumnIndex(INCOMING)) == 0;
-                int sendingState = cursor.getInt(cursor.getColumnIndex(SENDING_STATE));
-                short rowData = cursor.getShort(cursor.getColumnIndex(ROW_DATA));
-                boolean isMessage = (rowData & MessData.PRESENCE) == 0 && (rowData & MessData.SERVICE) == 0 && (rowData & MessData.PROGRESS) == 0;
-                if ((isMessage && sendingState == Message.NOTIFY_FROM_SERVER && !isIncoming) || isMessage) {
-                    long date = cursor.getLong(cursor.getColumnIndex(DATE));
-                    return date;
-                }
-            } while (cursor.moveToNext());
-        }
-        cursor.close();
-        return 0;
     }
 
     public void removeHistory() {

@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.TimeZone;
 
 public class Options {
-    public static final String UNAVAILABLE_NESSAGE = "unavailable_message";
+
     public static final String OPTION_ANTISPAM_MSG = "antispam_msg";
     public static final String OPTION_ANTISPAM_HELLO = "antispam_hello";
     public static final String OPTION_ANTISPAM_ANSWER = "antispam_answer";
@@ -33,7 +33,6 @@ public class Options {
     static final String OPTIONS_CURR_ACCOUNT = "current_account";
     public static final String OPTION_GMT_OFFSET = "gmt_offset";
     public static final String OPTION_PRIVATE_STATUS = "private_status";
-    public static final String OPTION_MAX_MSG_COUNT = "max_msg_count";
     public static final String OPTION_AA_TIME = "aa_time";
     public static final String OPTION_FONT_SCHEME = "font_scheme";
 
@@ -77,7 +76,6 @@ public class Options {
     }
 
     private static void setDefaults() {
-        setString(Options.UNAVAILABLE_NESSAGE, "I'll be back");
         setInt(Options.OPTION_CURRENT_PAGE, 0);
         setBoolean(Options.OPTION_WAKE_LOCK, false);
         setInt(Options.OPTION_CL_SORT_BY, 0);
@@ -88,7 +86,6 @@ public class Options {
         setString(Options.OPTION_MESS_RINGTONE, Settings.System.DEFAULT_NOTIFICATION_URI.toString());
         setBoolean(Options.OPTION_BLOG_NOTIFY, true);
         setBoolean(Options.OPTION_NOTIFY_IN_AWAY, true);
-        setInt(Options.OPTION_MAX_MSG_COUNT, 100);
         setString(Options.OPTION_ANTISPAM_KEYWORDS, "http sms www @conf");
         setInt(Options.OPTION_PRIVATE_STATUS, PrivateStatusForm.PSTATUS_NOT_INVISIBLE);
         setBoolean(Options.OPTION_ANSWERER, false);

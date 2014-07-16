@@ -106,7 +106,7 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
     private static final int INFO_MENU_TAKE_AVATAR = 7;
 
     public void setOptimalName() {
-        Contact contact = protocol.getItemByUIN(uin);
+        Contact contact = protocol.getItemByUID(uin);
         if (null != contact) {
             String name = contact.getName();
             if (name.equals(contact.getUserId()) || name.equals(protocol.getUniqueUserId(contact))) {

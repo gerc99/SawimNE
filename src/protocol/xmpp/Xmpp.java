@@ -2,10 +2,8 @@ package protocol.xmpp;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.util.Log;
 import android.widget.Toast;
 import protocol.*;
-import ru.sawim.Options;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.activities.BaseActivity;
@@ -117,7 +115,7 @@ public final class Xmpp extends Protocol implements FormListener {
     public void rejoin() {
         for (int i = 0; i < rejoinList.size(); ++i) {
             String jid = (String) rejoinList.elementAt(i);
-            XmppServiceContact conf = (XmppServiceContact) getItemByUIN(jid);
+            XmppServiceContact conf = (XmppServiceContact) getItemByUID(jid);
             if (null != conf) {
                 join(conf);
             }
@@ -249,7 +247,7 @@ public final class Xmpp extends Protocol implements FormListener {
                 c.setMyName(getDefaultName());
 
             } else if (isConference) {
-                XmppServiceContact conf = (XmppServiceContact) getItemByUIN(Jid.getBareJid(jid));
+                XmppServiceContact conf = (XmppServiceContact) getItemByUID(Jid.getBareJid(jid));
                 if (null != conf) {
                     c.setPrivateContactStatus(conf);
                     c.setMyName(conf.getMyName());
@@ -286,7 +284,7 @@ public final class Xmpp extends Protocol implements FormListener {
         if (isReconnect()) {
             for (int i = 0; i < rejoinList.size(); ++i) {
                 String jid = (String) rejoinList.elementAt(i);
-                XmppServiceContact c = (XmppServiceContact) getItemByUIN(jid);
+                XmppServiceContact c = (XmppServiceContact) getItemByUID(jid);
                 if (null != c && !c.isOnline()) {
                     connection.sendPresence(c);
                 }
@@ -717,7 +715,7 @@ public final class Xmpp extends Protocol implements FormListener {
 
         String realJid = contact.getUserId();
         if (Jid.isConference(realJid) && (-1 != realJid.indexOf('/'))) {
-            XmppServiceContact conference = (XmppServiceContact) getItemByUIN(Jid.getBareJid(realJid));
+            XmppServiceContact conference = (XmppServiceContact) getItemByUID(Jid.getBareJid(realJid));
             if (conference != null) {
                 String r = conference.getRealJid(Jid.getResource(realJid, ""));
                 if (!StringConvertor.isEmpty(r)) {

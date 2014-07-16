@@ -173,8 +173,11 @@ public class RosterItemView extends View {
     }
 
     @Override
-    protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
+    public void buildDrawingCache(boolean autoScale) {
+    }
+
+    @Override
+    public void draw(Canvas canvas) {
         if (itemFirstImage != null)
             canvas.drawBitmap(itemFirstImage, firstImageX, firstImageY, null);
         if (itemSecondImage != null)

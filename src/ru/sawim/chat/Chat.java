@@ -6,7 +6,6 @@ import protocol.xmpp.Jid;
 import protocol.xmpp.Xmpp;
 import protocol.xmpp.XmppContact;
 import protocol.xmpp.XmppServiceContact;
-import ru.sawim.Options;
 import ru.sawim.SawimApplication;
 import ru.sawim.chat.message.Message;
 import ru.sawim.chat.message.PlainMessage;
@@ -15,15 +14,11 @@ import ru.sawim.comm.StringConvertor;
 import ru.sawim.modules.history.HistoryStorage;
 import ru.sawim.roster.RosterHelper;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public final class Chat {
     private Protocol protocol;
     private Contact contact;
     private boolean writable = true;
     private HistoryStorage history;
-    private List<MessData> messData = new ArrayList<MessData>();
     public static final String ADDRESS = ", ";
     private boolean visibleChat;
 
@@ -165,47 +160,17 @@ public final class Chat {
     }
 
     public HistoryStorage getHistory() {
-        if (null == history && isHistory()) {
+        if (null == history) {
             history = HistoryStorage.getHistory(contact);
         }
         return history;
     }
 
     public int getMessCount() {
-        return messData.size();
-    }
-
-    public MessData getMessageDataByIndex(int index) {
-        return messData.get(index);
-    }
-
-    public void clear() {
-        messData.clear();
-    }
-
-    public void removeMessages(final int limit) {
-        if (messData.size() < limit) {
-            return;
+        if (history != null) {
+            return history.getHistorySize();
         }
-        if ((0 < limit) && (0 < messData.size())) {
-            while (limit < messData.size()) {
-                messData.remove(0);
-            }
-        } else {
-            ChatHistory.instance.unregisterChat(Chat.this);
-        }
-    }
-
-    public void removeOldMessages() {
-        removeMessages(Options.getInt(Options.OPTION_MAX_MSG_COUNT));
-    }
-
-    public void removeMessagesAtCursor(int currPoss) {
-        removeMessages(messData.size() - currPoss - 1);
-    }
-
-    public boolean empty() {
-        return 0 == getMessCount();
+        return 0;
     }
 
     public int typeNewMessageIcon = Message.ICON_NONE;
@@ -235,6 +200,10 @@ public final class Chat {
             contact.updateChatState(this);
             protocol.markMessages(contact);
         }
+    }
+
+    public void setMessageCounter(short count) {
+        messageCounter = count;
     }
 
     public int getUnreadMessageCount() {
@@ -283,10 +252,6 @@ public final class Chat {
         getHistory().addText(md);
     }
 
-    private boolean isHistory() {
-        return Options.getBoolean(Options.OPTION_HISTORY);
-    }
-
     public String getFrom(Message message) {
         String senderName = message.getName();
         if (null == senderName) {
@@ -300,7 +265,7 @@ public final class Chat {
     public MessData buildMessage(Message message, String from, boolean isSystemNotice, boolean isHighlight) {
         boolean incoming = message.isIncoming();
         String messageText = message.getProcessedText();
-        //messageText = StringConvertor.removeCr(messageText);
+        messageText = StringConvertor.removeCr(messageText);
         if (StringConvertor.isEmpty(messageText)) {
             return null;
         }
@@ -351,19 +316,16 @@ public final class Chat {
         return mData;
     }
 
-    private void addTextToForm(Message message, String from, boolean isSystemNotice, boolean isHighlight, boolean isHistory) {
+    private void addTextToForm(Message message, String from, boolean isSystemNotice, boolean isHighlight) {
         MessData mData = buildMessage(message, from, isSystemNotice, isHighlight);
         addMessage(mData);
         boolean isConference = contact.isConference();
         if (isConference && ((mData.isMessage() && mData.getIconIndex() == Message.NOTIFY_FROM_SERVER && !message.isIncoming()) || mData.isMessage()))
             RosterHelper.getInstance().setLastMessageTime(contact.getUserId(), mData.getTime());
-        if (isHistory) {
-            addTextToHistory(mData);
-        }
+        addTextToHistory(mData);
     }
 
     private void addMessage(MessData mData) {
-        messData.add(mData);
         if (RosterHelper.getInstance().getUpdateChatListener() != null) {
             RosterHelper.getInstance().getUpdateChatListener().addMessage(contact, mData);
             RosterHelper.getInstance().getUpdateChatListener().updateMessages(contact);
@@ -374,10 +336,11 @@ public final class Chat {
         if (getMessCount() <= 1)
             ChatHistory.instance.registerChat(this);
         String messageText = message.getProcessedText();
-        addMessage(new MessData(contact, message.getNewDate(), messageText, message.getName(), MessData.PRESENCE, false));
+        MessData mData = new MessData(contact, message.getNewDate(), messageText, message.getName(), MessData.PRESENCE, false);
+        addMessage(mData);
+        addTextToHistory(mData);
         if (!isVisibleChat()) {
             contact.updateChatState(this);
-            ChatHistory.instance.updateChatList();
             if (RosterHelper.getInstance().getUpdateChatListener() != null) {
                 RosterHelper.getInstance().getUpdateChatListener().updateChat();
             }
@@ -397,7 +360,7 @@ public final class Chat {
                     messageCounter--;
                 }
             }
-            addTextToForm(message, from, false, isHighlight, isHistory());
+            addTextToForm(message, from, false, isHighlight);
         } else if (isSystem) {
             SystemNotice notice = (SystemNotice) message;
             if (SystemNotice.SYS_NOTICE_AUTHREQ == notice.getSysnoteType()) {
@@ -407,11 +370,10 @@ public final class Chat {
                 sysNoticeCounter = inc(sysNoticeCounter);
             }
             //MagicEye.addAction(protocol, contact.getUserId(), message.getText());
-            addTextToForm(message, from, true, isHighlight, isHistory());
+            addTextToForm(message, from, true, isHighlight);
         }
         if (inc) {
             contact.updateChatState(this);
-            ChatHistory.instance.updateChatList();
             if (RosterHelper.getInstance().getUpdateChatListener() != null) {
                 RosterHelper.getInstance().getUpdateChatListener().updateChat();
             }
@@ -423,7 +385,7 @@ public final class Chat {
         if (getMessCount() <= 1)
             ChatHistory.instance.registerChat(this);
         resetUnreadMessages();
-        addTextToForm(message, from, true, false, isHistory());
+        addTextToForm(message, from, true, false);
         if (RosterHelper.getInstance().getUpdateChatListener() != null) {
             RosterHelper.getInstance().getUpdateChatListener().updateChat();
         }
@@ -431,15 +393,6 @@ public final class Chat {
 
     public Contact getContact() {
         return contact;
-    }
-
-    MessData getUnreadMessage(int num) {
-        int index = getMessCount() - getUnreadMessageCount() + num;
-        return getMessageDataByIndex(index);
-    }
-
-    public List<MessData> getMessData() {
-        return messData;
     }
 
     public boolean isVisibleChat() {

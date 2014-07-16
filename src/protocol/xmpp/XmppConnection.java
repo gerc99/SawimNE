@@ -662,7 +662,7 @@ public final class XmppConnection extends ClientConnection {
                         return;
                     }
                     xmpp.setRoster(roster.getGroups(), roster.mergeContacts());
-                    Contact selfContact = xmpp.getItemByUIN(xmpp.getUserId());
+                    Contact selfContact = xmpp.getItemByUID(xmpp.getUserId());
                     if (null != selfContact) {
                         selfContact.setBooleanValue(Contact.CONTACT_NO_AUTH, false);
                         xmpp.ui_updateContact(selfContact);
@@ -687,7 +687,7 @@ public final class XmppConnection extends ClientConnection {
                         if (Jid.isConference(jid)) {
 
                         } else if ((S_REMOVE).equals(subscription)) {
-                            xmpp.removeLocalContact(xmpp.getItemByUIN(jid));
+                            xmpp.removeLocalContact(xmpp.getItemByUID(jid));
                         } else {
                             String name = itemNode.getAttribute(XmlNode.S_NAME);
                             Contact contact = xmpp.createTempContact(jid);
@@ -703,7 +703,7 @@ public final class XmppConnection extends ClientConnection {
                             xmpp.addLocalContact(contact);
                         }
                     }
-                    Contact selfContact = xmpp.getItemByUIN(xmpp.getUserId());
+                    Contact selfContact = xmpp.getItemByUID(xmpp.getUserId());
                     if (null != selfContact) {
                         selfContact.setBooleanValue(Contact.CONTACT_NO_AUTH, false);
                         xmpp.ui_updateContact(selfContact);
@@ -804,7 +804,7 @@ public final class XmppConnection extends ClientConnection {
                             XmlNode item = storage.popChildNode();
                             String jid = item.getAttribute(XmlNode.S_JID);
                             String note = item.value;
-                            Contact contact = xmpp.getItemByUIN(jid);
+                            Contact contact = xmpp.getItemByUID(jid);
                             if (contact != null) {
                                 contact.annotations = note;
                             }
@@ -915,7 +915,7 @@ public final class XmppConnection extends ClientConnection {
             String xmlns = iqQuery.getXmlns();
             if ("http://jabber.org/protocol/rosterx".equals(xmlns)) {
                 if (Jid.isGate(from)) {
-                    Contact c = getXmpp().getItemByUIN(from);
+                    Contact c = getXmpp().getItemByUID(from);
                     if ((null != c) && !c.isTemp() && c.isAuth()) {
                         putPacketIntoQueue("<iq type='result' to='"
                                 + Util.xmlEscape(from) + "' id='" + Util.xmlEscape(id) + "' />");
@@ -1012,7 +1012,7 @@ public final class XmppConnection extends ClientConnection {
         userInfo.auth = false;
         userInfo.uin = from;
         if (Jid.isConference(from)) {
-            Contact c = getXmpp().getItemByUIN(Jid.getBareJid(from));
+            Contact c = getXmpp().getItemByUID(Jid.getBareJid(from));
             if (c instanceof XmppServiceContact) {
                 XmppContact.SubContact sc = ((XmppServiceContact) c).getExistSubContact(Jid.getResource(from, null));
                 if ((null != sc) && (null != sc.realJid)) {
@@ -1128,7 +1128,7 @@ public final class XmppConnection extends ClientConnection {
 
             boolean showError = Jid.isGate(from);
             if (Jid.isConference(from)) {
-                XmppServiceContact conf = (XmppServiceContact) getXmpp().getItemByUIN(from);
+                XmppServiceContact conf = (XmppServiceContact) getXmpp().getItemByUID(from);
                 if (null != conf) {
                     int code = Util.strToIntDef(errorNode.getAttribute(S_CODE), -1);
                     conf.nickError(getXmpp(), fromRes, code, getError(errorNode));
@@ -1140,7 +1140,7 @@ public final class XmppConnection extends ClientConnection {
                         SystemNotice.SYS_NOTICE_ERROR, from, getError(errorNode)));
             }
 
-            Contact c = getXmpp().getItemByUIN(from);
+            Contact c = getXmpp().getItemByUID(from);
             if (null == c) {
                 return;
             }
@@ -1156,7 +1156,7 @@ public final class XmppConnection extends ClientConnection {
             } else {
                 getXmpp().addMessage(new SystemNotice(getXmpp(), SystemNotice.SYS_NOTICE_AUTHREQ, from, null));
             }
-            Contact c = getXmpp().getItemByUIN(from);
+            Contact c = getXmpp().getItemByUID(from);
             autoRenameContact(c, x);
             autoMoveContact(c, x);
             return;
@@ -1165,7 +1165,7 @@ public final class XmppConnection extends ClientConnection {
             if (!isAutoGateContact(from)) {
                 getXmpp().setAuthResult(from, true);
             }
-            autoRenameContact(getXmpp().getItemByUIN(from), x);
+            autoRenameContact(getXmpp().getItemByUID(from), x);
             return;
         }
         if (("unsubscribed").equals(type)) {
@@ -1179,10 +1179,10 @@ public final class XmppConnection extends ClientConnection {
             type = "";
         }
 
-        XmppContact contact = (XmppContact) getXmpp().getItemByUIN(from);
+        XmppContact contact = (XmppContact) getXmpp().getItemByUID(from);
         if (null == contact) {
             String fullJid = Jid.realJidToSawimJid(fromFull);
-            contact = (XmppContact) getXmpp().getItemByUIN(fullJid);
+            contact = (XmppContact) getXmpp().getItemByUID(fullJid);
             if (null == contact) {
                 return;
             }
@@ -1359,7 +1359,7 @@ public final class XmppConnection extends ClientConnection {
         if (null == eventNode) {
             return;
         }
-        XmppContact contact = (XmppContact) getXmpp().getItemByUIN(Jid.getBareJid(fullJid));
+        XmppContact contact = (XmppContact) getXmpp().getItemByUID(Jid.getBareJid(fullJid));
         if (null == contact) {
             return;
         }
@@ -1442,7 +1442,7 @@ public final class XmppConnection extends ClientConnection {
 
     private void prepareFirstPrivateMessage(String jid) {
         final XmppServiceContact conf =
-                (XmppServiceContact) getXmpp().getItemByUIN(Jid.getBareJid(jid));
+                (XmppServiceContact) getXmpp().getItemByUID(Jid.getBareJid(jid));
         if (null == conf) {
             return;
         }
@@ -1549,7 +1549,7 @@ public final class XmppConnection extends ClientConnection {
         final String date = getDate(msg);
         final boolean isOnlineMessage = (null == date);
         long time = isOnlineMessage ? SawimApplication.getCurrentGmtTime() : Util.createGmtDate(date);
-        final XmppContact c = (XmppContact) getXmpp().getItemByUIN(from);
+        final XmppContact c = (XmppContact) getXmpp().getItemByUID(from);
         if (msg.contains(S_ERROR)) {
             final String errorText = getError(msg.getFirstNode(S_ERROR));
             if (null != errorText) {
@@ -1614,7 +1614,7 @@ public final class XmppConnection extends ClientConnection {
         }
         if (subject == null)
             message = new PlainMessage(from, getXmpp(), time, text, !isOnlineMessage);
-        if (!isGroupchat)
+        else if (!isGroupchat)
             message = new SystemNotice(getXmpp(), SystemNotice.SYS_NOTICE_MESSAGE, from, text);
         if (null == c) {
             if (isConference && !isGroupchat) {
@@ -1939,7 +1939,7 @@ public final class XmppConnection extends ClientConnection {
 
     private void updateConfPrivate(XmppServiceContact conf, String resource) {
         String privateJid = Jid.realJidToSawimJid(conf.getUserId() + '/' + resource);
-        Contact privateContact = getXmpp().getItemByUIN(privateJid);
+        Contact privateContact = getXmpp().getItemByUID(privateJid);
         if (null != privateContact) {
             ((XmppServiceContact) privateContact).setPrivateContactStatus(conf);
             getXmpp().ui_changeContactStatus(privateContact);
@@ -1990,7 +1990,7 @@ public final class XmppConnection extends ClientConnection {
             boolean isDelete = item.getAttribute("action").equals("delete");
             boolean isModify = item.getAttribute("action").equals("modify");
 
-            XmppContact contact = (XmppContact) j.getItemByUIN(jid);
+            XmppContact contact = (XmppContact) j.getItemByUID(jid);
             if (null == contact) {
                 if (isModify || isDelete) {
                     continue;
@@ -2222,7 +2222,7 @@ public final class XmppConnection extends ClientConnection {
 
     void sendMessage(PlainMessage message) {
         String to = message.getRcvrUin();
-        XmppContact toContact = (XmppContact) protocol.getItemByUIN(to);
+        XmppContact toContact = (XmppContact) protocol.getItemByUID(to);
         if (null != toContact) {
             to = toContact.getReciverJid();
         }
@@ -2293,9 +2293,7 @@ public final class XmppConnection extends ClientConnection {
 
     void sendPresenceUnavailable(String to) {
         putPacketIntoQueue("<presence type='unavailable' to='" + Util.xmlEscape(to)
-                + "'><status>"
-                + Options.getString(Options.UNAVAILABLE_NESSAGE)
-                + "</status></presence>");
+                + "'><status>I'll be back</status></presence>");
     }
 
     void setStatus(byte statusIndex, String msg, int priority) {

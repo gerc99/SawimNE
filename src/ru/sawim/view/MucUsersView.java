@@ -77,7 +77,7 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
                         switch (menu.getItem(which).idItem) {
                             case ContactMenu.COMMAND_PRIVATE:
                                 String jid = Jid.realJidToSawimJid(xmppServiceContact.getUserId() + "/" + nick);
-                                XmppServiceContact c = (XmppServiceContact) protocol.getItemByUIN(jid);
+                                XmppServiceContact c = (XmppServiceContact) protocol.getItemByUID(jid);
                                 if (null == c) {
                                     c = (XmppServiceContact) protocol.createTempContact(jid);
                                     protocol.addTempContact(c);

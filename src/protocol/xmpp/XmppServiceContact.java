@@ -159,7 +159,7 @@ public class XmppServiceContact extends XmppContact {
                 baseMyNick = newNick;
             }
             String jid = Jid.realJidToSawimJid(getUserId() + "/" + oldNick);
-            XmppServiceContact c = (XmppServiceContact) xmpp.getItemByUIN(jid);
+            XmppServiceContact c = (XmppServiceContact) xmpp.getItemByUID(jid);
             if (null != c) {
                 c.nickChainged(xmpp, oldNick, newNick);
             }

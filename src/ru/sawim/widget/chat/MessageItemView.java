@@ -181,8 +181,11 @@ public class MessageItemView extends View {
     }
 
     @Override
-    protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
+    public void buildDrawingCache(boolean autoScale) {
+    }
+
+    @Override
+    public void draw(Canvas canvas) {
         int stopX = getWidth() - getPaddingRight();
         if (isShowDivider) {
             textPaint.setColor(Scheme.getColor(Scheme.THEME_TEXT));

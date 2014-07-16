@@ -89,7 +89,7 @@ final class XmppForm implements FormListener {
     }
 
     void success() {
-        RosterHelper.getInstance().activate(xmpp.getItemByUIN(jid));
+        RosterHelper.getInstance().activate(xmpp.getItemByUID(jid));
     }
 
     private String getCaptchaXml() {

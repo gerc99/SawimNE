@@ -136,7 +136,7 @@ public final class MicroBlog implements TextBoxView.TextBoxListener {
         }
 
         String date = Util.getLocalDateString(gmtTime, false);
-        Contact contact = mrim.getItemByUIN(from);
+        Contact contact = mrim.getItemByUID(from);
         emails.addElement(from);
         ids.addElement(postid);
 

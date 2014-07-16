@@ -387,7 +387,7 @@ public final class Search implements FormListener, ControlStateListener {
             uin = uin.replace('@', '%') + '@' + xmppGate;
         }
 
-        Contact contact = protocol.getItemByUIN(uin);
+        Contact contact = protocol.getItemByUID(uin);
         if (null == contact) {
             contact = protocol.createTempContact(uin);
             contact.setBooleanValue(Contact.CONTACT_NO_AUTH, true);

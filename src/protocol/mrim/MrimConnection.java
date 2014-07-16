@@ -6,7 +6,6 @@ import protocol.StatusInfo;
 import protocol.TemporaryRoster;
 import protocol.net.ClientConnection;
 import protocol.net.TcpSocket;
-import ru.sawim.Options;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.SawimException;
@@ -293,7 +292,7 @@ public final class MrimConnection extends ClientConnection {
         int type = (int) packetData.getDWord();
         String chatName = packetData.getUcs2String();
 
-        MrimChatContact chat = (MrimChatContact) mrim.getItemByUIN(from);
+        MrimChatContact chat = (MrimChatContact) mrim.getItemByUID(from);
         if (null == chat) {
             chat = (MrimChatContact) mrim.createTempContact(from);
             mrim.addTempContact(chat);
@@ -406,7 +405,7 @@ public final class MrimConnection extends ClientConnection {
                 return;
             }
 
-            MrimContact c = (MrimContact) mrim.getItemByUIN(from);
+            MrimContact c = (MrimContact) mrim.getItemByUID(from);
             if (null != c) {
                 beginTyping(c, (MrimPacket.MESSAGE_FLAG_NOTIFY & flags) != 0);
             }
@@ -457,7 +456,7 @@ public final class MrimConnection extends ClientConnection {
             String user = packetData.getString();
             int clientCaps = (int) packetData.getDWord();
             String client = packetData.getString();
-            MrimContact contact = (MrimContact) mrim.getItemByUIN(user);
+            MrimContact contact = (MrimContact) mrim.getItemByUID(user);
             if ((null != contact) && !(contact instanceof MrimPhoneContact)) {
                 final int oldStatusIndex = contact.getStatusIndex();
 

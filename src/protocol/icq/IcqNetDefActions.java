@@ -4,7 +4,6 @@ import protocol.Contact;
 import protocol.XStatusInfo;
 import protocol.icq.packet.*;
 import protocol.icq.plugin.XtrazMessagePlugin;
-import ru.sawim.Options;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.SawimException;
@@ -172,7 +171,7 @@ public final class IcqNetDefActions {
                     if (granted) {
                         getIcq().setAuthResult(uin, true);
                     } else {
-                        Contact c = getIcq().getItemByUIN(uin);
+                        Contact c = getIcq().getItemByUID(uin);
                         if ((null != c) && !c.isTemp()) {
                             //MagicEye.addAction(getIcq(), uin,
                             //        JLocale.getString("denyedby") + uin);
@@ -186,7 +185,7 @@ public final class IcqNetDefActions {
                     buf.skip(4);
                     int type = buf.getWordBE();
                     if (0 == type) {
-                        Contact c = getIcq().getItemByUIN(uin);
+                        Contact c = getIcq().getItemByUID(uin);
                         if ((null != c) && !c.isTemp()) {
                             c.setTempFlag(true);
                             String message = JLocale.getString(R.string.contact_has_been_removed);
@@ -546,7 +545,7 @@ public final class IcqNetDefActions {
 
     private void userOffline(SnacPacket snacPacket) {
         String uin = getUinByByteLen(snacPacket.getReader());
-        IcqContact item = (IcqContact) getIcq().getItemByUIN(uin);
+        IcqContact item = (IcqContact) getIcq().getItemByUID(uin);
         if (null != item) {
             boolean hasBeenOffline = !item.isOnline();
             if (getIcq().isConnected() && hasBeenOffline) {
@@ -653,7 +652,7 @@ public final class IcqNetDefActions {
 
         //DebugLog.println("mood for " + uin + " " + mood + " " + statusText);
 
-        IcqContact contact = (IcqContact) getIcq().getItemByUIN(uin);
+        IcqContact contact = (IcqContact) getIcq().getItemByUID(uin);
         if (contact != null) {
             int flags = (status >> 16) & 0xFFFF;
             contact.setXStatus(Icq.xstatus.createXStatus(capabilities_old, mood), null);
@@ -718,7 +717,7 @@ public final class IcqNetDefActions {
 
     private XtrazMessagePlugin parseXtrazMessage(String uin, ArrayReader reader) {
         Icq icq = getIcq();
-        IcqContact contact = (IcqContact) icq.getItemByUIN(uin);
+        IcqContact contact = (IcqContact) icq.getItemByUID(uin);
         reader.skip(4);
         int xmlLen = (int) reader.getDWordLE();
         xmlLen = Math.min(xmlLen, reader.getBuffer().length - reader.getOffset());

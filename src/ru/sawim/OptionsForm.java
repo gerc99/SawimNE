@@ -82,8 +82,6 @@ public class OptionsForm implements ControlStateListener {
                 saveOptionBoolean(Options.OPTION_HISTORY);
                 saveOptionBoolean(Options.OPTION_HIDE_KEYBOARD);
                 saveOptionBoolean(Options.OPTION_SIMPLE_INPUT);
-                saveOptionInt(Options.OPTION_MAX_MSG_COUNT);
-                saveOptionString(Options.UNAVAILABLE_NESSAGE);
                 break;
 
             case OPTIONS_SIGNALING:
@@ -146,9 +144,6 @@ public class OptionsForm implements ControlStateListener {
                 setChecked(R.string.hide_chat_keyboard, Options.OPTION_HIDE_KEYBOARD);
                 setChecked(R.string.use_simple_input, Options.OPTION_SIMPLE_INPUT);
                 setChecked(R.string.use_history, Options.OPTION_HISTORY);
-                loadOptionInt(Options.OPTION_MAX_MSG_COUNT, R.string.max_message_count, "10|50|100|250|500|1000");
-
-                form.addTextField(Options.UNAVAILABLE_NESSAGE, R.string.post_outputs, Options.getString(Options.UNAVAILABLE_NESSAGE));
                 break;
 
             case OPTIONS_SIGNALING:

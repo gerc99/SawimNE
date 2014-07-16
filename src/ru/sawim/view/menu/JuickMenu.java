@@ -73,7 +73,7 @@ public class JuickMenu implements DialogInterface.OnClickListener {
                     .findFragmentById(R.id.chat_fragment);
             if (chatView == null) {
                 ChatView newFragment = new ChatView();
-                newFragment.initChat(currentProtocol, currentProtocol.getItemByUIN(currentContact));
+                newFragment.initChat(currentProtocol, currentProtocol.getItemByUID(currentContact));
                 FragmentTransaction transaction = activity.getSupportFragmentManager().beginTransaction();
                 transaction.replace(R.id.fragment_container, newFragment, ChatView.TAG);
                 transaction.addToBackStack(null);
@@ -82,7 +82,7 @@ public class JuickMenu implements DialogInterface.OnClickListener {
                 Chat chat = chatView.getCurrentChat();
                 chatView.pause(chat);
                 if (currentProtocol != null) {
-                    chatView.openChat(currentProtocol, currentProtocol.getItemByUIN("juick@juick.com"));
+                    chatView.openChat(currentProtocol, currentProtocol.getItemByUID("juick@juick.com"));
                     chatView.resume(chatView.getCurrentChat());
                 }
             }

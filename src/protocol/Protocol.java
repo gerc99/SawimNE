@@ -19,7 +19,9 @@ import java.io.*;
 import java.util.Vector;
 
 abstract public class Protocol {
+
     private static final int ROSTER_STORAGE_VERSION = 1;
+    private static final int RECONNECT_COUNT = 20;
 
     private final Object rosterLockObject = new Object();
     public ClientInfo clientInfo;
@@ -32,6 +34,7 @@ abstract public class Protocol {
     private byte privateStatus = 0;
     private String rmsName = null;
     private boolean isReconnect;
+    private int reconnect_attempts;
     private boolean needSave = false;
     private long lastStatusChangeTime;
     private byte progress = 100;
@@ -203,6 +206,7 @@ abstract public class Protocol {
     public final void setConnectingProgress(int percent) {
         progress = (byte) ((percent < 0) ? 100 : percent);
         if (100 == percent) {
+            reconnect_attempts = RECONNECT_COUNT;
             SawimApplication.getInstance().updateConnectionState();
             RosterHelper.getInstance().updateConnectionStatus();
             RosterHelper.getInstance().updateBarProtocols();
@@ -525,7 +529,7 @@ abstract public class Protocol {
     abstract protected Contact createContact(String uin, String name);
 
     public final Contact createTempContact(String uin, String name) {
-        Contact contact = getItemByUIN(uin);
+        Contact contact = getItemByUID(uin);
         if (null != contact) {
             return contact;
         }
@@ -571,7 +575,7 @@ abstract public class Protocol {
     }
 
     public final void beginTyping(String uin, boolean type) {
-        Contact item = getItemByUIN(uin);
+        Contact item = getItemByUID(uin);
         if (null != item) {
             beginTyping(item, type);
             RosterHelper.getInstance().updateRoster();
@@ -604,7 +608,7 @@ abstract public class Protocol {
         }
     }
 
-    public final Contact getItemByUIN(String uid) {
+    public final Contact getItemByUID(String uid) {
         return roster.getItemByUID(uid);
     }
 
@@ -818,7 +822,7 @@ abstract public class Protocol {
     }
 
     public final void addMessage(Message message, boolean silent) {
-        Contact contact = getItemByUIN(message.getSndrUin());
+        Contact contact = getItemByUID(message.getSndrUin());
         boolean isPlain = message instanceof PlainMessage;
         boolean isSystem = message instanceof SystemNotice;
         if ((null == contact) && (AntiSpam.isSpam(this, message, isSystem, isPlain) && contact.isConference())) {
@@ -899,7 +903,7 @@ abstract public class Protocol {
     }
 
     public final void setAuthResult(String uin, boolean auth) {
-        Contact c = getItemByUIN(uin);
+        Contact c = getItemByUID(uin);
         if (null == c) {
             return;
         }
@@ -916,6 +920,7 @@ abstract public class Protocol {
     public final void connect() {
         DebugLog.println("connect");
         isReconnect = false;
+        reconnect_attempts = RECONNECT_COUNT;
         disconnect(false);
         startConnection();
         setLastStatusChangeTime();
@@ -932,20 +937,24 @@ abstract public class Protocol {
             e = new SawimException(123, 0);
         }
         if (e.isReconnectable()) {
-            if (isConnected() && !isConnecting()) {
-                isReconnect = true;
-                RosterHelper.getInstance().updateProgressBar();
+            reconnect_attempts--;
+            if (0 < reconnect_attempts) {
+                if (isConnected() && !isConnecting()) {
+                    isReconnect = true;
+                    RosterHelper.getInstance().updateProgressBar();
+                }
+                try {
+                    int iter = RECONNECT_COUNT - reconnect_attempts;
+                    int sleep = Math.min(iter * 10, 2 * 60);
+                    Thread.sleep(sleep * 1000);
+                } catch (Exception ignored) {
+                }
+                if (isConnected() || isConnecting()) {
+                    disconnect(false);
+                    startConnection();
+                }
+                return;
             }
-            try {
-                int sleep = 10;
-                Thread.sleep(sleep * 1000);
-            } catch (Exception ignored) {
-            }
-            if (isConnected() || isConnecting()) {
-                disconnect(false);
-                startConnection();
-            }
-            return;
         }
         disconnect(false);
         setOnlineStatus(StatusInfo.STATUS_OFFLINE, null);

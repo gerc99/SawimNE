@@ -132,22 +132,24 @@ public class RosterAdapter extends BaseAdapter {
                     ProtocolBranch root = p.getProtocolBranch();
                     items.add(root);
                     if (!root.isExpanded()) continue;
-                    if (roster.useGroups) {
-                        roster.rebuildFlatItemsWG(p, items);
-                    } else {
-                        roster.rebuildFlatItemsWOG(p, items);
-                    }
+                    buildRoster(p);
                 }
             } else {
-                Protocol p = roster.getProtocol(0);
-                if (roster.useGroups) {
-                    roster.rebuildFlatItemsWG(p, items);
-                } else {
-                    roster.rebuildFlatItemsWOG(p, items);
-                }
+                buildRoster(roster.getProtocol(0));
             }
         }
         notifyDataSetChanged();
+    }
+
+    private void buildRoster(Protocol p) {
+        RosterHelper roster = RosterHelper.getInstance();
+        synchronized (p.getRosterLockObject()) {
+            if (roster.useGroups) {
+                roster.rebuildFlatItemsWG(p, items);
+            } else {
+                roster.rebuildFlatItemsWOG(p, items);
+            }
+        }
     }
 
     @Override

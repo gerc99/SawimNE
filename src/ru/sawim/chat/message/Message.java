@@ -64,7 +64,7 @@ public abstract class Message {
 
     public final void setSendingState(Protocol protocol, byte state) {
         if (mData != null) {
-            Contact contact = protocol.getItemByUIN(contactId);
+            Contact contact = protocol.getItemByUID(contactId);
             mData.setIconIndex(state);
             HistoryStorage historyStorage = protocol.getChat(contact).getHistory();
             if (historyStorage != null)
@@ -95,7 +95,7 @@ public abstract class Message {
     }
 
     protected final Contact getRcvr(Protocol protocol) {
-        return protocol.getItemByUIN(contactId);
+        return protocol.getItemByUID(contactId);
     }
 
     public boolean isOffline() {

@@ -70,8 +70,10 @@ public final class Storage {
     public byte[] getRecord(int id) {
         String where = COLUMN_ID + " = " + id;
         Cursor cursor = db.query(TABLE_NAME, null, where, null, null, null, null);
-        cursor.moveToFirst();
-        byte[] bytes = cursor.getBlob(cursor.getColumnIndex(COLUMN_DATA));
+        byte[] bytes = new byte[0];
+        if (cursor.moveToFirst()) {
+            bytes = cursor.getBlob(cursor.getColumnIndex(COLUMN_DATA));
+        }
         cursor.close();
         return bytes;
     }

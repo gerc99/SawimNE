@@ -31,6 +31,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
@@ -71,6 +72,19 @@ public class SawimActivity extends BaseActivity {
             rosterView.setArguments(getIntent().getExtras());
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.fragment_container, rosterView, RosterView.TAG).commit();
+        }
+        Log.e(LOG_TAG, ""+SawimApplication.getInstance().isExit);
+        if (SawimApplication.getInstance().isExit) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    ChatHistory.instance.loadUnreadMessages();
+                }
+            },"loadUnreadMessage").start();
+            if (RosterHelper.getInstance() != null) {
+                RosterHelper.getInstance().autoConnect();
+            }
+            SawimApplication.getInstance().isExit = false;
         }
     }
 
@@ -347,7 +361,7 @@ public class SawimActivity extends BaseActivity {
                 SawimApplication.getInstance().quit(false);
                 SawimApplication.getInstance().stopService();
                 finish();
-                System.exit(0);
+                SawimApplication.getInstance().isExit = true;
                 break;
         }
         return super.onOptionsItemSelected(item);
