@@ -71,12 +71,16 @@ public class SawimNotification {
             notification.setNumber(unread);
             stateMsg = String.format((String) context.getText(R.string.unread_messages), unread);
         }
-        stateMsg = ChatHistory.instance.getLastMessage(stateMsg.toString());
+        stateMsg = ChatHistory.instance.getLastMessage(stateMsg);
         notification.setAutoCancel(true);
         notification.setWhen(when);
-        //notification.setDefaults(android.app.Notification.DEFAULT_ALL);
         notification.setContentIntent(contentIntent);
-        notification.setContentTitle(context.getString(R.string.message_from) + " " + ChatHistory.instance.getLastMessageNick(context.getString(R.string.app_name)));
+        CharSequence lastMessageNick = ChatHistory.instance.getLastMessageNick();
+        if (lastMessageNick == null) {
+            notification.setContentTitle(context.getString(R.string.app_name));
+        } else {
+            notification.setContentTitle(context.getString(R.string.message_from) + " " + lastMessageNick);
+        }
         notification.setContentText(stateMsg);
         notification.setSmallIcon(icon);
         return notification.build();

@@ -261,7 +261,7 @@ public final class ChatHistory {
         return current;
     }
 
-    public CharSequence getLastMessage(String defMess) {
+    public CharSequence getLastMessage(CharSequence defMess) {
         Chat current = chatAt(getPreferredItem());
         if (current != null) {
             HistoryStorage historyStorage = current.getHistory();
@@ -274,7 +274,7 @@ public final class ChatHistory {
         return defMess;
     }
 
-    public String getLastMessageNick(String defMess) {
+    public String getLastMessageNick() {
         Chat current = chatAt(getPreferredItem());
         if (current != null) {
             HistoryStorage historyStorage = current.getHistory();
@@ -284,7 +284,7 @@ public final class ChatHistory {
                 return md.getNick();
             }
         }
-        return defMess;
+        return null;
     }
 
     public int getPreferredItem() {
