@@ -58,7 +58,6 @@ public class SawimApplication extends Application {
     private final SawimServiceConnection serviceConnection = new SawimServiceConnection();
     private final NetworkStateReceiver networkStateReceiver = new NetworkStateReceiver();
     public boolean isBindService = false;
-    public boolean isExit = false;
 
     private Handler uiHandler;
 

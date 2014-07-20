@@ -526,4 +526,6 @@
     <string name="notification_ringtone">Notification tone</string>
     <string name="notification_ringtone_summaey">Select a sound to play for a new notification message</string>
     <string name="new_subject">New subject</string>
+    <string name="conference_theme">Conference theme</string>
+    <string name="message_from">Message from</string>
 </resources>

@@ -27,7 +27,6 @@ public final class Chat {
     public int offset;
     public int dividerPosition = -1;
     public int lastVisiblePosition;
-    public int oldMessageCount;
 
     public Chat(Protocol p, Contact item) {
         contact = item;
@@ -203,7 +202,7 @@ public final class Chat {
     }
 
     public void setMessageCounter(short count) {
-        messageCounter = count;
+        otherMessageCounter = count;
     }
 
     public int getUnreadMessageCount() {
@@ -270,12 +269,6 @@ public final class Chat {
             return null;
         }
         boolean isMe = messageText.startsWith(PlainMessage.CMD_ME);
-        if (isMe) {
-            messageText = messageText.substring(4);
-            if (0 == messageText.length()) {
-                return null;
-            }
-        }
         short flags = 0;
         if (incoming) {
             flags |= MessData.INCOMING;
@@ -287,17 +280,13 @@ public final class Chat {
             flags |= MessData.SERVICE;
         }
 
-        final MessData mData = new MessData(contact, message.getNewDate(), messageText, from, flags, isHighlight);
-        if (!incoming && !mData.isMe()) {
-            message.setVisibleIcon(mData);
-        }
-        return mData;
+        return buildMessage(message, from, flags, isHighlight);
     }
 
     public MessData buildMessage(Message message, String from, short flags, boolean isHighlight) {
         boolean incoming = message.isIncoming();
         String messageText = message.getProcessedText();
-        //messageText = StringConvertor.removeCr(messageText);
+        messageText = StringConvertor.removeCr(messageText);
         if (StringConvertor.isEmpty(messageText)) {
             return null;
         }

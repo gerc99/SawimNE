@@ -74,9 +74,7 @@ public class XmppServiceContact extends XmppContact {
                 return 3;
         }
         return 0;
-    }
-
-    ;
+    };
 
     public boolean isAutoJoin() {
         return autojoin;
@@ -364,7 +362,7 @@ public class XmppServiceContact extends XmppContact {
             contactMenu.add(Menu.NONE, ContactMenu.USER_MANAGE_CONTACT, Menu.NONE, R.string.manage);
         }
         if (isOnline()) {
-            contactMenu.add(Menu.NONE, ContactMenu.USER_MENU_STATUSES, Menu.NONE, R.string.user_statuses);
+            contactMenu.add(Menu.NONE, ContactMenu.USER_MENU_STATUSES, Menu.NONE, R.string.conference_theme);
         }
         if (isPrivate) {
             contactMenu.add(Menu.NONE, ContactMenu.USER_MANAGE_CONTACT, Menu.NONE, R.string.manage);

@@ -128,6 +128,7 @@ public class VirtualListAdapter extends BaseAdapter {
         if (element.getImage() != null) {
             holder.imageView.setVisibility(ImageView.VISIBLE);
             holder.imageView.setImageDrawable(element.getImage());
+            holder.imageView.setAdjustViewBounds(true);
         }
         LinearLayout activeItem = (LinearLayout) convertView;
         if (i == selectedItem && selectedItem != -1) {

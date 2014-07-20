@@ -54,7 +54,7 @@ public class SawimNotification {
         notificationIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         if (0 < unread) {
-            notification.setLights(0xff00ff00, 300, 1000);
+            notification.setLights(0xff00ff00, 1000, 3000);
             if (silent) {
                 if (Options.getBoolean(Options.OPTION_VIBRATION)) {
                     int dat = 70;
@@ -76,7 +76,7 @@ public class SawimNotification {
         notification.setWhen(when);
         //notification.setDefaults(android.app.Notification.DEFAULT_ALL);
         notification.setContentIntent(contentIntent);
-        notification.setContentTitle(context.getString(R.string.app_name));
+        notification.setContentTitle(context.getString(R.string.message_from) + " " + ChatHistory.instance.getLastMessageNick(context.getString(R.string.app_name)));
         notification.setContentText(stateMsg);
         notification.setSmallIcon(icon);
         return notification.build();

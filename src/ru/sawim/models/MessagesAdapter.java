@@ -91,7 +91,7 @@ public class MessagesAdapter extends BaseAdapter {
         boolean incoming = mData.isIncoming();
 
         item.setLinkTextColor(Scheme.getColor(Scheme.THEME_LINKS));
-        item.setTypeface(mData.isConfHighLight() ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT);
+        item.setTypeface(mData.isHighLight() ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT);
         item.setBackgroundColor(0);
         item.setLayout(mData.layout);
         if (mData.isMe() || mData.isPresence()) {

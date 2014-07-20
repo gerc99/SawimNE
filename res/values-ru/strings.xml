@@ -528,4 +528,6 @@
     <string name="notification_ringtone">Звук уведомления</string>
     <string name="notification_ringtone_summaey">Выберите звук уведомления о новом сообщении</string>
     <string name="new_subject">Новая тема</string>
+    <string name="conference_theme">Тема конференции</string>
+    <string name="message_from">Сообщение от</string>
 </resources>

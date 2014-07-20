@@ -73,19 +73,6 @@ public class SawimActivity extends BaseActivity {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.fragment_container, rosterView, RosterView.TAG).commit();
         }
-        Log.e(LOG_TAG, ""+SawimApplication.getInstance().isExit);
-        if (SawimApplication.getInstance().isExit) {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    ChatHistory.instance.loadUnreadMessages();
-                }
-            },"loadUnreadMessage").start();
-            if (RosterHelper.getInstance() != null) {
-                RosterHelper.getInstance().autoConnect();
-            }
-            SawimApplication.getInstance().isExit = false;
-        }
     }
 
     @Override
@@ -361,7 +348,7 @@ public class SawimActivity extends BaseActivity {
                 SawimApplication.getInstance().quit(false);
                 SawimApplication.getInstance().stopService();
                 finish();
-                SawimApplication.getInstance().isExit = true;
+                System.exit(0);
                 break;
         }
         return super.onOptionsItemSelected(item);

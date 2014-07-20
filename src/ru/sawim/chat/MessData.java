@@ -16,7 +16,6 @@ public final class MessData {
     public String strTime;
     private byte iconIndex = Message.ICON_NONE;
     private short rowData;
-    private final boolean confHighLight;
     private boolean isHighLight;
 
     public Layout layout;
@@ -36,13 +35,24 @@ public final class MessData {
         boolean today = (SawimApplication.getCurrentGmtTime() - 24 * 60 * 60 < time);
         strTime = ru.sawim.comm.Util.getLocalDateString(time, today);
 
-        confHighLight = (isIncoming() && !currentContact.isSingleUserContact() && isHighLight());
         CharSequence parsedText = TextFormatter.getInstance().parsedText(currentContact, text);
         if (isMe()) {
             parsedText = new SpannableStringBuilder().append("* ").append(nick).append(" ").append(parsedText);
         } else if (isPresence()) {
             parsedText = new SpannableStringBuilder().append(strTime).append(" ").append(nick).append(parsedText);
         }
+        layout = MessageItemView.buildLayout(parsedText);
+    }
+
+    public MessData(Contact currentContact, long time, String text, String nick, short flags) {
+        isHighLight = false;
+        this.nick = nick;
+        this.time = time;
+        this.rowData = flags;
+        boolean today = (SawimApplication.getCurrentGmtTime() - 24 * 60 * 60 < time);
+        strTime = ru.sawim.comm.Util.getLocalDateString(time, today);
+
+        CharSequence parsedText = TextFormatter.getInstance().parsedText(currentContact, text);
         layout = MessageItemView.buildLayout(parsedText);
     }
 
@@ -100,7 +110,7 @@ public final class MessData {
 
     public byte getMessColor() {
         byte messColor = Scheme.THEME_TEXT;
-        if (confHighLight)
+        if (isHighLight)
             messColor = Scheme.THEME_CHAT_HIGHLIGHT_MSG;
         return messColor;
     }
@@ -111,9 +121,5 @@ public final class MessData {
 
     public void setIconIndex(byte iconIndex) {
         this.iconIndex = iconIndex;
-    }
-
-    public boolean isConfHighLight() {
-        return confHighLight;
     }
 }

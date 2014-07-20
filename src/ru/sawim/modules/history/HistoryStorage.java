@@ -122,6 +122,7 @@ public class HistoryStorage {
                 boolean isMessage = (rowData & MessData.PRESENCE) == 0 && (rowData & MessData.SERVICE) == 0 && (rowData & MessData.PROGRESS) == 0;
                 if ((isMessage && sendingState == Message.NOTIFY_FROM_SERVER && !isIncoming) || isMessage) {
                     lastMessageTime = cursor.getLong(cursor.getColumnIndex(DATE));
+                    break;
                 }
             } while (cursor.moveToPrevious());
         }
@@ -177,9 +178,6 @@ public class HistoryStorage {
         long date = Util.createLocalDate(Util.getLocalDateString(cursor.getLong(cursor.getColumnIndex(DATE)), false));
         short rowData = cursor.getShort(cursor.getColumnIndex(ROW_DATA));
         PlainMessage message;
-        if ((rowData & MessData.ME) != 0) {
-            text = text.substring(from.length() + 2);
-        }
         if (isIncoming) {
             message = new PlainMessage(from, chat.getProtocol(), date, text, true);
         } else {
@@ -189,6 +187,8 @@ public class HistoryStorage {
         if (rowData == 0) {
             messData = chat.buildMessage(message, contact.isConference() ? from : chat.getFrom(message),
                     false, Chat.isHighlight(message.getProcessedText(), contact.getMyName()));
+        } else if ((rowData & MessData.ME) != 0 || (rowData & MessData.PRESENCE) != 0) {
+            messData = new MessData(contact, message.getNewDate(), text, from, rowData);
         } else {
             messData = chat.buildMessage(message, contact.isConference() ? from : chat.getFrom(message),
                     rowData, Chat.isHighlight(message.getProcessedText(), contact.getMyName()));

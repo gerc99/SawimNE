@@ -261,14 +261,27 @@ public final class ChatHistory {
         return current;
     }
 
-    public String getLastMessage(String defMess) {
+    public CharSequence getLastMessage(String defMess) {
         Chat current = chatAt(getPreferredItem());
         if (current != null) {
             HistoryStorage historyStorage = current.getHistory();
             boolean hasHistory = historyStorage != null && historyStorage.getHistorySize() > 0;
             if (hasHistory) {
                 MessData md = historyStorage.getLastMessage(current);
-                return md.getNick() + "\n " + md.getText();
+                return md.getText();
+            }
+        }
+        return defMess;
+    }
+
+    public String getLastMessageNick(String defMess) {
+        Chat current = chatAt(getPreferredItem());
+        if (current != null) {
+            HistoryStorage historyStorage = current.getHistory();
+            boolean hasHistory = historyStorage != null && historyStorage.getHistorySize() > 0;
+            if (hasHistory) {
+                MessData md = historyStorage.getLastMessage(current);
+                return md.getNick();
             }
         }
         return defMess;

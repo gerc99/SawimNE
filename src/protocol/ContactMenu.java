@@ -37,9 +37,7 @@ public class ContactMenu implements TextBoxView.TextBoxListener {
     public static final int USER_MENU_ADHOC = 12;
     public static final int USER_MENU_SEEN = 13;
     public static final int USER_INVITE = 14;
-    public static final int ACTION_CURRENT_DEL_CHAT = 15;
-    public static final int ACTION_DEL_ALL_CHATS_EXCEPT_CUR = 16;
-    public static final int ACTION_DEL_ALL_CHATS = 17;
+
     public static final int CONFERENCE_AFFILIATION_LIST = 18;
     public static final int CONFERENCE_OWNERS = 19;
     public static final int CONFERENCE_ADMINS = 20;
