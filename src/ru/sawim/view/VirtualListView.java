@@ -121,7 +121,7 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
 
     @Override
     public void update() {
-        if (list.getModel() == null) return;
+        if (list.getModel() == null || getActivity() == null) return;
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {

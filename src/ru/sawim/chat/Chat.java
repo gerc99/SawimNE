@@ -24,9 +24,8 @@ public final class Chat {
 
     public String message;
     public int firstVisiblePosition;
+    public int currentPosition = -1;
     public int offset;
-    public int dividerPosition = -1;
-    public int lastVisiblePosition;
 
     public Chat(Protocol p, Contact item) {
         contact = item;
@@ -96,9 +95,6 @@ public final class Chat {
     public void sendMessage(String message) {
         if (getMessCount() <= 1)
             ChatHistory.instance.registerChat(this);
-        //if (!contact.isSingleUserContact() && message.endsWith(", ")) {
-        //    message = "";
-        //}
         if (!StringConvertor.isEmpty(message)) {
             protocol.sendMessage(contact, message, true);
         }
@@ -160,7 +156,7 @@ public final class Chat {
 
     public HistoryStorage getHistory() {
         if (null == history) {
-            history = HistoryStorage.getHistory(contact);
+            history = HistoryStorage.getHistory(contact.getUserId());
         }
         return history;
     }
@@ -279,7 +275,6 @@ public final class Chat {
         if (isSystemNotice) {
             flags |= MessData.SERVICE;
         }
-
         return buildMessage(message, from, flags, isHighlight);
     }
 
@@ -308,9 +303,6 @@ public final class Chat {
     private void addTextToForm(Message message, String from, boolean isSystemNotice, boolean isHighlight) {
         MessData mData = buildMessage(message, from, isSystemNotice, isHighlight);
         addMessage(mData);
-        boolean isConference = contact.isConference();
-        if (isConference && ((mData.isMessage() && mData.getIconIndex() == Message.NOTIFY_FROM_SERVER && !message.isIncoming()) || mData.isMessage()))
-            RosterHelper.getInstance().setLastMessageTime(contact.getUserId(), mData.getTime());
         addTextToHistory(mData);
     }
 
@@ -374,7 +366,7 @@ public final class Chat {
         if (getMessCount() <= 1)
             ChatHistory.instance.registerChat(this);
         resetUnreadMessages();
-        addTextToForm(message, from, true, false);
+        addTextToForm(message, from, false, false);
         if (RosterHelper.getInstance().getUpdateChatListener() != null) {
             RosterHelper.getInstance().getUpdateChatListener().updateChat();
         }

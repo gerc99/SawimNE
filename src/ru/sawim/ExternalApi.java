@@ -67,7 +67,7 @@ public class ExternalApi {
             intent.addCategory(Intent.CATEGORY_OPENABLE);
             intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
             if (!isCallable(intent)) return false;
-            fragment.startActivityForResult(intent, RESULT_EXTERNAL_FILE);
+            fragment.startActivityForResult(Intent.createChooser(intent, null), RESULT_EXTERNAL_FILE);
             return true;
         } catch (Exception e) {
             ru.sawim.modules.DebugLog.panic("pickFile", e);

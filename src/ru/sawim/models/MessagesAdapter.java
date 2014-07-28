@@ -123,14 +123,14 @@ public class MessagesAdapter extends BaseAdapter {
             item.setNick(Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG),
                     SawimApplication.getFontSize(), Typeface.DEFAULT_BOLD, nick);
             item.setMsgTime(Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG),
-                    SawimApplication.getFontSize() * 2 / 3, Typeface.DEFAULT, mData.strTime);
+                    SawimApplication.getFontSize() * 2 / 3, Typeface.DEFAULT, mData.getStrTime());
             item.setMsgTextSize(SawimApplication.getFontSize());
             item.setTextColor(Scheme.getColor(mData.getMessColor()));
 
         }
         if (mData.isMarked() && isMultiQuote) {
             item.setTypeface(Typeface.DEFAULT_BOLD);
-            item.setBackgroundColor(Scheme.getColor(Scheme.THEME_ITEM_SELECTED));
+            item.setTextColor(Scheme.getColor(Scheme.THEME_ITEM_SELECTED));
         }
         item.setShowDivider(position == index);
         item.repaint();
