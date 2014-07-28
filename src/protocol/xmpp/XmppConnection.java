@@ -6,6 +6,7 @@ import ru.sawim.Options;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.SawimException;
+import ru.sawim.chat.Chat;
 import ru.sawim.chat.ChatHistory;
 import ru.sawim.chat.message.Message;
 import ru.sawim.chat.message.PlainMessage;
@@ -33,6 +34,7 @@ import java.util.Vector;
 public final class XmppConnection extends ClientConnection {
 
     public static final boolean DEBUGLOG = false;
+    private static final int MESSAGE_COUNT_AFTER_CONNECT = 20;
 
     private Socket socket;
     private Xmpp protocol;
@@ -1612,10 +1614,11 @@ public final class XmppConnection extends ClientConnection {
         if (StringConvertor.isEmpty(text)) {
             return;
         }
-        if (subject == null)
+        if (subject == null) {
             message = new PlainMessage(from, getXmpp(), time, text, !isOnlineMessage);
-        else if (!isGroupchat)
+        } else if (!isGroupchat) {
             message = new SystemNotice(getXmpp(), SystemNotice.SYS_NOTICE_MESSAGE, from, text);
+        }
         if (null == c) {
             if (isConference && !isGroupchat) {
                 prepareFirstPrivateMessage(from);
@@ -1637,9 +1640,15 @@ public final class XmppConnection extends ClientConnection {
                     if (message != null)
                         message.setName(conf.getNick(fromRes));
                 }
-
             } else {
                 c.setActiveResource(fromRes);
+            }
+        }
+        if (subject == null && isConference && !isOnlineMessage) {
+            Chat chat = getXmpp().getChat(c);
+            HistoryStorage history = chat.getHistory();
+            if (history.hasMessage(chat, message, MESSAGE_COUNT_AFTER_CONNECT, history.getHistorySize() - MESSAGE_COUNT_AFTER_CONNECT)) {
+                return;
             }
         }
         if (message != null)
@@ -2261,14 +2270,15 @@ public final class XmppConnection extends ClientConnection {
             if (!StringConvertor.isEmpty(password)) {
                 xNode += "<password>" + Util.xmlEscape(password) + "</password>";
             }
-            long time = RosterHelper.getInstance().getLastMessageTime(conf.getUserId());
-            if (time == 0 && ChatHistory.instance.getChat(conf) == null) {
-                HistoryStorage historyStorage = getXmpp().getChat(conf).getHistory();
-                if (historyStorage != null)
-                    time = historyStorage.getLastMessageTime();
+            long time = 0;
+            HistoryStorage historyStorage = getXmpp().getChat(conf).getHistory();
+            if (historyStorage != null) {
+                time = historyStorage.getLastMessageTime();
             }
             if (0 != time)
-                xNode += "<history maxstanzas='20' seconds='" + (SawimApplication.getCurrentGmtTime() - time) + "'/>";
+                xNode += "<history maxstanzas='"
+                        + MESSAGE_COUNT_AFTER_CONNECT
+                        + "' seconds='" + (SawimApplication.getCurrentGmtTime() - time) + "'/>";
 
             if (!StringConvertor.isEmpty(xNode)) {
                 xml += "<x xmlns='http://jabber.org/protocol/muc'>" + xNode + "</x>";
@@ -2711,7 +2721,4 @@ public final class XmppConnection extends ClientConnection {
         putPacketIntoQueue(stanza);
         return true;
     }
-
 }
-
-

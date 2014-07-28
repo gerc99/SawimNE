@@ -37,23 +37,16 @@ public class HistoryStorage {
 
     private static final String PREFIX = "hist";
 
-    private Contact contact;
     private String uniqueUserId;
     private DatabaseHelper dbHelper;
     private SQLiteDatabase db;
-    private int firstMessageCount;
 
-    private HistoryStorage(Contact contact) {
-        this.contact = contact;
-        uniqueUserId = contact.getUserId();
+    private HistoryStorage(String uniqueUserId) {
+        this.uniqueUserId = uniqueUserId;
     }
 
-    public Contact getContact() {
-        return contact;
-    }
-
-    public static HistoryStorage getHistory(Contact contact) {
-        return new HistoryStorage(contact);
+    public static HistoryStorage getHistory(String uniqueUserId) {
+        return new HistoryStorage(uniqueUserId);
     }
 
     private boolean openHistory() {
@@ -61,7 +54,6 @@ public class HistoryStorage {
             try {
                 dbHelper = new DatabaseHelper(SawimApplication.getContext(), getDBName(), DB_CREATE, CHAT_HISTORY_TABLE, VERSION);
                 db = dbHelper.getWritableDatabase();
-                firstMessageCount = getHistorySize();
             } catch (Exception e) {
                 db = null;
                 dbHelper = null;
@@ -110,6 +102,18 @@ public class HistoryStorage {
         }
     }
 
+    public synchronized void deleteText(MessData md) {
+        if (!openHistory()) {
+            return;
+        }
+        try {
+            String wh = AUTHOR + "='" + md.getNick() + "' AND " + MESSAGE + "='" + md.getText().toString() + "'";
+            db.delete(CHAT_HISTORY_TABLE, wh, null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public long getLastMessageTime() {
         long lastMessageTime = 0;
         openHistory();
@@ -139,6 +143,38 @@ public class HistoryStorage {
         }
         cursor.close();
         return lastMessage;
+    }
+
+    public boolean hasMessage(Chat chat, Message message, int limit, int offset) {
+        final String selectCount = "select * from " + CHAT_HISTORY_TABLE
+                + " order by " + COLUMN_ID
+                + " ASC limit " + limit
+                + " OFFSET " + offset;
+        MessData mess = chat.buildMessage(message, chat.getContact().isConference() ? message.getName() : chat.getFrom(message),
+                false, Chat.isHighlight(message.getProcessedText(), chat.getContact().getMyName()));
+        boolean hasMessage = false;
+        try {
+            openHistory();
+            Cursor cursor = db.rawQuery(selectCount, new String[]{});
+            if (cursor.moveToLast()) {
+                do {
+                    MessData messFromDataBase = buildMessage(chat, cursor);
+                    if (hasMessage(mess, messFromDataBase)) {
+                        hasMessage = true;
+                        break;
+                    }
+                } while (cursor.moveToPrevious());
+            }
+            cursor.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return hasMessage;
+    }
+
+    private boolean hasMessage(MessData mess, MessData messFromDataBase) {
+        return mess.getNick().equals(messFromDataBase.getNick())
+                && mess.getText().toString().equals(messFromDataBase.getText().toString());
     }
 
     public void addNextListMessages(List<MessData> messDataList, final Chat chat, int limit, int offset, boolean addedAtTheBeginning) {
@@ -171,6 +207,7 @@ public class HistoryStorage {
     }
 
     private MessData buildMessage(Chat chat, Cursor cursor) {
+        Contact contact = chat.getContact();
         int sendingState = cursor.getInt(cursor.getColumnIndex(SENDING_STATE));
         boolean isIncoming = cursor.getInt(cursor.getColumnIndex(INCOMING)) == 0;
         String from = cursor.getString(cursor.getColumnIndex(AUTHOR));
@@ -215,16 +252,8 @@ public class HistoryStorage {
         return num;
     }
 
-    public int getFirstMessageCount() {
-        return firstMessageCount;
-    }
-
     private String getDBName() {
-        return PREFIX + getUniqueUserId().replace('@', '_').replace('.', '_').replace('/', '_');
-    }
-
-    String getUniqueUserId() {
-        return uniqueUserId;
+        return PREFIX + uniqueUserId.replace('@', '_').replace('.', '_').replace('/', '_');
     }
 
     public void removeHistory() {

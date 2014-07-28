@@ -686,7 +686,6 @@ public final class RosterHelper {
         return false;
     }
 
-    private HashMap<String, Long> lastMessagesTimeMap = new HashMap<String, Long>();
     private HashMap<String, String> subjectsMap = new HashMap<String, String>();
 
     public String getSubject(String id) {
@@ -696,15 +695,6 @@ public final class RosterHelper {
 
     public void setSubject(String id, String subject) {
         subjectsMap.put(id, subject);
-    }
-
-    public long getLastMessageTime(String id) {
-        if (lastMessagesTimeMap.containsKey(id)) return lastMessagesTimeMap.get(id);
-        else return 0;
-    }
-
-    public void setLastMessageTime(String id, long time) {
-        lastMessagesTimeMap.put(id, time);
     }
 
     private OnUpdateChat updateChatListener;
