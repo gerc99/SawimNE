@@ -12,6 +12,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.view.Surface;
 import android.view.WindowManager;
+import de.duenndns.ssl.MemorizingTrustManager;
 import protocol.Protocol;
 import ru.sawim.chat.ChatHistory;
 import ru.sawim.io.FileSystem;
@@ -26,7 +27,10 @@ import ru.sawim.service.SawimService;
 import ru.sawim.service.SawimServiceConnection;
 import ru.sawim.text.TextFormatter;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.X509TrustManager;
 import java.io.InputStream;
+import java.security.SecureRandom;
 import java.util.List;
 
 /**
@@ -61,6 +65,8 @@ public class SawimApplication extends Application {
 
     private Handler uiHandler;
 
+    public static SSLContext sc;
+
     public static SawimApplication getInstance() {
         return instance;
     }
@@ -82,6 +88,7 @@ public class SawimApplication extends Application {
         networkStateReceiver.updateNetworkState(this);
 
         instance.paused = false;
+
         HomeDirectory.init();
         Options.init();
         Scheme.load();
@@ -93,7 +100,9 @@ public class SawimApplication extends Application {
             Emotions.instance.load();
             Answerer.getInstance().load();
             gc();
-
+            sc = SSLContext.getInstance("TLS");
+            MemorizingTrustManager mtm = new MemorizingTrustManager(this);
+            sc.init(null, new X509TrustManager[] {mtm}, new SecureRandom());
             Options.loadAccounts();
             RosterHelper.getInstance().initAccounts();
             RosterHelper.getInstance().loadAccounts();

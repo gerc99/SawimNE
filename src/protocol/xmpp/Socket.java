@@ -9,12 +9,14 @@
 
 package protocol.xmpp;
 
+import android.content.Context;
 import protocol.net.TcpSocket;
 import ru.sawim.SawimException;
 import ru.sawim.modules.DebugLog;
 import ru.sawim.modules.zlib.ZLibInputStream;
 import ru.sawim.modules.zlib.ZLibOutputStream;
 
+import javax.net.ssl.SSLContext;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Vector;
@@ -44,8 +46,8 @@ final class Socket implements Runnable {
         DebugLog.println("zlib is working");
     }
 
-    public void startTls(String host) {
-        socket.startTls(host);
+    public void startTls(SSLContext sslctx, String host) {
+        socket.startTls(sslctx, host);
         secured = true;
     }
 

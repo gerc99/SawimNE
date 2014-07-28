@@ -1,17 +1,14 @@
 package protocol.net;
 
-import android.net.SSLCertificateSocketFactory;
 import ru.sawim.SawimException;
 import ru.sawim.modules.DebugLog;
 
-import javax.net.ssl.SSLPeerUnverifiedException;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.SSLSocket;
-import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 
 public final class TcpSocket {
@@ -164,10 +161,10 @@ public final class TcpSocket {
         }
     }
 
-    public void startTls(String host) {
+    public void startTls(SSLContext sc, String host) {
         try {
             DebugLog.println("startTls start " + socket + os + is);
-            SSLSocketFactory sslFactory = SSLCertificateSocketFactory.getInsecure(0, null);
+	        SSLSocketFactory sslFactory = (SSLSocketFactory)sc.getSocketFactory();
             socket = sslFactory.createSocket(socket, host, socket.getPort(), true);
             ((SSLSocket) socket).setUseClientMode(true);
             dump();
