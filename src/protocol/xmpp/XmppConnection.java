@@ -183,7 +183,7 @@ public final class XmppConnection extends ClientConnection {
 
     private void setStreamTls() throws SawimException {
         setProgress(15);
-        socket.startTls(domain_);
+        socket.startTls(SawimApplication.sc, domain_);
         write(getOpenStreamXml(domain_));
 
         DebugLog.println("tls turn on");
