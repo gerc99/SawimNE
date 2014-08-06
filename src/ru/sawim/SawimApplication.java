@@ -5,8 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -15,6 +14,7 @@ import android.view.WindowManager;
 import de.duenndns.ssl.MemorizingTrustManager;
 import protocol.Protocol;
 import ru.sawim.chat.ChatHistory;
+import ru.sawim.io.DatabaseHelper;
 import ru.sawim.io.FileSystem;
 import ru.sawim.io.HomeDirectory;
 import ru.sawim.modules.Answerer;
@@ -32,6 +32,8 @@ import javax.net.ssl.X509TrustManager;
 import java.io.InputStream;
 import java.security.SecureRandom;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Created with IntelliJ IDEA.
@@ -59,11 +61,14 @@ public class SawimApplication extends Application {
     public static int autoAbsenceTime;
 
     public static SawimApplication instance;
+    private static DatabaseHelper dbHelper;
+    private static SQLiteDatabase db;
     private final SawimServiceConnection serviceConnection = new SawimServiceConnection();
     private final NetworkStateReceiver networkStateReceiver = new NetworkStateReceiver();
     public boolean isBindService = false;
 
     private Handler uiHandler;
+    private static final ExecutorService executor = Executors.newCachedThreadPool();
 
     public static SSLContext sc;
 
@@ -75,6 +80,14 @@ public class SawimApplication extends Application {
         return instance.getBaseContext();
     }
 
+    public static DatabaseHelper getDbHelper() {
+        return dbHelper;
+    }
+
+    public static SQLiteDatabase getDb() {
+        return db;
+    }
+
     @Override
     public void onCreate() {
         instance = this;
@@ -82,6 +95,8 @@ public class SawimApplication extends Application {
         VERSION = getVersion();
         Thread.setDefaultUncaughtExceptionHandler(ExceptionHandler.inContext(getContext()));
         super.onCreate();
+        dbHelper = new DatabaseHelper(getApplicationContext());
+        db = dbHelper.getWritableDatabase();
         uiHandler = new Handler(Looper.getMainLooper());
 
         startService();
@@ -126,6 +141,10 @@ public class SawimApplication extends Application {
 
     public Handler getUiHandler() {
         return uiHandler;
+    }
+
+    public static ExecutorService getExecutor() {
+        return executor;
     }
 
     private void startService() {

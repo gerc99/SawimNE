@@ -9,8 +9,8 @@
 
 package protocol.xmpp;
 
-import android.content.Context;
 import protocol.net.TcpSocket;
+import ru.sawim.SawimApplication;
 import ru.sawim.SawimException;
 import ru.sawim.modules.DebugLog;
 import ru.sawim.modules.zlib.ZLibInputStream;
@@ -185,6 +185,6 @@ final class Socket implements Runnable {
     }
 
     public void start() {
-        new Thread(this,"XMPPSocet").start();
+        SawimApplication.getExecutor().submit(this);
     }
 }

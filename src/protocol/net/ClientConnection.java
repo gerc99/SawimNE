@@ -43,7 +43,7 @@ public abstract class ClientConnection implements Runnable {
     }
 
     public final void start() {
-        new Thread(this,"ClientConnection").start();
+        SawimApplication.getExecutor().submit(this);
     }
 
     public final void run() {

@@ -156,7 +156,7 @@ public final class Chat {
 
     public HistoryStorage getHistory() {
         if (null == history) {
-            history = HistoryStorage.getHistory(contact.getUserId());
+            history = HistoryStorage.getHistory(protocol.getUserId(), contact.getUserId());
         }
         return history;
     }

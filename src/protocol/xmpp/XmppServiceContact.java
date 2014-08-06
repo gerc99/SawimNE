@@ -362,7 +362,11 @@ public class XmppServiceContact extends XmppContact {
             contactMenu.add(Menu.NONE, ContactMenu.USER_MANAGE_CONTACT, Menu.NONE, R.string.manage);
         }
         if (isOnline()) {
-            contactMenu.add(Menu.NONE, ContactMenu.USER_MENU_STATUSES, Menu.NONE, R.string.conference_theme);
+            if (isConference) {
+                contactMenu.add(Menu.NONE, ContactMenu.USER_MENU_STATUSES, Menu.NONE, R.string.conference_theme);
+            } else {
+                contactMenu.add(Menu.NONE, ContactMenu.USER_MENU_STATUSES, Menu.NONE, R.string.statuses);
+            }
         }
         if (isPrivate) {
             contactMenu.add(Menu.NONE, ContactMenu.USER_MANAGE_CONTACT, Menu.NONE, R.string.manage);

@@ -1644,16 +1644,16 @@ public final class XmppConnection extends ClientConnection {
                 c.setActiveResource(fromRes);
             }
         }
-        if (subject == null && isConference && !isOnlineMessage) {
-            Chat chat = getXmpp().getChat(c);
-            HistoryStorage history = chat.getHistory();
-            if (history.hasMessage(chat, message, MESSAGE_COUNT_AFTER_CONNECT, history.getHistorySize() - MESSAGE_COUNT_AFTER_CONNECT)) {
+        if (s &&subject == null && isConference && !isOnlineMessage) {
+            s=false;
+            if (HistoryStorage.hasMessage(getXmpp().getChat(c), message, MESSAGE_COUNT_AFTER_CONNECT)) {
                 return;
             }
         }
         if (message != null)
             getXmpp().addMessage(message, S_HEADLINE.equals(type));
     }
+    boolean s=true;
 
     private void parseBlogMessage(String to, XmlNode msg, String text, String botNick) {
         text = StringConvertor.notNull(text);

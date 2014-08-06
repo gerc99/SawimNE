@@ -31,7 +31,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
@@ -141,7 +140,7 @@ public class SawimActivity extends BaseActivity {
         } else {
             Protocol protocol = null;
             Contact contact = null;
-            Chat oldChat = ChatHistory.instance.getChatById(ChatView.getLastChat());
+            Chat oldChat = ChatHistory.instance.getChat(RosterHelper.getInstance().getCurrentContact());
             if (p != null && c != null) {
                 protocol = p;
                 contact = c;

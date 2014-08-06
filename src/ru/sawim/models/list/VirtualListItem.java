@@ -3,9 +3,11 @@ package ru.sawim.models.list;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.text.SpannableStringBuilder;
 import android.view.View;
 import ru.sawim.SawimApplication;
 import ru.sawim.SawimResources;
+import ru.sawim.Scheme;
 import ru.sawim.text.TextFormatter;
 
 /**
@@ -26,7 +28,6 @@ public class VirtualListItem {
     private boolean itemSelectable;
     private OnGroupListListener groupListListener;
     public boolean opened = false;
-    public View itemView;
 
     public VirtualListItem(boolean itemSelectable) {
         this.itemSelectable = itemSelectable;
@@ -74,7 +75,10 @@ public class VirtualListItem {
 
     public CharSequence getDescStr() {
         if (descStr == null) return null;
-        return TextFormatter.getInstance().parsedText(null, descStr);
+        SpannableStringBuilder builder = new SpannableStringBuilder(descStr);
+        TextFormatter.getInstance().getTextWithLinks(builder, Scheme.getColor(Scheme.THEME_LINKS), -1);
+        TextFormatter.getInstance().detectEmotions(descStr, builder);
+        return builder;
     }
 
     public byte getThemeTextLabel() {

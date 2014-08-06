@@ -28,7 +28,8 @@ public class Scheme {
     public static final byte THEME_CONTACT_STATUS = 13;
     public static final byte THEME_PROTOCOL_BACKGROUND = 14;
     public static final byte THEME_LINKS = 15;
-    public static final byte THEME_DIVIDER = 16;
+    public static final byte THEME_LINKS_HIGHLIGHT = 16;
+    public static final byte THEME_DIVIDER = 17;
 
     public static final byte FONT_STYLE_PLAIN = 0;
     public static final byte FONT_STYLE_BOLD = 1;
@@ -56,6 +57,7 @@ public class Scheme {
             0x777777,
             0x000000,
             0x0099CB,
+            0xB0F0FF,
             0xafafaf};
 
     private static int[] currentTheme = new int[baseTheme.length];

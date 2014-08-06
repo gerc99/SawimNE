@@ -36,8 +36,8 @@ public final class ChatHistory {
     public void addLayerToListOfChats(Protocol p, List<Object> items) {
         boolean hasLayer = false;
         items.add(p.getUserId());
-        for (int i = 0; i < ChatHistory.instance.historyTable.size(); ++i) {
-            Chat chat = ChatHistory.instance.chatAt(i);
+        for (int i = 0; i < historyTable.size(); ++i) {
+            Chat chat = chatAt(i);
             if (chat.getProtocol() == p) {
                 items.add(chat);
                 hasLayer = true;
@@ -66,17 +66,6 @@ public final class ChatHistory {
         for (int i = getTotal() - 1; 0 <= i; --i) {
             if (c == contactAt(i)) {
                 return chatAt(i);
-            }
-        }
-        return null;
-    }
-
-    public Chat getChatById(String id) {
-        int size = historyTable.size();
-        for (int i = 0; i < size; ++i) {
-            Chat chat = chatAt(i);
-            if (chat.getContact().getUserId() == id) {
-                return chat;
             }
         }
         return null;
@@ -157,16 +146,16 @@ public final class ChatHistory {
     }
 
     public void registerChat(Chat item) {
-        if (!contains(historyTable, item.getContact().getUserId())) {
+        if (!contains(historyTable, item.getContact())) {
             historyTable.add(item);
             item.getContact().updateChatState(item);
         }
     }
 
-    private static boolean contains(List<Chat> list, String id) {
+    private static boolean contains(List<Chat> list, Contact contact) {
         int size = list.size();
         for (int i = 0; i < size; ++i) {
-            if (list.get(i).getContact().getUserId() == id) {
+            if (list.get(i).getContact() == contact) {
                 return true;
             }
         }
@@ -202,7 +191,7 @@ public final class ChatHistory {
         HistoryStorage historyStorage = chat.getHistory();
         boolean hasHistory = historyStorage != null && historyStorage.getHistorySize() > 0;
         if (hasHistory) {
-            historyStorage.closeHistory();
+            historyStorage.removeHistory();
         }
     }
 
@@ -248,17 +237,6 @@ public final class ChatHistory {
                 p.addTempContact(contact);
             }
         }
-    }
-
-    public int getItemChat(Contact currentContact) {
-        int current = 0;
-        for (int i = 0; i < historyTable.size(); ++i) {
-            Chat chat = chatAt(i);
-            if (currentContact.getUserId() == chat.getContact().getUserId()) {
-                current = i;
-            }
-        }
-        return current;
     }
 
     public CharSequence getLastMessage(CharSequence defMess) {

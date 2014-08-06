@@ -1,6 +1,7 @@
 package ru.sawim.text;
 
 import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -87,7 +88,10 @@ public class TextLinkClick implements TextLinkClickListener {
                 Uri uri = Uri.parse(clickedString);
                 Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                 intent.putExtra(Browser.EXTRA_APPLICATION_ID, activity.getPackageName());
-                activity.startActivity(intent);
+                try {
+                    activity.startActivity(intent);
+                } catch (ActivityNotFoundException e) {
+                }
             }
         }
     }

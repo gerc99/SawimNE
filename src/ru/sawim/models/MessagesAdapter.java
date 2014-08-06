@@ -36,17 +36,6 @@ public class MessagesAdapter extends BaseAdapter {
         items = new ArrayList<MessData>();
     }
 
-    public void add(MessData messData) {
-        items.add(messData);
-        notifyDataSetChanged();
-    }
-
-    public void addAll(List<MessData> newMessageList) {
-        items.clear();
-        items.addAll(newMessageList);
-        notifyDataSetChanged();
-    }
-
     public List getItems() {
         return items;
     }
@@ -129,7 +118,6 @@ public class MessagesAdapter extends BaseAdapter {
 
         }
         if (mData.isMarked() && isMultiQuote) {
-            item.setTypeface(Typeface.DEFAULT_BOLD);
             item.setTextColor(Scheme.getColor(Scheme.THEME_ITEM_SELECTED));
         }
         item.setShowDivider(position == index);

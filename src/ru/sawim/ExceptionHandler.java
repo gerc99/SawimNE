@@ -12,6 +12,7 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Environment;
+import android.util.Log;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -22,12 +23,14 @@ import java.util.Date;
 
 public final class ExceptionHandler implements Thread.UncaughtExceptionHandler {
 
-    private final DateFormat formatter = new SimpleDateFormat("dd.MM.yy HH:mm");
-    private final DateFormat fileFormatter = new SimpleDateFormat("dd-MM-yy");
+    private static final DateFormat formatter = new SimpleDateFormat("dd.MM.yy HH:mm");
+    private static final DateFormat fileFormatter = new SimpleDateFormat("dd-MM-yy");
     private String versionName = "0";
     private int versionCode = 0;
     private final String stacktraceDir;
     private final Thread.UncaughtExceptionHandler previousHandler;
+
+    private static final String PATH = "/Android/data/%s/files/";
 
     private ExceptionHandler(Context context, boolean chained) {
         PackageManager mPackManager = context.getPackageManager();
@@ -43,7 +46,7 @@ public final class ExceptionHandler implements Thread.UncaughtExceptionHandler {
             previousHandler = Thread.getDefaultUncaughtExceptionHandler();
         else
             previousHandler = null;
-        stacktraceDir = String.format("/Android/data/%s/files/", context.getPackageName());
+        stacktraceDir = String.format(PATH, context.getPackageName());
     }
 
     public static ExceptionHandler inContext(Context context) {
@@ -78,6 +81,36 @@ public final class ExceptionHandler implements Thread.UncaughtExceptionHandler {
                 }
             }
         }
+    }
+
+    public static void writeLog(final String tag, final String log) {
+        Log.d(tag, log);
+        SawimApplication.getExecutor().execute(new Runnable() {
+            @Override
+            public void run() {
+                final Date dumpDate = new Date(System.currentTimeMillis());
+                File sd = Environment.getExternalStorageDirectory();
+                File stacktrace = new File(sd.getPath() + String.format(PATH, SawimApplication.getContext().getPackageName()),
+                        String.format("%s-logs-%s.txt",
+                                tag, fileFormatter.format(dumpDate)));
+                File dumpdir = stacktrace.getParentFile();
+                boolean dirReady = dumpdir.isDirectory() || dumpdir.mkdirs();
+                if (dirReady) {
+                    FileWriter writer = null;
+                    try {
+                        writer = new FileWriter(stacktrace, true);
+                        writer.write(log + "\n");
+                    } catch (IOException e) {
+                    } finally {
+                        try {
+                            if (writer != null)
+                                writer.close();
+                        } catch (IOException e) {
+                        }
+                    }
+                }
+            }
+        });
     }
 
     @Override

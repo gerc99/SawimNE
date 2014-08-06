@@ -97,6 +97,11 @@ public class PictureView extends DialogFragment {
 
     @Override
     public void onDestroy() {
+        if (htmlTask != null) {
+            htmlTask.cancel(false);
+            htmlTask = null;
+        }
+        super.onDestroy();
         if (webView != null) {
             webView.destroyDrawingCache();
             webView.stopLoading();
@@ -106,10 +111,5 @@ public class PictureView extends DialogFragment {
             webView.destroy();
             webView = null;
         }
-        if (htmlTask != null) {
-            htmlTask.cancel(false);
-            htmlTask = null;
-        }
-        super.onDestroy();
     }
 }

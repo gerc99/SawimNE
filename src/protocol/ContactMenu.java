@@ -117,7 +117,7 @@ public class ContactMenu implements TextBoxView.TextBoxListener {
                 break;
 
             case USER_MENU_USER_REMOVE:
-                HistoryStorage.getHistory(contact.getUserId()).removeHistory();
+                HistoryStorage.getHistory(protocol.getUserId(), contact.getUserId()).removeHistory();
                 protocol.removeContact(contact);
                 break;
 
@@ -146,7 +146,12 @@ public class ContactMenu implements TextBoxView.TextBoxListener {
                 break;
 
             case USER_MENU_WAKE:
-                protocol.sendMessage(contact, PlainMessage.CMD_WAKEUP, true);
+                SawimApplication.getExecutor().execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        protocol.sendMessage(contact, PlainMessage.CMD_WAKEUP, true);
+                    }
+                });
                 protocol.getChat(contact).activate();
                 break;
 

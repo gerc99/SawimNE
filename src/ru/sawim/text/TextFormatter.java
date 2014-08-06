@@ -2,8 +2,6 @@ package ru.sawim.text;
 
 import android.text.*;
 import android.text.style.ImageSpan;
-import protocol.Contact;
-import ru.sawim.Scheme;
 import ru.sawim.modules.Emotions;
 import ru.sawim.view.menu.JuickMenu;
 
@@ -41,26 +39,10 @@ public class TextFormatter {
         smilesPattern = compilePattern();
     }
 
-    public CharSequence parsedText(final Contact contact, final CharSequence text) {
-        final int linkColor = Scheme.getColor(Scheme.THEME_LINKS);
-        SpannableStringBuilder builder = new SpannableStringBuilder(text);
-        if (contact != null) {
-            String userId = contact.getProtocol().getUniqueUserId(contact);
-            if (userId.startsWith(JuickMenu.JUICK) || userId.startsWith(JuickMenu.JUBO)) {
-                getTextWithLinks(builder, linkColor, JuickMenu.MODE_JUICK);
-            } else if (userId.startsWith(JuickMenu.PSTO) || userId.startsWith(JuickMenu.POINT)) {
-                getTextWithLinks(builder, linkColor, JuickMenu.MODE_PSTO);
-            }
-        }
-        getTextWithLinks(builder, linkColor, -1);
-        detectEmotions(text, builder);
-        return builder;
-    }
-
     public CharSequence detectEmotions(CharSequence text, SpannableStringBuilder builder) {
         Matcher matcher = smilesPattern.matcher(text);
         while (matcher.find()) {
-            if (!isThereLinks(builder, new int[]{matcher.start(), matcher.end()})) {
+            if (!isThereLinks(builder, matcher.start(), matcher.end())) {
                 builder.setSpan(new ImageSpan(smiles.getSmileIcon(smiles.buildSmileyToId().get(matcher.group())).getImage()),
                         matcher.start(), matcher.end(),
                         Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);

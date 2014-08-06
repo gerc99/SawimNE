@@ -1,16 +1,13 @@
 package ru.sawim.widget.chat;
 
-import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
-import android.text.Layout;
-import android.text.Spannable;
-import android.text.StaticLayout;
-import android.text.TextPaint;
+import android.text.*;
+import android.text.style.BackgroundColorSpan;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
@@ -34,11 +31,11 @@ public class MessageItemView extends View {
     private static final TextPaint messageTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
     private static final TextPaint textPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
 
-    public static final byte BACKGROUND_NONE = 0;
-    public static final byte BACKGROUND_INCOMING = 1;
-    public static final byte BACKGROUND_OUTCOMING = 2;
+    public static final int BACKGROUND_NONE = 0;
+    public static final int BACKGROUND_INCOMING = 1;
+    public static final int BACKGROUND_OUTCOMING = 2;
 
-    private byte backgroundIndex = BACKGROUND_NONE;
+    private int backgroundIndex = BACKGROUND_NONE;
     private String msgTimeText;
     private String nickText;
     private int nickColor;
@@ -55,7 +52,7 @@ public class MessageItemView extends View {
     private int textY;
 
     private Layout layout;
-    private TextLinkClickListener listener;
+    private TextLinkClickListener textLinkClickListener;
     private boolean isSecondTap;
     private boolean isLongTap;
     private boolean isShowDivider = false;
@@ -64,7 +61,6 @@ public class MessageItemView extends View {
     public MessageItemView(Context context) {
         super(context);
         textPaint.setAntiAlias(true);
-        messageTextPaint.setAntiAlias(true);
     }
 
     public void setTextSize(int size) {
@@ -75,19 +71,23 @@ public class MessageItemView extends View {
         this.layout = layout;
     }
 
-    public static Layout buildLayout(CharSequence parsedText) {
+    public static Layout buildLayout(CharSequence parsedText, Typeface msgTextTypeface) {
         DisplayMetrics displayMetrics = SawimApplication.getContext().getResources().getDisplayMetrics();
-        messageTextPaint.linkColor = Scheme.getColor(Scheme.THEME_LINKS);
-        messageTextPaint.setTextSize(SawimApplication.getFontSize() * displayMetrics.scaledDensity);
-        return makeLayout(parsedText, displayMetrics.widthPixels - Util.dipToPixels(SawimApplication.getContext(), 38));
+        return makeLayout(parsedText, msgTextTypeface, displayMetrics.widthPixels - Util.dipToPixels(SawimApplication.getContext(), 38));
     }
 
-    private static StaticLayout makeLayout(CharSequence text, int specSize) {
-        if (specSize <= 0) return null;
+    private static Layout makeLayout(CharSequence parsedText, Typeface msgTextTypeface, int width) {
+        if (width <= 0) return null;
+        DisplayMetrics displayMetrics = SawimApplication.getContext().getResources().getDisplayMetrics();
+        messageTextPaint.setAntiAlias(true);
+        messageTextPaint.linkColor = Scheme.getColor(Scheme.THEME_LINKS);
+        messageTextPaint.setTextAlign(Paint.Align.LEFT);
+        messageTextPaint.setTextSize(SawimApplication.getFontSize() * displayMetrics.scaledDensity);
+        messageTextPaint.setTypeface(msgTextTypeface);
         try {
-            return new StaticLayout(text, messageTextPaint, specSize, Layout.Alignment.ALIGN_NORMAL, 1.0F, 0.0F, false);
+            return new StaticLayout(parsedText, messageTextPaint, width, Layout.Alignment.ALIGN_NORMAL, 1.0F, 0.0F, false);
         } catch (ArrayIndexOutOfBoundsException e) {
-            return new StaticLayout(text.toString(), messageTextPaint, specSize, Layout.Alignment.ALIGN_NORMAL, 1.0F, 0.0F, false);
+            return new StaticLayout(parsedText.toString(), messageTextPaint, width, Layout.Alignment.ALIGN_NORMAL, 1.0F, 0.0F, false);
         }
     }
 
@@ -98,8 +98,7 @@ public class MessageItemView extends View {
         int height = isAddTitleView ? measureHeight(heightMeasureSpec) : getPaddingTop() + getPaddingBottom();
         int layoutWidth = width - getPaddingRight() - getPaddingLeft();
         if (layout.getWidth() != layoutWidth) {
-            messageTextPaint.setTextSize((SawimApplication.getFontSize()) * getResources().getDisplayMetrics().scaledDensity);
-            layout = makeLayout(layout.getText(), layoutWidth);
+            layout = makeLayout(layout.getText(), msgTextTypeface, layoutWidth);
         }
         titleHeight = isAddTitleView ? height - getPaddingTop() : getPaddingTop();
         if (layout != null)
@@ -137,8 +136,8 @@ public class MessageItemView extends View {
         textY = getPaddingTop() - (int) messageTextPaint.ascent();
     }
 
-    public void setBackgroundIndex(byte backgroundIndex) {
-        this.backgroundIndex = backgroundIndex;
+    public void setBackgroundIndex(int index) {
+        this.backgroundIndex = index;
     }
 
     public void setNick(int nickColor, int nickSize, Typeface nickTypeface, String nickText) {
@@ -257,11 +256,12 @@ public class MessageItemView extends View {
         return low;
     }
 
+    private static final BackgroundColorSpan linkHighlightColor = new BackgroundColorSpan(Scheme.getColor(Scheme.THEME_LINKS_HIGHLIGHT));
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (layout.getText() == null) return super.onTouchEvent(event);
         if (layout.getText() instanceof Spannable) {
-            Spannable buffer = (Spannable) layout.getText();
+            final Spannable buffer = (Spannable) layout.getText();
             int action = event.getAction();
             int x = (int) event.getX();
             int y = (int) event.getY();
@@ -276,29 +276,34 @@ public class MessageItemView extends View {
                 isSecondTap = true;
             }
 
+            if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_MOVE || action == MotionEvent.ACTION_CANCEL) {
+                buffer.removeSpan(linkHighlightColor);
+                repaint();
+            }
             if (urlSpans.length != 0) {
                 Runnable longPressed = new Runnable() {
                     public void run() {
-                        if (listener != null && !isSecondTap) {
+                        if (textLinkClickListener != null && !isSecondTap) {
                             isLongTap = true;
-                            listener.onTextLinkClick(MessageItemView.this, buildUrl(urlSpans), true);
+                            textLinkClickListener.onTextLinkClick(MessageItemView.this, buildUrl(urlSpans), true);
                         }
                     }
                 };
                 if (action == MotionEvent.ACTION_DOWN) {
                     isSecondTap = false;
                     isLongTap = false;
+                    buffer.setSpan(linkHighlightColor,
+                            buffer.getSpanStart(urlSpans[0]),
+                            buffer.getSpanEnd(urlSpans[0]), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    repaint();
                     removeCallbacks(longPressed);
                     postDelayed(longPressed, ViewConfiguration.getLongPressTimeout());
                 }
                 if (action == MotionEvent.ACTION_UP) {
                     if (!isLongTap) {
                         isSecondTap = true;
-                        try {
-                            if (listener != null)
-                                listener.onTextLinkClick(MessageItemView.this, buildUrl(urlSpans), false);
-                        } catch (ActivityNotFoundException e) {
-                        }
+                        if (textLinkClickListener != null)
+                            textLinkClickListener.onTextLinkClick(MessageItemView.this, buildUrl(urlSpans), false);
                     } else {
                         removeCallbacks(longPressed);
                     }
@@ -318,7 +323,7 @@ public class MessageItemView extends View {
         return link;
     }
 
-    public void setOnTextLinkClickListener(TextLinkClickListener onTextLinkClickListener) {
-        listener = onTextLinkClickListener;
+    public void setOnTextLinkClickListener(TextLinkClickListener listener) {
+        textLinkClickListener = listener;
     }
 }

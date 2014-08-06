@@ -1,5 +1,6 @@
 package ru.sawim.chat;
 
+import android.graphics.Typeface;
 import android.text.Layout;
 import android.text.SpannableStringBuilder;
 import protocol.Contact;
@@ -7,6 +8,7 @@ import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
 import ru.sawim.chat.message.Message;
 import ru.sawim.text.TextFormatter;
+import ru.sawim.view.menu.JuickMenu;
 import ru.sawim.widget.chat.MessageItemView;
 
 public final class MessData {
@@ -35,25 +37,30 @@ public final class MessData {
         boolean today = (SawimApplication.getCurrentGmtTime() - 24 * 60 * 60 < time);
         strTime = ru.sawim.comm.Util.getLocalDateString(time, today);
 
-        CharSequence parsedText = TextFormatter.getInstance().parsedText(currentContact, text);
-        if (isMe()) {
-            parsedText = new SpannableStringBuilder().append("* ").append(nick).append(" ").append(parsedText);
-        } else if (isPresence()) {
-            parsedText = new SpannableStringBuilder().append(strTime).append(" ").append(nick).append(parsedText);
-        }
-        layout = MessageItemView.buildLayout(parsedText);
+        CharSequence parsedText = parsedText(currentContact, text);
+        layout = MessageItemView.buildLayout(parsedText, isHighLight ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT);
     }
 
-    public MessData(Contact currentContact, long time, String text, String nick, short flags) {
-        isHighLight = false;
-        this.nick = nick;
-        this.time = time;
-        this.rowData = flags;
-        boolean today = (SawimApplication.getCurrentGmtTime() - 24 * 60 * 60 < time);
-        strTime = ru.sawim.comm.Util.getLocalDateString(time, today);
-
-        CharSequence parsedText = TextFormatter.getInstance().parsedText(currentContact, text);
-        layout = MessageItemView.buildLayout(parsedText);
+    public CharSequence parsedText(Contact contact, CharSequence text) {
+        final int linkColor = Scheme.getColor(Scheme.THEME_LINKS);
+        SpannableStringBuilder builder = new SpannableStringBuilder();
+        if (isMe()) {
+            builder.append("* ").append(nick).append(" ");
+        } else if (isPresence()) {
+            builder.append(strTime).append(" ").append(nick);
+        }
+        builder.append(text);
+        if (contact != null) {
+            String userId = contact.getProtocol().getUniqueUserId(contact);
+            if (userId.startsWith(JuickMenu.JUICK) || userId.startsWith(JuickMenu.JUBO)) {
+                TextFormatter.getInstance().getTextWithLinks(builder, linkColor, JuickMenu.MODE_JUICK);
+            } else if (userId.startsWith(JuickMenu.PSTO) || userId.startsWith(JuickMenu.POINT)) {
+                TextFormatter.getInstance().getTextWithLinks(builder, linkColor, JuickMenu.MODE_PSTO);
+            }
+        }
+        TextFormatter.getInstance().getTextWithLinks(builder, linkColor, -1);
+        TextFormatter.getInstance().detectEmotions(text, builder);
+        return builder;
     }
 
     public long getTime() {
