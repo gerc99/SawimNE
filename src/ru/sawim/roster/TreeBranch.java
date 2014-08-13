@@ -1,7 +1,9 @@
 
 package ru.sawim.roster;
 
-public abstract class TreeBranch implements TreeNode {
+import ru.sawim.comm.Sortable;
+
+public abstract class TreeBranch implements TreeNode, Sortable {
 
     public TreeBranch() {
     }

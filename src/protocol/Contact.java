@@ -8,6 +8,7 @@ import ru.sawim.Scheme;
 import ru.sawim.activities.BaseActivity;
 import ru.sawim.chat.Chat;
 import ru.sawim.comm.JLocale;
+import ru.sawim.comm.Sortable;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.icons.Icon;
 import ru.sawim.icons.ImageList;
@@ -16,7 +17,7 @@ import ru.sawim.roster.TreeNode;
 import ru.sawim.view.menu.MyMenu;
 
 
-abstract public class Contact implements TreeNode {
+abstract public class Contact implements TreeNode, Sortable {
     public static final ImageList serverListsIcons = ImageList.createImageList("/serverlists.png");
 
     protected String userId;

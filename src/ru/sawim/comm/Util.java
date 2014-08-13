@@ -4,8 +4,6 @@ import android.util.Base64;
 import ru.sawim.Options;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
-import ru.sawim.chat.Chat;
-import ru.sawim.roster.TreeNode;
 
 import java.io.ByteArrayOutputStream;
 import java.util.*;
@@ -720,20 +718,20 @@ public class Util {
         return stringArray;
     }
 
-    public static int compareNodes(TreeNode node1, TreeNode node2) {
+    public static int compareNodes(Sortable node1, Sortable node2) {
         int result = node1.getNodeWeight() - node2.getNodeWeight();
         if (0 == result) {
-            result = node1.getText().compareTo(node2.getText());
+            result = node1.getText().toLowerCase().compareTo(node2.getText().toLowerCase());
         }
         return result;
     }
 
-    public static void sort(Vector<TreeNode> subnodes) {
+    public static void sort(Vector subnodes) {
         for (int i = 1; i < subnodes.size(); ++i) {
-            TreeNode currNode = subnodes.elementAt(i);
+            Sortable currNode = (Sortable) subnodes.elementAt(i);
             int j = i - 1;
             for (; j >= 0; --j) {
-                TreeNode itemJ = subnodes.elementAt(j);
+                Sortable itemJ = (Sortable) subnodes.elementAt(j);
                 if (compareNodes(itemJ, currNode) <= 0) {
                     break;
                 }
@@ -741,23 +739,6 @@ public class Util {
             }
             if (j + 1 != i) {
                 subnodes.setElementAt(currNode, j + 1);
-            }
-        }
-    }
-
-    public static void sortChats(List<Chat> subnodes) {
-        for (int i = 1; i < subnodes.size(); ++i) {
-            Chat currNode = subnodes.get(i);
-            int j = i - 1;
-            for (; j >= 0; --j) {
-                Chat itemJ = subnodes.get(j);
-                if (compareNodes(itemJ.getContact(), currNode.getContact()) <= 0) {
-                    break;
-                }
-                subnodes.set(j + 1, itemJ);
-            }
-            if (j + 1 != i) {
-                subnodes.set(j + 1, currNode);
             }
         }
     }
