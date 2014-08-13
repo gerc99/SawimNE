@@ -12,10 +12,16 @@ task wrapper(type: Wrapper) {
     gradleVersion = '1.11'
 }
 
+repositories {
+    maven { url "http://dl.bintray.com/populov/maven" }
+    mavenCentral()
+}
+
 def mtmProject = project(':deps:mtm')
 
 dependencies {
     compile mtmProject
+    compile 'com.viewpagerindicator:library:2.4.1'
     compile 'com.android.support:support-v4:19+'
     compile 'com.android.support:appcompat-v7:19+'
 }

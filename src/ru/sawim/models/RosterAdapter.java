@@ -295,9 +295,14 @@ public class RosterAdapter extends BaseAdapter {
                     RosterItemView rosterItemView = new RosterItemView(context);
                     MyImageButton imageButton = new MyImageButton(context);
                     ProgressBar progressBar = new ProgressBar(context, null, android.R.attr.progressBarStyleInverse);
+                    LinearLayout.LayoutParams progressLinearLayout = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+                    progressLinearLayout.gravity = Gravity.RIGHT;
+                    progressLinearLayout.weight = 4;
+                    progressBar.setLayoutParams(progressLinearLayout);
                     progressBar.setMax(100);
                     LinearLayout.LayoutParams buttonLinearLayout = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
                     buttonLinearLayout.gravity = Gravity.RIGHT;
+                    buttonLinearLayout.weight = 4;
                     imageButton.setLayoutParams(buttonLinearLayout);
                     LinearLayout.LayoutParams rosterLinearLayout = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
                     rosterLinearLayout.gravity = Gravity.LEFT;
