@@ -13,6 +13,7 @@ import ru.sawim.R;
 import ru.sawim.SawimResources;
 import ru.sawim.Scheme;
 import ru.sawim.comm.JLocale;
+import ru.sawim.comm.Util;
 import ru.sawim.icons.Icon;
 import ru.sawim.widget.roster.RosterItemView;
 
@@ -44,6 +45,7 @@ public class MucUsersAdapter extends BaseAdapter {
 
     public void update() {
         items.clear();
+        Util.sort(conference.subcontacts);
         final int moderators = getContactCount(XmppServiceContact.ROLE_MODERATOR);
         final int participants = getContactCount(XmppServiceContact.ROLE_PARTICIPANT);
         final int visitors = getContactCount(XmppServiceContact.ROLE_VISITOR);

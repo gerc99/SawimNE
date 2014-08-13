@@ -6,10 +6,7 @@ import protocol.*;
 import ru.sawim.Options;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
-import ru.sawim.comm.Config;
-import ru.sawim.comm.JLocale;
-import ru.sawim.comm.StringConvertor;
-import ru.sawim.comm.Util;
+import ru.sawim.comm.*;
 import ru.sawim.view.menu.MyMenu;
 
 import java.util.Vector;
@@ -156,7 +153,7 @@ public class XmppContact extends Contact {
         return StringConvertor.notNull((null == c) ? null : c.realJid);
     }
 
-    public static class SubContact {
+    public static class SubContact implements Sortable {
         public String resource;
         public String statusText;
         public String roleText;
@@ -167,6 +164,16 @@ public class XmppContact extends Contact {
         public byte status;
         public byte priority;
         public byte priorityA;
+
+        @Override
+        public String getText() {
+            return resource;
+        }
+
+        @Override
+        public int getNodeWeight() {
+            return 0;
+        }
     }
 
     public Vector<SubContact> subcontacts = new Vector<SubContact>();

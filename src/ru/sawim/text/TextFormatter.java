@@ -39,8 +39,8 @@ public class TextFormatter {
         smilesPattern = compilePattern();
     }
 
-    public CharSequence detectEmotions(CharSequence text, SpannableStringBuilder builder) {
-        Matcher matcher = smilesPattern.matcher(text);
+    public CharSequence detectEmotions(SpannableStringBuilder builder) {
+        Matcher matcher = smilesPattern.matcher(builder);
         while (matcher.find()) {
             if (!isThereLinks(builder, matcher.start(), matcher.end())) {
                 builder.setSpan(new ImageSpan(smiles.getSmileIcon(smiles.buildSmileyToId().get(matcher.group())).getImage()),
@@ -96,50 +96,30 @@ public class TextFormatter {
         return false;
     }
 
-    public void getTextWithLinks(final SpannableStringBuilder ssb, final int linkColor, final int mode) {
-        ArrayList<Hyperlink> msgList = new ArrayList<Hyperlink>();
-        ArrayList<Hyperlink> linkList = new ArrayList<Hyperlink>();
+    public void getTextWithLinks(final SpannableStringBuilder ssb, final int mode) {
         switch (mode) {
             case JuickMenu.MODE_JUICK:
-                addLinks(msgList, ssb, juickPattern);
-                addLinks(msgList, ssb, nickPattern);
+                addLinks(ssb, juickPattern);
+                addLinks(ssb, nickPattern);
                 break;
             case JuickMenu.MODE_PSTO:
-                addLinks(msgList, ssb, pstoPattern);
-                addLinks(msgList, ssb, nickPattern);
+                addLinks(ssb, pstoPattern);
+                addLinks(ssb, nickPattern);
                 break;
             default:
-                addLinks(linkList, ssb, urlPattern);
+                addLinks(ssb, urlPattern);
                 break;
-        }
-        for (Hyperlink link : msgList) {
-            ssb.setSpan(link.span, link.start, link.end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            //ssb.setSpan(new ForegroundColorSpan(linkColor), link.start, link.end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        }
-        for (Hyperlink link : linkList) {
-            ssb.setSpan(link.span, link.start, link.end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            //ssb.setSpan(new ForegroundColorSpan(linkColor), link.start, link.end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
     }
 
-    private final void addLinks(ArrayList<Hyperlink> links, Spannable s, Pattern pattern) {
+    private void addLinks(Spannable s, Pattern pattern) {
         Matcher m = pattern.matcher(s);
         while (m.find()) {
             int start = m.start();
             int end = m.end();
-            Hyperlink spec = new Hyperlink();
-            spec.textSpan = s.subSequence(start, end).toString();
-            spec.span = new InternalURLSpan(spec.textSpan.toString());
-            spec.start = start;
-            spec.end = end;
-            links.add(spec);
+            String textSpan = s.subSequence(start, end).toString();
+            InternalURLSpan span = new InternalURLSpan(textSpan);
+            s.setSpan(span, start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
-    }
-
-    class Hyperlink {
-        String textSpan;
-        InternalURLSpan span;
-        int start;
-        int end;
     }
 }

@@ -223,16 +223,11 @@ public class SawimApplication extends Application {
     }
 
     public void quit(boolean isForceClose) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                int count = RosterHelper.getInstance().getProtocolCount();
-                for (int i = 0; i < count; ++i) {
-                    Protocol p = RosterHelper.getInstance().getProtocol(i);
-                    p.disconnect(true);
-                }
-            }
-        }).start();
+        int count = RosterHelper.getInstance().getProtocolCount();
+        for (int i = 0; i < count; ++i) {
+            Protocol p = RosterHelper.getInstance().getProtocol(i);
+            p.disconnect(true);
+        }
         RosterHelper.getInstance().safeSave();
         ChatHistory.instance.saveUnreadMessages();
         AutoAbsence.getInstance().online();

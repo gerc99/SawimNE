@@ -15,16 +15,18 @@ import ru.sawim.modules.history.HistoryStorage;
 import ru.sawim.roster.RosterHelper;
 
 public final class Chat {
+
+    public static final String ADDRESS = ", ";
+
     private Protocol protocol;
     private Contact contact;
     private boolean writable = true;
     private HistoryStorage history;
-    public static final String ADDRESS = ", ";
     private boolean visibleChat;
 
     public String message;
     public int firstVisiblePosition;
-    public int currentPosition = -1;
+    public int currentPosition = -2;
     public int offset;
 
     public Chat(Protocol p, Contact item) {
@@ -93,8 +95,7 @@ public final class Chat {
     }
 
     public void sendMessage(String message) {
-        if (getMessCount() <= 1)
-            ChatHistory.instance.registerChat(this);
+        ChatHistory.instance.registerChat(this);
         if (!StringConvertor.isEmpty(message)) {
             protocol.sendMessage(contact, message, true);
         }
@@ -159,13 +160,6 @@ public final class Chat {
             history = HistoryStorage.getHistory(protocol.getUserId(), contact.getUserId());
         }
         return history;
-    }
-
-    public int getMessCount() {
-        if (history != null) {
-            return history.getHistorySize();
-        }
-        return 0;
     }
 
     public int typeNewMessageIcon = Message.ICON_NONE;
@@ -241,7 +235,7 @@ public final class Chat {
     }
 
     public void addTextToHistory(MessData md) {
-        if (getHistory() == null || null == md) {
+        if (null == md) {
             return;
         }
         getHistory().addText(md);
@@ -307,6 +301,7 @@ public final class Chat {
     }
 
     private void addMessage(MessData mData) {
+        ChatHistory.instance.registerChat(this);
         if (RosterHelper.getInstance().getUpdateChatListener() != null) {
             RosterHelper.getInstance().getUpdateChatListener().addMessage(contact, mData);
             RosterHelper.getInstance().getUpdateChatListener().updateMessages(contact);
@@ -314,13 +309,12 @@ public final class Chat {
     }
 
     public void addPresence(SystemNotice message) {
-        if (getMessCount() <= 1)
-            ChatHistory.instance.registerChat(this);
         String messageText = message.getProcessedText();
         MessData mData = new MessData(contact, message.getNewDate(), messageText, message.getName(), MessData.PRESENCE, false);
         addMessage(mData);
         addTextToHistory(mData);
         if (!isVisibleChat()) {
+            otherMessageCounter = inc(otherMessageCounter);
             contact.updateChatState(this);
             if (RosterHelper.getInstance().getUpdateChatListener() != null) {
                 RosterHelper.getInstance().getUpdateChatListener().updateChat();
@@ -329,8 +323,6 @@ public final class Chat {
     }
 
     public void addMessage(Message message, boolean isPlain, boolean isSystem, boolean isHighlight) {
-        if (getMessCount() <= 1)
-            ChatHistory.instance.registerChat(this);
         boolean inc = !isVisibleChat();
         String from = getFrom(message);
         if (isPlain) {
@@ -363,8 +355,6 @@ public final class Chat {
 
     public void addMyMessage(PlainMessage message) {
         String from = getFrom(message);
-        if (getMessCount() <= 1)
-            ChatHistory.instance.registerChat(this);
         resetUnreadMessages();
         addTextToForm(message, from, false, false);
         if (RosterHelper.getInstance().getUpdateChatListener() != null) {

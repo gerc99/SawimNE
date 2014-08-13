@@ -1644,16 +1644,14 @@ public final class XmppConnection extends ClientConnection {
                 c.setActiveResource(fromRes);
             }
         }
-        if (s &&subject == null && isConference && !isOnlineMessage) {
-            s=false;
-            if (HistoryStorage.hasMessage(getXmpp().getChat(c), message, MESSAGE_COUNT_AFTER_CONNECT)) {
+        if (subject == null && isConference && !isOnlineMessage) {
+            if (HistoryStorage.hasLastMessage(getXmpp().getChat(c), message)) {
                 return;
             }
         }
         if (message != null)
             getXmpp().addMessage(message, S_HEADLINE.equals(type));
     }
-    boolean s=true;
 
     private void parseBlogMessage(String to, XmlNode msg, String text, String botNick) {
         text = StringConvertor.notNull(text);
@@ -2270,11 +2268,8 @@ public final class XmppConnection extends ClientConnection {
             if (!StringConvertor.isEmpty(password)) {
                 xNode += "<password>" + Util.xmlEscape(password) + "</password>";
             }
-            long time = 0;
             HistoryStorage historyStorage = getXmpp().getChat(conf).getHistory();
-            if (historyStorage != null) {
-                time = historyStorage.getLastMessageTime();
-            }
+            long time = historyStorage.getLastMessageTime();
             if (0 != time)
                 xNode += "<history maxstanzas='"
                         + MESSAGE_COUNT_AFTER_CONNECT

@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public final class Clipboard {
 
-    private static void insertQuotingChars(StringBuffer out, CharSequence text, boolean isSubstring, char qChars) {
+    public static void insertQuotingChars(StringBuilder out, CharSequence text, boolean isSubstring, char qChars) {
         int size = text.length();
         //int quoteMaxLen = 100;
         //boolean isSubstr = size > quoteMaxLen && isSubstring;
@@ -26,14 +26,14 @@ public final class Clipboard {
     }
 
     public static String serialize(boolean isSubstring, boolean incoming, String header, CharSequence text) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append("[ ").append(header).append(" ]").append('\n');
         insertQuotingChars(sb, text, isSubstring, incoming ? '\u00bb' : '\u00ab');
         return sb.toString();
     }
 
     public static String serialize(boolean isSubstring, boolean incoming, String header1, String header2, CharSequence text) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append("[ ").append(header1).append(" ").append(header2).append(" ]").append('\n');
         insertQuotingChars(sb, text, isSubstring, incoming ? '\u00bb' : '\u00ab');
         return sb.toString();

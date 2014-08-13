@@ -185,16 +185,17 @@ public class MessageItemView extends View {
 
     @Override
     public void draw(Canvas canvas) {
-        int stopX = getWidth() - getPaddingRight();
+        int width = getWidth();
+        int stopX = width - getPaddingRight();
         if (isShowDivider) {
             textPaint.setColor(Scheme.getColor(Scheme.THEME_TEXT));
             canvas.drawLine(getPaddingLeft(), getScrollY() - 2, stopX, getScrollY() - 2, textPaint);
         }
         if (backgroundIndex == BACKGROUND_INCOMING) {
-            setDrawableBounds(SawimResources.backgroundDrawableIn, 0, getPaddingTop() / 2, getWidth() - getPaddingRight() / 2, getHeight() - getPaddingBottom() / 2);
+            setDrawableBounds(SawimResources.backgroundDrawableIn, 0, getPaddingTop() / 2, width - getPaddingRight() / 2, getHeight() - getPaddingBottom() / 2);
             SawimResources.backgroundDrawableIn.draw(canvas);
         } else if (backgroundIndex == BACKGROUND_OUTCOMING) {
-            setDrawableBounds(SawimResources.backgroundDrawableOut, getPaddingLeft() - getPaddingLeft() / 2, getPaddingTop() / 2, getWidth() - getPaddingLeft() + getPaddingRight() / 2, getHeight() - getPaddingBottom() / 2);
+            setDrawableBounds(SawimResources.backgroundDrawableOut, getPaddingLeft() / 2, getPaddingTop() / 2, width - getPaddingRight() / 2, getHeight() - getPaddingBottom() / 2);
             SawimResources.backgroundDrawableOut.draw(canvas);
         }
 

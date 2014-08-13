@@ -76,8 +76,8 @@ public class VirtualListItem {
     public CharSequence getDescStr() {
         if (descStr == null) return null;
         SpannableStringBuilder builder = new SpannableStringBuilder(descStr);
-        TextFormatter.getInstance().getTextWithLinks(builder, Scheme.getColor(Scheme.THEME_LINKS), -1);
-        TextFormatter.getInstance().detectEmotions(descStr, builder);
+        TextFormatter.getInstance().getTextWithLinks(builder, -1);
+        TextFormatter.getInstance().detectEmotions(builder);
         return builder;
     }
 

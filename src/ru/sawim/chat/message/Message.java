@@ -67,8 +67,7 @@ public abstract class Message {
             Contact contact = protocol.getItemByUID(contactId);
             mData.setIconIndex(state);
             HistoryStorage historyStorage = protocol.getChat(contact).getHistory();
-            if (historyStorage != null)
-                historyStorage.updateText(mData);
+            historyStorage.updateText(mData);
             if (RosterHelper.getInstance().getUpdateChatListener() != null)
                 RosterHelper.getInstance().getUpdateChatListener().updateMessages(contact);
         }

@@ -19,3 +19,4 @@ isSystemBackground = false
 15 = 0x0099CB
 16 = 0x77C3D4
 17 = 0x303133
+18 = 0x669900

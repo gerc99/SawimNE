@@ -6,8 +6,8 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
-import android.util.Log;
 import ru.sawim.activities.SawimActivity;
 import ru.sawim.chat.ChatHistory;
 import ru.sawim.comm.JLocale;
@@ -61,7 +61,7 @@ public class SawimNotification {
                     long[] pattern = {0,3 * dat, dat, dat};
                     notification.setVibrate(pattern);
                 }
-                String ringtone = Options.getString(Options.OPTION_MESS_RINGTONE, null);
+                String ringtone = Options.getString(Options.OPTION_MESS_RINGTONE, Settings.System.DEFAULT_NOTIFICATION_URI.toString());
                 if (ringtone != null) {
                     notification.setSound(Uri.parse(ringtone));
                 }

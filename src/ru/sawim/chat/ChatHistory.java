@@ -30,7 +30,20 @@ public final class ChatHistory {
     }
 
     public void sort() {
-        Util.sortChats(historyTable);
+        for (int i = 1; i < historyTable.size(); ++i) {
+            Chat currNode = historyTable.get(i);
+            int j = i - 1;
+            for (; j >= 0; --j) {
+                Chat itemJ = historyTable.get(j);
+                if (Util.compareNodes(itemJ.getContact(), currNode.getContact()) <= 0) {
+                    break;
+                }
+                historyTable.set(j + 1, itemJ);
+            }
+            if (j + 1 != i) {
+                historyTable.set(j + 1, currNode);
+            }
+        }
     }
 
     public void addLayerToListOfChats(Protocol p, List<Object> items) {
@@ -189,8 +202,7 @@ public final class ChatHistory {
 
     private void closeHistory(Chat chat) {
         HistoryStorage historyStorage = chat.getHistory();
-        boolean hasHistory = historyStorage != null && historyStorage.getHistorySize() > 0;
-        if (hasHistory) {
+        if (!Options.getBoolean(Options.OPTION_HISTORY)) {
             historyStorage.removeHistory();
         }
     }
@@ -243,9 +255,8 @@ public final class ChatHistory {
         Chat current = chatAt(getPreferredItem());
         if (current != null) {
             HistoryStorage historyStorage = current.getHistory();
-            boolean hasHistory = historyStorage != null && historyStorage.getHistorySize() > 0;
-            if (hasHistory) {
-                MessData md = historyStorage.getLastMessage(current);
+            MessData md = historyStorage.getLastMessage(current);
+            if (md != null) {
                 return md.getText();
             }
         }
@@ -256,9 +267,8 @@ public final class ChatHistory {
         Chat current = chatAt(getPreferredItem());
         if (current != null) {
             HistoryStorage historyStorage = current.getHistory();
-            boolean hasHistory = historyStorage != null && historyStorage.getHistorySize() > 0;
-            if (hasHistory) {
-                MessData md = historyStorage.getLastMessage(current);
+            MessData md = historyStorage.getLastMessage(current);
+            if (md != null) {
                 return md.getNick();
             }
         }
@@ -297,14 +307,12 @@ public final class ChatHistory {
             for (int i = getTotal() - 1; 0 <= i; --i) {
                 Chat chat = chatAt(i);
                 int unreadMessageCount = chat.getUnreadMessageCount();
-                if (unreadMessageCount == 0 && !Options.getBoolean(Options.OPTION_HISTORY)) {
-                    HistoryStorage historyStorage = chat.getHistory();
-                    boolean hasHistory = historyStorage != null && historyStorage.getHistorySize() > 0;
-                    if (hasHistory) {
+                if (unreadMessageCount == 0) {
+                    if (!Options.getBoolean(Options.OPTION_HISTORY)) {
+                        HistoryStorage historyStorage = chat.getHistory();
                         historyStorage.removeHistory();
                     }
-                }
-                if (unreadMessageCount > 0) {
+                } else {
                     ByteArrayOutputStream out = new ByteArrayOutputStream();
                     DataOutputStream o = new DataOutputStream(out);
                     o.writeUTF(chat.getProtocol().getUserId());

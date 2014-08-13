@@ -59,6 +59,7 @@ public class MessagesAdapter extends BaseAdapter {
 
     @Override
     public MessData getItem(int i) {
+        if (items.size() == 0) return null;
         return items.get(i);
     }
 
