@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -17,6 +16,7 @@ import ru.sawim.chat.ChatHistory;
 import ru.sawim.io.DatabaseHelper;
 import ru.sawim.io.FileSystem;
 import ru.sawim.io.HomeDirectory;
+import ru.sawim.io.StorageConvertor;
 import ru.sawim.modules.Answerer;
 import ru.sawim.modules.AutoAbsence;
 import ru.sawim.modules.DebugLog;
@@ -64,7 +64,6 @@ public class SawimApplication extends Application {
 
     public static SawimApplication instance;
     private static DatabaseHelper dbHelper;
-    private static SQLiteDatabase db;
     private final SawimServiceConnection serviceConnection = new SawimServiceConnection();
     private final NetworkStateReceiver networkStateReceiver = new NetworkStateReceiver();
     public boolean isBindService = false;
@@ -86,10 +85,6 @@ public class SawimApplication extends Application {
         return dbHelper;
     }
 
-    public static SQLiteDatabase getDb() {
-        return db;
-    }
-
     @Override
     public void onCreate() {
         instance = this;
@@ -98,7 +93,6 @@ public class SawimApplication extends Application {
         Thread.setDefaultUncaughtExceptionHandler(ExceptionHandler.inContext(getContext()));
         super.onCreate();
         dbHelper = new DatabaseHelper(getApplicationContext());
-        db = dbHelper.getWritableDatabase();
         uiHandler = new Handler(Looper.getMainLooper());
 
         startService();
@@ -133,9 +127,10 @@ public class SawimApplication extends Application {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                StorageConvertor.historyConvert();
                 ChatHistory.instance.loadUnreadMessages();
             }
-        },"loadUnreadMessage").start();
+        },"loadMessage").start();
         if (RosterHelper.getInstance() != null) {
             RosterHelper.getInstance().autoConnect();
         }
