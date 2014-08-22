@@ -22,6 +22,7 @@ public class SeekBarPreference extends Preference implements SeekBar.OnSeekBarCh
     private SeekBar seekbar;
     private int progress;
     private int max = 100;
+    private int min;
 
     private TextView title;
     private TextView summary;
@@ -157,6 +158,10 @@ public class SeekBarPreference extends Preference implements SeekBar.OnSeekBarCh
         return progress;
     }
 
+    public void setMin(int min) {
+        this.min = min;
+    }
+
     /**
      * Set the max value for the <code>SeekBar</code> object.
      *
@@ -205,6 +210,9 @@ public class SeekBarPreference extends Preference implements SeekBar.OnSeekBarCh
      * Set the progress of the preference.
      */
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        if (progress <= min) {
+            progress = min;
+        }
         discard = !callChangeListener(progress);
     }
 

@@ -1,13 +1,11 @@
 package ru.sawim;
 
-import android.content.Context;
 import android.content.SharedPreferences;
-import android.provider.Settings;
+import android.preference.PreferenceManager;
 import protocol.Profile;
 import protocol.StatusInfo;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
-import ru.sawim.forms.PrivateStatusForm;
 import ru.sawim.io.Storage;
 import ru.sawim.modules.DebugLog;
 import ru.sawim.roster.RosterHelper;
@@ -15,7 +13,6 @@ import ru.sawim.roster.RosterHelper;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.TimeZone;
 
 public class Options {
 
@@ -29,9 +26,7 @@ public class Options {
     public static final String OPTION_CURRENT_PAGE = "current_page";
     public static final String OPTION_VIBRATION = "vibration";
     public static final String OPTION_COLOR_SCHEME = "color_scheme";
-    public static final String OPTION_VISIBILITY_ID = "visibility_id";
     static final String OPTIONS_CURR_ACCOUNT = "current_account";
-    public static final String OPTION_GMT_OFFSET = "gmt_offset";
     public static final String OPTION_PRIVATE_STATUS = "private_status";
     public static final String OPTION_AA_TIME = "aa_time";
     public static final String OPTION_FONT_SCHEME = "font_scheme";
@@ -42,67 +37,26 @@ public class Options {
     public static final String OPTION_USER_GROUPS = "user_groups";
     public static final String OPTION_HISTORY = "history";
     public static final String OPTION_WAKE_LOCK = "wake_lock";
-    public static final String OPTION_BRING_UP = "bring_up";
     public static final String OPTION_ANTISPAM_ENABLE = "antispam_enable";
     public static final String OPTION_HIDE_ICONS_CLIENTS = "hide_icons_clients";
     public static final String OPTION_SORT_UP_WITH_MSG = "sort_up_with_msg";
     public static final String OPTION_ALARM = "alarm";
     public static final String OPTION_SHOW_STATUS_LINE = "show_status_line";
-    public static final String OPTION_NOTIFY_IN_AWAY = "notify_in_away";
-    public static final String OPTION_BLOG_NOTIFY = "blog_notify";
     public static final String OPTION_SIMPLE_INPUT = "simple_input";
 
-    private static final String PREFS_NAME = "SAWIM:Settings";
     private static SharedPreferences preferences;
     private static SharedPreferences.Editor editor;
 
     private static final List<Profile> listOfProfiles = new ArrayList<Profile>();
 
     public static void init() {
-        preferences = SawimApplication.getContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        PreferenceManager.setDefaultValues(SawimApplication.getContext(), R.xml.preference, true);
+        preferences = PreferenceManager.getDefaultSharedPreferences(SawimApplication.getContext());
         editor = preferences.edit();
-        if (preferences.getAll().isEmpty()) {
-            initAccounts();
-            setDefaults();
-        }
     }
 
     public static synchronized void safeSave() {
         editor.commit();
-    }
-
-    private static void initAccounts() {
-        setInt(Options.OPTIONS_CURR_ACCOUNT, 0);
-    }
-
-    private static void setDefaults() {
-        setInt(Options.OPTION_CURRENT_PAGE, 0);
-        setBoolean(Options.OPTION_WAKE_LOCK, false);
-        setInt(Options.OPTION_CL_SORT_BY, 0);
-        setBoolean(Options.OPTION_SORT_UP_WITH_MSG, true);
-        setBoolean(Options.OPTION_CL_HIDE_OFFLINE, false);
-        setBoolean(Options.OPTION_HIDE_ICONS_CLIENTS, true);
-        setBoolean(Options.OPTION_HIDE_KEYBOARD, true);
-        setString(Options.OPTION_MESS_RINGTONE, Settings.System.DEFAULT_NOTIFICATION_URI.toString());
-        setBoolean(Options.OPTION_BLOG_NOTIFY, true);
-        setBoolean(Options.OPTION_NOTIFY_IN_AWAY, true);
-        setString(Options.OPTION_ANTISPAM_KEYWORDS, "http sms www @conf");
-        setInt(Options.OPTION_PRIVATE_STATUS, PrivateStatusForm.PSTATUS_NOT_INVISIBLE);
-        setBoolean(Options.OPTION_ANSWERER, false);
-        setBoolean(Options.OPTION_USER_GROUPS, true);
-        setBoolean(Options.OPTION_HISTORY, false);
-        setInt(Options.OPTION_COLOR_SCHEME, 1);
-        setInt(Options.OPTION_FONT_SCHEME, 16);
-        setInt(Options.OPTION_AA_TIME, 15);
-        setBoolean(Options.OPTION_SHOW_STATUS_LINE, false);
-        setInt(Options.OPTION_VISIBILITY_ID, 0);
-
-        setBoolean(Options.OPTION_BRING_UP, false);
-        int time = TimeZone.getDefault().getOffset(System.currentTimeMillis()) / (1000 * 60 * 60);
-        setInt(Options.OPTION_GMT_OFFSET, time);
-        setBoolean(OPTION_ALARM, true);
-
-        safeSave();
     }
 
     public static String getString(String key) {
@@ -115,6 +69,15 @@ public class Options {
 
     public static int getInt(String key) {
         return preferences.getInt(key, 0);
+    }
+
+    public static int getInt(int entriesResId, String key) {
+        String[] entries = SawimApplication.getContext().getResources().getStringArray(entriesResId);
+        String s = preferences.getString(key, entries[0]);
+        for (int i = 0; i < entries.length; ++i) {
+            if (entries[i].equals(s)) return i;
+        }
+        return 0;
     }
 
     public static boolean getBoolean(String key) {

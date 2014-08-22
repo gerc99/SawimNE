@@ -32,6 +32,7 @@ import javax.net.ssl.X509TrustManager;
 import java.io.InputStream;
 import java.security.SecureRandom;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -59,6 +60,7 @@ public class SawimApplication extends Application {
     public static int sortType;
     public static boolean hideIconsClient;
     public static int autoAbsenceTime;
+    public static int gmtOffset;
 
     public static SawimApplication instance;
     private static DatabaseHelper dbHelper;
@@ -109,7 +111,7 @@ public class SawimApplication extends Application {
         Scheme.load();
         updateOptions();
         Updater.startUIUpdater();
-
+        gmtOffset = TimeZone.getDefault().getOffset(System.currentTimeMillis()) / (1000 * 60 * 60);
         try {
             gc();
             Emotions.instance.load();
@@ -205,11 +207,11 @@ public class SawimApplication extends Application {
 
     public static void updateOptions() {
         SawimResources.initIcons();
-        fontSize = Math.max(Options.getInt(Options.OPTION_FONT_SCHEME), 7);
+        fontSize = Options.getInt(Options.OPTION_FONT_SCHEME);
         showStatusLine = Options.getBoolean(Options.OPTION_SHOW_STATUS_LINE);
         hideIconsClient = Options.getBoolean(Options.OPTION_HIDE_ICONS_CLIENTS);
-        sortType = Options.getInt(Options.OPTION_CL_SORT_BY);
-        autoAbsenceTime = Options.getInt(Options.OPTION_AA_TIME) * 60;
+        sortType = Options.getInt(R.array.sort_by_array, Options.OPTION_CL_SORT_BY);
+        autoAbsenceTime = Options.getInt(R.array.absence_array, Options.OPTION_AA_TIME) * 60;
     }
 
     public static boolean isManyPane() {
