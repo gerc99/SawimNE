@@ -70,6 +70,23 @@ public class MyListView extends ListView {
         height = (bottom - top);
     }
 
+    /**
+     * Check if this view can be scrolled vertically in a certain direction.
+     *
+     * @param direction Negative to check scrolling up, positive to check scrolling down.
+     * @return true if this view can be scrolled in the specified direction, false otherwise.
+     */
+    public boolean canScrollVertically(int direction) {
+        final int offset = computeVerticalScrollOffset();
+        final int range = computeVerticalScrollRange() - computeVerticalScrollExtent();
+        if (range == 0) return false;
+        if (direction < 0) {
+            return offset > 0;
+        } else {
+            return offset < range - 1;
+        }
+    }
+
     public void stopScroll() {
         onTouchEvent(
                 MotionEvent.obtain(SystemClock.uptimeMillis(),

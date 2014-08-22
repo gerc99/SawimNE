@@ -94,10 +94,14 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
                 image = new byte[fileSize];
                 TcpSocket.readFully(in, image, 0, image.length);
             }
-            setData(image == null ? in : new ByteArrayInputStream(image), fileSize);
+            if (image != null) {
+                in = new ByteArrayInputStream(image);
+                fileSize = in.available();
+            }
+            setData(in, fileSize);
             if (Util.isImageFile(filename)) {
                 setProgress(0);
-                new Thread(this,"FileTransfer").start();
+                SawimApplication.getExecutor().execute(this);
                 addProgress();
             } else {
                 askForNameDesc(activity);
@@ -147,7 +151,7 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
                 }
             } else {
                 setProgress(0);
-                new Thread(this,"FileTransfer").start();
+                SawimApplication.getExecutor().execute(this);
             }
             addProgress();
             forms.back();
@@ -195,7 +199,7 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
             if (-1 == percent) {
                 percent = 100;
             }
-            if ((0 == percent)) {
+            if (0 == percent) {
                 return;
             }
             changeFileProgress(percent, R.string.sending_file);
@@ -204,7 +208,8 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
                 changeFileProgress(percent, R.string.complete);
                 return;
             }
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -259,7 +264,7 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
 
     private void showPreview(final byte[] image) {
         if (image == null || forms == null) return;
-        new Thread(new Runnable() {
+        SawimApplication.getExecutor().execute(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -268,7 +273,7 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
                 } catch (Throwable ignored) {
                 }
             }
-        },"ShowPreview").start();
+        });
     }
 
     private void setFileName(String name) {

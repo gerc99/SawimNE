@@ -131,7 +131,7 @@ public class SawimActivity extends BaseActivity {
                 return true;
             }
             if (RosterHelper.getInstance().getCurrentContact() != c
-                    && chatView.isLastPosition()) {
+                    && chatView.isScrollEnd()) {
                 if (c != null) {
                     chatView.openChat(p, c);
                     return true;

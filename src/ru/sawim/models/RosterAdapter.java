@@ -219,7 +219,7 @@ public class RosterAdapter extends BaseAdapter {
         if (item.isTyping()) {
             rosterItemView.itemFirstImage = Message.getIcon(Message.ICON_TYPE).getBitmap();
         } else {
-            BitmapDrawable icMess = Message.getIcon((byte) item.getUnreadMessageIcon());
+            BitmapDrawable icMess = Message.getIcon(item.getUnreadMessageIcon());
             if (icMess != null)
                 rosterItemView.itemFirstImage = icMess.getBitmap();
         }
@@ -257,7 +257,7 @@ public class RosterAdapter extends BaseAdapter {
             return Message.getIcon(Message.ICON_TYPE);
         } else {
             Icon icStatus = chat.getProtocol().getStatusInfo().getIcon(chat.getContact().getStatusIndex());
-            BitmapDrawable icMess = Message.getIcon((byte) chat.getContact().getUnreadMessageIcon());
+            BitmapDrawable icMess = Message.getIcon(chat.getContact().getUnreadMessageIcon());
             return icMess == null || !showMess ? icStatus.getImage() : icMess;
         }
     }

@@ -33,7 +33,7 @@ public final class IcqNetDefActions {
     private void updateMessageStatus(SnacPacket packet) throws SawimException {
         long msgId = packet.getReader().getDWordBE() & 0xFFFFFFFFL;
         boolean toClient = (packet.getCommand() != 0x000C);
-        byte notifyType = toClient ? PlainMessage.NOTIFY_FROM_CLIENT : PlainMessage.NOTIFY_FROM_SERVER;
+        int notifyType = toClient ? PlainMessage.NOTIFY_FROM_CLIENT : PlainMessage.NOTIFY_FROM_SERVER;
         connection.markMessageSended(msgId, notifyType);
     }
 

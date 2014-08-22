@@ -8,8 +8,6 @@ import protocol.Group;
 public interface OnUpdateRoster {
     void updateRoster();
 
-    void updateBarProtocols();
-
     void updateProgressBar();
 
     void putIntoQueue(Group g);

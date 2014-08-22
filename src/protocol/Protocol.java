@@ -209,12 +209,10 @@ abstract public class Protocol {
             reconnect_attempts = RECONNECT_COUNT;
             SawimApplication.getInstance().updateConnectionState();
             RosterHelper.getInstance().updateConnectionStatus();
-            RosterHelper.getInstance().updateBarProtocols();
             RosterHelper.getInstance().updateRoster();
         } else if (0 == percent) {
             SawimApplication.getInstance().updateConnectionState();
             RosterHelper.getInstance().updateConnectionStatus();
-            RosterHelper.getInstance().updateBarProtocols();
             RosterHelper.getInstance().updateRoster();
         }
         RosterHelper.getInstance().updateProgressBar();
@@ -514,7 +512,6 @@ abstract public class Protocol {
         }
         setStatusesOffline();
         closeConnection();
-        RosterHelper.getInstance().updateBarProtocols();
         RosterHelper.getInstance().updateProgressBar();
         RosterHelper.getInstance().updateRoster();
         SawimApplication.getInstance().updateConnectionState();
@@ -647,7 +644,6 @@ abstract public class Protocol {
         setLastStatusChangeTime();
         if (isConnected()) {
             s_updateOnlineStatus();
-            RosterHelper.getInstance().updateBarProtocols();
             RosterHelper.getInstance().updateProgressBar();
         }
     }
@@ -890,7 +886,6 @@ abstract public class Protocol {
             SawimApplication.getInstance().sendNotify(contact.getUserId(), message.getText(), notifyMessage && !chat.isVisibleChat());
 
             RosterHelper.getInstance().updateRoster(contact);
-            RosterHelper.getInstance().updateBarProtocols();
         }
     }
 
@@ -1000,7 +995,7 @@ abstract public class Protocol {
         if (StringConvertor.isEmpty(msg)) {
             return;
         }
-        PlainMessage plainMsg = new PlainMessage(this, to, SawimApplication.getCurrentGmtTime(), msg);
+        PlainMessage plainMsg = new PlainMessage(this, to.getUserId(), SawimApplication.getCurrentGmtTime(), msg);
         if (isConnected()) {
             if (msg.startsWith("/") && !msg.startsWith("/me ") && !msg.startsWith("/wakeup") && (to instanceof XmppContact)) {
                 boolean cmdExecuted = ((XmppContact) to).execCommand(this, msg);

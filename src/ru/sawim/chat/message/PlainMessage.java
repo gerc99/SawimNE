@@ -24,7 +24,7 @@ public class PlainMessage extends Message {
         this.offline = offline;
     }
 
-    public PlainMessage(Protocol protocol, Contact rcvr, long date, String text) {
+    public PlainMessage(Protocol protocol, String rcvr, long date, String text) {
         super(date, protocol.getUserId(), rcvr, false);
         this.text = StringConvertor.notNull(text);
         this.offline = false;

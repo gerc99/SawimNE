@@ -14,7 +14,6 @@
 
     <style name="CustomTabPageIndicatorLight" parent="Widget.TabPageIndicator">
         <item name="android:background">@drawable/vpi__tab_indicator</item>
-        <item name="android:textAppearance">@style/CustomTabPageIndicator.Text</item>
         <item name="android:textColor">#FF555555</item>
         <item name="android:textSize">16sp</item>
         <item name="android:divider">@drawable/abc_list_divider_holo_light</item>
@@ -26,7 +25,6 @@
 
     <style name="CustomTabPageIndicator" parent="Widget.TabPageIndicator">
         <item name="android:background">@drawable/vpi__tab_indicator</item>
-        <item name="android:textAppearance">@style/CustomTabPageIndicator.Text</item>
         <item name="android:textColor">#ffc2c2c2</item>
         <item name="android:textSize">16sp</item>
         <item name="android:divider">@drawable/abc_list_divider_holo_dark</item>
@@ -34,10 +32,6 @@
         <item name="android:showDividers">middle</item>
         <item name="android:fadingEdge">horizontal</item>
         <item name="android:fadingEdgeLength">8dp</item>
-    </style>
-
-    <style name="CustomTabPageIndicator.Text" parent="android:TextAppearance.Medium">
-        <item name="android:typeface">monospace</item>
     </style>
 
     <style name="EditText" parent="android:Widget.EditText">

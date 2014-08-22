@@ -61,10 +61,9 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
 
     public static final String TAG = RosterView.class.getSimpleName();
 
-    private static final int UPDATE_BAR_PROTOCOLS = 0;
-    private static final int UPDATE_PROGRESS_BAR = 1;
-    private static final int UPDATE_ROSTER = 2;
-    private static final int PUT_INTO_QUEUE = 3;
+    private static final int UPDATE_PROGRESS_BAR = 0;
+    private static final int UPDATE_ROSTER = 1;
+    private static final int PUT_INTO_QUEUE = 2;
 
     public static final int MODE_DEFAULT = 0;
     public static final int MODE_SHARE = 1;
@@ -91,12 +90,10 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         chatsImage = new MyImageButton(activity);
 
         viewPager = new ViewPager(activity);
-        viewPager.setAnimationCacheEnabled(false);
         tabPageIndicator = new TabPageIndicator(getActivity());
         ViewPager.LayoutParams viewPagerLayoutParams = new ViewPager.LayoutParams();
         viewPagerLayoutParams.height = ViewPager.LayoutParams.WRAP_CONTENT;
-        viewPagerLayoutParams.width = ViewPager.LayoutParams.FILL_PARENT;
-        viewPagerLayoutParams.gravity = Gravity.TOP;
+        viewPagerLayoutParams.width = ViewPager.LayoutParams.MATCH_PARENT;
         viewPager.setLayoutParams(viewPagerLayoutParams);
         tabPageIndicator.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 
@@ -167,13 +164,15 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
 
         viewPager.setAdapter(pagerAdapter);
         tabPageIndicator.setViewPager(viewPager);
-        viewPager.setCurrentItem(RosterHelper.getInstance().getCurrPage());
+        tabPageIndicator.setCurrentItem(RosterHelper.getInstance().getCurrPage());
         return rosterViewLayout;
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
+        adaptersPages.clear();
+        adaptersPages = null;
         contextMenuInfo = null;
         handler = null;
         viewPager = null;
@@ -188,13 +187,6 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     @Override
     public boolean handleMessage(Message msg) {
         switch (msg.what) {
-            case UPDATE_BAR_PROTOCOLS:
-                final int protocolCount = RosterHelper.getInstance().getProtocolCount();
-                if (protocolCount > 1) {
-                    if (pagerAdapter != null)
-                        pagerAdapter.notifyDataSetChanged();
-                }
-                break;
             case UPDATE_PROGRESS_BAR:
                 final Protocol p = RosterHelper.getInstance().getProtocol(0);
                 if (RosterHelper.getInstance().getProtocolCount() == 1 && p != null) {
@@ -211,8 +203,8 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
                 if (getRosterAdapter() != null) {
                     getRosterAdapter().refreshList();
                 }
-                if (pagerAdapter != null)
-                    pagerAdapter.notifyDataSetChanged();
+                //if (pagerAdapter != null)
+                //    pagerAdapter.notifyDataSetChanged();
                 updateChatImage();
                 break;
             case PUT_INTO_QUEUE:
@@ -222,12 +214,6 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
                 break;
         }
         return false;
-    }
-
-    @Override
-    public void updateBarProtocols() {
-        if (handler == null) return;
-        handler.sendEmptyMessage(UPDATE_BAR_PROTOCOLS);
     }
 
     @Override
@@ -250,7 +236,6 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
 
     public void update() {
         updateRoster();
-        updateBarProtocols();
         updateProgressBar();
     }
 
@@ -357,7 +342,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     public void onResume() {
         super.onResume();
         resume();
-        if (!SawimApplication.isManyPane() && Scheme.isChangeTheme(Options.getInt(Options.OPTION_COLOR_SCHEME))) {
+        if (!SawimApplication.isManyPane() && Scheme.isChangeTheme(Scheme.getThemeId(Options.getString(Options.OPTION_COLOR_SCHEME)))) {
             ((SawimActivity) getActivity()).recreateActivity();
         }
     }

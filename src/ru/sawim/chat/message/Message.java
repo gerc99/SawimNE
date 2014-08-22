@@ -9,17 +9,17 @@ import ru.sawim.modules.history.HistoryStorage;
 import ru.sawim.roster.RosterHelper;
 
 public abstract class Message {
-    public static final byte ICON_NONE = -1;
-    public static final byte ICON_SYSREQ = 0;
-    public static final byte ICON_SYS_OK = 1;
-    public static final byte ICON_TYPE = 2;
-    public static final byte ICON_IN_MSG_HI = 3;
-    public static final byte ICON_IN_MSG = 4;
-    public static final byte ICON_OUT_MSG_FROM_SERVER = 6;
-    public static final byte ICON_OUT_MSG_FROM_CLIENT = 7;
+    public static final int ICON_NONE = -1;
+    public static final int ICON_SYSREQ = 0;
+    public static final int ICON_SYS_OK = 1;
+    public static final int ICON_TYPE = 2;
+    public static final int ICON_IN_MSG_HI = 3;
+    public static final int ICON_IN_MSG = 4;
+    public static final int ICON_OUT_MSG_FROM_SERVER = 6;
+    public static final int ICON_OUT_MSG_FROM_CLIENT = 7;
 
-    public static final byte NOTIFY_FROM_SERVER = ICON_OUT_MSG_FROM_SERVER;
-    public static final byte NOTIFY_FROM_CLIENT = ICON_OUT_MSG_FROM_CLIENT;
+    public static final int NOTIFY_FROM_SERVER = ICON_OUT_MSG_FROM_SERVER;
+    public static final int NOTIFY_FROM_CLIENT = ICON_OUT_MSG_FROM_CLIENT;
 
     private boolean isIncoming;
     private String contactId;
@@ -28,7 +28,7 @@ public abstract class Message {
     private MessData mData = null;
     private long newDate;
 
-    public static BitmapDrawable getIcon(byte type) {
+    public static BitmapDrawable getIcon(int type) {
         switch (type) {
             case ICON_SYSREQ:
                 return SawimResources.authReqIcon;
@@ -51,18 +51,11 @@ public abstract class Message {
         this.isIncoming = isIncoming;
     }
 
-    protected Message(long date, String myId, Contact contact, boolean isIncoming) {
-        this.newDate = date;
-        this.myId = myId;
-        this.contactId = contact.getUserId();
-        this.isIncoming = isIncoming;
-    }
-
     public final void setVisibleIcon(MessData mData) {
         this.mData = mData;
     }
 
-    public final void setSendingState(Protocol protocol, byte state) {
+    public final void setSendingState(Protocol protocol, int state) {
         if (mData != null) {
             Contact contact = protocol.getItemByUID(contactId);
             mData.setIconIndex(state);

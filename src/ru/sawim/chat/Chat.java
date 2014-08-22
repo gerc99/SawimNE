@@ -251,7 +251,7 @@ public final class Chat {
         return senderName;
     }
 
-    public MessData buildMessage(Message message, String from, boolean isSystemNotice, boolean isHighlight) {
+    public static MessData buildMessage(Contact contact, Message message, String from, boolean isSystemNotice, boolean isHighlight) {
         boolean incoming = message.isIncoming();
         String messageText = message.getProcessedText();
         messageText = StringConvertor.removeCr(messageText);
@@ -269,10 +269,10 @@ public final class Chat {
         if (isSystemNotice) {
             flags |= MessData.SERVICE;
         }
-        return buildMessage(message, from, flags, isHighlight);
+        return buildMessage(contact, message, from, flags, isHighlight);
     }
 
-    public MessData buildMessage(Message message, String from, short flags, boolean isHighlight) {
+    public static MessData buildMessage(Contact contact, Message message, String from, short flags, boolean isHighlight) {
         boolean incoming = message.isIncoming();
         String messageText = message.getProcessedText();
         messageText = StringConvertor.removeCr(messageText);
@@ -295,7 +295,7 @@ public final class Chat {
     }
 
     private void addTextToForm(Message message, String from, boolean isSystemNotice, boolean isHighlight) {
-        MessData mData = buildMessage(message, from, isSystemNotice, isHighlight);
+        MessData mData = buildMessage(contact, message, from, isSystemNotice, isHighlight);
         addMessage(mData);
         addTextToHistory(mData);
     }

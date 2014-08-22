@@ -887,11 +887,10 @@ public final class XmppConnection extends ClientConnection {
             String jid = Jid.isConference(from) ? from : Jid.getBareJid(from);
             //MagicEye.addAction(xmpp, jid, "get_time");
 
-            int gmtOffset = Options.getInt(Options.OPTION_GMT_OFFSET);
             putPacketIntoQueue("<iq type='result' to='" + Util.xmlEscape(from)
                     + "' id='" + Util.xmlEscape(id) + "'>"
                     + "<time xmlns='urn:xmpp:time'><tzo>"
-                    + (0 <= gmtOffset ? "+" : "-") + Util.makeTwo(Math.abs(gmtOffset)) + ":00"
+                    + (0 <= SawimApplication.gmtOffset ? "+" : "-") + Util.makeTwo(Math.abs(SawimApplication.gmtOffset)) + ":00"
                     + "</tzo><utc>"
                     + Util.getUtcDateString(SawimApplication.getCurrentGmtTime())
                     + "</utc></time></iq>");
@@ -2646,7 +2645,7 @@ public final class XmppConnection extends ClientConnection {
         return isMessageExist(Util.strToIntDef(id, -1));
     }
 
-    private void setMessageSended(String id, byte state) {
+    private void setMessageSended(String id, int state) {
         markMessageSended(Util.strToIntDef(id, -1), state);
     }
 

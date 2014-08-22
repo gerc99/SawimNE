@@ -372,11 +372,6 @@ public final class RosterHelper {
             onUpdateRoster.updateRoster();
     }
 
-    public void updateBarProtocols() {
-        if (onUpdateRoster != null)
-            onUpdateRoster.updateBarProtocols();
-    }
-
     public void updateProgressBar() {
         if (onUpdateRoster != null)
             onUpdateRoster.updateProgressBar();

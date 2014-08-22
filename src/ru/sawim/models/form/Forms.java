@@ -10,7 +10,6 @@ import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
 import ru.sawim.modules.DebugLog;
 import ru.sawim.view.FormView;
-import ru.sawim.view.preference.PreferenceFormView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -133,10 +132,6 @@ public class Forms {
 
     public void show(BaseActivity activity) {
         FormView.show(activity, this);
-    }
-
-    public void preferenceFormShow(BaseActivity activity) {
-        PreferenceFormView.show(activity, this);
     }
 
     public void invalidate(boolean isLoad) {

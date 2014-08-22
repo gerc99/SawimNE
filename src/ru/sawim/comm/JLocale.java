@@ -16,6 +16,6 @@ public class JLocale {
     }
 
     public static String getSystemLanguage() {
-        return Locale.getDefault().toString();
+        return Locale.getDefault().toString().replace("_", "-").toLowerCase();
     }
 }

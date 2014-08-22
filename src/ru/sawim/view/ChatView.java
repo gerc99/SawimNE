@@ -502,13 +502,12 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
 
         chat.currentPosition = adapter.getCount();
         chat.firstVisiblePosition = chatListView.getFirstVisiblePosition();
-        boolean isBottomScroll = chatListView.getLastVisiblePosition() + 1 == chat.currentPosition;
-        if (isBottomScroll) {
+        if (isScrollEnd()) {
             unreadMessageCount = 0;
             chat.currentPosition = 0;
         }
         View item = chatListView.getChildAt(0);
-        chat.offset = (item == null) ? 0 : Math.abs(isBottomScroll ? item.getTop() : item.getBottom());
+        chat.offset = (item == null) ? 0 : Math.abs(isScrollEnd() ? item.getTop() : item.getBottom());
         offsetNewMessage = chatListView.getHeight() / 4;
 
         chat.setVisibleChat(false);
@@ -547,11 +546,11 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
             loadStory(false, true);
         }
 
-        chatListsView.setShowDividerForUnreadMessage(chatListView.getLastVisiblePosition() != adapter.getCount());
+        chatListsView.setShowDividerForUnreadMessage(isScrollEnd());
     }
 
-    public boolean isLastPosition() {
-        return adapter != null && chatListView.getLastVisiblePosition() == adapter.getCount() - 1;
+    public boolean isScrollEnd() {
+        return chatListView != null && !chatListView.canScrollVertically(0);
     }
 
     public void setSharingText(String text) {
@@ -643,9 +642,9 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
                 isScroll = scrollState > 0;
-                boolean isBottomScroll = chatListView.getLastVisiblePosition() + 1 == adapter.getCount();
-                if (isBottomScroll) {
+                if (isScrollEnd()) {
                     chat.currentPosition = 0;
+                    newMessageCount = 0;
                 } else {
                     chat.currentPosition = -3;
                 }
@@ -661,7 +660,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                 } else {
                     oldFirstVisibleItem = -1;
                 }
-                chatListsView.setShowDividerForUnreadMessage(firstVisibleItem + visibleItemCount != totalItemCount);
+                chatListsView.setShowDividerForUnreadMessage(!isScrollEnd());
             }
         });
     }
@@ -689,6 +688,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
         }
     }
 
+    int newMessageCount = 0;
     @Override
     public boolean handleMessage(Message msg) {
         switch (msg.what) {
@@ -697,13 +697,18 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                 MessData mess = (MessData) ((Object[]) msg.obj)[1];
                 if (chat != null && chat.getContact() == c) {
                     adapter.getItems().add(mess);
+                    newMessageCount++;
                 }
                 break;
             case UPDATE_MESSAGES:
                 Contact contact = (Contact) msg.obj;
                 if (chat != null && chat.getContact() == contact) {
+                    boolean isScrollEnd = isScrollEnd();
                     adapter.notifyDataSetChanged();
-                    chatListsView.setShowDividerForUnreadMessage(chatListView.getLastVisiblePosition() + 1 == adapter.getCount() - 1);
+                    chatListsView.setShowDividerForUnreadMessage(!isScrollEnd());
+                    if (isScrollEnd) {
+                        chatListView.setSelectionFromTop(adapter.getCount() - newMessageCount, chatListView.getHeight() / 4);
+                    }
                 }
                 break;
             case UPDATE_CHAT:
@@ -755,9 +760,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                                     chatListView.setSelectionFromTop(chat.firstVisiblePosition, chat.offset);
                                 }
                             } else {
-                                if (isFirstOpenChat) {
-                                    chatListView.setSelection(0);
-                                } else {
+                                if (!isFirstOpenChat) {
                                     if (isBottomScroll) {
                                         chatListView.setSelectionFromTop(chat.firstVisiblePosition, -chat.offset);
                                     } else {
@@ -807,6 +810,9 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
 
     private void addUnreadMessagesFromHistoryToList() {
         if (unreadMessageCount == 0) return;
+        if (isOldChat) {
+            isOldChat = false;
+        }
         boolean isFirstOpenChat = chat.currentPosition == -2;
         boolean isBottomScroll = chat.currentPosition == 0;
         adapter.setPosition(adapter.getCount());

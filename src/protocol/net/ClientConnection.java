@@ -143,7 +143,7 @@ public abstract class ClientConnection implements Runnable {
         return false;
     }
 
-    public final void markMessageSended(long msgId, byte status) {
+    public final void markMessageSended(long msgId, int status) {
         PlainMessage msg = null;
         for (int i = 0; i < messages.size(); ++i) {
             PlainMessage m = messages.elementAt(i);
