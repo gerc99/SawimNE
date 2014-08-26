@@ -22,60 +22,28 @@ public final class StorageConvertor {
         String normalizedName = normalizeStorageName(fromStorageName);
         if (isExists(normalizedName)) {
             Context context = SawimApplication.getContext();
-            try {
-                Log.d(LOG_TAG, "Converting " + fromStorageName);
+            Log.d(LOG_TAG, "Converting " + fromStorageName);
 
-                String headerFileName = normalizedName + RECORD_STORE_HEADER_SUFFIX;
-                DataInputStream dis = new DataInputStream(context.openFileInput(headerFileName));
+            String headerFileName = normalizedName + RECORD_STORE_HEADER_SUFFIX;
+            int recordsCount = readHeaderFile(headerFileName);
+            Log.d(LOG_TAG, "recordsCount = " + recordsCount);
 
-                // reading header
-                for (byte identifier : fileIdentifier) {
-                    if (dis.read() != identifier) {
-                        throw new IOException();
-                    }
-                }
-                dis.read(); // Major version number
-                dis.read(); // Minor version number
-                dis.read(); // Encrypted flag
-                dis.readUTF();  // RS name
-                dis.readLong(); // Last modified
-                dis.readInt();  // Version
-                dis.readInt();  // AuthMode
-                dis.readByte(); // Writable
-                int recordsCount = dis.readInt();  // Size
+            for (int recordId = 0; recordId < recordsCount; ++recordId) {
+                String recordFileName = normalizedName + "." + (recordId + 1) + RECORD_STORE_RECORD_SUFFIX;
+                byte[] data = readFile(recordFileName);
+                toStorage.addRecord(data);
+                context.deleteFile(recordFileName);
 
-                Log.d(LOG_TAG, "recordsCount = " + recordsCount);
-
-                for (int recordId = 0; recordId < recordsCount; ++recordId) {
-                    String recordFileName = normalizedName + "." + (recordId + 1) + RECORD_STORE_RECORD_SUFFIX;
-
-                    DataInputStream dataStream = new DataInputStream(context.openFileInput(recordFileName));
-                    dataStream.readInt(); // Record ID
-                    dataStream.readInt(); // Tag
-
-                    int recordSize = dataStream.readInt();
-                    byte data[] = new byte[recordSize];
-                    dataStream.read(data);
-                    dataStream.close();
-
-                    toStorage.addRecord(data);
-                    context.deleteFile(recordFileName);
-
-                    Log.d(LOG_TAG, "Done converting record #" + (recordId + 1));
-                }
-
-                context.deleteFile(headerFileName);
-
-                Log.d(LOG_TAG, "Done converting " + fromStorageName);
-            } catch (IOException e) {
-                e.printStackTrace();
+                Log.d(LOG_TAG, "Done converting record #" + (recordId + 1));
             }
+            context.deleteFile(headerFileName);
+            Log.d(LOG_TAG, "Done converting " + fromStorageName);
         }
     }
 
     public static void historyConvert() {
         Context context = SawimApplication.getContext();
-        String PREFIX = "hist";
+        final String PREFIX = "hist";
         for (int i = 0; i < context.fileList().length; ++i) {
             String fileName = context.fileList()[i];
             if (!fileName.startsWith(PREFIX)) {
@@ -84,25 +52,9 @@ public final class StorageConvertor {
             if (fileName.endsWith(RECORD_STORE_HEADER_SUFFIX)) {
                 try {
                     String headerFileName = fileName;
-                    DataInputStream dis = new DataInputStream(context.openFileInput(headerFileName));
-
-                    // reading header
-                    for (byte identifier : fileIdentifier) {
-                        if (dis.read() != identifier) {
-                            throw new IOException();
-                        }
-                    }
-                    dis.read(); // Major version number
-                    dis.read(); // Minor version number
-                    dis.read(); // Encrypted flag
-                    dis.readUTF();  // RS name
-                    dis.readLong(); // Last modified
-                    dis.readInt();  // Version
-                    dis.readInt();  // AuthMode
-                    dis.readByte(); // Writable
-                    int recordsCount = dis.readInt();  // Size
-
+                    int recordsCount = readHeaderFile(headerFileName);
                     Log.d(LOG_TAG, "recordsCount = " + recordsCount);
+
                     fileName = fileName.substring(0, fileName.length() - RECORD_STORE_HEADER_SUFFIX.length());
                     int count = RosterHelper.getInstance().getProtocolCount();
                     for (int pi = 0; pi < count; ++pi) {
@@ -112,13 +64,7 @@ public final class StorageConvertor {
                         for (int recordId = 0; recordId < recordsCount; ++recordId) {
                             String recordFileName = fileName + "." + (recordId + 1) + RECORD_STORE_RECORD_SUFFIX;
 
-                            DataInputStream dataStream = new DataInputStream(context.openFileInput(recordFileName));
-                            dataStream.readInt(); // Record ID
-                            dataStream.readInt(); // Tag
-
-                            int recordSize = dataStream.readInt();
-                            byte data[] = new byte[recordSize];
-                            dataStream.read(data);
+                            byte[] data = readFile(recordFileName);
 
                             ByteArrayInputStream bais = new ByteArrayInputStream(data);
                             DataInputStream is = new DataInputStream(bais);
@@ -127,23 +73,83 @@ public final class StorageConvertor {
                             String text = is.readUTF();
                             long date = Util.createLocalDate(is.readUTF());
 
-                            Log.e(LOG_TAG, from + " " + text + " " + date);
                             historyStorage.addText(0, isIncoming, from, text, date, (short) 0);
-                            context.deleteFile(recordFileName);
 
                             is.close();
-                            dataStream.close();
                             Log.d(LOG_TAG, "Done converting record #" + (recordId + 1));
                         }
                     }
+                    for (int recordId = 0; recordId < recordsCount; ++recordId) {
+                        String recordFileName = fileName + "." + (recordId + 1) + RECORD_STORE_RECORD_SUFFIX;
+                        context.deleteFile(recordFileName);
+                    }
                     context.deleteFile(headerFileName);
-
-                     Log.d(LOG_TAG, "Done converting " + fileName);
+                    Log.d(LOG_TAG, "Done converting " + fileName);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         }
+    }
+
+    private static int readHeaderFile(String headerFileName) {
+        Context context = SawimApplication.getContext();
+        int recordsCount = 0;
+        DataInputStream dis = null;
+        try {
+            dis = new DataInputStream(context.openFileInput(headerFileName));
+
+            // reading header
+            for (byte identifier : fileIdentifier) {
+                if (dis.read() != identifier) {
+                    throw new IOException();
+                }
+            }
+            dis.read(); // Major version number
+            dis.read(); // Minor version number
+            dis.read(); // Encrypted flag
+            dis.readUTF();  // RS name
+            dis.readLong(); // Last modified
+            dis.readInt();  // Version
+            dis.readInt();  // AuthMode
+            dis.readByte(); // Writable
+            recordsCount = dis.readInt();  // Size
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (dis != null) {
+                    dis.close();
+                }
+            } catch (IOException ignore) {
+            }
+        }
+        return recordsCount;
+    }
+
+    private static byte[] readFile(String recordFileName) {
+        Context context = SawimApplication.getContext();
+        DataInputStream dis = null;
+        byte data[] = new byte[0];
+        try {
+            dis = new DataInputStream(context.openFileInput(recordFileName));
+            dis.readInt(); // Record ID
+            dis.readInt(); // Tag
+
+            int recordSize = dis.readInt();
+            data = new byte[recordSize];
+            dis.read(data);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (dis != null) {
+                    dis.close();
+                }
+            } catch (IOException ignore) {
+            }
+        }
+        return data;
     }
 
     private static String normalizeStorageName(String name) {
