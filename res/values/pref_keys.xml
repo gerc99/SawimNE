@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="pref_account">pref_account</string>
+    <string name="pref_wake_lock">pref_wake_lock</string>
+    <string name="pref_color_scheme">pref_color_scheme</string>
+    <string name="pref_font_scheme">pref_font_scheme</string>
+    <string name="pref_user_groups">pref_user_groups</string>
+    <string name="pref_show_status_line">pref_show_status_line</string>
+    <string name="pref_sort_up_with_msg">pref_sort_up_with_msg</string>
+    <string name="pref_cl_sort_by">pref_cl_sort_by</string>
+    <string name="pref_hide_keyboard">pref_hide_keyboard</string>
+    <string name="pref_simple_input">pref_simple_input</string>
+    <string name="pref_history">pref_history</string>
+    <string name="pref_mess_ringtone">pref_mess_ringtone</string>
+    <string name="pref_vibration">pref_vibration</string>
+    <string name="pref_alarm">pref_alarm</string>
+    <string name="pref_antispam_enable">pref_antispam_enable</string>
+    <string name="pref_antispam_msg">pref_antispam_msg</string>
+    <string name="pref_antispam_answer">pref_antispam_answer</string>
+    <string name="pref_antispam_hello">pref_antispam_hello</string>
+    <string name="pref_antispam_keywords">pref_antispam_keywords</string>
+    <string name="pref_answerer">pref_answerer</string>
+    <string name="pref_options_pro">pref_options_pro</string>
+    <string name="pref_hide_icons_clients">pref_hide_icons_clients</string>
+    <string name="pref_aa_time">pref_aa_time</string>
+    <string name="pref_about_program">pref_about_program</string>
+
+</resources>

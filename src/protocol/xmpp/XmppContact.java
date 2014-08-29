@@ -32,7 +32,7 @@ public class XmppContact extends Contact {
 
     public void addChatMenuItems(ContextMenu model) {
         if (isOnline()) {
-            if (Options.getBoolean(Options.OPTION_ALARM) && isSingleUserContact()) {
+            if (Options.getBoolean(JLocale.getString(R.string.pref_alarm)) && isSingleUserContact()) {
                 model.add(Menu.NONE, ContactMenu.USER_MENU_WAKE, Menu.NONE, R.string.wake);
             }
         }

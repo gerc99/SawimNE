@@ -6,6 +6,7 @@ import protocol.*;
 import ru.sawim.Options;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
+import ru.sawim.comm.JLocale;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.modules.DebugLog;
 import ru.sawim.view.menu.MyMenu;
@@ -67,7 +68,7 @@ public class MrimContact extends Contact {
     }
 
     public void addChatMenuItems(ContextMenu model) {
-        if (isOnline() && Options.getBoolean(Options.OPTION_ALARM) && isSingleUserContact()) {
+        if (isOnline() && Options.getBoolean(JLocale.getString(R.string.pref_alarm)) && isSingleUserContact()) {
             model.add(Menu.FIRST, ContactMenu.USER_MENU_WAKE, 2, R.string.wake);
         }
     }

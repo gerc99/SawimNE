@@ -423,7 +423,7 @@ public final class RosterHelper {
     }
 
     public void updateOptions() {
-        useGroups = Options.getBoolean(Options.OPTION_USER_GROUPS) && getCurrPage() != ACTIVE_CONTACTS;
+        useGroups = Options.getBoolean(JLocale.getString(R.string.pref_user_groups)) && getCurrPage() != ACTIVE_CONTACTS;
         hideOffline = getCurrPage() == ONLINE_CONTACTS;
     }
 
@@ -645,13 +645,13 @@ public final class RosterHelper {
                         ? StatusInfo.STATUS_OFFLINE : StatusInfo.STATUS_ONLINE, "");
                 return true;
             case RosterHelper.MENU_STATUS:
-                new StatusesView(p, StatusesView.ADAPTER_STATUS).show(activity.getSupportFragmentManager(), "change-status");
+                new StatusesView().init(p, StatusesView.ADAPTER_STATUS).show(activity.getSupportFragmentManager(), "change-status");
                 return true;
             case RosterHelper.MENU_XSTATUS:
                 new XStatusesView(p).show(activity.getSupportFragmentManager(), "change-xstatus");
                 return true;
             case RosterHelper.MENU_PRIVATE_STATUS:
-                new StatusesView(p, StatusesView.ADAPTER_PRIVATESTATUS).show(activity.getSupportFragmentManager(), "change-private-status");
+                new StatusesView().init(p, StatusesView.ADAPTER_PRIVATESTATUS).show(activity.getSupportFragmentManager(), "change-private-status");
                 return true;
             case RosterHelper.MENU_SEND_SMS:
                 new SmsForm(null, null).show(activity);

@@ -56,12 +56,12 @@ public class SawimNotification {
         if (0 < unread) {
             notification.setLights(0xff00ff00, 1000, 3000);
             if (silent) {
-                if (Options.getBoolean(Options.OPTION_VIBRATION)) {
+                if (Options.getBoolean(JLocale.getString(R.string.pref_vibration))) {
                     int dat = 70;
                     long[] pattern = {0,3 * dat, dat, dat};
                     notification.setVibrate(pattern);
                 }
-                String ringtone = Options.getString(Options.OPTION_MESS_RINGTONE, null);
+                String ringtone = Options.getString(JLocale.getString(R.string.pref_mess_ringtone), null);
                 if (ringtone != null) {
                     notification.setSound(Uri.parse(ringtone));
                 }

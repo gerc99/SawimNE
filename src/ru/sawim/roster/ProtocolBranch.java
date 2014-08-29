@@ -3,6 +3,8 @@ package ru.sawim.roster;
 import protocol.Contact;
 import protocol.Protocol;
 import ru.sawim.Options;
+import ru.sawim.R;
+import ru.sawim.comm.JLocale;
 import ru.sawim.comm.Util;
 
 import java.util.Vector;
@@ -53,7 +55,7 @@ public class ProtocolBranch extends TreeBranch {
 
     public void sort() {
         synchronized (protocol.getRosterLockObject()) {
-            if (Options.getBoolean(Options.OPTION_USER_GROUPS)) {
+            if (Options.getBoolean(JLocale.getString(R.string.pref_user_groups))) {
                 Util.sort(protocol.getGroupItems());
             } else {
                 Util.sort(protocol.getContactItems());

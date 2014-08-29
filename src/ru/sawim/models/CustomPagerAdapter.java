@@ -19,7 +19,9 @@ public class CustomPagerAdapter extends PagerAdapter {
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
         View page = pagesList.get(position);
-        container.addView(page);
+        if (container.indexOfChild(page) == -1) {
+            container.addView(page);
+        }
         return page;
     }
 

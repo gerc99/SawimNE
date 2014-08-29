@@ -48,7 +48,7 @@ import ru.sawim.chat.ChatHistory;
 import ru.sawim.modules.DebugLog;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.view.*;
-import ru.sawim.view.preference.MainPreferenceView;
+import ru.sawim.activities.MainPreferenceActivity;
 
 public class SawimActivity extends BaseActivity {
 
@@ -197,7 +197,6 @@ public class SawimActivity extends BaseActivity {
         FragmentManager fragmentManager = getSupportFragmentManager();
         SawimFragment chatView = (SawimFragment) fragmentManager.findFragmentByTag(ChatView.TAG);
         SawimFragment formView = (SawimFragment) fragmentManager.findFragmentByTag(FormView.TAG);
-        SawimFragment preferenceFormView = (SawimFragment) fragmentManager.findFragmentByTag(MainPreferenceView.TAG);
         SawimFragment virtualListView = (SawimFragment) fragmentManager.findFragmentByTag(VirtualListView.TAG);
         if (chatView != null && chatView.isVisible()) {
             if (chatView.hasBack())
@@ -208,10 +207,6 @@ public class SawimActivity extends BaseActivity {
         } else if (formView != null) {
             if (formView.hasBack())
                 back();
-        } else if (preferenceFormView != null) {
-            if (preferenceFormView.hasBack()) {
-                back();
-            }
         } else super.onBackPressed();
         //if (SawimApplication.isManyPane())
         //    rosterView.resume();
@@ -226,7 +221,7 @@ public class SawimActivity extends BaseActivity {
 
     public void recreateActivity() {
         finish();
-        startActivity(new Intent(this, SawimActivity.class));
+        startActivity(new Intent(this, SawimActivity.class).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION));
     }
 
     public void closeActivity() {
@@ -338,7 +333,7 @@ public class SawimActivity extends BaseActivity {
             return true;
         switch (item.getItemId()) {
             case MENU_OPTIONS:
-                MainPreferenceView.show(this);
+                startActivity(new Intent(this, MainPreferenceActivity.class));
                 break;
             case MENU_DEBUG_LOG:
                 DebugLog.instance.activate();

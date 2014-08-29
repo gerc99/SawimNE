@@ -4,7 +4,9 @@ import android.graphics.drawable.BitmapDrawable;
 import protocol.Contact;
 import protocol.Protocol;
 import ru.sawim.Options;
+import ru.sawim.R;
 import ru.sawim.chat.message.Message;
+import ru.sawim.comm.JLocale;
 import ru.sawim.comm.Util;
 import ru.sawim.io.Storage;
 import ru.sawim.modules.history.HistoryStorage;
@@ -202,7 +204,7 @@ public final class ChatHistory {
 
     private void closeHistory(Chat chat) {
         HistoryStorage historyStorage = chat.getHistory();
-        if (!Options.getBoolean(Options.OPTION_HISTORY)) {
+        if (!Options.getBoolean(JLocale.getString(R.string.pref_history))) {
             historyStorage.removeHistory();
         }
     }
@@ -308,7 +310,7 @@ public final class ChatHistory {
                 Chat chat = chatAt(i);
                 int unreadMessageCount = chat.getUnreadMessageCount();
                 if (unreadMessageCount == 0) {
-                    if (!Options.getBoolean(Options.OPTION_HISTORY)) {
+                    if (!Options.getBoolean(JLocale.getString(R.string.pref_history))) {
                         HistoryStorage historyStorage = chat.getHistory();
                         historyStorage.removeHistory();
                     }

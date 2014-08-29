@@ -9,7 +9,7 @@ import protocol.Protocol;
 import ru.sawim.Options;
 import ru.sawim.R;
 import ru.sawim.SawimNotification;
-import ru.sawim.chat.ChatHistory;
+import ru.sawim.comm.JLocale;
 import ru.sawim.roster.RosterHelper;
 
 public class SawimService extends Service {
@@ -47,7 +47,7 @@ public class SawimService extends Service {
     }
 
     private void updateLock() {
-        if (!Options.getBoolean(Options.OPTION_WAKE_LOCK)) {
+        if (!Options.getBoolean(JLocale.getString(R.string.pref_wake_lock))) {
             release();
             return;
         }

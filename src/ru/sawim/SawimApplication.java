@@ -13,6 +13,7 @@ import android.view.WindowManager;
 import de.duenndns.ssl.MemorizingTrustManager;
 import protocol.Protocol;
 import ru.sawim.chat.ChatHistory;
+import ru.sawim.comm.JLocale;
 import ru.sawim.io.DatabaseHelper;
 import ru.sawim.io.FileSystem;
 import ru.sawim.io.HomeDirectory;
@@ -202,11 +203,11 @@ public class SawimApplication extends Application {
 
     public static void updateOptions() {
         SawimResources.initIcons();
-        fontSize = Options.getInt(Options.OPTION_FONT_SCHEME);
-        showStatusLine = Options.getBoolean(Options.OPTION_SHOW_STATUS_LINE);
-        hideIconsClient = Options.getBoolean(Options.OPTION_HIDE_ICONS_CLIENTS);
-        sortType = Options.getInt(R.array.sort_by_array, Options.OPTION_CL_SORT_BY);
-        autoAbsenceTime = Options.getInt(R.array.absence_array, Options.OPTION_AA_TIME) * 60;
+        fontSize = Options.getInt(JLocale.getString(R.string.pref_font_scheme));
+        showStatusLine = Options.getBoolean(JLocale.getString(R.string.pref_show_status_line));
+        hideIconsClient = Options.getBoolean(JLocale.getString(R.string.pref_hide_icons_clients));
+        sortType = Options.getInt(R.array.sort_by_array, JLocale.getString(R.string.pref_cl_sort_by));
+        autoAbsenceTime = Options.getInt(R.array.absence_array, JLocale.getString(R.string.pref_aa_time)) * 5 * 60;
     }
 
     public static boolean isManyPane() {

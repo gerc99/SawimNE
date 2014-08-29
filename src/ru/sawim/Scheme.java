@@ -1,6 +1,7 @@
 package ru.sawim;
 
 import ru.sawim.comm.Config;
+import ru.sawim.comm.JLocale;
 import ru.sawim.comm.Util;
 
 import java.util.Vector;
@@ -90,16 +91,15 @@ public class Scheme {
             themeNames[i + 1] = config.getName();
             themeColors[i + 1] = configToTheme(config);
         }
-        oldTheme = getThemeId(Options.getString(Options.OPTION_COLOR_SCHEME));
-        Scheme.setColorScheme(oldTheme);
+        Scheme.setColorScheme(getThemeId());
     }
 
     public static boolean isBlack() {
-        return isBlack[getThemeId(Options.getString(Options.OPTION_COLOR_SCHEME))];
+        return isBlack[getThemeId()];
     }
 
     public static boolean isSystemBackground() {
-        return isSystemBackground[getThemeId(Options.getString(Options.OPTION_COLOR_SCHEME))];
+        return isSystemBackground[getThemeId()];
     }
 
     private static int[] configToTheme(Config config) {
@@ -136,12 +136,15 @@ public class Scheme {
         if (themeNames.length <= schemeNum) {
             schemeNum = 0;
         }
-        Options.setString(Options.OPTION_COLOR_SCHEME, themeNames[schemeNum]);
         setColorScheme(themeColors[schemeNum]);
     }
 
     private static void setColorScheme(int[] scheme) {
         System.arraycopy(scheme, 0, currentTheme, 0, currentTheme.length);
+    }
+
+    public static int getThemeId() {
+        return getThemeId(Options.getString(JLocale.getString(R.string.pref_color_scheme)));
     }
 
     public static int getThemeId(String theme) {

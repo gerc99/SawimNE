@@ -16,33 +16,10 @@ import java.util.List;
 
 public class Options {
 
-    public static final String OPTION_ANTISPAM_MSG = "antispam_msg";
-    public static final String OPTION_ANTISPAM_HELLO = "antispam_hello";
-    public static final String OPTION_ANTISPAM_ANSWER = "antispam_answer";
-    public static final String OPTION_ANTISPAM_KEYWORDS = "antispam_keywords";
-
-    public static final String OPTION_CL_SORT_BY = "cl_sort_by";
-    public static final String OPTION_MESS_RINGTONE = "mess_ringtone";
-    public static final String OPTION_CURRENT_PAGE = "current_page";
-    public static final String OPTION_VIBRATION = "vibration";
-    public static final String OPTION_COLOR_SCHEME = "color_scheme";
     static final String OPTIONS_CURR_ACCOUNT = "current_account";
     public static final String OPTION_PRIVATE_STATUS = "private_status";
-    public static final String OPTION_AA_TIME = "aa_time";
-    public static final String OPTION_FONT_SCHEME = "font_scheme";
-
-    public static final String OPTION_ANSWERER = "answer";
-    public static final String OPTION_HIDE_KEYBOARD = "hide_keyboard";
     public static final String OPTION_CL_HIDE_OFFLINE = "cl_hide_offline";
-    public static final String OPTION_USER_GROUPS = "user_groups";
-    public static final String OPTION_HISTORY = "history";
-    public static final String OPTION_WAKE_LOCK = "wake_lock";
-    public static final String OPTION_ANTISPAM_ENABLE = "antispam_enable";
-    public static final String OPTION_HIDE_ICONS_CLIENTS = "hide_icons_clients";
-    public static final String OPTION_SORT_UP_WITH_MSG = "sort_up_with_msg";
-    public static final String OPTION_ALARM = "alarm";
-    public static final String OPTION_SHOW_STATUS_LINE = "show_status_line";
-    public static final String OPTION_SIMPLE_INPUT = "simple_input";
+    public static final String OPTION_CURRENT_PAGE = "current_page";
 
     private static SharedPreferences preferences;
     private static SharedPreferences.Editor editor;

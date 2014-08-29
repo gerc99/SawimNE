@@ -1,81 +1,93 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <PreferenceScreen android:title="@string/options_account" android:key="options_account">
+    <PreferenceScreen android:title="@string/options_account" android:key="@string/pref_account">
     </PreferenceScreen>
 
     <PreferenceScreen android:title="@string/options_network">
         <CheckBoxPreference android:title="@string/wake_lock"
-                            android:key="wake_lock"
+                            android:key="@string/pref_wake_lock"
                             android:defaultValue="true"/>
     </PreferenceScreen>
     <PreferenceScreen android:title="@string/options_interface">
         <ListPreference
-                android:key="color_scheme"
+                android:key="@string/pref_color_scheme"
                 android:title="@string/color_scheme"
                 android:defaultValue="Light Holo"/>
         <ru.sawim.view.preference.SeekBarPreference android:title="@string/fonts"
-                                                    android:key="font_scheme"
+                                                    android:key="@string/pref_font_scheme"
                                                     android:defaultValue="18"/>
         <PreferenceCategory android:title="@string/contact_list"/>
         <CheckBoxPreference android:title="@string/show_user_groups"
-                            android:key="user_groups"
+                            android:key="@string/pref_user_groups"
                             android:defaultValue="true"/>
         <CheckBoxPreference android:title="@string/show_status_line"
-                            android:key="show_status_line"
+                            android:key="@string/pref_show_status_line"
                             android:defaultValue="true"/>
         <CheckBoxPreference android:title="@string/contacts_with_msg_at_top"
-                            android:key="sort_up_with_msg"
+                            android:key="@string/pref_sort_up_with_msg"
                             android:defaultValue="true"/>
         <ListPreference
-                android:key="cl_sort_by"
+                android:key="@string/pref_cl_sort_by"
                 android:defaultValue="@string/sort_by_status"
                 android:title="@string/sort_by"
                 android:entries="@array/sort_by_array"
                 android:entryValues="@array/sort_by_array"/>
         <PreferenceCategory android:title="@string/chat"/>
         <CheckBoxPreference android:title="@string/hide_chat_keyboard"
-                            android:key="hide_keyboard"
+                            android:key="@string/pref_hide_keyboard"
                             android:defaultValue="true"/>
         <CheckBoxPreference android:title="@string/use_simple_input"
-                            android:key="simple_input"
+                            android:key="@string/pref_simple_input"
                             android:defaultValue="false"/>
         <CheckBoxPreference android:title="@string/use_history"
-                            android:key="history"
+                            android:key="@string/pref_history"
                             android:defaultValue="false"/>
     </PreferenceScreen>
 
     <PreferenceScreen android:title="@string/options_signaling">
-        <RingtonePreference android:key="mess_ringtone"
+        <RingtonePreference android:key="@string/pref_mess_ringtone"
                             android:title="@string/notification_ringtone"
                             android:summary="@string/notification_ringtone_summaey"
                             android:showSilent="true"
                             android:showDefault="true"
                             android:ringtoneType="notification"	/>
         <CheckBoxPreference android:title="@string/vibration"
-                            android:key="vibration"/>
+                            android:key="@string/pref_vibration"/>
         <CheckBoxPreference android:title="@string/alarm"
-                            android:key="alarm"/>
+                            android:key="@string/pref_alarm"/>
     </PreferenceScreen>
 
     <PreferenceScreen android:title="@string/antispam">
         <CheckBoxPreference android:title="@string/on"
-                            android:key="antispam_enable"/>
-        <EditTextPreference android:key="antispam_msg"
+                            android:key="@string/pref_antispam_enable"/>
+        <EditTextPreference android:key="@string/pref_antispam_msg"
                             android:title="@string/antispam_msg"/>
-        <EditTextPreference android:key="antispam_answer"
+        <EditTextPreference android:key="@string/pref_antispam_answer"
                             android:title="@string/antispam_answer"/>
-        <EditTextPreference android:key="antispam_hello"
+        <EditTextPreference android:key="@string/pref_antispam_hello"
                             android:title="@string/antispam_hello"/>
-        <EditTextPreference android:key="antispam_keywords"
+        <EditTextPreference android:key="@string/pref_antispam_keywords"
                             android:title="@string/antispam_keywords"
                 android:defaultValue="http sms www @conf"/>
     </PreferenceScreen>
 
-    <PreferenceScreen android:title="@string/answerer" android:key="answerer">
+    <PreferenceScreen android:title="@string/answerer" android:key="@string/pref_answerer">
     </PreferenceScreen>
 
-    <PreferenceScreen android:title="@string/about_program" android:key="about_program">
+    <PreferenceScreen android:title="@string/options_pro" android:key="@string/pref_options_pro">
+        <CheckBoxPreference android:title="@string/hide_icons_clients"
+                            android:key="@string/pref_hide_icons_clients"
+                            android:defaultValue="true"/>
+        <ListPreference
+                android:key="@string/pref_aa_time"
+                android:defaultValue="5"
+                android:title="@string/absence"
+                android:entries="@array/absence_array"
+                android:entryValues="@array/absence_array"/>
+    </PreferenceScreen>
+
+    <PreferenceScreen android:title="@string/about_program" android:key="@string/pref_about_program">
     </PreferenceScreen>
 
 </PreferenceScreen>

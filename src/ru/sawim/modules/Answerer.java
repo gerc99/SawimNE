@@ -84,7 +84,7 @@ public final class Answerer implements FormListener {
             public void onCreateOptionsMenu(Menu menu) {
                 menu.add(Menu.FIRST, MENU_ADD, 2, JLocale.getString(R.string.add_new));
                 menu.add(Menu.FIRST, MENU_CLEAR, 2, JLocale.getString(R.string.delete_all));
-                if (Options.getBoolean(Options.OPTION_ANSWERER)) {
+                if (Options.getBoolean(JLocale.getString(R.string.pref_answerer))) {
                     menu.add(Menu.FIRST, MENU_ON_OFF, 2, JLocale.getString(R.string.answerer_off));
                 } else {
                     menu.add(Menu.FIRST, MENU_ON_OFF, 2, JLocale.getString(R.string.answerer_on));
@@ -110,7 +110,7 @@ public final class Answerer implements FormListener {
                         break;
 
                     case MENU_ON_OFF:
-                        Options.setBoolean(Options.OPTION_ANSWERER, !Options.getBoolean(Options.OPTION_ANSWERER));
+                        Options.setBoolean(JLocale.getString(R.string.pref_answerer), !Options.getBoolean(JLocale.getString(R.string.pref_answerer)));
                         Options.safeSave();
                         refreshList();
                         break;

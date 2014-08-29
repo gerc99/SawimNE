@@ -710,7 +710,7 @@ abstract public class Protocol {
     }
 
     public final void markMessages(Contact contact) {
-        if (Options.getBoolean(Options.OPTION_SORT_UP_WITH_MSG)) {
+        if (Options.getBoolean(JLocale.getString(R.string.pref_sort_up_with_msg))) {
             ui_updateContact(contact);
         }
         RosterHelper.getInstance().markMessages(contact);
@@ -856,7 +856,7 @@ abstract public class Protocol {
         boolean isBlog = isBlogBot(contact.getUserId());
         boolean isMention = false;
         if (!silent) {
-            if (Options.getBoolean(Options.OPTION_ANSWERER)) {
+            if (Options.getBoolean(JLocale.getString(R.string.pref_answerer))) {
                 Answerer.getInstance().checkMessage(this, contact, message);
             }
             if (!isPersonal && !message.isOffline() && (contact instanceof XmppContact)) {
@@ -869,7 +869,7 @@ abstract public class Protocol {
             if (message.isOffline()) {
             } else if (isPersonal) {
                 if (contact.isAuth() && !contact.isTemp()
-                        && message.isWakeUp() && Options.getBoolean(Options.OPTION_ALARM)) {
+                        && message.isWakeUp() && Options.getBoolean(JLocale.getString(R.string.pref_alarm))) {
                     SawimNotification.alarm(message.getProcessedText());
                 } else {
                     //playNotification(Notify.NOTIFY_MESSAGE);

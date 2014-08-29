@@ -22,9 +22,10 @@ public class StatusesView extends DialogFragment {
     private int type;
     private Protocol protocol;
 
-    public StatusesView(Protocol p, int type) {
+    public StatusesView init(Protocol p, int type) {
         protocol = p;
         this.type = type;
+        return this;
     }
 
     @Override

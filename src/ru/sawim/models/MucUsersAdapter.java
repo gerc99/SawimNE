@@ -219,7 +219,7 @@ public class MucUsersAdapter extends BaseAdapter {
         rosterItemView.itemNameFont = Typeface.DEFAULT;
         rosterItemView.itemName = c.resource;
         Icon ic = protocol.clientInfo.getIcon(c.client);
-        if (ic != null && !Options.getBoolean(Options.OPTION_HIDE_ICONS_CLIENTS)) {
+        if (ic != null && !Options.getBoolean(JLocale.getString(R.string.pref_hide_icons_clients))) {
             rosterItemView.itemFifthImage = ic.getImage().getBitmap();
         }
         rosterItemView.itemFourthImage = SawimResources.affiliationIcons.iconAt(XmppServiceContact.getAffiliationName(c.priorityA)).getImage().getBitmap();
