@@ -528,4 +528,5 @@
     <string name="new_subject">New subject</string>
     <string name="conference_theme">Conference theme</string>
     <string name="message_from">Message from</string>
+    <string name="delete_history">Delete history</string>
 </resources>

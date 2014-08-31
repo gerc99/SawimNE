@@ -122,6 +122,7 @@ public final class StatusView {
     public void init(Protocol p, Contact c) {
         list = VirtualList.getInstance();
         model = new VirtualListModel();
+        list.setProtocol(p);
         list.setModel(model);
         list.setOnBuildContextMenu(new VirtualList.OnBuildContextMenu() {
             @Override
@@ -170,7 +171,7 @@ public final class StatusView {
         return contact;
     }
 
-    public void showIt() {
-        list.show();
+    public void showIt(BaseActivity activity) {
+        list.show(activity);
     }
 }

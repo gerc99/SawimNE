@@ -18,6 +18,7 @@ import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
 import ru.sawim.models.list.VirtualList;
 import ru.sawim.models.list.VirtualListModel;
+import ru.sawim.view.VirtualListView;
 
 import java.util.Vector;
 
@@ -46,7 +47,7 @@ public final class Answerer implements FormListener {
         return instance;
     }
 
-    public void activate() {
+    public void activate(BaseActivity activity) {
         list = VirtualList.getInstance();
         list.setCaption(JLocale.getString(R.string.answerer));
         refreshList();
@@ -117,7 +118,8 @@ public final class Answerer implements FormListener {
                 }
             }
         });
-        list.show();
+        VirtualListView.show(activity, false);
+        list.updateModel();
     }
 
     private void refreshList() {
@@ -201,7 +203,7 @@ public final class Answerer implements FormListener {
         list.back();
     }
 
-    public void formAction(Forms gform, boolean apply) {
+    public void formAction(BaseActivity activity, Forms gform, boolean apply) {
         if (form == gform) {
             if (apply) {
                 String item = form.getTextFieldValue(FORM_EDIT_QUESTION) + "=" + form.getTextFieldValue(FORM_EDIT_ANSWER);

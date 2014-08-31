@@ -574,7 +574,7 @@ public final class Xmpp extends Protocol implements FormListener {
                 break;
 
             case ContactMenu.GATE_REGISTER:
-                getConnection().register(c.getUserId());
+                getConnection().register(c.getUserId()).show(activity);
                 break;
 
             case ContactMenu.GATE_UNREGISTER:
@@ -595,7 +595,7 @@ public final class Xmpp extends Protocol implements FormListener {
                     ServiceDiscovery sd = getServiceDiscovery();
                     sd.setServer(contact.getUserId());
                     sd.isMucUsers(true);
-                    sd.showIt();
+                    sd.showIt(activity);
                 }
                 break;
             case ContactMenu.COMMAND_TITLE:
@@ -625,31 +625,31 @@ public final class Xmpp extends Protocol implements FormListener {
                 break;
 
             case ContactMenu.CONFERENCE_OWNER_OPTIONS:
-                connection.requestOwnerForm(c.getUserId());
+                connection.requestOwnerForm(c.getUserId()).show(activity);
                 break;
             case ContactMenu.CONFERENCE_OWNERS:
                 AffiliationListConf alc = getAffiliationListConf();
                 alc.setServer(c.getUserId(), c.getMyName());
                 getConnection().requestAffiliationListConf(c.getUserId(), "owner");
-                alc.showIt();
+                alc.showIt(activity);
                 break;
             case ContactMenu.CONFERENCE_ADMINS:
                 AffiliationListConf al = getAffiliationListConf();
                 al.setServer(c.getUserId(), c.getMyName());
                 getConnection().requestAffiliationListConf(c.getUserId(), "admin");
-                al.showIt();
+                al.showIt(activity);
                 break;
             case ContactMenu.CONFERENCE_MEMBERS:
                 AffiliationListConf affiliationListConf = getAffiliationListConf();
                 affiliationListConf.setServer(c.getUserId(), c.getMyName());
                 getConnection().requestAffiliationListConf(c.getUserId(), "member");
-                affiliationListConf.showIt();
+                affiliationListConf.showIt(activity);
                 break;
             case ContactMenu.CONFERENCE_INBAN:
                 AffiliationListConf aff = getAffiliationListConf();
                 aff.setServer(c.getUserId(), c.getMyName());
                 getConnection().requestAffiliationListConf(c.getUserId(), "outcast");
-                aff.showIt();
+                aff.showIt(activity);
                 break;
 
             case ContactMenu.CONFERENCE_DISCONNECT:
@@ -777,7 +777,7 @@ public final class Xmpp extends Protocol implements FormListener {
         statusView.addTime();
     }
 
-    public void showStatus(Contact contact) {
+    public void showStatus(BaseActivity activity, Contact contact) {
         StatusView statusView = RosterHelper.getInstance().getStatusView();
         try {
             if (contact.isOnline() && contact.isSingleUserContact()) {
@@ -795,7 +795,7 @@ public final class Xmpp extends Protocol implements FormListener {
 
         statusView.init(this, contact);
         updateStatusView(statusView, contact);
-        statusView.showIt();
+        statusView.showIt(activity);
     }
 
     public void saveAnnotations(String xml) {
@@ -857,7 +857,7 @@ public final class Xmpp extends Protocol implements FormListener {
         }
     }
 
-    public void formAction(Forms form, boolean apply) {
+    public void formAction(BaseActivity activity, Forms form, boolean apply) {
         if (enterData == form) {
             if (apply) {
                 if (enterConf.isConference()) {

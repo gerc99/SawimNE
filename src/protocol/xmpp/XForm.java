@@ -32,6 +32,10 @@ final class XForm {
         form = new Forms(caption, listener, true);
     }
 
+    void init(Forms f) {
+        form = f;
+    }
+
     public boolean isWaiting() {
         return waitingForm;
     }
@@ -59,7 +63,7 @@ final class XForm {
     }
 
     public void setErrorMessage(String error) {
-        form.setErrorString(error);
+        form.setWarningString(error);
     }
 
     public String getField(String name) {

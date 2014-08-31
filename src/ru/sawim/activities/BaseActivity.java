@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import ru.sawim.ExternalApi;
+import ru.sawim.R;
 import ru.sawim.SawimResources;
 
 /**
@@ -13,30 +14,9 @@ import ru.sawim.SawimResources;
  */
 public class BaseActivity extends ActionBarActivity {
 
-    public static ExternalApi externalApi = new ExternalApi();
-    private static BaseActivity currentActivity;
-
-    public static BaseActivity getCurrentActivity() {
-        return currentActivity;
-    }
-
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        currentActivity = null;
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        currentActivity = this;
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    protected void onResume() {
-        currentActivity = this;
-        super.onResume();
-    }
+    private final static ExternalApi externalApi = new ExternalApi();
+    private OnConfigurationChanged configurationChanged;
+    private int oldOrientation;
 
     public void resetBar(String title) {
         ActionBar actionBar = getSupportActionBar();
@@ -50,8 +30,6 @@ public class BaseActivity extends ActionBarActivity {
         actionBar.setTitle(title);
     }
 
-    int oldOrientation;
-
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
@@ -63,14 +41,12 @@ public class BaseActivity extends ActionBarActivity {
         }
     }
 
-    private static OnConfigurationChanged configurationChanged;
-
-    public OnConfigurationChanged getConfigurationChanged() {
-        return configurationChanged;
+    public static ExternalApi getExternalApi() {
+        return externalApi;
     }
 
     public void setConfigurationChanged(OnConfigurationChanged configurationChanged) {
-        BaseActivity.configurationChanged = configurationChanged;
+        this.configurationChanged = configurationChanged;
     }
 
     public interface OnConfigurationChanged {

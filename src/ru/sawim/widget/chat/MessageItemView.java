@@ -176,7 +176,7 @@ public class MessageItemView extends View {
 
     public void repaint() {
         requestLayout();
-        invalidate();
+        //invalidate();
     }
 
     @Override

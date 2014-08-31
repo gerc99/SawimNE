@@ -20,7 +20,11 @@ import ru.sawim.widget.Util;
  */
 public class ChatListsView extends IcsLinearLayout {
 
+    private static final int CHAT_LIST_VIEW_INDEX = 0;
+    private static final int NICKS_LIST_VIEW_INDEX = 1;
+
     private static final TextPaint textPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
+
     private boolean isShowDividerForUnreadMessage = false;
 
     public ChatListsView(Context context, boolean isTablet, View chatListView, View nickList) {
@@ -32,12 +36,12 @@ public class ChatListsView extends IcsLinearLayout {
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
         if (isTablet)
             lp.weight = 1;
-        addViewInLayout(chatListView, 0, lp);
+        addViewInLayout(chatListView, CHAT_LIST_VIEW_INDEX, lp);
 
         if (isTablet) {
             lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
             lp.weight = 3;
-            addViewInLayout(nickList, 1, lp);
+            addViewInLayout(nickList, NICKS_LIST_VIEW_INDEX, lp);
         }
         textPaint.setStrokeWidth(Util.dipToPixels(context, 5));
     }
@@ -61,7 +65,7 @@ public class ChatListsView extends IcsLinearLayout {
         super.dispatchDraw(canvas);
         if (isShowDividerForUnreadMessage) {
             textPaint.setColor(Scheme.getColor(Scheme.THEME_UNREAD_MESSAGE_DIVIDER));
-            canvas.drawLine(getPaddingLeft(), getHeight(), getWidth() - getPaddingRight(), getHeight(), textPaint);
+            canvas.drawLine(getPaddingLeft(), getHeight(), getChildAt(CHAT_LIST_VIEW_INDEX).getWidth() - getPaddingRight(), getHeight(), textPaint);
         }
     }
 }

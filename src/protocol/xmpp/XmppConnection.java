@@ -2466,10 +2466,10 @@ public final class XmppConnection extends ClientConnection {
                 && (jid.equals(autoSubscribeDomain) || jid.endsWith('@' + autoSubscribeDomain));
     }
 
-    void register(String jid) {
+    XmppForm register(String jid) {
         xmppForm = new XmppForm(XmppForm.TYPE_REGISTER, getXmpp(), jid);
         requestIq(jid, "jabber:iq:register", xmppForm.getId());
-        xmppForm.show();
+        return xmppForm;
     }
 
     void unregister(String jid) {
@@ -2477,10 +2477,10 @@ public final class XmppConnection extends ClientConnection {
                 + "' id='unreg1'><query xmlns='jabber:iq:register'><remove/></query></iq>");
     }
 
-    void requestOwnerForm(String jid) {
+    XmppForm requestOwnerForm(String jid) {
         xmppForm = new XmppForm(XmppForm.TYPE_OWNER, getXmpp(), jid);
         requestIq(jid, "http://jabber.org/protocol/muc#owner", xmppForm.getId());
-        xmppForm.show();
+        return xmppForm;
     }
 
     void showContactSeen(String jid) {

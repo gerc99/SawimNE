@@ -73,7 +73,7 @@ public class MessagesAdapter extends BaseAdapter {
         final MessData mData = getItem(index);
         MessageItemView item = (MessageItemView) convView;
         if (item == null) {
-            item = new MessageItemView(SawimApplication.getInstance().getBaseContext());
+            item = new MessageItemView(viewGroup.getContext());
             Contact contact = RosterHelper.getInstance().getCurrentContact();
             item.setOnTextLinkClickListener(new TextLinkClick(contact.getProtocol(), contact.getUserId()));
         }

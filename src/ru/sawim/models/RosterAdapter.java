@@ -266,6 +266,13 @@ public class RosterAdapter extends BaseAdapter {
         rosterItemView.isShowDivider = value;
     }
 
+    private static final View.OnClickListener protocolMenuClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            RosterHelper.getInstance().showProtocolMenu((BaseActivity) v.getContext(), ((ProtocolBranch) v.getTag()).getProtocol());
+        }
+    };
+
     @Override
     public View getView(int i, View convertView, final ViewGroup viewGroup) {
         final Object o = getItem(i);
@@ -290,7 +297,7 @@ public class RosterAdapter extends BaseAdapter {
         } else {
             if (itemViewType == ITEM_PROTOCOL) {
                 if (convertView == null) {
-                    Context context = SawimApplication.getInstance().getBaseContext();
+                    Context context = viewGroup.getContext();
                     convertView = new LinearLayout(context);
                     RosterItemView rosterItemView = new RosterItemView(context);
                     MyImageButton imageButton = new MyImageButton(context);
@@ -322,12 +329,8 @@ public class RosterAdapter extends BaseAdapter {
                 if (o != null) {
                     final TreeNode treeNode = (TreeNode) o;
                     progressBar.setVisibility(((ProtocolBranch) treeNode).getProtocol().getConnectingProgress() != 100 ? View.VISIBLE : View.GONE);
-                    imageButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            RosterHelper.getInstance().showProtocolMenu((BaseActivity) viewGroup.getContext(), ((ProtocolBranch) treeNode).getProtocol());
-                        }
-                    });
+                    imageButton.setTag(treeNode);
+                    imageButton.setOnClickListener(protocolMenuClickListener);
                     populateFromProtocol(rosterItemView, (ProtocolBranch) treeNode);
                     setShowDivider(rosterItemView, true);
                 }

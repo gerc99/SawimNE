@@ -88,6 +88,7 @@ public class ContactMenu implements TextBoxView.TextBoxListener {
     public static final int USER_MENU_CLOSE_CHAT = 62;
     public static final int MENU_MULTI_CITATION = 63;
     public static final int ROLE_COMMANDS = 64;
+    public static final int USER_MENU_DELETE_HISTORY = 65;
 
     private Contact contact;
     private Protocol protocol;
@@ -122,11 +123,11 @@ public class ContactMenu implements TextBoxView.TextBoxListener {
                 break;
 
             case USER_MENU_STATUSES:
-                protocol.showStatus(contact);
+                protocol.showStatus(activity, contact);
                 break;
 
             case USER_MANAGE_CONTACT:
-                final MyMenu menu = new MyMenu(activity);
+                final MyMenu menu = new MyMenu();
                 contact.initManageContactMenu(protocol, menu);
                 AlertDialog.Builder builder = new AlertDialog.Builder(activity);
                 builder.setCancelable(true);
@@ -153,6 +154,16 @@ public class ContactMenu implements TextBoxView.TextBoxListener {
                     }
                 });
                 protocol.getChat(contact).activate();
+                break;
+
+            case USER_MENU_DELETE_HISTORY:
+                SawimApplication.getExecutor().execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        protocol.getChat(contact).getHistory().removeHistory();
+                    }
+                });
+                Toast.makeText(activity, activity.getString(R.string.messages_are_deleted), Toast.LENGTH_LONG).show();
                 break;
 
             case USER_MENU_FILE_TRANS:

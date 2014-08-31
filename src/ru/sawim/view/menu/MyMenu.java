@@ -23,11 +23,6 @@ import java.util.List;
 public class MyMenu extends BaseAdapter {
 
     private List<MyMenuItem> myMenuItems = new ArrayList<MyMenuItem>();
-    private Context context;
-
-    public MyMenu(Context c) {
-        context = c;
-    }
 
     public void add(String name, int id) {
         MyMenuItem myMenuItem = new MyMenuItem();
@@ -61,7 +56,7 @@ public class MyMenu extends BaseAdapter {
         View row = convertView;
         ItemWrapper wr;
         if (row == null) {
-            LayoutInflater inf = LayoutInflater.from(context);
+            LayoutInflater inf = LayoutInflater.from(viewGroup.getContext());
             row = inf.inflate(R.layout.menu_item, null);
             wr = new ItemWrapper(row);
             row.setTag(wr);

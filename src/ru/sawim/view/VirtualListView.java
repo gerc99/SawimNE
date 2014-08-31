@@ -110,12 +110,18 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
     }
 
     public static void show(BaseActivity activity) {
+        show(activity, true);
+    }
+
+    public static void show(BaseActivity activity, boolean addToBackStack) {
         if (SawimApplication.isManyPane())
             activity.setContentView(R.layout.main);
         VirtualListView newFragment = new VirtualListView();
         FragmentTransaction transaction = activity.getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment_container, newFragment, VirtualListView.TAG);
-        transaction.addToBackStack(null);
+        if (addToBackStack) {
+            transaction.addToBackStack(null);
+        }
         transaction.commit();
     }
 
@@ -146,7 +152,7 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (SawimActivity.externalApi.onActivityResult(requestCode, resultCode, data)) return;
+        if (BaseActivity.getExternalApi().onActivityResult(requestCode, resultCode, data)) return;
         super.onActivityResult(requestCode, resultCode, data);
     }
 

@@ -79,7 +79,7 @@ public class SmsForm implements FormListener {
         return form.getTextFieldValue(PHONE);
     }
 
-    public void formAction(Forms form, boolean apply) {
+    public void formAction(BaseActivity activity, Forms form, boolean apply) {
         if (apply) {
             final String text = form.getTextFieldValue(TEXT);
             final String phone = getPhone();

@@ -920,10 +920,10 @@ public class Icq extends Protocol {
         data.showProfile(activity);
     }
 
-    public void showStatus(Contact contact) {
+    public void showStatus(BaseActivity activity, Contact contact) {
         StatusView statusView = RosterHelper.getInstance().getStatusView();
         _updateStatusView(statusView, contact);
-        statusView.showIt();
+        statusView.showIt(activity);
         if ((XStatusInfo.XSTATUS_NONE != contact.getXStatusIndex())
                 && (null == contact.getXStatusText())
                 && isMeVisible(contact)) {

@@ -1,17 +1,23 @@
 package ru.sawim.activities;
 
+import android.app.ActionBar;
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.*;
 import android.text.TextUtils;
-import ru.sawim.Options;
-import ru.sawim.R;
-import ru.sawim.SawimApplication;
-import ru.sawim.Scheme;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import ru.sawim.*;
 import ru.sawim.comm.JLocale;
+import ru.sawim.listener.OnCreateListener;
 import ru.sawim.modules.Answerer;
-import ru.sawim.view.AboutProgramView;
 import ru.sawim.view.preference.SeekBarPreference;
 
 /**
@@ -29,6 +35,12 @@ public class MainPreferenceActivity extends PreferenceActivity {
         setTheme(Scheme.isBlack() ? R.style.BaseTheme : R.style.BaseThemeLight);
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preference);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            ActionBar actionBar = getActionBar();
+            actionBar.setHomeButtonEnabled(true);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext());
         sharedPreferenceChangeListener = new SharedPreferenceChangeListener();
@@ -63,7 +75,13 @@ public class MainPreferenceActivity extends PreferenceActivity {
         getPreferenceScreen().findPreference(getString(R.string.pref_answerer)).setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                Answerer.getInstance().activate();
+                Container.put(OnCreateListener.class, new OnCreateListener() {
+                    @Override
+                    public void onCreate(BaseActivity activity) {
+                        Answerer.getInstance().activate(activity);
+                    }
+                });
+                startActivity(new Intent(MainPreferenceActivity.this, EmptyActivity.class));
                 return false;
             }
         });
@@ -71,10 +89,45 @@ public class MainPreferenceActivity extends PreferenceActivity {
         getPreferenceScreen().findPreference(getString(R.string.pref_about_program)).setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                new AboutProgramView().show(BaseActivity.getCurrentActivity().getSupportFragmentManager(), AboutProgramView.TAG);
+                Activity activity = MainPreferenceActivity.this;
+                AlertDialog.Builder adb = new AlertDialog.Builder(activity);
+                adb.setTitle(R.string.about_program);
+                View v = activity.getLayoutInflater().inflate(R.layout.about_program, null);
+                LinearLayout aboutLayout = (LinearLayout) v.findViewById(R.id.about_linear);
+                TextView about = new TextView(activity);
+                about.setTextSize(SawimApplication.getFontSize());
+                about.setText(R.string.about_program_desc);
+                about.setTypeface(Typeface.DEFAULT_BOLD);
+                aboutLayout.addView(about);
+
+                TextView version = new TextView(activity);
+                version.setTextSize(SawimApplication.getFontSize());
+                version.setText(getString(R.string.version) + ": " + SawimApplication.VERSION);
+                version.setTypeface(Typeface.DEFAULT);
+                aboutLayout.addView(version);
+
+                TextView author = new TextView(activity);
+                author.setTextSize(SawimApplication.getFontSize());
+                author.setText(getString(R.string.author));
+                author.setTypeface(Typeface.DEFAULT);
+                aboutLayout.addView(author);
+
+                adb.setView(v);
+                adb.show();
                 return false;
             }
         });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override

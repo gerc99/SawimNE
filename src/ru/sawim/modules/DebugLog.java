@@ -169,9 +169,9 @@ public final class DebugLog {
         });
     }
 
-    public void activate() {
+    public void activate(BaseActivity activity) {
         init();
-        list.show();
+        list.show(activity);
     }
 
     private void removeOldRecords() {

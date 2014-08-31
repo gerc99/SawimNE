@@ -47,7 +47,6 @@ public class SawimNotification {
             }
         }
 
-        long when = 0;
         NotificationCompat.Builder notification = new NotificationCompat.Builder(context);
         Intent notificationIntent = new Intent(context, SawimActivity.class);
         notificationIntent.setAction(SawimActivity.NOTIFY);
@@ -72,17 +71,13 @@ public class SawimNotification {
             stateMsg = String.format((String) context.getText(R.string.unread_messages), unread);
         }
         stateMsg = ChatHistory.instance.getLastMessage(stateMsg);
-        notification.setAutoCancel(true);
-        notification.setWhen(when);
-        notification.setContentIntent(contentIntent);
         CharSequence lastMessageNick = ChatHistory.instance.getLastMessageNick();
-        if (lastMessageNick == null) {
-            notification.setContentTitle(context.getString(R.string.app_name));
-        } else {
-            notification.setContentTitle(context.getString(R.string.message_from) + " " + lastMessageNick);
-        }
-        notification.setContentText(stateMsg);
-        notification.setSmallIcon(icon);
+        notification.setAutoCancel(true).setWhen(0)
+                .setContentIntent(contentIntent)
+                .setContentText(stateMsg)
+                .setSmallIcon(icon)
+                .setContentTitle(lastMessageNick == null ? context.getString(R.string.app_name)
+                        : context.getString(R.string.message_from) + " " + lastMessageNick);
         return notification.build();
     }
 

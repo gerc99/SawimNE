@@ -8,18 +8,16 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.*;
-import android.support.v4.view.PagerTitleStrip;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
-import android.util.Log;
 import android.view.*;
 import android.widget.*;
 import com.viewpagerindicator.TabPageIndicator;
+import ru.sawim.activities.SawimActivity;
 import ru.sawim.listener.OnUpdateRoster;
 import protocol.Contact;
 import protocol.ContactMenu;
@@ -27,7 +25,6 @@ import protocol.Group;
 import protocol.Protocol;
 import ru.sawim.*;
 import ru.sawim.activities.BaseActivity;
-import ru.sawim.activities.SawimActivity;
 import ru.sawim.chat.Chat;
 import ru.sawim.chat.ChatHistory;
 import ru.sawim.comm.JLocale;
@@ -79,7 +76,6 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     private TabPageIndicator tabPageIndicator;
     private ViewPager viewPager;
     private CustomPagerAdapter pagerAdapter;
-    private ArrayList<BaseAdapter> adaptersPages;
 
     @Override
     public void onAttach(Activity activity) {
@@ -129,10 +125,6 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         RosterAdapter allRosterAdapter = new RosterAdapter();
         RosterAdapter onlineRosterAdapter = new RosterAdapter();
         RosterAdapter activeRosterAdapter = new RosterAdapter();
-        adaptersPages = new ArrayList<BaseAdapter>();
-        adaptersPages.add(allRosterAdapter);
-        adaptersPages.add(onlineRosterAdapter);
-        adaptersPages.add(activeRosterAdapter);
         allListView.setAdapter(allRosterAdapter);
         onlineListView.setAdapter(onlineRosterAdapter);
         activeListView.setAdapter(activeRosterAdapter);
@@ -171,8 +163,6 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     @Override
     public void onDetach() {
         super.onDetach();
-        adaptersPages.clear();
-        adaptersPages = null;
         contextMenuInfo = null;
         handler = null;
         viewPager = null;
@@ -188,24 +178,10 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     public boolean handleMessage(Message msg) {
         switch (msg.what) {
             case UPDATE_PROGRESS_BAR:
-                final Protocol p = RosterHelper.getInstance().getProtocol(0);
-                if (RosterHelper.getInstance().getProtocolCount() == 1 && p != null) {
-                    BaseActivity activity = (BaseActivity) getActivity();
-                    byte percent = p.getConnectingProgress();
-                    activity.setSupportProgress(percent * 100);
-                    if (100 == percent || 0 == percent) {
-                        activity.supportInvalidateOptionsMenu();
-                    }
-                }
+                updateProgressBarSync();
                 break;
             case UPDATE_ROSTER:
-                RosterHelper.getInstance().updateOptions();
-                if (getRosterAdapter() != null) {
-                    getRosterAdapter().refreshList();
-                }
-                //if (pagerAdapter != null)
-                //    pagerAdapter.notifyDataSetChanged();
-                updateChatImage();
+                updateRosterSync();
                 break;
             case PUT_INTO_QUEUE:
                 if (getRosterAdapter() != null) {
@@ -214,6 +190,30 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
                 break;
         }
         return false;
+    }
+
+    private int oldProgressBarPercent;
+    private void updateProgressBarSync() {
+        final Protocol p = RosterHelper.getInstance().getProtocol(0);
+        if (RosterHelper.getInstance().getProtocolCount() == 1 && p != null) {
+            byte percent = p.getConnectingProgress();
+            if (oldProgressBarPercent != percent) {
+                oldProgressBarPercent = percent;
+                BaseActivity activity = (BaseActivity) getActivity();
+                activity.setSupportProgress(percent * 100);
+                if (100 == percent || 0 == percent) {
+                    activity.supportInvalidateOptionsMenu();
+                }
+            }
+        }
+    }
+
+    private void updateRosterSync() {
+        updateChatImage();
+        RosterHelper.getInstance().updateOptions();
+        if (getRosterAdapter() != null) {
+            getRosterAdapter().refreshList();
+        }
     }
 
     @Override
@@ -235,8 +235,8 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     }
 
     public void update() {
-        updateRoster();
-        updateProgressBar();
+        updateRosterSync();
+        updateProgressBarSync();
     }
 
     private void updateChatImage() {
@@ -276,16 +276,14 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     new ContactMenu(current.getProtocol(), current.getContact()).doAction((BaseActivity) getActivity(), ContactMenu.USER_MENU_GRANT_AUTH);
-                                    getActivity().supportInvalidateOptionsMenu();
-                                    updateRoster();
+                                    update();
                                 }
                             });
                             dialogBuilder.setNegativeButton(R.string.deny, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     new ContactMenu(current.getProtocol(), current.getContact()).doAction((BaseActivity) getActivity(), ContactMenu.USER_MENU_DENY_AUTH);
-                                    getActivity().supportInvalidateOptionsMenu();
-                                    updateRoster();
+                                    update();
                                 }
                             });
                             Dialog dialog = dialogBuilder.create();
@@ -295,8 +293,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
                     }.show(getFragmentManager().beginTransaction(), "auth");
                 } else {
                     openChat(current.getProtocol(), current.getContact(), null);
-                    getActivity().supportInvalidateOptionsMenu();
-                    updateRoster();
+                    update();
                 }
             }
         });
@@ -342,7 +339,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     public void onResume() {
         super.onResume();
         resume();
-        if (!SawimApplication.isManyPane() && Scheme.isChangeTheme(Scheme.getThemeId(Options.getString(Options.OPTION_COLOR_SCHEME)))) {
+        if (Scheme.isChangeTheme(Scheme.getThemeId())) {
             ((SawimActivity) getActivity()).recreateActivity();
         }
     }
@@ -353,6 +350,8 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
 
         if (RosterHelper.getInstance().getProtocolCount() > 0) {
             RosterHelper.getInstance().setOnUpdateRoster(this);
+            update();
+            getActivity().supportInvalidateOptionsMenu();
             if (SawimApplication.returnFromAcc) {
                 SawimApplication.returnFromAcc = false;
                 if (getRosterAdapter().getCount() == 0)
@@ -360,8 +359,6 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
                 if (pagerAdapter != null)
                     pagerAdapter.notifyDataSetChanged();
             }
-            update();
-            getActivity().supportInvalidateOptionsMenu();
         } else {
             if (!SawimApplication.isManyPane()) {
                 FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
@@ -376,7 +373,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
 
     public RosterAdapter getRosterAdapter() {
         if (viewPager == null) return null;
-        return (RosterAdapter) adaptersPages.get(viewPager.getCurrentItem());
+        return (RosterAdapter) ((MyListView) pagerAdapter.instantiateItem(viewPager, viewPager.getCurrentItem())).getAdapter();
     }
 
     private void openChat(Protocol p, Contact c, String sharingText) {
@@ -462,7 +459,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
             if (item.getType() == TreeNode.PROTOCOL || item.getType() == TreeNode.GROUP) {
                 TreeBranch group = (TreeBranch) item;
                 group.setExpandFlag(!group.isExpanded());
-                updateRoster();
+                update();
             }
         }
     }

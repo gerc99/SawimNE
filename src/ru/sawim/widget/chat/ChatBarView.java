@@ -20,6 +20,9 @@ import ru.sawim.widget.SimpleItemView;
  */
 public class ChatBarView extends IcsLinearLayout {
 
+    private static final int ITEM_VIEW_INDEX = 0;
+    private static final int CHATS_IMAGE_INDEX = 1;
+
     SimpleItemView itemView;
 
     public ChatBarView(Context context, View chatsImage) {
@@ -37,12 +40,12 @@ public class ChatBarView extends IcsLinearLayout {
         itemView = new SimpleItemView(context);
         int padding = ru.sawim.widget.Util.dipToPixels(context, 3);
         itemView.setPadding(padding, padding, padding, padding);
-        addViewInLayout(itemView, 0, labelLayoutParams);
+        addViewInLayout(itemView, ITEM_VIEW_INDEX, labelLayoutParams);
 
         if (!SawimApplication.isManyPane()) {
             LinearLayout.LayoutParams chatsImageLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
             chatsImageLP.gravity = Gravity.CENTER_VERTICAL;
-            addViewInLayout(chatsImage, 1, chatsImageLP);
+            addViewInLayout(chatsImage, CHATS_IMAGE_INDEX, chatsImageLP);
         }
     }
 
@@ -51,8 +54,8 @@ public class ChatBarView extends IcsLinearLayout {
     }
 
     public void setVisibilityChatsImage(int visibility) {
-        if (getChildAt(1) != null)
-            getChildAt(1).setVisibility(visibility);
+        if (getChildAt(CHATS_IMAGE_INDEX) != null)
+            getChildAt(CHATS_IMAGE_INDEX).setVisibility(visibility);
     }
 
     public void updateTextView(String text) {

@@ -86,7 +86,7 @@ public final class ManageContactListForm implements FormListener, TextBoxView.Te
     }
 
     public void showMenu(final BaseActivity a) {
-        final MyMenu menu = new MyMenu(a);
+        final MyMenu menu = new MyMenu();
         boolean canAdd = !protocol.getGroupItems().isEmpty()
                 && ((null == group) || group.hasMode(Group.MODE_NEW_CONTACTS));
         if (canAdd) {
@@ -249,7 +249,7 @@ public final class ManageContactListForm implements FormListener, TextBoxView.Te
         }
     }
 
-    public void formAction(Forms form, boolean apply) {
+    public void formAction(BaseActivity activity, Forms form, boolean apply) {
         if (!apply) {
             form.back();
             return;

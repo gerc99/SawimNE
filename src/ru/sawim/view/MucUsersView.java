@@ -56,8 +56,8 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
                 final Object o = usersAdapter.getItem(position);
                 if (o instanceof String) return false;
                 final String nick = usersAdapter.getCurrentSubContact(o);
-                final MyMenu menu = new MyMenu(activity);
-                final MyMenu roleConfigMenu = getRoleConfigMenu(activity, nick);
+                final MyMenu menu = new MyMenu();
+                final MyMenu roleConfigMenu = getRoleConfigMenu(nick);
                 menu.add(activity.getString(R.string.open_private), ContactMenu.COMMAND_PRIVATE);
                 menu.add(activity.getString(R.string.info), ContactMenu.COMMAND_INFO);
                 menu.add(activity.getString(R.string.user_statuses), ContactMenu.COMMAND_STATUS);
@@ -91,7 +91,7 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
                                 protocol.showUserInfo(activity, xmppServiceContact.getPrivateContact(nick));
                                 break;
                             case ContactMenu.COMMAND_STATUS:
-                                protocol.showStatus(xmppServiceContact.getPrivateContact(nick));
+                                protocol.showStatus(activity, xmppServiceContact.getPrivateContact(nick));
                                 break;
                             case ContactMenu.USER_INVITE:
                                 try {
@@ -122,8 +122,8 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
         nickList.setOnItemLongClickListener(null);
     }
 
-    private MyMenu getRoleConfigMenu(BaseActivity activity, final String nick) {
-        final MyMenu menu = new MyMenu(activity);
+    private MyMenu getRoleConfigMenu(final String nick) {
+        final MyMenu menu = new MyMenu();
         int myAffiliation = usersAdapter.getAffiliation(xmppServiceContact.getMyName());
         int myRole = usersAdapter.getRole(xmppServiceContact.getMyName());
         final int role = usersAdapter.getRole(nick);

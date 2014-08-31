@@ -9,9 +9,11 @@
 
 package ru.sawim.models.form;
 
+import ru.sawim.activities.BaseActivity;
+
 /**
  * @author Vladimir Kryukov
  */
 public interface FormListener {
-    void formAction(Forms form, boolean apply);
+    void formAction(BaseActivity activity, Forms form, boolean apply);
 }

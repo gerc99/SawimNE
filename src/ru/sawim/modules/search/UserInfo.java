@@ -72,6 +72,7 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
         if (!searchResult) {
             addMenu();
         }
+        profileView.setProtocol(protocol);
         profileView.setModel(new VirtualListModel());
         profileView.setClickListListener(new VirtualList.OnClickListListener() {
             @Override
@@ -90,7 +91,7 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
 
     public void showProfile(BaseActivity activity) {
         this.activity = activity;
-        profileView.show();
+        profileView.show(activity);
     }
 
     void setSeachResultFlag() {
@@ -134,6 +135,7 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
                 protocol.getAvatar(this);
             }
         }
+        profileView.setProtocol(protocol);
         profileView.setModel(profile);
         profileView.updateModel();
     }
@@ -206,9 +208,9 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
                         break;
 
                     case INFO_MENU_TAKE_AVATAR:
-                        BaseActivity.externalApi.setFragment(activity
+                        BaseActivity.getExternalApi().setFragment(activity
                                 .getSupportFragmentManager().findFragmentByTag(VirtualListView.TAG));
-                        BaseActivity.externalApi.startCamera(UserInfo.this, 640, 480);
+                        BaseActivity.getExternalApi().startCamera(UserInfo.this, 640, 480);
                         break;
 
                     case INFO_MENU_REMOVE_AVATAR:
@@ -218,9 +220,9 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
                         break;
 
                     case INFO_MENU_ADD_AVATAR:
-                        BaseActivity.externalApi.setFragment(activity
+                        BaseActivity.getExternalApi().setFragment(activity
                                 .getSupportFragmentManager().findFragmentByTag(VirtualListView.TAG));
-                        if (BaseActivity.externalApi.pickFile(UserInfo.this)) {
+                        if (BaseActivity.getExternalApi().pickFile(UserInfo.this)) {
                             return;
                         }
                         break;
@@ -299,6 +301,7 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
         profileView.updateModel();
         profile.setInfoMessage(JLocale.getString(R.string.wait));
         addContextMenu();
+        profileView.setProtocol(protocol);
         profileView.setModel(profile);
         profileView.updateModel();
     }

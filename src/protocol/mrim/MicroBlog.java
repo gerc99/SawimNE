@@ -35,9 +35,10 @@ public final class MicroBlog implements TextBoxView.TextBoxListener {
         this.mrim = mrim;
     }
 
-    public void activate() {
+    public void activate(BaseActivity activity) {
         list = VirtualList.getInstance();
         list.setCaption(JLocale.getString(R.string.microblog));
+        list.setProtocol(mrim);
         list.setModel(model);
         list.setClickListListener(new VirtualList.OnClickListListener() {
             @Override
@@ -117,7 +118,7 @@ public final class MicroBlog implements TextBoxView.TextBoxListener {
                 }
             }
         });
-        list.show();
+        list.show(activity);
     }
 
     private void removeOldRecords() {

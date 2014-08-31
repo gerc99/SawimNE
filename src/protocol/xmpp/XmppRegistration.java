@@ -5,6 +5,7 @@ import ru.sawim.Options;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.SawimException;
+import ru.sawim.activities.BaseActivity;
 import ru.sawim.comm.JLocale;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
@@ -118,7 +119,7 @@ public class XmppRegistration implements Runnable, FormListener {
         new Thread(this,"XMPPRegistration").start();
     }
 
-    public void formAction(Forms form, boolean apply) {
+    public void formAction(BaseActivity activity, Forms form, boolean apply) {
         if (apply) {
             if ((0 < form.getSize()) || (TYPE_NEW_ACCOUNT_DOMAIN == type)) {
                 doAction();

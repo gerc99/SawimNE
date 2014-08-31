@@ -12,7 +12,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
@@ -46,8 +45,9 @@ public class FormView extends DialogFragment implements Forms.OnUpdateForm, View
     private Forms forms;
     private static HashMap<String, Forms> formsMap = new HashMap<String, Forms>();
 
-    public FormView(Forms forms) {
+    public FormView init(Forms forms) {
         this.forms = forms;
+        return this;
     }
 
     @Override
@@ -74,6 +74,7 @@ public class FormView extends DialogFragment implements Forms.OnUpdateForm, View
         getDialog().setTitle(getLastForms().getCaption());
         getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         getDialog().setCanceledOnTouchOutside(false);
+        ((TextView) getDialog().findViewById(android.R.id.title)).setSingleLine(false);
         View v = inflater.inflate(R.layout.form, container, false);
         textView = (TextView) v.findViewById(R.id.textView);
         progressBar = (ProgressBar) v.findViewById(R.id.progressBar);
@@ -95,20 +96,21 @@ public class FormView extends DialogFragment implements Forms.OnUpdateForm, View
 
     public static void show(final BaseActivity activity, final Forms f) {
         formsMap.put(f.getCaption(), f);
-        if (activity == null) {
-            SawimNotification.captcha(f.getCaption());
-        } else {
+        if (activity != null) {
             activity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    if (activity.isFinishing()) {
-                        SawimNotification.captcha(f.getCaption());
-                    } else {
-                        new FormView(f).show(activity.getSupportFragmentManager().beginTransaction(), "form");
+                    if (!activity.isFinishing()) {
+                        new FormView().init(f).show(activity.getSupportFragmentManager().beginTransaction(), "form");
                     }
                 }
             });
         }
+    }
+
+    public static void showCaptcha(final Forms f) {
+        formsMap.put(f.getCaption(), f);
+        SawimNotification.captcha(f.getCaption());
     }
 
     public static void showWindows(final BaseActivity activity, final String title) {
@@ -116,7 +118,7 @@ public class FormView extends DialogFragment implements Forms.OnUpdateForm, View
             @Override
             public void run() {
                 if (!activity.isFinishing()) {
-                    FormView formView = new FormView(formsMap.get(title));
+                    FormView formView = new FormView().init(formsMap.get(title));
                     formView.show(activity.getSupportFragmentManager().beginTransaction(), "form");
                 }
             }
@@ -140,11 +142,11 @@ public class FormView extends DialogFragment implements Forms.OnUpdateForm, View
                     scrollView.setVisibility(View.VISIBLE);
                     buildList();
                 }
-                if (getLastForms().getErrorString() != null) {
+                if (getLastForms().getWarningString() != null) {
                     textView.setVisibility(View.VISIBLE);
                     progressBar.setVisibility(View.GONE);
                     scrollView.setVisibility(View.GONE);
-                    textView.setText(getLastForms().getErrorString());
+                    textView.setText(getLastForms().getWarningString());
                 }
             }
         });
@@ -164,13 +166,8 @@ public class FormView extends DialogFragment implements Forms.OnUpdateForm, View
     public void onClick(View view) {
         if (getLastForms().getFormListener() != null)
             getLastForms().getFormListener()
-                    .formAction(getLastForms(), view.equals(okButton));
+                    .formAction((BaseActivity) getActivity(), getLastForms(), view.equals(okButton));
         Util.hideKeyboard(getActivity());
-    }
-
-    public boolean hasBack() {
-        Util.hideKeyboard(getActivity());
-        return getLastForms().getBackPressedListener() == null || getLastForms().getBackPressedListener().back();
     }
 
     private void buildList() {
@@ -199,7 +196,7 @@ public class FormView extends DialogFragment implements Forms.OnUpdateForm, View
 
                         public void onTextChanged(CharSequence s, int start, int before, int count) {
                             c.text = s.toString();
-                            getLastForms().controlUpdated(c);
+                            getLastForms().controlUpdated((BaseActivity) getActivity(), c);
                         }
                     });
                     listLayout.addView(editText);
@@ -212,7 +209,7 @@ public class FormView extends DialogFragment implements Forms.OnUpdateForm, View
                         @Override
                         public void onClick(View view) {
                             c.selected = !c.selected;
-                            getLastForms().controlUpdated(c);
+                            getLastForms().controlUpdated((BaseActivity) getActivity(), c);
                         }
                     });
                     listLayout.addView(checkBox);
@@ -229,7 +226,7 @@ public class FormView extends DialogFragment implements Forms.OnUpdateForm, View
                         @Override
                         public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
                             c.current = position;
-                            getLastForms().controlUpdated(c);
+                            getLastForms().controlUpdated((BaseActivity) getActivity(), c);
                         }
 
                         @Override
@@ -247,7 +244,7 @@ public class FormView extends DialogFragment implements Forms.OnUpdateForm, View
                         @Override
                         public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                             c.level = i;
-                            getLastForms().controlUpdated(c);
+                            getLastForms().controlUpdated((BaseActivity) getActivity(), c);
                         }
 
                         @Override
@@ -274,7 +271,7 @@ public class FormView extends DialogFragment implements Forms.OnUpdateForm, View
                             c.level = i;
                             descView.setTextSize(c.level);
                             descView.setText(c.description + "(" + c.level + ")");
-                            getLastForms().controlUpdated(c);
+                            getLastForms().controlUpdated((BaseActivity) getActivity(), c);
                         }
 
                         @Override
@@ -306,7 +303,7 @@ public class FormView extends DialogFragment implements Forms.OnUpdateForm, View
                         @Override
                         public void onClick(View v) {
                             Util.hideKeyboard(getActivity());
-                            getLastForms().controlUpdated(c);
+                            getLastForms().controlUpdated((BaseActivity) getActivity(), c);
                         }
                     });
                     listLayout.addView(button);

@@ -252,7 +252,6 @@ public class SawimActivity extends BaseActivity {
         return chatView;
     }
 
-
     private static final int MENU_OPTIONS = 7;
     private static final int MENU_QUIT = 14;
     private static final int MENU_DEBUG_LOG = 22;
@@ -336,7 +335,7 @@ public class SawimActivity extends BaseActivity {
                 startActivity(new Intent(this, MainPreferenceActivity.class));
                 break;
             case MENU_DEBUG_LOG:
-                DebugLog.instance.activate();
+                DebugLog.instance.activate(this);
                 break;
             case MENU_QUIT:
                 SawimApplication.getInstance().quit(false);

@@ -61,13 +61,12 @@ public class VkApp {
     }
 
     public void showLoginDialog(String email, String password) {
-        //new WebClient().oauth(OAUTH_AUTHORIZE_URL, email, password, _listener);
-        SawimApplication.getInstance().getUiHandler().post(new Runnable() {
-            public void run() {
-                if (BaseActivity.getCurrentActivity() != null)
-                    new VkDialog(BaseActivity.getCurrentActivity(), OAUTH_AUTHORIZE_URL, _listener).show();
-            }
-        });
+        new WebClient().oauth(OAUTH_AUTHORIZE_URL, email, password, _listener);
+        //SawimApplication.getInstance().getUiHandler().post(new Runnable() {
+        //    public void run() {
+        //        new VkDialog(BaseActivity.getCurrentActivity(), OAUTH_AUTHORIZE_URL, _listener).show();
+        //    }
+        //});
 
     }
 

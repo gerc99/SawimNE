@@ -120,7 +120,6 @@ public class SawimApplication extends Application {
             RosterHelper.getInstance().loadAccounts();
         } catch (Exception e) {
             DebugLog.panic("init", e);
-            DebugLog.instance.activate();
         }
         DebugLog.startTests();
         TextFormatter.init();

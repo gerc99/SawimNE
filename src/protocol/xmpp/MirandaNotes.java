@@ -39,6 +39,7 @@ public final class MirandaNotes {
         model = new VirtualListModel();
         screen.setCaption(JLocale.getString(R.string.notes));
         xmpp = protocol;
+        screen.setProtocol(xmpp);
         screen.setModel(model);
         screen.setBuildOptionsMenu(new VirtualList.OnBuildOptionsMenu() {
             @Override
@@ -121,7 +122,7 @@ public final class MirandaNotes {
         model.clear();
     }
 
-    public void showIt() {
+    public void showIt(BaseActivity activity) {
         clear();
         notes.removeAllElements();
         VirtualListItem wait = model.createNewParser(true);
@@ -129,7 +130,7 @@ public final class MirandaNotes {
                 Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
         model.addPar(wait);
         xmpp.getConnection().requestMirandaNotes();
-        screen.show();
+        screen.show(activity);
         screen.updateModel();
     }
 
@@ -217,7 +218,7 @@ public final class MirandaNotes {
             form.show(activity);
         }
 
-        public void formAction(Forms form, boolean apply) {
+        public void formAction(BaseActivity activity, Forms form, boolean apply) {
             if (apply) {
                 String title = form.getTextFieldValue(FIELD_TITLE);
                 String tags = form.getTextFieldValue(FIELD_TAGS);

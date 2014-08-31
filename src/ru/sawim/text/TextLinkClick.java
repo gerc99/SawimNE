@@ -37,32 +37,31 @@ public class TextLinkClick implements TextLinkClickListener {
     }
 
     @Override
-    public void onTextLinkClick(View textView, String clickedString, boolean isLongTap) {
+    public void onTextLinkClick(View textView, final String clickedString, boolean isLongTap) {
         if (clickedString.length() == 0) return;
-        final BaseActivity activity = BaseActivity.getCurrentActivity();
+        final BaseActivity activity = (BaseActivity) textView.getContext();
         boolean isJuick = clickedString.startsWith("@") || clickedString.startsWith("#");
         if (isJuick) {
             new JuickMenu(activity, currentProtocol, currentContact, clickedString).show();
             return;
         }
         if (isLongTap || Jid.isJID(clickedString)) {
-            CharSequence[] items = new CharSequence[2];
-            items[0] = activity.getString(R.string.copy);
-            items[1] = activity.getString(R.string.add_contact);
             final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
             builder.setCancelable(true);
             builder.setTitle(R.string.url_menu);
-            final String finalClickedString = clickedString;
+            CharSequence[] items = new CharSequence[2];
+            items[0] = activity.getString(R.string.copy);
+            items[1] = activity.getString(R.string.add_contact);
             builder.setItems(items, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     switch (which) {
                         case 0:
-                            Clipboard.setClipBoardText(activity, finalClickedString);
+                            Clipboard.setClipBoardText(activity, clickedString);
                             break;
                         case 1:
                             currentProtocol.getSearchForm().show(activity,
-                                    Util.getUrlWithoutProtocol(finalClickedString), true);
+                                    Util.getUrlWithoutProtocol(clickedString), true);
                             break;
                     }
                 }
@@ -74,18 +73,17 @@ public class TextLinkClick implements TextLinkClickListener {
                 DebugLog.panic("onTextLinkClick", e);
             }
         } else {
-            if (!Util.isUrl(clickedString))
-                clickedString = "http://" + clickedString;
-            if (clickedString.toLowerCase().startsWith(HtmlTask.PIK4U)
-                    || (clickedString.toLowerCase().startsWith("https://db.tt/"))
-                    || Util.isImageFile(clickedString)) {
+            String clickedStringWithHttp = Util.isUrl(clickedString) ? clickedString : "http://" + clickedString;
+            if (clickedStringWithHttp.toLowerCase().startsWith(HtmlTask.PIK4U)
+                    || (clickedStringWithHttp.toLowerCase().startsWith("https://db.tt/"))
+                    || Util.isImageFile(clickedStringWithHttp)) {
                 PictureView pictureView = new PictureView();
-                pictureView.setLink(clickedString);
+                pictureView.setLink(clickedStringWithHttp);
                 FragmentTransaction transaction = (activity).getSupportFragmentManager().beginTransaction();
                 transaction.add(pictureView, PictureView.TAG);
                 transaction.commitAllowingStateLoss();
             } else {
-                Uri uri = Uri.parse(clickedString);
+                Uri uri = Uri.parse(clickedStringWithHttp);
                 Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                 intent.putExtra(Browser.EXTRA_APPLICATION_ID, activity.getPackageName());
                 try {

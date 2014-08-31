@@ -320,8 +320,9 @@ public class Mrim extends Protocol {
             }
             VirtualList tl = VirtualList.getInstance();
             tl.setCaption(JLocale.getString(R.string.list_of_users));
+            tl.setProtocol(this);
             tl.setModel(list);
-            tl.show();
+            tl.show(activity);
             tl.updateModel();
 
         } else if (ContactMenu.USER_MENU_ADD_USER == action) {
@@ -357,7 +358,7 @@ public class Mrim extends Protocol {
         data.showProfile(activity);
     }
 
-    public void showStatus(Contact contact) {
+    public void showStatus(BaseActivity activity, Contact contact) {
         if (contact instanceof MrimPhoneContact) {
             return;
         }
@@ -374,6 +375,6 @@ public class Mrim extends Protocol {
         }
         statusView.addClient();
         statusView.addTime();
-        statusView.showIt();
+        statusView.showIt(activity);
     }
 }

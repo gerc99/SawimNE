@@ -9,11 +9,13 @@ import android.text.Layout;
 import android.text.Spannable;
 import android.text.StaticLayout;
 import android.text.TextPaint;
+import android.text.style.BackgroundColorSpan;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 import ru.sawim.SawimApplication;
+import ru.sawim.Scheme;
 import ru.sawim.text.InternalURLSpan;
 import ru.sawim.text.TextLinkClickListener;
 
@@ -113,6 +115,7 @@ public class MyTextView extends View {
         return false;
     }
 
+    private static final BackgroundColorSpan linkHighlightColor = new BackgroundColorSpan(Scheme.getColor(Scheme.THEME_LINKS_HIGHLIGHT));
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (text == null) return super.onTouchEvent(event);
@@ -129,6 +132,11 @@ public class MyTextView extends View {
             if (action == MotionEvent.ACTION_CANCEL || action == MotionEvent.ACTION_OUTSIDE) {
                 isSecondTap = true;
             }
+
+            if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_MOVE || action == MotionEvent.ACTION_CANCEL) {
+                buffer.removeSpan(linkHighlightColor);
+                repaint();
+            }
             if (urlSpans.length != 0) {
                 Runnable longPressed = new Runnable() {
                     public void run() {
@@ -141,6 +149,10 @@ public class MyTextView extends View {
                 if (action == MotionEvent.ACTION_DOWN) {
                     isSecondTap = false;
                     isLongTap = false;
+                    buffer.setSpan(linkHighlightColor,
+                            buffer.getSpanStart(urlSpans[0]),
+                            buffer.getSpanEnd(urlSpans[0]), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    repaint();
                     removeCallbacks(longPressed);
                     postDelayed(longPressed, ViewConfiguration.getLongPressTimeout());
                 }

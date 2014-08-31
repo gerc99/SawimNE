@@ -36,12 +36,11 @@ public class Forms {
     public static final byte CONTROL_RINGTONE = 9;
     private OnUpdateForm updateFormListener;
     private FormListener formListener;
-    private OnBackPressed backPressedListener;
     private ControlStateListener controlListener;
     private String caption;
     private boolean isAccept;
     private String waitingString;
-    private String errorString;
+    private String warningString;
 
     public static class Control {
         public String id;
@@ -68,12 +67,12 @@ public class Forms {
         this.isAccept = isAccept;
     }
 
-    public String getErrorString() {
-        return errorString;
+    public String getWarningString() {
+        return warningString;
     }
 
-    public void setErrorString(String errorString) {
-        this.errorString = errorString;
+    public void setWarningString(String warningString) {
+        this.warningString = warningString;
     }
 
     public String getWaitingString() {
@@ -114,24 +113,12 @@ public class Forms {
         void back();
     }
 
-    public interface OnBackPressed {
-        boolean back();
-    }
-
-    public OnBackPressed getBackPressedListener() {
-        return backPressedListener;
-    }
-
-    public void setBackPressedListener(OnBackPressed backPressedListener) {
-        this.backPressedListener = backPressedListener;
-    }
-
-    public void show() {
-        FormView.show(BaseActivity.getCurrentActivity(), this);
-    }
-
     public void show(BaseActivity activity) {
         FormView.show(activity, this);
+    }
+
+    public void showCaptcha() {
+        FormView.showCaptcha(this);
     }
 
     public void invalidate(boolean isLoad) {
@@ -449,9 +436,9 @@ public class Forms {
         return getCheckBoxValue(String.valueOf(controlId));
     }
 
-    public void controlUpdated(Control c) {
+    public void controlUpdated(BaseActivity activity, Control c) {
         if (null != controlListener) {
-            controlListener.controlStateChanged(c.id);
+            controlListener.controlStateChanged(activity, c.id);
         }
     }
 }

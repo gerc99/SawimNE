@@ -328,6 +328,9 @@ abstract public class Contact implements TreeNode, Sortable {
         if (isOnline()) {
             menu.add(Menu.NONE, ContactMenu.USER_MENU_STATUSES, Menu.NONE, R.string.statuses);
         }
+        if (protocol.getChat(this).getHistory().getHistorySize() > 0) {
+            menu.add(Menu.NONE, ContactMenu.USER_MENU_DELETE_HISTORY, Menu.NONE, R.string.delete_history);
+        }
         if (hasChat()) {
             menu.add(Menu.NONE, ContactMenu.USER_MENU_CLOSE_CHAT, Menu.NONE, R.string.close);
         }

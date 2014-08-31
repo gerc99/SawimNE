@@ -77,7 +77,7 @@ public final class Search implements FormListener, ControlStateListener {
         preferredNick = null;
     }
 
-    public void controlStateChanged(String id) {
+    public void controlStateChanged(BaseActivity activity, String id) {
         if (PROFILE == Integer.valueOf(id)) {
             String userid = searchForm.getTextFieldValue(USERID);
             if (StringConvertor.isEmpty(userid)) {
@@ -89,7 +89,7 @@ public final class Search implements FormListener, ControlStateListener {
             Contact contact = protocol.createTempContact(userid);
             if (null != contact) {
                 searchForm.back();
-                protocol.showUserInfo(BaseActivity.getCurrentActivity(), contact);
+                protocol.showUserInfo(activity, contact);
             }
         }
     }
@@ -107,11 +107,11 @@ public final class Search implements FormListener, ControlStateListener {
         searchForm.show(activity);
     }
 
-    private void showResults() {
+    private void showResults(BaseActivity activity) {
         results.removeAllElements();
         searchId = Util.uniqueValue();
         waitResults = true;
-        showWaitScreen();
+        showWaitScreen(activity);
         protocol.searchUsers(this);
     }
 
@@ -232,13 +232,14 @@ public final class Search implements FormListener, ControlStateListener {
         drawResultScreen();
     }
 
-    private void showWaitScreen() {
+    private void showWaitScreen(BaseActivity activity) {
         screen.setCaption(JLocale.getString(R.string.search_user));
         VirtualListModel model = new VirtualListModel();
         model.setInfoMessage(JLocale.getString(R.string.wait));
         screen.updateModel();
+        screen.setProtocol(protocol);
         screen.setModel(model);
-        screen.show();
+        screen.show(activity);
     }
 
     private void drawResultScreen() {
@@ -257,6 +258,7 @@ public final class Search implements FormListener, ControlStateListener {
             VirtualListModel model = new VirtualListModel();
             model.setInfoMessage(JLocale.getString(R.string.no_results));
             screen.updateModel();
+            screen.setProtocol(protocol);
             screen.setModel(model);
         }
 
@@ -322,7 +324,7 @@ public final class Search implements FormListener, ControlStateListener {
         nextOrPrev(1 == direction);
     }
 
-    public void formAction(Forms form, boolean apply) {
+    public void formAction(BaseActivity activity, Forms form, boolean apply) {
         if (apply) {
             if (TYPE_FULL == type) {
                 currentResultIndex = 0;
@@ -339,7 +341,7 @@ public final class Search implements FormListener, ControlStateListener {
                     setSearchParam(Search.EMAIL, searchForm.getTextFieldValue(Search.EMAIL));
                 }
 
-                showResults();
+                showResults(activity);
 
             } else if (TYPE_LITE == type) {
                 String userid = searchForm.getTextFieldValue(USERID).trim();

@@ -20,6 +20,11 @@ import ru.sawim.widget.Util;
  */
 public class ChatInputBarView extends IcsLinearLayout {
 
+    private static final int MENU_BUTTON_INDEX = 0;
+    private static final int SMILE_BUTTON_INDEX = 1;
+    private static final int MESSAGE_EDITOR_INDEX = 2;
+    private static final int SEND_BUTTON_INDEX = 3;
+
     public ChatInputBarView(Context context, ImageButton menuButton, ImageButton smileButton, EditText messageEditor, ImageButton sendButton) {
         super(context);
         int padding = Util.dipToPixels(context, 5);
@@ -30,18 +35,18 @@ public class ChatInputBarView extends IcsLinearLayout {
         setLayoutParams(layoutParams);
 
         LinearLayout.LayoutParams menuButtonLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
-        addViewInLayout(menuButton, 0, menuButtonLP);
+        addViewInLayout(menuButton, MENU_BUTTON_INDEX, menuButtonLP);
 
         LinearLayout.LayoutParams smileButtonLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
-        addViewInLayout(smileButton, 1, smileButtonLP);
+        addViewInLayout(smileButton, SMILE_BUTTON_INDEX, smileButtonLP);
 
         LinearLayout.LayoutParams messageEditorLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         messageEditorLP.gravity = Gravity.CENTER | Gravity.LEFT;
         messageEditorLP.weight = (float) 0.87;
-        addViewInLayout(messageEditor, 2, messageEditorLP);
+        addViewInLayout(messageEditor, MESSAGE_EDITOR_INDEX, messageEditorLP);
 
         LinearLayout.LayoutParams sendButtonLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
-        addViewInLayout(sendButton, 3, sendButtonLP);
+        addViewInLayout(sendButton, SEND_BUTTON_INDEX, sendButtonLP);
     }
 
     public void setImageButtons(ImageButton menuButton, ImageButton smileButton, ImageButton sendButton) {

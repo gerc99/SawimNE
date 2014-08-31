@@ -89,7 +89,7 @@ public class EditInfo implements FormListener {
     }
 
     @Override
-    public void formAction(Forms form, boolean apply) {
+    public void formAction(BaseActivity activity, Forms form, boolean apply) {
         if (!apply) {
             form.back();
             destroy();

@@ -12,7 +12,6 @@ import ru.sawim.SawimApplication;
 import ru.sawim.SawimException;
 import ru.sawim.SawimNotification;
 import ru.sawim.activities.BaseActivity;
-import ru.sawim.activities.SawimActivity;
 import ru.sawim.chat.Chat;
 import ru.sawim.comm.JLocale;
 import ru.sawim.comm.StringConvertor;
@@ -74,14 +73,14 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
     }
 
     public void startFileTransfer() {
-        if (SawimActivity.externalApi.pickFile(this)) {
+        if (BaseActivity.getExternalApi().pickFile(this)) {
             return;
         }
         ru.sawim.modules.DebugLog.panic("show file browser");
     }
 
     public void startPhotoTransfer() {
-        SawimActivity.externalApi.startCamera(this, 1024, 768);
+        BaseActivity.getExternalApi().startCamera(this, 1024, 768);
     }
 
     public void onFileSelect(BaseActivity activity, InputStream in, String fileName) {
@@ -139,7 +138,7 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
         forms.show(activity);
     }
 
-    public void formAction(Forms form, boolean apply) {
+    public void formAction(BaseActivity activity, Forms form, boolean apply) {
         if (apply) {
             description = forms.getTextFieldValue(descriptionField);
             sendMode = forms.getSelectorValue(transferMode);

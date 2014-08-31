@@ -9,9 +9,11 @@
 
 package ru.sawim.models.form;
 
+import ru.sawim.activities.BaseActivity;
+
 /**
  * @author Vladimir Kryukov
  */
 public interface ControlStateListener {
-    void controlStateChanged(String id);
+    void controlStateChanged(BaseActivity activity, String id);
 }

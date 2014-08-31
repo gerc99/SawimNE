@@ -371,6 +371,9 @@ public class XmppServiceContact extends XmppContact {
         if (isPrivate) {
             contactMenu.add(Menu.NONE, ContactMenu.USER_MANAGE_CONTACT, Menu.NONE, R.string.manage);
         }
+        if (protocol.getChat(this).getHistory().getHistorySize() > 0) {
+            contactMenu.add(Menu.NONE, ContactMenu.USER_MENU_DELETE_HISTORY, Menu.NONE, R.string.delete_history);
+        }
         if (hasChat()) {
             contactMenu.add(Menu.NONE, ContactMenu.USER_MENU_CLOSE_CHAT, Menu.NONE, R.string.close);
         }

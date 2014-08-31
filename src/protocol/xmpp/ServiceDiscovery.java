@@ -68,7 +68,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
                     xmpp.getConnection().sendPresence((XmppServiceContact) c);
                     Toast.makeText(activity, R.string.added, Toast.LENGTH_SHORT).show();
                 } else if (Jid.isKnownGate(jid)) {
-                    xmpp.getConnection().register(jid);
+                    xmpp.getConnection().register(jid).show(activity);
                 } else {
                     setServer(jid);
                 }
@@ -125,7 +125,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
                             break;
 
                         case COMMAND_REGISTER:
-                            xmpp.getConnection().register(jid);
+                            xmpp.getConnection().register(jid).show(activity);
                             break;
 
                         case COMMAND_ADHOC:
@@ -258,11 +258,11 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
         //}
     }
 
-    public void showIt() {
+    public void showIt(BaseActivity activity) {
         if (StringConvertor.isEmpty(serverJid)) {
             setServer("");
         }
-        screen.show();
+        screen.show(activity);
     }
 
     public void update() {

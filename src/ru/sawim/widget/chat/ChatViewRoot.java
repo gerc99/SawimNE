@@ -20,13 +20,17 @@ import ru.sawim.widget.IcsLinearLayout;
  */
 public class ChatViewRoot extends IcsLinearLayout {
 
+    private static final int CHAT_LISTS_VIEW_INDEX = 0;
+    private static final int CHAT_INPUT_BAR_VIEW_INDEX = 1;
+    private static final int HINT_VIEW_INDEX = 2;
+
     public ChatViewRoot(Context context, View chatListsView, View chatInputBarView) {
         super(context);
         setOrientation(LinearLayout.VERTICAL);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
         setLayoutParams(layoutParams);
-        addViewInLayout(chatListsView, 0, chatListsView.getLayoutParams());
-        addViewInLayout(chatInputBarView, 1, chatInputBarView.getLayoutParams());
+        addViewInLayout(chatListsView, CHAT_LISTS_VIEW_INDEX, chatListsView.getLayoutParams());
+        addViewInLayout(chatInputBarView, CHAT_INPUT_BAR_VIEW_INDEX, chatInputBarView.getLayoutParams());
     }
 
     public void update() {
@@ -40,10 +44,10 @@ public class ChatViewRoot extends IcsLinearLayout {
         hint.setTextSize(SawimApplication.getFontSize());
         hint.setGravity(Gravity.CENTER);
         hint.setText(R.string.select_contact);
-        addView(hint, 2);
+        addView(hint, HINT_VIEW_INDEX);
     }
 
     public void hideHint() {
-        if (getChildAt(2) != null) removeViewAt(2);
+        if (getChildAt(HINT_VIEW_INDEX) != null) removeViewAt(HINT_VIEW_INDEX);
     }
 }

@@ -530,4 +530,5 @@
     <string name="new_subject">Новая тема</string>
     <string name="conference_theme">Тема конференции</string>
     <string name="message_from">Сообщение от</string>
+    <string name="delete_history">Удалить историю</string>
 </resources>

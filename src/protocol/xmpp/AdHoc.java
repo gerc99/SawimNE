@@ -8,7 +8,6 @@ import ru.sawim.comm.Util;
 import ru.sawim.models.form.ControlStateListener;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
-import ru.sawim.roster.RosterHelper;
 
 public final class AdHoc implements FormListener, ControlStateListener {
     private XmppContact contact;
@@ -76,7 +75,7 @@ public final class AdHoc implements FormListener, ControlStateListener {
             commandsListForm.addSelector(FORM_COMMAND, R.string.commands, names, 0);
         } else {
             if (loaded)
-                commandsListForm.setErrorString(JLocale.getString(R.string.commands_not_found));
+                commandsListForm.setWarningString(JLocale.getString(R.string.commands_not_found));
             else
                 commandsListForm.setWaitingString(JLocale.getString(R.string.receiving_commands));
         }
@@ -127,14 +126,15 @@ public final class AdHoc implements FormListener, ControlStateListener {
     private String commandSessionId;
     private String commandId;
 
-    public void formAction(Forms form, boolean apply) {
+    public void formAction(BaseActivity activity, Forms form, boolean apply) {
         if (!apply) {
             form.back();
             return;
         }
-        if (commandsListForm == form) {
+        if (commandForm == null) {
             if (0 != nodes.length) {
                 commandIndex = form.getSelectorValue(FORM_COMMAND);
+                updateForm(false);
                 protocol.getConnection().requestCommand(this, nodes[commandIndex]);
             } else {
                 requestCommandsForCurrentResource();
@@ -142,9 +142,8 @@ public final class AdHoc implements FormListener, ControlStateListener {
             }
         } else {
             execForm();
-            RosterHelper.getInstance().activate(contact);
+            updateForm(false);
         }
-        form.back();
     }
 
     private void execForm() {
@@ -179,7 +178,8 @@ public final class AdHoc implements FormListener, ControlStateListener {
         commandId = id;
         commandSessionId = commandXml.getAttribute("sessionid");
         XForm form = new XForm();
-        form.init(names[commandIndex], this);
+        commandsListForm.setCaption(names[commandIndex]);
+        form.init(commandsListForm);
         form.loadXFromXml(commandXml, iqXml);
         commandForm = form;
 
@@ -190,20 +190,18 @@ public final class AdHoc implements FormListener, ControlStateListener {
             protocol.getConnection().resetAdhoc();
             commandForm = null;
             if (!StringConvertor.isEmpty(text)) {
-                RosterHelper.getInstance().activateWithMsg(text);
+                commandsListForm.setWarningString(text);
                 showForm = false;
             }
         }
-        if (showForm) {
-            form.getForm().show();
-        }
+        commandsListForm.invalidate(showForm);
     }
 
     @Override
-    public void controlStateChanged(String id) {
+    public void controlStateChanged(BaseActivity activity, String id) {
         if (FORM_RESOURCE == Integer.valueOf(id)) {
             //requestCommandsForCurrentResource();
-            // updateForm(false);
+            //updateForm(false);
         }
     }
 }

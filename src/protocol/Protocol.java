@@ -1019,7 +1019,7 @@ abstract public class Protocol {
     public void showUserInfo(BaseActivity activity, Contact contact) {
     }
 
-    public void showStatus(Contact contact) {
+    public void showStatus(BaseActivity activity, Contact contact) {
     }
 
     public final void setContactStatus(Contact contact, byte status, String text) {

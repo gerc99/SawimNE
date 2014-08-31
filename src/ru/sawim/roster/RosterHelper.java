@@ -592,7 +592,7 @@ public final class RosterHelper {
 
     public void showProtocolMenu(final BaseActivity activity, final Protocol p) {
         if (p != null) {
-            final MyMenu menu = new MyMenu(activity);
+            final MyMenu menu = new MyMenu();
             menu.add(p.isConnected() || p.isConnecting() ? R.string.disconnect : R.string.connect, MENU_CONNECT);
             menu.add(R.string.status, MENU_STATUS);
             if (p.getXStatusInfo() != null)
@@ -657,7 +657,7 @@ public final class RosterHelper {
                 new SmsForm(null, null).show(activity);
                 return true;
             case RosterHelper.MENU_DISCO:
-                ((Xmpp) p).getServiceDiscovery().showIt();
+                ((Xmpp) p).getServiceDiscovery().showIt(activity);
                 return true;
             case RosterHelper.MENU_ADHOC:
                 String serverAddress = Jid.getDomain(p.getUserId());
@@ -666,7 +666,7 @@ public final class RosterHelper {
                 adhoc.show(activity);
                 return true;
             case RosterHelper.MENU_NOTES:
-                ((Xmpp) p).getMirandaNotes().showIt();
+                ((Xmpp) p).getMirandaNotes().showIt(activity);
                 return true;
             case RosterHelper.MENU_GROUPS:
                 new ManageContactListForm(p).showMenu(activity);
@@ -675,7 +675,7 @@ public final class RosterHelper {
                 p.showUserInfo(activity, p.createTempContact(p.getUserId(), p.getNick()));
                 return true;
             case RosterHelper.MENU_MICROBLOG:
-                ((Mrim) p).getMicroBlog().activate();
+                ((Mrim) p).getMicroBlog().activate(activity);
                 return true;
         }
         return false;

@@ -4,12 +4,11 @@
     <PreferenceScreen android:title="@string/options_account" android:key="@string/pref_account">
     </PreferenceScreen>
 
-    <PreferenceScreen android:title="@string/options_network">
+    <PreferenceCategory android:title="@string/options_network"/>
         <CheckBoxPreference android:title="@string/wake_lock"
                             android:key="@string/pref_wake_lock"
                             android:defaultValue="true"/>
-    </PreferenceScreen>
-    <PreferenceScreen android:title="@string/options_interface">
+    <PreferenceCategory android:title="@string/options_interface"/>
         <ListPreference
                 android:key="@string/pref_color_scheme"
                 android:title="@string/color_scheme"
@@ -43,9 +42,8 @@
         <CheckBoxPreference android:title="@string/use_history"
                             android:key="@string/pref_history"
                             android:defaultValue="false"/>
-    </PreferenceScreen>
 
-    <PreferenceScreen android:title="@string/options_signaling">
+    <PreferenceCategory android:title="@string/options_signaling"/>
         <RingtonePreference android:key="@string/pref_mess_ringtone"
                             android:title="@string/notification_ringtone"
                             android:summary="@string/notification_ringtone_summaey"
@@ -56,9 +54,8 @@
                             android:key="@string/pref_vibration"/>
         <CheckBoxPreference android:title="@string/alarm"
                             android:key="@string/pref_alarm"/>
-    </PreferenceScreen>
 
-    <PreferenceScreen android:title="@string/antispam">
+    <PreferenceCategory android:title="@string/antispam"/>
         <CheckBoxPreference android:title="@string/on"
                             android:key="@string/pref_antispam_enable"/>
         <EditTextPreference android:key="@string/pref_antispam_msg"
@@ -70,12 +67,11 @@
         <EditTextPreference android:key="@string/pref_antispam_keywords"
                             android:title="@string/antispam_keywords"
                 android:defaultValue="http sms www @conf"/>
-    </PreferenceScreen>
 
     <PreferenceScreen android:title="@string/answerer" android:key="@string/pref_answerer">
     </PreferenceScreen>
 
-    <PreferenceScreen android:title="@string/options_pro" android:key="@string/pref_options_pro">
+    <PreferenceCategory android:title="@string/options_pro" android:key="@string/pref_options_pro"/>
         <CheckBoxPreference android:title="@string/hide_icons_clients"
                             android:key="@string/pref_hide_icons_clients"
                             android:defaultValue="true"/>
@@ -85,7 +81,6 @@
                 android:title="@string/absence"
                 android:entries="@array/absence_array"
                 android:entryValues="@array/absence_array"/>
-    </PreferenceScreen>
 
     <PreferenceScreen android:title="@string/about_program" android:key="@string/pref_about_program">
     </PreferenceScreen>

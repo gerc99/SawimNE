@@ -1,6 +1,7 @@
 package protocol.xmpp;
 
 import ru.sawim.R;
+import ru.sawim.activities.BaseActivity;
 import ru.sawim.comm.Util;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
@@ -55,10 +56,10 @@ final class XmppForm implements FormListener {
         form.loadFromXml(xml, baseXml);
     }
 
-    public void show() {
+    public void show(BaseActivity activity) {
         form.init(typeToTitle(type), this);
         form.setWaiting();
-        form.getForm().show();
+        form.getForm().show(activity);
     }
 
     public void showCaptcha(XmlNode baseNode) {
@@ -67,14 +68,14 @@ final class XmppForm implements FormListener {
         XmlNode captcha = baseNode.getFirstNode(S_CAPTCHA);
         id = baseNode.getAttribute("id");
         form.loadXFromXml(captcha, baseNode);
-        form.getForm().show();
+        form.getForm().showCaptcha();
     }
 
     public String getId() {
         return id;
     }
 
-    public void formAction(Forms f, boolean apply) {
+    public void formAction(BaseActivity activity, Forms f, boolean apply) {
         if (apply) {
             if (0 < form.getSize()) {
                 doAction();
