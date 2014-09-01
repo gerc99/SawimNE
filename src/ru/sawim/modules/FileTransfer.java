@@ -199,6 +199,7 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
         name = name.replace('/', '_');
         name = name.replace('\\', '_');
         name = name.replace('%', '_');
+        name = name.replace(' ', '_');
         filename = name;
     }
 
