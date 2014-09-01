@@ -1,6 +1,5 @@
 package ru.sawim.modules;
 
-import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.util.Log;
 import org.json.JSONObject;
@@ -17,38 +16,26 @@ import ru.sawim.comm.JLocale;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
 import ru.sawim.io.FileBrowserListener;
-import ru.sawim.models.form.FormListener;
-import ru.sawim.models.form.Forms;
 import ru.sawim.modules.photo.PhotoListener;
 import ru.sawim.roster.RosterHelper;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Scanner;
 
-public final class FileTransfer implements FileBrowserListener, PhotoListener, Runnable, FormListener {
+public final class FileTransfer implements FileBrowserListener, PhotoListener, Runnable {
     private static final String TAG = FileTransfer.class.getSimpleName();
 
-    private static final int descriptionField = 1000;
-    private static final int transferMode = 1001;
-    private static final int JNR_SOCKET = 0;
-    private static final int JNR_HTTP = 1;
-    private static final int JO_HTTP = 2;
-    private static final int IBB_MODE = 3;
     private String filename;
-    private String description;
-    private int sendMode;
     private InputStream fis;
     private int fsize;
     private boolean canceled = false;
     private Protocol protocol;
     private Contact cItem;
     private Chat chat;
-    private Forms forms;
 
     public FileTransfer(Protocol p, Contact _cItem) {
         protocol = p;
@@ -98,14 +85,10 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
                 fileSize = in.available();
             }
             setData(in, fileSize);
-            if (Util.isImageFile(filename)) {
-                setProgress(0);
-                SawimApplication.getExecutor().execute(this);
-                addProgress();
-            } else {
-                askForNameDesc(activity);
-                showPreview(image);
-            }
+
+            setProgress(0);
+            SawimApplication.getExecutor().execute(this);
+            addProgress();
         } catch (Exception e) {
             closeFile();
             handleException(new SawimException(191, 6));
@@ -119,44 +102,9 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
                 + timestamp.replace('.', '-').replace(' ', '-')
                 + ".jpg";
         setFileName(photoName);
-        askForNameDesc(activity);
-        showPreview(data);
-    }
-
-    private void askForNameDesc(BaseActivity activity) {
-        forms = new Forms(R.string.name_desc, this, true);
-        forms.addString(String.format("%s: %s", JLocale.getString(R.string.filename), filename), null);
-        forms.addTextField(descriptionField, R.string.description, "");
-        String items = "jimm.net.ru|www.jimm.net.ru|jimm.org";
-        if (cItem instanceof protocol.xmpp.XmppContact) {
-            if (cItem.isSingleUserContact() && cItem.isOnline()) {
-                items += "|ibb";
-            }
-        }
-        forms.addSelector(transferMode, R.string.send_via, items, 0);
-        forms.addString(String.format("%s: %d KB", JLocale.getString(R.string.size), getFileSize() / 1024), null);
-        forms.show(activity);
-    }
-
-    public void formAction(BaseActivity activity, Forms form, boolean apply) {
-        if (apply) {
-            description = forms.getTextFieldValue(descriptionField);
-            sendMode = forms.getSelectorValue(transferMode);
-
-            if (forms.getSelectorValue(transferMode) == IBB_MODE) {
-                try {
-                    protocol.sendFile(this, filename, description);
-                } catch (Exception ignored) {
-                }
-            } else {
-                setProgress(0);
-                SawimApplication.getExecutor().execute(this);
-            }
-            addProgress();
-            forms.back();
-        } else {
-            destroy();
-        }
+        setProgress(0);
+        SawimApplication.getExecutor().execute(this);
+        addProgress();
     }
 
     private String getProgressText() {
@@ -174,9 +122,7 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
     public void cancel() {
         canceled = true;
         changeFileProgress(0, R.string.canceled);
-        if (0 < sendMode) {
-            closeFile();
-        }
+        closeFile();
     }
 
     public boolean isCanceled() {
@@ -232,26 +178,13 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
             SawimApplication.gc();
         } catch (Exception ignored) {
         }
-        if (forms != null)
-            forms.back();
     }
 
     public void run() {
         try {
             InputStream in = getFileIS();
             int size = getFileSize();
-            switch (sendMode) {
-                case JNR_SOCKET:
-                    sendFileThroughServer(in, size);
-                    break;
-                case JNR_HTTP:
-                    sendFileThroughWeb("files.jimm.net.ru:81", in, size);
-                    break;
-                case JO_HTTP:
-                    sendFileThroughWeb("filetransfer.jimm.org", in, size);
-                    break;
-            }
-
+            sendFileThroughServer(in, size);
         } catch (SawimException e) {
             handleException(e);
         } catch (Exception e) {
@@ -259,20 +192,6 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
             handleException(new SawimException(194, 2));
         }
         destroy();
-    }
-
-    private void showPreview(final byte[] image) {
-        if (image == null || forms == null) return;
-        SawimApplication.getExecutor().execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    forms.addBitmap(BitmapFactory.decodeByteArray(image, 0, image.length));
-                    forms.invalidate(true);
-                } catch (Throwable ignored) {
-                }
-            }
-        });
     }
 
     private void setFileName(String name) {
@@ -370,7 +289,7 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
                 Util header = new Util();
                 header.writeWordBE(version);
                 header.writeLenAndUtf8String(filename);
-                header.writeLenAndUtf8String(description);
+                header.writeLenAndUtf8String("");//description
                 header.writeLenAndUtf8String(getTransferClient());
                 header.writeDWordBE(fileSize);
                 socket.write(header.toByteArray());
@@ -416,9 +335,6 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
             }
         }
         StringBuilder messText = new StringBuilder();
-        if (!StringConvertor.isEmpty(description)) {
-            messText.append(description).append("\n");
-        }
         messText.append("File: ").append(filename).append("\n");
         messText.append("Size: ")
                 .append(StringConvertor.bytesToSizeString(fileSize, false))
@@ -427,95 +343,5 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
 
         protocol.sendMessage(cItem, messText.toString(), true);
         setProgress(100);
-    }
-
-    private void sendFileThroughWeb(String host, InputStream fis, int fsize) throws SawimException {
-        InputStream is;
-        OutputStream os;
-        HttpURLConnection sc = null;
-
-        final String url = "http://" + host + "/__receive_file.php";
-        try {
-            sc = (HttpURLConnection) new URL(url).openConnection();
-            sc.setRequestMethod("POST");
-            String boundary = "a9f843c9b8a736e53c40f598d434d283e4d9ff72";
-            sc.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
-            os = sc.getOutputStream();
-
-            StringBuilder headers = new StringBuilder();
-            headers.append("--").append(boundary).append("\r\n");
-            headers.append("Content-Disposition: form-data; name=\"filedesc\"\r\n");
-            headers.append("\r\n");
-            headers.append(description);
-            headers.append("\r\n");
-            headers.append("--").append(boundary).append("\r\n");
-            headers.append("Content-Disposition: form-data; name=\"Sawimfile\"; filename=\"");
-            headers.append(filename).append("\"\r\n");
-            headers.append("Content-Type: application/octet-stream\r\n");
-            headers.append("Content-Transfer-Encoding: binary\r\n");
-            headers.append("\r\n");
-            os.write(StringConvertor.stringToByteArrayUtf8(headers.toString()));
-
-            byte[] buffer = new byte[1024 * 2];
-            int counter = fsize;
-            while (counter > 0) {
-                int read = fis.read(buffer);
-                os.write(buffer, 0, read);
-                counter -= read;
-                if (fsize != 0) {
-                    if (isCanceled()) {
-                        throw new SawimException(194, 1);
-                    }
-                    setProgress((100 - 2) * (fsize - counter) / fsize);
-                }
-            }
-            String end = "\r\n--" + boundary + "--\r\n";
-            os.write(StringConvertor.stringToByteArrayUtf8(end));
-
-            is = sc.getInputStream();
-            int respCode = sc.getResponseCode();
-            if (HttpURLConnection.HTTP_OK != respCode) {
-                throw new SawimException(194, respCode);
-            }
-
-            StringBuilder response = new StringBuilder();
-            for (; ; ) {
-                int read = is.read();
-                if (read == -1) break;
-                response.append((char) (read & 0xFF));
-            }
-
-            String respString = response.toString();
-            int dataPos = respString.indexOf("http://");
-            if (-1 == dataPos) {
-                DebugLog.println("server say '" + respString + "'");
-                throw new SawimException(194, 1);
-            }
-
-            if (isCanceled()) {
-                throw new SawimException(194, 1);
-            }
-            respString = respString.replace("\r", "");
-            respString = respString.replace("\n", "");
-
-            StringBuilder messText = new StringBuilder();
-            if (!StringConvertor.isEmpty(description)) {
-                messText.append(description).append("\n");
-            }
-            messText.append("File: ").append(filename).append("\n");
-            messText.append("Size: ")
-                    .append(StringConvertor.bytesToSizeString(fsize, false))
-                    .append("\n");
-            messText.append("Link: ").append(respString);
-            protocol.sendMessage(cItem, messText.toString(), true);
-            setProgress(100);
-            sc.disconnect();
-            os.close();
-            is.close();
-        } catch (IOException e) {
-            sc.disconnect();
-            DebugLog.panic("send file", e);
-            throw new SawimException(194, 0);
-        }
     }
 }
