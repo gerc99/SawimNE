@@ -68,7 +68,7 @@ public final class AdHoc implements FormListener, ControlStateListener {
             }
         }
         commandsListForm.clearForm();
-        if (1 < resources.length) {
+        if (1 < resources.length && !Jid.isConference(contact.getUserId())) {
             commandsListForm.addSelector(FORM_RESOURCE, R.string.resource, resources, selectedResource);
         }
         if (0 < names.length) {
@@ -200,8 +200,8 @@ public final class AdHoc implements FormListener, ControlStateListener {
     @Override
     public void controlStateChanged(BaseActivity activity, String id) {
         if (FORM_RESOURCE == Integer.valueOf(id)) {
-            //requestCommandsForCurrentResource();
-            //updateForm(false);
+            requestCommandsForCurrentResource();
+            updateForm(false);
         }
     }
 }

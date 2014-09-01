@@ -108,7 +108,7 @@ public class MainPreferenceActivity extends PreferenceActivity {
 
                 TextView author = new TextView(activity);
                 author.setTextSize(SawimApplication.getFontSize());
-                author.setText(getString(R.string.author));
+                author.setText(getString(R.string.author) + ": Gerc (Gorbachev Sergey)");
                 author.setTypeface(Typeface.DEFAULT);
                 aboutLayout.addView(author);
 
