@@ -21,7 +21,6 @@ import android.support.v7.app.ActionBar;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.*;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -37,7 +36,6 @@ import protocol.xmpp.Xmpp;
 import protocol.xmpp.XmppServiceContact;
 import ru.sawim.*;
 import ru.sawim.activities.BaseActivity;
-import ru.sawim.activities.SawimActivity;
 import ru.sawim.chat.Chat;
 import ru.sawim.chat.ChatHistory;
 import ru.sawim.chat.MessData;
@@ -76,7 +74,6 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
 
     private static final int ADD_MESSAGE = 0;
     private static final int UPDATE_MESSAGES = 1;
-    private static final int UPDATE_MUC_LIST = 4;
     private Handler handler;
 
     private Chat chat;
@@ -704,6 +701,12 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                 if (chat != null && chat.getContact() == c) {
                     adapter.getItems().add(mess);
                     newMessageCount++;
+
+                    boolean isScrollEnd = isScrollEnd();
+                    adapter.notifyDataSetChanged();
+                    if (isScrollEnd) {
+                        chatListView.setSelectionFromTop(adapter.getCount() - newMessageCount, chatListView.getHeight() / 4);
+                    }
                 }
                 break;
             case UPDATE_MESSAGES:
@@ -722,12 +725,16 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
 
     @Override
     public void addMessage(Contact contact, MessData mess) {
-        handler.sendMessage(Message.obtain(handler, ADD_MESSAGE, new Object[]{contact, mess}));
+        if (chat != null && chat.getContact() == contact) {
+            handler.sendMessage(Message.obtain(handler, ADD_MESSAGE, new Object[]{contact, mess}));
+        }
     }
 
     @Override
     public void updateMessages(Contact contact) {
-        handler.sendMessage(Message.obtain(handler, UPDATE_MESSAGES, contact));
+        if (chat != null && chat.getContact() == contact) {
+            handler.sendMessage(Message.obtain(handler, UPDATE_MESSAGES, contact));
+        }
     }
 
     @Override
@@ -1096,9 +1103,8 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     }
 
     private void hideKeyboard() {
-        if (Options.getBoolean(JLocale.getString(R.string.pref_hide_keyboard)) && messageEditor != null) {
-            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(messageEditor.getWindowToken(), 0);
+        if (Options.getBoolean(JLocale.getString(R.string.pref_hide_keyboard))) {
+            Util.hideKeyboard(getActivity());
         }
     }
 
@@ -1109,22 +1115,25 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     }
 
     public void send() {
-        if (chat == null) return;
         hideKeyboard();
         SawimApplication.getExecutor().execute(new Runnable() {
             @Override
             public void run() {
-                chat.sendMessage(getText());
+                if (chat != null) {
+                    chat.sendMessage(getText());
+                }
                 if (chatListView != null) {
                     chatListView.post(new Runnable() {
                         @Override
                         public void run() {
-                            resetText();
-                            chat.message = null;
-                            adapter.setPosition(-1);
-                            chat.currentPosition = 0;
-                            if (chatListView.getLastVisiblePosition() + 1 == adapter.getCount() - 1) {
-                                updateMessages(chat.getContact());
+                            if (chat != null) {
+                                resetText();
+                                chat.message = null;
+                                adapter.setPosition(-1);
+                                chat.currentPosition = 0;
+                                if (chatListView.getLastVisiblePosition() + 1 == adapter.getCount() - 1) {
+                                    updateMessages(chat.getContact());
+                                }
                             }
                         }
                     });

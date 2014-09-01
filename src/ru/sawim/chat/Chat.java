@@ -304,7 +304,6 @@ public final class Chat {
         ChatHistory.instance.registerChat(this);
         if (RosterHelper.getInstance().getUpdateChatListener() != null) {
             RosterHelper.getInstance().getUpdateChatListener().addMessage(contact, mData);
-            RosterHelper.getInstance().getUpdateChatListener().updateMessages(contact);
         }
     }
 
