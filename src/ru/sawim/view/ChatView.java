@@ -83,6 +83,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     private String sharingText;
     private boolean sendByEnter;
     private static int offsetNewMessage;
+    private int newMessageCount = 0;
 
     private RosterAdapter chatsSpinnerAdapter;
     private MessagesAdapter adapter;
@@ -691,7 +692,6 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
         }
     }
 
-    int newMessageCount = 0;
     @Override
     public boolean handleMessage(Message msg) {
         switch (msg.what) {
@@ -1131,6 +1131,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                                 chat.message = null;
                                 adapter.setPosition(-1);
                                 chat.currentPosition = 0;
+                                newMessageCount = 0;
                                 if (chatListView.getLastVisiblePosition() + 1 == adapter.getCount() - 1) {
                                     updateMessages(chat.getContact());
                                 }
