@@ -521,8 +521,6 @@
     <string name="sucks">Sucks</string>
     <string name="wake_lock">Support the work when the screen is off</string>
     <string name="domain">Domain</string>
-    <string name="account_settings">Account settings</string>
-    <string name="push">Push</string>
     <string name="notification_ringtone">Notification tone</string>
     <string name="notification_ringtone_summaey">Select a sound to play for a new notification message</string>
     <string name="new_subject">New subject</string>

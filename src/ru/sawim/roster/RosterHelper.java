@@ -584,11 +584,10 @@ public final class RosterHelper {
     public static final int MENU_PRIVATE_STATUS = 3;
     public static final int MENU_SEND_SMS = 5;
     public static final int MENU_DISCO = 16;
-    public static final int MENU_ADHOC = 17;
-    public static final int MENU_NOTES = 18;
-    public static final int MENU_GROUPS = 19;
-    public static final int MENU_MYSELF = 20;
-    public static final int MENU_MICROBLOG = 21;
+    public static final int MENU_NOTES = 17;
+    public static final int MENU_GROUPS = 18;
+    public static final int MENU_MYSELF = 19;
+    public static final int MENU_MICROBLOG = 20;
 
     public void showProtocolMenu(final BaseActivity activity, final Protocol p) {
         if (p != null) {
@@ -610,7 +609,6 @@ public final class RosterHelper {
                     if (((Xmpp) p).hasS2S()) {
                         menu.add(R.string.service_discovery, MENU_DISCO);
                     }
-                    menu.add(R.string.account_settings, MENU_ADHOC);
                 }
                 menu.add(R.string.manage_contact_list, MENU_GROUPS);
                 if (p instanceof Icq) {
@@ -658,12 +656,6 @@ public final class RosterHelper {
                 return true;
             case RosterHelper.MENU_DISCO:
                 ((Xmpp) p).getServiceDiscovery().showIt(activity);
-                return true;
-            case RosterHelper.MENU_ADHOC:
-                String serverAddress = Jid.getDomain(p.getUserId());
-                Contact serverContact = p.createTempContact(serverAddress);
-                AdHoc adhoc = new AdHoc((Xmpp) p, (XmppContact) serverContact);
-                adhoc.show(activity);
                 return true;
             case RosterHelper.MENU_NOTES:
                 ((Xmpp) p).getMirandaNotes().showIt(activity);

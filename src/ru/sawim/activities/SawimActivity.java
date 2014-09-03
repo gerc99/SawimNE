@@ -288,7 +288,6 @@ public class SawimActivity extends BaseActivity {
                         if (((Xmpp) p).hasS2S()) {
                             menu.add(Menu.NONE, RosterHelper.MENU_DISCO, Menu.NONE, R.string.service_discovery);
                         }
-                        menu.add(Menu.NONE, RosterHelper.MENU_ADHOC, Menu.NONE, R.string.account_settings);
                     }
                     menu.add(Menu.NONE, RosterHelper.MENU_GROUPS, Menu.NONE, R.string.manage_contact_list);
                     if (p instanceof Icq) {
