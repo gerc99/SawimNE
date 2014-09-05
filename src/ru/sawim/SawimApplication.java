@@ -12,9 +12,7 @@ import android.view.Surface;
 import android.view.WindowManager;
 import de.duenndns.ssl.MemorizingTrustManager;
 import protocol.Protocol;
-import ru.sawim.chat.ChatHistory;
 import ru.sawim.comm.JLocale;
-import ru.sawim.io.DatabaseHelper;
 import ru.sawim.io.FileSystem;
 import ru.sawim.io.HomeDirectory;
 import ru.sawim.io.StorageConvertor;
@@ -22,6 +20,7 @@ import ru.sawim.modules.Answerer;
 import ru.sawim.modules.AutoAbsence;
 import ru.sawim.modules.DebugLog;
 import ru.sawim.modules.Emotions;
+import ru.sawim.modules.history.HistoryStorage;
 import ru.sawim.receiver.NetworkStateReceiver;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.service.SawimService;
@@ -48,6 +47,10 @@ public class SawimApplication extends Application {
 
     public static final String LOG_TAG = SawimApplication.class.getSimpleName();
 
+    public static final String DATABASE_NAME = "sawim.db";
+    public static final int DATABASE_VERSION = 2;
+    public static final String AUTHORITY = "ru.sawim.contentprovider";
+
     public static String NAME;
     public static String VERSION;
     public static final String PHONE = "Android/" + android.os.Build.MODEL
@@ -64,7 +67,6 @@ public class SawimApplication extends Application {
     public static int gmtOffset;
 
     public static SawimApplication instance;
-    private static DatabaseHelper dbHelper;
     private final SawimServiceConnection serviceConnection = new SawimServiceConnection();
     private final NetworkStateReceiver networkStateReceiver = new NetworkStateReceiver();
     public boolean isBindService = false;
@@ -82,10 +84,6 @@ public class SawimApplication extends Application {
         return instance.getBaseContext();
     }
 
-    public static DatabaseHelper getDbHelper() {
-        return dbHelper;
-    }
-
     @Override
     public void onCreate() {
         instance = this;
@@ -93,7 +91,6 @@ public class SawimApplication extends Application {
         VERSION = getVersion();
         Thread.setDefaultUncaughtExceptionHandler(ExceptionHandler.inContext(getContext()));
         super.onCreate();
-        dbHelper = new DatabaseHelper(getApplicationContext());
         uiHandler = new Handler(Looper.getMainLooper());
 
         startService();
@@ -128,7 +125,7 @@ public class SawimApplication extends Application {
             @Override
             public void run() {
                 StorageConvertor.historyConvert();
-                ChatHistory.instance.loadUnreadMessages();
+                HistoryStorage.loadUnreadMessages();
             }
         },"loadMessage").start();
         if (RosterHelper.getInstance() != null) {
@@ -226,7 +223,7 @@ public class SawimApplication extends Application {
             p.disconnect(true);
         }
         RosterHelper.getInstance().safeSave();
-        ChatHistory.instance.saveUnreadMessages();
+        HistoryStorage.saveUnreadMessages();
         AutoAbsence.getInstance().online();
     }
 

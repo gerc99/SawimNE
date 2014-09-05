@@ -8,14 +8,9 @@ import ru.sawim.R;
 import ru.sawim.chat.message.Message;
 import ru.sawim.comm.JLocale;
 import ru.sawim.comm.Util;
-import ru.sawim.io.Storage;
 import ru.sawim.modules.history.HistoryStorage;
 import ru.sawim.roster.RosterHelper;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
@@ -297,55 +292,7 @@ public final class ChatHistory {
         return current;
     }
 
-    protected int getSize() {
+    public int getSize() {
         return historyTable.size();
-    }
-
-    public void saveUnreadMessages() {
-        Storage.delete("unread");
-        Storage s = new Storage("unread");
-        try {
-            s.open();
-            for (int i = getTotal() - 1; 0 <= i; --i) {
-                Chat chat = chatAt(i);
-                int unreadMessageCount = chat.getUnreadMessageCount();
-                if (unreadMessageCount == 0) {
-                    if (!Options.getBoolean(JLocale.getString(R.string.pref_history))) {
-                        HistoryStorage historyStorage = chat.getHistory();
-                        historyStorage.removeHistory();
-                    }
-                } else {
-                    ByteArrayOutputStream out = new ByteArrayOutputStream();
-                    DataOutputStream o = new DataOutputStream(out);
-                    o.writeUTF(chat.getProtocol().getUserId());
-                    o.writeUTF(chat.getContact().getUserId());
-                    o.writeShort(unreadMessageCount);
-                    s.addRecord(out.toByteArray());
-                }
-            }
-        } catch (Exception e) {
-        }
-        s.close();
-    }
-
-    public void loadUnreadMessages() {
-        Storage s = new Storage("unread");
-        try {
-            s.open();
-            for (int i = 1; i <= s.getNumRecords(); ++i) {
-                DataInputStream in = new DataInputStream(new ByteArrayInputStream(s.getRecord(i)));
-                String account = in.readUTF();
-                String userId = in.readUTF();
-                short unreadMessageCount = in.readShort();
-                Protocol protocol = RosterHelper.getInstance().getProtocol(account);
-                Contact contact = protocol.getItemByUID(userId);
-                Chat chat = protocol.getChat(contact);
-                chat.setMessageCounter(unreadMessageCount);
-                contact.updateChatState(chat);
-            }
-        } catch (Exception ignored) {
-        }
-        s.close();
-        Storage.delete("unread");
     }
 }

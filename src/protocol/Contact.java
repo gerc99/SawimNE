@@ -198,6 +198,7 @@ abstract public class Contact implements TreeNode, Sortable {
         if (null != chat) {
             icon = chat.getNewMessageIcon();
             booleanValues |= HAS_CHAT;
+            chat.getHistory().updateUnreadMessagesCount(chat.getUnreadMessageCount());
         } else {
             booleanValues &= ~HAS_CHAT;
         }
