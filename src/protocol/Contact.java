@@ -258,7 +258,7 @@ abstract public class Contact implements TreeNode, Sortable {
     }
 
     public final String getText() {
-        return name;
+        return name == null ? "" : name;
     }
 
     @Override

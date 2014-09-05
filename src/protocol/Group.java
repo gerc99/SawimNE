@@ -94,7 +94,7 @@ public class Group extends TreeBranch {
     }
 
     public final String getText() {
-        return caption;
+        return caption == null ? "" : caption;
     }
 
     @Override

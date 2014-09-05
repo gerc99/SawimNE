@@ -52,7 +52,7 @@ public class Roster {
 
     public final Group getGroup(String name) {
         for (int i = groups.size() - 1; 0 <= i; --i) {
-            Group group = (Group) groups.elementAt(i);
+            Group group = groups.elementAt(i);
             if (group.getName().equals(name)) {
                 return group;
             }
