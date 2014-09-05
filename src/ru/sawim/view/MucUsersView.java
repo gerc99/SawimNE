@@ -2,6 +2,7 @@ package ru.sawim.view;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -28,6 +29,7 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
     private TextBoxView kikTextbox;
     private Protocol protocol;
     private XmppServiceContact xmppServiceContact;
+    private boolean isLongClick = false;
 
     public void init(Protocol protocol, XmppServiceContact xmppServiceContact) {
         this.protocol = protocol;
@@ -38,9 +40,20 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
         final BaseActivity activity = (BaseActivity) chatView.getActivity();
         usersAdapter.init((Xmpp) protocol, xmppServiceContact);
         nickList.setAdapter(usersAdapter);
+        nickList.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                int action = event.getAction();
+                if (action == MotionEvent.ACTION_DOWN) {
+                    isLongClick = false;
+                }
+                return false;
+            }
+        });
         nickList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                if (isLongClick) return;
                 final Object o = usersAdapter.getItem(position);
                 chatView.hasBack();
                 if (o instanceof XmppContact.SubContact) {
@@ -53,6 +66,7 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
         nickList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, final int position, long l) {
+                isLongClick = true;
                 final Object o = usersAdapter.getItem(position);
                 if (o instanceof String) return false;
                 final String nick = usersAdapter.getCurrentSubContact(o);
@@ -94,10 +108,7 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
                                 protocol.showStatus(activity, xmppServiceContact.getPrivateContact(nick));
                                 break;
                             case ContactMenu.USER_INVITE:
-                                try {
-                                    ((Xmpp) protocol).showInviteForm(activity, xmppServiceContact.getUserId() + '/' + subContact.resource);
-                                } catch (Exception e) {
-                                }
+                                ((Xmpp) protocol).showInviteForm(activity, xmppServiceContact.getUserId() + '/' + subContact.resource);
                                 break;
                             case ContactMenu.GATE_COMMANDS:
                                 AdHoc adhoc = new AdHoc((Xmpp) protocol, xmppServiceContact);
