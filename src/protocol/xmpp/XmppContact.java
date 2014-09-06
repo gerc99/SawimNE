@@ -129,8 +129,7 @@ public class XmppContact extends Contact {
         String jid = Jid.SawimJidToRealJid(getUserId());
         String fullJid = jid;
         if (isConference()) {
-            String nick = ((XmppServiceContact) this).getMyName();
-            fullJid = Jid.SawimJidToRealJid(getUserId() + '/' + nick);
+            fullJid = Jid.SawimJidToRealJid(getUserId() + '/' + getMyName());
         }
 
         xml = xml.replace("${sawim.caps}", xmppConnection.getCaps());

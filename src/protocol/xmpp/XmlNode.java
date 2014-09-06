@@ -139,7 +139,7 @@ public final class XmlNode {
         char ch = socket.readChar();
         while (';' != ch) {
             if (0 < limit) {
-                buffer.append((char) ch);
+                buffer.append(ch);
                 limit--;
             }
             ch = socket.readChar();
@@ -265,7 +265,6 @@ public final class XmlNode {
 
         value = readString(socket, '<', getMaxDataSize(name));
 
-
         while (true) {
             ch = socket.readChar();
             if ('!' == ch) {
@@ -298,14 +297,11 @@ public final class XmlNode {
         while ('?' != ch) {
             ch = socket.readChar();
         }
-
         ch = socket.readChar();
-
         ch = socket.readChar();
         while ('<' != ch) {
             ch = socket.readChar();
         }
-
         return socket.readChar();
     }
 
@@ -347,7 +343,6 @@ public final class XmlNode {
         return (null == node) ? null : node.value;
     }
 
-
     public XmlNode getFirstNode(String name) {
         for (int i = 0; i < children.size(); ++i) {
             XmlNode node = unsafeChildAt(i);
@@ -357,7 +352,6 @@ public final class XmlNode {
         }
         return null;
     }
-
 
     public XmlNode getFirstNode(String name, String xmlns) {
         for (int i = 0; i < children.size(); ++i) {
@@ -415,11 +409,9 @@ public final class XmlNode {
         return (null == node) ? null : node.getAttribute(key);
     }
 
-
     public boolean contains(String name) {
         return null != getFirstNode(name);
     }
-
 
     private String _toString(StringBuffer sb, String spaces) {
         sb.append(spaces).append("<").append(name);
@@ -454,7 +446,6 @@ public final class XmlNode {
         return sb.toString();
     }
 
-
     public String popValue() {
         String result = value;
         value = null;
@@ -474,7 +465,6 @@ public final class XmlNode {
         }
         return Util.base64decode(value);
     }
-
 
     private boolean isContains(String[] subtags) {
         if (null == subtags) {

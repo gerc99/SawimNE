@@ -678,8 +678,8 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
         boolean isConference = chat.getContact() instanceof XmppServiceContact && chat.getContact().isConference();
         if (isConference) {
             mucUsersView = new MucUsersView();
-            mucUsersView.init(chat.getProtocol(), (XmppServiceContact) chat.getContact());
-            mucUsersView.show(this, nickList);
+            mucUsersView.init(chat.getContact().getMyName());
+            mucUsersView.show(chat.getProtocol(), (XmppServiceContact) chat.getContact(), this, nickList);
         } else {
             mucUsersView = null;
             if (SawimApplication.isManyPane()) {

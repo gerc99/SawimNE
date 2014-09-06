@@ -27,16 +27,15 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
     private String currMucNik = "";
     private TextBoxView banTextbox;
     private TextBoxView kikTextbox;
-    private Protocol protocol;
-    private XmppServiceContact xmppServiceContact;
+    private String myName;
     private boolean isLongClick = false;
 
-    public void init(Protocol protocol, XmppServiceContact xmppServiceContact) {
-        this.protocol = protocol;
-        this.xmppServiceContact = xmppServiceContact;
+    public void init(String myName) {
+        this.myName = myName;
     }
 
-    public void show(final ChatView chatView, ListView nickList) {
+    public void show(final Protocol protocol, final XmppServiceContact xmppServiceContact,
+                     final ChatView chatView, ListView nickList) {
         final BaseActivity activity = (BaseActivity) chatView.getActivity();
         usersAdapter.init((Xmpp) protocol, xmppServiceContact);
         nickList.setAdapter(usersAdapter);
@@ -71,7 +70,7 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
                 if (o instanceof String) return false;
                 final String nick = usersAdapter.getCurrentSubContact(o);
                 final MyMenu menu = new MyMenu();
-                final MyMenu roleConfigMenu = getRoleConfigMenu(nick);
+                final MyMenu roleConfigMenu = getRoleConfigMenu(xmppServiceContact, nick);
                 menu.add(activity.getString(R.string.open_private), ContactMenu.COMMAND_PRIVATE);
                 menu.add(activity.getString(R.string.info), ContactMenu.COMMAND_INFO);
                 menu.add(activity.getString(R.string.user_statuses), ContactMenu.COMMAND_STATUS);
@@ -79,7 +78,7 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
                 menu.add(activity.getString(R.string.adhoc), ContactMenu.GATE_COMMANDS);
                 if (roleConfigMenu.getCount() > 0)
                     menu.add(activity.getString(R.string.role_commands), ContactMenu.ROLE_COMMANDS);
-                AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+                final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
                 builder.setCancelable(true);
                 builder.setTitle(xmppServiceContact.getName());
                 builder.setAdapter(menu, new DialogInterface.OnClickListener() {
@@ -116,7 +115,7 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
                                 adhoc.show(activity);
                                 break;
                             case ContactMenu.ROLE_COMMANDS:
-                                showRoleConfig(roleConfigMenu, nick, chatView);
+                                showRoleConfig(xmppServiceContact, roleConfigMenu, nick, chatView);
                                 break;
                         }
                     }
@@ -133,7 +132,7 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
         nickList.setOnItemLongClickListener(null);
     }
 
-    private MyMenu getRoleConfigMenu(final String nick) {
+    private MyMenu getRoleConfigMenu(XmppServiceContact xmppServiceContact, final String nick) {
         final MyMenu menu = new MyMenu();
         int myAffiliation = usersAdapter.getAffiliation(xmppServiceContact.getMyName());
         int myRole = usersAdapter.getRole(xmppServiceContact.getMyName());
@@ -184,7 +183,7 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
         return menu;
     }
 
-    private void showRoleConfig(final MyMenu menu, final String nick, final ChatView chatView) {
+    private void showRoleConfig(XmppServiceContact xmppServiceContact, final MyMenu menu, final String nick, final ChatView chatView) {
         final BaseActivity activity = (BaseActivity) chatView.getActivity();
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setCancelable(true);
@@ -248,18 +247,18 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
 
     public void textboxAction(TextBoxView box, boolean ok) {
         String rzn = (box == banTextbox) ? banTextbox.getString() : kikTextbox.getString();
-        String Nick = "";
-        String myNick = xmppServiceContact.getMyName();
+        String nick = "";
+        String myNick = myName;
         String reason = "";
         if (rzn.length() != 0 && rzn.charAt(0) == '!') {
             rzn = rzn.substring(1);
         } else {
-            Nick = (myNick == null) ? myNick : myNick + ": ";
+            nick = (myNick == null) ? myNick : myNick + ": ";
         }
         if (rzn.length() != 0 && myNick != null) {
-            reason = Nick + rzn;
+            reason = nick + rzn;
         } else {
-            reason = Nick;
+            reason = nick;
         }
         if ((box == banTextbox)) {
             usersAdapter.setMucAffiliationR(currMucNik, "outcast", reason);

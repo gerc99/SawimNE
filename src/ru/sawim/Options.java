@@ -20,6 +20,7 @@ public class Options {
     public static final String OPTION_PRIVATE_STATUS = "private_status";
     public static final String OPTION_CL_HIDE_OFFLINE = "cl_hide_offline";
     public static final String OPTION_CURRENT_PAGE = "current_page";
+    public static final String OPTION_PRESENCE = "presence_";
 
     private static SharedPreferences preferences;
     private static SharedPreferences.Editor editor;

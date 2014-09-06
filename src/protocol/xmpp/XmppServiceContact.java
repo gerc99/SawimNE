@@ -135,11 +135,11 @@ public class XmppServiceContact extends XmppContact {
     }
 
     public boolean isPresence() {
-        return Options.getBoolean("presence_" + getUserId());
+        return Options.getBoolean(Options.OPTION_PRESENCE + getUserId());
     }
 
     public void setPresencesFlag(boolean flag) {
-        Options.setBoolean("presence_" + getUserId(), flag);
+        Options.setBoolean(Options.OPTION_PRESENCE + getUserId(), flag);
         Options.safeSave();
     }
 

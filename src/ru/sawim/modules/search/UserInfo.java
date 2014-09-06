@@ -265,16 +265,9 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
 
                     case INFO_MENU_SAVE_AVATAR:
                         byte[] buffer = avatar;
+                        FileSystem.openDir(FileSystem.AVATARS);
                         FileSystem fileSystem = new FileSystem();
                         String path = fileSystem.getCardDir().getAbsolutePath() + FileSystem.getSawimHome() + FileSystem.AVATARS;
-                        try {
-                            fileSystem.openFile(path);
-                            File file = fileSystem.getFile();
-                            if (!file.exists())
-                                file.mkdirs();
-                        } catch (SawimException e) {
-                            e.printStackTrace();
-                        }
 
                         try {
                             if (buffer != null) {

@@ -23,6 +23,21 @@ public class FileSystem {
         return new FileSystem();
     }
 
+    public static File openDir(String dir) {
+        File file = null;
+        FileSystem fileSystem = new FileSystem();
+        String path = fileSystem.getCardDir().getAbsolutePath() + FileSystem.getSawimHome() + dir;
+        try {
+            fileSystem.openFile(path);
+            file = fileSystem.getFile();
+            if (!file.exists())
+                file.mkdirs();
+        } catch (SawimException e) {
+            e.printStackTrace();
+        }
+        return file;
+    }
+
     public InputStream openSawimFile(String file) {
         byte[] buffer;
         try {
