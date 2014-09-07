@@ -16,8 +16,8 @@ public final class AdHoc implements FormListener, ControlStateListener {
     private String[] nodes;
     private String[] names;
     private XForm commandForm;
-    private static final int FORM_RESOURCE = 1;
-    private static final int FORM_COMMAND = 2;
+    private static final String FORM_RESOURCE = "form_resource";
+    private static final String FORM_COMMAND = "form_command";
     private Forms commandsListForm;
 
     public AdHoc(Xmpp protocol, XmppContact contact) {
@@ -199,7 +199,7 @@ public final class AdHoc implements FormListener, ControlStateListener {
 
     @Override
     public void controlStateChanged(BaseActivity activity, String id) {
-        if (FORM_RESOURCE == Integer.valueOf(id)) {
+        if (FORM_RESOURCE.equals(id)) {
             requestCommandsForCurrentResource();
             updateForm(false);
         }
