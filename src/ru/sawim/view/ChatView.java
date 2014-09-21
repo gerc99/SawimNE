@@ -702,25 +702,25 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                     adapter.getItems().add(mess);
                     newMessageCount++;
 
-                    boolean isScrollEnd = isScrollEnd();
-                    adapter.notifyDataSetChanged();
-                    if (isScrollEnd) {
-                        chatListView.setSelectionFromTop(adapter.getCount() - newMessageCount, chatListView.getHeight() / 4);
-                    }
+                    setScroll();
                 }
                 break;
             case UPDATE_MESSAGES:
                 Contact contact = (Contact) msg.obj;
                 if (chat != null && chat.getContact() == contact) {
-                    boolean isScrollEnd = isScrollEnd();
-                    adapter.notifyDataSetChanged();
-                    if (isScrollEnd) {
-                        chatListView.setSelectionFromTop(adapter.getCount() - newMessageCount, chatListView.getHeight() / 4);
-                    }
+                    setScroll();
                 }
                 break;
         }
         return false;
+    }
+
+    private void setScroll() {
+        boolean isScrollEnd = isScrollEnd();
+        adapter.notifyDataSetChanged();
+        if (isScrollEnd) {
+            chatListView.setSelectionFromTop(adapter.getCount() - newMessageCount, chatListView.getHeight() / 4);
+        }
     }
 
     @Override
@@ -1115,6 +1115,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     }
 
     public void send() {
+        final boolean isScrollEnd = isScrollEnd();
         hideKeyboard();
         SawimApplication.getExecutor().execute(new Runnable() {
             @Override
@@ -1132,8 +1133,9 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                                 adapter.setPosition(-1);
                                 chat.currentPosition = 0;
                                 newMessageCount = 0;
-                                if (chatListView.getLastVisiblePosition() + 1 == adapter.getCount() - 1) {
-                                    updateMessages(chat.getContact());
+                                adapter.notifyDataSetChanged();
+                                if (isScrollEnd) {
+                                    chatListView.setSelection(adapter.getCount());
                                 }
                             }
                         }
