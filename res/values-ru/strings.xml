@@ -90,6 +90,7 @@
 
     <string name="contact_list">Контакт-лист</string>
     <string name="remove">Удалить</string>
+    <string name="remove_avatar">Удалить аватар</string>
     <string name="remove_me">Удалиться из его КЛ</string>
     <string name="rename">Переименовать</string>
 

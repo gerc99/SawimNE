@@ -30,6 +30,7 @@ public class ContactMenu implements TextBoxView.TextBoxListener {
     public static final int CONFERENCE_CONNECT = 5;
     public static final int CONFERENCE_OPTIONS = 6;
     public static final int CONFERENCE_OWNER_OPTIONS = 7;
+    public static final int CONFERENCE_INFORMATION = 15;
     public static final int CONFERENCE_ADD = 8;
     public static final int COMMAND_TITLE = 9;
     public static final int USER_MENU_CONNECTIONS = 10;

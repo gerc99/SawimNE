@@ -16,6 +16,7 @@ public class SawimProvider extends ContentProvider {
 
     private static final String TABLE_CHAT_HISTORY = "history";
     private static final String TABLE_UNREAD_MESSAGES = "history_unread_messages";
+    private static final String TABLE_AVATAR_HASHES = "history_avatar_hashes";
 
     public static final String ROW_AUTO_ID = "_id";
     public static final String ACCOUNT_ID = "account_id";
@@ -29,6 +30,8 @@ public class SawimProvider extends ContentProvider {
     public static final String DATE = "date";
 
     public static final String UNREAD_MESSAGES_COUNT = "unread_messages_count";
+
+    public static final String AVATAR_HASH = "avatar_hash";
 
     public static final String CREATE_CHAT_HISTORY_TABLE = "create table if not exists "
             + TABLE_CHAT_HISTORY + " ("
@@ -49,13 +52,22 @@ public class SawimProvider extends ContentProvider {
             + CONTACT_ID + " text not null, "
             + UNREAD_MESSAGES_COUNT + " int);";
 
+    public static final String CREATE_AVATAR_HASHES_TABLE = "create table if not exists "
+            + TABLE_AVATAR_HASHES + " ("
+            + ROW_AUTO_ID + " integer primary key autoincrement, "
+            + CONTACT_ID + " text not null, "
+            + AVATAR_HASH + " text not null);";
+
     private static final int URI_HISTORY = 1;
     private static final int URI_UNREAD_MESSAGES = 2;
+    private static final int URI_AVATAR_HASHES = 3;
 
     public static Uri HISTORY_RESOLVER_URI = Uri.parse("content://"
             + SawimApplication.AUTHORITY + "/" + TABLE_CHAT_HISTORY);
     public static Uri HISTORY_UNREAD_MESSAGES_RESOLVER_URI = Uri.parse("content://"
             + SawimApplication.AUTHORITY + "/" + TABLE_UNREAD_MESSAGES);
+    public static Uri AVATAR_HASHES_RESOLVER_URI = Uri.parse("content://"
+            + SawimApplication.AUTHORITY + "/" + TABLE_AVATAR_HASHES);
 
     DatabaseHelper dbHelper;
 
@@ -63,6 +75,7 @@ public class SawimProvider extends ContentProvider {
     static {
         uriMatcher.addURI(SawimApplication.AUTHORITY, TABLE_CHAT_HISTORY, URI_HISTORY);
         uriMatcher.addURI(SawimApplication.AUTHORITY, TABLE_UNREAD_MESSAGES, URI_UNREAD_MESSAGES);
+        uriMatcher.addURI(SawimApplication.AUTHORITY, TABLE_AVATAR_HASHES, URI_AVATAR_HASHES);
     }
 
     @Override
@@ -118,6 +131,9 @@ public class SawimProvider extends ContentProvider {
                 break;
             case URI_UNREAD_MESSAGES:
                 table = TABLE_UNREAD_MESSAGES;
+                break;
+            case URI_AVATAR_HASHES:
+                table = TABLE_AVATAR_HASHES;
                 break;
             default:
                 throw new IllegalArgumentException("Unknown URI: " + uri);

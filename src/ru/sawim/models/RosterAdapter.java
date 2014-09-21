@@ -2,6 +2,7 @@ package ru.sawim.models;
 
 import android.content.Context;
 import android.database.DataSetObserver;
+import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.view.Gravity;
@@ -19,10 +20,13 @@ import ru.sawim.chat.Chat;
 import ru.sawim.chat.ChatHistory;
 import ru.sawim.chat.message.Message;
 import ru.sawim.icons.Icon;
+import ru.sawim.icons.ImageCache;
+import ru.sawim.io.FileSystem;
 import ru.sawim.roster.ProtocolBranch;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.roster.TreeNode;
 import ru.sawim.widget.MyImageButton;
+import ru.sawim.widget.Util;
 import ru.sawim.widget.roster.RosterItemView;
 
 import java.util.ArrayList;
@@ -164,12 +168,12 @@ public class RosterAdapter extends BaseAdapter {
         rosterItemView.itemNameFont = Typeface.DEFAULT;
         rosterItemView.itemName = o.getText();
 
-        rosterItemView.itemFirstImage = new Icon(o.isExpanded() ?
+        rosterItemView.itemSecondImage = new Icon(o.isExpanded() ?
                 SawimResources.groupDownIcon : SawimResources.groupRightIcons).getImage().getBitmap();
 
         Icon icGroup = o.getProtocol().getCurrentStatusIcon();
         if (icGroup != null)
-            rosterItemView.itemSecondImage = icGroup.getImage().getBitmap();
+            rosterItemView.itemThirdImage = icGroup.getImage().getBitmap();
 
         Profile profile = o.getProtocol().getProfile();
         if (profile != null) {
@@ -178,14 +182,14 @@ public class RosterAdapter extends BaseAdapter {
                 if (xStatusInfo != null) {
                     Icon xStatusIcon = xStatusInfo.getIcon(profile.xstatusIndex);
                     if (xStatusIcon != null)
-                        rosterItemView.itemThirdImage = xStatusIcon.getImage().getBitmap();
+                        rosterItemView.itemFourthImage = xStatusIcon.getImage().getBitmap();
                 }
             }
         }
 
         BitmapDrawable messIcon = ChatHistory.instance.getUnreadMessageIcon(o.getProtocol());
         if (!o.isExpanded() && messIcon != null)
-            rosterItemView.itemFourthImage = messIcon.getBitmap();
+            rosterItemView.itemFifthImage = messIcon.getBitmap();
     }
 
     void populateFromGroup(RosterItemView rosterItemView, Group g) {
@@ -198,10 +202,10 @@ public class RosterAdapter extends BaseAdapter {
 
         BitmapDrawable messIcon = ChatHistory.instance.getUnreadMessageIcon(g.getContacts());
         if (!g.isExpanded() && messIcon != null)
-            rosterItemView.itemFourthImage = messIcon.getBitmap();
+            rosterItemView.itemFifthImage = messIcon.getBitmap();
     }
 
-    void populateFromContact(RosterItemView rosterItemView, RosterHelper roster, Protocol p, Contact item) {
+    void populateFromContact(final RosterItemView rosterItemView, RosterHelper roster, Protocol p, Contact item) {
         if (p == null || item == null) return;
         rosterItemView.itemNameColor = Scheme.getColor(item.getTextTheme());
         rosterItemView.itemNameFont = item.hasChat() ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT;
@@ -212,22 +216,34 @@ public class RosterAdapter extends BaseAdapter {
             rosterItemView.itemDescColor = Scheme.getColor(Scheme.THEME_CONTACT_STATUS);
             rosterItemView.itemDesc = statusMessage;
         }
-
+        Bitmap avatar = ImageCache.getInstance().get(FileSystem.openDir(FileSystem.AVATARS),
+                SawimApplication.getExecutor(), item.avatarHash, null, Util.dipToPixels(rosterItemView.getContext(), SawimApplication.AVATAR_SIZE), Scheme.THEME_BACKGROUND, new ImageCache.OnImageLoadListener() {
+                    @Override
+                    public void onLoad() {
+                        rosterItemView.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                notifyDataSetChanged();
+                            }
+                        });
+                    }
+                });
+        rosterItemView.itemFirstImage = avatar;
         Icon icStatus = item.getLeftIcon(p);
         if (icStatus != null)
-            rosterItemView.itemFirstImage = icStatus.getImage().getBitmap();
+            rosterItemView.itemSecondImage = icStatus.getImage().getBitmap();
         if (item.isTyping()) {
-            rosterItemView.itemFirstImage = Message.getIcon(Message.ICON_TYPE).getBitmap();
+            rosterItemView.itemSecondImage = Message.getIcon(Message.ICON_TYPE).getBitmap();
         } else {
             BitmapDrawable icMess = Message.getIcon(item.getUnreadMessageIcon());
             if (icMess != null)
-                rosterItemView.itemFirstImage = icMess.getBitmap();
+                rosterItemView.itemSecondImage = icMess.getBitmap();
         }
 
         if (item.getXStatusIndex() != XStatusInfo.XSTATUS_NONE) {
             XStatusInfo xStatusInfo = p.getXStatusInfo();
             if (xStatusInfo != null)
-                rosterItemView.itemSecondImage = xStatusInfo.getIcon(item.getXStatusIndex()).getImage().getBitmap();
+                rosterItemView.itemThirdImage = xStatusInfo.getIcon(item.getXStatusIndex()).getImage().getBitmap();
         }
 
         if (!item.isTemp()) {
@@ -243,13 +259,13 @@ public class RosterAdapter extends BaseAdapter {
                 if (privacyList != -1)
                     rosterItemView.itemThirdImage = Contact.serverListsIcons.iconAt(privacyList).getImage().getBitmap();
             } else {
-                rosterItemView.itemThirdImage = SawimResources.authIcon.getBitmap();
+                rosterItemView.itemFourthImage = SawimResources.authIcon.getBitmap();
             }
         }
 
         Icon icClient = (null != p.clientInfo) ? p.clientInfo.getIcon(item.clientIndex) : null;
         if (icClient != null && !SawimApplication.hideIconsClient)
-            rosterItemView.itemFourthImage = icClient.getImage().getBitmap();
+            rosterItemView.itemSixthImage = icClient.getImage().getBitmap();
     }
 
     public BitmapDrawable getImageChat(Chat chat, boolean showMess) {

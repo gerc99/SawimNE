@@ -356,9 +356,6 @@ public final class Chat {
         String from = getFrom(message);
         resetUnreadMessages();
         addTextToForm(message, from, false, false);
-        if (RosterHelper.getInstance().getUpdateChatListener() != null) {
-            RosterHelper.getInstance().getUpdateChatListener().updateChat();
-        }
     }
 
     public Contact getContact() {

@@ -249,7 +249,7 @@ public final class Search implements FormListener, ControlStateListener {
             screen.setCaption(JLocale.getString(R.string.results)
                     + " " + (currentResultIndex + 1) + "/" + resultCount);
             UserInfo userInfo = getCurrentResult();
-            userInfo.setSeachResultFlag();
+            userInfo.setSearchResultFlag();
             userInfo.setProfileView(screen);
             userInfo.updateProfileView();
 

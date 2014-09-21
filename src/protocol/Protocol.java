@@ -165,10 +165,10 @@ abstract public class Protocol {
             }
             for (int i = 0; i < roster.getGroupItems().size(); ++i) {
                 Group g = roster.getGroupItems().elementAt(i);
-                updateContacts(g);
+                RosterHelper.getInstance().updateGroup(this, g);
                 oldRoster.getGroupItems().addElement(g);
             }
-            updateContacts(notInListGroup);
+            RosterHelper.getInstance().updateGroup(this, notInListGroup);
         }
         if (RosterHelper.getInstance().getProtocolCount() == 0) return;
         RosterHelper.getInstance().updateRoster();
@@ -178,21 +178,17 @@ abstract public class Protocol {
 
     public final void setContactListAddition(Group group) {
         synchronized (rosterLockObject) {
-            updateContacts(group);
-            updateContacts(notInListGroup);
-            Vector groupItems = group.getContacts();
+            RosterHelper.getInstance().updateGroup(this, group);
+            RosterHelper.getInstance().updateGroup(this, notInListGroup);
+            Vector<Contact> groupItems = group.getContacts();
             for (int i = 0; i < groupItems.size(); ++i) {
                 if (-1 == roster.getContactItems().indexOf(groupItems.elementAt(i))) {
-                    roster.getContactItems().addElement((Contact) groupItems.elementAt(i));
+                    roster.getContactItems().addElement(groupItems.elementAt(i));
                 }
             }
         }
         RosterHelper.getInstance().updateRoster();
         needSave();
-    }
-
-    private void updateContacts(Group group) {
-        RosterHelper.getInstance().updateGroup(this, group);
     }
 
     public final boolean isConnecting() {
@@ -302,8 +298,7 @@ abstract public class Protocol {
         Storage storage = new Storage(rmsName);
         storage.open();
         try {
-            byte[] buf;
-            buf = storage.getRecord(1);
+            byte[] buf = storage.getRecord(1);
             ByteArrayInputStream bais = new ByteArrayInputStream(buf);
             DataInputStream dis = new DataInputStream(bais);
             if (dis.readInt() != ROSTER_STORAGE_VERSION) {
@@ -354,6 +349,7 @@ abstract public class Protocol {
         int totalCount = cItemsCount + roster.getGroupItems().size();
         for (int i = 0; i < totalCount; ++i) {
             if (i < cItemsCount) {
+                dos.writeByte(0);
                 saveContact(dos, roster.getContactItems().elementAt(i));
             } else {
                 dos.writeByte(1);
@@ -395,7 +391,6 @@ abstract public class Protocol {
     }
 
     protected void saveContact(DataOutputStream out, Contact contact) throws Exception {
-        out.writeByte(0);
         out.writeUTF(contact.getUserId());
         out.writeUTF(contact.getName());
         out.writeInt(contact.getGroupId());
@@ -563,11 +558,11 @@ abstract public class Protocol {
         return branch;
     }
 
-    public final Vector getContactItems() {
+    public final Vector<Contact> getContactItems() {
         return roster.getContactItems();
     }
 
-    public final Vector getGroupItems() {
+    public final Vector<Group> getGroupItems() {
         return roster.getGroupItems();
     }
 

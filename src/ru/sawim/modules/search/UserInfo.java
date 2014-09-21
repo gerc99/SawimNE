@@ -29,28 +29,29 @@ import ru.sawim.modules.DebugLog;
 import ru.sawim.modules.photo.PhotoListener;
 import ru.sawim.view.VirtualListView;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.List;
 
 public class UserInfo implements PhotoListener, FileBrowserListener {
-    private final Protocol protocol;
+    private Protocol protocol;
     private VirtualList profileView;
     private boolean avatarIsLoaded = false;
     private boolean searchResult = false;
     public byte[] avatar;
     public String status;
     public protocol.xmpp.XmlNode vCard;
-    public final String realUin;
+    public String realUin;
 
     public String localName, uin, nick, email, homeCity, firstName, lastName, homeState, homePhones, homeFax, homeAddress, cellPhone, homePage,
             interests, about, workCity, workState, workPhone, workFax, workAddress, workCompany, workDepartment, workPosition, birthDay;
     public int age;
     public byte gender;
     public boolean auth;
+    private boolean isEditable = false;
 
     public UserInfo(Protocol prot, String uin) {
+        this(prot);
         protocol = prot;
         realUin = uin;
     }
@@ -58,6 +59,10 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
     public UserInfo(Protocol prot) {
         protocol = prot;
         realUin = null;
+        isEditable |= (protocol instanceof Icq);
+        isEditable |= (protocol instanceof Xmpp);
+        isEditable |= protocol.getUserId().equals(uin)
+                && protocol.isConnected();
     }
 
     public void setProfileView(VirtualList view) {
@@ -94,7 +99,7 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
         profileView.show(activity);
     }
 
-    void setSeachResultFlag() {
+    void setSearchResultFlag() {
         searchResult = true;
     }
 
@@ -195,7 +200,9 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
                     if (protocol instanceof Xmpp) {
                         menu.add(Menu.FIRST, INFO_MENU_TAKE_AVATAR, 2, R.string.take_photo);
                         menu.add(Menu.FIRST, INFO_MENU_ADD_AVATAR, 2, R.string.add_from_fs);
-                        menu.add(Menu.FIRST, INFO_MENU_REMOVE_AVATAR, 2, R.string.remove);
+                        if (avatar != null) {
+                            menu.add(Menu.FIRST, INFO_MENU_REMOVE_AVATAR, 2, R.string.remove_avatar);
+                        }
                     }
                 }
             }
@@ -237,8 +244,9 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
             public void onCreateContextMenu(ContextMenu menu, int listItem) {
                 menu.add(Menu.FIRST, INFO_MENU_COPY, 2, R.string.copy_text);
                 menu.add(Menu.FIRST, INFO_MENU_COPY_ALL, 2, R.string.copy_all_text);
-                if (avatar != null)
+                if (avatar != null) {
                     menu.add(Menu.FIRST, INFO_MENU_SAVE_AVATAR, 2, SawimApplication.getInstance().getString(R.string.save_avatar));
+                }
             }
 
             @Override
@@ -299,12 +307,12 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
         profileView.updateModel();
     }
 
+    public void setEditable() {
+        isEditable = true;
+    }
+
     public boolean isEditable() {
-        boolean isEditable = false;
-        isEditable |= (protocol instanceof Icq);
-        isEditable |= (protocol instanceof Xmpp);
-        return isEditable && protocol.getUserId().equals(uin)
-                && protocol.isConnected();
+        return isEditable;
     }
 
     private Icon getStatusAsIcon() {

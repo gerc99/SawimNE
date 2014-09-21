@@ -26,14 +26,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(SawimProvider.CREATE_CHAT_HISTORY_TABLE);
         db.execSQL(SawimProvider.CREATE_UNREAD_MESSAGES_TABLE);
+        db.execSQL(SawimProvider.CREATE_AVATAR_HASHES_TABLE);
         if (sqlCreateEntries != null) {
             db.execSQL(sqlCreateEntries);
         }
     }
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        if (oldVersion == 1 && newVersion == 2) {
+        if (oldVersion <= 1 && newVersion >= 2) {
             db.execSQL(SawimProvider.CREATE_UNREAD_MESSAGES_TABLE);
+        }
+        if (oldVersion <= 3 && newVersion >= 4) {
+            db.execSQL(SawimProvider.CREATE_AVATAR_HASHES_TABLE);
         }
     }
 

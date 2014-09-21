@@ -12,6 +12,7 @@ import ru.sawim.comm.JLocale;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
 import ru.sawim.icons.ImageList;
+import ru.sawim.io.RosterStorage;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
 import ru.sawim.modules.FileTransfer;
@@ -191,7 +192,7 @@ public final class Xmpp extends Protocol implements FormListener {
         while (true) {
             int id = Util.nextRandInt() % 0x1000;
             for (int i = getGroupItems().size() - 1; i >= 0; --i) {
-                Group group = (Group) getGroupItems().elementAt(i);
+                Group group = getGroupItems().elementAt(i);
                 if (group.getId() == id) {
                     id = -1;
                     break;
@@ -253,9 +254,12 @@ public final class Xmpp extends Protocol implements FormListener {
                     c.setMyName(conf.getMyName());
                 }
             }
+            c.avatarHash = RosterStorage.getAvatarHash(c.getUserId());
             return c;
         }
-        return new XmppContact(jid, name);
+        Contact contact = new XmppContact(jid, name);
+        contact.avatarHash = RosterStorage.getAvatarHash(contact.getUserId());
+        return contact;
     }
 
     private String getDefaultName() {
@@ -622,6 +626,21 @@ public final class Xmpp extends Protocol implements FormListener {
 
             case ContactMenu.CONFERENCE_OPTIONS:
                 showOptionsForm(activity, (XmppServiceContact) c);
+                break;
+
+            case ContactMenu.CONFERENCE_INFORMATION:
+                XmppServiceContact xmppServiceContact = (XmppServiceContact) contact;
+                UserInfo data = getConnection().getUserInfo(xmppServiceContact);
+                XmppContact.SubContact my = xmppServiceContact.getContact(xmppServiceContact.getMyName());
+                if (null != my) {
+                    if (XmppServiceContact.AFFILIATION_OWNER == my.priorityA) {
+                        data.setEditable();
+                    }
+                }
+                data.uin = c.getUserId();
+                data.createProfileView(contact.getName());
+                data.setProfileViewToWait();
+                data.showProfile(activity);
                 break;
 
             case ContactMenu.CONFERENCE_OWNER_OPTIONS:

@@ -28,7 +28,6 @@ public final class StringConvertor {
         return size + " MiB";
     }
 
-
     public static String byteArrayToHexString(byte[] buf) {
         StringBuilder hexString = new StringBuilder(buf.length * 2);
         for (int i = 0; i < buf.length; ++i) {

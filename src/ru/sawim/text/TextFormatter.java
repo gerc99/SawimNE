@@ -5,7 +5,6 @@ import android.text.style.ImageSpan;
 import ru.sawim.modules.Emotions;
 import ru.sawim.view.menu.JuickMenu;
 
-import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

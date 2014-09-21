@@ -4,9 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
+import android.graphics.*;
 import android.os.Build;
 import android.util.DisplayMetrics;
 import android.view.View;
@@ -44,6 +42,51 @@ public class Util {
             bitmap.setDensity(metrics.densityDpi);
         }
         return bitmap;
+    }
+
+    public static Bitmap getAvatarBitmap(byte[] bytes, int size, int backgroundColor) {
+        Bitmap avatar;
+        Bitmap avatarTmp = Util.decodeBitmap(bytes, size);
+        int h = avatarTmp.getHeight();
+        int w = avatarTmp.getWidth();
+        if (h > w) {
+            w = (w * size) / h;
+            h = size;
+        } else {
+            h = (h * size) / w;
+            w = size;
+        }
+        Bitmap scaled = Bitmap.createScaledBitmap(avatarTmp, w, h, true);
+        if (h != w) {
+            avatarTmp.recycle();
+        }
+        if (h == w) {
+            avatar = scaled;
+        } else {
+            avatar = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
+            Canvas c = new Canvas(avatar);
+            c.drawColor(backgroundColor);
+            c.drawBitmap(scaled, (size - w) / 2, (size - h) / 2, null);
+        }
+        return avatar;
+    }
+
+    public static Bitmap decodeBitmap(byte[] bytes, int maxSize) {
+        Bitmap tmp;
+        BitmapFactory.Options opts = new BitmapFactory.Options();
+        opts.inJustDecodeBounds = true;
+        BitmapFactory.decodeByteArray(bytes, 0, bytes.length, opts);
+        int h = opts.outHeight;
+        int w = opts.outWidth;
+        int scaleFactor = 1;
+        while (h / 2 >= maxSize && w / 2 >= maxSize) {
+            w /= 2; h /= 2;
+            scaleFactor *= 2;
+        }
+        opts = new BitmapFactory.Options();
+        opts.inSampleSize = scaleFactor;
+        tmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length, opts);
+        return tmp;
     }
 
     public static View getDivider(Context context, boolean vertical, int color) {

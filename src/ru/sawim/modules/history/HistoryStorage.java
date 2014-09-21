@@ -15,7 +15,6 @@ import ru.sawim.chat.message.PlainMessage;
 import ru.sawim.comm.JLocale;
 import ru.sawim.comm.Util;
 import ru.sawim.io.SawimProvider;
-import ru.sawim.io.StorageConvertor;
 import ru.sawim.modules.DebugLog;
 import ru.sawim.roster.RosterHelper;
 
@@ -23,12 +22,13 @@ import java.util.List;
 
 public class HistoryStorage {
 
-    private String protocolId;
-    private String uniqueUserId;
-
     private static final String WHERE_ACC_CONTACT_ID = SawimProvider.ACCOUNT_ID + " = ? AND " + SawimProvider.CONTACT_ID + " = ?";
     private static final String WHERE_ACC_CONTACT_AUTHOR_MESSAGE_ID = SawimProvider.ACCOUNT_ID + " = ? AND " + SawimProvider.CONTACT_ID
             + "= ? AND " + SawimProvider.AUTHOR + "= ? AND " + SawimProvider.MESSAGE + " = ?";
+
+    private String protocolId;
+    private String uniqueUserId;
+
 
     private HistoryStorage(String protocolId, String uniqueUserId) {
         this.protocolId = protocolId;

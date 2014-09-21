@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.TimeZone;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 /**
  * Created with IntelliJ IDEA.
@@ -48,7 +49,7 @@ public class SawimApplication extends Application {
     public static final String LOG_TAG = SawimApplication.class.getSimpleName();
 
     public static final String DATABASE_NAME = "sawim.db";
-    public static final int DATABASE_VERSION = 2;
+    public static final int DATABASE_VERSION = 4;
     public static final String AUTHORITY = "ru.sawim.contentprovider";
 
     public static String NAME;
@@ -56,6 +57,7 @@ public class SawimApplication extends Application {
     public static final String PHONE = "Android/" + android.os.Build.MODEL
             + "/" + android.os.Build.VERSION.RELEASE;
     public static final String DEFAULT_SERVER = "jabber.ru";
+    public static final int AVATAR_SIZE = 50;
 
     public static boolean returnFromAcc = false;
     private boolean paused = true;
@@ -72,7 +74,7 @@ public class SawimApplication extends Application {
     public boolean isBindService = false;
 
     private Handler uiHandler;
-    private static final ExecutorService executor = Executors.newCachedThreadPool();
+    private ExecutorService backgroundExecutor;
 
     public static SSLContext sc;
 
@@ -92,7 +94,17 @@ public class SawimApplication extends Application {
         Thread.setDefaultUncaughtExceptionHandler(ExceptionHandler.inContext(getContext()));
         super.onCreate();
         uiHandler = new Handler(Looper.getMainLooper());
-
+        backgroundExecutor = Executors
+                .newCachedThreadPool(new ThreadFactory() {
+                    @Override
+                    public Thread newThread(Runnable runnable) {
+                        Thread thread = new Thread(runnable,
+                                "Background executor service");
+                        thread.setPriority(Thread.MIN_PRIORITY);
+                        thread.setDaemon(true);
+                        return thread;
+                    }
+                });
         startService();
         networkStateReceiver.updateNetworkState(this);
 
@@ -138,7 +150,7 @@ public class SawimApplication extends Application {
     }
 
     public static ExecutorService getExecutor() {
-        return executor;
+        return getInstance().backgroundExecutor;
     }
 
     private void startService() {
@@ -217,14 +229,14 @@ public class SawimApplication extends Application {
     }
 
     public void quit(boolean isForceClose) {
+        RosterHelper.getInstance().safeSave();
+        HistoryStorage.saveUnreadMessages();
+        AutoAbsence.getInstance().online();
         int count = RosterHelper.getInstance().getProtocolCount();
         for (int i = 0; i < count; ++i) {
             Protocol p = RosterHelper.getInstance().getProtocol(i);
             p.disconnect(true);
         }
-        RosterHelper.getInstance().safeSave();
-        HistoryStorage.saveUnreadMessages();
-        AutoAbsence.getInstance().online();
     }
 
     public static long getCurrentGmtTime() {

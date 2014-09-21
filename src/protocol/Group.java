@@ -9,7 +9,7 @@ import java.util.Vector;
 public class Group extends TreeBranch {
 
     private String name;
-    private final Vector contacts = new Vector();
+    private final Vector<Contact> contacts = new Vector<Contact>();
     private byte mode;
     private String caption = null;
     private int groupId;
@@ -71,14 +71,14 @@ public class Group extends TreeBranch {
         return (0 == contacts.size());
     }
 
-    public final Vector getContacts() {
+    public final Vector<Contact> getContacts() {
         return contacts;
     }
 
     public final void updateGroupData() {
         int onlineCount = 0;
         for (int i = 0; i < contacts.size(); ++i) {
-            Contact item = (Contact) contacts.elementAt(i);
+            Contact item = contacts.elementAt(i);
             if (item.isOnline()) {
                 onlineCount++;
             }

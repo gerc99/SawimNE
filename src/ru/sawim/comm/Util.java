@@ -1,7 +1,6 @@
 package ru.sawim.comm;
 
 import android.util.Base64;
-import ru.sawim.Options;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 

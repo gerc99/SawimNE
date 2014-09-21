@@ -31,6 +31,7 @@ abstract public class Contact implements TreeNode, Sortable {
     private String xstatusText = null;
     String version = "";
     public long chaingingStatusTime = 0;
+    public String avatarHash;
 
     public final boolean isOnline() {
         return (StatusInfo.STATUS_OFFLINE != status);

@@ -32,6 +32,7 @@ public class RosterItemView extends View {
     public Bitmap itemThirdImage = null;
     public Bitmap itemFourthImage = null;
     public Bitmap itemFifthImage = null;
+    public Bitmap itemSixthImage = null;
 
     private static TextPaint textPaint;
     private static Paint paintDivider;
@@ -42,6 +43,7 @@ public class RosterItemView extends View {
             thirdImageX, thirdImageY,
             fourthImageX, fourthImageY,
             fifthImageX, fifthImageY,
+            sixthImageX, sixthImageY,
             textX;
     public boolean isShowDivider;
 
@@ -75,6 +77,7 @@ public class RosterItemView extends View {
         itemThirdImage = null;
         itemFourthImage = null;
         itemFifthImage = null;
+        itemSixthImage = null;
         itemNameFont = null;
     }
 
@@ -156,19 +159,25 @@ public class RosterItemView extends View {
         } else
             thirdImageX = secondImageX;
         if (itemThirdImage != null) {
+            fourthImageX = thirdImageX + itemThirdImage.getWidth() + leftPadding;
             thirdImageY = y - (itemThirdImage.getHeight() >> 1);
-            textX = thirdImageX + itemThirdImage.getWidth() + leftPadding;
+            textX = fourthImageX;
+        } else
+            fourthImageX = thirdImageX;
+        if (itemFourthImage != null) {
+            fourthImageY = y - (itemFourthImage.getHeight() >> 1);
+            textX = fourthImageX + itemFourthImage.getWidth() + leftPadding;
         }
 
-        fourthImageX = viewWidth;
-        if (itemFourthImage != null) {
-            fourthImageX = viewWidth - itemFourthImage.getWidth() - rightPadding;
-            fourthImageY = y - (itemFourthImage.getHeight() >> 1);
-        }
-        fifthImageX = fourthImageX;
+        fifthImageX = viewWidth;
         if (itemFifthImage != null) {
-            fifthImageX = fourthImageX - itemFifthImage.getWidth() - rightPadding;
+            fifthImageX = viewWidth - itemFifthImage.getWidth() - rightPadding;
             fifthImageY = y - (itemFifthImage.getHeight() >> 1);
+        }
+        sixthImageX = fifthImageX;
+        if (itemSixthImage != null) {
+            sixthImageX = fifthImageX - itemSixthImage.getWidth() - rightPadding;
+            sixthImageY = y - (itemSixthImage.getHeight() >> 1);
         }
     }
 
@@ -184,6 +193,8 @@ public class RosterItemView extends View {
             canvas.drawBitmap(itemSecondImage, secondImageX, secondImageY, null);
         if (itemThirdImage != null)
             canvas.drawBitmap(itemThirdImage, thirdImageX, thirdImageY, null);
+        if (itemFourthImage != null)
+            canvas.drawBitmap(itemFourthImage, fourthImageX, fourthImageY, null);
         if (itemName != null) {
             textPaint.setColor(itemNameColor);
             setTextSize(SawimApplication.getFontSize());
@@ -196,10 +207,10 @@ public class RosterItemView extends View {
             textPaint.setTypeface(Typeface.DEFAULT);
             canvas.drawText(TextUtils.ellipsize(itemDesc, textPaint, fifthImageX - textX, TextUtils.TruncateAt.END).toString(), textX, lineTwoY, textPaint);
         }
-        if (itemFourthImage != null)
-            canvas.drawBitmap(itemFourthImage, fourthImageX, fourthImageY, null);
         if (itemFifthImage != null)
             canvas.drawBitmap(itemFifthImage, fifthImageX, fifthImageY, null);
+        if (itemSixthImage != null)
+            canvas.drawBitmap(itemSixthImage, sixthImageX, sixthImageY, null);
 
         boolean isLayer = itemName == null && itemDesc != null;
         if (isShowDivider) {

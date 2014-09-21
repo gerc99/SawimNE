@@ -1,13 +1,11 @@
 package protocol.xmpp;
 
+import android.graphics.BitmapFactory;
 import protocol.*;
 import protocol.net.ClientConnection;
-import ru.sawim.Options;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.SawimException;
-import ru.sawim.chat.Chat;
-import ru.sawim.chat.ChatHistory;
 import ru.sawim.chat.message.Message;
 import ru.sawim.chat.message.PlainMessage;
 import ru.sawim.chat.message.SystemNotice;
@@ -15,16 +13,17 @@ import ru.sawim.comm.Config;
 import ru.sawim.comm.JLocale;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
+import ru.sawim.icons.ImageCache;
+import ru.sawim.io.FileSystem;
+import ru.sawim.io.RosterStorage;
 import ru.sawim.modules.DebugLog;
 import ru.sawim.modules.crypto.MD5;
+import ru.sawim.modules.crypto.SHA1;
 import ru.sawim.modules.history.HistoryStorage;
 import ru.sawim.modules.search.UserInfo;
 import ru.sawim.roster.RosterHelper;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
@@ -35,39 +34,6 @@ public final class XmppConnection extends ClientConnection {
 
     public static final boolean DEBUGLOG = false;
     private static final int MESSAGE_COUNT_AFTER_CONNECT = 20;
-
-    private Socket socket;
-    private Xmpp protocol;
-
-    String fullJid_;
-    private String domain_ = "";
-    private String resource;
-    private final boolean xep0048 = false;
-    private byte[] pingPacket = new byte[]{' '};
-    private byte[] forPongPacket = StringConvertor.stringToByteArrayUtf8(
-            "<iq type='get'><ping xmlns='urn:xmpp:ping'/></iq>");
-
-    private String verHash = "";
-    private String featureList = "";
-
-    private final Vector packets = new Vector();
-
-    private boolean isGTalk_ = false;
-    private boolean authorized_ = false;
-    private boolean rosterLoaded = false;
-
-    private UserInfo singleUserInfo;
-    private String autoSubscribeDomain;
-    private XmppForm xmppForm;
-
-    private IBBFileTransfer ibb;
-
-    private ServiceDiscovery serviceDiscovery = null;
-    private AdHoc adhoc;
-    private AffiliationListConf affListConf = null;
-    private MirandaNotes notes = null;
-
-    private SASL_ScramSha1 scramSHA1;
 
     private static final String[] statusCodes = {
             "unavailable",
@@ -127,6 +93,41 @@ public final class XmppConnection extends ClientConnection {
     private static final byte IQ_TYPE_GET = 1;
     private static final byte IQ_TYPE_SET = 2;
     private static final byte IQ_TYPE_ERROR = 3;
+
+    private Socket socket;
+    private Xmpp protocol;
+
+    String fullJid_;
+    private String domain_ = "";
+    private String resource;
+    private final boolean xep0048 = false;
+    private byte[] pingPacket = new byte[]{' '};
+    private byte[] forPongPacket = StringConvertor.stringToByteArrayUtf8(
+            "<iq type='get'><ping xmlns='urn:xmpp:ping'/></iq>");
+
+    private String verHash = "";
+    private String featureList = "";
+
+    private final Vector packets = new Vector();
+
+    private boolean isGTalk_ = false;
+    private boolean authorized_ = false;
+    private boolean rosterLoaded = false;
+
+    private UserInfo singleUserInfo;
+    private String autoSubscribeDomain;
+    private XmppForm xmppForm;
+
+    private IBBFileTransfer ibb;
+
+    private ServiceDiscovery serviceDiscovery = null;
+    private AdHoc adhoc;
+    private AffiliationListConf affListConf = null;
+    private MirandaNotes notes = null;
+
+    private SASL_ScramSha1 scramSHA1;
+
+    private String myAvatarHash = null;
 
     private byte nativeStatus2StatusIndex(String rawStatus) {
         rawStatus = StringConvertor.notNull(rawStatus);
@@ -641,36 +642,42 @@ public final class XmppConnection extends ClientConnection {
                 }
                 if ((IQ_TYPE_RESULT == iqType) && !rosterLoaded) {
                     rosterLoaded = true;
-                    TemporaryRoster roster = new TemporaryRoster(xmpp);
-                    xmpp.setContactListStub();
                     while (0 < iqQuery.childrenCount()) {
                         XmlNode itemNode = iqQuery.popChildNode();
                         String jid = itemNode.getAttribute(XmlNode.S_JID);
-                        Contact contact = roster.makeContact(jid);
+                        Contact contact = xmpp.getItemByUID(jid);
+                        if (contact == null) {
+                            contact = xmpp.createContact(jid, jid);
+                        }
                         contact.setName(itemNode.getAttribute(XmlNode.S_NAME));
 
                         String groupName = itemNode.getFirstNodeValue(S_GROUP);
                         if (StringConvertor.isEmpty(groupName) || Jid.isConference(jid)) {
                             groupName = contact.getDefaultGroupName();
                         }
-                        contact.setGroup(roster.getOrCreateGroup(groupName));
+                        Group g = xmpp.getOrCreateGroup(groupName);
+                        contact.setGroup(g);
 
                         String subscription = itemNode.getAttribute("subscription");
                         contact.setBooleanValue(Contact.CONTACT_NO_AUTH, isNoAutorized(subscription));
-                        roster.addContact(contact);
+                        if (!xmpp.getContactItems().contains(contact)) {
+                            xmpp.getContactItems().add(contact);
+                        }
+                        RosterHelper.getInstance().updateGroup(xmpp, g);
                     }
+                    RosterHelper.getInstance().updateGroup(xmpp, xmpp.getNotInListGroup());
+                    RosterHelper.getInstance().updateRoster();
                     setProgress(70);
                     if (!isConnected()) {
                         return;
                     }
-                    xmpp.setRoster(roster.getGroups(), roster.mergeContacts());
                     Contact selfContact = xmpp.getItemByUID(xmpp.getUserId());
                     if (null != selfContact) {
                         selfContact.setBooleanValue(Contact.CONTACT_NO_AUTH, false);
                         xmpp.ui_updateContact(selfContact);
                     }
                     setProgress(80);
-                    xmpp.s_updateOnlineStatus();
+                    getVCard(xmpp.getUserId());
                     String xcode = Xmpp.xStatus.getCode(xmpp.getProfile().xstatusIndex);
                     if ((null != xcode) && !xcode.startsWith(XmppXStatus.XSTATUS_START)) {
                         setXStatus();
@@ -678,7 +685,6 @@ public final class XmppConnection extends ClientConnection {
                     setProgress(90);
                     getBookmarks();
                     putPacketIntoQueue("<iq type='get' id='getnotes'><query xmlns='jabber:iq:private'><storage xmlns='storage:rosternotes'/></query></iq>");
-
                     setProgress(100);
 
                 } else if (IQ_TYPE_SET == iqType) {
@@ -999,76 +1005,133 @@ public final class XmppConnection extends ClientConnection {
         userInfo.vCard.cleanXmlTree();
 
         StringBuffer packet = new StringBuffer();
-        packet.append("<iq type='set' id='").append(generateId()).append("'>");
+        packet.append("<iq type='set' to='").append(Util.xmlEscape(userInfo.uin))
+                .append("' id='").append(generateId()).append("'>");
         userInfo.vCard.toString(packet);
         packet.append("</iq>");
         putPacketIntoQueue(packet.toString());
+        updateAvatar(userInfo.vCard, userInfo.uin);
     }
 
     private void loadVCard(XmlNode vCard, String from) {
+        updateAvatar(vCard, from);
         UserInfo userInfo = singleUserInfo;
-        if ((null == userInfo) || !from.equals(userInfo.realUin)) {
-            return;
-        }
-        userInfo.auth = false;
-        userInfo.uin = from;
-        if (Jid.isConference(from)) {
-            Contact c = getXmpp().getItemByUID(Jid.getBareJid(from));
-            if (c instanceof XmppServiceContact) {
-                XmppContact.SubContact sc = ((XmppServiceContact) c).getExistSubContact(Jid.getResource(from, null));
-                if ((null != sc) && (null != sc.realJid)) {
-                    userInfo.uin = sc.realJid;
+        if (null != userInfo && from.equals(userInfo.realUin)) {
+            userInfo.auth = false;
+            userInfo.uin = from;
+            if (Jid.isConference(from)) {
+                Contact c = getXmpp().getItemByUID(Jid.getBareJid(from));
+                if (c instanceof XmppServiceContact) {
+                    XmppContact.SubContact sc = ((XmppServiceContact) c).getExistSubContact(Jid.getResource(from, null));
+                    if ((null != sc) && (null != sc.realJid)) {
+                        userInfo.uin = sc.realJid;
+                    }
                 }
             }
-        }
-        if (null == vCard) {
+            if (null == vCard) {
+                userInfo.updateProfileView();
+                singleUserInfo = null;
+                return;
+            }
+            String name[] = new String[3];
+            name[0] = vCard.getFirstNodeValue("N", "GIVEN");
+            name[1] = vCard.getFirstNodeValue("N", "MIDDLE");
+            name[2] = vCard.getFirstNodeValue("N", "FAMILY");
+            if (StringConvertor.isEmpty(Util.implode(name, ""))) {
+                userInfo.firstName = vCard.getFirstNodeValue("FN");
+                userInfo.lastName = null;
+            } else {
+                userInfo.lastName = name[2];
+                name[2] = null;
+                userInfo.firstName = Util.implode(name, " ");
+            }
+            userInfo.nick = vCard.getFirstNodeValue("NICKNAME");
+            userInfo.birthDay = vCard.getFirstNodeValue("BDAY");
+            userInfo.email = vCard.getFirstNodeValue("EMAIL", new String[]{"INTERNET"}, "USERID", true);
+            userInfo.about = vCard.getFirstNodeValue("DESC");
+            userInfo.homePage = vCard.getFirstNodeValue("URL");
+
+            userInfo.homeAddress = vCard.getFirstNodeValue("ADR", new String[]{"HOME"}, "STREET", true);
+            userInfo.homeCity = vCard.getFirstNodeValue("ADR", new String[]{"HOME"}, "LOCALITY", true);
+            userInfo.homeState = vCard.getFirstNodeValue("ADR", new String[]{"HOME"}, "REGION", true);
+            userInfo.cellPhone = vCard.getFirstNodeValue("TEL", new String[]{"HOME", "VOICE"}, "NUMBER", true);
+
+            userInfo.workCompany = vCard.getFirstNodeValue("ORG", null, "ORGNAME");
+            userInfo.workDepartment = vCard.getFirstNodeValue("ORG", null, "ORGUNIT");
+            userInfo.workPosition = vCard.getFirstNodeValue("TITLE");
+            userInfo.workPhone = vCard.getFirstNodeValue("TEL", new String[]{"WORK", "VOICE"}, "NUMBER");
+
+            if (!Jid.isGate(from)) {
+                userInfo.setOptimalName();
+            }
+            if (userInfo.isEditable()) {
+                userInfo.vCard = vCard;
+            }
             userInfo.updateProfileView();
+
+            XmlNode bs64photo = vCard.getFirstNode("PHOTO");
+            bs64photo = (null == bs64photo) ? null : bs64photo.getFirstNode("BINVAL");
+            if (null != bs64photo) {
+                new Thread(new AvatarLoader(userInfo, bs64photo), "XMPPAvatarLoad").start();
+            }
             singleUserInfo = null;
-            return;
         }
-        String name[] = new String[3];
-        name[0] = vCard.getFirstNodeValue("N", "GIVEN");
-        name[1] = vCard.getFirstNodeValue("N", "MIDDLE");
-        name[2] = vCard.getFirstNodeValue("N", "FAMILY");
-        if (StringConvertor.isEmpty(Util.implode(name, ""))) {
-            userInfo.firstName = vCard.getFirstNodeValue("FN");
-            userInfo.lastName = null;
-        } else {
-            userInfo.lastName = name[2];
-            name[2] = null;
-            userInfo.firstName = Util.implode(name, " ");
-        }
-        userInfo.nick = vCard.getFirstNodeValue("NICKNAME");
-        userInfo.birthDay = vCard.getFirstNodeValue("BDAY");
-        userInfo.email = vCard.getFirstNodeValue("EMAIL", new String[]{"INTERNET"}, "USERID", true);
-        userInfo.about = vCard.getFirstNodeValue("DESC");
-        userInfo.homePage = vCard.getFirstNodeValue("URL");
+    }
 
-        userInfo.homeAddress = vCard.getFirstNodeValue("ADR", new String[]{"HOME"}, "STREET", true);
-        userInfo.homeCity = vCard.getFirstNodeValue("ADR", new String[]{"HOME"}, "LOCALITY", true);
-        userInfo.homeState = vCard.getFirstNodeValue("ADR", new String[]{"HOME"}, "REGION", true);
-        userInfo.cellPhone = vCard.getFirstNodeValue("TEL", new String[]{"HOME", "VOICE"}, "NUMBER", true);
-
-        userInfo.workCompany = vCard.getFirstNodeValue("ORG", null, "ORGNAME");
-        userInfo.workDepartment = vCard.getFirstNodeValue("ORG", null, "ORGUNIT");
-        userInfo.workPosition = vCard.getFirstNodeValue("TITLE");
-        userInfo.workPhone = vCard.getFirstNodeValue("TEL", new String[]{"WORK", "VOICE"}, "NUMBER");
-
-        if (!Jid.isGate(from)) {
-            userInfo.setOptimalName();
+    private void updateAvatar(XmlNode vCard, String from) {
+        if (null != vCard) {
+            Contact c = getXmpp().getItemByUID(Jid.getBareJid(from));
+            XmlNode bs64photo = vCard.getFirstNode("PHOTO");
+            bs64photo = (null == bs64photo) ? null : bs64photo.getFirstNode("BINVAL");
+            if (bs64photo != null) {
+                byte[] avatarBytes = Util.base64decode(bs64photo.value);
+                String avatarHash = StringConvertor.byteArrayToHexString(SHA1.calculate(avatarBytes));
+                if (c.getUserId().equals(getXmpp().getUserId())) {
+                    if (myAvatarHash == null || !myAvatarHash.equals(avatarHash)) {
+                        myAvatarHash = avatarHash;
+                        getXmpp().s_updateOnlineStatus();
+                    }
+                }
+                if (Jid.isConference(from)) {
+                    if (c instanceof XmppServiceContact) {
+                        XmppContact.SubContact sc = ((XmppServiceContact) c).getExistSubContact(Jid.getResource(from, null));
+                        if (null != sc) {
+                            sc.avatarHash = avatarHash;
+                            RosterStorage.updateAvatarHash(c.getUserId() + "/" + sc.resource, avatarHash);
+                        } else {
+                            c.avatarHash = avatarHash;
+                            RosterStorage.updateAvatarHash(c.getUserId(), avatarHash);
+                        }
+                    }
+                } else {
+                    c.avatarHash = avatarHash;
+                    RosterStorage.updateAvatarHash(c.getUserId(), avatarHash);
+                }
+                ImageCache.getInstance().save(FileSystem.openDir(FileSystem.AVATARS),
+                        from, avatarHash, BitmapFactory.decodeByteArray(avatarBytes, 0, avatarBytes.length));
+            } else {
+                if (c.getUserId().equals(getXmpp().getUserId())) {
+                    myAvatarHash = null;
+                    getXmpp().s_updateOnlineStatus();
+                }
+                if (Jid.isConference(from)) {
+                    if (c instanceof XmppServiceContact) {
+                        XmppContact.SubContact sc = ((XmppServiceContact) c).getExistSubContact(Jid.getResource(from, null));
+                        if (null != sc) {
+                            sc.avatarHash = "";
+                            RosterStorage.updateAvatarHash(c.getUserId() + "/" + sc.resource, sc.avatarHash);
+                        } else {
+                            c.avatarHash = "";
+                            RosterStorage.updateAvatarHash(c.getUserId(), c.avatarHash);
+                        }
+                    }
+                } else {
+                    c.avatarHash = "";
+                    RosterStorage.updateAvatarHash(c.getUserId(), c.avatarHash);
+                }
+                ImageCache.getInstance().save(FileSystem.openDir(FileSystem.AVATARS), from, "", null);
+            }
         }
-        if (userInfo.isEditable()) {
-            userInfo.vCard = vCard;
-        }
-        userInfo.updateProfileView();
-
-        XmlNode bs64photo = vCard.getFirstNode("PHOTO");
-        bs64photo = (null == bs64photo) ? null : bs64photo.getFirstNode("BINVAL");
-        if (null != bs64photo) {
-            new Thread(new AvatarLoader(userInfo, bs64photo),"XMPPAvatarLoad").start();
-        }
-        bs64photo = null;
-        singleUserInfo = null;
     }
 
     private void loadBookmarks(XmlNode storage) {
@@ -1189,6 +1252,12 @@ public final class XmppConnection extends ClientConnection {
             }
         }
 
+        XmlNode vcardUpdate = x.getXNode("vcard-temp:x:update");
+        String newAvatarHash = null;
+        if (vcardUpdate != null) {
+            newAvatarHash = vcardUpdate.getFirstNodeValue("photo");
+        }
+
         int priority = Util.strToIntDef(x.getFirstNodeValue("priority"), 0);
         String statusString = x.getFirstNodeValue(S_STATUS);
         if (Jid.isConference(from)) {
@@ -1241,6 +1310,19 @@ public final class XmppConnection extends ClientConnection {
             getXmpp().setConfContactStatus(conf, fromRes,
                     nativeStatus2StatusIndex(type), statusString, priority, priorityA, rangVoice);
             if (null != item) {
+                XmppContact.SubContact sc = conf.getExistSubContact(fromRes);
+                if (sc != null) {
+                    String id = conf.getUserId() + "/" + fromRes;
+                    if (newAvatarHash == null) {
+                        if (sc.avatarHash == null || !ImageCache.getInstance().hasHash(id, sc.avatarHash)) {
+                            getVCard(id);
+                        }
+                    } else {
+                        if (!newAvatarHash.equals(sc.avatarHash)) {
+                            getVCard(id);
+                        }
+                    }
+                }
                 String newNick = item.getAttribute(XmlNode.S_NICK);
                 String realJid = item.getAttribute(XmlNode.S_JID);
                 if (null != newNick) {
@@ -1248,7 +1330,7 @@ public final class XmppConnection extends ClientConnection {
                             nativeStatus2StatusIndex(""), "", priority, priorityA, rangVoice);
                     conf.nickChainged(getXmpp(), fromRes, newNick);
                 } else {
-                    StringBuilder s = new StringBuilder(0);
+                    StringBuilder s = new StringBuilder();
                     if (statusString != null) {
                         s.append('(').append(statusString).append(") ");
                     }
@@ -1275,6 +1357,15 @@ public final class XmppConnection extends ClientConnection {
             if (RosterHelper.getInstance().getUpdateChatListener() != null)
                 RosterHelper.getInstance().getUpdateChatListener().updateMucList();
         } else {
+            if (newAvatarHash == null) {
+                if (contact.avatarHash == null || !ImageCache.getInstance().hasHash(contact.getUserId(), contact.avatarHash)) {
+                    getVCard(contact.getUserId());
+                }
+            } else {
+                if (!newAvatarHash.equals(contact.avatarHash)) {
+                    getVCard(contact.getUserId());
+                }
+            }
             if (!("unavailable").equals(type)) {
                 if ((XStatusInfo.XSTATUS_NONE == contact.getXStatusIndex())
                         || !Xmpp.xStatus.isPep(contact.getXStatusIndex())) {
@@ -2290,8 +2381,11 @@ public final class XmppConnection extends ClientConnection {
         }
         xml += (StringConvertor.isEmpty(xstatusTitle) ? "" : "<status>" + Util.xmlEscape(xstatusTitle) + "</status>");
 
-        xml = "<presence to='" + Util.xmlEscape(to) + "'>" + xml
-                + getCaps() + "</presence>";
+        xml = "<presence to='" + Util.xmlEscape(to) + "'>" + xml + getCaps();
+        if (myAvatarHash != null) {
+            xml += "<x xmlns='vcard-temp:x:update'><photo>" + myAvatarHash + "</photo></x>";
+        }
+        xml += "</presence>";
         putPacketIntoQueue(xml);
     }
 
@@ -2318,9 +2412,11 @@ public final class XmppConnection extends ClientConnection {
                 + (StringConvertor.isEmpty(status) ? "" : "<show>" + status + "</show>")
                 + (StringConvertor.isEmpty(msg) ? "" : "<status>" + Util.xmlEscape(msg) + "</status>")
                 + (0 < priority ? "<priority>" + priority + "</priority>" : "")
-                + getCaps()
-                + xXml
-                + "</presence>";
+                + getCaps();
+        if (myAvatarHash != null) {
+            xml += "<x xmlns='vcard-temp:x:update'><photo>" + myAvatarHash + "</photo></x>";
+        }
+        xml += xXml + "</presence>";
         putPacketIntoQueue(xml);
         //if (!AutoAbsence.getInstance().isChangeStatus())
         setConferencesXStatus(status, msg, priority);
@@ -2331,16 +2427,18 @@ public final class XmppConnection extends ClientConnection {
         Vector contacts = getXmpp().getContactItems();
         for (int i = 0; i < contacts.size(); ++i) {
             XmppContact contact = (XmppContact) contacts.elementAt(i);
-            if (contact instanceof XmppContact) {
-                if ((contact).isConference() && contact.isOnline()) {
-                    if (0 <= priority) {
-                        xml = "<presence to='" + Util.xmlEscape(contact.getUserId()) + "'>";
-                        xml += (StringConvertor.isEmpty(status) ? "" : "<show>" + status + "</show>");
-                        xml += (StringConvertor.isEmpty(msg) ? "" : "<status>" + Util.xmlEscape(msg) + "</status>");
-                        xml += getCaps() + "</presence>";
-                        putPacketIntoQueue(xml);
-
+            if ((contact).isConference() && contact.isOnline()) {
+                if (0 <= priority) {
+                    xml = "<presence to='" + Util.xmlEscape(contact.getUserId()) + "'>";
+                    xml += (StringConvertor.isEmpty(status) ? "" : "<show>" + status + "</show>");
+                    xml += (StringConvertor.isEmpty(msg) ? "" : "<status>" + Util.xmlEscape(msg) + "</status>");
+                    xml += getCaps();
+                    if (myAvatarHash != null) {
+                        xml += "<x xmlns='vcard-temp:x:update'><photo>" + myAvatarHash + "</photo></x>";
                     }
+                    xml += "</presence>";
+                    putPacketIntoQueue(xml);
+
                 }
             }
         }
@@ -2594,7 +2692,6 @@ public final class XmppConnection extends ClientConnection {
         }
     }
 
-
     private String getVerHash(Vector features) {
         StringBuilder sb = new StringBuilder();
         sb.append("client/phone/" + "/" + SawimApplication.NAME + "<");
@@ -2619,7 +2716,6 @@ public final class XmppConnection extends ClientConnection {
 
         features.addElement("http://jabber.org/protocol/activity");
         features.addElement("http://jabber.org/protocol/activity+notify");
-
 
         features.addElement("http://jabber.org/protocol/chatstates");
 

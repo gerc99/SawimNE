@@ -1,5 +1,6 @@
 package ru.sawim.models;
 
+import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.text.TextUtils;
 import android.view.View;
@@ -8,13 +9,12 @@ import android.widget.BaseAdapter;
 import protocol.xmpp.Xmpp;
 import protocol.xmpp.XmppContact;
 import protocol.xmpp.XmppServiceContact;
-import ru.sawim.Options;
-import ru.sawim.R;
-import ru.sawim.SawimResources;
-import ru.sawim.Scheme;
+import ru.sawim.*;
 import ru.sawim.comm.JLocale;
 import ru.sawim.comm.Util;
 import ru.sawim.icons.Icon;
+import ru.sawim.icons.ImageCache;
+import ru.sawim.io.FileSystem;
 import ru.sawim.widget.roster.RosterItemView;
 
 import java.util.ArrayList;
@@ -187,7 +187,6 @@ public class MucUsersAdapter extends BaseAdapter {
                 c.realJid, affiliation, setReason);
     }
 
-
     void setShowDivider(RosterItemView rosterItemView, boolean value) {
         rosterItemView.isShowDivider = value;
     }
@@ -206,15 +205,27 @@ public class MucUsersAdapter extends BaseAdapter {
             rosterItemView.itemNameFont = Typeface.DEFAULT_BOLD;
         }
         if (o instanceof XmppContact.SubContact)
-            populateFrom(rosterItemView, protocol, o);
+            populateFrom(rosterItemView, protocol, (XmppContact.SubContact) o);
         setShowDivider(rosterItemView, getItem(i + 1) instanceof XmppContact.SubContact);
         ((RosterItemView) convertView).repaint();
         return rosterItemView;
     }
 
-    void populateFrom(RosterItemView rosterItemView, Xmpp protocol, Object o) {
-        XmppContact.SubContact c = (XmppContact.SubContact) o;
-        rosterItemView.itemFirstImage = protocol.getStatusInfo().getIcon(c.status).getImage().getBitmap();
+    void populateFrom(final RosterItemView rosterItemView, Xmpp protocol, XmppContact.SubContact c) {
+        Bitmap avatar = ImageCache.getInstance().get(FileSystem.openDir(FileSystem.AVATARS), SawimApplication.getExecutor(), c.avatarHash,
+                null, ru.sawim.widget.Util.dipToPixels(rosterItemView.getContext(), SawimApplication.AVATAR_SIZE), Scheme.getColor(Scheme.THEME_BACKGROUND), new ImageCache.OnImageLoadListener() {
+                    @Override
+                    public void onLoad() {
+                        rosterItemView.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                notifyDataSetChanged();
+                            }
+                        });
+                    }
+                });
+        rosterItemView.itemFirstImage = avatar;
+        rosterItemView.itemSecondImage = protocol.getStatusInfo().getIcon(c.status).getImage().getBitmap();
         rosterItemView.itemNameColor = Scheme.getColor(Scheme.THEME_TEXT);
         rosterItemView.itemNameFont = Typeface.DEFAULT;
         rosterItemView.itemName = c.resource;
@@ -222,6 +233,6 @@ public class MucUsersAdapter extends BaseAdapter {
         if (ic != null && !Options.getBoolean(JLocale.getString(R.string.pref_hide_icons_clients))) {
             rosterItemView.itemFifthImage = ic.getImage().getBitmap();
         }
-        rosterItemView.itemFourthImage = SawimResources.affiliationIcons.iconAt(XmppServiceContact.getAffiliationName(c.priorityA)).getImage().getBitmap();
+        rosterItemView.itemSixthImage = SawimResources.affiliationIcons.iconAt(XmppServiceContact.getAffiliationName(c.priorityA)).getImage().getBitmap();
     }
 }

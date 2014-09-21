@@ -185,6 +185,6 @@ final class Socket implements Runnable {
     }
 
     public void start() {
-        SawimApplication.getExecutor().execute(this);
+        SawimApplication.getExecutor().submit(this);
     }
 }

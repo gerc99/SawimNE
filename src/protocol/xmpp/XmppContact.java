@@ -7,6 +7,7 @@ import ru.sawim.Options;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.comm.*;
+import ru.sawim.io.RosterStorage;
 import ru.sawim.view.menu.MyMenu;
 
 import java.util.Vector;
@@ -153,6 +154,7 @@ public class XmppContact extends Contact {
     }
 
     public static class SubContact implements Sortable {
+        public String avatarHash;
         public String resource;
         public String statusText;
         public String roleText;
@@ -207,6 +209,7 @@ public class XmppContact extends Contact {
         c = new SubContact();
         c.resource = resource;
         c.status = StatusInfo.STATUS_OFFLINE;
+        c.avatarHash = RosterStorage.getAvatarHash(getUserId() + "/" + resource);
         subcontacts.addElement(c);
         return c;
     }
@@ -259,7 +262,6 @@ public class XmppContact extends Contact {
             if (0 == subcontacts.size()) {
                 setOfflineStatus();
             }
-
         } else {
             SubContact c = getSubContact(resource);
             c.priority = (byte) priority;

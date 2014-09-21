@@ -274,7 +274,11 @@ public final class ChatHistory {
 
     public int getPreferredItem() {
         for (int i = 0; i < historyTable.size(); ++i) {
-            if (0 < chatAt(i).getPersonalUnreadMessageCount()) {
+            Chat chat = chatAt(i);
+            if (chat.getAuthRequestCounter() > 0) {
+                continue;
+            }
+            if (0 < chat.getPersonalUnreadMessageCount()) {
                 return i;
             }
         }
@@ -282,6 +286,9 @@ public final class ChatHistory {
         int current = -1;
         for (int i = 0; i < historyTable.size(); ++i) {
             Chat chat = chatAt(i);
+            if (chat.getAuthRequestCounter() > 0) {
+                continue;
+            }
             if (0 < chat.getUnreadMessageCount()) {
                 return i;
             }
