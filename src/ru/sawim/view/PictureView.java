@@ -16,6 +16,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import ru.sawim.R;
 import ru.sawim.view.tasks.HtmlTask;
+import ru.sawim.widget.Util;
 
 /**
  * Created with IntelliJ IDEA.
@@ -29,17 +30,15 @@ public class PictureView extends DialogFragment {
     public static final String TAG = PictureView.class.getSimpleName();
     private String link;
     private WebView webView;
-    private ProgressBar progressBar;
     private HtmlTask htmlTask;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
         View v = inflater.inflate(R.layout.picture_view, container, false);
 
         final RelativeLayout root = new RelativeLayout(getActivity());
-        root.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        root.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
 
         getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
         getDialog().setContentView(root);
@@ -47,7 +46,13 @@ public class PictureView extends DialogFragment {
 
         TextView textView = (TextView) v.findViewById(R.id.textView);
         textView.setText(link);
-        progressBar = (ProgressBar) v.findViewById(R.id.progressBar);
+        textView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                close();
+            }
+        });
+        final ProgressBar progressBar = (ProgressBar) v.findViewById(R.id.progressBar);
         webView = (WebView) v.findViewById(R.id.webView);
         WebSettings settings = webView.getSettings();
         settings.setUseWideViewPort(true);
@@ -71,6 +76,7 @@ public class PictureView extends DialogFragment {
 
             @Override
             public void onProgressChanged(WebView view, int newProgress) {
+                progressBar.setProgress(newProgress);
                 if (newProgress == 100) {
                     view.setVisibility(ImageView.VISIBLE);
                     progressBar.setVisibility(ProgressBar.GONE);
@@ -80,6 +86,10 @@ public class PictureView extends DialogFragment {
                 }
             }
         });
+
+        v.setBackgroundColor(Util.getSystemBackground(getActivity().getApplicationContext()));
+        root.setBackgroundColor(Util.getSystemBackground(getActivity().getApplicationContext()));
+        webView.setBackgroundColor(Util.getSystemBackground(getActivity().getApplicationContext()));
         return v;
     }
 
@@ -87,12 +97,15 @@ public class PictureView extends DialogFragment {
         this.link = link;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
+    private void close() {
         if (htmlTask != null && htmlTask.isHide() && isVisible()) {
             dismiss();
         }
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        close();
     }
 
     @Override

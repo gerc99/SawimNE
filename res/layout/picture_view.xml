@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:layout_height="match_parent">
 
@@ -10,15 +9,19 @@
             android:layout_height="wrap_content"
             android:text="Link"
             android:id="@+id/textView" android:layout_gravity="center" android:linksClickable="true"
-            android:autoLink="web"/>
+            android:autoLink="web" android:layout_centerInParent="true" android:layout_above="@+id/progressBar"
+            android:layout_margin="10dp" android:layout_below="@+id/webView"/>
     <ProgressBar
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/progressBar" android:layout_gravity="center"/>
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_gravity="center" android:layout_centerInParent="true" android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp" android:visibility="gone"/>
     <WebView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/webView" android:layout_gravity="center"/>
+            android:layout_height="wrap_content"
+            android:id="@+id/webView" android:layout_gravity="center"
+            />
 
-
-</LinearLayout>
+</RelativeLayout>
