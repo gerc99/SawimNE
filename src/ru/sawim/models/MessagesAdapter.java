@@ -70,7 +70,7 @@ public class MessagesAdapter extends BaseAdapter {
 
     @Override
     public View getView(int index, View convView, ViewGroup viewGroup) {
-        final MessData mData = getItem(index);
+        MessData mData = getItem(index);
         MessageItemView item = (MessageItemView) convView;
         if (item == null) {
             item = new MessageItemView(viewGroup.getContext());
@@ -86,8 +86,7 @@ public class MessagesAdapter extends BaseAdapter {
         item.setLayout(mData.layout);
         if (mData.isMe() || mData.isPresence()) {
             item.setBackgroundIndex(MessageItemView.BACKGROUND_NONE);
-            item.setPadding(Util.dipToPixels(item.getContext(), 19),
-                    Util.dipToPixels(item.getContext(), 7), Util.dipToPixels(item.getContext(), 19), Util.dipToPixels(item.getContext(), 9));
+            item.setPadding(MessageItemView.PADDING_LEFT + 1, MessageItemView.PADDING_TOP, MessageItemView.PADDING_RIGHT - 1, MessageItemView.PADDING_BOTTOM);
             item.setNick(0, 0, null, null);
             item.setMsgTime(0, 0, null, null);
             item.setCheckImage(null);
@@ -101,12 +100,10 @@ public class MessagesAdapter extends BaseAdapter {
         } else {
             if (incoming) {
                 item.setBackgroundIndex(MessageItemView.BACKGROUND_INCOMING);
-                item.setPadding(Util.dipToPixels(item.getContext(), 18),
-                        Util.dipToPixels(item.getContext(), 7), Util.dipToPixels(item.getContext(), 20), Util.dipToPixels(item.getContext(), 9));
+                item.setPadding(MessageItemView.PADDING_LEFT, MessageItemView.PADDING_TOP, MessageItemView.PADDING_RIGHT, MessageItemView.PADDING_BOTTOM);
             } else {
                 item.setBackgroundIndex(MessageItemView.BACKGROUND_OUTCOMING);
-                item.setPadding(Util.dipToPixels(item.getContext(), 20),
-                        Util.dipToPixels(item.getContext(), 7), Util.dipToPixels(item.getContext(), 18), Util.dipToPixels(item.getContext(), 9));
+                item.setPadding(MessageItemView.PADDING_RIGHT, MessageItemView.PADDING_TOP, MessageItemView.PADDING_LEFT, MessageItemView.PADDING_BOTTOM);
             }
             item.setTextSize(SawimApplication.getFontSize());
             item.setCheckImage(mData.getIconIndex() == Message.ICON_OUT_MSG_FROM_CLIENT ? SawimResources.messageIconCheck.getBitmap() : null);

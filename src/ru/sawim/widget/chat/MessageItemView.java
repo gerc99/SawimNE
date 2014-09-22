@@ -31,6 +31,11 @@ public class MessageItemView extends View {
     private static final TextPaint messageTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
     private static final TextPaint textPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
 
+    public static final int PADDING_LEFT = Util.dipToPixels(SawimApplication.getContext(), 18);
+    public static final int PADDING_TOP = Util.dipToPixels(SawimApplication.getContext(), 7);
+    public static final int PADDING_RIGHT = Util.dipToPixels(SawimApplication.getContext(), 20);
+    public static final int PADDING_BOTTOM = Util.dipToPixels(SawimApplication.getContext(), 9);
+
     public static final int BACKGROUND_NONE = 0;
     public static final int BACKGROUND_INCOMING = 1;
     public static final int BACKGROUND_OUTCOMING = 2;
@@ -73,7 +78,7 @@ public class MessageItemView extends View {
 
     public static Layout buildLayout(CharSequence parsedText, Typeface msgTextTypeface) {
         DisplayMetrics displayMetrics = SawimApplication.getContext().getResources().getDisplayMetrics();
-        return makeLayout(parsedText, msgTextTypeface, displayMetrics.widthPixels - Util.dipToPixels(SawimApplication.getContext(), 38));
+        return makeLayout(parsedText, msgTextTypeface, displayMetrics.widthPixels - (PADDING_LEFT + PADDING_RIGHT));
     }
 
     private static Layout makeLayout(CharSequence parsedText, Typeface msgTextTypeface, int width) {

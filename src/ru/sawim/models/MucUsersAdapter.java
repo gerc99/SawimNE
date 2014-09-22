@@ -229,6 +229,11 @@ public class MucUsersAdapter extends BaseAdapter {
         rosterItemView.itemNameColor = Scheme.getColor(Scheme.THEME_TEXT);
         rosterItemView.itemNameFont = Typeface.DEFAULT;
         rosterItemView.itemName = c.resource;
+        if (SawimApplication.showStatusLine) {
+            String statusMessage = c.statusText == null ? protocol.getStatusInfo().getName(c.status) : c.statusText;
+            rosterItemView.itemDescColor = Scheme.getColor(Scheme.THEME_CONTACT_STATUS);
+            rosterItemView.itemDesc = statusMessage;
+        }
         Icon ic = protocol.clientInfo.getIcon(c.client);
         if (ic != null && !Options.getBoolean(JLocale.getString(R.string.pref_hide_icons_clients))) {
             rosterItemView.itemFifthImage = ic.getImage().getBitmap();

@@ -51,7 +51,6 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
     private boolean isEditable = false;
 
     public UserInfo(Protocol prot, String uin) {
-        this(prot);
         protocol = prot;
         realUin = uin;
     }
@@ -59,10 +58,6 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
     public UserInfo(Protocol prot) {
         protocol = prot;
         realUin = null;
-        isEditable |= (protocol instanceof Icq);
-        isEditable |= (protocol instanceof Xmpp);
-        isEditable |= protocol.getUserId().equals(uin)
-                && protocol.isConnected();
     }
 
     public void setProfileView(VirtualList view) {
@@ -312,6 +307,12 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
     }
 
     public boolean isEditable() {
+        if (!isEditable) {
+            isEditable |= (protocol instanceof Icq);
+            isEditable |= (protocol instanceof Xmpp);
+            isEditable = isEditable && protocol.getUserId().equals(uin)
+                    && protocol.isConnected();
+        }
         return isEditable;
     }
 

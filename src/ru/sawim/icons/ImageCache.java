@@ -73,9 +73,11 @@ public class ImageCache {
                                     }
                                 }
                                 bitmap = Util.getAvatarBitmap(fileContent, size, backgroundColor);
-                                bitmapLruCache.put(hash, bitmap);
-                                if (onImageLoadListener != null) {
-                                    onImageLoadListener.onLoad();
+                                if (bitmap != null) {
+                                    bitmapLruCache.put(hash, bitmap);
+                                    if (onImageLoadListener != null) {
+                                        onImageLoadListener.onLoad();
+                                    }
                                 }
                             }
                         }

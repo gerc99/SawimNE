@@ -1086,14 +1086,14 @@ public final class XmppConnection extends ClientConnection {
             if (bs64photo != null) {
                 byte[] avatarBytes = Util.base64decode(bs64photo.value);
                 String avatarHash = StringConvertor.byteArrayToHexString(SHA1.calculate(avatarBytes));
-                if (c.getUserId().equals(getXmpp().getUserId())) {
+                if (from.equals(getXmpp().getUserId())) {
                     if (myAvatarHash == null || !myAvatarHash.equals(avatarHash)) {
                         myAvatarHash = avatarHash;
                         getXmpp().s_updateOnlineStatus();
                     }
                 }
                 if (Jid.isConference(from)) {
-                    if (c instanceof XmppServiceContact) {
+                    if (c != null && c instanceof XmppServiceContact) {
                         XmppContact.SubContact sc = ((XmppServiceContact) c).getExistSubContact(Jid.getResource(from, null));
                         if (null != sc) {
                             sc.avatarHash = avatarHash;
@@ -1104,18 +1104,20 @@ public final class XmppConnection extends ClientConnection {
                         }
                     }
                 } else {
-                    c.avatarHash = avatarHash;
-                    RosterStorage.updateAvatarHash(c.getUserId(), avatarHash);
+                    if (c != null) {
+                        c.avatarHash = avatarHash;
+                        RosterStorage.updateAvatarHash(c.getUserId(), avatarHash);
+                    }
                 }
                 ImageCache.getInstance().save(FileSystem.openDir(FileSystem.AVATARS),
                         from, avatarHash, BitmapFactory.decodeByteArray(avatarBytes, 0, avatarBytes.length));
             } else {
-                if (c.getUserId().equals(getXmpp().getUserId())) {
+                if (from.equals(getXmpp().getUserId())) {
                     myAvatarHash = null;
                     getXmpp().s_updateOnlineStatus();
                 }
                 if (Jid.isConference(from)) {
-                    if (c instanceof XmppServiceContact) {
+                    if (c != null && c instanceof XmppServiceContact) {
                         XmppContact.SubContact sc = ((XmppServiceContact) c).getExistSubContact(Jid.getResource(from, null));
                         if (null != sc) {
                             sc.avatarHash = "";
@@ -1126,8 +1128,10 @@ public final class XmppConnection extends ClientConnection {
                         }
                     }
                 } else {
-                    c.avatarHash = "";
-                    RosterStorage.updateAvatarHash(c.getUserId(), c.avatarHash);
+                    if (c != null) {
+                        c.avatarHash = "";
+                        RosterStorage.updateAvatarHash(c.getUserId(), c.avatarHash);
+                    }
                 }
                 ImageCache.getInstance().save(FileSystem.openDir(FileSystem.AVATARS), from, "", null);
             }

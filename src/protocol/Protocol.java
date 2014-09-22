@@ -21,7 +21,10 @@ import java.util.Vector;
 abstract public class Protocol {
 
     private static final int ROSTER_STORAGE_VERSION = 1;
-    private static final int RECONNECT_COUNT = 20;
+    private static final int RECONNECT_COUNT = 10;
+
+    private static final int TYPE_GROUP = 0;
+    private static final int TYPE_CONTACT = 1;
 
     private final Object rosterLockObject = new Object();
     public ClientInfo clientInfo;
@@ -317,10 +320,10 @@ abstract public class Protocol {
                     while (0 < dis.available()) {
                         byte type = dis.readByte();
                         switch (type) {
-                            case 0:
+                            case TYPE_GROUP:
                                 roster.getContactItems().addElement(loadContact(dis));
                                 break;
-                            case 1:
+                            case TYPE_CONTACT:
                                 roster.getGroupItems().addElement(loadGroup(dis));
                                 break;
                         }
@@ -349,10 +352,10 @@ abstract public class Protocol {
         int totalCount = cItemsCount + roster.getGroupItems().size();
         for (int i = 0; i < totalCount; ++i) {
             if (i < cItemsCount) {
-                dos.writeByte(0);
+                dos.writeByte(TYPE_GROUP);
                 saveContact(dos, roster.getContactItems().elementAt(i));
             } else {
-                dos.writeByte(1);
+                dos.writeByte(TYPE_CONTACT);
                 saveGroup(dos, roster.getGroupItems().elementAt(i - cItemsCount));
             }
             if ((baos.size() >= 4000) || (i == totalCount - 1)) {
@@ -633,8 +636,9 @@ abstract public class Protocol {
     public final void setOnlineStatus(int statusIndex, String msg, boolean save) {
         profile.statusIndex = (byte) statusIndex;
         profile.statusMessage = msg;
-        if (save)
+        if (save) {
             Options.saveAccount(profile);
+        }
 
         setLastStatusChangeTime();
         if (isConnected()) {
@@ -947,7 +951,7 @@ abstract public class Protocol {
             }
         }
         disconnect(false);
-        setOnlineStatus(StatusInfo.STATUS_OFFLINE, null);
+        setOnlineStatus(StatusInfo.STATUS_OFFLINE, null, false);
         showException(e);
     }
 

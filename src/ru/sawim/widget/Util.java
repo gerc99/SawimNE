@@ -47,6 +47,7 @@ public class Util {
     public static Bitmap getAvatarBitmap(byte[] bytes, int size, int backgroundColor) {
         Bitmap avatar;
         Bitmap avatarTmp = Util.decodeBitmap(bytes, size);
+        if (avatarTmp == null) return null;
         int h = avatarTmp.getHeight();
         int w = avatarTmp.getWidth();
         if (h > w) {

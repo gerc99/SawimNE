@@ -21,6 +21,9 @@ import ru.sawim.widget.Util;
  */
 public class RosterItemView extends View {
 
+    private static final int PADDING_W = Util.dipToPixels(SawimApplication.getContext(), 10);
+    private static final int PADDING_H = Util.dipToPixels(SawimApplication.getContext(), 15);
+
     public String itemName;
     public String itemDesc;
     public int itemNameColor;
@@ -49,9 +52,7 @@ public class RosterItemView extends View {
 
     public RosterItemView(Context context) {
         super(context);
-        int paddingW = Util.dipToPixels(context, 10);
-        int paddingH = Util.dipToPixels(context, 15);
-        setPadding(paddingW, paddingH, paddingW, paddingH);
+        setPadding(PADDING_W, PADDING_H, PADDING_W, PADDING_H);
         initPaint();
     }
 
@@ -148,36 +149,36 @@ public class RosterItemView extends View {
         firstImageX = leftPadding;
         if (itemFirstImage != null) {
             secondImageX = firstImageX + itemFirstImage.getWidth() + leftPadding;
-            firstImageY = y - (itemFirstImage.getHeight() >> 1);
+            firstImageY = y - (itemFirstImage.getHeight() / 2);
             textX = secondImageX;
         } else
             secondImageX = firstImageX;
         if (itemSecondImage != null) {
             thirdImageX = secondImageX + itemSecondImage.getWidth() + leftPadding;
-            secondImageY = y - (itemSecondImage.getHeight() >> 1);
+            secondImageY = y - (itemSecondImage.getHeight() / 2);
             textX = thirdImageX;
         } else
             thirdImageX = secondImageX;
         if (itemThirdImage != null) {
             fourthImageX = thirdImageX + itemThirdImage.getWidth() + leftPadding;
-            thirdImageY = y - (itemThirdImage.getHeight() >> 1);
+            thirdImageY = y - (itemThirdImage.getHeight() / 2);
             textX = fourthImageX;
         } else
             fourthImageX = thirdImageX;
         if (itemFourthImage != null) {
-            fourthImageY = y - (itemFourthImage.getHeight() >> 1);
+            fourthImageY = y - (itemFourthImage.getHeight() / 2);
             textX = fourthImageX + itemFourthImage.getWidth() + leftPadding;
         }
 
         fifthImageX = viewWidth;
         if (itemFifthImage != null) {
             fifthImageX = viewWidth - itemFifthImage.getWidth() - rightPadding;
-            fifthImageY = y - (itemFifthImage.getHeight() >> 1);
+            fifthImageY = y - (itemFifthImage.getHeight() / 2);
         }
         sixthImageX = fifthImageX;
         if (itemSixthImage != null) {
             sixthImageX = fifthImageX - itemSixthImage.getWidth() - rightPadding;
-            sixthImageY = y - (itemSixthImage.getHeight() >> 1);
+            sixthImageY = y - (itemSixthImage.getHeight() / 2);
         }
     }
 
