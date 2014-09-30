@@ -5,11 +5,15 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import ru.sawim.activities.SawimActivity;
+import ru.sawim.chat.Chat;
 import ru.sawim.chat.ChatHistory;
 import ru.sawim.comm.JLocale;
+import ru.sawim.io.SawimProvider;
+import ru.sawim.modules.history.HistoryStorage;
 import ru.sawim.roster.RosterHelper;
 
 import java.util.HashMap;
@@ -70,8 +74,14 @@ public class SawimNotification {
             notification.setNumber(unread);
             stateMsg = String.format((String) context.getText(R.string.unread_messages), unread);
         }
-        stateMsg = ChatHistory.instance.getLastMessage(stateMsg);
-        CharSequence lastMessageNick = ChatHistory.instance.getLastMessageNick();
+        CharSequence lastMessageNick = null;
+        Chat current = ChatHistory.instance.chatAt(ChatHistory.instance.getPreferredItem());
+        if (current != null) {
+            HistoryStorage historyStorage = current.getHistory();
+            Cursor cursor = historyStorage.getLastCursor();
+            stateMsg = cursor.getString(cursor.getColumnIndex(SawimProvider.MESSAGE));
+            lastMessageNick = cursor.getString(cursor.getColumnIndex(SawimProvider.AUTHOR));
+        }
         notification.setAutoCancel(true).setWhen(0)
                 .setContentIntent(contentIntent)
                 .setContentText(stateMsg)

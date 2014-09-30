@@ -248,30 +248,6 @@ public final class ChatHistory {
         }
     }
 
-    public CharSequence getLastMessage(CharSequence defMess) {
-        Chat current = chatAt(getPreferredItem());
-        if (current != null) {
-            HistoryStorage historyStorage = current.getHistory();
-            MessData md = historyStorage.getLastMessage(current);
-            if (md != null) {
-                return md.getText();
-            }
-        }
-        return defMess;
-    }
-
-    public String getLastMessageNick() {
-        Chat current = chatAt(getPreferredItem());
-        if (current != null) {
-            HistoryStorage historyStorage = current.getHistory();
-            MessData md = historyStorage.getLastMessage(current);
-            if (md != null) {
-                return md.getNick();
-            }
-        }
-        return null;
-    }
-
     public int getPreferredItem() {
         for (int i = 0; i < historyTable.size(); ++i) {
             Chat chat = chatAt(i);

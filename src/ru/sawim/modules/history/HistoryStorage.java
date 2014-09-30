@@ -110,19 +110,19 @@ public class HistoryStorage {
         return lastMessageTime;
     }
 
-    public MessData getLastMessage(Chat chat) {
-        MessData lastMessage = null;
+    public Cursor getLastCursor() {
+        Cursor cursor = null;
         try {
-            Cursor cursor = SawimApplication.getContext().getContentResolver().query(SawimProvider.HISTORY_RESOLVER_URI, null,
+            Cursor c = SawimApplication.getContext().getContentResolver().query(SawimProvider.HISTORY_RESOLVER_URI, null,
                     WHERE_ACC_CONTACT_ID, new String[]{protocolId, uniqueUserId}, null);
             if (cursor.moveToLast()) {
-                lastMessage = buildMessage(chat, cursor);
+                cursor = c;
             }
             cursor.close();
         } catch (Exception e) {
             DebugLog.panic(e);
         }
-        return lastMessage;
+        return cursor;
     }
 
     public static boolean hasLastMessage(Chat chat, Message message) {

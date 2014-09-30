@@ -93,7 +93,7 @@ public class FileSystem {
         if (isAccessible(new File("/sdcard"))) return new File("/sdcard");
         if (isAccessible(new File("/mnt/sdcard"))) return new File("/mnt/sdcard");
         if (isAccessible(new File("/mnt/ext_card"))) return new File("/mnt/ext_card");
-        return null;
+        return ext;
     }
 
     private static boolean isAccessible(File file) {

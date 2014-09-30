@@ -64,11 +64,13 @@ public final class MessData {
         }
         builder.append(text);
         if (contact != null) {
-            String userId = contact.getProtocol().getUniqueUserId(contact);
-            if (userId.startsWith(JuickMenu.JUICK) || userId.startsWith(JuickMenu.JUBO)) {
-                TextFormatter.getInstance().getTextWithLinks(builder, JuickMenu.MODE_JUICK);
-            } else if (userId.startsWith(JuickMenu.PSTO) || userId.startsWith(JuickMenu.POINT)) {
-                TextFormatter.getInstance().getTextWithLinks(builder, JuickMenu.MODE_PSTO);
+            if (contact.getProtocol() != null) {
+                String userId = contact.getProtocol().getUniqueUserId(contact);
+                if (userId.startsWith(JuickMenu.JUICK) || userId.startsWith(JuickMenu.JUBO)) {
+                    TextFormatter.getInstance().getTextWithLinks(builder, JuickMenu.MODE_JUICK);
+                } else if (userId.startsWith(JuickMenu.PSTO) || userId.startsWith(JuickMenu.POINT)) {
+                    TextFormatter.getInstance().getTextWithLinks(builder, JuickMenu.MODE_PSTO);
+                }
             }
         }
         TextFormatter.getInstance().getTextWithLinks(builder, -1);

@@ -58,9 +58,6 @@ public class Util {
             w = size;
         }
         Bitmap scaled = Bitmap.createScaledBitmap(avatarTmp, w, h, true);
-        if (h != w) {
-            avatarTmp.recycle();
-        }
         if (h == w) {
             avatar = scaled;
         } else {

@@ -127,6 +127,16 @@ public class ImageCache {
         return hash.equals("") && getHash(id) != null && getHash(id).equals(hash);
     }
 
+    public boolean hasFile(File pathCacheFolder, String hash) {
+        String[] files = pathCacheFolder.list();
+        for (String file : files) {
+            if (file.equals(hash)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private File getFile(File pathCacheFolder, String hash) {
         return new File(pathCacheFolder, hash.replace('/', '_').concat(".").concat(COMPRESS_FORMAT.name()));
     }

@@ -1037,6 +1037,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        if (adapter == null) return super.onContextItemSelected(item);
         final MessData md = adapter.getItem(info.position);
         if (md == null) return super.onContextItemSelected(item);
         final Protocol protocol = chat.getProtocol();
@@ -1135,7 +1136,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                                 newMessageCount = 0;
                                 adapter.notifyDataSetChanged();
                                 if (isScrollEnd) {
-                                    chatListView.setSelection(adapter.getCount());
+                                    chatListView.setSelectionFromTop(adapter.getCount(), -chat.offset);
                                 }
                             }
                         }
