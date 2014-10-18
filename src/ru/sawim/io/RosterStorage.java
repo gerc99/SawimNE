@@ -16,8 +16,9 @@ public class RosterStorage {
     }
 
     public static void updateAvatarHash(String uniqueUserId, String hash) {
+        Cursor c = null;
         try {
-            Cursor c = SawimApplication.getContext().getContentResolver()
+            c = SawimApplication.getContext().getContentResolver()
                     .query(SawimProvider.AVATAR_HASHES_RESOLVER_URI, null, WHERE_CONTACT_ID,
                             new String[]{uniqueUserId}, null);
             if (c.getCount() > 0) {
@@ -31,22 +32,34 @@ public class RosterStorage {
                 values.put(SawimProvider.AVATAR_HASH, hash);
                 SawimApplication.getContext().getContentResolver().insert(SawimProvider.AVATAR_HASHES_RESOLVER_URI, values);
             }
-            c.close();
         } catch (Exception e) {
             DebugLog.panic(e);
+        } finally {
+            if (c != null){
+                c.close();
+            }
         }
     }
 
     public static String getAvatarHash(String uniqueUserId) {
-        Cursor cursor = SawimApplication.getContext().getContentResolver().query(SawimProvider.AVATAR_HASHES_RESOLVER_URI, null,
-                WHERE_CONTACT_ID, new String[]{uniqueUserId}, null);
-        if (cursor.moveToFirst()) {
-            do {
-                String hash = cursor.getString(cursor.getColumnIndex(SawimProvider.AVATAR_HASH));
-                return hash;
-            } while (cursor.moveToNext());
+        String hash = null;
+        Cursor cursor = null;
+        try {
+            cursor = SawimApplication.getContext().getContentResolver().query(SawimProvider.AVATAR_HASHES_RESOLVER_URI, null,
+                    WHERE_CONTACT_ID, new String[]{uniqueUserId}, null);
+
+            if (cursor.moveToFirst()) {
+                do {
+                    hash = cursor.getString(cursor.getColumnIndex(SawimProvider.AVATAR_HASH));
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            DebugLog.panic(e);
+        } finally {
+            if (cursor != null){
+                cursor.close();
+            }
         }
-        cursor.close();
-        return null;
+        return hash;
     }
 }

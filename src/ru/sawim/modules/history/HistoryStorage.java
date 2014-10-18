@@ -113,14 +113,15 @@ public class HistoryStorage {
     public Cursor getLastCursor() {
         Cursor cursor = null;
         try {
-            Cursor c = SawimApplication.getContext().getContentResolver().query(SawimProvider.HISTORY_RESOLVER_URI, null,
-                    WHERE_ACC_CONTACT_ID, new String[]{protocolId, uniqueUserId}, null);
-            if (cursor.moveToLast()) {
-                cursor = c;
-            }
-            cursor.close();
+            cursor = SawimApplication.getContext().getContentResolver().query(SawimProvider.HISTORY_RESOLVER_URI, null,
+                    null, null, null);
+            cursor.moveToLast();
         } catch (Exception e) {
             DebugLog.panic(e);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
         }
         return cursor;
     }
@@ -193,7 +194,7 @@ public class HistoryStorage {
         MessData messData;
         if (rowData == 0) {
             messData = Chat.buildMessage(contact, message, contact.isConference() ? from : chat.getFrom(message),
-                    false, Chat.isHighlight(message.getProcessedText(), contact.getMyName()));
+                    false, isIncoming ? Chat.isHighlight(message.getProcessedText(), contact.getMyName()): false);
         } else if ((rowData & MessData.ME) != 0 || (rowData & MessData.PRESENCE) != 0) {
             messData = new MessData(contact, message.getNewDate(), text, from, rowData);
         } else {

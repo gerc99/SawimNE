@@ -234,9 +234,9 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
                             throw new SawimException(194, 1);
                         }
                         out.flush();
-                        setProgress((100 - 2) * (fileSize - counter) / fileSize);
                     }
                 }
+                setProgress(100);
                 out.flush();
                 out.close();
 

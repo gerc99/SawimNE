@@ -88,4 +88,10 @@ android {
             }
         }
     }
+    android.applicationVariants.all { variant ->
+        println "*********" + variant.description + "**********";
+        def apkName = "SawimNE.apk";
+        println "*********" + "$project.buildDir/apk/" + apkName + "**********";
+        variant.outputFile = file("$project.buildDir/apk/" + apkName)
+    }
 }

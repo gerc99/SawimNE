@@ -69,7 +69,7 @@ public final class DebugLog {
 
     public static void panic(Throwable e) {
         Log.e("DebugLog", "panic", e);
-        ExceptionHandler.reportOnlyHandler(SawimApplication.getInstance().getApplicationContext()).uncaughtException(null, e);
+        //ExceptionHandler.reportOnlyHandler(SawimApplication.getInstance().getApplicationContext()).uncaughtException(null, e);
     }
 
     public static long profilerStart() {

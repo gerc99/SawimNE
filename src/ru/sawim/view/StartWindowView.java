@@ -184,8 +184,8 @@ public class StartWindowView extends Fragment {
                     account.password = password;
                     account.nick = nick;
                     account.isActive = true;
-                    addAccount(Options.getAccountCount() + 1, account);
                     if (login.length() > 0 && password.length() > 0) {
+                        addAccount(Options.getAccountCount() + 1, account);
                         getFragmentManager().popBackStack();
                         back();
                         Util.hideKeyboard(getActivity());

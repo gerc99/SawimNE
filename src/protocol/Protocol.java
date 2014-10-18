@@ -854,6 +854,7 @@ abstract public class Protocol {
         boolean isPersonal = contact.isSingleUserContact();
         boolean isBlog = isBlogBot(contact.getUserId());
         boolean isMention = false;
+        boolean isWakeUp = false;
         if (!silent) {
             if (Options.getBoolean(JLocale.getString(R.string.pref_answerer))) {
                 Answerer.getInstance().checkMessage(this, contact, message);
@@ -867,9 +868,10 @@ abstract public class Protocol {
             }
             if (message.isOffline()) {
             } else if (isPersonal) {
-                if (contact.isAuth() && !contact.isTemp()
-                        && message.isWakeUp() && Options.getBoolean(JLocale.getString(R.string.pref_alarm))) {
-                    SawimNotification.alarm(message.getProcessedText());
+                isWakeUp = contact.isAuth() && !contact.isTemp()
+                        && message.isWakeUp() && Options.getBoolean(JLocale.getString(R.string.pref_alarm));
+                if (isWakeUp) {
+                    SawimNotification.alarm(contact.getUserId());
                 } else {
                     //playNotification(Notify.NOTIFY_MESSAGE);
                     notifyMessage = true;
@@ -878,13 +880,13 @@ abstract public class Protocol {
                 //playNotification(Notify.NOTIFY_MULTIMESSAGE);
             }
         }
-        boolean isNewMessageIcon = chat.typeNewMessageIcon != chat.getNewMessageIcon();
-        if (isNewMessageIcon) {
-            chat.typeNewMessageIcon = chat.getNewMessageIcon();
-
-            SawimApplication.getInstance().sendNotify(contact.getUserId(), message.getText(), notifyMessage && !chat.isVisibleChat());
-
-            RosterHelper.getInstance().updateRoster(contact);
+        if (!isWakeUp) {
+            boolean isNewMessageIcon = chat.typeNewMessageIcon != chat.getNewMessageIcon() || !contact.getUserId().equals(SawimNotification.getLastNotifyContact());
+            if (isNewMessageIcon) {
+                chat.typeNewMessageIcon = chat.getNewMessageIcon();
+                RosterHelper.getInstance().updateRoster(contact);
+                SawimApplication.getInstance().sendNotify(contact.getUserId(), message.getProcessedText(), notifyMessage && !chat.isVisibleChat());
+            }
         }
     }
 

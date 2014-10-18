@@ -44,9 +44,8 @@ public class Util {
         return bitmap;
     }
 
-    public static Bitmap getAvatarBitmap(byte[] bytes, int size, int backgroundColor) {
+    public static Bitmap getAvatarBitmap(Bitmap avatarTmp, int size, int backgroundColor) {
         Bitmap avatar;
-        Bitmap avatarTmp = Util.decodeBitmap(bytes, size);
         if (avatarTmp == null) return null;
         int h = avatarTmp.getHeight();
         int w = avatarTmp.getWidth();
@@ -83,6 +82,7 @@ public class Util {
         }
         opts = new BitmapFactory.Options();
         opts.inSampleSize = scaleFactor;
+        opts.inJustDecodeBounds = false;
         tmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length, opts);
         return tmp;
     }

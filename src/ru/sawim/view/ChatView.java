@@ -21,6 +21,7 @@ import android.support.v7.app.ActionBar;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.*;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -491,9 +492,6 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     @Override
     public void onResume() {
         super.onResume();
-        boolean isOldChatInTablet = chat != null && chat.getContact() == RosterHelper.getInstance()
-                .getCurrentContact() && SawimApplication.isManyPane();
-        if (isOldChatInTablet) return;
         resume(chat);
     }
 
@@ -910,7 +908,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                 adapter.notifyDataSetChanged();
             } else {
                 if (chat.isBlogBot()) {
-                    new JuickMenu(getActivity(), protocol, contact.getUserId(), chat.getBlogPostId(msg)).show();
+                    new JuickMenu(getActivity(), protocol.getUserId(), contact.getUserId(), chat.getBlogPostId(msg)).show();
                     return;
                 }
                 if (mucUsersView != null) {

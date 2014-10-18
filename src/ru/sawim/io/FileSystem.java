@@ -1,4 +1,3 @@
-
 package ru.sawim.io;
 
 import android.os.Environment;
@@ -11,7 +10,7 @@ public class FileSystem {
 
     public static final String HISTORY = "history";
     public static final String RES = "res/";
-    public static final String AVATARS = "avatars/";
+    public static final String AVATARS = ".avatars/";
 
     File file;
 

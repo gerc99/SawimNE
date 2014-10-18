@@ -8,14 +8,18 @@ import android.webkit.WebView;
 import android.widget.ProgressBar;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
 /**
  * Created by admin on 01.03.14.
  */
-public class HtmlTask extends AsyncTask<String, Void, String[]> {
+public class HtmlTask extends AsyncTask<String, Integer, String[]> {
 
     public static final String TAG = HtmlTask.class.getSimpleName();
 
@@ -44,23 +48,18 @@ public class HtmlTask extends AsyncTask<String, Void, String[]> {
             urlConnection.setInstanceFollowRedirects(false);
             String newUrl = urlConnection.getHeaderField("Location");
             if (newUrl != null) {
-                newUrl = parseDb(newUrl);
+                newUrl = parseDropBox(newUrl);
                 link = newUrl;
                 urlConnection = (HttpURLConnection) new URL(newUrl).openConnection();
             }
-
-            result[1] = urlConnection.getContentType();
-            if (isImage(result[1])) {
-                return result;
-            }
-            BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
-            StringBuilder total = new StringBuilder();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                total.append(line);
-            }
-            result[0] = total.toString();
             if (link.startsWith(PIK4U)) {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+                StringBuilder total = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    total.append(line);
+                }
+                result[0] = total.toString();
                 int start = result[0].indexOf("<div class='img-preview'>") + 36;
                 if (start == -1) {
                     result[0] = null;
@@ -68,8 +67,35 @@ public class HtmlTask extends AsyncTask<String, Void, String[]> {
                 }
                 int end = result[0].indexOf("'><img src='", start);
                 result[0] = result[0].substring(start, end);
+                link = url.getProtocol() + "://" + url.getHost() + result[0];
+                urlConnection = (HttpURLConnection) new URL(link).openConnection();
             }
-            result[0] = url.getProtocol() + "://" + url.getHost() + result[0];
+
+            result[1] = urlConnection.getContentType();
+            if (isImage(result[1])) {
+                File file = File.createTempFile("tempfile", ".bin");
+                file.deleteOnExit();
+                int size = urlConnection.getContentLength();
+                InputStream input = urlConnection.getInputStream();
+                byte[] buffer = new byte[4096];
+                if (size == -1 ) {
+                    size = 1;
+                }
+                int n;
+                OutputStream output = new FileOutputStream(file);
+                int recived = 0;
+                while ((n = input.read(buffer)) != -1) {
+                    if (n > 0) {
+                        recived += n;
+                        publishProgress(100 * recived / size - 1);
+                        output.write(buffer, 0, n);
+                    }
+                }
+                publishProgress(100);
+                output.close();
+                link = "file://" + file.getAbsolutePath();
+                return result;
+            }
         } catch (Exception e) {
             e.printStackTrace();
             result[0] = null;
@@ -104,7 +130,7 @@ public class HtmlTask extends AsyncTask<String, Void, String[]> {
         }
     }
 
-    public static String parseDb(String link) {
+    public static String parseDropBox(String link) {
         if (-1 != link.indexOf("https://www.dropbox.com")) {
             link = link.replace("https://www.dropbox", "http://dl.dropboxusercontent");
         }

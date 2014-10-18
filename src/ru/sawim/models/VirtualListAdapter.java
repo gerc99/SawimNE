@@ -91,7 +91,7 @@ public class VirtualListAdapter extends BaseAdapter {
 
         holder.labelView.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
         holder.descView.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
-        holder.descView.setOnTextLinkClickListener(new TextLinkClick(list.getProtocol(), ""));
+        holder.descView.setOnTextLinkClickListener(new TextLinkClick(list.getProtocol().getUserId(), ""));
 
         holder.labelView.setVisibility(TextView.GONE);
         holder.descView.setVisibility(TextView.GONE);

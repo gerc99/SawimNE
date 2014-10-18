@@ -68,24 +68,25 @@ public class PictureView extends DialogFragment {
         webView.setScrollbarFadingEnabled(true);
         webView.setWebViewClient(new WebViewClient());
 
-        link = HtmlTask.parseDb(link);
+        link = HtmlTask.parseDropBox(link);
         progressBar.setVisibility(ProgressBar.VISIBLE);
-        htmlTask = new HtmlTask(getActivity(), link, webView, progressBar);
-        htmlTask.execute(link);
-        webView.setWebChromeClient(new WebChromeClient() {
-
+        htmlTask = new HtmlTask(getActivity(), link, webView, progressBar) {
             @Override
-            public void onProgressChanged(WebView view, int newProgress) {
+            protected void onProgressUpdate(Integer... values) {
+                super.onProgressUpdate(values);
+                int newProgress = values[0];
                 progressBar.setProgress(newProgress);
                 if (newProgress == 100) {
-                    view.setVisibility(ImageView.VISIBLE);
+                    webView.setVisibility(ImageView.VISIBLE);
                     progressBar.setVisibility(ProgressBar.GONE);
                 } else {
-                    view.setVisibility(ImageView.GONE);
+                    webView.setVisibility(ImageView.GONE);
                     progressBar.setVisibility(ProgressBar.VISIBLE);
                 }
             }
-        });
+        };
+        htmlTask.execute(link);
+        webView.setWebChromeClient(new WebChromeClient() );
 
         v.setBackgroundColor(Util.getSystemBackground(getActivity().getApplicationContext()));
         root.setBackgroundColor(Util.getSystemBackground(getActivity().getApplicationContext()));

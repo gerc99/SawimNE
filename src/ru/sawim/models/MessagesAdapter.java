@@ -59,7 +59,7 @@ public class MessagesAdapter extends BaseAdapter {
 
     @Override
     public MessData getItem(int i) {
-        if (items.size() == 0 || (items.size() <= position)) return null;
+        if (items.size() == 0 || (items.size() <= i)) return null;
         return items.get(i);
     }
 
@@ -75,7 +75,7 @@ public class MessagesAdapter extends BaseAdapter {
         if (item == null) {
             item = new MessageItemView(viewGroup.getContext());
             Contact contact = RosterHelper.getInstance().getCurrentContact();
-            item.setOnTextLinkClickListener(new TextLinkClick(contact.getProtocol(), contact.getUserId()));
+            item.setOnTextLinkClickListener(new TextLinkClick(contact.getProtocol().getUserId(), contact.getUserId()));
         }
         String nick = mData.getNick();
         boolean incoming = mData.isIncoming();

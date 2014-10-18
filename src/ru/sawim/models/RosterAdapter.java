@@ -40,7 +40,7 @@ import java.util.Vector;
  * Time: 17:03
  * To change this template use File | Settings | File Templates.
  */
-public class RosterAdapter extends BaseAdapter {
+public class RosterAdapter extends BaseAdapter implements View.OnClickListener{
 
     private static final int ITEM_PROTOCOL = 0;
     private static final int ITEM_GROUP = 1;
@@ -217,7 +217,7 @@ public class RosterAdapter extends BaseAdapter {
             rosterItemView.itemDesc = statusMessage;
         }
         Bitmap avatar = ImageCache.getInstance().get(FileSystem.openDir(FileSystem.AVATARS),
-                SawimApplication.getExecutor(), item.avatarHash, null, Util.dipToPixels(rosterItemView.getContext(), SawimApplication.AVATAR_SIZE), Scheme.THEME_BACKGROUND, new ImageCache.OnImageLoadListener() {
+                SawimApplication.getExecutor(), item.avatarHash, null, new ImageCache.OnImageLoadListener() {
                     @Override
                     public void onLoad() {
                         rosterItemView.post(new Runnable() {
@@ -282,13 +282,6 @@ public class RosterAdapter extends BaseAdapter {
         rosterItemView.isShowDivider = value;
     }
 
-    private static final View.OnClickListener protocolMenuClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            RosterHelper.getInstance().showProtocolMenu((BaseActivity) v.getContext(), ((ProtocolBranch) v.getTag()).getProtocol());
-        }
-    };
-
     @Override
     public View getView(int i, View convertView, final ViewGroup viewGroup) {
         final Object o = getItem(i);
@@ -346,7 +339,7 @@ public class RosterAdapter extends BaseAdapter {
                     final TreeNode treeNode = (TreeNode) o;
                     progressBar.setVisibility(((ProtocolBranch) treeNode).getProtocol().getConnectingProgress() != 100 ? View.VISIBLE : View.GONE);
                     imageButton.setTag(treeNode);
-                    imageButton.setOnClickListener(protocolMenuClickListener);
+                    imageButton.setOnClickListener(this);
                     populateFromProtocol(rosterItemView, (ProtocolBranch) treeNode);
                     setShowDivider(rosterItemView, true);
                 }
@@ -379,5 +372,10 @@ public class RosterAdapter extends BaseAdapter {
             }
         }
         return convertView;
+    }
+
+    @Override
+    public void onClick(View v) {
+        RosterHelper.getInstance().showProtocolMenu((BaseActivity) v.getContext(), ((ProtocolBranch) v.getTag()).getProtocol());
     }
 }

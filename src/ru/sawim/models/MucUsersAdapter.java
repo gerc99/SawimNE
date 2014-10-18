@@ -213,7 +213,7 @@ public class MucUsersAdapter extends BaseAdapter {
 
     void populateFrom(final RosterItemView rosterItemView, Xmpp protocol, XmppContact.SubContact c) {
         Bitmap avatar = ImageCache.getInstance().get(FileSystem.openDir(FileSystem.AVATARS), SawimApplication.getExecutor(), c.avatarHash,
-                null, ru.sawim.widget.Util.dipToPixels(rosterItemView.getContext(), SawimApplication.AVATAR_SIZE), Scheme.getColor(Scheme.THEME_BACKGROUND), new ImageCache.OnImageLoadListener() {
+                null, new ImageCache.OnImageLoadListener() {
                     @Override
                     public void onLoad() {
                         rosterItemView.post(new Runnable() {

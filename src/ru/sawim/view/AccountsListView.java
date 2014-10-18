@@ -244,13 +244,13 @@ public class AccountsListView extends Fragment {
                     int editAccountNum = Options.getAccountIndex(account);
                     account.isActive = Options.getAccountCount() <= editAccountNum
                             || Options.getAccount(editAccountNum).isActive;
-                    if (isEdit) {
-                        addAccount(id, account);
-                    } else {
-                        account.isActive = true;
-                        addAccount(Options.getAccountCount() + 1, account);
-                    }
                     if (login.length() > 0 && password.length() > 0) {
+                        if (isEdit) {
+                            addAccount(id, account);
+                        } else {
+                            account.isActive = true;
+                            addAccount(Options.getAccountCount() + 1, account);
+                        }
                         getFragmentManager().popBackStack();
                         Util.hideKeyboard(getActivity());
                     }

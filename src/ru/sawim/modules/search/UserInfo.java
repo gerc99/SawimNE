@@ -278,7 +278,8 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
                                 FileOutputStream fos = new FileOutputStream(avatar);
                                 fos.write(buffer);
                                 fos.close();
-                                Toast.makeText(SawimApplication.getContext(), R.string.saved_in + " " + avatar, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(SawimApplication.getContext(), SawimApplication.getContext().getString(R.string.saved_in)
+                                        + " " + avatar, Toast.LENGTH_SHORT).show();
                             }
                         } catch (Exception e) {
                             DebugLog.println("Save avatar exception " + e.getMessage());

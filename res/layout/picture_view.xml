@@ -5,12 +5,13 @@
               android:layout_height="match_parent">
 
     <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Link"
+            android:text="LinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLink"
             android:id="@+id/textView" android:layout_gravity="center" android:linksClickable="true"
             android:autoLink="web" android:layout_centerInParent="true" android:layout_above="@+id/progressBar"
-            android:layout_margin="10dp" android:layout_below="@+id/webView"/>
+            android:layout_margin="10dp" android:layout_below="@+id/webView" android:autoText="false"
+            android:ellipsize="end" android:lines="2"/>
     <ProgressBar
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -22,6 +23,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/webView" android:layout_gravity="center"
-            />
+            android:visibility="visible"/>
 
 </RelativeLayout>

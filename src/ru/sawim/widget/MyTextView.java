@@ -133,10 +133,6 @@ public class MyTextView extends View {
                 isSecondTap = true;
             }
 
-            if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_MOVE || action == MotionEvent.ACTION_CANCEL) {
-                buffer.removeSpan(linkHighlightColor);
-                repaint();
-            }
             if (urlSpans.length != 0) {
                 Runnable longPressed = new Runnable() {
                     public void run() {
@@ -146,6 +142,11 @@ public class MyTextView extends View {
                         }
                     }
                 };
+                if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_MOVE || action == MotionEvent.ACTION_CANCEL) {
+                    buffer.removeSpan(linkHighlightColor);
+                    removeCallbacks(longPressed);
+                    repaint();
+                }
                 if (action == MotionEvent.ACTION_DOWN) {
                     isSecondTap = false;
                     isLongTap = false;

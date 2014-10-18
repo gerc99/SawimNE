@@ -1,6 +1,5 @@
 package protocol.xmpp;
 
-import android.graphics.BitmapFactory;
 import protocol.*;
 import protocol.net.ClientConnection;
 import ru.sawim.R;
@@ -677,6 +676,7 @@ public final class XmppConnection extends ClientConnection {
                         xmpp.ui_updateContact(selfContact);
                     }
                     setProgress(80);
+                    getXmpp().s_updateOnlineStatus();
                     getVCard(xmpp.getUserId());
                     String xcode = Xmpp.xStatus.getCode(xmpp.getProfile().xstatusIndex);
                     if ((null != xcode) && !xcode.startsWith(XmppXStatus.XSTATUS_START)) {
@@ -936,6 +936,11 @@ public final class XmppConnection extends ClientConnection {
             if (null != adhoc) {
                 adhoc.loadCommandXml(iq, id);
             }
+        } else if (("alarm").equals(queryName)) {
+            String jid = Jid.isConference(from) ? from : Jid.getBareJid(from);
+            PlainMessage message = new PlainMessage(jid, getProtocol(),
+                    SawimApplication.getCurrentGmtTime(), PlainMessage.CMD_WAKEUP, false);
+            getXmpp().addMessage(message);
         }
         if (IQ_TYPE_GET == iqType) {
             sendIqError(iqQuery.name, iqQuery.getXmlns(), from, id);
@@ -1110,30 +1115,28 @@ public final class XmppConnection extends ClientConnection {
                     }
                 }
                 ImageCache.getInstance().save(FileSystem.openDir(FileSystem.AVATARS),
-                        from, avatarHash, BitmapFactory.decodeByteArray(avatarBytes, 0, avatarBytes.length));
+                        from, avatarHash, avatarBytes);
             } else {
                 if (from.equals(getXmpp().getUserId())) {
-                    myAvatarHash = null;
-                    getXmpp().s_updateOnlineStatus();
+                    if (myAvatarHash != null) {
+                        myAvatarHash = null;
+                        getXmpp().s_updateOnlineStatus();
+                    }
                 }
                 if (Jid.isConference(from)) {
                     if (c != null && c instanceof XmppServiceContact) {
                         XmppContact.SubContact sc = ((XmppServiceContact) c).getExistSubContact(Jid.getResource(from, null));
                         if (null != sc) {
                             sc.avatarHash = "";
-                            RosterStorage.updateAvatarHash(c.getUserId() + "/" + sc.resource, sc.avatarHash);
                         } else {
                             c.avatarHash = "";
-                            RosterStorage.updateAvatarHash(c.getUserId(), c.avatarHash);
                         }
                     }
                 } else {
                     if (c != null) {
                         c.avatarHash = "";
-                        RosterStorage.updateAvatarHash(c.getUserId(), c.avatarHash);
                     }
                 }
-                ImageCache.getInstance().save(FileSystem.openDir(FileSystem.AVATARS), from, "", null);
             }
         }
     }
@@ -1174,9 +1177,22 @@ public final class XmppConnection extends ClientConnection {
             if (conference.isAutoJoin()) {
                 xmpp.join(conference);
             }
+            requestVCard(conference.getUserId(), null, conference.avatarHash);
         }
         xmpp.setContactListAddition(group);
         xmpp.rejoin();
+    }
+
+    private void requestVCard(String id, String newAvatarHash, String avatarHash) {
+        if (newAvatarHash == null) {
+            if (avatarHash == null) {
+                getVCard(id);
+            }
+        } else {
+            if (!newAvatarHash.equals(avatarHash)) {
+                getVCard(id);
+            }
+        }
     }
 
     private void parsePresence(XmlNode x) {
@@ -1261,7 +1277,6 @@ public final class XmppConnection extends ClientConnection {
         if (vcardUpdate != null) {
             newAvatarHash = vcardUpdate.getFirstNodeValue("photo");
         }
-
         int priority = Util.strToIntDef(x.getFirstNodeValue("priority"), 0);
         String statusString = x.getFirstNodeValue(S_STATUS);
         if (Jid.isConference(from)) {
@@ -1317,15 +1332,7 @@ public final class XmppConnection extends ClientConnection {
                 XmppContact.SubContact sc = conf.getExistSubContact(fromRes);
                 if (sc != null) {
                     String id = conf.getUserId() + "/" + fromRes;
-                    if (newAvatarHash == null) {
-                        if (sc.avatarHash == null || !ImageCache.getInstance().hasHash(id, sc.avatarHash)) {
-                            getVCard(id);
-                        }
-                    } else {
-                        if (!newAvatarHash.equals(sc.avatarHash)) {
-                            getVCard(id);
-                        }
-                    }
+                    requestVCard(id, newAvatarHash, sc.avatarHash);
                 }
                 String newNick = item.getAttribute(XmlNode.S_NICK);
                 String realJid = item.getAttribute(XmlNode.S_JID);
@@ -1361,15 +1368,7 @@ public final class XmppConnection extends ClientConnection {
             if (RosterHelper.getInstance().getUpdateChatListener() != null)
                 RosterHelper.getInstance().getUpdateChatListener().updateMucList();
         } else {
-            if (newAvatarHash == null) {
-                if (contact.avatarHash == null || !ImageCache.getInstance().hasHash(contact.getUserId(), contact.avatarHash)) {
-                    getVCard(contact.getUserId());
-                }
-            } else {
-                if (!newAvatarHash.equals(contact.avatarHash)) {
-                    getVCard(contact.getUserId());
-                }
-            }
+            requestVCard(contact.getUserId(), newAvatarHash, contact.avatarHash);
             if (!("unavailable").equals(type)) {
                 if ((XStatusInfo.XSTATUS_NONE == contact.getXStatusIndex())
                         || !Xmpp.xStatus.isPep(contact.getXStatusIndex())) {
@@ -2373,15 +2372,19 @@ public final class XmppConnection extends ClientConnection {
                 xml += "<x xmlns='http://jabber.org/protocol/muc'>" + xNode + "</x>";
             }
         }
-        String status = getNativeStatus(getXmpp().getProfile().statusIndex);
-        if (!StringConvertor.isEmpty(status)) {
-            xml += "<show>" + status + "</show>";
+        if (getXmpp().getProfile() != null) {
+            String status = getNativeStatus(getXmpp().getProfile().statusIndex);
+            if (!StringConvertor.isEmpty(status)) {
+                xml += "<show>" + status + "</show>";
+            }
         }
-
-        String xstatusTitle = getXmpp().getProfile().xstatusTitle;
-        String descr = getXmpp().getProfile().xstatusDescription;
-        if (!StringConvertor.isEmpty(descr)) {
-            xstatusTitle += " " + descr;
+        String xstatusTitle = null;
+        if (getXmpp().getProfile() != null) {
+            xstatusTitle = getXmpp().getProfile().xstatusTitle;
+            String descr = getXmpp().getProfile().xstatusDescription;
+            if (!StringConvertor.isEmpty(descr)) {
+                xstatusTitle += " " + descr;
+            }
         }
         xml += (StringConvertor.isEmpty(xstatusTitle) ? "" : "<status>" + Util.xmlEscape(xstatusTitle) + "</status>");
 
@@ -2404,7 +2407,7 @@ public final class XmppConnection extends ClientConnection {
 
     void setStatus(String status, String msg, int priority) {
         String xXml = getQipXStatus();
-        if (0 != xXml.length()) {
+        if (0 != xXml.length() && getXmpp().getProfile() != null) {
             msg = getXmpp().getProfile().xstatusTitle;
             String descr = getXmpp().getProfile().xstatusDescription;
             if (!StringConvertor.isEmpty(descr)) {

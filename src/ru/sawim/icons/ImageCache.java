@@ -2,6 +2,8 @@ package ru.sawim.icons;
 
 import android.graphics.Bitmap;
 import android.text.TextUtils;
+import ru.sawim.SawimApplication;
+import ru.sawim.Scheme;
 import ru.sawim.comm.LruCache;
 import ru.sawim.widget.Util;
 
@@ -18,6 +20,7 @@ public class ImageCache {
     private LruCache<String, Bitmap> bitmapLruCache = new LruCache<>(((int) Runtime.getRuntime().maxMemory() / 1024) / 8); // Use 1/8th of the available memory for this memory cache.
     private HashMap<String, String> hashMap = new HashMap<>();
     private static ImageCache instance;
+    private static final int AVATAR_SIZE = Util.dipToPixels(SawimApplication.getContext(), SawimApplication.AVATAR_SIZE);
 
     private ImageCache() {
     }
@@ -35,8 +38,7 @@ public class ImageCache {
         return localInstance;
     }
 
-    public Bitmap get(final File pathCacheFolder, Executor executor, final String hash, final Bitmap defaultImage, final int size, final int backgroundColor,
-                      final OnImageLoadListener onImageLoadListener) {
+    public Bitmap get(final File pathCacheFolder, Executor executor, final String hash, final Bitmap defaultImage, final OnImageLoadListener onImageLoadListener) {
         Bitmap bitmap = null;
         if (!TextUtils.isEmpty(hash)) {
             bitmap = bitmapLruCache.get(hash);
@@ -72,7 +74,7 @@ public class ImageCache {
                                         }
                                     }
                                 }
-                                bitmap = Util.getAvatarBitmap(fileContent, size, backgroundColor);
+                                bitmap = Util.getAvatarBitmap(Util.decodeBitmap(fileContent, AVATAR_SIZE), AVATAR_SIZE, Scheme.getColor(Scheme.THEME_BACKGROUND));
                                 if (bitmap != null) {
                                     bitmapLruCache.put(hash, bitmap);
                                     if (onImageLoadListener != null) {
@@ -88,9 +90,10 @@ public class ImageCache {
         return bitmap;
     }
 
-    public boolean save(File pathCacheFolder, String id, String hash, Bitmap bitmap) {
+    public boolean save(File pathCacheFolder, String id, String hash, byte[] avatarBytes) {
         File file = getFile(pathCacheFolder, hash);
         String oldHash = hashMap.get(id);
+        Bitmap bitmap = Util.getAvatarBitmap(Util.decodeBitmap(avatarBytes, AVATAR_SIZE), AVATAR_SIZE, Scheme.getColor(Scheme.THEME_BACKGROUND));
         if (oldHash == null || !oldHash.equals(hash)) {
             hashMap.put(id, hash);
             if (bitmap != null) {
@@ -124,7 +127,7 @@ public class ImageCache {
     }
 
     public boolean hasHash(String id, String hash) {
-        return hash.equals("") && getHash(id) != null && getHash(id).equals(hash);
+        return !hash.equals("") && getHash(id) != null && getHash(id).equals(hash);
     }
 
     public boolean hasFile(File pathCacheFolder, String hash) {

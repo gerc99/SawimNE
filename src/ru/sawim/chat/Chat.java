@@ -60,14 +60,14 @@ public final class Chat {
         for (int index = text.indexOf(nick); -1 != index; index = text.indexOf(nick, index + 1)) {
             if (0 < index) {
                 char before = text.charAt(index - 1);
-                if ((' ' != before) && ('\n' != before) && ('\t' != before)) {
+                if ((' ' != before) && ('\n' != before) && ('\t' != before) && ('<' != before) && ('[' != before)&& (':' != before)) {
                     continue;
                 }
             }
             if (index + nick.length() + 2 < text.length()) {
                 char after = (char) Math.min(text.charAt(index + nick.length()),
                         text.charAt(index + nick.length() + 1));
-                if ((' ' != after) && ('\n' != after) && ('\t' != after)) {
+                if ((' ' != after) && ('\n' != after) && ('\t' != after) && ('>' != after) && (']' != after)) {
                     continue;
                 }
             }

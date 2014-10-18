@@ -15,6 +15,7 @@ import ru.sawim.R;
 import ru.sawim.activities.BaseActivity;
 import ru.sawim.comm.Util;
 import ru.sawim.modules.DebugLog;
+import ru.sawim.roster.RosterHelper;
 import ru.sawim.view.PictureView;
 import ru.sawim.view.menu.JuickMenu;
 import ru.sawim.view.tasks.HtmlTask;
@@ -28,10 +29,10 @@ import ru.sawim.view.tasks.HtmlTask;
  */
 public class TextLinkClick implements TextLinkClickListener {
 
-    private Protocol currentProtocol;
+    private String currentProtocol;
     private String currentContact;
 
-    public TextLinkClick(Protocol currentProtocol, String currentContact) {
+    public TextLinkClick(String currentProtocol, String currentContact) {
         this.currentProtocol = currentProtocol;
         this.currentContact = currentContact;
     }
@@ -60,7 +61,8 @@ public class TextLinkClick implements TextLinkClickListener {
                             Clipboard.setClipBoardText(activity, clickedString);
                             break;
                         case 1:
-                            currentProtocol.getSearchForm().show(activity,
+                            Protocol protocol = RosterHelper.getInstance().getProtocol(currentProtocol);
+                            protocol.getSearchForm().show(activity,
                                     Util.getUrlWithoutProtocol(clickedString), true);
                             break;
                     }

@@ -27,11 +27,11 @@ public class JuickMenu implements DialogInterface.OnClickListener {
     public static final int MODE_PSTO = 1;
 
     private FragmentActivity activity;
-    private Protocol currentProtocol;
+    private String currentProtocol;
     private String currentContact;
     private String text;
 
-    public JuickMenu(FragmentActivity activity, Protocol currentProtocol, String currentContact, String clickedString) {
+    public JuickMenu(FragmentActivity activity, String currentProtocol, String currentContact, String clickedString) {
         this.activity = activity;
         text = clickedString;
         this.currentProtocol = currentProtocol;
@@ -69,11 +69,12 @@ public class JuickMenu implements DialogInterface.OnClickListener {
 
     public void onClick(DialogInterface dialog, int which) {
         if (currentContact.startsWith(JUBO)) {
+            Protocol protocol = RosterHelper.getInstance().getProtocol(currentProtocol);
             ChatView chatView = (ChatView) activity.getSupportFragmentManager()
                     .findFragmentById(R.id.chat_fragment);
             if (chatView == null) {
                 ChatView newFragment = new ChatView();
-                newFragment.initChat(currentProtocol, currentProtocol.getItemByUID(currentContact));
+                newFragment.initChat(protocol, protocol.getItemByUID(currentContact));
                 FragmentTransaction transaction = activity.getSupportFragmentManager().beginTransaction();
                 transaction.replace(R.id.fragment_container, newFragment, ChatView.TAG);
                 transaction.addToBackStack(null);
@@ -82,7 +83,7 @@ public class JuickMenu implements DialogInterface.OnClickListener {
                 Chat chat = chatView.getCurrentChat();
                 chatView.pause(chat);
                 if (currentProtocol != null) {
-                    chatView.openChat(currentProtocol, currentProtocol.getItemByUID("juick@juick.com"));
+                    chatView.openChat(protocol, protocol.getItemByUID("juick@juick.com"));
                     chatView.resume(chatView.getCurrentChat());
                 }
             }
