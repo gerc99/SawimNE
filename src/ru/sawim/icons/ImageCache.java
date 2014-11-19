@@ -8,7 +8,6 @@ import ru.sawim.comm.LruCache;
 import ru.sawim.widget.Util;
 
 import java.io.*;
-import java.util.HashMap;
 import java.util.concurrent.Executor;
 
 /**
@@ -18,7 +17,6 @@ public class ImageCache {
 
     private static final Bitmap.CompressFormat COMPRESS_FORMAT = Bitmap.CompressFormat.PNG;
     private LruCache<String, Bitmap> bitmapLruCache = new LruCache<>(((int) Runtime.getRuntime().maxMemory() / 1024) / 8); // Use 1/8th of the available memory for this memory cache.
-    private HashMap<String, String> hashMap = new HashMap<>();
     private static ImageCache instance;
     private static final int AVATAR_SIZE = Util.dipToPixels(SawimApplication.getContext(), SawimApplication.AVATAR_SIZE);
 
@@ -95,25 +93,21 @@ public class ImageCache {
 
     public boolean save(File pathCacheFolder, String id, String hash, byte[] avatarBytes) {
         File file = getFile(pathCacheFolder, hash);
-        String oldHash = hashMap.get(id);
         Bitmap bmp = Util.decodeBitmap(avatarBytes, AVATAR_SIZE);
         Bitmap bitmap = Util.getAvatarBitmap(bmp, AVATAR_SIZE, bmp.getPixel(0, 0));
-        if (oldHash == null || !oldHash.equals(hash)) {
-            hashMap.put(id, hash);
-            if (bitmap != null) {
-                OutputStream os = null;
-                try {
-                    os = new FileOutputStream(file);
-                    bitmap.compress(COMPRESS_FORMAT, 95, os);
-                    return true;
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } finally {
-                    if (os != null) {
-                        try {
-                            os.close();
-                        } catch (IOException ignore) {
-                        }
+        if (bitmap != null) {
+            OutputStream os = null;
+            try {
+                os = new FileOutputStream(file);
+                bitmap.compress(COMPRESS_FORMAT, 95, os);
+                return true;
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if (os != null) {
+                    try {
+                        os.close();
+                    } catch (IOException ignore) {
                     }
                 }
             }
@@ -124,14 +118,6 @@ public class ImageCache {
     public void remove(final File pathCacheFolder, String hash) {
         File file = getFile(pathCacheFolder, hash);
         file.delete();
-    }
-
-    public String getHash(String id) {
-        return hashMap.get(id);
-    }
-
-    public boolean hasHash(String id, String hash) {
-        return !hash.equals("") && getHash(id) != null && getHash(id).equals(hash);
     }
 
     public boolean hasFile(File pathCacheFolder, String hash) {

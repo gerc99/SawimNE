@@ -1184,6 +1184,12 @@ public final class XmppConnection extends ClientConnection {
     }
 
     private void requestVCard(String id, String newAvatarHash, String avatarHash) {
+        if (avatarHash != null && !avatarHash.isEmpty()) {
+            if (!ImageCache.getInstance().hasFile(FileSystem.openDir(FileSystem.AVATARS), avatarHash)) {
+                getVCard(id);
+                return;
+            }
+        }
         if (newAvatarHash == null) {
             if (avatarHash == null) {
                 getVCard(id);
