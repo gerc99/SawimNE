@@ -760,7 +760,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
             } else if (isScroll && !isLoad) {
                 isAdded = chat.getHistory().addNextListMessages(adapter.getItems(), chat, HISTORY_MESSAGES_LIMIT, oldCount, true);
             }
-            int newCount = adapter.getItems().size();
+            int newCount = adapter.getCount();
             if (isAdded && (isLoad || isScroll)) {
                 int position = newCount - unreadMessageCount;
                 adapter.setPosition(position);
@@ -797,14 +797,13 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
         if (isOldChat) {
             isOldChat = false;
         }
-        boolean isFirstOpenChat = chat.currentPosition == -2;
         boolean isBottomScroll = chat.currentPosition == 0;
         adapter.setPosition(adapter.getCount());
         boolean isAdded = chat.getHistory().addNextListMessages(adapter.getItems(), chat, unreadMessageCount, 0, false);
         if (isAdded) {
             adapter.notifyDataSetChanged();
-            if (isBottomScroll && !isFirstOpenChat) {
-                chatListView.setSelectionFromTop(adapter.getCount(), offsetNewMessage);
+            if (isBottomScroll) {
+                chatListView.setSelectionFromTop(adapter.getCount() - unreadMessageCount, chatListView.getHeight() / 4);
             }
             chat.currentPosition = -1;
             unreadMessageCount = 0;
