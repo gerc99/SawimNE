@@ -158,6 +158,7 @@ public class RosterItemView extends View {
             secondImageY = y - (itemSecondImage.getHeight() / 2);
             textX = thirdImageX;
         } else
+
             thirdImageX = secondImageX;
         if (itemThirdImage != null) {
             fourthImageX = thirdImageX + itemThirdImage.getWidth() + leftPadding;
@@ -177,8 +178,8 @@ public class RosterItemView extends View {
         }
         sixthImageX = fifthImageX;
         if (itemSixthImage != null) {
-            sixthImageX = fifthImageX - itemSixthImage.getWidth() - rightPadding;
-            sixthImageY = y - (itemSixthImage.getHeight() / 2);
+            sixthImageX = secondImageX - leftPadding - 3;
+            sixthImageY = firstImageY;
         }
     }
 

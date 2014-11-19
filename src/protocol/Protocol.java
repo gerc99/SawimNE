@@ -5,11 +5,18 @@ import ru.sawim.*;
 import ru.sawim.activities.BaseActivity;
 import ru.sawim.chat.Chat;
 import ru.sawim.chat.ChatHistory;
-import ru.sawim.chat.message.*;
-import ru.sawim.comm.*;
+import ru.sawim.chat.message.Message;
+import ru.sawim.chat.message.PlainMessage;
+import ru.sawim.chat.message.SystemNotice;
+import ru.sawim.comm.JLocale;
+import ru.sawim.comm.StringConvertor;
+import ru.sawim.comm.Util;
 import ru.sawim.icons.Icon;
 import ru.sawim.io.Storage;
-import ru.sawim.modules.*;
+import ru.sawim.modules.Answerer;
+import ru.sawim.modules.AntiSpam;
+import ru.sawim.modules.DebugLog;
+import ru.sawim.modules.FileTransfer;
 import ru.sawim.modules.search.Search;
 import ru.sawim.modules.search.UserInfo;
 import ru.sawim.roster.ProtocolBranch;
@@ -302,36 +309,38 @@ abstract public class Protocol {
         storage.open();
         try {
             byte[] buf = storage.getRecord(1);
-            ByteArrayInputStream bais = new ByteArrayInputStream(buf);
-            DataInputStream dis = new DataInputStream(bais);
-            if (dis.readInt() != ROSTER_STORAGE_VERSION) {
-                throw new Exception();
-            }
-            loadProtocolData(storage.getRecord(2));
-            for (int marker = 3; marker <= storage.getNumRecords(); ++marker) {
-                try {
-                    buf = storage.getRecord(marker);
-                    if ((null == buf) || (0 == buf.length)) {
-                        continue;
-                    }
-
-                    bais = new ByteArrayInputStream(buf);
-                    dis = new DataInputStream(bais);
-                    while (0 < dis.available()) {
-                        byte type = dis.readByte();
-                        switch (type) {
-                            case TYPE_GROUP:
-                                roster.getContactItems().addElement(loadContact(dis));
-                                break;
-                            case TYPE_CONTACT:
-                                roster.getGroupItems().addElement(loadGroup(dis));
-                                break;
-                        }
-                    }
-                } catch (EOFException e) {
+            if (buf.length != 0) {
+                ByteArrayInputStream bais = new ByteArrayInputStream(buf);
+                DataInputStream dis = new DataInputStream(bais);
+                if (dis.readInt() != ROSTER_STORAGE_VERSION) {
+                    throw new Exception();
                 }
+                loadProtocolData(storage.getRecord(2));
+                for (int marker = 3; marker <= storage.getNumRecords(); ++marker) {
+                    try {
+                        buf = storage.getRecord(marker);
+                        if ((null == buf) || (0 == buf.length)) {
+                            continue;
+                        }
+
+                        bais = new ByteArrayInputStream(buf);
+                        dis = new DataInputStream(bais);
+                        while (0 < dis.available()) {
+                            byte type = dis.readByte();
+                            switch (type) {
+                                case TYPE_GROUP:
+                                    roster.getContactItems().addElement(loadContact(dis));
+                                    break;
+                                case TYPE_CONTACT:
+                                    roster.getGroupItems().addElement(loadGroup(dis));
+                                    break;
+                            }
+                        }
+                    } catch (EOFException e) {
+                    }
+                }
+                DebugLog.memoryUsage("clload");
             }
-            DebugLog.memoryUsage("clload");
         } finally {
             storage.close();
         }
@@ -884,7 +893,7 @@ abstract public class Protocol {
             boolean isNewMessageIcon = (chat.typeNewMessageIcon != chat.getNewMessageIcon()
                     && !contact.getUserId().equals(ChatHistory.instance.getLastChatNick()))
                     || Message.ICON_IN_MSG_HI == chat.typeNewMessageIcon;
-            if (isNewMessageIcon) {
+            if (isNewMessageIcon && !chat.isVisibleChat()) {
                 chat.typeNewMessageIcon = chat.getNewMessageIcon();
                 RosterHelper.getInstance().updateRoster(contact);
                 SawimApplication.getInstance().sendNotify(contact.getUserId(), message.getProcessedText(), notifyMessage && !chat.isVisibleChat());

@@ -1,9 +1,9 @@
 package ru.sawim.icons;
 
+
 import android.graphics.Bitmap;
 import android.text.TextUtils;
 import ru.sawim.SawimApplication;
-import ru.sawim.Scheme;
 import ru.sawim.comm.LruCache;
 import ru.sawim.widget.Util;
 
@@ -74,7 +74,8 @@ public class ImageCache {
                                         }
                                     }
                                 }
-                                bitmap = Util.getAvatarBitmap(Util.decodeBitmap(fileContent, AVATAR_SIZE), AVATAR_SIZE, Scheme.getColor(Scheme.THEME_BACKGROUND));
+                                Bitmap bmp = Util.decodeBitmap(fileContent, AVATAR_SIZE);
+                                bitmap = RoundedAvatars.getRoundedBitmap(Util.getAvatarBitmap(bmp, AVATAR_SIZE, bmp.getPixel(0,0)));
                                 if (bitmap != null) {
                                     bitmapLruCache.put(hash, bitmap);
                                     if (onImageLoadListener != null) {
@@ -86,6 +87,8 @@ public class ImageCache {
                     }
                 });
             }
+        } else {
+            bitmap = RoundedAvatars.getRoundedBitmapNotExsist(AVATAR_SIZE);
         }
         return bitmap;
     }
@@ -93,7 +96,8 @@ public class ImageCache {
     public boolean save(File pathCacheFolder, String id, String hash, byte[] avatarBytes) {
         File file = getFile(pathCacheFolder, hash);
         String oldHash = hashMap.get(id);
-        Bitmap bitmap = Util.getAvatarBitmap(Util.decodeBitmap(avatarBytes, AVATAR_SIZE), AVATAR_SIZE, Scheme.getColor(Scheme.THEME_BACKGROUND));
+        Bitmap bmp = Util.decodeBitmap(avatarBytes, AVATAR_SIZE);
+        Bitmap bitmap = Util.getAvatarBitmap(bmp, AVATAR_SIZE, bmp.getPixel(0, 0));
         if (oldHash == null || !oldHash.equals(hash)) {
             hashMap.put(id, hash);
             if (bitmap != null) {
