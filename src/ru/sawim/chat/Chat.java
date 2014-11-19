@@ -24,7 +24,8 @@ public final class Chat {
     private HistoryStorage history;
     private boolean visibleChat;
 
-    public String message;
+    public String savedMessage;
+    public String lastMessage;
     public int firstVisiblePosition;
     public int currentPosition = -2;
     public int offset;
@@ -296,8 +297,8 @@ public final class Chat {
 
     private void addTextToForm(Message message, String from, boolean isSystemNotice, boolean isHighlight) {
         MessData mData = buildMessage(contact, message, from, isSystemNotice, isHighlight);
-        addMessage(mData);
         addTextToHistory(mData);
+        addMessage(mData);
     }
 
     private void addMessage(MessData mData) {
@@ -305,13 +306,14 @@ public final class Chat {
         if (RosterHelper.getInstance().getUpdateChatListener() != null) {
             RosterHelper.getInstance().getUpdateChatListener().addMessage(contact, mData);
         }
+        lastMessage = mData.getText().toString();
     }
 
     public void addPresence(SystemNotice message) {
         String messageText = message.getProcessedText();
         MessData mData = new MessData(contact, message.getNewDate(), messageText, message.getName(), MessData.PRESENCE, false);
-        addMessage(mData);
         addTextToHistory(mData);
+        addMessage(mData);
         if (!isVisibleChat()) {
             otherMessageCounter = inc(otherMessageCounter);
             contact.updateChatState(this);

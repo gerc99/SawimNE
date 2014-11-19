@@ -725,21 +725,13 @@ public class Util {
         return result;
     }
 
-    public static void sort(Vector subnodes) {
-        for (int i = 1; i < subnodes.size(); ++i) {
-            Sortable currNode = (Sortable) subnodes.elementAt(i);
-            int j = i - 1;
-            for (; j >= 0; --j) {
-                Sortable itemJ = (Sortable) subnodes.elementAt(j);
-                if (compareNodes(itemJ, currNode) <= 0) {
-                    break;
-                }
-                subnodes.setElementAt(itemJ, j + 1);
+    public static <T extends Sortable> void sort(List<T> subnodes) {
+        Collections.sort(subnodes, new Comparator<T>() {
+            @Override
+            public int compare(T t1, T t2) {
+                return Util.compareNodes(t1, t2);
             }
-            if (j + 1 != i) {
-                subnodes.setElementAt(currNode, j + 1);
-            }
-        }
+        });
     }
 
     private static void putCh(StringBuffer sb, int ch) {

@@ -229,6 +229,7 @@ public class HistoryStorage {
 
     public void removeHistory() {
         try {
+            updateUnreadMessagesCount(0);
             SawimApplication.getContext().getContentResolver()
                     .delete(SawimProvider.HISTORY_RESOLVER_URI, WHERE_ACC_CONTACT_ID, new String[]{protocolId, uniqueUserId});
         } catch (Exception e) {
@@ -284,13 +285,15 @@ public class HistoryStorage {
                     continue;
                 }
                 Protocol protocol = RosterHelper.getInstance().getProtocol(account);
-                Contact contact = protocol.getItemByUID(userId);
-                if (contact == null) {
-                    contact = protocol.createTempContact(userId);
+                if (protocol != null) {
+                    Contact contact = protocol.getItemByUID(userId);
+                    if (contact == null) {
+                        contact = protocol.createTempContact(userId);
+                    }
+                    Chat chat = protocol.getChat(contact);
+                    chat.setMessageCounter(unreadMessageCount);
+                    contact.updateChatState(chat);
                 }
-                Chat chat = protocol.getChat(contact);
-                chat.setMessageCounter(unreadMessageCount);
-                contact.updateChatState(chat);
             } while (cursor.moveToNext());
         }
         cursor.close();

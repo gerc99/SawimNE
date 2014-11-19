@@ -111,8 +111,11 @@ public final class VirtualListModel {
         return elements.size();
     }
 
-    public boolean isItemSelectable(int i) {
-        return elements.get(i).isItemSelectable();
+    public boolean isItemSelectable(int index) {
+        if ((index < 0) || (getSize() <= index)) {
+            return false;
+        }
+        return elements.get(index).isItemSelectable();
     }
 }
 

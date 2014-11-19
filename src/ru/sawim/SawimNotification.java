@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import ru.sawim.activities.SawimActivity;
+import ru.sawim.chat.Chat;
 import ru.sawim.chat.ChatHistory;
 import ru.sawim.comm.JLocale;
 import ru.sawim.roster.RosterHelper;
@@ -27,13 +28,11 @@ public class SawimNotification {
     public static final int ALARM_NOTIFY_ID = 2;
     private static final HashMap<String, Integer> idsMap = new HashMap<String, Integer>();
     private static final HashMap<Integer, NotificationCompat.Builder> notifiBuildersMap = new HashMap<Integer, NotificationCompat.Builder>();
-    private static String lastNotifyContact;
 
-    public static Notification get(Context context, String nick, String msg, boolean silent) {
+    public static Notification get(Context context, String nick, boolean silent) {
         int unread = ChatHistory.instance.getPersonalUnreadMessageCount(false);
         int allUnread = ChatHistory.instance.getPersonalUnreadMessageCount(true);
         CharSequence stateMsg = "";
-        lastNotifyContact = nick;
         final int icon;
         if (0 < allUnread) {
             icon = R.drawable.ic_tray_msg;
@@ -70,10 +69,15 @@ public class SawimNotification {
         }
         if (0 < allUnread) {
             notification.setNumber(unread);
-            //stateMsg = String.format(context.getText(R.string.unread_messages).toString(), unread);
+            stateMsg = String.format(context.getText(R.string.unread_messages).toString(), unread);
         }
-        if (msg != null) {
-            stateMsg = msg;
+        if (nick != null) {
+            ChatHistory.instance.nicksTable.add(nick);
+        }
+        Chat current = ChatHistory.instance.getChat(ChatHistory.instance.getLastChatNick());
+        if (current != null && current.lastMessage != null && current.getUnreadMessageCount() > 0) {
+            nick = current.getContact().getName();
+            stateMsg = current.lastMessage;
         }
         notification.setAutoCancel(true).setWhen(0)
                 .setContentIntent(contentIntent)
@@ -220,9 +224,5 @@ public class SawimNotification {
         if (idsMap.get(id) == null) return;
         ((NotificationManager) SawimApplication.getContext().getSystemService(Context.NOTIFICATION_SERVICE)).cancel(idsMap.get(id));
         idsMap.remove(id);
-    }
-
-    public static String getLastNotifyContact() {
-        return lastNotifyContact;
     }
 }

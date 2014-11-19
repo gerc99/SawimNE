@@ -1,10 +1,6 @@
 package ru.sawim.view;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -27,7 +23,6 @@ import ru.sawim.*;
 import ru.sawim.activities.BaseActivity;
 import ru.sawim.chat.Chat;
 import ru.sawim.chat.ChatHistory;
-import ru.sawim.comm.JLocale;
 import ru.sawim.forms.ManageContactListForm;
 import ru.sawim.models.CustomPagerAdapter;
 import ru.sawim.models.RosterAdapter;
@@ -38,7 +33,6 @@ import ru.sawim.roster.TreeBranch;
 import ru.sawim.roster.TreeNode;
 import ru.sawim.widget.MyImageButton;
 import ru.sawim.widget.MyListView;
-import ru.sawim.widget.Util;
 import ru.sawim.widget.roster.RosterViewRoot;
 
 import java.io.FileNotFoundException;
@@ -262,35 +256,10 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         chatsImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final Chat current = ChatHistory.instance.chatAt(ChatHistory.instance.getPreferredItem());
+                Chat current = ChatHistory.instance.chatAt(ChatHistory.instance.getPreferredItem());
                 if (current == null) return;
                 if (0 < current.getAuthRequestCounter()) {
-                    new DialogFragment() {
-                        @Override
-                        public Dialog onCreateDialog(Bundle savedInstanceState) {
-                            final Context context = getActivity();
-                            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
-                            dialogBuilder.setInverseBackgroundForced(Util.isNeedToInverseDialogBackground());
-                            dialogBuilder.setMessage(JLocale.getString(R.string.grant) + " " + current.getContact().getName() + "?");
-                            dialogBuilder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    new ContactMenu(current.getProtocol(), current.getContact()).doAction((BaseActivity) getActivity(), ContactMenu.USER_MENU_GRANT_AUTH);
-                                    update();
-                                }
-                            });
-                            dialogBuilder.setNegativeButton(R.string.deny, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    new ContactMenu(current.getProtocol(), current.getContact()).doAction((BaseActivity) getActivity(), ContactMenu.USER_MENU_DENY_AUTH);
-                                    update();
-                                }
-                            });
-                            Dialog dialog = dialogBuilder.create();
-                            dialog.setCanceledOnTouchOutside(true);
-                            return dialog;
-                        }
-                    }.show(getFragmentManager().beginTransaction(), "auth");
+                    ChatView.showAuthorizationDialog((BaseActivity) getActivity(), current);
                 } else {
                     openChat(current.getProtocol(), current.getContact(), null);
                     update();

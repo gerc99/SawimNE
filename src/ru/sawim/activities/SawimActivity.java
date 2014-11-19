@@ -39,16 +39,12 @@ import protocol.Protocol;
 import protocol.icq.Icq;
 import protocol.mrim.Mrim;
 import protocol.xmpp.Xmpp;
-import ru.sawim.Options;
-import ru.sawim.R;
-import ru.sawim.SawimApplication;
-import ru.sawim.Scheme;
+import ru.sawim.*;
 import ru.sawim.chat.Chat;
 import ru.sawim.chat.ChatHistory;
 import ru.sawim.modules.DebugLog;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.view.*;
-import ru.sawim.activities.MainPreferenceActivity;
 
 public class SawimActivity extends BaseActivity {
 
@@ -95,15 +91,12 @@ public class SawimActivity extends BaseActivity {
                 rosterView.setMode(getIntent().getType().equals("text/plain") ? RosterView.MODE_SHARE_TEXT : RosterView.MODE_SHARE);
             return;
         }
-        if (NOTIFY.equals(getIntent().getAction())) {
-            Chat current = ChatHistory.instance.chatAt(ChatHistory.instance.getPreferredItem());
-            if (current != null)
+        Chat current = ChatHistory.instance.getChat(ChatHistory.instance.getLastChatNick());
+        if (NOTIFY.equals(getIntent().getAction()) || NOTIFY_REPLY.equals(getIntent().getAction())) {
+            if (current != null) {
                 isOpenNewChat = openChat(current.getProtocol(), current.getContact(), true);
-        }
-        if (NOTIFY_REPLY.equals(getIntent().getAction())) {
-            Chat current = ChatHistory.instance.chatAt(ChatHistory.instance.getPreferredItem());
-            if (current != null)
-                isOpenNewChat = openChat(current.getProtocol(), current.getContact(), true);
+                ChatHistory.instance.nicksTable.remove(ChatHistory.instance.nicksTable.size() - 1);
+            }
         }
         if (NOTIFY_CAPTCHA.equals(getIntent().getAction())) {
             FormView.showWindows(this, getIntent().getStringExtra(NOTIFY_CAPTCHA));

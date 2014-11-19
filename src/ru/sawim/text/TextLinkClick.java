@@ -20,6 +20,8 @@ import ru.sawim.view.PictureView;
 import ru.sawim.view.menu.JuickMenu;
 import ru.sawim.view.tasks.HtmlTask;
 
+import java.util.ArrayList;
+
 /**
  * Created with IntelliJ IDEA.
  * User: admin
@@ -43,17 +45,21 @@ public class TextLinkClick implements TextLinkClickListener {
         final BaseActivity activity = (BaseActivity) textView.getContext();
         boolean isJuick = clickedString.startsWith("@") || clickedString.startsWith("#");
         if (isJuick) {
-            new JuickMenu(activity, currentProtocol, currentContact, clickedString).show();
+            if (currentProtocol != null && currentContact != null) {
+                new JuickMenu(activity, currentProtocol, currentContact, clickedString).show();
+            }
             return;
         }
         if (isLongTap || Jid.isJID(clickedString)) {
             final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
             builder.setCancelable(true);
             builder.setTitle(R.string.url_menu);
-            CharSequence[] items = new CharSequence[2];
-            items[0] = activity.getString(R.string.copy);
-            items[1] = activity.getString(R.string.add_contact);
-            builder.setItems(items, new DialogInterface.OnClickListener() {
+            ArrayList<CharSequence> items = new ArrayList<>();
+            items.add(activity.getString(R.string.copy));
+            if (currentProtocol != null) {
+                items.add(activity.getString(R.string.add_contact));
+            }
+            builder.setItems(items.toArray(new CharSequence[items.size()]), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     switch (which) {

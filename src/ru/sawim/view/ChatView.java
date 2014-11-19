@@ -21,7 +21,6 @@ import android.support.v7.app.ActionBar;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.*;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -109,8 +108,8 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         handler = new Handler(this);
-        chatsImage = new MyImageButton(activity);
 
+        chatsImage = new MyImageButton(activity);
         menuButton = new MyImageButton(activity);
         smileButton = new MyImageButton(activity);
         sendButton = new MyImageButton(activity);
@@ -214,38 +213,12 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
         chatsImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (0 < chat.getAuthRequestCounter()) {
-                    new DialogFragment() {
-                        @Override
-                        public Dialog onCreateDialog(Bundle savedInstanceState) {
-                            final Protocol protocol = chat.getProtocol();
-                            final Contact contact = chat.getContact();
-                            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity);
-                            dialogBuilder.setInverseBackgroundForced(Util.isNeedToInverseDialogBackground());
-                            dialogBuilder.setMessage(JLocale.getString(R.string.grant) + " " + contact.getName() + "?");
-                            dialogBuilder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    new ContactMenu(protocol, contact).doAction(activity, ContactMenu.USER_MENU_GRANT_AUTH);
-                                    activity.supportInvalidateOptionsMenu();
-                                    updateRoster();
-                                }
-                            });
-                            dialogBuilder.setNegativeButton(R.string.deny, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    new ContactMenu(protocol, contact).doAction(activity, ContactMenu.USER_MENU_DENY_AUTH);
-                                    activity.supportInvalidateOptionsMenu();
-                                    updateRoster();
-                                }
-                            });
-                            Dialog dialog = dialogBuilder.create();
-                            dialog.setCanceledOnTouchOutside(true);
-                            return dialog;
-                        }
-                    }.show(getFragmentManager().beginTransaction(), "auth");
+                final Chat newChat = ChatHistory.instance.chatAt(ChatHistory.instance.getPreferredItem());
+                if (newChat == null) return;
+                if (0 < newChat.getAuthRequestCounter()) {
+                    showAuthorizationDialog((BaseActivity) getActivity(), newChat);
                 } else {
-                    forceGoToChat(ChatHistory.instance.chatAt(ChatHistory.instance.getPreferredItem()));
+                    forceGoToChat(newChat);
                 }
             }
         });
@@ -497,7 +470,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
 
     public void pause(Chat chat) {
         if (chat == null) return;
-        chat.message = getText().length() == 0 ? null : getText();
+        chat.savedMessage = getText().length() == 0 ? null : getText();
 
         chat.currentPosition = adapter.getCount();
         chat.firstVisiblePosition = chatListView.getFirstVisiblePosition();
@@ -522,13 +495,13 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
         unreadMessageCount = chat.getUnreadMessageCount();
         chat.resetUnreadMessages();
         if (sharingText != null) {
-            if (null != chat.message) {
-                chat.message += " " + sharingText;
+            if (null != chat.savedMessage) {
+                chat.savedMessage += " " + sharingText;
             } else {
-                chat.message = sharingText;
+                chat.savedMessage = sharingText;
             }
         }
-        messageEditor.setText(chat.message);
+        messageEditor.setText(chat.savedMessage);
         messageEditor.setSelection(messageEditor.getText().length());
 
         if (!SawimApplication.isManyPane()) {
@@ -653,7 +626,9 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                 if (oldFirstVisibleItem != firstVisibleItem) {
                     oldFirstVisibleItem = firstVisibleItem;
                     if (visibleItemCount > 0 && firstVisibleItem == 0) {
-                        loadStory(isScroll, false);
+                        if (chatListView.canScrollVertically(-1)) {
+                            loadStory(isScroll, false);
+                        }
                     }
                 } else {
                     oldFirstVisibleItem = -1;
@@ -1116,19 +1091,20 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     public void send() {
         final boolean isScrollEnd = isScrollEnd();
         hideKeyboard();
+        final String text = getText();
+        resetText();
         SawimApplication.getExecutor().execute(new Runnable() {
             @Override
             public void run() {
                 if (chat != null) {
-                    chat.sendMessage(getText());
+                    chat.sendMessage(text);
                 }
                 if (chatListView != null) {
                     chatListView.post(new Runnable() {
                         @Override
                         public void run() {
                             if (chat != null) {
-                                resetText();
-                                chat.message = null;
+                                chat.savedMessage = null;
                                 adapter.setPosition(-1);
                                 chat.currentPosition = 0;
                                 newMessageCount = 0;
@@ -1142,6 +1118,38 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                 }
             }
         });
+    }
+
+    public static void showAuthorizationDialog(final BaseActivity activity, final Chat newChat) {
+        new DialogFragment() {
+            @Override
+            public Dialog onCreateDialog(Bundle savedInstanceState) {
+                final Protocol protocol = newChat.getProtocol();
+                final Contact contact = newChat.getContact();
+                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity);
+                dialogBuilder.setInverseBackgroundForced(Util.isNeedToInverseDialogBackground());
+                dialogBuilder.setMessage(JLocale.getString(R.string.grant) + " " + contact.getName() + "?");
+                dialogBuilder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        new ContactMenu(protocol, contact).doAction(activity, ContactMenu.USER_MENU_GRANT_AUTH);
+                        activity.supportInvalidateOptionsMenu();
+                        RosterHelper.getInstance().updateRoster();
+                    }
+                });
+                dialogBuilder.setNegativeButton(R.string.deny, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        new ContactMenu(protocol, contact).doAction(activity, ContactMenu.USER_MENU_DENY_AUTH);
+                        activity.supportInvalidateOptionsMenu();
+                        RosterHelper.getInstance().updateRoster();
+                    }
+                });
+                Dialog dialog = dialogBuilder.create();
+                dialog.setCanceledOnTouchOutside(true);
+                return dialog;
+            }
+        }.show(activity.getSupportFragmentManager().beginTransaction(), "auth");
     }
 
     private boolean canAdd(String what) {

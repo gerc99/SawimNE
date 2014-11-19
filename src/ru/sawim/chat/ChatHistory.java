@@ -11,13 +11,14 @@ import ru.sawim.comm.Util;
 import ru.sawim.modules.history.HistoryStorage;
 import ru.sawim.roster.RosterHelper;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
 
 public final class ChatHistory {
-    public final List<Chat> historyTable = new ArrayList<Chat>();
+
     public static final ChatHistory instance = new ChatHistory();
+
+    public final List<Chat> historyTable = new ArrayList<Chat>();
+    public final List<String> nicksTable = new ArrayList<String>();
 
     private ChatHistory() {
     }
@@ -27,20 +28,12 @@ public final class ChatHistory {
     }
 
     public void sort() {
-        for (int i = 1; i < historyTable.size(); ++i) {
-            Chat currNode = historyTable.get(i);
-            int j = i - 1;
-            for (; j >= 0; --j) {
-                Chat itemJ = historyTable.get(j);
-                if (Util.compareNodes(itemJ.getContact(), currNode.getContact()) <= 0) {
-                    break;
-                }
-                historyTable.set(j + 1, itemJ);
+        Collections.sort(historyTable, new Comparator<Chat>() {
+            @Override
+            public int compare(Chat c1, Chat c2) {
+                return Util.compareNodes(c1.getContact(), c2.getContact());
             }
-            if (j + 1 != i) {
-                historyTable.set(j + 1, currNode);
-            }
-        }
+        });
     }
 
     public void addLayerToListOfChats(Protocol p, List<Object> items) {
@@ -62,6 +55,14 @@ public final class ChatHistory {
         }
     }
 
+    public String getLastChatNick() {
+        int size = nicksTable.size();
+        if (size > 0) {
+            return nicksTable.get(size - 1);
+        }
+        return null;
+    }
+
     public Chat chatAt(int index) {
         if ((index < historyTable.size()) && (index >= 0))
             return historyTable.get(index);
@@ -75,6 +76,16 @@ public final class ChatHistory {
     public Chat getChat(Contact c) {
         for (int i = getTotal() - 1; 0 <= i; --i) {
             if (c == contactAt(i)) {
+                return chatAt(i);
+            }
+        }
+        return null;
+    }
+
+    public Chat getChat(String id) {
+        if (id == null) return null;
+        for (int i = getTotal() - 1; 0 <= i; --i) {
+            if (id.equals(contactAt(i).getUserId())) {
                 return chatAt(i);
             }
         }
@@ -174,7 +185,7 @@ public final class ChatHistory {
 
     public void unregisterChat(Chat item) {
         if (null == item) return;
-        if (item.message != null) return;
+        if (item.savedMessage != null) return;
         closeHistory(item);
         historyTable.remove(item);
         Contact c = item.getContact();
@@ -252,27 +263,22 @@ public final class ChatHistory {
         for (int i = 0; i < historyTable.size(); ++i) {
             Chat chat = chatAt(i);
             if (chat.getAuthRequestCounter() > 0) {
-                continue;
+                return i;
             }
             if (0 < chat.getPersonalUnreadMessageCount()) {
                 return i;
             }
         }
-        //Contact currentContact = RosterHelper.getSawimActivity().getCurrentContact();
-        int current = -1;
         for (int i = 0; i < historyTable.size(); ++i) {
             Chat chat = chatAt(i);
             if (chat.getAuthRequestCounter() > 0) {
-                continue;
+                return i;
             }
             if (0 < chat.getUnreadMessageCount()) {
                 return i;
             }
-            //if (currentContact == chat.getContact()) {
-            //    current = i;
-            //}
         }
-        return current;
+        return -1;
     }
 
     public int getSize() {

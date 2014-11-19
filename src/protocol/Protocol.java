@@ -881,7 +881,9 @@ abstract public class Protocol {
             }
         }
         if (!isWakeUp) {
-            boolean isNewMessageIcon = chat.typeNewMessageIcon != chat.getNewMessageIcon() || !contact.getUserId().equals(SawimNotification.getLastNotifyContact());
+            boolean isNewMessageIcon = (chat.typeNewMessageIcon != chat.getNewMessageIcon()
+                    && !contact.getUserId().equals(ChatHistory.instance.getLastChatNick()))
+                    || Message.ICON_IN_MSG_HI == chat.typeNewMessageIcon;
             if (isNewMessageIcon) {
                 chat.typeNewMessageIcon = chat.getNewMessageIcon();
                 RosterHelper.getInstance().updateRoster(contact);

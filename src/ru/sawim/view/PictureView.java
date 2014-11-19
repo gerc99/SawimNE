@@ -123,7 +123,6 @@ public class PictureView extends DialogFragment {
             webView.clearHistory();
             webView.clearFormData();
             webView.destroy();
-            webView = null;
         }
     }
 }

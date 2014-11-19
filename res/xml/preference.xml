@@ -7,7 +7,7 @@
     <PreferenceCategory android:title="@string/options_network"/>
         <CheckBoxPreference android:title="@string/wake_lock"
                             android:key="@string/pref_wake_lock"
-                            android:defaultValue="true"/>
+                            android:defaultValue="false"/>
     <PreferenceCategory android:title="@string/options_interface"/>
         <ListPreference
                 android:key="@string/pref_color_scheme"
