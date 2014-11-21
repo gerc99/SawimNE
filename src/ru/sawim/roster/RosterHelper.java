@@ -8,10 +8,7 @@ import ru.sawim.listener.OnUpdateRoster;
 import protocol.*;
 import protocol.icq.Icq;
 import protocol.mrim.Mrim;
-import protocol.xmpp.AdHoc;
-import protocol.xmpp.Jid;
 import protocol.xmpp.Xmpp;
-import protocol.xmpp.XmppContact;
 import ru.sawim.Options;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
@@ -256,9 +253,10 @@ public final class RosterHelper {
             return;
         int count = getProtocolCount();
         for (int i = 0; i < count; ++i) {
-            Protocol p = getProtocol(i);
-            if (!"".equals(p.getPassword()) && p.getProfile().isConnected()) {
-                p.connect();
+            Profile profile = Options.getAccount(i);
+            Protocol protocol = getProtocol(profile);
+            if (!"".equals(protocol.getPassword()) && profile.isConnected()) {
+                protocol.connect();
             }
         }
     }

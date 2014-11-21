@@ -295,14 +295,13 @@ public final class Chat {
         return mData;
     }
 
-    private void addTextToForm(Message message, String from, boolean isSystemNotice, boolean isHighlight) {
-        MessData mData = buildMessage(contact, message, from, isSystemNotice, isHighlight);
-        addTextToHistory(mData);
-        addMessage(mData);
+    private void addMessage(Message message, String from, boolean isSystemNotice, boolean isHighlight) {
+        addMessage(buildMessage(contact, message, from, isSystemNotice, isHighlight));
     }
 
     private void addMessage(MessData mData) {
         ChatHistory.instance.registerChat(this);
+        addTextToHistory(mData);
         if (RosterHelper.getInstance().getUpdateChatListener() != null) {
             RosterHelper.getInstance().getUpdateChatListener().addMessage(contact, mData);
         }
@@ -334,7 +333,7 @@ public final class Chat {
                     messageCounter--;
                 }
             }
-            addTextToForm(message, from, false, isHighlight);
+            addMessage(message, from, false, isHighlight);
         } else if (isSystem) {
             SystemNotice notice = (SystemNotice) message;
             if (SystemNotice.SYS_NOTICE_AUTHREQ == notice.getSysnoteType()) {
@@ -344,7 +343,7 @@ public final class Chat {
                 sysNoticeCounter = inc(sysNoticeCounter);
             }
             //MagicEye.addAction(protocol, contact.getUserId(), message.getText());
-            addTextToForm(message, from, true, isHighlight);
+            addMessage(message, from, true, isHighlight);
         }
         if (inc) {
             contact.updateChatState(this);
@@ -357,7 +356,7 @@ public final class Chat {
     public void addMyMessage(PlainMessage message) {
         String from = getFrom(message);
         resetUnreadMessages();
-        addTextToForm(message, from, false, false);
+        addMessage(message, from, false, false);
     }
 
     public Contact getContact() {
