@@ -876,7 +876,7 @@ abstract public class Protocol {
                 isMention = isHighlight;
             }
             if (message.isOffline()) {
-            } else if (isPersonal) {
+            } else if (isPersonal || isMention) {
                 isWakeUp = contact.isAuth() && !contact.isTemp()
                         && message.isWakeUp() && Options.getBoolean(JLocale.getString(R.string.pref_alarm));
                 if (isWakeUp) {
@@ -890,13 +890,10 @@ abstract public class Protocol {
             }
         }
         if (!isWakeUp) {
-            boolean isNewMessageIcon = (chat.typeNewMessageIcon != chat.getNewMessageIcon()
-                    && !contact.getUserId().equals(ChatHistory.instance.getLastChatNick()))
-                    || Message.ICON_IN_MSG_HI == chat.typeNewMessageIcon;
-            if (isNewMessageIcon && !chat.isVisibleChat()) {
+            if (!chat.isVisibleChat()) {
                 chat.typeNewMessageIcon = chat.getNewMessageIcon();
                 RosterHelper.getInstance().updateRoster(contact);
-                SawimApplication.getInstance().sendNotify(contact.getUserId(), message.getProcessedText(), notifyMessage && !chat.isVisibleChat());
+                SawimApplication.getInstance().sendNotify(contact.getUserId(), message.getProcessedText(), notifyMessage && !chat.isVisibleChat(), message.getName());
             }
         }
     }

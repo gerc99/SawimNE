@@ -12,6 +12,7 @@ import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import protocol.*;
+import protocol.xmpp.XmppServiceContact;
 import ru.sawim.SawimApplication;
 import ru.sawim.SawimResources;
 import ru.sawim.Scheme;
@@ -26,7 +27,6 @@ import ru.sawim.roster.ProtocolBranch;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.roster.TreeNode;
 import ru.sawim.widget.MyImageButton;
-import ru.sawim.widget.Util;
 import ru.sawim.widget.roster.RosterItemView;
 
 import java.util.ArrayList;
@@ -229,9 +229,11 @@ public class RosterAdapter extends BaseAdapter implements View.OnClickListener{
                     }
                 });
         rosterItemView.itemFirstImage = avatar;
-        Icon icStatus = item.getLeftIcon(p);
-        if (icStatus != null)
-            rosterItemView.itemSecondImage = icStatus.getImage().getBitmap();
+        rosterItemView.itemSixthImage = SawimResources.affiliationIcons.iconAt(XmppServiceContact.getStatusName(item.getStatusIndex())).getImage().getBitmap();
+
+        Icon icClient = (null != p.clientInfo) ? p.clientInfo.getIcon(item.clientIndex) : null;
+        if (icClient != null && !SawimApplication.hideIconsClient)
+            rosterItemView.itemSecondImage = icClient.getImage().getBitmap();
         if (item.isTyping()) {
             rosterItemView.itemSecondImage = Message.getIcon(Message.ICON_TYPE).getBitmap();
         } else {
@@ -263,9 +265,6 @@ public class RosterAdapter extends BaseAdapter implements View.OnClickListener{
             }
         }
 
-        Icon icClient = (null != p.clientInfo) ? p.clientInfo.getIcon(item.clientIndex) : null;
-        if (icClient != null && !SawimApplication.hideIconsClient)
-            rosterItemView.itemSixthImage = icClient.getImage().getBitmap();
     }
 
     public BitmapDrawable getImageChat(Chat chat, boolean showMess) {

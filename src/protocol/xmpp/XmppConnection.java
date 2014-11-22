@@ -22,7 +22,10 @@ import ru.sawim.modules.history.HistoryStorage;
 import ru.sawim.modules.search.UserInfo;
 import ru.sawim.roster.RosterHelper;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
@@ -871,6 +874,7 @@ public final class XmppConnection extends ClientConnection {
                             + "'/></iq>");
                 }
                 if (IQ_TYPE_RESULT == iqType) {
+                    String jid = Jid.isConference(from) ? from : Jid.getBareJid(from);
                     String time = iqQuery.getAttribute("seconds");
                     time = Util.secDiffToDate(Integer.parseInt(time));
                     getXmpp().addMessage(new SystemNotice(getXmpp(), (byte) -1, Jid.getBareJid(from), time));

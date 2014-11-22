@@ -28,11 +28,12 @@ public class SawimNotification {
     public static final int ALARM_NOTIFY_ID = 2;
     private static final HashMap<String, Integer> idsMap = new HashMap<String, Integer>();
     private static final HashMap<Integer, NotificationCompat.Builder> notifiBuildersMap = new HashMap<Integer, NotificationCompat.Builder>();
-
-    public static Notification get(Context context, String nick, boolean silent) {
+    private static String lastNotifyContact;
+    public static Notification get(Context context, String nick, boolean silent, String senderName) {
         int unread = ChatHistory.instance.getPersonalUnreadMessageCount(false);
         int allUnread = ChatHistory.instance.getPersonalUnreadMessageCount(true);
         CharSequence stateMsg = "";
+        lastNotifyContact = nick;
         final int icon;
         if (0 < allUnread) {
             icon = R.drawable.ic_tray_msg;
@@ -84,7 +85,7 @@ public class SawimNotification {
                 .setContentText(stateMsg)
                 .setSmallIcon(icon)
                 .setContentTitle(nick == null ? context.getString(R.string.app_name)
-                        : context.getString(R.string.message_from) + " " + nick);
+                        : context.getString(R.string.message_from) + " " + (senderName == null ? nick : senderName+"/"+nick));
         return notification.build();
     }
 
@@ -224,5 +225,9 @@ public class SawimNotification {
         if (idsMap.get(id) == null) return;
         ((NotificationManager) SawimApplication.getContext().getSystemService(Context.NOTIFICATION_SERVICE)).cancel(idsMap.get(id));
         idsMap.remove(id);
+    }
+
+    public static String getLastNotifyContact() {
+        return lastNotifyContact;
     }
 }

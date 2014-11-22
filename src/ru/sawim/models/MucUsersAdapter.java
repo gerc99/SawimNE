@@ -239,6 +239,6 @@ public class MucUsersAdapter extends BaseAdapter {
         if (ic != null && !Options.getBoolean(JLocale.getString(R.string.pref_hide_icons_clients))) {
             rosterItemView.itemFifthImage = ic.getImage().getBitmap();
         }
-        rosterItemView.itemSixthImage = SawimResources.affiliationIcons.iconAt(XmppServiceContact.getAffiliationName(c.status)).getImage().getBitmap();
+        rosterItemView.itemSixthImage = SawimResources.affiliationIcons.iconAt(XmppServiceContact.getStatusName(c.status)).getImage().getBitmap();
     }
 }

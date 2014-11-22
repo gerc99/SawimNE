@@ -2,6 +2,7 @@ package protocol.xmpp;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.provider.Settings;
 import android.widget.Toast;
 import protocol.*;
 import ru.sawim.R;
@@ -445,7 +446,8 @@ public final class Xmpp extends Protocol implements FormListener {
     }
 
     protected String processUin(String uin) {
-        resource = Jid.getResource(uin, "Sawim");
+        String android_id = Settings.Secure.getString(SawimApplication.getContext().getContentResolver(),Settings.Secure.ANDROID_ID);
+        resource = Jid.getResource(uin, "Sawim"+" ("+android_id+")");
         return Jid.getBareJid(uin);
     }
 

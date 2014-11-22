@@ -1,6 +1,8 @@
 package ru.sawim;
 
-import android.app.*;
+import android.app.ActivityManager;
+import android.app.Application;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -189,8 +191,8 @@ public class SawimApplication extends Application {
         serviceConnection.send(Message.obtain(null, SawimService.SET_STATUS, objects));
     }
 
-    public void sendNotify(String title, String text, boolean silent) {
-        Object[] parameters = new Object[]{title, text, silent};
+    public void sendNotify(String title, String text, boolean silent, String nick) {
+        Object[] parameters = new Object[]{ title, text, silent, nick};
         serviceConnection.send(Message.obtain(null, SawimService.SEND_NOTIFY, parameters));
     }
 
