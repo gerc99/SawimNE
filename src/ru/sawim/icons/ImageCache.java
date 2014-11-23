@@ -2,7 +2,9 @@ package ru.sawim.icons;
 
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.text.TextUtils;
+import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.comm.LruCache;
 import ru.sawim.widget.Util;
@@ -86,7 +88,7 @@ public class ImageCache {
                 });
             }
         } else {
-            bitmap = RoundedAvatars.getRoundedBitmapNotExsist(AVATAR_SIZE);
+            bitmap = BitmapFactory.decodeResource(SawimApplication.getContext().getResources(), R.drawable.avatar);
         }
         return bitmap;
     }
