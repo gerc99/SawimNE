@@ -143,7 +143,7 @@ final class Socket implements Runnable {
 
     private Object readObject() throws SawimException {
         Object readObject = null;
-        while (connected && null == readObject) {
+        while (connected && null == readObject && socket != null) {
             readObject = XmlNode.parse(this);
             if (null == readObject) sleep(100);
         }

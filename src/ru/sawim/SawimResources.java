@@ -1,5 +1,7 @@
 package ru.sawim;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import ru.sawim.icons.ImageList;
@@ -32,6 +34,8 @@ public class SawimResources {
             getDrawable(R.drawable.ic_new_message);
     public static final BitmapDrawable personalMessageIcon = (BitmapDrawable) SawimApplication.getInstance().getResources().
             getDrawable(R.drawable.ic_new_personal_message);
+    public static final Bitmap default_avatar = BitmapFactory.decodeResource(SawimApplication.getContext().getResources(),
+            R.drawable.avatar);
     public static Drawable appIcon = SawimApplication.getInstance().getResources().getDrawable(R.drawable.ic_launcher);
 
     public static void initIcons() {

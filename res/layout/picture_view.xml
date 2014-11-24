@@ -2,16 +2,9 @@
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
-              android:layout_height="match_parent">
+              android:layout_height="match_parent" android:orientation="vertical"
+              android:gravity="center_vertical|center_horizontal">
 
-    <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="LinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLink"
-            android:id="@+id/textView" android:layout_gravity="center" android:linksClickable="true"
-            android:autoLink="web" android:layout_centerInParent="true" android:layout_above="@+id/progressBar"
-            android:layout_margin="10dp" android:layout_below="@+id/webView" android:autoText="false"
-            android:ellipsize="end" android:lines="2"/>
     <ProgressBar
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -20,9 +13,21 @@
             android:layout_gravity="center" android:layout_centerInParent="true" android:layout_marginLeft="15dp"
             android:layout_marginRight="15dp" android:visibility="gone"/>
     <WebView
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:id="@+id/webView" android:layout_gravity="center_vertical"
+            android:visibility="visible"
+            android:layout_below="@+id/progressBar" android:layout_alignParentLeft="true"
+            android:layout_above="@+id/textView"/>
+    <TextView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/webView" android:layout_gravity="center"
-            android:visibility="visible"/>
+            android:layout_height="wrap_content"
+            android:text="LinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLinkLink"
+            android:id="@+id/textView" android:layout_gravity="center" android:linksClickable="true"
+            android:autoLink="web"
+            android:autoText="false"
+            android:ellipsize="end" android:lines="2"
+            android:layout_alignParentBottom="true" android:layout_alignParentLeft="true"
+            android:gravity="center_vertical|center_horizontal"/>
 
 </RelativeLayout>

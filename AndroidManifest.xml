@@ -24,6 +24,7 @@
                   android:theme="@style/BaseTheme"
                   android:windowSoftInputMode="stateAlwaysHidden|adjustResize"
                   android:configChanges="orientation|keyboardHidden|screenSize"
+                  android:excludeFromRecents="true"
                   android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
