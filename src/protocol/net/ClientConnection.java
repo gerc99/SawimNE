@@ -1,11 +1,23 @@
 package protocol.net;
 
+import android.annotation.TargetApi;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Build;
 import protocol.Protocol;
+import ru.sawim.Options;
+import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.SawimException;
 import ru.sawim.chat.message.Message;
 import ru.sawim.chat.message.PlainMessage;
+import ru.sawim.comm.JLocale;
 import ru.sawim.modules.DebugLog;
+import ru.sawim.roster.RosterHelper;
 
 import java.util.Vector;
 
@@ -21,7 +33,10 @@ public abstract class ClientConnection implements Runnable {
 
     private static final int PING_INTERVAL = 90;
     private static final int PONG_TIMEOUT = 4 * 60;
-
+    private BroadcastReceiver mReceiver;
+    private AlarmManager alarm;
+    private PendingIntent pendingIntent;
+    private Context context = SawimApplication.getContext();
     protected final void setPingInterval(long interval) {
         keepAliveInterv = Math.min(keepAliveInterv, interval);
         nextPingTime = SawimApplication.getCurrentGmtTime() + keepAliveInterv;
@@ -40,6 +55,7 @@ public abstract class ClientConnection implements Runnable {
         usePong = false;
         keepAliveInterv = PING_INTERVAL;
         nextPingTime = SawimApplication.getCurrentGmtTime() + keepAliveInterv;
+        Wakeup(nextPingTime);
     }
 
     public final void start() {
@@ -48,6 +64,7 @@ public abstract class ClientConnection implements Runnable {
 
     public final void run() {
         initPingValues();
+        RegisterAlarm();
         SawimException exception = null;
         try {
             getProtocol().setConnectingProgress(0);
@@ -80,6 +97,7 @@ public abstract class ClientConnection implements Runnable {
             }
         }
         disconnect();
+        UnregisterAlarm();
         try {
             closeSocket();
         } catch (Exception e) {
@@ -109,11 +127,13 @@ public abstract class ClientConnection implements Runnable {
             throw new SawimException(120, 9);
         }
         if (nextPingTime <= now) {
+            if (!Options.getBoolean(JLocale.getString(R.string.pref_wake_lock))){
             if (usePong) {
                 pingForPong();
             } else {
                 ping();
             }
+            } else Wakeup(nextPingTime);
             nextPingTime = now + keepAliveInterv;
         }
     }
@@ -181,4 +201,62 @@ public abstract class ClientConnection implements Runnable {
     protected abstract void ping() throws SawimException;
 
     protected abstract boolean processPacket() throws SawimException;
+
+    private void RegisterAlarm()
+    {
+        mReceiver = new BroadcastReceiver()
+        {
+            @Override
+            public void onReceive(Context context, Intent intent)
+            {
+                try {
+
+                    if (usePong) {
+                        pingForPong();
+                    } else {
+                        ping();
+                    }
+                } catch (SawimException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        context.registerReceiver(mReceiver, new IntentFilter("ru.sawim.alarm"));
+        pendingIntent = PendingIntent.getBroadcast(context, 0, new Intent("ru.sawim.alarm"), PendingIntent.FLAG_CANCEL_CURRENT);
+        alarm = (AlarmManager)(context.getSystemService(Context.ALARM_SERVICE));
+    }
+
+    private void UnregisterAlarm()
+    {
+        alarm.cancel(pendingIntent);
+        context.unregisterReceiver(mReceiver);
+    }
+
+    private void Wakeup(long nextPingTime) {
+        if (Options.getBoolean(JLocale.getString(R.string.pref_wake_lock))) {
+            RosterHelper cl = RosterHelper.getInstance();
+            if (cl.isConnected()) {
+                if (alarm != null) {
+                    try {
+                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+                            alarm.cancel(pendingIntent);
+                            alarm.set(AlarmManager.RTC_WAKEUP, nextPingTime, pendingIntent);
+                        } else {
+                            alarm.cancel(pendingIntent);
+                            setAlarmKitkat(AlarmManager.RTC_WAKEUP, nextPingTime, pendingIntent);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+
+    @TargetApi(19)
+    private void setAlarmKitkat(int rtcWakeup, long time, PendingIntent pendingIntent) {
+        alarm.setExact(rtcWakeup, time, pendingIntent);
+    }
+
 }

@@ -2,10 +2,9 @@ package ru.sawim.icons;
 
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.text.TextUtils;
-import ru.sawim.R;
 import ru.sawim.SawimApplication;
+import ru.sawim.SawimResources;
 import ru.sawim.comm.LruCache;
 import ru.sawim.widget.Util;
 
@@ -21,7 +20,6 @@ public class ImageCache {
     private LruCache<String, Bitmap> bitmapLruCache = new LruCache<>(((int) Runtime.getRuntime().maxMemory() / 1024) / 8); // Use 1/8th of the available memory for this memory cache.
     private static ImageCache instance;
     private static final int AVATAR_SIZE = Util.dipToPixels(SawimApplication.getContext(), SawimApplication.AVATAR_SIZE);
-
     private ImageCache() {
     }
 
@@ -88,7 +86,7 @@ public class ImageCache {
                 });
             }
         } else {
-            bitmap = BitmapFactory.decodeResource(SawimApplication.getContext().getResources(), R.drawable.avatar);
+            bitmap = SawimResources.default_avatar;
         }
         return bitmap;
     }
