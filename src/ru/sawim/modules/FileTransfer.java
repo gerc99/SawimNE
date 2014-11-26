@@ -224,16 +224,25 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
 
                 OutputStream out = conn.getOutputStream();
                 byte[] buffer = new byte[8192];
-                int counter = fileSize;
-                while (counter > 0) {
-                    int read = fis.read(buffer);
-                    out.write(buffer, 0, read);
-                    counter -= read;
-                    if (fileSize != 0) {
-                        if (isCanceled()) {
-                            throw new SawimException(194, 1);
+                int recived = 0;
+                int read;
+                while ((read = fis.read(buffer)) != -1) {
+                    if (read > 0) {
+                        recived += read;
+                        out.write(buffer, 0, read);
+                        try {
+                            Thread.sleep(100);
+                        } catch (Exception ignored) {
                         }
-                        out.flush();
+                        int percent = 100 * recived / fileSize - 1;
+                        if (percent != -1)
+                            setProgress(percent);
+                        if (fileSize != 0) {
+                            if (isCanceled()) {
+                                throw new SawimException(194, 1);
+                            }
+                            out.flush();
+                        }
                     }
                 }
                 setProgress(100);

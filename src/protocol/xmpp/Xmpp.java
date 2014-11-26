@@ -606,14 +606,14 @@ public final class Xmpp extends Protocol implements FormListener {
                 break;
             case ContactMenu.COMMAND_TITLE:
                 TextBoxView textbox = new TextBoxView();
-                textbox.setString("/title " + c.getStatusText());
+                textbox.setString(c.getStatusText());
                 textbox.setTextBoxListener(new TextBoxView.TextBoxListener() {
                     @Override
                     public void textboxAction(final TextBoxView box, boolean ok) {
                         SawimApplication.getExecutor().execute(new Runnable() {
                             @Override
                             public void run() {
-                                sendMessage(contact, box.getString(), true);
+                                sendMessage(contact, "/title " + box.getString(), true);
                             }
                         });
 

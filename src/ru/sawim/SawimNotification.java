@@ -137,17 +137,19 @@ public class SawimNotification {
             if (percent == 100) {
                 builder.setTicker(JLocale.getString(R.string.sending_complete));
                 builder.setSmallIcon(android.R.drawable.stat_sys_upload_done);
+                notifiBuildersMap.remove(id);
+                idsMap.remove(filename);
             } else {
                 builder.setTicker(JLocale.getString(R.string.sending_file));
                 builder.setSmallIcon(android.R.drawable.stat_sys_upload);
             }
-            builder.setContentText(text).setProgress(100, percent, true);
+            builder.setContentText(text).setProgress(100, percent, false);
             builder.setAutoCancel(true);
         } else {
             builder.setSmallIcon(android.R.drawable.stat_sys_upload_done);
             builder.setTicker(text);
             builder.setAutoCancel(false);
-            builder.setContentText(text).setProgress(0, 0, true);
+            builder.setContentText(text).setProgress(0, 0, false);
             notifiBuildersMap.remove(id);
             idsMap.remove(filename);
         }
