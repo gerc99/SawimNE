@@ -188,7 +188,7 @@ public final class RosterHelper {
         for (int i = 0; i < count; ++i) {
             Protocol p = getProtocol(i);
             if (p.getProfile() != null)
-                if (p.getProfile().protocolType == profile.protocolType)
+                if (is(p, profile))
                     return p;
         }
         return null;

@@ -1,12 +1,9 @@
 package ru.sawim.activities;
 
 import android.content.res.Configuration;
-import android.media.AudioManager;
-import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import ru.sawim.ExternalApi;
-import ru.sawim.R;
 import ru.sawim.SawimResources;
 
 /**
@@ -26,7 +23,7 @@ public class BaseActivity extends ActionBarActivity {
         actionBar.setDisplayShowHomeEnabled(true);
         actionBar.setDisplayShowCustomEnabled(false);
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-        actionBar.setIcon(SawimResources.appIcon);
+        actionBar.setIcon(SawimResources.APP_ICON);
         actionBar.setTitle(title);
     }
 

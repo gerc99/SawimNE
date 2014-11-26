@@ -12,7 +12,6 @@ import ru.sawim.chat.MessData;
 import ru.sawim.chat.message.Message;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.text.TextLinkClick;
-import ru.sawim.widget.Util;
 import ru.sawim.widget.chat.MessageItemView;
 
 import java.util.ArrayList;
@@ -106,7 +105,7 @@ public class MessagesAdapter extends BaseAdapter {
                 item.setPadding(MessageItemView.PADDING_RIGHT, MessageItemView.PADDING_TOP, MessageItemView.PADDING_LEFT, MessageItemView.PADDING_BOTTOM);
             }
             item.setTextSize(SawimApplication.getFontSize());
-            item.setCheckImage(mData.getIconIndex() == Message.ICON_OUT_MSG_FROM_CLIENT ? SawimResources.messageIconCheck.getBitmap() : null);
+            item.setCheckImage(mData.getIconIndex() == Message.ICON_OUT_MSG_FROM_CLIENT ? SawimResources.MESSAGE_ICON_CHECK.getBitmap() : null);
             item.setNick(Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG),
                     SawimApplication.getFontSize(), Typeface.DEFAULT_BOLD, nick);
             item.setMsgTime(Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG),

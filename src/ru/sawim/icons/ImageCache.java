@@ -86,7 +86,7 @@ public class ImageCache {
                 });
             }
         } else {
-            bitmap = SawimResources.default_avatar;
+            bitmap = SawimResources.DEFAULT_AVATAR;
         }
         return bitmap;
     }

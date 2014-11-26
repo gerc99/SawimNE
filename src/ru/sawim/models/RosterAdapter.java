@@ -261,7 +261,7 @@ public class RosterAdapter extends BaseAdapter implements View.OnClickListener{
                 if (privacyList != -1)
                     rosterItemView.itemThirdImage = Contact.serverListsIcons.iconAt(privacyList).getImage().getBitmap();
             } else {
-                rosterItemView.itemFourthImage = SawimResources.authIcon.getBitmap();
+                rosterItemView.itemFourthImage = SawimResources.AUTH_ICON.getBitmap();
             }
         }
 
@@ -324,7 +324,7 @@ public class RosterAdapter extends BaseAdapter implements View.OnClickListener{
                     rosterLinearLayout.weight = 1;
                     convertView.setBackgroundColor(Scheme.getColor(Scheme.THEME_ITEM_SELECTED));
                     rosterItemView.setLayoutParams(rosterLinearLayout);
-                    imageButton.setImageDrawable(SawimResources.ic_menu);
+                    imageButton.setImageDrawable(SawimResources.menuIcon);
                     ((ViewGroup) convertView).setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
                     ((ViewGroup) convertView).addView(rosterItemView);
                     ((ViewGroup) convertView).addView(progressBar);

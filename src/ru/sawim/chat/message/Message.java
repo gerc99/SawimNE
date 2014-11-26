@@ -31,15 +31,15 @@ public abstract class Message {
     public static BitmapDrawable getIcon(int type) {
         switch (type) {
             case ICON_SYSREQ:
-                return SawimResources.authReqIcon;
+                return SawimResources.AUTH_REQ_ICON;
             case ICON_SYS_OK:
-                return SawimResources.authGrantIcon;
+                return SawimResources.AUTH_GRANT_ICON;
             case ICON_TYPE:
                 return SawimResources.typingIcon;
             case ICON_IN_MSG_HI:
-                return SawimResources.personalMessageIcon;
+                return SawimResources.PERSONAL_MESSAGE_ICON;
             case ICON_IN_MSG:
-                return SawimResources.messageIcon;
+                return SawimResources.MESSAGE_ICON;
         }
         return null;
     }

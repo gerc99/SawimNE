@@ -21,7 +21,6 @@ import ru.sawim.roster.RosterHelper;
 
 import java.util.Vector;
 
-
 public abstract class ClientConnection implements Runnable {
     private long keepAliveInterv;
     private boolean usePong;
@@ -33,10 +32,10 @@ public abstract class ClientConnection implements Runnable {
 
     private static final int PING_INTERVAL = 90;
     private static final int PONG_TIMEOUT = 4 * 60;
-    private BroadcastReceiver mReceiver;
+    private BroadcastReceiver receiver;
     private AlarmManager alarm;
     private PendingIntent pendingIntent;
-    private Context context = SawimApplication.getContext();
+
     protected final void setPingInterval(long interval) {
         keepAliveInterv = Math.min(keepAliveInterv, interval);
         nextPingTime = SawimApplication.getCurrentGmtTime() + keepAliveInterv;
@@ -55,7 +54,7 @@ public abstract class ClientConnection implements Runnable {
         usePong = false;
         keepAliveInterv = PING_INTERVAL;
         nextPingTime = SawimApplication.getCurrentGmtTime() + keepAliveInterv;
-        Wakeup(nextPingTime);
+        wakeup(nextPingTime);
     }
 
     public final void start() {
@@ -64,7 +63,7 @@ public abstract class ClientConnection implements Runnable {
 
     public final void run() {
         initPingValues();
-        RegisterAlarm();
+        registerAlarm();
         SawimException exception = null;
         try {
             getProtocol().setConnectingProgress(0);
@@ -97,7 +96,7 @@ public abstract class ClientConnection implements Runnable {
             }
         }
         disconnect();
-        UnregisterAlarm();
+        unregisterAlarm();
         try {
             closeSocket();
         } catch (Exception e) {
@@ -133,7 +132,7 @@ public abstract class ClientConnection implements Runnable {
             } else {
                 ping();
             }
-            } else Wakeup(nextPingTime);
+            } else wakeup(nextPingTime);
             nextPingTime = now + keepAliveInterv;
         }
     }
@@ -202,42 +201,39 @@ public abstract class ClientConnection implements Runnable {
 
     protected abstract boolean processPacket() throws SawimException;
 
-    private void RegisterAlarm()
-    {
-        mReceiver = new BroadcastReceiver()
-        {
+    private void registerAlarm() {
+        receiver = new BroadcastReceiver() {
             @Override
-            public void onReceive(Context context, Intent intent)
-            {
-                    new Thread() {
-                        @Override
-                        public void run() {
-                            try {
+            public void onReceive(Context context, Intent intent) {
+                new Thread() {
+                    @Override
+                    public void run() {
+                        try {
                             if (usePong) {
                                 pingForPong();
                             } else {
                                 ping();
                             }
-                            } catch (SawimException e) {
-                                e.printStackTrace();
-                            }
+                        } catch (SawimException e) {
+                            e.printStackTrace();
                         }
-                    }.start();
+                    }
+                }.start();
             }
         };
 
-        context.registerReceiver(mReceiver, new IntentFilter("ru.sawim.alarm"));
+        Context context = SawimApplication.getContext();
+        context.registerReceiver(receiver, new IntentFilter("ru.sawim.alarm"));
         pendingIntent = PendingIntent.getBroadcast(context, 0, new Intent("ru.sawim.alarm"), PendingIntent.FLAG_CANCEL_CURRENT);
         alarm = (AlarmManager)(context.getSystemService(Context.ALARM_SERVICE));
     }
 
-    private void UnregisterAlarm()
-    {
+    private void unregisterAlarm() {
         alarm.cancel(pendingIntent);
-        context.unregisterReceiver(mReceiver);
+        SawimApplication.getContext().unregisterReceiver(receiver);
     }
 
-    private void Wakeup(long nextPingTime) {
+    private void wakeup(long nextPingTime) {
         if (Options.getBoolean(JLocale.getString(R.string.pref_wake_lock))) {
             RosterHelper cl = RosterHelper.getInstance();
             if (cl.isConnected()) {
