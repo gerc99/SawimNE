@@ -73,7 +73,7 @@ public class ImageCache {
                                     }
                                 }
                                 Bitmap bmp = Util.decodeBitmap(fileContent, AVATAR_SIZE);
-                                bitmap = RoundedAvatars.getRoundedBitmap(Util.getAvatarBitmap(bmp, AVATAR_SIZE, bmp.getPixel(0,0)));
+                                bitmap = RoundedAvatars.getRoundedBitmap(Util.getAvatarBitmap(bmp, AVATAR_SIZE, (bmp != null) ? bmp.getPixel(0, 0) : 0x00000000));
                                 if (bitmap != null) {
                                     bitmapLruCache.put(hash, bitmap);
                                     if (onImageLoadListener != null) {
@@ -94,7 +94,7 @@ public class ImageCache {
     public boolean save(File pathCacheFolder, String id, String hash, byte[] avatarBytes) {
         File file = getFile(pathCacheFolder, hash);
         Bitmap bmp = Util.decodeBitmap(avatarBytes, AVATAR_SIZE);
-        Bitmap bitmap = Util.getAvatarBitmap(bmp, AVATAR_SIZE, bmp.getPixel(0, 0));
+        Bitmap bitmap = Util.getAvatarBitmap(bmp, AVATAR_SIZE, (bmp != null) ? bmp.getPixel(0,0) : 0x00000000);
         if (bitmap != null) {
             OutputStream os = null;
             try {

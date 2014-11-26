@@ -209,16 +209,20 @@ public abstract class ClientConnection implements Runnable {
             @Override
             public void onReceive(Context context, Intent intent)
             {
-                try {
-
-                    if (usePong) {
-                        pingForPong();
-                    } else {
-                        ping();
-                    }
-                } catch (SawimException e) {
-                    e.printStackTrace();
-                }
+                    new Thread() {
+                        @Override
+                        public void run() {
+                            try {
+                            if (usePong) {
+                                pingForPong();
+                            } else {
+                                ping();
+                            }
+                            } catch (SawimException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }.start();
             }
         };
 
