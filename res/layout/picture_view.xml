@@ -10,15 +10,14 @@
             android:layout_height="wrap_content"
             android:id="@+id/progressBar"
             style="?android:attr/progressBarStyleHorizontal"
-            android:layout_gravity="center" android:layout_centerInParent="true" android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp" android:visibility="gone"/>
+            android:layout_gravity="center"
+            android:visibility="gone" android:layout_above="@+id/textView" android:layout_centerHorizontal="true"/>
     <WebView
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:id="@+id/webView" android:layout_gravity="center_vertical"
-            android:visibility="visible"
-            android:layout_below="@+id/progressBar" android:layout_alignParentLeft="true"
-            android:layout_above="@+id/textView"/>
+            android:layout_alignParentLeft="true"
+            android:layout_above="@+id/progressBar"/>
     <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
