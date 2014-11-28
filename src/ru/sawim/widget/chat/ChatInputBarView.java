@@ -50,9 +50,9 @@ public class ChatInputBarView extends IcsLinearLayout {
     }
 
     public void setImageButtons(ImageButton menuButton, ImageButton smileButton, ImageButton sendButton) {
-        menuButton.setImageDrawable(SawimResources.menuIcon);
+        menuButton.setImageDrawable(SawimResources.MENU_ICON);
         smileButton.setImageResource(Scheme.isBlack() ? R.drawable.ic_emoji_dark : R.drawable.ic_emoji_light);
         sendButton.setImageResource(Scheme.isBlack() ? R.drawable.ic_send_dark : R.drawable.ic_send_light);
-        setDividerDrawable(SawimResources.listDivider);
+        setDividerDrawable(SawimResources.LIST_DIVIDER);
     }
 }

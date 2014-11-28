@@ -1,12 +1,10 @@
 package ru.sawim.activities;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.*;
 import android.text.TextUtils;
@@ -35,12 +33,6 @@ public class MainPreferenceActivity extends PreferenceActivity {
         setTheme(Scheme.isBlack() ? R.style.BaseTheme : R.style.BaseThemeLight);
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preference);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            ActionBar actionBar = getActionBar();
-            actionBar.setHomeButtonEnabled(true);
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext());
         sharedPreferenceChangeListener = new SharedPreferenceChangeListener();

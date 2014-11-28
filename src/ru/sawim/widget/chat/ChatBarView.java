@@ -50,7 +50,7 @@ public class ChatBarView extends IcsLinearLayout {
     }
 
     public void update() {
-        setDividerDrawable(SawimResources.listDivider);
+        setDividerDrawable(SawimResources.LIST_DIVIDER);
     }
 
     public void setVisibilityChatsImage(int visibility) {

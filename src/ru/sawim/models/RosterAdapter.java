@@ -324,7 +324,7 @@ public class RosterAdapter extends BaseAdapter implements View.OnClickListener{
                     rosterLinearLayout.weight = 1;
                     convertView.setBackgroundColor(Scheme.getColor(Scheme.THEME_ITEM_SELECTED));
                     rosterItemView.setLayoutParams(rosterLinearLayout);
-                    imageButton.setImageDrawable(SawimResources.menuIcon);
+                    imageButton.setImageDrawable(SawimResources.MENU_ICON);
                     ((ViewGroup) convertView).setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
                     ((ViewGroup) convertView).addView(rosterItemView);
                     ((ViewGroup) convertView).addView(progressBar);
