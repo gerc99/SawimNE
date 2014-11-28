@@ -1,10 +1,6 @@
 package ru.sawim.service;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.app.Service;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.IBinder;
@@ -13,7 +9,6 @@ import android.os.Messenger;
 import android.util.Log;
 import protocol.Protocol;
 import ru.sawim.R;
-import ru.sawim.SawimApplication;
 import ru.sawim.SawimNotification;
 
 public class SawimService extends Service {
@@ -25,17 +20,11 @@ public class SawimService extends Service {
     public static final int UPDATE_APP_ICON = 2;
     public static final int SEND_NOTIFY = 3;
     public static final int SET_STATUS = 4;
-    private BroadcastReceiver mReceiver;
-    private AlarmManager alarm;
-    private PendingIntent pendingIntent;
-    private Context context = SawimApplication.getContext();
-    private long nextPingTime;
-    private long keepAliveInterv;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        SawimService.this.startForeground(R.string.app_name, SawimNotification.get(SawimService.this, null, false, null));
+        SawimService.this.startForeground(R.string.app_name, SawimNotification.get(SawimService.this, null, false));
         Log.i(LOG_TAG, "onStart();");
     }
 
@@ -65,11 +54,11 @@ public class SawimService extends Service {
                         //updateLock();
                         break;
                     case UPDATE_APP_ICON:
-                        SawimService.this.startForeground(R.string.app_name, SawimNotification.get(SawimService.this, null, false, null));
+                        SawimService.this.startForeground(R.string.app_name, SawimNotification.get(SawimService.this, null, false));
                         break;
                     case SEND_NOTIFY:
                         //SawimNotification.sendNotify(SawimService.this, (String)((Object[])msg.obj)[0], (String)((Object[])msg.obj)[1]);
-                        SawimService.this.startForeground(R.string.app_name, SawimNotification.get(SawimService.this, (String)((Object[])msg.obj)[0], (boolean)((Object[])msg.obj)[2], (String)((Object[])msg.obj)[3]));
+                        SawimService.this.startForeground(R.string.app_name, SawimNotification.get(SawimService.this, (String)((Object[])msg.obj)[0], (boolean)((Object[])msg.obj)[2]));
                         break;
                     case SET_STATUS:
                         final Protocol protocol = (Protocol) ((Object[]) msg.obj)[0];

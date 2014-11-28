@@ -26,6 +26,7 @@ public final class Chat {
 
     public String savedMessage;
     public String lastMessage;
+    public String lastMessageNick;
     public int firstVisiblePosition;
     public int currentPosition = -2;
     public int offset;
@@ -305,6 +306,7 @@ public final class Chat {
         if (RosterHelper.getInstance().getUpdateChatListener() != null) {
             RosterHelper.getInstance().getUpdateChatListener().addMessage(contact, mData);
         }
+        lastMessageNick = mData.getNick();
         lastMessage = mData.getText().toString();
     }
 

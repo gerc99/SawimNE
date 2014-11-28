@@ -893,7 +893,7 @@ abstract public class Protocol {
             if (!chat.isVisibleChat()) {
                 chat.typeNewMessageIcon = chat.getNewMessageIcon();
                 RosterHelper.getInstance().updateRoster(contact);
-                SawimApplication.getInstance().sendNotify(contact.getUserId(), message.getProcessedText(), notifyMessage && !chat.isVisibleChat(), message.getName());
+                SawimApplication.getInstance().sendNotify(contact.getUserId(), message.getProcessedText(), notifyMessage && !chat.isVisibleChat());
             }
         }
     }

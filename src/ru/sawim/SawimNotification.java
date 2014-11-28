@@ -28,7 +28,7 @@ public class SawimNotification {
     public static final int ALARM_NOTIFY_ID = 2;
     private static final HashMap<String, Integer> idsMap = new HashMap<String, Integer>();
     private static final HashMap<Integer, NotificationCompat.Builder> notifiBuildersMap = new HashMap<Integer, NotificationCompat.Builder>();
-    public static Notification get(Context context, String nick, boolean silent, String senderName) {
+    public static Notification get(Context context, String nick, boolean silent) {
         int unread = ChatHistory.instance.getPersonalUnreadMessageCount(false);
         int allUnread = ChatHistory.instance.getPersonalUnreadMessageCount(true);
         CharSequence stateMsg = "";
@@ -74,8 +74,10 @@ public class SawimNotification {
             ChatHistory.instance.nicksTable.add(nick);
         }
         Chat current = ChatHistory.instance.getChat(ChatHistory.instance.getLastChatNick());
+        String senderName = null;
         if (current != null && current.lastMessage != null && current.getUnreadMessageCount() > 0) {
             nick = current.getContact().getName();
+            senderName = current.lastMessageNick;
             stateMsg = current.lastMessage;
         }
         notification.setAutoCancel(true).setWhen(0)
@@ -83,7 +85,7 @@ public class SawimNotification {
                 .setContentText(stateMsg)
                 .setSmallIcon(icon)
                 .setContentTitle(nick == null ? context.getString(R.string.app_name)
-                        : context.getString(R.string.message_from) + " " + (senderName == null ? nick : senderName+"/"+nick));
+                        : context.getString(R.string.message_from) + " " + (senderName == null ? nick : senderName + "/" + nick));
         return notification.build();
     }
 
