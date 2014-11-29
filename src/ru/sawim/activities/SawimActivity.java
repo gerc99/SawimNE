@@ -33,7 +33,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.Window;
 import protocol.Contact;
 import protocol.Protocol;
 import protocol.icq.Icq;
@@ -61,7 +60,6 @@ public class SawimActivity extends BaseActivity {
     public void onCreate(Bundle savedInstanceState) {
         setTheme(Scheme.isBlack() ? R.style.BaseTheme : R.style.BaseThemeLight);
         super.onCreate(savedInstanceState);
-        supportRequestWindowFeature(Window.FEATURE_PROGRESS);
 
         setContentView(SawimApplication.isManyPane() ? R.layout.main_twopane : R.layout.main);
         if (savedInstanceState == null && !SawimApplication.isManyPane()) {

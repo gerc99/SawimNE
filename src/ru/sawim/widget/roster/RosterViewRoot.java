@@ -13,13 +13,14 @@ import ru.sawim.Scheme;
  * To change this template use File | Settings | File Templates.
  */
 public class RosterViewRoot extends LinearLayout {
-    public RosterViewRoot(Context context, View rosterView) {
+    public RosterViewRoot(Context context, View progressBar, View rosterView) {
         super(context);
         setOrientation(LinearLayout.VERTICAL);
         setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         if (!Scheme.isSystemBackground()) {
             setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
         }
-        addViewInLayout(rosterView, 0, rosterView.getLayoutParams(), true);
+        addViewInLayout(progressBar, 0, progressBar.getLayoutParams(), true);
+        addViewInLayout(rosterView, 1, rosterView.getLayoutParams(), true);
     }
 }

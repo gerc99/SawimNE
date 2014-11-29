@@ -71,6 +71,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     private TabPageIndicator tabPageIndicator;
     private ViewPager viewPager;
     private CustomPagerAdapter pagerAdapter;
+    private ProgressBar progressBar;
 
     @Override
     public void onAttach(Activity activity) {
@@ -79,6 +80,13 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         rosterBarLayout = new LinearLayout(activity);
         barLinearLayout = new LinearLayout(activity);
         chatsImage = new MyImageButton(activity);
+
+        progressBar = new ProgressBar(activity, null, android.R.attr.progressBarStyleHorizontal);
+        progressBar.setMax(100);
+        progressBar.getProgressDrawable().setBounds(progressBar.getProgressDrawable().getBounds());
+        LinearLayout.LayoutParams ProgressBarLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        ProgressBarLP.setMargins(30, 0, 30, 1);
+        progressBar.setLayoutParams(ProgressBarLP);
 
         viewPager = new ViewPager(activity);
         tabPageIndicator = new TabPageIndicator(getActivity());
@@ -107,7 +115,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
             }
         });
 
-        rosterViewLayout = new RosterViewRoot(activity, viewPager);
+        rosterViewLayout = new RosterViewRoot(activity, progressBar, viewPager);
     }
 
     @Override
@@ -195,7 +203,12 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
             if (oldProgressBarPercent != percent) {
                 oldProgressBarPercent = percent;
                 BaseActivity activity = (BaseActivity) getActivity();
-                activity.setSupportProgress(percent * 100);
+                if (100 != percent) {
+                    progressBar.setVisibility(ProgressBar.VISIBLE);
+                    progressBar.setProgress(percent);
+                } else {
+                    progressBar.setVisibility(ProgressBar.GONE);
+                }
                 if (100 == percent || 0 == percent) {
                     activity.supportInvalidateOptionsMenu();
                 }
