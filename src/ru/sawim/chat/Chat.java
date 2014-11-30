@@ -313,7 +313,6 @@ public final class Chat {
     public void addPresence(SystemNotice message) {
         String messageText = message.getProcessedText();
         MessData mData = new MessData(contact, message.getNewDate(), messageText, message.getName(), MessData.PRESENCE, false);
-        addTextToHistory(mData);
         addMessage(mData);
         if (!isVisibleChat()) {
             otherMessageCounter = inc(otherMessageCounter);

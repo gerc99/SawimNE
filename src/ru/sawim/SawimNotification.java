@@ -71,7 +71,8 @@ public class SawimNotification {
             stateMsg = String.format(context.getText(R.string.unread_messages).toString(), unread);
         }
         if (nick != null) {
-            ChatHistory.instance.nicksTable.add(nick);
+            if (!ChatHistory.instance.nicksTable.contains(nick))
+                ChatHistory.instance.nicksTable.add(nick);
         }
         Chat current = ChatHistory.instance.getChat(ChatHistory.instance.getLastChatNick());
         String senderName = null;
