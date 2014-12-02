@@ -164,6 +164,7 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
             return;
         }
         changeFileProgress(-1, R.string.error);
+        chat.addFileProgress(JLocale.getString(R.string.error), e.getLocalizedMessage());
     }
 
     private void closeFile() {
@@ -245,9 +246,10 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
                         }
                     }
                 }
-                setProgress(100);
                 out.flush();
                 out.close();
+
+                conn.setReadTimeout(15000);
 
                 int responseCode = conn.getResponseCode();
                 switch (responseCode) {
@@ -278,7 +280,10 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
                         break;
                     }
                 }
-            } catch (Exception ex) {
+            } catch (java.net.SocketTimeoutException e) {
+                throw new SawimException(118, 0);
+            }
+            catch (Exception ex) {
                 throw new SawimException(194, 0);
             } finally {
                 try {
