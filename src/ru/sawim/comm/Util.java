@@ -729,7 +729,10 @@ public class Util {
         Collections.sort(subnodes, new Comparator<T>() {
             @Override
             public int compare(T t1, T t2) {
-                return Util.compareNodes(t1, t2);
+                if (t1 != null && t2 != null) {
+                    return Util.compareNodes(t1, t2);
+                }
+                return -1;
             }
         });
     }
