@@ -18,13 +18,15 @@ public class AvatarLoader implements Runnable {
                 : bs64photo.popBinValue();
         bs64photo = null;
         try {
-            if ((null != avatarBytes)) {
+            if (null != avatarBytes) {
                 userInfo.setAvatar(avatarBytes);
                 avatarBytes = null;
                 userInfo.updateProfileView();
             }
-        } catch (OutOfMemoryError ignored) {
-        } catch (Exception ignored) {
+        } catch (OutOfMemoryError outOfMemoryError) {
+            outOfMemoryError.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

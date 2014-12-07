@@ -24,7 +24,7 @@ public class SawimService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        SawimService.this.startForeground(R.string.app_name, SawimNotification.get(SawimService.this, null, false));
+        SawimService.this.startForeground(R.string.app_name, SawimNotification.get(SawimService.this, false));
         Log.i(LOG_TAG, "onStart();");
     }
 
@@ -44,7 +44,6 @@ public class SawimService extends Service {
         return messenger.getBinder();
     }
 
-
     private class IncomingHandler extends Handler {
         @Override
         public void handleMessage(final Message msg) {
@@ -54,11 +53,11 @@ public class SawimService extends Service {
                         //updateLock();
                         break;
                     case UPDATE_APP_ICON:
-                        SawimService.this.startForeground(R.string.app_name, SawimNotification.get(SawimService.this, null, false));
+                        SawimService.this.startForeground(R.string.app_name, SawimNotification.get(SawimService.this, false));
                         break;
                     case SEND_NOTIFY:
                         //SawimNotification.sendNotify(SawimService.this, (String)((Object[])msg.obj)[0], (String)((Object[])msg.obj)[1]);
-                        SawimService.this.startForeground(R.string.app_name, SawimNotification.get(SawimService.this, (String)((Object[])msg.obj)[0], (boolean)((Object[])msg.obj)[2]));
+                        SawimService.this.startForeground(R.string.app_name, SawimNotification.get(SawimService.this, (boolean)msg.obj));
                         break;
                     case SET_STATUS:
                         final Protocol protocol = (Protocol) ((Object[]) msg.obj)[0];

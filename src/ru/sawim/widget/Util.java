@@ -25,23 +25,7 @@ public class Util {
         if (buffer == null) return null;
         DisplayMetrics metrics = new DisplayMetrics();
         activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
-        float scaleWidth = metrics.scaledDensity;
-        float scaleHeight = metrics.scaledDensity;
-
-        Matrix matrix = new Matrix();
-        matrix.postScale(scaleWidth, scaleHeight);
-        Bitmap bitmap = BitmapFactory.decodeByteArray(buffer, 0, buffer.length);
-        int width = bitmap.getWidth();
-        if (width > metrics.widthPixels) {
-            double k = (double) width / (double) metrics.widthPixels;
-            int h = (int) (bitmap.getWidth() / k);
-            bitmap = Bitmap.createBitmap(bitmap, 0, 0, metrics.widthPixels, h, matrix, true);
-            bitmap.setDensity(metrics.densityDpi);
-        } else {
-            bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-            bitmap.setDensity(metrics.densityDpi);
-        }
-        return bitmap;
+        return decodeBitmap(buffer, metrics.widthPixels, metrics.heightPixels);
     }
 
     public static Bitmap getAvatarBitmap(Bitmap avatarTmp, int size, int backgroundColor) {
@@ -85,6 +69,33 @@ public class Util {
         opts.inJustDecodeBounds = false;
         tmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length, opts);
         return tmp;
+    }
+
+    public static Bitmap decodeBitmap(byte[] bytes, int reqWidth, int reqHeight) {
+        Bitmap tmp;
+        BitmapFactory.Options opts = new BitmapFactory.Options();
+        opts.inJustDecodeBounds = true;
+        BitmapFactory.decodeByteArray(bytes, 0, bytes.length, opts);
+        opts = new BitmapFactory.Options();
+        opts.inSampleSize = calculateInSampleSize(opts, reqWidth, reqHeight);
+        opts.inJustDecodeBounds = false;
+        tmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length, opts);
+        return tmp;
+    }
+
+    public static int calculateInSampleSize(BitmapFactory.Options options,
+                                            int reqWidth, int reqHeight) {
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+        if (height > reqHeight || width > reqWidth) {
+            if (width > height) {
+                inSampleSize = Math.round((float) height / (float) reqHeight);
+            } else {
+                inSampleSize = Math.round((float) width / (float) reqWidth);
+            }
+        }
+        return inSampleSize;
     }
 
     public static View getDivider(Context context, boolean vertical, int color) {

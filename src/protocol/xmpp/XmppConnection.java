@@ -1196,7 +1196,9 @@ public final class XmppConnection extends ClientConnection {
         }
         if (newAvatarHash == null) {
             if (avatarHash == null) {
-                getVCard(id);
+                if (RosterStorage.getAvatarHash(id) == null) {
+                    getVCard(id);
+                }
             }
         } else {
             if (!newAvatarHash.equals(avatarHash)) {

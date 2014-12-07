@@ -28,7 +28,7 @@ public class SawimNotification {
     public static final int ALARM_NOTIFY_ID = 2;
     private static final HashMap<String, Integer> idsMap = new HashMap<String, Integer>();
     private static final HashMap<Integer, NotificationCompat.Builder> notifiBuildersMap = new HashMap<Integer, NotificationCompat.Builder>();
-    public static Notification get(Context context, String nick, boolean silent) {
+    public static Notification get(Context context, boolean silent) {
         int unread = ChatHistory.instance.getPersonalUnreadMessageCount(false);
         int allUnread = ChatHistory.instance.getPersonalUnreadMessageCount(true);
         CharSequence stateMsg = "";
@@ -66,17 +66,14 @@ public class SawimNotification {
                 }
             }
         }
-        if (0 < allUnread) {
+        if (0 < unread) {
             notification.setNumber(unread);
             stateMsg = String.format(context.getText(R.string.unread_messages).toString(), unread);
         }
-        if (nick != null) {
-            if (!ChatHistory.instance.nicksTable.contains(nick))
-                ChatHistory.instance.nicksTable.add(nick);
-        }
-        Chat current = ChatHistory.instance.getChat(ChatHistory.instance.getLastChatNick());
+        Chat current = ChatHistory.instance.chatAt(ChatHistory.instance.getPreferredItem());
+        String nick = null;
         String senderName = null;
-        if (current != null && current.lastMessage != null && current.getUnreadMessageCount() > 0) {
+        if (current != null && current.lastMessage != null && current.getAllUnreadMessageCount() > 0) {
             nick = current.getContact().getName();
             senderName = current.lastMessageNick;
             stateMsg = current.lastMessage;
@@ -189,8 +186,8 @@ public class SawimNotification {
         long when = 0;
         int icon = R.drawable.ic_tray_msg;
         long[] vibraPattern = {0, 500, 250, 500};
-        int unread = ChatHistory.instance.getPersonalUnreadMessageCount(false);
-        int allUnread = ChatHistory.instance.getPersonalUnreadMessageCount(true);
+        int unread = ChatHistory.instance.getPersonalAndSysnoticeAndAuthUnreadMessageCount(false);
+        int allUnread = ChatHistory.instance.getPersonalAndSysnoticeAndAuthUnreadMessageCount(true);
         if (0 < allUnread) {
             NotificationCompat.Builder notification = new NotificationCompat.Builder(context);
             CharSequence contentTitle = context.getText(R.string.notify_title);

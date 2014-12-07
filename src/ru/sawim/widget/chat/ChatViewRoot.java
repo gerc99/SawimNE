@@ -34,7 +34,7 @@ public class ChatViewRoot extends IcsLinearLayout {
     }
 
     public void update() {
-        setDividerDrawable(SawimResources.LIST_DIVIDER);
+        setDividerDrawable(SawimResources.listDivider);
     }
 
     public void showHint() {

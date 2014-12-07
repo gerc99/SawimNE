@@ -93,6 +93,7 @@ public class GetAvatar implements Runnable {
                 userInfo.updateProfileView();
             }
         } catch (OutOfMemoryError e) {
+            e.printStackTrace();
             userInfo.setAvatar(null);
         }
     }

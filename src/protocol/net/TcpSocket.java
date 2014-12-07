@@ -137,7 +137,9 @@ public final class TcpSocket {
 
     public void write(byte[] data, int offset, int length) throws SawimException {
         try {
-            os.write(data, offset, length);
+            if (os != null) {
+                os.write(data, offset, length);
+            }
         } catch (IOException e) {
             ru.sawim.modules.DebugLog.panic("write", e);
             throw new SawimException(120, 2);
@@ -146,7 +148,9 @@ public final class TcpSocket {
 
     public void flush() throws SawimException {
         try {
-            os.flush();
+            if (os != null) {
+                os.flush();
+            }
         } catch (IOException e) {
             throw new SawimException(120, 2);
         }
@@ -195,9 +199,18 @@ public final class TcpSocket {
     }
 
     public void close() {
-        close(is);
-        close(os);
-        close(socket);
+        if (is != null) {
+            close(is);
+            is = null;
+        }
+        if (os != null) {
+            close(os);
+            os = null;
+        }
+        if (socket != null) {
+            close(socket);
+            socket = null;
+        }
     }
 
     public static void close(Socket s) {

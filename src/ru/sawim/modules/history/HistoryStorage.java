@@ -29,7 +29,6 @@ public class HistoryStorage {
     private String protocolId;
     private String uniqueUserId;
 
-
     private HistoryStorage(String protocolId, String uniqueUserId) {
         this.protocolId = protocolId;
         this.uniqueUserId = uniqueUserId;
@@ -87,8 +86,9 @@ public class HistoryStorage {
 
     public long getLastMessageTime() {
         long lastMessageTime = 0;
+        Cursor cursor = null;
         try {
-            Cursor cursor = SawimApplication.getContext().getContentResolver()
+            cursor = SawimApplication.getContext().getContentResolver()
                     .query(SawimProvider.HISTORY_RESOLVER_URI, null, WHERE_ACC_CONTACT_ID, new String[]{protocolId, uniqueUserId}, null);
             if (cursor.moveToLast()) {
                 do {
@@ -103,9 +103,12 @@ public class HistoryStorage {
                     }
                 } while (cursor.moveToPrevious());
             }
-            cursor.close();
         } catch (Exception e) {
             DebugLog.panic(e);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
         }
         return lastMessageTime;
     }
@@ -129,19 +132,23 @@ public class HistoryStorage {
     public static boolean hasLastMessage(Chat chat, Message message) {
         Contact contact = chat.getContact();
         boolean hasMessage = false;
+        Cursor cursor = null;
         try {
             MessData mess = Chat.buildMessage(contact, message, contact.isConference() ? message.getName() : chat.getFrom(message),
                     false, Chat.isHighlight(message.getProcessedText(), contact.getMyName()));
-            Cursor cursor = SawimApplication.getContext().getContentResolver()
+            cursor = SawimApplication.getContext().getContentResolver()
                     .query(SawimProvider.HISTORY_RESOLVER_URI, null, WHERE_ACC_CONTACT_ID,
                             new String[]{chat.getProtocol().getUserId(), contact.getUserId()}, SawimProvider.ROW_AUTO_ID + " DESC LIMIT 1");
             if (cursor.moveToFirst()) {
                 MessData messFromDataBase = buildMessage(chat, cursor);
                 hasMessage = hasMessage(mess, messFromDataBase);
             }
-            cursor.close();
         } catch (Exception e) {
             DebugLog.panic(e);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
         }
         return hasMessage;
     }
@@ -153,27 +160,33 @@ public class HistoryStorage {
 
     public boolean addNextListMessages(List<MessData> messDataList, final Chat chat, int limit, int offset, boolean addedAtTheBeginning) {
         boolean isAdded;
-        Cursor cursor = SawimApplication.getContext().getContentResolver()
-                .query(SawimProvider.HISTORY_RESOLVER_URI, null, WHERE_ACC_CONTACT_ID,
-                        new String[]{protocolId, uniqueUserId}, SawimProvider.ROW_AUTO_ID + " DESC LIMIT " + limit + " OFFSET " + offset);
-        if (addedAtTheBeginning) {
-            isAdded = cursor.moveToFirst();
-            if (isAdded) {
-                do {
-                    MessData mess = buildMessage(chat, cursor);
-                    messDataList.add(0, mess);
-                } while (cursor.moveToNext());
+        Cursor cursor = null;
+        try {
+            cursor = SawimApplication.getContext().getContentResolver()
+                    .query(SawimProvider.HISTORY_RESOLVER_URI, null, WHERE_ACC_CONTACT_ID,
+                            new String[]{protocolId, uniqueUserId}, SawimProvider.ROW_AUTO_ID + " DESC LIMIT " + limit + " OFFSET " + offset);
+            if (addedAtTheBeginning) {
+                isAdded = cursor.moveToFirst();
+                if (isAdded) {
+                    do {
+                        MessData mess = buildMessage(chat, cursor);
+                        messDataList.add(0, mess);
+                    } while (cursor.moveToNext());
+                }
+            } else {
+                isAdded = cursor.moveToLast();
+                if (isAdded) {
+                    do {
+                        MessData mess = buildMessage(chat, cursor);
+                        messDataList.add(mess);
+                    } while (cursor.moveToPrevious());
+                }
             }
-        } else {
-            isAdded = cursor.moveToLast();
-            if (isAdded) {
-                do {
-                    MessData mess = buildMessage(chat, cursor);
-                    messDataList.add(mess);
-                } while (cursor.moveToPrevious());
+        } finally {
+            if (cursor != null) {
+                cursor.close();
             }
         }
-        cursor.close();
         return isAdded;
     }
 
@@ -208,22 +221,35 @@ public class HistoryStorage {
     }
 
     public int getHistorySize() {
-        Cursor cursor = SawimApplication.getContext().getContentResolver()
-                .query(SawimProvider.HISTORY_RESOLVER_URI, null, WHERE_ACC_CONTACT_ID, new String[]{protocolId, uniqueUserId}, null);
-        int count = cursor.getCount();
-        cursor.close();
+        Cursor cursor = null;
+        int count = 0;
+        try {
+            cursor = SawimApplication.getContext().getContentResolver()
+                    .query(SawimProvider.HISTORY_RESOLVER_URI, null, WHERE_ACC_CONTACT_ID, new String[]{protocolId, uniqueUserId}, null);
+            count = cursor.getCount();
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
         return count;
     }
 
     public int getLastId() {
         int id = -1;
-        Cursor cursor = SawimApplication.getContext().getContentResolver()
-                .query(SawimProvider.HISTORY_RESOLVER_URI, null, WHERE_ACC_CONTACT_ID,
-                        new String[]{protocolId, uniqueUserId}, SawimProvider.ROW_AUTO_ID + " DESC LIMIT 1");
-        if (cursor.moveToFirst()) {
-            id = cursor.getInt(cursor.getColumnIndex(SawimProvider.ROW_AUTO_ID));
+        Cursor cursor = null;
+        try {
+            cursor = SawimApplication.getContext().getContentResolver()
+                    .query(SawimProvider.HISTORY_RESOLVER_URI, null, WHERE_ACC_CONTACT_ID,
+                            new String[]{protocolId, uniqueUserId}, SawimProvider.ROW_AUTO_ID + " DESC LIMIT 1");
+            if (cursor.moveToFirst()) {
+                id = cursor.getInt(cursor.getColumnIndex(SawimProvider.ROW_AUTO_ID));
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
         }
-        cursor.close();
         return id;
     }
 
@@ -238,8 +264,9 @@ public class HistoryStorage {
     }
 
     public void updateUnreadMessagesCount(int count) {
+        Cursor c = null;
         try {
-            Cursor c = SawimApplication.getContext().getContentResolver()
+            c = SawimApplication.getContext().getContentResolver()
                     .query(SawimProvider.HISTORY_UNREAD_MESSAGES_RESOLVER_URI, null, WHERE_ACC_CONTACT_ID,
                             new String[]{protocolId, uniqueUserId}, null);
             if (c.getCount() > 0) {
@@ -254,16 +281,19 @@ public class HistoryStorage {
                 values.put(SawimProvider.UNREAD_MESSAGES_COUNT, count);
                 SawimApplication.getContext().getContentResolver().insert(SawimProvider.HISTORY_UNREAD_MESSAGES_RESOLVER_URI, values);
             }
-            c.close();
         } catch (Exception e) {
             DebugLog.panic(e);
+        } finally {
+            if (c != null) {
+                c.close();
+            }
         }
     }
 
     public static void saveUnreadMessages() {
         for (int i = ChatHistory.instance.getTotal() - 1; 0 <= i; --i) {
             Chat chat = ChatHistory.instance.chatAt(i);
-            int unreadMessageCount = chat.getUnreadMessageCount();
+            int unreadMessageCount = chat.getAllUnreadMessageCount();
             if (unreadMessageCount == 0) {
                 if (!Options.getBoolean(JLocale.getString(R.string.pref_history))) {
                     HistoryStorage historyStorage = chat.getHistory();
@@ -274,28 +304,36 @@ public class HistoryStorage {
     }
 
     public static void loadUnreadMessages() {
-        Cursor cursor = SawimApplication.getContext().getContentResolver()
-                .query(SawimProvider.HISTORY_UNREAD_MESSAGES_RESOLVER_URI, null, null, null, null);
-        if (cursor.moveToFirst()) {
-            do {
-                String account = cursor.getString(cursor.getColumnIndex(SawimProvider.ACCOUNT_ID));
-                String userId = cursor.getString(cursor.getColumnIndex(SawimProvider.CONTACT_ID));
-                short unreadMessageCount = cursor.getShort(cursor.getColumnIndex(SawimProvider.UNREAD_MESSAGES_COUNT));
-                if (unreadMessageCount == 0) {
-                    continue;
-                }
-                Protocol protocol = RosterHelper.getInstance().getProtocol(account);
-                if (protocol != null) {
-                    Contact contact = protocol.getItemByUID(userId);
-                    if (contact == null) {
-                        contact = protocol.createTempContact(userId);
+        Cursor cursor = null;
+        try {
+            cursor = SawimApplication.getContext().getContentResolver()
+                    .query(SawimProvider.HISTORY_UNREAD_MESSAGES_RESOLVER_URI, null, null, null, null);
+            if (cursor.moveToFirst()) {
+                do {
+                    String account = cursor.getString(cursor.getColumnIndex(SawimProvider.ACCOUNT_ID));
+                    String userId = cursor.getString(cursor.getColumnIndex(SawimProvider.CONTACT_ID));
+                    short unreadMessageCount = cursor.getShort(cursor.getColumnIndex(SawimProvider.UNREAD_MESSAGES_COUNT));
+                    if (unreadMessageCount == 0) {
+                        continue;
                     }
-                    Chat chat = protocol.getChat(contact);
-                    chat.setMessageCounter(unreadMessageCount);
-                    contact.updateChatState(chat);
-                }
-            } while (cursor.moveToNext());
+                    Protocol protocol = RosterHelper.getInstance().getProtocol(account);
+                    if (protocol != null) {
+                        Contact contact = protocol.getItemByUID(userId);
+                        if (contact == null) {
+                            contact = protocol.createTempContact(userId);
+                        }
+                        Chat chat = protocol.getChat(contact);
+                        chat.setOtherMessageCounter(unreadMessageCount);
+                        contact.updateChatState(chat);
+                    }
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            DebugLog.panic(e);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
         }
-        cursor.close();
     }
 }
