@@ -264,10 +264,16 @@ public final class ChatHistory {
         int current = -1;
         for (int i = 0; i < historyTable.size(); ++i) {
             Chat chat = chatAt(i);
-            if (0 < chat.getAuthRequestCounter()
-                    || 0 < chat.getPersonalMessageCount()
-                    || 0 < chat.getOtherMessageCount()
-                    || 0 < chat.getSysNoticeCounter()) {
+            if (0 < chat.getAuthRequestCounter()) {
+                current = i;
+            }
+            if (0 < chat.getPersonalMessageCount()) {
+                current = i;
+            }
+            if (0 < chat.getOtherMessageCount()) {
+                current = i;
+            }
+            if (0 < chat.getSysNoticeCounter()) {
                 current = i;
             }
         }

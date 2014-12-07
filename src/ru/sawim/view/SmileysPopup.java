@@ -1,7 +1,7 @@
 package ru.sawim.view;
 
 import android.app.Activity;
-import android.content.res.Configuration;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
@@ -9,6 +9,7 @@ import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import ru.sawim.activities.BaseActivity;
 import ru.sawim.models.SmilesAdapter;
 import ru.sawim.modules.Emotions;
 import ru.sawim.roster.RosterHelper;
@@ -17,7 +18,7 @@ import ru.sawim.widget.Util;
 
 public class SmileysPopup {
 
-    private final Activity activity;
+    private final BaseActivity activity;
     SizeNotifierLinearLayout rootView;
     private View smileysView;
 
@@ -25,7 +26,7 @@ public class SmileysPopup {
     private EditText editText;
     private boolean keyboardVisible;
 
-    public SmileysPopup(Activity activity, SizeNotifierLinearLayout view, EditText editText) {
+    public SmileysPopup(BaseActivity activity, SizeNotifierLinearLayout view, EditText editText) {
         this.activity = activity;
         rootView = view;
         this.editText = editText;
@@ -95,9 +96,8 @@ public class SmileysPopup {
     private int getPossibleKeyboardHeight() {
         int viewHeight = rootView.getHeight();
         int screenHeight = activity.getResources().getDisplayMetrics().heightPixels;
-        int statusBarHeight = activity.getWindow().findViewById(Window.ID_ANDROID_CONTENT).getTop();
-
-        return screenHeight - viewHeight - statusBarHeight;
+        
+        return screenHeight - viewHeight - activity.getSupportActionBar().getHeight() - Util.getStatusBarHeight(activity);
     }
 
     private View getContentView() {
