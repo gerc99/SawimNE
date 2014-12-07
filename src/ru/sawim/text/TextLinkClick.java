@@ -44,19 +44,20 @@ public class TextLinkClick implements TextLinkClickListener {
         if (clickedString.length() == 0) return;
         final BaseActivity activity = (BaseActivity) textView.getContext();
         boolean isJuick = clickedString.startsWith("@") || clickedString.startsWith("#");
+        boolean isJID = Jid.isJID(clickedString);
         if (isJuick) {
             if (currentProtocol != null && currentContact != null) {
                 new JuickMenu(activity, currentProtocol, currentContact, clickedString).show();
             }
             return;
         }
-        if (isLongTap || Jid.isJID(clickedString)) {
+        if (isLongTap || isJID) {
             final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
             builder.setCancelable(true);
             builder.setTitle(R.string.url_menu);
             ArrayList<CharSequence> items = new ArrayList<>();
             items.add(activity.getString(R.string.copy));
-            if (currentProtocol != null) {
+            if (isJID && currentProtocol != null) {
                 items.add(activity.getString(R.string.add_contact));
             }
             builder.setItems(items.toArray(new CharSequence[items.size()]), new DialogInterface.OnClickListener() {
