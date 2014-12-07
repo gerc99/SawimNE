@@ -193,26 +193,33 @@ public final class Chat {
         }
     }
 
-    public void setMessageCounter(short count) {
+    public void setOtherMessageCounter(short count) {
         otherMessageCounter = count;
     }
 
-    public int getUnreadMessageCount() {
-        return messageCounter + sysNoticeCounter + authRequestCounter
+    public int getAllUnreadMessageCount() {
+        return getPersonalMessageCount() + sysNoticeCounter + authRequestCounter
                 + otherMessageCounter;
     }
 
-    public int getPersonalUnreadMessageCount() {
-        return messageCounter + sysNoticeCounter + authRequestCounter;
+    public int getPersonalAndSysnoticeAndAuthUnreadMessageCount() {
+        return getPersonalMessageCount() + sysNoticeCounter + authRequestCounter;
     }
 
-    public int getOtherMessageCount() {
-        return sysNoticeCounter + authRequestCounter
-                + otherMessageCounter;
+    public int getPersonalMessageCount() {
+        return messageCounter;
     }
 
     public int getAuthRequestCounter() {
         return authRequestCounter;
+    }
+
+    public int getSysNoticeCounter() {
+        return sysNoticeCounter;
+    }
+
+    public int getOtherMessageCount() {
+        return otherMessageCounter;
     }
 
     public final int getNewMessageIcon() {

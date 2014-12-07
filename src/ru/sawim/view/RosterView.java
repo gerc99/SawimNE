@@ -87,6 +87,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         LinearLayout.LayoutParams ProgressBarLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         ProgressBarLP.setMargins(30, 0, 30, 1);
         progressBar.setLayoutParams(ProgressBarLP);
+        progressBar.setVisibility(View.GONE);
 
         viewPager = new ViewPager(activity);
         tabPageIndicator = new TabPageIndicator(getActivity());
@@ -249,7 +250,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
 
     private void updateChatImage() {
         if (chatsImage == null) return;
-        Drawable icMess = ChatHistory.instance.getUnreadMessageIcon();
+        Drawable icMess = ChatHistory.instance.getLastUnreadMessageIcon();
         if (icMess == null) {
             chatsImage.setVisibility(View.GONE);
         } else {

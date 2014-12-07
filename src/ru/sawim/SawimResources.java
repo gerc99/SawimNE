@@ -17,6 +17,7 @@ public class SawimResources {
     public static BitmapDrawable usersIcon;
     public static BitmapDrawable usersIconOn;
     public static BitmapDrawable typingIcon;
+    public static Drawable listDivider;
     public static Drawable backgroundDrawableIn;
     public static Drawable backgroundDrawableOut;
 
@@ -24,8 +25,6 @@ public class SawimResources {
             .getDrawable(R.drawable.abc_ic_menu_moreoverflow_mtrl_alpha);
     public static final BitmapDrawable AUTH_ICON = (BitmapDrawable) SawimApplication.getInstance().getResources()
             .getDrawable(android.R.drawable.stat_notify_error);
-    public static final Drawable LIST_DIVIDER = SawimApplication.getInstance().getResources()
-            .getDrawable(R.drawable.abc_list_divider_mtrl_alpha);
     public static final BitmapDrawable MESSAGE_ICON_CHECK = (BitmapDrawable) SawimApplication.getInstance().getResources()
             .getDrawable(R.drawable.msg_check);
     public static final BitmapDrawable AUTH_GRANT_ICON = (BitmapDrawable) SawimApplication.getInstance().getResources().
@@ -58,6 +57,8 @@ public class SawimResources {
                 .getDrawable(Scheme.isBlack() ? R.drawable.ic_collapsed_dark : R.drawable.ic_collapsed_light);
         groupRightIcons = (BitmapDrawable) SawimApplication.getInstance().getResources()
                 .getDrawable(Scheme.isBlack() ? R.drawable.ic_expanded_dark : R.drawable.ic_expanded_light);
+        listDivider = SawimApplication.getInstance().getResources()
+                .getDrawable(Scheme.isBlack() ? R.drawable.abc_list_divider_holo_dark : R.drawable.abc_list_divider_holo_light);
         backgroundDrawableIn = SawimApplication.getInstance().getResources()
                 .getDrawable(Scheme.isBlack() ? R.drawable.msg_in_dark : R.drawable.msg_in);
         backgroundDrawableOut = SawimApplication.getInstance().getResources()

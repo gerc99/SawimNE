@@ -543,7 +543,7 @@ public final class Xmpp extends Protocol implements FormListener {
             String conferenceJid = conf.getUserId() + '/';
             for (int i = all.size() - 1; 0 <= i; --i) {
                 XmppContact c = (XmppContact) all.elementAt(i);
-                if (c.getUserId().startsWith(conferenceJid) && !c.hasUnreadMessage()) {
+                if (c.getUserId().startsWith(conferenceJid) && getChat(c).getAllUnreadMessageCount() == 0) {
                     removeContact(c);
                 }
             }

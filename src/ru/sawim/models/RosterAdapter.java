@@ -237,7 +237,7 @@ public class RosterAdapter extends BaseAdapter implements View.OnClickListener{
         if (item.isTyping()) {
             rosterItemView.itemSecondImage = Message.getIcon(Message.ICON_TYPE).getBitmap();
         } else {
-            BitmapDrawable icMess = Message.getIcon(item.getUnreadMessageIcon());
+            BitmapDrawable icMess = ChatHistory.instance.getUnreadMessageIcon(item);
             if (icMess != null)
                 rosterItemView.itemSecondImage = icMess.getBitmap();
         }
@@ -272,7 +272,7 @@ public class RosterAdapter extends BaseAdapter implements View.OnClickListener{
             return Message.getIcon(Message.ICON_TYPE);
         } else {
             Icon icStatus = chat.getProtocol().getStatusInfo().getIcon(chat.getContact().getStatusIndex());
-            BitmapDrawable icMess = Message.getIcon(chat.getContact().getUnreadMessageIcon());
+            BitmapDrawable icMess = Message.getIcon(chat.getNewMessageIcon());
             return icMess == null || !showMess ? icStatus.getImage() : icMess;
         }
     }

@@ -7,6 +7,7 @@ import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
 import ru.sawim.activities.BaseActivity;
 import ru.sawim.chat.Chat;
+import ru.sawim.chat.ChatHistory;
 import ru.sawim.comm.JLocale;
 import ru.sawim.comm.Sortable;
 import ru.sawim.comm.StringConvertor;
@@ -148,7 +149,6 @@ abstract public class Contact implements TreeNode, Sortable {
     public static final byte SL_IGNORE = 1 << 6;
 
     private static final int TYPING = 1 << 8;
-    private static final int HAS_CHAT = 1 << 9;
 
     public final void setBooleanValue(byte key, boolean value) {
         if (value) {
@@ -191,19 +191,13 @@ abstract public class Contact implements TreeNode, Sortable {
     }
 
     public final boolean hasChat() {
-        return (booleanValues & HAS_CHAT) != 0;
+        return ChatHistory.instance.getChat(this) != null;
     }
 
     public final void updateChatState(Chat chat) {
-        int icon = -1;
         if (null != chat) {
-            icon = chat.getNewMessageIcon();
-            booleanValues |= HAS_CHAT;
-            chat.getHistory().updateUnreadMessagesCount(chat.getUnreadMessageCount());
-        } else {
-            booleanValues &= ~HAS_CHAT;
+            chat.getHistory().updateUnreadMessagesCount(chat.getAllUnreadMessageCount());
         }
-        booleanValues = (booleanValues & ~0x00FF0000) | ((icon + 1) << 16);
     }
 
     public final boolean inVisibleList() {
@@ -268,9 +262,21 @@ abstract public class Contact implements TreeNode, Sortable {
     }
 
     public final int getNodeWeight() {
-        if (/*Options.getBoolean(Options.OPTION_SORT_UP_WITH_MSG)
-                && */hasUnreadMessage()) {
-            return 5;
+        Chat chat = ChatHistory.instance.getChat(this);
+        boolean hasChat = chat != null;
+        if (hasChat) {
+            if (0 < chat.getAuthRequestCounter()) {
+                return 1;
+            }
+            if (0 < chat.getPersonalMessageCount()) {
+                return 2;
+            }
+            if (0 < chat.getOtherMessageCount()) {
+                return 3;
+            }
+            if (0 < chat.getSysNoticeCounter()) {
+                return 4;
+            }
         }
         if (!isSingleUserContact()) {
             return isOnline() ? 9 : 50;
@@ -279,7 +285,7 @@ abstract public class Contact implements TreeNode, Sortable {
             return 20;
         }
         if (isOnline()) {
-            if (hasChat()) {
+            if (hasChat) {
                 return 10;
             }
             switch (SawimApplication.sortType) {
@@ -293,14 +299,6 @@ abstract public class Contact implements TreeNode, Sortable {
             return 60;
         }
         return 51;
-    }
-
-    public final boolean hasUnreadMessage() {
-        return 0 != (booleanValues & 0x00FF0000);
-    }
-
-    public final int getUnreadMessageIcon() {
-        return ((booleanValues >>> 16) & 0xFF) - 1;
     }
 
     protected abstract void initManageContactMenu(Protocol protocol, MyMenu menu);

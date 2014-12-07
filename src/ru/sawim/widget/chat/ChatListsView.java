@@ -47,7 +47,7 @@ public class ChatListsView extends IcsLinearLayout {
     }
 
     public void update() {
-        setDividerDrawable(SawimResources.LIST_DIVIDER);
+        setDividerDrawable(SawimResources.listDivider);
     }
 
     public void setShowDividerForUnreadMessage(boolean isShowDividerForUnreadMessage) {

@@ -191,9 +191,8 @@ public class SawimApplication extends Application {
         serviceConnection.send(Message.obtain(null, SawimService.SET_STATUS, objects));
     }
 
-    public void sendNotify(String title, String text, boolean silent) {
-        Object[] parameters = new Object[]{ title, text, silent};
-        serviceConnection.send(Message.obtain(null, SawimService.SEND_NOTIFY, parameters));
+    public void sendNotify(boolean silent) {
+        serviceConnection.send(Message.obtain(null, SawimService.SEND_NOTIFY, silent));
     }
 
     public boolean isNetworkAvailable() {

@@ -492,7 +492,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
         if (chat == null) return;
         chat.setVisibleChat(true);
         RosterHelper.getInstance().setOnUpdateChat(this);
-        unreadMessageCount = chat.getUnreadMessageCount();
+        unreadMessageCount = chat.getAllUnreadMessageCount();
         chat.resetUnreadMessages();
         if (sharingText != null) {
             if (null != chat.savedMessage) {
@@ -812,7 +812,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
 
     private void updateChatIcon() {
         if (chat == null || chatBarLayout == null) return;
-        Drawable icMess = ChatHistory.instance.getUnreadMessageIcon();
+        Drawable icMess = ChatHistory.instance.getLastUnreadMessageIcon();
         BitmapDrawable confIcon = StatusInfo.STATUS_OFFLINE == chat.getContact().getStatusIndex()
                 ? SawimResources.usersIcon : SawimResources.usersIconOn;
         if (SawimApplication.isManyPane()) {
