@@ -93,6 +93,12 @@ public final class StatusView {
         }
     }
 
+    public void addContactRole(String role) {
+        if (null != role) {
+            addInfo(JLocale.getString(R.string.affiliation), role);
+        }
+    }
+
     public void addInfo(String key, String value) {
         model.addParam(key, value);
         list.updateModel();
