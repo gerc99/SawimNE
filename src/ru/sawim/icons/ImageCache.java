@@ -37,7 +37,7 @@ public class ImageCache {
     }
 
     public Bitmap get(final File pathCacheFolder, Executor executor, final String hash, final Bitmap defaultImage, final OnImageLoadListener onImageLoadListener) {
-        Bitmap bitmap = null;
+        Bitmap bitmap = defaultImage;
         if (!TextUtils.isEmpty(hash)) {
             bitmap = bitmapLruCache.get(hash);
             if (bitmap == null) {
