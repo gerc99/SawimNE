@@ -1,5 +1,6 @@
 package ru.sawim.modules.search;
 
+import android.net.Uri;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -397,7 +398,7 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
         }
     }
 
-    public void onFileSelect(BaseActivity activity, InputStream fis, String fileName) throws SawimException {
+    public void onFileSelect(BaseActivity activity, InputStream fis, String fileName, Uri fileUri) throws SawimException {
         try {
             int size = fis.available();
             if (size <= 30 * 1024 * 1024) {

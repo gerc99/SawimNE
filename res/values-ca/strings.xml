@@ -497,4 +497,9 @@
     <string name="fuck_you">Fastigueja\'t</string>
     <string name="sucks">Xucla\'t aquesta</string>
     <string name="wake_lock">Suportar el treball quan la pantalla estigui apagada</string>
+    <string name="cancel_upload">Cancel·lar descàrrega</string>
+    <string name="upload_form">Enviament d\'un fitxer</string>
+    <string name="upload_time">Carregant llançat</string>
+    <string name="path">Ruta</string>
+    <string name="stopped">Enviant detingut</string>
 </resources>

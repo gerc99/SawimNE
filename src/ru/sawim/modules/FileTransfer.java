@@ -1,15 +1,13 @@
 package ru.sawim.modules;
 
+import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
 import org.json.JSONObject;
 import protocol.Contact;
 import protocol.Protocol;
 import protocol.net.TcpSocket;
-import ru.sawim.R;
-import ru.sawim.SawimApplication;
-import ru.sawim.SawimException;
-import ru.sawim.SawimNotification;
+import ru.sawim.*;
 import ru.sawim.activities.BaseActivity;
 import ru.sawim.chat.Chat;
 import ru.sawim.comm.JLocale;
@@ -24,15 +22,17 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Scanner;
+import java.util.*;
 
 public final class FileTransfer implements FileBrowserListener, PhotoListener, Runnable {
     private static final String TAG = FileTransfer.class.getSimpleName();
+    public static final List<Map<String, String>> fileMap  = new ArrayList<>();
 
     private String filename;
-    private InputStream fis;
-    private int fsize;
-    private boolean canceled = false;
+    private static String filePath;
+    public static InputStream fis;
+    private static int fsize;
+    public static boolean canceled = false;
     private Protocol protocol;
     private Contact cItem;
     private Chat chat;
@@ -70,9 +70,10 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
         BaseActivity.getExternalApi().startCamera(this, 1024, 768);
     }
 
-    public void onFileSelect(BaseActivity activity, InputStream in, String fileName) {
+    public void onFileSelect(BaseActivity activity, InputStream in, String fileName, Uri fileUri) {
         try {
             setFileName(fileName);
+            filePath = ExternalApi.getPath(activity, fileUri);
             int fileSize = in.available();
             byte[] image = null;
 
@@ -85,13 +86,47 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
                 fileSize = in.available();
             }
             setData(in, fileSize);
-
             setProgress(0);
             SawimApplication.getExecutor().execute(this);
             addProgress();
+            publicUploadDetail(filename, fileSize, getReceiver());
         } catch (Exception e) {
             closeFile();
             handleException(new SawimException(191, 6));
+        }
+    }
+
+    private static void publicUploadDetail(String filename, int fileSize, Contact receiver) {
+        try {
+        canceled = false;
+        long time = SawimApplication.getCurrentGmtTime();
+        boolean today = (SawimApplication.getCurrentGmtTime() - 24 * 60 * 60 < time);
+        String strTime = ru.sawim.comm.Util.getLocalDateString(time, today);
+        Map<String,String> currentFileMap = new HashMap<>();
+        currentFileMap.put("FILENAME",filename);
+        currentFileMap.put("FILESIZE", String.valueOf(fileSize));
+        currentFileMap.put("PATH", filePath);
+        currentFileMap.put("TO", receiver.getUserId());
+        currentFileMap.put("START", strTime);
+        currentFileMap.put("ID", String.valueOf((filename + " - " + StringConvertor.bytesToSizeString(fsize, false)).hashCode()));
+        fileMap.add(currentFileMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void cancelUpload(int id){
+        try {
+            canceled = true;
+            Map<String, String> fileMap = FileTransfer.fileMap.get(id);
+            String filename = fileMap.get("FILENAME");
+            TcpSocket.close(fis);
+            fis = null;
+            SawimNotification.clear(filename + " - " + StringConvertor.bytesToSizeString(fsize, false));
+            SawimNotification.fileProgress(filename + " - " + StringConvertor.bytesToSizeString(fsize, false), -1, JLocale.getString(R.string.canceled));
+            SawimApplication.gc();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -119,7 +154,7 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
         }
     }
 
-    public void cancel() {
+    public  void cancel() {
         canceled = true;
         changeFileProgress(0, R.string.canceled);
         closeFile();
@@ -175,6 +210,7 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
     public void destroy() {
         try {
             closeFile();
+            fileMap.clear();
             RosterHelper.getInstance().removeTransfer(false);
             SawimApplication.gc();
         } catch (Exception ignored) {

@@ -3,6 +3,7 @@
 
 package ru.sawim.io;
 
+import android.net.Uri;
 import ru.sawim.SawimException;
 import ru.sawim.activities.BaseActivity;
 
@@ -10,7 +11,7 @@ import java.io.InputStream;
 
 
 public interface FileBrowserListener {
-    public void onFileSelect(BaseActivity activity, InputStream in, String fileName) throws SawimException;
+    public void onFileSelect(BaseActivity activity, InputStream in, String fileName, Uri fileUri) throws SawimException;
 }
 
 
