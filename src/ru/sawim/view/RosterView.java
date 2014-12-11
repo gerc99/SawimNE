@@ -395,7 +395,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
             try {
                 InputStream is = getActivity().getContentResolver().openInputStream(data);
                 FileTransfer fileTransfer = new FileTransfer(p, c);
-                fileTransfer.onFileSelect((BaseActivity) getActivity(), is, ExternalApi.getFileName(data, getActivity()));
+                fileTransfer.onFileSelect((BaseActivity) getActivity(), is, ExternalApi.getFileName(data, getActivity()), data);
             } catch (FileNotFoundException e) {
             }
             Toast.makeText(getActivity(), R.string.sending_file, Toast.LENGTH_LONG).show();

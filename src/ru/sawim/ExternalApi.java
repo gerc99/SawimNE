@@ -114,7 +114,7 @@ public class ExternalApi {
             } else if (RESULT_EXTERNAL_FILE == requestCode) {
                 Uri fileUri = data.getData();
                 InputStream is = fragment.getActivity().getContentResolver().openInputStream(fileUri);
-                fileTransferListener.onFileSelect((BaseActivity) fragment.getActivity(), is, getFileName(fileUri, fragment.getActivity()));
+                fileTransferListener.onFileSelect((BaseActivity) fragment.getActivity(), is, getFileName(fileUri, fragment.getActivity()), fileUri);
                 fileTransferListener = null;
                 return true;
             }
@@ -143,7 +143,7 @@ public class ExternalApi {
         return file.substring(file.lastIndexOf('/') + 1);
     }
 
-    private static String getPath(final Context context, final Uri uri) {
+    public static String getPath(final Context context, final Uri uri) {
         final boolean isKitKat = Build.VERSION.SDK_INT >= 19;
         if (isKitKat && DocumentsContract.isDocumentUri(context, uri)) {
             if (isExternalStorageDocument(uri)) {

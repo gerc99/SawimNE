@@ -528,4 +528,9 @@
     <string name="conference_theme">Conference theme</string>
     <string name="message_from">Message from</string>
     <string name="delete_history">Delete history</string>
+    <string name="cancel_upload">Cancel upload</string>
+    <string name="upload_form">Sending file</string>
+    <string name="upload_time">Start upload at</string>
+    <string name="path">Path</string>
+    <string name="stopped">Stopped</string>
 </resources>

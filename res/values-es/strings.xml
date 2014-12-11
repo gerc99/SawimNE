@@ -498,4 +498,9 @@
     <string name="fuck_you">Fastídiate</string>
     <string name="sucks">Chúpate esa</string>
     <string name="wake_lock">Soportar el trabajo cuando la pantalla esté apagada</string>
+    <string name="cancel_upload">Cancelar descarga</string>
+    <string name="upload_form">Envío de un archivo</string>
+    <string name="upload_time">Cargando lanzado</string>
+    <string name="path">Ruta</string>
+    <string name="stopped">Enviando detenido</string>
 </resources>

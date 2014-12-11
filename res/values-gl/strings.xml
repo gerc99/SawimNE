@@ -496,4 +496,9 @@
     <string name="fuck_you">Que che den!</string>
     <string name="sucks">Chúpache esa</string>
     <string name="wake_lock">Soportar o traballo cando a pantalla estea apagada</string>
+    <string name="cancel_upload">Anular a descarga</string>
+    <string name="upload_form">Foto Frete un</string>
+    <string name="upload_time">Cargando lanzado</string>
+    <string name="path">Ruta</string>
+    <string name="stopped">Envío de presos</string>
 </resources>

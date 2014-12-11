@@ -1,17 +1,25 @@
 package ru.sawim;
 
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
+import android.app.*;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.NotificationCompat;
+import protocol.Contact;
+import protocol.xmpp.XmppContact;
+import protocol.xmpp.XmppServiceContact;
+import ru.sawim.activities.BaseActivity;
 import ru.sawim.activities.SawimActivity;
 import ru.sawim.chat.Chat;
 import ru.sawim.chat.ChatHistory;
 import ru.sawim.comm.JLocale;
+import ru.sawim.models.form.Forms;
 import ru.sawim.roster.RosterHelper;
+import ru.sawim.view.FormView;
+import ru.sawim.widget.Util;
 
 import java.util.HashMap;
 
@@ -117,9 +125,10 @@ public class SawimNotification {
         int id = filename.hashCode();
         final Context context = SawimApplication.getContext();
         Intent intent = new Intent(context, SawimActivity.class);
-        intent.setAction(Intent.ACTION_MAIN);
+        intent.setAction(SawimActivity.NOTIFY_UPLOAD);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.putExtra(SawimActivity.NOTIFY_UPLOAD, id);
         PendingIntent contentIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         NotificationCompat.Builder builder = notifiBuildersMap.get(id);
         if (builder == null) {
@@ -128,7 +137,9 @@ public class SawimNotification {
         }
         if (idsMap.containsKey(filename))
             id = idsMap.get(filename);
-        else idsMap.put(filename, id);
+        else {
+            idsMap.put(filename, id);
+        }
 
         builder.setContentIntent(contentIntent);
         builder.setOngoing(false);
@@ -139,12 +150,13 @@ public class SawimNotification {
                 builder.setSmallIcon(android.R.drawable.stat_sys_upload_done);
                 notifiBuildersMap.remove(id);
                 idsMap.remove(filename);
+                builder.setAutoCancel(true);
             } else {
                 builder.setTicker(JLocale.getString(R.string.sending_file));
                 builder.setSmallIcon(android.R.drawable.stat_sys_upload);
+                builder.setAutoCancel(false);
             }
             builder.setContentText(text).setProgress(100, percent, false);
-            builder.setAutoCancel(true);
         } else {
             builder.setSmallIcon(android.R.drawable.stat_sys_upload_done);
             builder.setTicker(text);

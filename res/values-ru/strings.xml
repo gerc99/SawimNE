@@ -531,4 +531,9 @@
     <string name="conference_theme">Тема конференции</string>
     <string name="message_from">Сообщение от</string>
     <string name="delete_history">Удалить историю</string>
+    <string name="cancel_upload">Отменить загрузку</string>
+    <string name="upload_form">Отправка файла</string>
+    <string name="upload_time">Загрузка начата</string>
+    <string name="path">Путь</string>
+    <string name="stopped">Отправка остановлена</string>
 </resources>

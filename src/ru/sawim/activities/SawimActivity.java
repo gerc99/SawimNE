@@ -44,6 +44,7 @@ import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
 import ru.sawim.chat.Chat;
 import ru.sawim.chat.ChatHistory;
+import ru.sawim.forms.UploadDetailsForm;
 import ru.sawim.modules.DebugLog;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.view.*;
@@ -54,6 +55,7 @@ public class SawimActivity extends BaseActivity {
     public static final String NOTIFY = "ru.sawim.notify";
     public static final String NOTIFY_REPLY = "ru.sawim.notify.reply";
     public static final String NOTIFY_CAPTCHA = "ru.sawim.notify.captcha";
+    public static final String NOTIFY_UPLOAD = "ru.sawim.notify.upload";
     private boolean isOpenNewChat = false;
 
     @Override
@@ -104,6 +106,9 @@ public class SawimActivity extends BaseActivity {
         }
         if (NOTIFY_CAPTCHA.equals(getIntent().getAction())) {
             FormView.showWindows(this, getIntent().getStringExtra(NOTIFY_CAPTCHA));
+        }
+        if (NOTIFY_UPLOAD.equals(getIntent().getAction())) {
+            new UploadDetailsForm(getIntent().getIntExtra(NOTIFY_UPLOAD, -1)).show(this);
         }
         setIntent(null);
     }
