@@ -1,11 +1,7 @@
 package ru.sawim.view;
 
-import android.app.Activity;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
-import android.view.Window;
-import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
@@ -23,13 +19,11 @@ public class SmileysPopup {
     private View smileysView;
 
     private PopupWindow popupWindow;
-    private EditText editText;
     private boolean keyboardVisible;
 
-    public SmileysPopup(BaseActivity activity, SizeNotifierLinearLayout view, EditText editText) {
+    public SmileysPopup(BaseActivity activity, SizeNotifierLinearLayout view) {
         this.activity = activity;
         rootView = view;
-        this.editText = editText;
         rootView.setOnSizeChangedListener(new SizeNotifierLinearLayout.OnSizeChangedListener() {
             @Override
             public void onSizeChanged() {
@@ -96,7 +90,7 @@ public class SmileysPopup {
     private int getPossibleKeyboardHeight() {
         int viewHeight = rootView.getHeight();
         int screenHeight = activity.getResources().getDisplayMetrics().heightPixels;
-        
+
         return screenHeight - viewHeight - activity.getSupportActionBar().getHeight() - Util.getStatusBarHeight(activity);
     }
 

@@ -217,7 +217,7 @@ public class RosterAdapter extends BaseAdapter implements View.OnClickListener{
             rosterItemView.itemDesc = statusMessage;
         }
         Bitmap avatar = ImageCache.getInstance().get(FileSystem.openDir(FileSystem.AVATARS),
-                SawimApplication.getExecutor(), item.avatarHash, null, new ImageCache.OnImageLoadListener() {
+                SawimApplication.getExecutor(), item.avatarHash, SawimResources.DEFAULT_AVATAR, new ImageCache.OnImageLoadListener() {
                     @Override
                     public void onLoad() {
                         rosterItemView.post(new Runnable() {

@@ -121,7 +121,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
         chatListsView = new ChatListsView(activity, SawimApplication.isManyPane(), chatListView, nickList);
         chatInputBarView = new ChatInputBarView(activity, menuButton, smileButton, messageEditor, sendButton);
         chatViewLayout = new ChatViewRoot(activity, chatListsView, chatInputBarView);
-        smileysPopup = new SmileysPopup((BaseActivity) activity, chatViewLayout, messageEditor);
+        smileysPopup = new SmileysPopup((BaseActivity) activity, chatViewLayout);
         drawerLayout = new DrawerLayout(activity);
 
         ((BaseActivity) activity).setConfigurationChanged(new BaseActivity.OnConfigurationChanged() {
