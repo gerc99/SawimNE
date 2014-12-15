@@ -7,11 +7,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.view.Surface;
-import android.view.WindowManager;
 import de.duenndns.ssl.MemorizingTrustManager;
 import protocol.Protocol;
 import ru.sawim.comm.JLocale;
@@ -220,9 +219,7 @@ public class SawimApplication extends Application {
     }
 
     public static boolean isManyPane() {
-        int rotation = ((WindowManager) SawimApplication.getContext()
-                .getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getRotation();
-        return !(rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_180) && isTablet();
+        return SawimApplication.getContext().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE && isTablet();
     }
 
     public static boolean isTablet() {

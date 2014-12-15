@@ -536,4 +536,5 @@
     <string name="upload_time">Загрузка начата</string>
     <string name="path">Путь</string>
     <string name="stopped">Отправка остановлена</string>
+    <string name="repeat">Повторить</string>
 </resources>

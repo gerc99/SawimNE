@@ -2,26 +2,18 @@ package ru.sawim;
 
 import android.app.*;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.NotificationCompat;
-import protocol.Contact;
-import protocol.xmpp.XmppContact;
-import protocol.xmpp.XmppServiceContact;
-import ru.sawim.activities.BaseActivity;
 import ru.sawim.activities.SawimActivity;
 import ru.sawim.chat.Chat;
 import ru.sawim.chat.ChatHistory;
 import ru.sawim.comm.JLocale;
-import ru.sawim.models.form.Forms;
 import ru.sawim.roster.RosterHelper;
-import ru.sawim.view.FormView;
-import ru.sawim.widget.Util;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by admin on 27.01.14.
@@ -34,7 +26,7 @@ public class SawimNotification {
 
     public static final int NOTIFY_ID = 1;
     public static final int ALARM_NOTIFY_ID = 2;
-    private static final HashMap<String, Integer> idsMap = new HashMap<String, Integer>();
+    private static final List<Integer> idsMap = new ArrayList<Integer>();
     private static final HashMap<Integer, NotificationCompat.Builder> notifiBuildersMap = new HashMap<Integer, NotificationCompat.Builder>();
     public static Notification get(Context context, boolean silent) {
         int unread = ChatHistory.instance.getPersonalUnreadMessageCount(false);
@@ -121,24 +113,21 @@ public class SawimNotification {
                 .notify(ALARM_NOTIFY_ID, notification.build());
     }
 
-    public static void fileProgress(String filename, int percent, String text) {
-        int id = filename.hashCode();
+    public static void fileProgress(int id, String filename, int percent, String text) {
         final Context context = SawimApplication.getContext();
         Intent intent = new Intent(context, SawimActivity.class);
         intent.setAction(SawimActivity.NOTIFY_UPLOAD);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.putExtra(SawimActivity.NOTIFY_UPLOAD, id);
-        PendingIntent contentIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent contentIntent = PendingIntent.getActivity(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         NotificationCompat.Builder builder = notifiBuildersMap.get(id);
         if (builder == null) {
             builder = new NotificationCompat.Builder(context);
             notifiBuildersMap.put(id, builder);
         }
-        if (idsMap.containsKey(filename))
-            id = idsMap.get(filename);
-        else {
-            idsMap.put(filename, id);
+        if (!idsMap.contains(id)) {
+            idsMap.add(id);
         }
 
         builder.setContentIntent(contentIntent);
@@ -186,9 +175,9 @@ public class SawimNotification {
         builder.setContentText(JLocale.getString(R.string.captcha));
         builder.setSmallIcon(android.R.drawable.stat_notify_more);
         builder.setAutoCancel(true);
-        if (idsMap.containsKey(title))
-            id = idsMap.get(title);
-        else idsMap.put(title, id);
+        if (!idsMap.contains(id)) {
+            idsMap.add(id);
+        }
         ((NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE))
                 .notify(id, builder.build());
     }
@@ -233,8 +222,8 @@ public class SawimNotification {
         }
     }*/
 
-    public static void clear(String id) {
-        if (idsMap.get(id) == null) return;
+    public static void clear(int id) {
+        if (idsMap.isEmpty() || idsMap.get(id) == null) return;
         ((NotificationManager) SawimApplication.getContext().getSystemService(Context.NOTIFICATION_SERVICE)).cancel(idsMap.get(id));
         idsMap.remove(id);
     }

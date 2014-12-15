@@ -533,4 +533,5 @@
     <string name="upload_time">Start upload at</string>
     <string name="path">Path</string>
     <string name="stopped">Stopped</string>
+    <string name="repeat">Repeat</string>
 </resources>

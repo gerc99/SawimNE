@@ -11,7 +11,7 @@ import java.io.InputStream;
 
 
 public interface FileBrowserListener {
-    public void onFileSelect(BaseActivity activity, InputStream in, String fileName, Uri fileUri) throws SawimException;
+    public void onFileSelect(BaseActivity activity, Uri fileUri) throws SawimException;
 }
 
 

@@ -112,9 +112,7 @@ public class ExternalApi {
                 return true;
 
             } else if (RESULT_EXTERNAL_FILE == requestCode) {
-                Uri fileUri = data.getData();
-                InputStream is = fragment.getActivity().getContentResolver().openInputStream(fileUri);
-                fileTransferListener.onFileSelect((BaseActivity) fragment.getActivity(), is, getFileName(fileUri, fragment.getActivity()), fileUri);
+                fileTransferListener.onFileSelect((BaseActivity) fragment.getActivity(), data.getData());
                 fileTransferListener = null;
                 return true;
             }

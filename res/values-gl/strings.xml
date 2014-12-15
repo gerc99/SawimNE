@@ -501,4 +501,5 @@
     <string name="upload_time">Cargando lanzado</string>
     <string name="path">Ruta</string>
     <string name="stopped">Envío de presos</string>
+    <string name="repeat">Repita</string>
 </resources>

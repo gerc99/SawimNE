@@ -786,9 +786,9 @@ public final class Xmpp extends Protocol implements FormListener {
 
         statusView.initUI();
         if (contact instanceof XmppServiceContact) {
-            if (contact.isOnline()) {
-            XmppServiceContact xmppServiceContact = (XmppServiceContact) contact;
-            statusView.addContactRole(xmppServiceContact.getCurrentSubContact().roleText);
+            if (contact.isOnline() && contact.isSingleUserContact()) {
+                XmppServiceContact xmppServiceContact = (XmppServiceContact) contact;
+                statusView.addContactRole(xmppServiceContact.getCurrentSubContact().roleText);
             }
         }
         statusView.addContactStatus();

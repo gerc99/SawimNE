@@ -24,6 +24,7 @@ import ru.sawim.view.StatusesView;
 import ru.sawim.view.XStatusesView;
 import ru.sawim.view.menu.MyMenu;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
@@ -42,7 +43,7 @@ public final class RosterHelper {
     private final StatusView statusView = new StatusView();
 
     private Contact currentContact;
-    private Vector transfers = new Vector();
+    private List<FileTransfer> transfers = new ArrayList<FileTransfer>();
     private OnUpdateRoster onUpdateRoster;
     private TreeNode selectedItem = null;
     public boolean useGroups;
@@ -347,18 +348,30 @@ public final class RosterHelper {
     }
 
     public void addTransfer(FileTransfer ft) {
-        transfers.addElement(ft);
+        transfers.add(ft);
     }
 
-    public void removeTransfer(boolean cancel) {
+    public void removeTransfer(int id, boolean cancel) {
         for (int i = 0; i < transfers.size(); ++i) {
-            FileTransfer ft = (FileTransfer) transfers.elementAt(i);
-            transfers.removeElementAt(i);
-            if (cancel) {
-                ft.cancel();
+            FileTransfer ft = transfers.get(i);
+            if (ft.getProgressText().equals(id)) {
+                transfers.remove(i);
+                if (cancel) {
+                    ft.cancel();
+                }
             }
             return;
         }
+    }
+
+    public FileTransfer getFileTransfer(int id) {
+        for (int i = 0; i < transfers.size(); ++i) {
+            FileTransfer ft = transfers.get(i);
+            if (ft.getId() == id) {
+                return ft;
+            }
+        }
+        return null;
     }
 
     public void updateRoster(TreeNode node) {

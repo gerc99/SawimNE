@@ -10,11 +10,12 @@ import ru.sawim.SawimApplication;
 import ru.sawim.chat.message.Message;
 import ru.sawim.chat.message.PlainMessage;
 import ru.sawim.chat.message.SystemNotice;
+import ru.sawim.comm.Sortable;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.modules.history.HistoryStorage;
 import ru.sawim.roster.RosterHelper;
 
-public final class Chat {
+public final class Chat implements Sortable {
 
     public static final String ADDRESS = ", ";
 
@@ -377,5 +378,27 @@ public final class Chat {
 
     public void setVisibleChat(boolean visibleChat) {
         this.visibleChat = visibleChat;
+    }
+
+    @Override
+    public String getText() {
+        return contact.getName();
+    }
+
+    @Override
+    public int getNodeWeight() {
+        if (0 < getAuthRequestCounter()) {
+            return 1;
+        }
+        if (0 < getPersonalMessageCount()) {
+            return 2;
+        }
+        if (0 < getOtherMessageCount()) {
+            return 3;
+        }
+        if (0 < getSysNoticeCounter()) {
+            return 4;
+        }
+        return 5;
     }
 }

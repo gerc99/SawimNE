@@ -398,8 +398,9 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
         }
     }
 
-    public void onFileSelect(BaseActivity activity, InputStream fis, String fileName, Uri fileUri) throws SawimException {
+    public void onFileSelect(BaseActivity activity, Uri fileUri) throws SawimException {
         try {
+            InputStream fis = activity.getContentResolver().openInputStream(fileUri);
             int size = fis.available();
             if (size <= 30 * 1024 * 1024) {
                 byte[] binAvatar = new byte[size];
@@ -410,10 +411,8 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
                     readed += read;
                 }
                 setBinAvatar(binAvatar);
-                binAvatar = null;
             }
             TcpSocket.close(fis);
-            fis = null;
         } catch (Throwable ignored) {
         }
         if (null != avatar) {

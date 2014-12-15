@@ -27,12 +27,7 @@ public final class ChatHistory {
     }
 
     public void sort() {
-        Collections.sort(historyTable, new Comparator<Chat>() {
-            @Override
-            public int compare(Chat c1, Chat c2) {
-                return Util.compareNodes(c1.getContact(), c2.getContact());
-            }
-        });
+        Util.sort(historyTable);
     }
 
     public void addLayerToListOfChats(Protocol p, List<Object> items) {
@@ -103,18 +98,24 @@ public final class ChatHistory {
         return count;
     }
 
+    private int[] ICON_TYPES = new int[] {Message.ICON_IN_MSG_HI, Message.ICON_SYSREQ, Message.ICON_IN_MSG, Message.ICON_SYS_OK};
+
+    public int getPreferredItem() {
+        int current = -1;
+        for (int i = 0; i < historyTable.size(); ++i) {
+            Chat chat = chatAt(i);
+            if (0 < chat.getAllUnreadMessageCount()) {
+                current = i;
+            }
+        }
+        return current;
+    }
+
     private int getMoreImportant(int v1, int v2) {
-        if ((Message.ICON_IN_MSG_HI == v1) || (Message.ICON_IN_MSG_HI == v2)) {
-            return Message.ICON_IN_MSG_HI;
-        }
-        if ((Message.ICON_SYSREQ == v1) || (Message.ICON_SYSREQ == v2)) {
-            return Message.ICON_SYSREQ;
-        }
-        if ((Message.ICON_IN_MSG == v1) || (Message.ICON_IN_MSG == v2)) {
-            return Message.ICON_IN_MSG;
-        }
-        if ((Message.ICON_SYS_OK == v1) || (Message.ICON_SYS_OK == v2)) {
-            return Message.ICON_SYS_OK;
+        for (int iconType : ICON_TYPES) {
+            if (iconType == v1 || iconType == v2) {
+                return iconType;
+            }
         }
         return -1;
     }
@@ -258,26 +259,6 @@ public final class ChatHistory {
                 p.addTempContact(contact);
             }
         }
-    }
-
-    public int getPreferredItem() {
-        int current = -1;
-        for (int i = 0; i < historyTable.size(); ++i) {
-            Chat chat = chatAt(i);
-            if (0 < chat.getAuthRequestCounter()) {
-                current = i;
-            }
-            if (0 < chat.getPersonalMessageCount()) {
-                current = i;
-            }
-            if (0 < chat.getOtherMessageCount()) {
-                current = i;
-            }
-            if (0 < chat.getSysNoticeCounter()) {
-                current = i;
-            }
-        }
-        return current;
     }
 
     public int getSize() {

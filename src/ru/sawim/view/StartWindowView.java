@@ -54,7 +54,7 @@ public class StartWindowView extends Fragment {
 
                     @Override
                     public void addAccount(int num, Profile acc) {
-                        addAccount(num, acc);
+                        StartWindowView.this.addAccount(num, acc);
                     }
                 });
                 xmppRegistration.init().show((BaseActivity) getActivity());

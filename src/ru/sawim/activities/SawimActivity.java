@@ -44,7 +44,6 @@ import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
 import ru.sawim.chat.Chat;
 import ru.sawim.chat.ChatHistory;
-import ru.sawim.forms.UploadDetailsForm;
 import ru.sawim.modules.DebugLog;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.view.*;
@@ -108,7 +107,7 @@ public class SawimActivity extends BaseActivity {
             FormView.showWindows(this, getIntent().getStringExtra(NOTIFY_CAPTCHA));
         }
         if (NOTIFY_UPLOAD.equals(getIntent().getAction())) {
-            new UploadDetailsForm(getIntent().getIntExtra(NOTIFY_UPLOAD, -1)).show(this);
+            RosterHelper.getInstance().getFileTransfer(getIntent().getIntExtra(NOTIFY_UPLOAD, -1)).showDialog(this);
         }
         setIntent(null);
     }

@@ -1,5 +1,6 @@
 package protocol.xmpp;
 
+import android.util.Log;
 import protocol.*;
 import protocol.net.ClientConnection;
 import ru.sawim.R;
@@ -331,7 +332,6 @@ public final class XmppConnection extends ClientConnection {
     private String[] getHostAndPort(String server) {
         // TODO: legacy SSL
         String defaultServer = getXmpp().getDefaultServer(domain_);
-
         String[] url = Util.explode(server, ':');
         String[] socketUrl = new String[2];
         final String S_SOCKET = "socket";
@@ -349,14 +349,6 @@ public final class XmppConnection extends ClientConnection {
             // default port
             socketUrl[0] = url[0];
             socketUrl[1] = S_5222;
-        }
-        if (null != defaultServer) {
-            socketUrl[0] = defaultServer;
-            url = Util.explode(defaultServer, ':');
-            if (3 == url.length) {
-                socketUrl[0] = url[1];
-                socketUrl[1] = url[2];
-            }
         }
         return socketUrl;
     }

@@ -61,7 +61,7 @@ public class FormView extends DialogFragment implements Forms.OnUpdateForm, View
         super.onDetach();
         getLastForms().setUpdateFormListener(null);
         formsMap.remove(formsMap.size() - 1);
-        SawimNotification.clear(getLastForms().getCaption());
+        SawimNotification.clear(getLastForms().getCaption().hashCode());
     }
 
     private Forms getLastForms() {

@@ -36,8 +36,6 @@ import ru.sawim.widget.MyImageButton;
 import ru.sawim.widget.MyListView;
 import ru.sawim.widget.roster.RosterViewRoot;
 
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -392,12 +390,8 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         } else {
             Uri data = intent.getParcelableExtra(Intent.EXTRA_STREAM);
             if (data == null) return;
-            try {
-                InputStream is = getActivity().getContentResolver().openInputStream(data);
-                FileTransfer fileTransfer = new FileTransfer(p, c);
-                fileTransfer.onFileSelect((BaseActivity) getActivity(), is, ExternalApi.getFileName(data, getActivity()), data);
-            } catch (FileNotFoundException e) {
-            }
+            FileTransfer fileTransfer = new FileTransfer(p, c);
+            fileTransfer.onFileSelect((BaseActivity) getActivity(), data);
             Toast.makeText(getActivity(), R.string.sending_file, Toast.LENGTH_LONG).show();
         }
         setMode(MODE_DEFAULT);

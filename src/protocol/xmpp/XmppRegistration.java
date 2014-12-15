@@ -96,8 +96,6 @@ public class XmppRegistration implements Runnable, FormListener {
         }
 
         if (null == error) {
-            form.back();
-            //opts = null;
             listener = null;
 
         } else {
