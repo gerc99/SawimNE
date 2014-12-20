@@ -19,7 +19,6 @@ import ru.sawim.widget.roster.RosterItemView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 /**
  * Created with IntelliJ IDEA.
@@ -40,6 +39,7 @@ public class MucUsersAdapter extends BaseAdapter {
     public void init(Xmpp xmpp, XmppServiceContact conf) {
         protocol = xmpp;
         conference = conf;
+        update();
     }
 
     public void update() {
