@@ -177,9 +177,9 @@ public class ImageList {
         if (originBitmap != null) {
             originBitmap = Bitmap.createScaledBitmap(originBitmap, originBitmap.getWidth() * density, originBitmap.getHeight() * density, true);
             originBitmap = originBitmap.copy(Bitmap.Config.ARGB_4444, false);
-            originBitmap.setDensity(0);
+            originBitmap.setDensity(SawimApplication.getInstance().getResources().getDisplayMetrics().densityDpi);
             output = new BitmapDrawable(SawimApplication.getInstance().getResources(), originBitmap);
-            output.setBounds(0, 0, (int) (output.getIntrinsicWidth() * density), (int) (output.getIntrinsicHeight() * density));
+            output.setBounds(0, 0, output.getIntrinsicWidth() * density, output.getIntrinsicHeight() * density);
         }
         return output.getBitmap();
     }

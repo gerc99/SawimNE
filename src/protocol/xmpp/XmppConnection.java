@@ -1,6 +1,5 @@
 package protocol.xmpp;
 
-import android.util.Log;
 import protocol.*;
 import protocol.net.ClientConnection;
 import ru.sawim.R;

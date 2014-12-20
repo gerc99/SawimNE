@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
-import android.util.Log;
 import ru.sawim.activities.SawimActivity;
 import ru.sawim.chat.Chat;
 import ru.sawim.chat.ChatHistory;
@@ -225,7 +224,6 @@ public class SawimNotification {
 
     public static void clear(int id) {
         String idStr = String.valueOf(id);
-        Log.e("kk", id+" clear "+idsMap.size());
         if (idsMap.isEmpty()) return;
         ((NotificationManager) SawimApplication.getContext().getSystemService(Context.NOTIFICATION_SERVICE)).cancel(id);
         idsMap.remove(idStr);

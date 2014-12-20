@@ -147,6 +147,8 @@ final class XForm {
                 values.setElementAt(form.getTextFieldValue(i), i);
             } else if (itemType.startsWith("text-")) {
                 values.setElementAt(form.getTextFieldValue(i), i);
+            } else if (itemType.equals(S_MEDIA)) {
+                values.setElementAt(form.getTextFieldValue(i), i);
             } else if (S_BOOLEAN.equals(itemType)) {
                 values.setElementAt(form.getCheckBoxValue(i) ? "1" : "0", i);
             } else if ("".equals(itemType)) {
@@ -267,6 +269,9 @@ final class XForm {
         } else if (S_TEXT_SINGLE.equals(type)) {
             form.addTextField(num, label, value);
 
+        } else if (S_MEDIA.equals(type)) {
+            form.addTextField(num, label, value);
+
         } else if (S_TEXT_MULTI.equals(type)) {
             form.addTextField(num, label, value);
 
@@ -300,6 +305,7 @@ final class XForm {
     private static final String S_BOOLEAN = "boolean";
     private static final String S_FIXED = "fixed";
     private static final String S_TEXT_MULTI = "text-multi";
+    private static final String S_MEDIA = "media";
 }
 
 
