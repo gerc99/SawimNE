@@ -39,6 +39,7 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
         final BaseActivity activity = (BaseActivity) chatView.getActivity();
         usersAdapter.init((Xmpp) protocol, xmppServiceContact);
         nickList.setAdapter(usersAdapter);
+        nickList.setFastScrollEnabled(true);
         nickList.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {

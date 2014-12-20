@@ -10,7 +10,8 @@ import ru.sawim.comm.*;
 import ru.sawim.io.RosterStorage;
 import ru.sawim.view.menu.MyMenu;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class XmppContact extends Contact {
@@ -177,15 +178,15 @@ public class XmppContact extends Contact {
         }
     }
 
-    public Vector<SubContact> subcontacts = new Vector<SubContact>();
+    public final List<SubContact> subcontacts = new ArrayList<>();
 
     private void removeSubContact(String resource) {
         for (int i = subcontacts.size() - 1; i >= 0; --i) {
-            SubContact c = subcontacts.elementAt(i);
+            SubContact c = subcontacts.get(i);
             if (c.resource.equals(resource)) {
                 c.status = StatusInfo.STATUS_OFFLINE;
                 c.statusText = null;
-                subcontacts.removeElementAt(i);
+                subcontacts.remove(i);
                 return;
             }
         }
@@ -193,7 +194,7 @@ public class XmppContact extends Contact {
 
     public SubContact getExistSubContact(String resource) {
         for (int i = subcontacts.size() - 1; i >= 0; --i) {
-            SubContact c = subcontacts.elementAt(i);
+            SubContact c = subcontacts.get(i);
             if (c.resource.equals(resource)) {
                 return c;
             }
@@ -210,7 +211,7 @@ public class XmppContact extends Contact {
         c.resource = resource;
         c.status = StatusInfo.STATUS_OFFLINE;
         c.avatarHash = RosterStorage.getAvatarHash(getUserId() + "/" + resource);
-        subcontacts.addElement(c);
+        subcontacts.add(c);
         return c;
     }
 
@@ -230,10 +231,10 @@ public class XmppContact extends Contact {
             return currentContact;
         }
         try {
-            currentContact = subcontacts.elementAt(0);
+            currentContact = subcontacts.get(0);
             byte maxPriority = currentContact.priority;
             for (int i = 1; i < subcontacts.size(); ++i) {
-                SubContact contact = subcontacts.elementAt(i);
+                SubContact contact = subcontacts.get(i);
                 if (maxPriority < contact.priority) {
                     maxPriority = contact.priority;
                     currentContact = contact;
@@ -301,7 +302,7 @@ public class XmppContact extends Contact {
     }
 
     public final void setOfflineStatus() {
-        subcontacts.removeAllElements();
+        subcontacts.clear();
         super.setOfflineStatus();
     }
 

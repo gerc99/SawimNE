@@ -247,7 +247,7 @@ public class XmppServiceContact extends XmppContact {
                         SystemNotice.SYS_NOTICE_ERROR, getUserId(), text));
             }
             for (int i = 0; i < subcontacts.size(); ++i) {
-                subcontacts.elementAt(i).status = StatusInfo.STATUS_OFFLINE;
+                subcontacts.get(i).status = StatusInfo.STATUS_OFFLINE;
             }
             String startUin = getUserId() + '/';
             Vector contactList = xmpp.getContactItems();
@@ -317,7 +317,7 @@ public class XmppServiceContact extends XmppContact {
             return null;
         }
         for (int i = 0; i < subcontacts.size(); ++i) {
-            XmppContact.SubContact contact = subcontacts.elementAt(i);
+            XmppContact.SubContact contact = subcontacts.get(i);
             if (nick.equals(contact.resource)) {
                 return contact;
             }
@@ -446,9 +446,9 @@ public class XmppServiceContact extends XmppContact {
             setClient(XmppClient.CLIENT_NONE, null);
         } else {
             if (subcontacts.isEmpty()) {
-                subcontacts.addElement(sc);
+                subcontacts.add(sc);
             } else {
-                subcontacts.setElementAt(sc, 0);
+                subcontacts.set(0, sc);
             }
             setStatus(sc.status, sc.statusText);
             setClient(sc.client, null);

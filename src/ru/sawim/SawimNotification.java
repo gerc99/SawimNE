@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 import ru.sawim.activities.SawimActivity;
 import ru.sawim.chat.Chat;
 import ru.sawim.chat.ChatHistory;
@@ -26,7 +27,7 @@ public class SawimNotification {
 
     public static final int NOTIFY_ID = 1;
     public static final int ALARM_NOTIFY_ID = 2;
-    private static final List<Integer> idsMap = new ArrayList<Integer>();
+    private static final List<String> idsMap = new ArrayList<String>();
     private static final HashMap<Integer, NotificationCompat.Builder> notifiBuildersMap = new HashMap<Integer, NotificationCompat.Builder>();
     public static Notification get(Context context, boolean silent) {
         int unread = ChatHistory.instance.getPersonalUnreadMessageCount(false);
@@ -126,8 +127,9 @@ public class SawimNotification {
             builder = new NotificationCompat.Builder(context);
             notifiBuildersMap.put(id, builder);
         }
-        if (!idsMap.contains(id)) {
-            idsMap.add(id);
+        String idStr = String.valueOf(id);
+        if (!idsMap.contains(idStr)) {
+            idsMap.add(idStr);
         }
 
         builder.setContentIntent(contentIntent);
@@ -138,7 +140,6 @@ public class SawimNotification {
                 builder.setTicker(JLocale.getString(R.string.sending_complete));
                 builder.setSmallIcon(android.R.drawable.stat_sys_upload_done);
                 notifiBuildersMap.remove(id);
-                idsMap.remove(filename);
                 builder.setAutoCancel(true);
             } else {
                 builder.setTicker(JLocale.getString(R.string.sending_file));
@@ -152,7 +153,6 @@ public class SawimNotification {
             builder.setAutoCancel(false);
             builder.setContentText(text).setProgress(0, 0, false);
             notifiBuildersMap.remove(id);
-            idsMap.remove(filename);
         }
         ((NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE))
                 .notify(id, builder.build());
@@ -175,8 +175,9 @@ public class SawimNotification {
         builder.setContentText(JLocale.getString(R.string.captcha));
         builder.setSmallIcon(android.R.drawable.stat_notify_more);
         builder.setAutoCancel(true);
-        if (!idsMap.contains(id)) {
-            idsMap.add(id);
+        String idStr = String.valueOf(id);
+        if (!idsMap.contains(idStr)) {
+            idsMap.add(idStr);
         }
         ((NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE))
                 .notify(id, builder.build());
@@ -223,9 +224,11 @@ public class SawimNotification {
     }*/
 
     public static void clear(int id) {
-        if (idsMap.isEmpty() || idsMap.get(id) == null) return;
-        ((NotificationManager) SawimApplication.getContext().getSystemService(Context.NOTIFICATION_SERVICE)).cancel(idsMap.get(id));
-        idsMap.remove(id);
+        String idStr = String.valueOf(id);
+        Log.e("kk", id+" clear "+idsMap.size());
+        if (idsMap.isEmpty()) return;
+        ((NotificationManager) SawimApplication.getContext().getSystemService(Context.NOTIFICATION_SERVICE)).cancel(id);
+        idsMap.remove(idStr);
     }
 
 }

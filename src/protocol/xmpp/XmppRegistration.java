@@ -83,7 +83,7 @@ public class XmppRegistration implements Runnable, FormListener {
                 account.nick = "";
                 account.isActive = true;
                 listener.addAccount(Options.getAccountCount(), account);
-
+                form.back();
             } else {
                 error = connection.getError(n.getFirstNode("error"));
             }
@@ -97,7 +97,7 @@ public class XmppRegistration implements Runnable, FormListener {
 
         if (null == error) {
             listener = null;
-
+            form.back();
         } else {
             type = TYPE_NONE;
             form.setErrorMessage(error);

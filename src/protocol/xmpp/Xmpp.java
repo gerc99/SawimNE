@@ -714,7 +714,7 @@ public final class Xmpp extends Protocol implements FormListener {
         final Vector items = new Vector();
         int selected = 0;
         for (int i = 0; i < c.subcontacts.size(); ++i) {
-            XmppContact.SubContact contact = c.subcontacts.elementAt(i);
+            XmppContact.SubContact contact = c.subcontacts.get(i);
             items.add(contact.resource);
             if (contact.resource.equals(c.currentResource)) {
                 selected = i;

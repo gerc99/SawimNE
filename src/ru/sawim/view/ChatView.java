@@ -104,6 +104,8 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     private ChatBarView chatBarLayout;
     private DialogFragment chatsDialogFragment;
 
+    public ChatView() {}
+
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -577,6 +579,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                         dialogBuilder.setInverseBackgroundForced(Util.isNeedToInverseDialogBackground());
                         MyListView lv = (MyListView) dialogView.findViewById(R.id.listView);
                         lv.setAdapter(chatsSpinnerAdapter);
+                        lv.setFastScrollEnabled(true);
                         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                             @Override
                             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

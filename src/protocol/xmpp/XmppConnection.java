@@ -1124,13 +1124,16 @@ public final class XmppConnection extends ClientConnection {
                         XmppContact.SubContact sc = ((XmppServiceContact) c).getExistSubContact(Jid.getResource(from, null));
                         if (null != sc) {
                             sc.avatarHash = "";
+                            RosterStorage.updateAvatarHash(c.getUserId() + "/" + sc.resource, "");
                         } else {
                             c.avatarHash = "";
+                            RosterStorage.updateAvatarHash(c.getUserId(), "");
                         }
                     }
                 } else {
                     if (c != null) {
                         c.avatarHash = "";
+                        RosterStorage.updateAvatarHash(c.getUserId(), "");
                     }
                 }
             }

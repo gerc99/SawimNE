@@ -221,9 +221,9 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
             }
             changeFileProgress(percent, R.string.sending_file);
             if (100 == percent) {
+                changeFileProgress(percent, R.string.complete);
                 RosterHelper.getInstance().removeTransfer(getId(), true);
                 SawimNotification.clear(getId());
-                changeFileProgress(percent, R.string.complete);
                 closeFile();
             }
         } catch (Exception e) {

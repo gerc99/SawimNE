@@ -40,12 +40,13 @@ public class MucUsersAdapter extends BaseAdapter {
     public void init(Xmpp xmpp, XmppServiceContact conf) {
         protocol = xmpp;
         conference = conf;
-        update();
     }
 
     public void update() {
         items.clear();
-        Util.sort(conference.subcontacts);
+        synchronized (conference.subcontacts) {
+            Util.sort(conference.subcontacts);
+        }
         final int moderators = getContactCount(XmppServiceContact.ROLE_MODERATOR);
         final int participants = getContactCount(XmppServiceContact.ROLE_PARTICIPANT);
         final int visitors = getContactCount(XmppServiceContact.ROLE_VISITOR);
@@ -111,9 +112,9 @@ public class MucUsersAdapter extends BaseAdapter {
 
     private final int getContactCount(byte priority) {
         int count = 0;
-        Vector<XmppContact.SubContact> subcontacts = conference.subcontacts;
+        List<XmppContact.SubContact> subcontacts = conference.subcontacts;
         for (int i = 0; i < subcontacts.size(); ++i) {
-            XmppContact.SubContact contact = subcontacts.elementAt(i);
+            XmppContact.SubContact contact = subcontacts.get(i);
             if (contact != null)
                 if (contact.priority == priority) {
                     count++;
@@ -126,9 +127,9 @@ public class MucUsersAdapter extends BaseAdapter {
         if (TextUtils.isEmpty(nick)) {
             return null;
         }
-        Vector<XmppContact.SubContact> subcontacts = conference.subcontacts;
+        List<XmppContact.SubContact> subcontacts = conference.subcontacts;
         for (int i = 0; i < subcontacts.size(); ++i) {
-            XmppContact.SubContact contact = subcontacts.elementAt(i);
+            XmppContact.SubContact contact = subcontacts.get(i);
             if (nick.equals(contact.resource)) {
                 return contact;
             }
@@ -139,9 +140,9 @@ public class MucUsersAdapter extends BaseAdapter {
     private void addLayerToListOfSubcontacts(int layer, int size, byte priority) {
         boolean hasLayer = false;
         items.add(JLocale.getString(layer)/* + "(" + size + ")"*/);
-        Vector<XmppContact.SubContact> subcontacts = conference.subcontacts;
+        List<XmppContact.SubContact> subcontacts = conference.subcontacts;
         for (int i = 0; i < subcontacts.size(); ++i) {
-            XmppContact.SubContact contact = subcontacts.elementAt(i);
+            XmppContact.SubContact contact = subcontacts.get(i);
             if (contact.priority == priority) {
                 items.add(contact);
                 hasLayer = true;
