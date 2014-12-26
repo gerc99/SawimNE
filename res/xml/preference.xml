@@ -17,6 +17,9 @@
                                                     android:key="@string/pref_font_scheme"
                                                     android:defaultValue="18"/>
         <PreferenceCategory android:title="@string/contact_list"/>
+        <CheckBoxPreference android:title="@string/show_users_avatars"
+                        android:key="@string/pref_users_avatars"
+                        android:defaultValue="true"/>
         <CheckBoxPreference android:title="@string/show_user_groups"
                             android:key="@string/pref_user_groups"
                             android:defaultValue="true"/>

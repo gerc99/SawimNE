@@ -109,6 +109,8 @@
     <string name="acc_sel_protocol">Select protocol:</string>
     <string name="acc_delete_confirm">Do you really want to delete %s?</string>
 
+    <string name="show_users_avatars">Show users avatars</string>
+
     <string name="show_user_groups">Show user groups</string>
     <string name="show_status_line">Show status line</string>
 

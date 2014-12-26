@@ -4,6 +4,7 @@
     <string name="pref_wake_lock">pref_wake_lock</string>
     <string name="pref_color_scheme">pref_color_scheme</string>
     <string name="pref_font_scheme">pref_font_scheme</string>
+    <string name="pref_users_avatars">pref_users_avatars</string>
     <string name="pref_user_groups">pref_user_groups</string>
     <string name="pref_show_status_line">pref_show_status_line</string>
     <string name="pref_sort_up_with_msg">pref_sort_up_with_msg</string>
