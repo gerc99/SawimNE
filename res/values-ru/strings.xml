@@ -110,6 +110,8 @@
     <string name="acc_sel_protocol">Выберите протокол:</string>
     <string name="acc_delete_confirm">Вы действительно хотите удалить аккаунт %s?</string>
 
+    <string name="show_users_avatars">Показывать аватары</string>
+
     <string name="show_user_groups">Показывать группы контактов</string>
     <string name="show_status_line">Показывать строку статуса</string>
 

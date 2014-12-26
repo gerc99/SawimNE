@@ -95,6 +95,7 @@
     <string name="acc_nick">Alcume:</string>
     <string name="acc_sel_protocol">Seleccionar protocolo:</string>
     <string name="acc_delete_confirm">Estás seguro que desexas eliminar a %s?</string>
+    <string name="show_users_avatars">Amosar usuarios avatars</string>
     <string name="show_user_groups">Mostra os grupos de usuarios</string>
     <string name="show_status_line">Mostra o estado de liña</string>
     <string name="user_info">Información de usuario</string>

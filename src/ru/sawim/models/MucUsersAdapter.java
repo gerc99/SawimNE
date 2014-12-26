@@ -14,6 +14,7 @@ import ru.sawim.comm.JLocale;
 import ru.sawim.comm.Util;
 import ru.sawim.icons.Icon;
 import ru.sawim.icons.ImageCache;
+import ru.sawim.icons.ImageList;
 import ru.sawim.io.FileSystem;
 import ru.sawim.widget.roster.RosterItemView;
 
@@ -212,6 +213,7 @@ public class MucUsersAdapter extends BaseAdapter {
     }
 
     void populateFrom(final RosterItemView rosterItemView, Xmpp protocol, XmppContact.SubContact c) {
+        if (Options.getBoolean(JLocale.getString(R.string.pref_users_avatars))) {
         Bitmap avatar = ImageCache.getInstance().get(FileSystem.openDir(FileSystem.AVATARS), SawimApplication.getExecutor(), c.avatarHash,
                 SawimResources.DEFAULT_AVATAR, new ImageCache.OnImageLoadListener() {
                     @Override
@@ -224,8 +226,9 @@ public class MucUsersAdapter extends BaseAdapter {
                         });
                     }
                 });
-
         rosterItemView.itemFirstImage = avatar;
+        } else rosterItemView.itemFirstImage = SawimResources.DEFAULT_AVATAR_STATIC;
+
         //  rosterItemView.itemSecondImage = protocol.getStatusInfo().getIcon(c.status).getImage().getBitmap();
         rosterItemView.itemNameColor = Scheme.getColor(Scheme.THEME_TEXT);
         rosterItemView.itemNameFont = Typeface.DEFAULT;

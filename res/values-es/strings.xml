@@ -95,6 +95,7 @@
     <string name="acc_nick">Apodo:</string>
     <string name="acc_sel_protocol">Seleccionar protocolo:</string>
     <string name="acc_delete_confirm">Estás seguro que deseas eliminar a %s?</string>
+    <string name="show_users_avatars">Mostrar usuarios avatares</string>
     <string name="show_user_groups">Muestra los grupos de usuarios</string>
     <string name="show_status_line">Muestra el estado de línea</string>
     <string name="user_info">Información de usuario</string>

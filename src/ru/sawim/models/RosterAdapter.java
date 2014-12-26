@@ -13,13 +13,12 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import protocol.*;
 import protocol.xmpp.XmppServiceContact;
-import ru.sawim.SawimApplication;
-import ru.sawim.SawimResources;
-import ru.sawim.Scheme;
+import ru.sawim.*;
 import ru.sawim.activities.BaseActivity;
 import ru.sawim.chat.Chat;
 import ru.sawim.chat.ChatHistory;
 import ru.sawim.chat.message.Message;
+import ru.sawim.comm.JLocale;
 import ru.sawim.icons.Icon;
 import ru.sawim.icons.ImageCache;
 import ru.sawim.io.FileSystem;
@@ -216,19 +215,21 @@ public class RosterAdapter extends BaseAdapter implements View.OnClickListener{
             rosterItemView.itemDescColor = Scheme.getColor(Scheme.THEME_CONTACT_STATUS);
             rosterItemView.itemDesc = statusMessage;
         }
-        Bitmap avatar = ImageCache.getInstance().get(FileSystem.openDir(FileSystem.AVATARS),
-                SawimApplication.getExecutor(), item.avatarHash, SawimResources.DEFAULT_AVATAR, new ImageCache.OnImageLoadListener() {
-                    @Override
-                    public void onLoad() {
-                        rosterItemView.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                notifyDataSetChanged();
-                            }
-                        });
-                    }
-                });
-        rosterItemView.itemFirstImage = avatar;
+        if (Options.getBoolean(JLocale.getString(R.string.pref_users_avatars))) {
+            Bitmap avatar = ImageCache.getInstance().get(FileSystem.openDir(FileSystem.AVATARS),
+                    SawimApplication.getExecutor(), item.avatarHash, SawimResources.DEFAULT_AVATAR, new ImageCache.OnImageLoadListener() {
+                        @Override
+                        public void onLoad() {
+                            rosterItemView.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    notifyDataSetChanged();
+                                }
+                            });
+                        }
+                    });
+            rosterItemView.itemFirstImage = avatar;
+        } else rosterItemView.itemFirstImage = SawimResources.DEFAULT_AVATAR_STATIC;
         rosterItemView.itemSixthImage = SawimResources.affiliationIcons.iconAt(XmppServiceContact.getStatusName(item.getStatusIndex())).getImage().getBitmap();
 
         Icon icClient = (null != p.clientInfo) ? p.clientInfo.getIcon(item.clientIndex) : null;
