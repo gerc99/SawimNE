@@ -155,10 +155,15 @@ public class ImageList {
         if (originBitmap != null) {
             switch (SawimApplication.getInstance().getResources().getDisplayMetrics().densityDpi) {
                 case 120:
-                    if (originBitmap.getWidth() > 16)
-                        originBitmap = Bitmap.createScaledBitmap(originBitmap, 16, 16, true);
+                    if (originBitmap.getWidth() >= 6 && !SawimApplication.getContext().getResources().getBoolean(R.bool.is_tablet))
+                        originBitmap = Bitmap.createScaledBitmap(originBitmap, 6, 6, true);
+                    else if (originBitmap.getWidth() >= 8)
+                        originBitmap = Bitmap.createScaledBitmap(originBitmap, 8, 8, true);
                     break;
                 case 160:
+                    if (originBitmap.getWidth() > 8)
+                        originBitmap = Bitmap.createScaledBitmap(originBitmap, 8, 8, true);
+                    break;
                 case 180:
                     if (originBitmap.getWidth() >= 24 && !SawimApplication.getContext().getResources().getBoolean(R.bool.is_tablet))
                         originBitmap = Bitmap.createScaledBitmap(originBitmap, 24, 24, true);
