@@ -83,7 +83,7 @@ public class SawimNotification {
                 .setContentText(stateMsg)
                 .setSmallIcon(icon)
                 .setContentTitle(nick == null ? context.getString(R.string.app_name)
-                        : context.getString(R.string.message_from) + " " + (senderName == null ? nick : senderName + "/" + nick));
+                        : context.getString(R.string.message_from) + " " + (senderName == null || current.getContact().isSingleUserContact() ? nick : senderName + "/" + nick));
         return notification.build();
     }
 
