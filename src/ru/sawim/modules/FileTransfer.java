@@ -12,6 +12,7 @@ import protocol.net.TcpSocket;
 import ru.sawim.*;
 import ru.sawim.activities.BaseActivity;
 import ru.sawim.chat.Chat;
+import ru.sawim.chat.message.PlainMessage;
 import ru.sawim.comm.JLocale;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
@@ -36,8 +37,7 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
 
     private String filename;
     private String filePath;
-    private InputStream fis;
-    private int fsize;
+    private byte[] fileBytes;
     private String startTime;
     private Chat chat;
 
@@ -56,19 +56,17 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
             } else if (status == ERROR_STATUS) {
                 statusStr = JLocale.getString(R.string.error);
             }
-            builder.setMessage(
-                    JLocale.getString(R.string.path) + ": " + filePath
-                            + "\n" + JLocale.getString(R.string.size) + ": " + getFileSize()
-                            + "\n" + JLocale.getString(R.string.chat) + ": " + chat.getContact().getUserId()
-                            + "\n" + JLocale.getString(R.string.upload_time) + ": " + startTime
-                            + "\n" + JLocale.getString(R.string.status) + ": "
-                            + statusStr);
+            builder.setMessage(filePath == null ? "" : (JLocale.getString(R.string.path) + ": " + filePath + "\n")
+                    + JLocale.getString(R.string.size) + ": " + getFileSize() + "\n"
+                    + JLocale.getString(R.string.chat) + ": " + chat.getContact().getUserId() + "\n"
+                    + JLocale.getString(R.string.upload_time) + ": " + startTime + "\n"
+                    + JLocale.getString(R.string.status) + ": " + statusStr);
             if (status == ERROR_STATUS) {
                 builder.setNegativeButton(JLocale.getString(R.string.repeat),
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog,
                                                 int id) {
-                                setProgress(0);
+                                SawimNotification.clear(getId());
                                 SawimApplication.getExecutor().execute(FileTransfer.this);
                                 chat.activate();
                                 chat.addFileProgress(JLocale.getString(R.string.sending_file), getProgressText());
@@ -100,9 +98,8 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
         return chat.getContact();
     }
 
-    private void setData(InputStream is, int size) {
-        fis = is;
-        fsize = size;
+    private void setData(byte[] fileBytes) {
+        this.fileBytes = fileBytes;
 
         long time = SawimApplication.getCurrentGmtTime();
         boolean today = (SawimApplication.getCurrentGmtTime() - 24 * 60 * 60 < time);
@@ -110,11 +107,11 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
     }
 
     public InputStream getFileIS() {
-        return fis;
+        return new ByteArrayInputStream(fileBytes);
     }
 
     public int getFileSize() {
-        return fsize;
+        return fileBytes.length;
     }
 
     public void startFileTransfer() {
@@ -134,20 +131,12 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
             setFileName(ExternalApi.getFileName(fileUri, activity));
             filePath = ExternalApi.getPath(activity, fileUri);
             int fileSize = in.available();
-            byte[] image = null;
+            byte[] fileBytes = new byte[fileSize];
+            TcpSocket.readFully(in, fileBytes, 0, fileBytes.length);
 
-            if (Util.isImageFile(filename)) {
-                image = new byte[fileSize];
-                TcpSocket.readFully(in, image, 0, image.length);
-            }
-            if (image != null) {
-                in = new ByteArrayInputStream(image);
-                fileSize = in.available();
-            }
-            setData(in, fileSize);
+            setData(fileBytes);
             start();
         } catch (Exception e) {
-            closeFile();
             handleException(new SawimException(191, 6));
         }
     }
@@ -171,7 +160,7 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
     }
 
     public void processPhoto(BaseActivity activity, final byte[] data) {
-        setData(new ByteArrayInputStream(data), data.length);
+        setData(data);
         String timestamp = Util.getLocalDateString(SawimApplication.getCurrentGmtTime(), false);
         String photoName = "photo-"
                 + timestamp.replace('.', '-').replace(' ', '-')
@@ -195,7 +184,6 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
     public void cancel() {
         status = CANCELED_STATUS;
         changeFileProgress(0, R.string.canceled);
-        closeFile();
     }
 
     public boolean isCanceled() {
@@ -224,7 +212,6 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
                 changeFileProgress(percent, R.string.complete);
                 RosterHelper.getInstance().removeTransfer(getId(), true);
                 SawimNotification.clear(getId());
-                closeFile();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -241,14 +228,8 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
         chat.addFileProgress(JLocale.getString(R.string.error), e.getLocalizedMessage());
     }
 
-    private void closeFile() {
-        TcpSocket.close(fis);
-        fis = null;
-    }
-
     public void destroy() {
         try {
-            closeFile();
             RosterHelper.getInstance().removeTransfer(getId(), false);
             SawimApplication.gc();
         } catch (Exception ignored) {
@@ -423,6 +404,7 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
                 throw new SawimException(194, 0);
             }
         }
+        TcpSocket.close(fis);
         StringBuilder messText = new StringBuilder();
         messText.append("File: ").append(filename).append("\n");
         messText.append("Size: ")
@@ -430,7 +412,8 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
                 .append("\n");
         messText.append("Link: ").append(url);
 
-        chat.getProtocol().sendMessage(chat.getContact(), messText.toString(), true);
+        PlainMessage plainMsg = new PlainMessage(chat.getProtocol(), chat.getContact().getUserId(), SawimApplication.getCurrentGmtTime(), messText.toString());
+        chat.addMessage(plainMsg, true, false, false);
         setProgress(100);
     }
 }
