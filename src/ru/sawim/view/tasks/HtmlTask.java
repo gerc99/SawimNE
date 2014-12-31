@@ -108,8 +108,16 @@ public class HtmlTask extends AsyncTask<String, Integer, String[]> {
     protected void onPostExecute(String[] s) {
         progressBar.setVisibility(ProgressBar.GONE);
 
-        String html1 = "<html><head><meta charset=\"utf-8\"><style>.block{width:100%;}" +
-                "body {height: 100%;width: 100%;display: -webkit-box;display: box;-webkit-box-orient: vertical;box-orient: vertical;-webkit-box-align: stretch;box-align: stretch;-webkit-box-direction: normal;box-direction: normal;-webkit-box-pack: center;box-pack: center;}</style></head><body> <img class=\"block\" src=\"";
+        String html1 = "<html><head><meta charset=\"utf-8\">" +
+                "<style>.block{width:100%;}" +
+                "body {height: 100%;width: 100%;" +
+                "display: -webkit-box;" +
+                "display: box;" +
+                "-webkit-box-orient: vertical;box-orient: vertical;" +
+                "-webkit-box-align: stretch;box-align: stretch;" +
+                "-webkit-box-direction: normal;box-direction: normal;" +
+                "-webkit-box-pack: center;box-pack: center;}" +
+                "</style></head><body> <img class=\"block\" src=\"";
         String html2 = "\"></body></html>";
         try {
             if (link.startsWith(PIK4U) && s[0] != null) {
