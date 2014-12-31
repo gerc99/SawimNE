@@ -265,7 +265,18 @@ abstract public class Contact implements TreeNode, Sortable {
         Chat chat = ChatHistory.instance.getChat(this);
         boolean hasChat = chat != null;
         if (hasChat) {
-            return chat.getNodeWeight();
+            if (0 < chat.getAuthRequestCounter()) {
+                return 1;
+            }
+            if (0 < chat.getPersonalMessageCount()) {
+                return 2;
+            }
+            if (0 < chat.getSysNoticeCounter()) {
+                return 3;
+            }
+            if (0 < chat.getOtherMessageCount()) {
+                return 4;
+            }
         }
         if (!isSingleUserContact()) {
             return isOnline() ? 9 : 50;

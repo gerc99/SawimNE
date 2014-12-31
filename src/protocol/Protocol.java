@@ -725,6 +725,7 @@ abstract public class Protocol {
             ui_updateContact(contact);
         }
         RosterHelper.getInstance().markMessages(contact);
+        ChatHistory.instance.sort();
     }
 
     public final void ui_changeContactStatus(Contact contact) {
@@ -892,10 +893,17 @@ abstract public class Protocol {
                 //playNotification(Notify.NOTIFY_MULTIMESSAGE);
             }
         }
+        boolean isNewMessageIcon = chat.getOldMessageIcon() != chat.getNewMessageIcon();
+        if (isNewMessageIcon) {
+            chat.setOldMessageIcon(chat.getNewMessageIcon());
+            ChatHistory.instance.sort();
+            if (!chat.isVisibleChat()) {
+                RosterHelper.getInstance().updateRoster(contact);
+
+            }
+        }
         if (!isWakeUp) {
             if (!chat.isVisibleChat()) {
-                chat.typeNewMessageIcon = chat.getNewMessageIcon();
-                RosterHelper.getInstance().updateRoster(contact);
                 SawimApplication.getInstance().sendNotify(notifyMessage && !chat.isVisibleChat());
             }
         }

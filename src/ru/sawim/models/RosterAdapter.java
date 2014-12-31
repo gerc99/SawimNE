@@ -117,7 +117,6 @@ public class RosterAdapter extends BaseAdapter implements View.OnClickListener{
         final int count = roster.getProtocolCount();
         items.clear();
         if (type == RosterHelper.ACTIVE_CONTACTS) {
-            ChatHistory.instance.sort();
             for (int i = 0; i < roster.getProtocolCount(); ++i) {
                 ChatHistory.instance.addLayerToListOfChats(roster.getProtocol(i), items);
             }

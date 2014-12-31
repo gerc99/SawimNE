@@ -10,12 +10,11 @@ import ru.sawim.SawimApplication;
 import ru.sawim.chat.message.Message;
 import ru.sawim.chat.message.PlainMessage;
 import ru.sawim.chat.message.SystemNotice;
-import ru.sawim.comm.Sortable;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.modules.history.HistoryStorage;
 import ru.sawim.roster.RosterHelper;
 
-public final class Chat implements Sortable {
+public final class Chat {
 
     public static final String ADDRESS = ", ";
 
@@ -80,6 +79,7 @@ public final class Chat implements Sortable {
     }
 
     public void addFileProgress(String caption, String text) {
+        messageCounter = inc(messageCounter);
         addMessage(new MessData(contact, SawimApplication.getCurrentGmtTime(), text, caption, MessData.PROGRESS, false));
         if (RosterHelper.getInstance().getUpdateChatListener() != null)
             RosterHelper.getInstance().getUpdateChatListener().updateMessages(contact);
@@ -165,7 +165,7 @@ public final class Chat implements Sortable {
         return history;
     }
 
-    public int typeNewMessageIcon = Message.ICON_NONE;
+    private int oldMessageIcon = Message.ICON_NONE;
     private short messageCounter = 0;
     private short otherMessageCounter = 0;
     private byte sysNoticeCounter = 0;
@@ -181,7 +181,7 @@ public final class Chat implements Sortable {
     }
 
     public void resetUnreadMessages() {
-        typeNewMessageIcon = Message.ICON_NONE;
+        oldMessageIcon = Message.ICON_NONE;
         boolean notEmpty = 0 < messageCounter
                 || 0 < otherMessageCounter
                 || 0 < sysNoticeCounter;
@@ -234,6 +234,14 @@ public final class Chat implements Sortable {
             return Message.ICON_SYS_OK;
         }
         return Message.ICON_NONE;
+    }
+
+    public final int getOldMessageIcon() {
+        return oldMessageIcon;
+    }
+
+    public final void setOldMessageIcon(int oldMessageIcon) {
+        this.oldMessageIcon = oldMessageIcon;
     }
 
     private short inc(short val) {
@@ -313,6 +321,9 @@ public final class Chat implements Sortable {
         addTextToHistory(mData);
         if (RosterHelper.getInstance().getUpdateChatListener() != null) {
             RosterHelper.getInstance().getUpdateChatListener().addMessage(contact, mData);
+            if (!isVisibleChat()) {
+                RosterHelper.getInstance().getUpdateChatListener().updateChat();
+            }
         }
         lastMessageNick = mData.getNick();
         lastMessage = mData.getText().toString();
@@ -325,9 +336,6 @@ public final class Chat implements Sortable {
         if (!isVisibleChat()) {
             otherMessageCounter = inc(otherMessageCounter);
             contact.updateChatState(this);
-            if (RosterHelper.getInstance().getUpdateChatListener() != null) {
-                RosterHelper.getInstance().getUpdateChatListener().updateChat();
-            }
         }
     }
 
@@ -356,9 +364,6 @@ public final class Chat implements Sortable {
         }
         if (inc) {
             contact.updateChatState(this);
-            if (RosterHelper.getInstance().getUpdateChatListener() != null) {
-                RosterHelper.getInstance().getUpdateChatListener().updateChat();
-            }
         }
     }
 
@@ -378,27 +383,5 @@ public final class Chat implements Sortable {
 
     public void setVisibleChat(boolean visibleChat) {
         this.visibleChat = visibleChat;
-    }
-
-    @Override
-    public String getText() {
-        return contact.getName();
-    }
-
-    @Override
-    public int getNodeWeight() {
-        if (0 < getAuthRequestCounter()) {
-            return 1;
-        }
-        if (0 < getPersonalMessageCount()) {
-            return 2;
-        }
-        if (0 < getOtherMessageCount()) {
-            return 3;
-        }
-        if (0 < getSysNoticeCounter()) {
-            return 4;
-        }
-        return 5;
     }
 }

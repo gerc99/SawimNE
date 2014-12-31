@@ -27,7 +27,12 @@ public final class ChatHistory {
     }
 
     public void sort() {
-        Util.sort(historyTable);
+        Collections.sort(historyTable, new Comparator<Chat>() {
+            @Override
+            public int compare(Chat c1, Chat c2) {
+                return Util.compareNodes(c1.getContact(), c2.getContact());
+            }
+        });
     }
 
     public void addLayerToListOfChats(Protocol p, List<Object> items) {
@@ -98,43 +103,48 @@ public final class ChatHistory {
         return count;
     }
 
-    private int[] ICON_TYPES = new int[] {Message.ICON_IN_MSG_HI, Message.ICON_SYSREQ, Message.ICON_IN_MSG, Message.ICON_SYS_OK};
-
     public int getPreferredItem() {
         int current = -1;
-        for (int i = 0; i < historyTable.size(); ++i) {
+        for (int i = 0; i < getTotal(); ++i) {
             Chat chat = chatAt(i);
             if (0 < chat.getAllUnreadMessageCount()) {
                 current = i;
+                break;
             }
         }
         return current;
     }
 
+    private static final int[] SORTED_ICON_TYPES = new int[] {Message.ICON_IN_MSG_HI, Message.ICON_SYSREQ, Message.ICON_IN_MSG, Message.ICON_SYS_OK};
     private int getMoreImportant(int v1, int v2) {
-        for (int iconType : ICON_TYPES) {
+        for (int iconType : SORTED_ICON_TYPES) {
             if (iconType == v1 || iconType == v2) {
                 return iconType;
             }
         }
-        return -1;
+        return Message.ICON_NONE;
     }
 
     public BitmapDrawable getLastUnreadMessageIcon() {
-        int icon = -1;
-        for (int i = getTotal() - 1; 0 <= i; --i) {
+        int icon = Message.ICON_NONE;
+        /*for (int i = getTotal() - 1; 0 <= i; --i) {
             icon = getMoreImportant(icon, chatAt(i).getNewMessageIcon());
+        }*/
+
+        Chat chat = chatAt(getPreferredItem());
+        if (chat != null) {
+            icon = chat.getNewMessageIcon();
         }
         return Message.getIcon(icon);
     }
 
     public BitmapDrawable getUnreadMessageIcon(Contact contact) {
-        int icon = -1;
+        int icon = Message.ICON_NONE;
         Chat chat;
         for (int i = getTotal() - 1; 0 <= i; --i) {
             chat = chatAt(i);
             if (chat != null) {
-                if (contact == contactAt(i)) {
+                if (contact == chat.getContact()) {
                     icon = getMoreImportant(icon, chat.getNewMessageIcon());
                 }
             }
@@ -143,7 +153,7 @@ public final class ChatHistory {
     }
 
     public BitmapDrawable getUnreadMessageIcon(Protocol p) {
-        int icon = -1;
+        int icon = Message.ICON_NONE;
         Chat chat;
         for (int i = getTotal() - 1; 0 <= i; --i) {
             chat = chatAt(i);
@@ -157,7 +167,7 @@ public final class ChatHistory {
     }
 
     public BitmapDrawable getUnreadMessageIcon(Vector contacts) {
-        int icon = -1;
+        int icon = Message.ICON_NONE;
         Chat chat;
         for (int i = contacts.size() - 1; 0 <= i; --i) {
             chat = getChat((Contact) contacts.elementAt(i));
@@ -227,7 +237,7 @@ public final class ChatHistory {
             if (except == chat) continue;
             clearChat(chat);
         }
-        if (0 == getSize()) {
+        if (0 == getTotal()) {
             RosterHelper.getInstance().updateRoster();
         }
     }
@@ -259,9 +269,5 @@ public final class ChatHistory {
                 p.addTempContact(contact);
             }
         }
-    }
-
-    public int getSize() {
-        return historyTable.size();
     }
 }
