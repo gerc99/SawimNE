@@ -95,6 +95,7 @@
     <string name="acc_nick">Sobrenom:</string>
     <string name="acc_sel_protocol">Selecciona el protocol:</string>
     <string name="acc_delete_confirm">Estàs segur que desitges eliminar a %s?</string>
+    <string name="show_users_avatars">Mostrar usuaris avatars</string>
     <string name="show_user_groups">Mostra els grups d\'usuaris</string>
     <string name="show_status_line">Mostra l\'estat de línia</string>
     <string name="user_info">Informació d\'usuari</string>

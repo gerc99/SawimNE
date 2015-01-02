@@ -37,6 +37,8 @@ public class SawimResources {
             getDrawable(R.drawable.ic_new_personal_message);
     public static final Bitmap DEFAULT_AVATAR = BitmapFactory.decodeResource(SawimApplication.getContext().getResources(),
             R.drawable.avatar);
+    public static final Bitmap DEFAULT_AVATAR_STATIC = BitmapFactory.decodeResource(SawimApplication.getContext().getResources(),
+            R.drawable.online);
     public static final Drawable APP_ICON = SawimApplication.getInstance().getResources().getDrawable(R.drawable.ic_launcher);
 
     public static void initIcons() {

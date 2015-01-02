@@ -869,7 +869,10 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                     if (xmppServiceContact.getContact(mData.getNick()) == null) {
                         Toast.makeText(getActivity(), getString(R.string.contact_walked), Toast.LENGTH_LONG).show();
                     }
-                    setText(chat.onMessageSelected(mData));
+                    String text = chat.onMessageSelected(mData);
+                    if (text != "") {
+                        setText(text);
+                    }
                 }
                 showKeyboard();
                 if (SawimApplication.isManyPane()) {
