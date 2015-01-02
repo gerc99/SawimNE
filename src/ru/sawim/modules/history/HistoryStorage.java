@@ -84,7 +84,7 @@ public class HistoryStorage {
                         new String[]{protocolId, uniqueUserId, md.getNick(), md.getText().toString()});
     }
 
-    public long getLastMessageTime() {
+    public synchronized long getLastMessageTime() {
         long lastMessageTime = 0;
         Cursor cursor = null;
         try {
@@ -129,7 +129,7 @@ public class HistoryStorage {
         return cursor;
     }
 
-    public static boolean hasLastMessage(Chat chat, Message message) {
+    public synchronized static boolean hasLastMessage(Chat chat, Message message) {
         Contact contact = chat.getContact();
         boolean hasMessage = false;
         Cursor cursor = null;
@@ -158,7 +158,7 @@ public class HistoryStorage {
                 && mess.getText().toString().equals(messFromDataBase.getText().toString());
     }
 
-    public boolean addNextListMessages(List<MessData> messDataList, final Chat chat, int limit, int offset, boolean addedAtTheBeginning) {
+    public synchronized boolean addNextListMessages(List<MessData> messDataList, final Chat chat, int limit, int offset, boolean addedAtTheBeginning) {
         boolean isAdded;
         Cursor cursor = null;
         try {
@@ -220,7 +220,7 @@ public class HistoryStorage {
         return messData;
     }
 
-    public int getHistorySize() {
+    public synchronized int getHistorySize() {
         Cursor cursor = null;
         int count = 0;
         try {
