@@ -25,7 +25,10 @@
 
 package ru.sawim.activities;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -48,6 +51,9 @@ import ru.sawim.modules.DebugLog;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.view.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SawimActivity extends BaseActivity {
 
     public static final String LOG_TAG = SawimActivity.class.getSimpleName();
@@ -55,7 +61,11 @@ public class SawimActivity extends BaseActivity {
     public static final String NOTIFY_REPLY = "ru.sawim.notify.reply";
     public static final String NOTIFY_CAPTCHA = "ru.sawim.notify.captcha";
     public static final String NOTIFY_UPLOAD = "ru.sawim.notify.upload";
+    public static final String SHOW_FRAGMENT = "ru.sawim.show_fragment";
+
+    private static List<Fragment> backgroundFragmentsStack = new ArrayList<>();
     private boolean isOpenNewChat = false;
+    private BroadcastReceiver broadcastReceiver;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -70,6 +80,15 @@ public class SawimActivity extends BaseActivity {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.fragment_container, rosterView, RosterView.TAG).commit();
         }
+        broadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent.getAction().equals(SHOW_FRAGMENT)) {
+                    showLastFragmentFromBackStack();
+                }
+            }
+        };
+        registerReceiver(broadcastReceiver, new IntentFilter(SHOW_FRAGMENT));
     }
 
     @Override
@@ -158,6 +177,26 @@ public class SawimActivity extends BaseActivity {
         return false;
     }
 
+    private void showLastFragmentFromBackStack() {
+        if (backgroundFragmentsStack.size() > 0) {
+            Fragment fragment = backgroundFragmentsStack.get(backgroundFragmentsStack.size() - 1);
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment, fragment.getTag());
+            backgroundFragmentsStack.remove(backgroundFragmentsStack.size() - 1);
+        }
+    }
+
+    public static void addFragmentToStack(Fragment fragment) {
+        if (SawimApplication.isPaused()) {
+            backgroundFragmentsStack.add(fragment);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(broadcastReceiver);
+    }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -185,6 +224,8 @@ public class SawimActivity extends BaseActivity {
         }
         handleIntent();
         if (!isOpenNewChat && SawimApplication.isManyPane()) openChat(null, null, true);
+
+        showLastFragmentFromBackStack();
     }
 
     @Override
