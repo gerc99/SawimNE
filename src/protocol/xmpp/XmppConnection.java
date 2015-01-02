@@ -2,6 +2,7 @@ package protocol.xmpp;
 
 import protocol.*;
 import protocol.net.ClientConnection;
+import ru.sawim.Options;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.SawimException;
@@ -671,7 +672,7 @@ public final class XmppConnection extends ClientConnection {
                     }
                     setProgress(80);
                     getXmpp().s_updateOnlineStatus();
-                    getVCard(xmpp.getUserId());
+                    requestVCard(xmpp.getUserId(), "-", "---");
                     String xcode = Xmpp.xStatus.getCode(xmpp.getProfile().xstatusIndex);
                     if ((null != xcode) && !xcode.startsWith(XmppXStatus.XSTATUS_START)) {
                         setXStatus();
@@ -1182,6 +1183,7 @@ public final class XmppConnection extends ClientConnection {
     }
 
     private void requestVCard(String id, String newAvatarHash, String avatarHash) {
+        if (!Options.getBoolean(JLocale.getString(R.string.pref_users_avatars))) return;
         if (avatarHash != null && !avatarHash.isEmpty()) {
             if (!ImageCache.getInstance().hasFile(FileSystem.openDir(FileSystem.AVATARS), avatarHash)) {
                 getVCard(id);

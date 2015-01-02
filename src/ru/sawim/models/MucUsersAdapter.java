@@ -215,19 +215,19 @@ public class MucUsersAdapter extends BaseAdapter {
 
     void populateFrom(final RosterItemView rosterItemView, Xmpp protocol, XmppContact.SubContact c) {
         if (Options.getBoolean(JLocale.getString(R.string.pref_users_avatars))) {
-        Bitmap avatar = ImageCache.getInstance().get(FileSystem.openDir(FileSystem.AVATARS), SawimApplication.getExecutor(), c.avatarHash,
-                SawimResources.DEFAULT_AVATAR, new ImageCache.OnImageLoadListener() {
-                    @Override
-                    public void onLoad() {
-                        rosterItemView.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                notifyDataSetChanged();
-                            }
-                        });
-                    }
-                });
-        rosterItemView.itemFirstImage = avatar;
+            Bitmap avatar = ImageCache.getInstance().get(FileSystem.openDir(FileSystem.AVATARS), SawimApplication.getExecutor(), c.avatarHash,
+                    SawimResources.DEFAULT_AVATAR, new ImageCache.OnImageLoadListener() {
+                        @Override
+                        public void onLoad() {
+                            rosterItemView.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    notifyDataSetChanged();
+                                }
+                            });
+                        }
+                    });
+            rosterItemView.itemFirstImage = avatar;
         } else rosterItemView.itemFirstImage = SawimResources.DEFAULT_AVATAR_STATIC;
 
         //  rosterItemView.itemSecondImage = protocol.getStatusInfo().getIcon(c.status).getImage().getBitmap();
