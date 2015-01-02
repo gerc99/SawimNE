@@ -47,6 +47,7 @@ import ru.sawim.roster.RosterHelper;
 import ru.sawim.text.TextFormatter;
 import ru.sawim.view.menu.JuickMenu;
 import ru.sawim.view.menu.MyMenu;
+import ru.sawim.view.menu.MyMenuItem;
 import ru.sawim.widget.FixedEditText;
 import ru.sawim.widget.MyImageButton;
 import ru.sawim.widget.MyListView;
@@ -230,31 +231,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                 @Override
                 public void onClick(View view) {
                     if (chat == null) return;
-                    Contact contact = chat.getContact();
-                    final MyMenu menu = new MyMenu();
-                    boolean accessible = chat.getWritable() && (contact.isSingleUserContact() || contact.isOnline());
-                    menu.add(getString(adapter.isMultiQuote() ?
-                            R.string.disable_multi_citation : R.string.include_multi_citation), ContactMenu.MENU_MULTI_CITATION);
-                    if (0 < chat.getAuthRequestCounter()) {
-                        menu.add(R.string.grant, ContactMenu.USER_MENU_GRANT_AUTH);
-                        menu.add(R.string.deny, ContactMenu.USER_MENU_DENY_AUTH);
-                    }
-                    if (!contact.isAuth()) {
-                        menu.add(R.string.requauth, ContactMenu.USER_MENU_REQU_AUTH);
-                    }
-                    if (accessible) {
-                        menu.add(R.string.ft_name, ContactMenu.USER_MENU_FILE_TRANS);
-                        menu.add(R.string.ft_cam, ContactMenu.USER_MENU_CAM_TRANS);
-                    }
-
-                    if (contact.isSingleUserContact()) {
-                        menu.add(R.string.user_statuses, ContactMenu.USER_MENU_STATUSES);
-                    } else {
-                        menu.add(R.string.conference_theme, ContactMenu.USER_MENU_STATUSES);
-                        if (contact.isOnline()) {
-                            menu.add(R.string.leave_chat, ContactMenu.CONFERENCE_DISCONNECT);
-                        }
-                    }
+                    final MyMenu menu = getMenu();
                     AlertDialog.Builder builder = new AlertDialog.Builder(activity);
                     builder.setCancelable(true);
                     builder.setTitle(null);
@@ -629,9 +606,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                 if (oldFirstVisibleItem != firstVisibleItem) {
                     oldFirstVisibleItem = firstVisibleItem;
                     if (visibleItemCount > 0 && firstVisibleItem == 0) {
-                        if (chatListView.canScrollVertically(-1)) {
-                            loadStory(isScroll, false);
-                        }
+                        loadStory(isScroll, false);
                     }
                 } else {
                     oldFirstVisibleItem = -1;
@@ -916,32 +891,42 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    public void onPrepareOptionsMenu_(Menu menu) {
-        if (chat == null) return;
-        final Contact contact = chat.getContact();
-        menu.clear();
+    private MyMenu getMenu() {
+        Contact contact = chat.getContact();
+        final MyMenu menu = new MyMenu();
         boolean accessible = chat.getWritable() && (contact.isSingleUserContact() || contact.isOnline());
-        menu.add(Menu.FIRST, ContactMenu.MENU_MULTI_CITATION, 2, getString(adapter.isMultiQuote() ?
-                R.string.disable_multi_citation : R.string.include_multi_citation));
+        menu.add(getString(adapter.isMultiQuote() ?
+                R.string.disable_multi_citation : R.string.include_multi_citation), ContactMenu.MENU_MULTI_CITATION);
         if (0 < chat.getAuthRequestCounter()) {
-            menu.add(Menu.FIRST, ContactMenu.USER_MENU_GRANT_AUTH, 2, R.string.grant);
-            menu.add(Menu.FIRST, ContactMenu.USER_MENU_DENY_AUTH, 2, R.string.deny);
+            menu.add(R.string.grant, ContactMenu.USER_MENU_GRANT_AUTH);
+            menu.add(R.string.deny, ContactMenu.USER_MENU_DENY_AUTH);
         }
         if (!contact.isAuth()) {
-            menu.add(Menu.FIRST, ContactMenu.USER_MENU_REQU_AUTH, 2, R.string.requauth);
+            menu.add(R.string.requauth, ContactMenu.USER_MENU_REQU_AUTH);
         }
         if (accessible) {
-            menu.add(Menu.FIRST, ContactMenu.USER_MENU_FILE_TRANS, 2, R.string.ft_name);
-            menu.add(Menu.FIRST, ContactMenu.USER_MENU_CAM_TRANS, 2, R.string.ft_cam);
+            menu.add(R.string.ft_name, ContactMenu.USER_MENU_FILE_TRANS);
+            menu.add(R.string.ft_cam, ContactMenu.USER_MENU_CAM_TRANS);
         }
 
         if (contact.isSingleUserContact()) {
-            menu.add(Menu.FIRST, ContactMenu.USER_MENU_STATUSES, 2, R.string.user_statuses);
+            menu.add(R.string.user_statuses, ContactMenu.USER_MENU_STATUSES);
         } else {
-            menu.add(Menu.FIRST, ContactMenu.USER_MENU_STATUSES, 2, R.string.conference_theme);
+            menu.add(R.string.conference_theme, ContactMenu.USER_MENU_STATUSES);
             if (contact.isOnline()) {
-                menu.add(Menu.FIRST, ContactMenu.CONFERENCE_DISCONNECT, 2, R.string.leave_chat);
+                menu.add(R.string.leave_chat, ContactMenu.CONFERENCE_DISCONNECT);
             }
+        }
+        return menu;
+    }
+
+    public void onPrepareOptionsMenu_(Menu menu) {
+        if (chat == null) return;
+        menu.clear();
+        MyMenu myMenu = getMenu();
+        for (int i = 0; i < myMenu.getCount(); ++i) {
+            MyMenuItem myMenuItem = myMenu.getItem(i);
+            menu.add(Menu.FIRST, myMenuItem.idItem, 2, myMenuItem.nameItem);
         }
         super.onPrepareOptionsMenu(menu);
     }
