@@ -69,7 +69,7 @@ public class SawimApplication extends Application {
     public static int autoAbsenceTime;
     public static int gmtOffset;
 
-    public static SawimApplication instance;
+    private static SawimApplication instance;
     private final SawimServiceConnection serviceConnection = new SawimServiceConnection();
     private final NetworkStateReceiver networkStateReceiver = new NetworkStateReceiver();
     public boolean isBindService = false;
