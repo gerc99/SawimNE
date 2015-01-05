@@ -412,8 +412,7 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
                 .append("\n");
         messText.append("Link: ").append(url);
 
-        PlainMessage plainMsg = new PlainMessage(chat.getProtocol(), chat.getContact().getUserId(), SawimApplication.getCurrentGmtTime(), messText.toString());
-        chat.addMessage(plainMsg, true, false, false);
+        chat.getProtocol().sendMessage(chat, messText.toString());
         setProgress(100);
     }
 }

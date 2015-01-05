@@ -1033,6 +1033,12 @@ abstract public class Protocol {
         }
     }
 
+    public final void sendMessage(Chat chat, String messText) {
+        PlainMessage plainMsg = new PlainMessage(chat.getProtocol(), chat.getContact().getUserId(), SawimApplication.getCurrentGmtTime(), messText);
+        chat.addMessage(plainMsg, true, false, false);
+        sendSomeMessage(plainMsg);
+    }
+
     protected void doAction(BaseActivity activity, Contact contact, int cmd) {
     }
 
