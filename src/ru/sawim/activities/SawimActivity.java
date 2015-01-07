@@ -193,9 +193,6 @@ public class SawimActivity extends BaseActivity {
             } else {
                 startActivity(new Intent(this, AccountsListActivity.class));
             }
-        } else {
-            if (startWindowView != null)
-                fragmentManager.popBackStack();
         }
         handleIntent();
         if (!isOpenNewChat && SawimApplication.isManyPane()) openChat(null, null, true);
