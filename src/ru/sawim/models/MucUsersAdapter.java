@@ -228,9 +228,9 @@ public class MucUsersAdapter extends BaseAdapter {
                         }
                     });
             rosterItemView.itemFirstImage = avatar;
-        } else rosterItemView.itemFirstImage = SawimResources.DEFAULT_AVATAR_STATIC;
+        }
 
-        //  rosterItemView.itemSecondImage = protocol.getStatusInfo().getIcon(c.status).getImage().getBitmap();
+        rosterItemView.itemSecondImage = protocol.getStatusInfo().getIcon(c.status).getImage().getBitmap();
         rosterItemView.itemNameColor = Scheme.getColor(Scheme.THEME_TEXT);
         rosterItemView.itemNameFont = Typeface.DEFAULT;
         rosterItemView.itemName = c.resource;
@@ -243,6 +243,6 @@ public class MucUsersAdapter extends BaseAdapter {
         if (ic != null && !Options.getBoolean(JLocale.getString(R.string.pref_hide_icons_clients))) {
             rosterItemView.itemFifthImage = ic.getImage().getBitmap();
         }
-        rosterItemView.itemSixthImage = SawimResources.affiliationIcons.iconAt(XmppServiceContact.getStatusName(c.status)).getImage().getBitmap();
+        rosterItemView.itemSixthImage = SawimResources.affiliationIcons.iconAt(XmppServiceContact.getAffiliationName(c.status)).getImage().getBitmap();
     }
 }

@@ -22,10 +22,6 @@ import java.util.Vector;
 
 public class XmppServiceContact extends XmppContact {
 
-    public static final byte STATUS_ONLINE = (byte) 1;
-    public static final byte STATUS_AWAY = (byte) 2;
-    public static final byte STATUS_DND = (byte) 3;
-    public static final byte STATUS_OFFLINE = (byte) 0;
     public static final byte AFFILIATION_NONE = (byte) 0;
     public static final byte AFFILIATION_MEMBER = (byte) 1;
     public static final byte AFFILIATION_ADMIN = (byte) 2;
@@ -66,19 +62,18 @@ public class XmppServiceContact extends XmppContact {
         }
     }
 
-
-    public static final int getStatusName(byte index) {
+    public static final int getAffiliationName(byte index) {
         switch (index) {
-            case STATUS_AWAY:
+            case AFFILIATION_OWNER:
                 return 0;
-            case STATUS_DND:
+            case AFFILIATION_ADMIN:
                 return 1;
-            case STATUS_ONLINE:
+            case AFFILIATION_MEMBER:
                 return 2;
-            case STATUS_OFFLINE:
+            case AFFILIATION_NONE:
                 return 3;
         }
-        return 1;
+        return 0;
     };
 
     public boolean isAutoJoin() {

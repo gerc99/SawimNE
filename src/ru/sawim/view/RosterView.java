@@ -368,6 +368,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
                 chatViewTablet.setSharingText(sharingText);
                 chatViewTablet.resume(chatViewTablet.getCurrentChat());
             }
+            update();
         } else {
             ChatView chatView = new ChatView();
             chatView.initChat(p, c);
@@ -420,15 +421,11 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
                 if (o instanceof Chat) {
                     Chat chat = (Chat) o;
                     openChat(chat.getProtocol(), chat.getContact(), null);
-                    if (SawimApplication.isManyPane())
-                        update();
                 }
             } else {
                 TreeNode item = (TreeNode) getRosterAdapter().getItem(position);
                 if (item.getType() == TreeNode.CONTACT) {
                     openChat(((Contact) item).getProtocol(), ((Contact) item), null);
-                    if (SawimApplication.isManyPane())
-                        update();
                 }
             }
         }
