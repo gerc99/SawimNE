@@ -622,40 +622,45 @@ public final class RosterHelper {
     public static final int MENU_MYSELF = 19;
     public static final int MENU_MICROBLOG = 20;
 
+    public MyMenu getMenu(final Protocol p) {
+        final MyMenu menu = new MyMenu();
+        menu.add(p.isConnected() || p.isConnecting() ? R.string.disconnect : R.string.connect, MENU_CONNECT);
+        menu.add(R.string.status, MENU_STATUS);
+        if (p.getXStatusInfo() != null)
+            menu.add(R.string.xstatus, MENU_XSTATUS);
+        if ((p instanceof Icq) || (p instanceof Mrim))
+            menu.add(R.string.private_status, MENU_PRIVATE_STATUS);
+        for (int i = 0; i < count; ++i) {
+            Protocol pr = RosterHelper.getInstance().getProtocol(i);
+            if (pr instanceof Mrim && pr.isConnected()) {
+                menu.add(R.string.send_sms, MENU_SEND_SMS);
+            }
+        }
+        if (p.isConnected()) {
+            if (p instanceof Xmpp) {
+                if (((Xmpp) p).hasS2S()) {
+                    menu.add(R.string.service_discovery, MENU_DISCO);
+                }
+            }
+            menu.add(R.string.manage_contact_list, MENU_GROUPS);
+            if (p instanceof Icq) {
+                menu.add(R.string.myself, MENU_MYSELF);
+            } else {
+                if (p instanceof Xmpp) {
+                    menu.add(R.string.notes, MENU_NOTES);
+                }
+                if (p.hasVCardEditor())
+                    menu.add(R.string.myself, MENU_MYSELF);
+                if (p instanceof Mrim)
+                    menu.add(R.string.microblog, MENU_MICROBLOG);
+            }
+        }
+        return menu;
+    }
+
     public void showProtocolMenu(final BaseActivity activity, final Protocol p) {
         if (p != null) {
-            final MyMenu menu = new MyMenu();
-            menu.add(p.isConnected() || p.isConnecting() ? R.string.disconnect : R.string.connect, MENU_CONNECT);
-            menu.add(R.string.status, MENU_STATUS);
-            if (p.getXStatusInfo() != null)
-                menu.add(R.string.xstatus, MENU_XSTATUS);
-            if ((p instanceof Icq) || (p instanceof Mrim))
-                menu.add(R.string.private_status, MENU_PRIVATE_STATUS);
-            for (int i = 0; i < count; ++i) {
-                Protocol pr = RosterHelper.getInstance().getProtocol(i);
-                if (pr instanceof Mrim && pr.isConnected()) {
-                    menu.add(R.string.send_sms, MENU_SEND_SMS);
-                }
-            }
-            if (p.isConnected()) {
-                if (p instanceof Xmpp) {
-                    if (((Xmpp) p).hasS2S()) {
-                        menu.add(R.string.service_discovery, MENU_DISCO);
-                    }
-                }
-                menu.add(R.string.manage_contact_list, MENU_GROUPS);
-                if (p instanceof Icq) {
-                    menu.add(R.string.myself, MENU_MYSELF);
-                } else {
-                    if (p instanceof Xmpp) {
-                        menu.add(R.string.notes, MENU_NOTES);
-                    }
-                    if (p.hasVCardEditor())
-                        menu.add(R.string.myself, MENU_MYSELF);
-                    if (p instanceof Mrim)
-                        menu.add(R.string.microblog, MENU_MICROBLOG);
-                }
-            }
+            final MyMenu menu = getMenu(p);
             AlertDialog.Builder builder = new AlertDialog.Builder(activity);
             builder.setCancelable(true);
             builder.setTitle(p.getUserId());
