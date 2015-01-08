@@ -834,7 +834,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
             }
             int position = ids.get(searchPositionsCount - 1);
             if (position > adapter.getCount()) {
-                loadStory(false, true);
+                chat.getHistory().addNextListMessages(adapter.getItems(), chat, position, adapter.getCount(), true);
             }
             adapter.notifyDataSetChanged();
             chatListView.setSelection(position);
@@ -846,6 +846,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
 
     private void enableSearchMode() {
         isSearchMode = true;
+        searchTextFromMessage();
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -926,7 +927,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                         Toast.makeText(getActivity(), getString(R.string.contact_walked), Toast.LENGTH_LONG).show();
                     }
                     String text = chat.onMessageSelected(mData);
-                    if (text.equals("")) {
+                    if (!text.equals("")) {
                         setText(text);
                     }
                 }
@@ -1271,8 +1272,9 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                 sharingText = null;
             }
             if (isSearchMode) {
-                if (oldSearchQuery != null && !oldSearchQuery.equals(text)) {
-                    oldSearchQuery = text;
+                String query = text.toLowerCase();
+                if (oldSearchQuery != null && !oldSearchQuery.equals(query)) {
+                    oldSearchQuery = query;
                     searchPositionsCount = 0;
                     searchTextFromMessage();
                 }
