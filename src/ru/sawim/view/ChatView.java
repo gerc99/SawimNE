@@ -57,6 +57,8 @@ import ru.sawim.widget.chat.ChatInputBarView;
 import ru.sawim.widget.chat.ChatListsView;
 import ru.sawim.widget.chat.ChatViewRoot;
 
+import java.util.List;
+
 /**
  * Created with IntelliJ IDEA.
  * User: Gerc
@@ -69,6 +71,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     public static final String TAG = ChatView.class.getSimpleName();
 
     private static final int HISTORY_MESSAGES_LIMIT = 20;
+    private static final String CITATION_DIVIDER = "\n---\n";
 
     private static final String PROTOCOL_ID = "protocol_id";
     private static final String CONTACT_ID = "contact_id";
@@ -85,6 +88,10 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     private boolean sendByEnter;
     private static int offsetNewMessage;
     private int newMessageCount = 0;
+
+    private String oldSearchQuery;
+    private boolean isSearchMode;
+    private int searchPositionsCount;
 
     private RosterAdapter chatsSpinnerAdapter;
     private MessagesAdapter adapter;
@@ -185,7 +192,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
         chatBarLayout.update();
         chatViewLayout.update();
         chatListsView.update();
-        chatInputBarView.setImageButtons(menuButton, smileButton, sendButton);
+        chatInputBarView.setImageButtons(menuButton, smileButton, sendButton, isSearchMode);
         if (!SawimApplication.isManyPane()) {
             DrawerLayout.LayoutParams nickListLP = new DrawerLayout.LayoutParams(Util.dipToPixels(activity, 240), DrawerLayout.LayoutParams.MATCH_PARENT);
             DrawerLayout.LayoutParams drawerLayoutLP = new DrawerLayout.LayoutParams(DrawerLayout.LayoutParams.MATCH_PARENT, DrawerLayout.LayoutParams.MATCH_PARENT);
@@ -314,13 +321,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
             sendButton.setVisibility(ImageButton.GONE);
         } else {
             sendButton.setVisibility(ImageButton.VISIBLE);
-            sendButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    send();
-                    closePane();
-                }
-            });
+            sendButton.setOnClickListener(sendBtnClickListener);
             sendButton.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
@@ -374,6 +375,10 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     }
 
     public boolean hasBack() {
+        if (isSearchMode) {
+            destroySearchMode();
+            return false;
+        }
         return !closePane();
     }
 
@@ -817,17 +822,60 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
             rosterView.update();
     }
 
-    private static final String MESS_DIVIDER = "\n---\n";
+    private void searchTextFromMessage() {
+        final String query = getText().toLowerCase();
+        final List<Integer> ids = chat.getHistory().getSearchMessagesIds(query);
+        final boolean idsIsNtEmpty = !ids.isEmpty();
+        if (idsIsNtEmpty) {
+            oldSearchQuery = query;
+            if (searchPositionsCount == 0) {
+                adapter.setQuery(query);
+                searchPositionsCount = ids.size();
+            }
+            int position = ids.get(searchPositionsCount - 1);
+            if (position > adapter.getCount()) {
+                loadStory(false, true);
+            }
+            adapter.notifyDataSetChanged();
+            chatListView.setSelection(position);
+            searchPositionsCount--;
+        } else {
+            Toast.makeText(getActivity().getApplicationContext(), R.string.not_found, Toast.LENGTH_LONG).show();
+        }
+    }
 
-    private void destroyMultiCitation() {
+    private void enableSearchMode() {
+        isSearchMode = true;
+        sendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                searchTextFromMessage();
+            }
+        });
+        chatInputBarView.setImageButtons(menuButton, smileButton, sendButton, isSearchMode);
+        adapter.notifyDataSetChanged();
+    }
+
+    private void destroySearchMode() {
+        isSearchMode = false;
+        searchPositionsCount = 0;
+        adapter.setQuery(null);
+        sendButton.setOnClickListener(sendBtnClickListener);
+        chatInputBarView.setImageButtons(menuButton, smileButton, sendButton, false);
+        adapter.notifyDataSetChanged();
+    }
+
+    private void destroyMultiCitationMode() {
         Clipboard.setClipBoardText(getActivity(), null);
-        adapter.setMultiQuote(false);
+        adapter.setMultiQuoteMode(false);
         for (int i = 0; i < adapter.getCount(); ++i) {
             MessData messData = adapter.getItem(i);
             if (messData.isMarked()) {
                 messData.setMarked(false);
             }
         }
+        adapter.notifyDataSetChanged();
+        getActivity().supportInvalidateOptionsMenu();
     }
 
     private StringBuilder buildQuote() {
@@ -840,11 +888,19 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                     msg = "*" + mData.getNick() + " " + msg;
                 String msgSerialize = Clipboard.serialize(false, mData.isIncoming(), mData.getNick(), mData.getStrTime(), msg);
                 multiQuoteBuffer.append(msgSerialize);
-                multiQuoteBuffer.append(MESS_DIVIDER);
+                multiQuoteBuffer.append(CITATION_DIVIDER);
             }
         }
         return multiQuoteBuffer;
     }
+
+    private View.OnClickListener sendBtnClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            send();
+            closePane();
+        }
+    };
 
     private ListView.OnItemClickListener chatClick = new ListView.OnItemClickListener() {
         @Override
@@ -853,7 +909,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
             final Contact contact = chat.getContact();
             MessData mData = (MessData) adapterView.getAdapter().getItem(position);
             String msg = mData.getText().toString();
-            if (adapter.isMultiQuote()) {
+            if (adapter.isMultiQuoteMode()) {
                 mData.setMarked(!mData.isMarked());
                 StringBuilder multiQuoteBuffer = buildQuote();
                 Clipboard.setClipBoardText(getActivity(), 0 == multiQuoteBuffer.length() ? null : multiQuoteBuffer.toString());
@@ -870,7 +926,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                         Toast.makeText(getActivity(), getString(R.string.contact_walked), Toast.LENGTH_LONG).show();
                     }
                     String text = chat.onMessageSelected(mData);
-                    if (text != "") {
+                    if (text.equals("")) {
                         setText(text);
                     }
                 }
@@ -898,7 +954,8 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
         Contact contact = chat.getContact();
         final MyMenu menu = new MyMenu();
         boolean accessible = chat.getWritable() && (contact.isSingleUserContact() || contact.isOnline());
-        menu.add(getString(adapter.isMultiQuote() ?
+        menu.add(R.string.find, ContactMenu.CHAT_MENU_SEARCH);
+        menu.add(getString(adapter.isMultiQuoteMode() ?
                 R.string.disable_multi_citation : R.string.include_multi_citation), ContactMenu.MENU_MULTI_CITATION);
         if (0 < chat.getAuthRequestCounter()) {
             menu.add(R.string.grant, ContactMenu.USER_MENU_GRANT_AUTH);
@@ -942,15 +999,18 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
         final Protocol protocol = chat.getProtocol();
         final Contact contact = chat.getContact();
         switch (id) {
+            case ContactMenu.CHAT_MENU_SEARCH:
+                enableSearchMode();
+                break;
             case ContactMenu.MENU_MULTI_CITATION:
-                if (adapter.isMultiQuote()) {
-                    destroyMultiCitation();
+                if (adapter.isMultiQuoteMode()) {
+                    destroyMultiCitationMode();
                 } else {
-                    adapter.setMultiQuote(true);
+                    adapter.setMultiQuoteMode(true);
                     Toast.makeText(getActivity(), R.string.hint_multi_citation, Toast.LENGTH_LONG).show();
+                    adapter.notifyDataSetChanged();
+                    getActivity().supportInvalidateOptionsMenu();
                 }
-                adapter.notifyDataSetChanged();
-                getActivity().supportInvalidateOptionsMenu();
                 break;
 
             case ContactMenu.USER_MENU_FILE_TRANS:
@@ -1017,10 +1077,10 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                 StringBuilder sb = new StringBuilder();
                 if (md.isMe() || md.isPresence()) {
                     Clipboard.insertQuotingChars(sb, msg, false, md.isIncoming() ? '\u00bb' : '\u00ab');
-                    sb.append(MESS_DIVIDER);
+                    sb.append(CITATION_DIVIDER);
                 } else {
                     sb.append(Clipboard.serialize(true, md.isIncoming(), md.getNick(), md.getStrTime(), msg));
-                    sb.append(MESS_DIVIDER);
+                    sb.append(CITATION_DIVIDER);
                 }
                 Clipboard.setClipBoardText(getActivity(), 0 == sb.length() ? null : sb.toString());
                 Toast.makeText(getActivity(), R.string.hint_citation, Toast.LENGTH_LONG).show();
@@ -1178,33 +1238,15 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                 text, 0, text.length());
     }
 
-    private boolean compose = false;
     private final TextWatcher textWatcher = new TextWatcher() {
-        private String previousText;
-        private int lineCount = 0;
+        private boolean compose = false;
 
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            if (sendByEnter) {
-                previousText = s.toString();
-            }
         }
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-            /*if (sendByEnter && (start + count <= s.length()) && (1 == count)) {
-                boolean enter = ('\n' == s.charAt(start));
-                if (enter) {
-                    messageEditor.setText(previousText);
-                    messageEditor.setSelection(start);
-                    send();
-                    if (lineCount != messageEditor.getLineCount()) {
-                        lineCount = messageEditor.getLineCount();
-                        messageEditor.requestLayout();
-                    }
-                    return;
-                }
-            }*/
             if (chat == null) return;
             final Protocol protocol = chat.getProtocol();
             final Contact contact = chat.getContact();
@@ -1228,12 +1270,17 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
             if (sharingText != null && sharingText.equals(text)) {
                 sharingText = null;
             }
-            if (adapter != null && adapter.isMultiQuote()) {
+            if (isSearchMode) {
+                if (oldSearchQuery != null && !oldSearchQuery.equals(text)) {
+                    oldSearchQuery = text;
+                    searchPositionsCount = 0;
+                    searchTextFromMessage();
+                }
+            }
+            if (adapter != null && adapter.isMultiQuoteMode()) {
                 String clipBoardText = Clipboard.getClipBoardText(getActivity());
                 if (clipBoardText != null && text.equals(clipBoardText)) {
-                    destroyMultiCitation();
-                    adapter.notifyDataSetChanged();
-                    getActivity().supportInvalidateOptionsMenu();
+                    destroyMultiCitationMode();
                 }
             }
             TextFormatter.getInstance().detectEmotions(s);

@@ -373,7 +373,6 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
             ChatView chatView = new ChatView();
             chatView.initChat(p, c);
             chatView.setSharingText(sharingText);
-            getFragmentManager().popBackStack();
             FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.fragment_container, chatView, ChatView.TAG);
             transaction.addToBackStack(null);

@@ -77,11 +77,10 @@ public class MessageItemView extends View {
     }
 
     public static Layout buildLayout(CharSequence parsedText, Typeface msgTextTypeface) {
-        DisplayMetrics displayMetrics = SawimApplication.getContext().getResources().getDisplayMetrics();
-        return makeLayout(parsedText, msgTextTypeface, displayMetrics.widthPixels - (PADDING_LEFT + PADDING_RIGHT));
+        return makeLayout(parsedText, msgTextTypeface, SawimApplication.getContext().getResources().getDisplayMetrics().widthPixels - (PADDING_LEFT + PADDING_RIGHT));
     }
 
-    private static Layout makeLayout(CharSequence parsedText, Typeface msgTextTypeface, int width) {
+    public static Layout makeLayout(CharSequence parsedText, Typeface msgTextTypeface, int width) {
         if (width <= 0) return null;
         DisplayMetrics displayMetrics = SawimApplication.getContext().getResources().getDisplayMetrics();
         messageTextPaint.setAntiAlias(true);

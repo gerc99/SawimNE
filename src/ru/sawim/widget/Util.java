@@ -6,6 +6,9 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.*;
 import android.os.Build;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.BackgroundColorSpan;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -96,6 +99,25 @@ public class Util {
             }
         }
         return inSampleSize;
+    }
+
+    public static CharSequence highlightText(String search, String originalText, int color) {
+        if (search == null || search.isEmpty()) {
+            return originalText;
+        }
+        int start = originalText.toLowerCase().indexOf(search);
+        if (start < 0) {
+            return originalText;
+        } else {
+            Spannable highlighted = new SpannableString(originalText);
+            while (start >= 0) {
+                int spanStart = start;
+                int spanEnd = start + search.length();
+                highlighted.setSpan(new BackgroundColorSpan(color), spanStart, spanEnd, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                start = originalText.indexOf(search, spanEnd);
+            }
+            return highlighted;
+        }
     }
 
     public static View getDivider(Context context, boolean vertical, int color) {

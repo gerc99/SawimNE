@@ -12,6 +12,7 @@ import ru.sawim.chat.MessData;
 import ru.sawim.chat.message.Message;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.text.TextLinkClick;
+import ru.sawim.widget.Util;
 import ru.sawim.widget.chat.MessageItemView;
 
 import java.util.ArrayList;
@@ -28,23 +29,28 @@ public class MessagesAdapter extends BaseAdapter {
 
     private List<MessData> items;
 
-    private boolean isMultiQuote = false;
+    private String query;
+    private boolean isMultiQuoteMode;
     private int position;
 
     public MessagesAdapter() {
-        items = new ArrayList<MessData>();
+        items = new ArrayList<>();
     }
 
     public List getItems() {
         return items;
     }
 
-    public boolean isMultiQuote() {
-        return isMultiQuote;
+    public void setQuery(String query) {
+        this.query = query;
     }
 
-    public void setMultiQuote(boolean multiShot) {
-        isMultiQuote = multiShot;
+    public boolean isMultiQuoteMode() {
+        return isMultiQuoteMode;
+    }
+
+    public void setMultiQuoteMode(boolean flag) {
+        isMultiQuoteMode = flag;
     }
 
     public void setPosition(int position) {
@@ -112,9 +118,13 @@ public class MessagesAdapter extends BaseAdapter {
                     SawimApplication.getFontSize() * 2 / 3, Typeface.DEFAULT, mData.getStrTime());
             item.setMsgTextSize(SawimApplication.getFontSize());
             item.setTextColor(Scheme.getColor(mData.getMessColor()));
-
         }
-        if (mData.isMarked() && isMultiQuote) {
+        if (query != null) {
+            item.setLayout(MessageItemView.makeLayout(
+                    Util.highlightText(query, mData.layout.getText().toString(), Scheme.getColor(Scheme.THEME_LINKS)),
+                    Typeface.DEFAULT_BOLD, mData.layout.getWidth()));
+        }
+        if (mData.isMarked() && isMultiQuoteMode) {
             item.setTextColor(Scheme.getColor(Scheme.THEME_ITEM_SELECTED));
         }
         item.setShowDivider(position == index);

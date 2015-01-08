@@ -18,6 +18,7 @@ import ru.sawim.io.SawimProvider;
 import ru.sawim.modules.DebugLog;
 import ru.sawim.roster.RosterHelper;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class HistoryStorage {
@@ -82,6 +83,31 @@ public class HistoryStorage {
         SawimApplication.getContext().getContentResolver()
                 .delete(SawimProvider.HISTORY_RESOLVER_URI, WHERE_ACC_CONTACT_AUTHOR_MESSAGE_ID,
                         new String[]{protocolId, uniqueUserId, md.getNick(), md.getText().toString()});
+    }
+
+    public synchronized List<Integer> getSearchMessagesIds(String search) {
+        List<Integer> ids = new ArrayList<>();
+        Cursor cursor = null;
+        try {
+            cursor = SawimApplication.getContext().getContentResolver()
+                    .query(SawimProvider.HISTORY_RESOLVER_URI, null, WHERE_ACC_CONTACT_ID, new String[]{protocolId, uniqueUserId}, null);
+            if (cursor.moveToFirst()) {
+                for (int i = 0; i < cursor.getCount(); i++) {
+                    cursor.moveToPosition(i);
+                    String messTxt = cursor.getString(cursor.getColumnIndex(SawimProvider.MESSAGE));
+                    if (messTxt.toLowerCase().contains(search)) {
+                        ids.add(i);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            DebugLog.panic(e);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return ids;
     }
 
     public synchronized long getLastMessageTime() {

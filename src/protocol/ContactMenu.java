@@ -90,6 +90,7 @@ public class ContactMenu implements TextBoxView.TextBoxListener {
     public static final int MENU_MULTI_CITATION = 63;
     public static final int ROLE_COMMANDS = 64;
     public static final int USER_MENU_DELETE_HISTORY = 65;
+    public static final int CHAT_MENU_SEARCH = 66;
 
     private Contact contact;
     private Protocol protocol;
