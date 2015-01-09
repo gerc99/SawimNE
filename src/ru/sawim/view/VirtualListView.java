@@ -27,7 +27,6 @@ import ru.sawim.widget.MyListView;
 public class VirtualListView extends SawimFragment implements VirtualList.OnVirtualListListener {
 
     public static final String TAG = VirtualListView.class.getSimpleName();
-    private VirtualListAdapter adapter;
     private VirtualList list = VirtualList.getInstance();
     private MyListView lv;
     private AdapterView.AdapterContextMenuInfo contextMenuInfo;
@@ -43,7 +42,6 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
         super.onDetach();
         if (getFragmentManager().getBackStackEntryCount() <= 1) {
             list.clearAll();
-            adapter = null;
         }
     }
 
@@ -61,7 +59,7 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
         super.onActivityCreated(savedInstanceState);
         Activity currentActivity = getActivity();
         currentActivity.setTitle(list.getCaption());
-        adapter = new VirtualListAdapter(currentActivity, list);
+        final VirtualListAdapter adapter = new VirtualListAdapter(currentActivity, list);
         lv = (MyListView) currentActivity.findViewById(R.id.list_view);
         lv.setAdapter(adapter);
         lv.setOnItemClickListener(new ListView.OnItemClickListener() {
@@ -125,14 +123,18 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
         transaction.commit();
     }
 
+    private VirtualListAdapter getVirtualListAdapter() {
+        return (VirtualListAdapter) lv.getAdapter();
+    }
+
     @Override
     public void update() {
         if (list.getModel() == null || getActivity() == null) return;
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                adapter.refreshList(list.getModel().elements);
-                adapter.notifyDataSetInvalidated();
+                getVirtualListAdapter().refreshList(list.getModel().elements);
+                getVirtualListAdapter().notifyDataSetInvalidated();
             }
         });
     }
@@ -178,7 +180,7 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
             @Override
             public void run() {
                 if (isSelected)
-                    adapter.setSelectedItem(i);
+                    getVirtualListAdapter().setSelectedItem(i);
                 lv.setSelection(i);
             }
         });

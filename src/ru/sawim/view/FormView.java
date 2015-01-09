@@ -40,7 +40,6 @@ public class FormView extends DialogFragment implements Forms.OnUpdateForm, View
     private ScrollView scrollView;
     private LinearLayout listLayout;
     private Button okButton;
-    private Button cancelButton;
     private int padding;
     private Forms forms;
     private static HashMap<String, Forms> formsMap = new HashMap<String, Forms>();
@@ -83,7 +82,7 @@ public class FormView extends DialogFragment implements Forms.OnUpdateForm, View
         padding = Util.dipToPixels(getActivity(), 6);
 
         okButton = (Button) v.findViewById(R.id.data_form_ok);
-        cancelButton = (Button) v.findViewById(R.id.data_form_cancel);
+        Button cancelButton = (Button) v.findViewById(R.id.data_form_cancel);
         if (Util.isNeedToInverseDialogBackground())
             scrollView.setBackgroundResource(Util.getSystemBackground(getActivity()));
         okButton.setOnClickListener(this);
@@ -202,7 +201,7 @@ public class FormView extends DialogFragment implements Forms.OnUpdateForm, View
                     listLayout.addView(editText);
                     break;
                 case Forms.CONTROL_CHECKBOX:
-                    CheckBox checkBox = new CheckBox(context);
+                    CheckBox checkBox = (CheckBox) View.inflate(context, R.layout.material_factory_checkbox, null);
                     checkBox.setText(c.description);
                     checkBox.setChecked(c.selected);
                     checkBox.setOnClickListener(new View.OnClickListener() {

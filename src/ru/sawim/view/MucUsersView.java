@@ -21,22 +21,16 @@ import ru.sawim.view.menu.MyMenu;
  * Time: 21:55
  * To change this template use File | Settings | File Templates.
  */
-public class MucUsersView implements TextBoxView.TextBoxListener {
+public class MucUsersView {
 
-    private MucUsersAdapter usersAdapter = new MucUsersAdapter();
-    private String currMucNik = "";
     private TextBoxView banTextbox;
     private TextBoxView kikTextbox;
-    private String myName;
     private boolean isLongClick = false;
-
-    public void init(String myName) {
-        this.myName = myName;
-    }
 
     public void show(final Protocol protocol, final XmppServiceContact xmppServiceContact,
                      final ChatView chatView, ListView nickList) {
         final BaseActivity activity = (BaseActivity) chatView.getActivity();
+        final MucUsersAdapter usersAdapter = new MucUsersAdapter();
         usersAdapter.init((Xmpp) protocol, xmppServiceContact);
         nickList.setAdapter(usersAdapter);
         nickList.setFastScrollEnabled(true);
@@ -71,7 +65,7 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
                 if (o instanceof String) return false;
                 final String nick = usersAdapter.getCurrentSubContact(o);
                 final MyMenu menu = new MyMenu();
-                final MyMenu roleConfigMenu = getRoleConfigMenu(xmppServiceContact, nick);
+                final MyMenu roleConfigMenu = getRoleConfigMenu(usersAdapter, xmppServiceContact, nick);
                 menu.add(activity.getString(R.string.open_private), ContactMenu.COMMAND_PRIVATE);
                 menu.add(activity.getString(R.string.info), ContactMenu.COMMAND_INFO);
                 menu.add(activity.getString(R.string.user_statuses), ContactMenu.COMMAND_STATUS);
@@ -85,7 +79,6 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
                 builder.setAdapter(menu, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        currMucNik = nick;
                         chatView.hasBack();
                         XmppContact.SubContact subContact = xmppServiceContact.getExistSubContact(nick);
                         switch (menu.getItem(which).idItem) {
@@ -127,13 +120,7 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
         });
     }
 
-    public void destroy(ListView nickList) {
-        nickList.setAdapter(null);
-        nickList.setOnItemClickListener(null);
-        nickList.setOnItemLongClickListener(null);
-    }
-
-    private MyMenu getRoleConfigMenu(XmppServiceContact xmppServiceContact, final String nick) {
+    private MyMenu getRoleConfigMenu(MucUsersAdapter usersAdapter, XmppServiceContact xmppServiceContact, final String nick) {
         final MyMenu menu = new MyMenu();
         int myAffiliation = usersAdapter.getAffiliation(xmppServiceContact.getMyName());
         int myRole = usersAdapter.getRole(xmppServiceContact.getMyName());
@@ -186,6 +173,36 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
 
     private void showRoleConfig(XmppServiceContact xmppServiceContact, final MyMenu menu, final String nick, final ChatView chatView) {
         final BaseActivity activity = (BaseActivity) chatView.getActivity();
+        final MucUsersAdapter usersAdapter = chatView.getMucUsersAdapter();
+        final TextBoxView.TextBoxListener textBoxListener = new TextBoxView.TextBoxListener() {
+            @Override
+            public void textboxAction(TextBoxView box, boolean ok) {
+                String rzn = (box == banTextbox) ? banTextbox.getString() : kikTextbox.getString();
+                String myNick_ = "";
+                String myNick = chatView.getCurrentChat().getContact().getMyName();
+                String reason = "";
+                if (rzn.length() != 0 && rzn.charAt(0) == '!') {
+                    rzn = rzn.substring(1);
+                } else {
+                    myNick_ = (myNick == null) ? myNick : myNick + ": ";
+                }
+                if (rzn.length() != 0 && myNick != null) {
+                    reason = myNick_ + rzn;
+                } else {
+                    reason = myNick_;
+                }
+                if (box == banTextbox) {
+                    usersAdapter.setMucAffiliationR(nick, "outcast", reason);
+                    banTextbox.back();
+                    return;
+                }
+                if (box == kikTextbox) {
+                    usersAdapter.setMucRoleR(nick, "none", reason);
+                    kikTextbox.back();
+                    return;
+                }
+            }
+        };
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setCancelable(true);
         builder.setTitle(xmppServiceContact.getName());
@@ -195,14 +212,14 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
                 switch (menu.getItem(which).idItem) {
                     case ContactMenu.COMMAND_KICK:
                         kikTextbox = new TextBoxView();
-                        kikTextbox.setTextBoxListener(MucUsersView.this);
+                        kikTextbox.setTextBoxListener(textBoxListener);
                         kikTextbox.setString("");
                         kikTextbox.show(activity.getSupportFragmentManager(), "message");
                         break;
 
                     case ContactMenu.COMMAND_BAN:
                         banTextbox = new TextBoxView();
-                        banTextbox.setTextBoxListener(MucUsersView.this);
+                        banTextbox.setTextBoxListener(textBoxListener);
                         banTextbox.setString("");
                         banTextbox.show(activity.getSupportFragmentManager(), "message");
                         break;
@@ -246,34 +263,7 @@ public class MucUsersView implements TextBoxView.TextBoxListener {
         builder.create().show();
     }
 
-    public void textboxAction(TextBoxView box, boolean ok) {
-        String rzn = (box == banTextbox) ? banTextbox.getString() : kikTextbox.getString();
-        String nick = "";
-        String myNick = myName;
-        String reason = "";
-        if (rzn.length() != 0 && rzn.charAt(0) == '!') {
-            rzn = rzn.substring(1);
-        } else {
-            nick = (myNick == null) ? myNick : myNick + ": ";
-        }
-        if (rzn.length() != 0 && myNick != null) {
-            reason = nick + rzn;
-        } else {
-            reason = nick;
-        }
-        if ((box == banTextbox)) {
-            usersAdapter.setMucAffiliationR(currMucNik, "outcast", reason);
-            banTextbox.back();
-            return;
-        }
-        if ((box == kikTextbox)) {
-            usersAdapter.setMucRoleR(currMucNik, "none", reason);
-            kikTextbox.back();
-            return;
-        }
-    }
-
-    public void update() {
+    public void update(MucUsersAdapter usersAdapter) {
         if (usersAdapter != null) {
             usersAdapter.update();
             usersAdapter.notifyDataSetChanged();
