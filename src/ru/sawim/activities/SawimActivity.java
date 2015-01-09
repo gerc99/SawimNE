@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -320,7 +321,11 @@ public class SawimActivity extends BaseActivity {
             return true;
         switch (item.getItemId()) {
             case MENU_OPTIONS:
-                startActivity(new Intent(this, MainPreferenceActivity.class));
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                    startActivity(new Intent(this, MainPreferenceActivityNew.class));
+                } else {
+                    startActivity(new Intent(this, MainPreferenceActivity.class));
+                }
                 break;
             case MENU_DEBUG_LOG:
                 DebugLog.instance.activate(this);

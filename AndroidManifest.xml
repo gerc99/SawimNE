@@ -64,6 +64,10 @@
                   android:theme="@style/BaseTheme"
                   android:windowSoftInputMode="stateAlwaysHidden|adjustResize"
                   android:configChanges="orientation|keyboardHidden|screenSize"/>
+        <activity android:name=".activities.MainPreferenceActivityNew"
+                  android:theme="@style/BaseTheme"
+                  android:windowSoftInputMode="stateAlwaysHidden|adjustResize"
+                  android:configChanges="orientation|keyboardHidden|screenSize"/>
         <activity android:name=".activities.AccountsListActivity"
                   android:theme="@style/BaseTheme"
                   android:windowSoftInputMode="stateAlwaysHidden|adjustResize"
