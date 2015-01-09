@@ -238,8 +238,10 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
         profileView.setOnBuildContextMenu(new VirtualList.OnBuildContextMenu() {
             @Override
             public void onCreateContextMenu(ContextMenu menu, int listItem) {
-                menu.add(Menu.FIRST, INFO_MENU_COPY, 2, R.string.copy_text);
-                menu.add(Menu.FIRST, INFO_MENU_COPY_ALL, 2, R.string.copy_all_text);
+                if (profileView.getModel().isItemSelectable(listItem)) {
+                    menu.add(Menu.FIRST, INFO_MENU_COPY, 2, R.string.copy_text);
+                    menu.add(Menu.FIRST, INFO_MENU_COPY_ALL, 2, R.string.copy_all_text);
+                }
                 if (avatar != null) {
                     menu.add(Menu.FIRST, INFO_MENU_SAVE_AVATAR, 2, SawimApplication.getInstance().getString(R.string.save_avatar));
                 }
