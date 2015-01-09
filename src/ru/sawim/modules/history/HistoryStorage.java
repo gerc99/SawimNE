@@ -87,6 +87,7 @@ public class HistoryStorage {
 
     public synchronized List<Integer> getSearchMessagesIds(String search) {
         List<Integer> ids = new ArrayList<>();
+        if (search == null || search.isEmpty()) return ids;
         Cursor cursor = null;
         try {
             cursor = SawimApplication.getContext().getContentResolver()
