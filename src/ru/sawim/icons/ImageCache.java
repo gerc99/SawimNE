@@ -120,6 +120,7 @@ public class ImageCache {
 
     public boolean hasFile(File pathCacheFolder, String hash) {
         String[] files = pathCacheFolder.list();
+        if (files == null) return false;
         for (String file : files) {
             if (file.equals(hash)) {
                 return true;
