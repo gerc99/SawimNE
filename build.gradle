@@ -3,7 +3,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.14.2'
+        classpath 'com.android.tools.build:gradle:1.0.0'
     }
 }
 
@@ -83,17 +83,19 @@ android {
 
         buildTypes {
             release {
-                runProguard true
+                minifyEnabled true
                 proguardFile getDefaultProguardFile('proguard-android.txt')
                 proguardFile file('proguard-android.txt')
                 signingConfig signingConfigs.sawim
             }
         }
     }
-    android.applicationVariants.all { variant ->
+    applicationVariants.all { variant ->
         println "*********" + variant.description + "**********";
         def apkName = "SawimNE.apk";
         println "*********" + "$project.buildDir/apk/" + apkName + "**********";
-        variant.outputFile = file("$project.buildDir/apk/" + apkName)
+        variant.outputs.each { output ->
+            output.outputFile = file("$project.buildDir/apk/" + apkName)
+        }
     }
 }
