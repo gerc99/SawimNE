@@ -10,7 +10,6 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -70,6 +69,7 @@ public class PictureView extends DialogFragment {
 
         link = HtmlTask.parseDropBox(link);
         progressBar.setVisibility(ProgressBar.VISIBLE);
+        webView.setVisibility(ProgressBar.GONE);
         htmlTask = new HtmlTask(getActivity(), link, webView, progressBar) {
             @Override
             protected void onProgressUpdate(Integer... values) {
@@ -77,16 +77,16 @@ public class PictureView extends DialogFragment {
                 int newProgress = values[0];
                 progressBar.setProgress(newProgress);
                 if (newProgress == 100) {
-                    webView.setVisibility(ImageView.VISIBLE);
+                    webView.setVisibility(View.VISIBLE);
                     progressBar.setVisibility(ProgressBar.GONE);
                 } else {
-                    webView.setVisibility(ImageView.GONE);
+                    webView.setVisibility(View.GONE);
                     progressBar.setVisibility(ProgressBar.VISIBLE);
                 }
             }
         };
         htmlTask.execute(link);
-        webView.setWebChromeClient(new WebChromeClient() );
+        webView.setWebChromeClient(new WebChromeClient());
 
         v.setBackgroundColor(Util.getSystemBackground(getActivity().getApplicationContext()));
         root.setBackgroundColor(Util.getSystemBackground(getActivity().getApplicationContext()));
