@@ -45,6 +45,7 @@ public class PreferenceScreenBuilder {
         preferenceScreen.findPreference(activity.getString(R.string.pref_account)).setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
+                activity.finish();
                 activity.startActivity(new Intent(activity, AccountsListActivity.class));
                 return false;
             }

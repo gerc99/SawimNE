@@ -158,7 +158,7 @@ public class AccountsListView extends Fragment {
                     @Override
                     public void onAdd() {
                         Util.hideKeyboard(getActivity());
-                        update();
+                        getActivity().finish();
                     }
                 });
                 transaction.replace(R.id.fragment_container, loginView, loginView.TAG);

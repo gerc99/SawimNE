@@ -1,5 +1,6 @@
 package protocol.xmpp;
 
+import android.util.Log;
 import protocol.Profile;
 import ru.sawim.Options;
 import ru.sawim.R;
@@ -75,6 +76,7 @@ public class XmppRegistration implements Runnable, FormListener {
                 throw new SawimException(0, 0);
             }
             XmlNode n = connection.newAccountRegister(xml);
+            Log.i("Register", n.toString());
             if (("result").equals(n.getAttribute("type"))) {
                 Profile account = new Profile();
                 account.protocolType = Profile.PROTOCOL_JABBER;

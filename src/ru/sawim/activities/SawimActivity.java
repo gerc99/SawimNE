@@ -114,8 +114,7 @@ public class SawimActivity extends BaseActivity {
             chatView = (ChatView) fragmentManager.findFragmentByTag(ChatView.TAG);
             if (fragmentManager.getFragments() == null || rosterView == null || chatView == null || rosterView.isVisible()) {
                 if (p == null || c == null) return false;
-                chatView = new ChatView();
-                chatView.initChat(p, c);
+                chatView = ChatView.newInstance(p.getUserId(), c.getUserId());
                 FragmentTransaction transaction = fragmentManager.beginTransaction();
                 transaction.replace(R.id.fragment_container, chatView, ChatView.TAG);
                 transaction.addToBackStack(null);
@@ -193,6 +192,9 @@ public class SawimActivity extends BaseActivity {
             } else {
                 startActivity(new Intent(this, AccountsListActivity.class));
             }
+        } else {
+            if (startWindowView != null)
+                fragmentManager.popBackStack();
         }
         handleIntent();
         if (!isOpenNewChat && SawimApplication.isManyPane()) openChat(null, null, true);

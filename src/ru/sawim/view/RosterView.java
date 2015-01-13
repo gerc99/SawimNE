@@ -345,6 +345,7 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
                 FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                 FragmentTransaction transaction = fragmentManager.beginTransaction();
                 StartWindowView newFragment = new StartWindowView();
+                transaction.addToBackStack(null);
                 transaction.replace(R.id.fragment_container, newFragment, StartWindowView.TAG);
                 transaction.commit();
                 getActivity().supportInvalidateOptionsMenu();
@@ -363,15 +364,12 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
             ChatView chatViewTablet = (ChatView) getActivity().getSupportFragmentManager()
                     .findFragmentById(R.id.chat_fragment);
             chatViewTablet.pause(chatViewTablet.getCurrentChat());
-            if (c != null) {
-                chatViewTablet.openChat(p, c);
-                chatViewTablet.setSharingText(sharingText);
-                chatViewTablet.resume(chatViewTablet.getCurrentChat());
-            }
+            chatViewTablet.openChat(p, c);
+            chatViewTablet.setSharingText(sharingText);
+            chatViewTablet.resume(chatViewTablet.getCurrentChat());
             update();
         } else {
-            ChatView chatView = new ChatView();
-            chatView.initChat(p, c);
+            ChatView chatView = ChatView.newInstance(p.getUserId(), c.getUserId());
             chatView.setSharingText(sharingText);
             FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.fragment_container, chatView, ChatView.TAG);

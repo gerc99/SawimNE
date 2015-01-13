@@ -113,7 +113,14 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     private ChatBarView chatBarLayout;
     private DialogFragment chatsDialogFragment;
 
-    public ChatView() {}
+    public static ChatView newInstance(String protocolId, String contactId) {
+        ChatView chatView = new ChatView();
+        Bundle args = new Bundle();
+        args.putString(PROTOCOL_ID, protocolId);
+        args.putString(CONTACT_ID, contactId);
+        chatView.setArguments(args);
+        return chatView;
+    }
 
     @Override
     public void onAttach(Activity activity) {
@@ -411,7 +418,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
             Protocol protocol = RosterHelper.getInstance().getProtocol(savedInstanceState.getString(PROTOCOL_ID));
             Contact contact = protocol.getItemByUID(savedInstanceState.getString(CONTACT_ID));
             if (contact != null) {
-                chat = protocol.getChat(contact);
+                initChat(protocol, contact);
             }
         }
     }
@@ -421,7 +428,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
         super.onStart();
         Contact currentContact = RosterHelper.getInstance().getCurrentContact();
         if (chat == null && currentContact != null && !SawimApplication.isManyPane()) {
-            chat = currentContact.getProtocol().getChat(currentContact);
+            initChat(currentContact.getProtocol(), currentContact);
         }
         if (chat == null) {
             if (SawimApplication.isManyPane()) {
@@ -521,7 +528,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
         updateRoster();
     }
 
-    public void initChat(Protocol p, Contact c) {
+    private void initChat(Protocol p, Contact c) {
         c.activate((BaseActivity) getActivity(), p);
         chat = p.getChat(c);
     }
