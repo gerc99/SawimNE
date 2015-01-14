@@ -384,8 +384,8 @@
     <string name="was_kicked">was kicked</string>
     <string name="when_locked">When locked</string>
     <string name="work_info">Work</string>
-    <string name="you_was_baned">You was baned</string>
-    <string name="you_was_kicked">You was kicked</string>
+    <string name="you_was_baned">You were baned</string>
+    <string name="you_was_kicked">You were kicked</string>
     <string name="error_180">Error creating the VideoControl</string>
     <string name="error_181">Viewfinder initialization error</string>
     <string name="error_182">Viewfinder start error</string>
@@ -536,4 +536,11 @@
     <string name="path">Path</string>
     <string name="stopped">Stopped</string>
     <string name="repeat">Repeat</string>
+    <string name="change_password">Change password</string>
+    <string name="current_password">Current password</string>
+    <string name="new_password">New password</string>
+    <string name="warning">Warning</string>
+    <string name="connect_first">You have to connect first</string>
+    <string name="passwords_mismatch">Your current password does not match the entered one</string>
+    <string name="passwords_changed">The password has changed</string>
 </resources>

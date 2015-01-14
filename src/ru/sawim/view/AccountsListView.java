@@ -10,6 +10,9 @@ import android.widget.*;
 import protocol.Profile;
 import protocol.Protocol;
 import protocol.StatusInfo;
+import protocol.xmpp.Jid;
+import protocol.xmpp.Xmpp;
+import protocol.xmpp.XmppChangePassword;
 import ru.sawim.Options;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
@@ -51,10 +54,15 @@ public class AccountsListView extends Fragment {
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
         menu.add(Menu.FIRST, R.id.menu_edit, 0, R.string.edit);
         menu.add(Menu.FIRST, R.id.lift_up, 0, R.string.lift_up);
         menu.add(Menu.FIRST, R.id.put_down, 0, R.string.put_down);
         menu.add(Menu.FIRST, R.id.menu_delete, 0, R.string.delete);
+        Profile account = accountsListAdapter.getItem(info.position);
+        if (account.protocolType == Profile.PROTOCOL_JABBER) {
+            menu.add(Menu.FIRST, R.id.change_password, 0, R.string.change_password);
+        }
     }
 
     @Override
@@ -125,6 +133,74 @@ public class AccountsListView extends Fragment {
                         .setNegativeButton(android.R.string.no, null)
                         .create().show();
                 return true;
+            case R.id.change_password:
+                final Profile account_ = account;
+                LinearLayout linear = new LinearLayout(getActivity());
+                final EditText curPassword = new EditText(getActivity());
+                final EditText newPassword = new EditText(getActivity());
+                final AlertDialog.Builder passwordAlert = new AlertDialog.Builder(getActivity());
+                final AlertDialog.Builder warning = new AlertDialog.Builder(getActivity());
+
+                linear.setOrientation(LinearLayout.VERTICAL);
+                linear.addView(curPassword);
+                linear.addView(newPassword);
+
+                passwordAlert.setTitle(R.string.change_password);
+                passwordAlert.setView(linear);
+
+                curPassword.setHint(R.string.current_password);
+                newPassword.setHint(R.string.new_password);
+
+                warning.setTitle(R.string.warning);
+                warning.setCancelable(true);
+                warning.setNegativeButton(android.R.string.cancel, null);
+                Protocol p = RosterHelper.getInstance().getProtocol(accountID);
+                if (!p.isConnected()) {
+                    warning.setMessage(R.string.connect_first);
+                    warning.show();
+                    return true;
+                }
+
+                passwordAlert.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        Protocol p = RosterHelper.getInstance().getProtocol(accountID);
+                        String curPasswordStr = curPassword.getText().toString(); // current one
+                        String newPasswordStr = newPassword.getText().toString();
+                        String oldPassword = p.getPassword();
+
+                        if (!curPasswordStr.equals(oldPassword)) {
+                            warning.setMessage(R.string.passwords_mismatch);
+                            warning.show();
+                        }
+                        else {
+                            XmppChangePassword changer = new XmppChangePassword();
+                            String jid = p.getUserId();
+                            String domain = Jid.getDomain(jid);
+                            String username = Jid.getNick(jid);
+                            String xml = changer.getXml(domain, username, newPasswordStr);
+                            changer.sendXml(xml, (Xmpp) RosterHelper.getInstance().getProtocol(accountID));
+                            Profile newAccount = new Profile();
+                            newAccount.protocolType = Profile.PROTOCOL_JABBER; // We have no feature to change password in another protocol. Yet?
+                            newAccount.userId = jid;
+                            newAccount.nick = account_.nick;
+                            newAccount.password = newPasswordStr;
+                            newAccount.isActive = account_.isActive;
+                            newAccount.statusIndex = account_.statusIndex;
+                            newAccount.xstatusIndex = account_.xstatusIndex;
+                            newAccount.statusMessage = account_.statusMessage;
+                            newAccount.xstatusTitle = account_.xstatusTitle;
+                            newAccount.xstatusDescription = account_.xstatusDescription;
+                            Options.setAccount(accountID, newAccount);
+                            warning.setMessage(R.string.passwords_changed);
+                            warning.show();
+                        }
+                    }
+                });
+
+                passwordAlert.setNegativeButton(android.R.string.cancel, null);
+                passwordAlert.show();
+                return true;
+
         }
         return super.onContextItemSelected(item);
     }
