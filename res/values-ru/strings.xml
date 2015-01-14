@@ -539,4 +539,11 @@
     <string name="path">Путь</string>
     <string name="stopped">Отправка остановлена</string>
     <string name="repeat">Повторить</string>
+    <string name="change_password">Изменить пароль</string>
+    <string name="current_password">Текущий пароль</string>
+    <string name="days"></string>
+    <string name="new_password">Новый пароль</string>
+    <string name="warning">Внимание</string>
+    <string name="passwords_mismatch">Текуший пароль не совпадает с введённым</string>
+    <string name="passwords_changed">Пароль был изменён</string>
 </resources>
