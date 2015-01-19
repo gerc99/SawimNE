@@ -7,8 +7,6 @@ import ru.sawim.comm.Util;
  * Created by mrdoctorwho on 1/13/15.
  */
 
-
-
 public class XmppChangePassword {
 
     public String getXml(String domain, String username, String password) {

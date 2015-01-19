@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.text.InputType;
 import android.view.*;
 import android.widget.*;
 import protocol.Profile;
@@ -133,6 +134,7 @@ public class AccountsListView extends Fragment {
                         .setNegativeButton(android.R.string.no, null)
                         .create().show();
                 return true;
+
             case R.id.change_password:
                 final Profile account_ = account;
                 LinearLayout linear = new LinearLayout(getActivity());
@@ -140,6 +142,9 @@ public class AccountsListView extends Fragment {
                 final EditText newPassword = new EditText(getActivity());
                 final AlertDialog.Builder passwordAlert = new AlertDialog.Builder(getActivity());
                 final AlertDialog.Builder warning = new AlertDialog.Builder(getActivity());
+
+                curPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                newPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
 
                 linear.setOrientation(LinearLayout.VERTICAL);
                 linear.addView(curPassword);
@@ -155,22 +160,41 @@ public class AccountsListView extends Fragment {
                 warning.setCancelable(true);
                 warning.setNegativeButton(android.R.string.cancel, null);
                 Protocol p = RosterHelper.getInstance().getProtocol(accountID);
+
                 if (!p.isConnected()) {
                     warning.setMessage(R.string.connect_first);
                     warning.show();
                     return true;
                 }
 
-                passwordAlert.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
+                passwordAlert.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        //Do nothing here because we override this button later to change the close behaviour.
+                        //However, we still need this because on older versions of Android unless we
+                        //pass a handler the button doesn't get instantiated
+                    }
+                });
+                passwordAlert.setNegativeButton(android.R.string.cancel, null);
+                final AlertDialog dialog = passwordAlert.create();
+                dialog.show();
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View v)
+                    {
                         Protocol p = RosterHelper.getInstance().getProtocol(accountID);
-                        String curPasswordStr = curPassword.getText().toString(); // current one
+                        String curPasswordStr = curPassword.getText().toString();
                         String newPasswordStr = newPassword.getText().toString();
                         String oldPassword = p.getPassword();
 
                         if (!curPasswordStr.equals(oldPassword)) {
-                            warning.setMessage(R.string.passwords_mismatch);
-                            warning.show();
+                           curPassword.setError(getString(R.string.passwords_mismatch));
+                        }
+                        else if ( newPasswordStr.isEmpty() )  {
+                            newPassword.setError(getString(R.string.non_empty));
                         }
                         else {
                             XmppChangePassword changer = new XmppChangePassword();
@@ -179,28 +203,15 @@ public class AccountsListView extends Fragment {
                             String username = Jid.getNick(jid);
                             String xml = changer.getXml(domain, username, newPasswordStr);
                             changer.sendXml(xml, (Xmpp) RosterHelper.getInstance().getProtocol(accountID));
-                            Profile newAccount = new Profile();
-                            newAccount.protocolType = Profile.PROTOCOL_JABBER; // We have no feature to change password in another protocol. Yet?
-                            newAccount.userId = jid;
-                            newAccount.nick = account_.nick;
-                            newAccount.password = newPasswordStr;
-                            newAccount.isActive = account_.isActive;
-                            newAccount.statusIndex = account_.statusIndex;
-                            newAccount.xstatusIndex = account_.xstatusIndex;
-                            newAccount.statusMessage = account_.statusMessage;
-                            newAccount.xstatusTitle = account_.xstatusTitle;
-                            newAccount.xstatusDescription = account_.xstatusDescription;
-                            Options.setAccount(accountID, newAccount);
+                            account_.password = newPasswordStr;
+                            Options.setAccount(accountID, account_);
+                            dialog.dismiss(); // shall we do this?
                             warning.setMessage(R.string.passwords_changed);
                             warning.show();
                         }
                     }
                 });
-
-                passwordAlert.setNegativeButton(android.R.string.cancel, null);
-                passwordAlert.show();
                 return true;
-
         }
         return super.onContextItemSelected(item);
     }

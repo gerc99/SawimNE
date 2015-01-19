@@ -546,4 +546,5 @@
     <string name="warning">Внимание</string>
     <string name="passwords_mismatch">Текуший пароль не совпадает с введённым</string>
     <string name="passwords_changed">Пароль был изменён</string>
+    <string name="non_empty">Поле не может быть пустым</string>
 </resources>
