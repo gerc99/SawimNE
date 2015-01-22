@@ -374,13 +374,10 @@ public final class Search implements FormListener, ControlStateListener {
                         }
                     }
                     RosterHelper.getInstance().activate(contact);
-                    form.back();
                 }
             }
-
-        } else {
-            form.back();
         }
+        form.back();
     }
 
     private Contact createContact(UserInfo resultData) {
