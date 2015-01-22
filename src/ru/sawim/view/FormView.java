@@ -6,6 +6,8 @@ import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.support.v7.internal.widget.TintCheckBox;
+import android.support.v7.internal.widget.TintEditText;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -181,7 +183,7 @@ public class FormView extends DialogFragment implements Forms.OnUpdateForm, View
                     drawText(context, c, listLayout);
                     break;
                 case Forms.CONTROL_INPUT:
-                    EditText editText = new EditText(context);
+                    TintEditText editText = new TintEditText(context);
                     drawText(context, c, listLayout);
                     editText.setHint(R.string.enter_the);
                     editText.setText(c.text);
@@ -201,7 +203,7 @@ public class FormView extends DialogFragment implements Forms.OnUpdateForm, View
                     listLayout.addView(editText);
                     break;
                 case Forms.CONTROL_CHECKBOX:
-                    CheckBox checkBox = (CheckBox) View.inflate(context, R.layout.material_factory_checkbox, null);
+                    TintCheckBox checkBox = new TintCheckBox(context);
                     checkBox.setText(c.description);
                     checkBox.setChecked(c.selected);
                     checkBox.setOnClickListener(new View.OnClickListener() {
