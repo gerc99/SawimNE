@@ -253,6 +253,7 @@ public final class RosterHelper {
     }
 
     public boolean checkPassword(Protocol protocol) {
+        if (protocol == null) return false;
         if (protocol.getPassword() == null || "".equals(protocol.getPassword())) {
             Profile profile = protocol.getProfile();
             int editAccountNum = Options.getAccountIndex(profile);
