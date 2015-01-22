@@ -224,8 +224,6 @@ public class SawimActivity extends BaseActivity {
             if (formView.hasBack())
                 back();
         } else super.onBackPressed();
-        //if (SawimApplication.isManyPane())
-        //    rosterView.resume();
     }
 
     private void back() {

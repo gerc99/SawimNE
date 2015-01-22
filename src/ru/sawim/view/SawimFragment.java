@@ -1,6 +1,8 @@
 package ru.sawim.view;
 
 import android.support.v4.app.Fragment;
+import android.view.Menu;
+import android.view.MenuItem;
 
 /**
  * Created with IntelliJ IDEA.
@@ -12,4 +14,11 @@ import android.support.v4.app.Fragment;
 public abstract class SawimFragment extends Fragment {
 
     public abstract boolean hasBack();
+
+    public void onPrepareOptionsMenu_(Menu menu) {
+    }
+
+    public void onOptionsItemSelected_(MenuItem item) {
+
+    }
 }
