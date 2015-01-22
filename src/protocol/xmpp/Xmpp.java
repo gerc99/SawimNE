@@ -414,13 +414,6 @@ public final class Xmpp extends Protocol implements FormListener {
             case Profile.PROTOCOL_ODNOKLASSNIKI:
                 return "xmpp.odnoklassniki.ru";
         }
-
-        if ("jabber.ru".equals(domain)) {
-            return domain;
-        }
-        if ("xmpp.ru".equals(domain)) {
-            return domain;
-        }
         if ("ya.ru".equals(domain)) {
             return "xmpp.yandex.ru";
         }
