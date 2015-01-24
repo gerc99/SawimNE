@@ -414,6 +414,9 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (savedInstanceState == null) {
+            savedInstanceState = getArguments();
+        }
         if (savedInstanceState != null) {
             Protocol protocol = RosterHelper.getInstance().getProtocol(savedInstanceState.getString(PROTOCOL_ID));
             Contact contact = protocol.getItemByUID(savedInstanceState.getString(CONTACT_ID));

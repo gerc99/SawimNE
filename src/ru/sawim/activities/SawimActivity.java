@@ -90,12 +90,12 @@ public class SawimActivity extends BaseActivity {
         if (NOTIFY.equals(getIntent().getAction())) {
             Chat current = ChatHistory.instance.chatAt(ChatHistory.instance.getPreferredItem());
             if (current != null)
-                isOpenNewChat = openChat(current.getProtocol(), current.getContact(), true);
+                isOpenNewChat = openChat(current.getProtocol(), current.getContact());
         }
         if (NOTIFY_REPLY.equals(getIntent().getAction())) {
             Chat current = ChatHistory.instance.chatAt(ChatHistory.instance.getPreferredItem());
             if (current != null)
-                isOpenNewChat = openChat(current.getProtocol(), current.getContact(), true);
+                isOpenNewChat = openChat(current.getProtocol(), current.getContact());
         }
         if (NOTIFY_CAPTCHA.equals(getIntent().getAction())) {
             FormView.showWindows(this, getIntent().getStringExtra(NOTIFY_CAPTCHA));
@@ -106,7 +106,7 @@ public class SawimActivity extends BaseActivity {
         setIntent(null);
     }
 
-    public boolean openChat(Protocol p, Contact c, boolean allowingStateLoss) {
+    public boolean openChat(Protocol p, Contact c) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         ChatView chatView = (ChatView) fragmentManager.findFragmentById(R.id.chat_fragment);
         if (chatView == null) {
@@ -118,10 +118,7 @@ public class SawimActivity extends BaseActivity {
                 FragmentTransaction transaction = fragmentManager.beginTransaction();
                 transaction.replace(R.id.fragment_container, chatView, ChatView.TAG);
                 transaction.addToBackStack(null);
-                if (allowingStateLoss)
-                    transaction.commitAllowingStateLoss();
-                else
-                    transaction.commit();
+                transaction.commitAllowingStateLoss();
                 return true;
             }
             if (RosterHelper.getInstance().getCurrentContact() != c
@@ -197,7 +194,7 @@ public class SawimActivity extends BaseActivity {
                 fragmentManager.popBackStack();
         }
         handleIntent();
-        if (!isOpenNewChat && SawimApplication.isManyPane()) openChat(null, null, true);
+        if (!isOpenNewChat && SawimApplication.isManyPane()) openChat(null, null);
 
         showLastFragmentFromBackStack();
     }
