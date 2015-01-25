@@ -307,19 +307,6 @@ public final class RosterHelper {
         return false;
     }
 
-    public boolean disconnect() {
-        boolean disconnecting = false;
-        int count = getProtocolCount();
-        for (int i = 0; i < count; ++i) {
-            Protocol p = getProtocol(i);
-            if (p.isConnected()) {
-                p.disconnect(false);
-                disconnecting = true;
-            }
-        }
-        return disconnecting;
-    }
-
     public void safeSave() {
         int count = getProtocolCount();
         for (int i = 0; i < count; ++i) {

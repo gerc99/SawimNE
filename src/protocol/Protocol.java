@@ -512,7 +512,7 @@ abstract public class Protocol {
     protected void userCloseConnection() {
     }
 
-    public void disconnect(boolean user) {
+    private void disconnect(boolean user) {
         setConnectingProgress(-1);
         if (user) {
             userCloseConnection();
@@ -656,7 +656,7 @@ abstract public class Protocol {
         }
     }
 
-    public final void setStatus(int statusIndex, String msg) {
+    private void setStatus(int statusIndex, String msg, boolean save) {
         if (profile == null) {
             disconnect(true);
             return;
@@ -666,10 +666,18 @@ abstract public class Protocol {
         if (connected && !connecting) {
             disconnect(true);
         }
-        setOnlineStatus(statusIndex, msg);
+        setOnlineStatus(statusIndex, msg, save);
         if (!connected && connecting) {
             connect();
         }
+    }
+
+    public final void setStatus(int statusIndex, String msg) {
+        setStatus(statusIndex, msg, true);
+    }
+
+    public final void setStatusAndDontSave(int statusIndex, String msg) {
+        setStatus(statusIndex, msg, false);
     }
 
     protected abstract void s_updateXStatus();

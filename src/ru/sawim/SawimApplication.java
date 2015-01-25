@@ -13,6 +13,7 @@ import android.os.Looper;
 import android.os.Message;
 import de.duenndns.ssl.MemorizingTrustManager;
 import protocol.Protocol;
+import protocol.StatusInfo;
 import ru.sawim.comm.JLocale;
 import ru.sawim.io.FileSystem;
 import ru.sawim.io.HomeDirectory;
@@ -233,7 +234,7 @@ public class SawimApplication extends Application {
         int count = RosterHelper.getInstance().getProtocolCount();
         for (int i = 0; i < count; ++i) {
             Protocol p = RosterHelper.getInstance().getProtocol(i);
-            p.disconnect(true);
+            p.setStatusAndDontSave(StatusInfo.STATUS_OFFLINE, null);
         }
     }
 
