@@ -7,7 +7,6 @@ import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import protocol.Protocol;
-import protocol.StatusInfo;
 import ru.sawim.roster.RosterHelper;
 
 public class NetworkStateReceiver extends BroadcastReceiver {
@@ -40,7 +39,7 @@ public class NetworkStateReceiver extends BroadcastReceiver {
         int count = RosterHelper.getInstance().getProtocolCount();
         for (int i = 0; i < count; ++i) {
             Protocol p = RosterHelper.getInstance().getProtocol(i);
-            p.setStatusAndDontSave(StatusInfo.STATUS_OFFLINE, null);
+            p.disconnect(false);
         }
     }
 
