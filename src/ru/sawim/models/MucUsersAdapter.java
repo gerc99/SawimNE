@@ -14,10 +14,10 @@ import ru.sawim.comm.JLocale;
 import ru.sawim.comm.Util;
 import ru.sawim.icons.Icon;
 import ru.sawim.icons.ImageCache;
-import ru.sawim.icons.ImageList;
 import ru.sawim.io.FileSystem;
 import ru.sawim.widget.roster.RosterItemView;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +36,12 @@ public class MucUsersAdapter extends BaseAdapter {
     private XmppServiceContact conference;
     private List<Object> items = new ArrayList<Object>();
     private Xmpp protocol;
+
+    File avatarsFolder;
+
+    {
+        avatarsFolder = FileSystem.openDir(FileSystem.AVATARS);
+    }
 
     public void init(Xmpp xmpp, XmppServiceContact conf) {
         protocol = xmpp;
@@ -215,7 +221,7 @@ public class MucUsersAdapter extends BaseAdapter {
 
     void populateFrom(final RosterItemView rosterItemView, Xmpp protocol, XmppContact.SubContact c) {
         if (Options.getBoolean(JLocale.getString(R.string.pref_users_avatars))) {
-            Bitmap avatar = ImageCache.getInstance().get(FileSystem.openDir(FileSystem.AVATARS), SawimApplication.getExecutor(), c.avatarHash,
+            Bitmap avatar = ImageCache.getInstance().get(avatarsFolder, SawimApplication.getExecutor(), c.avatarHash,
                     SawimResources.DEFAULT_AVATAR, new ImageCache.OnImageLoadListener() {
                         @Override
                         public void onLoad() {

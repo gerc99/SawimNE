@@ -27,6 +27,7 @@ import ru.sawim.roster.TreeNode;
 import ru.sawim.widget.MyImageButton;
 import ru.sawim.widget.roster.RosterItemView;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
@@ -47,6 +48,12 @@ public class RosterAdapter extends BaseAdapter implements View.OnClickListener{
     private int type;
     private List<Object> items = new ArrayList<Object>();
     private Vector updateQueue = new Vector();
+
+    File avatarsFolder;
+
+    {
+        avatarsFolder = FileSystem.openDir(FileSystem.AVATARS);
+    }
 
     public void setType(int type) {
         this.type = type;
@@ -214,7 +221,7 @@ public class RosterAdapter extends BaseAdapter implements View.OnClickListener{
             rosterItemView.itemDesc = statusMessage;
         }
         if (Options.getBoolean(JLocale.getString(R.string.pref_users_avatars))) {
-            Bitmap avatar = ImageCache.getInstance().get(FileSystem.openDir(FileSystem.AVATARS),
+            Bitmap avatar = ImageCache.getInstance().get(avatarsFolder,
                     SawimApplication.getExecutor(), item.avatarHash, SawimResources.DEFAULT_AVATAR, new ImageCache.OnImageLoadListener() {
                         @Override
                         public void onLoad() {
