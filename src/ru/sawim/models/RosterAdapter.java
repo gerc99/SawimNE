@@ -48,6 +48,7 @@ public class RosterAdapter extends BaseAdapter implements View.OnClickListener{
     private int type;
     private List<Object> items = new ArrayList<Object>();
     private Vector updateQueue = new Vector();
+    private List<Contact> originalContactList = new ArrayList<Contact>();
 
     File avatarsFolder;
 
@@ -57,6 +58,36 @@ public class RosterAdapter extends BaseAdapter implements View.OnClickListener{
 
     public void setType(int type) {
         this.type = type;
+    }
+
+    public boolean filterData(String query) {
+        items.clear();
+        boolean isFound = false;
+        if (query == null || query.isEmpty()) {
+            originalContactList.clear();
+            refreshList();
+        } else {
+            query = query.toLowerCase();
+            if (originalContactList.isEmpty()) {
+                int count = RosterHelper.getInstance().getProtocolCount();
+                for (int i = 0; i < count; ++i) {
+                    Protocol p = RosterHelper.getInstance().getProtocol(i);
+                    Vector allItems = p.getContactItems();
+                    for (int k = 0; k < allItems.size(); ++k) {
+                        originalContactList.add((Contact) allItems.get(k));
+                    }
+                }
+            }
+            for (Contact contact : originalContactList) {
+                boolean isSearch = contact.getText().toLowerCase().contains(query);
+                if (isSearch) {
+                    items.add(contact);
+                }
+            }
+            isFound = !items.isEmpty();
+            notifyDataSetChanged();
+        }
+        return isFound;
     }
 
     @Override
@@ -214,7 +245,7 @@ public class RosterAdapter extends BaseAdapter implements View.OnClickListener{
         rosterItemView.itemNameColor = Scheme.getColor(item.getTextTheme());
         rosterItemView.itemNameFont = item.hasChat() ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT;
         rosterItemView.itemName = (item.subcontactsS() == 0) ?
-                item.getText() : item.getText() + " (" + item.subcontactsS() + ")";
+                    item.getText() : item.getText() + " (" + item.subcontactsS() + ")";
         if (SawimApplication.showStatusLine) {
             String statusMessage = roster.getStatusMessage(p, item);
             rosterItemView.itemDescColor = Scheme.getColor(Scheme.THEME_CONTACT_STATUS);

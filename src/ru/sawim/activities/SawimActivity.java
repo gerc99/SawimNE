@@ -211,7 +211,10 @@ public class SawimActivity extends BaseActivity {
         SawimFragment chatView = (SawimFragment) fragmentManager.findFragmentByTag(ChatView.TAG);
         SawimFragment formView = (SawimFragment) fragmentManager.findFragmentByTag(FormView.TAG);
         SawimFragment virtualListView = (SawimFragment) fragmentManager.findFragmentByTag(VirtualListView.TAG);
-        if (chatView != null && chatView.isVisible()) {
+        if (getRosterView() != null) {
+            if (getRosterView().hasBack())
+                super.onBackPressed();
+        } else if (chatView != null && chatView.isVisible()) {
             if (chatView.hasBack())
                 super.onBackPressed();
         } else if (virtualListView != null) {
@@ -263,6 +266,7 @@ public class SawimActivity extends BaseActivity {
         return chatView;
     }
 
+    private static final int MENU_SEARCH = 6;
     private static final int MENU_OPTIONS = 7;
     private static final int MENU_QUIT = 14;
     private static final int MENU_DEBUG_LOG = 22;
@@ -290,6 +294,7 @@ public class SawimActivity extends BaseActivity {
                     menu.add(Menu.NONE, myMenuItem.idItem, Menu.NONE, myMenuItem.nameItem);
                 }
             }
+            menu.add(Menu.NONE, MENU_SEARCH, Menu.NONE, R.string.search_user);
             menu.add(Menu.NONE, MENU_OPTIONS, Menu.NONE, R.string.options);
             menu.add(Menu.NONE, MENU_QUIT, Menu.NONE, R.string.quit);
         }
@@ -317,6 +322,9 @@ public class SawimActivity extends BaseActivity {
         if (RosterHelper.getInstance().protocolMenuItemSelected(this, RosterHelper.getInstance().getProtocol(0), item.getItemId()))
             return true;
         switch (item.getItemId()) {
+            case MENU_SEARCH:
+                getRosterView().enableSearchMode();
+                break;
             case MENU_OPTIONS:
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                     startActivity(new Intent(this, MainPreferenceActivityNew.class));

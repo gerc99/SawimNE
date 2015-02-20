@@ -11,6 +11,8 @@ import android.support.v4.app.*;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.*;
 import android.widget.*;
 import com.viewpagerindicator.TabPageIndicator;
@@ -47,7 +49,7 @@ import java.util.List;
  * Time: 19:58
  * To change this template use File | Settings | File Templates.
  */
-public class RosterView extends Fragment implements ListView.OnItemClickListener, OnUpdateRoster, Handler.Callback {
+public class RosterView extends SawimFragment implements ListView.OnItemClickListener, OnUpdateRoster, Handler.Callback {
 
     public static final String TAG = RosterView.class.getSimpleName();
 
@@ -70,6 +72,8 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
     private ViewPager viewPager;
     private CustomPagerAdapter pagerAdapter;
     private ProgressBar progressBar;
+    private EditText queryEditText;
+    private boolean isSearchMode;
 
     @Override
     public void onAttach(Activity activity) {
@@ -78,6 +82,26 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         rosterBarLayout = new LinearLayout(activity);
         barLinearLayout = new LinearLayout(activity);
         chatsImage = new MyImageButton(activity);
+        queryEditText = new EditText(activity);
+        queryEditText.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
+        queryEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String text = s.subSequence(0, s.length()).toString();
+                if (isSearchMode) {
+                    String query = text.toLowerCase();
+                    getRosterAdapter().filterData(query);
+                }
+            }
+        });
 
         progressBar = new ProgressBar(activity, null, android.R.attr.progressBarStyleHorizontal);
         progressBar.setMax(100);
@@ -194,6 +218,11 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
         return false;
     }
 
+    public void enableSearchMode() {
+        isSearchMode = true;
+        initBar();
+    }
+
     private int oldProgressBarPercent;
     private void updateProgressBarSync() {
         final Protocol p = RosterHelper.getInstance().getProtocol(0);
@@ -290,8 +319,12 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
             rosterBarLayoutLP.weight = 2;
             rosterBarLayout.setLayoutParams(rosterBarLayoutLP);
             rosterBarLayout.removeAllViews();
-            if (RosterHelper.getInstance().getProtocolCount() > 0)
-                rosterBarLayout.addView(tabPageIndicator);
+            if (isSearchMode) {
+                barLinearLayout.addView(queryEditText);
+            } else {
+                if (RosterHelper.getInstance().getProtocolCount() > 0)
+                    rosterBarLayout.addView(tabPageIndicator);
+            }
             rosterBarLayout.addView(chatsImage);
             barLinearLayout.addView(rosterBarLayout);
             ChatView chatView = (ChatView) getActivity().getSupportFragmentManager()
@@ -300,8 +333,12 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
             barLinearLayout.addView(chatView.getTitleBar());
             actionBar.setCustomView(barLinearLayout);
         } else {
-            if (RosterHelper.getInstance().getProtocolCount() > 0)
-                barLinearLayout.addView(tabPageIndicator);
+            if (isSearchMode) {
+                barLinearLayout.addView(queryEditText);
+            } else {
+                if (RosterHelper.getInstance().getProtocolCount() > 0)
+                    barLinearLayout.addView(tabPageIndicator);
+            }
             barLinearLayout.addView(chatsImage);
             actionBar.setCustomView(barLinearLayout);
         }
@@ -493,5 +530,16 @@ public class RosterView extends Fragment implements ListView.OnItemClickListener
 
     public void setMode(int mode) {
         this.mode = mode;
+    }
+
+    @Override
+    public boolean hasBack() {
+        if (isSearchMode) {
+            isSearchMode = false;
+            getRosterAdapter().filterData(null);
+            initBar();
+            return false;
+        }
+        return true;
     }
 }
