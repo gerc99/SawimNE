@@ -241,9 +241,9 @@ public final class Xmpp extends Protocol implements FormListener {
         jid = Jid.realJidToSawimJid(jid);
 
         boolean isGate = (-1 == jid.indexOf('@'));
-        boolean isConference = Jid.isConference(jid);
+        boolean isConference = Jid.isConference(getConnection().getMucServer(), jid);
         if (isGate || isConference) {
-            XmppServiceContact c = new XmppServiceContact(jid, name);
+            XmppServiceContact c = new XmppServiceContact(jid, name, isConference);
             if (c.isConference()) {
                 c.setGroup(getOrCreateGroup(c.getDefaultGroupName()));
                 c.setMyName(getDefaultName());
@@ -734,7 +734,7 @@ public final class Xmpp extends Protocol implements FormListener {
         }
 
         String realJid = contact.getUserId();
-        if (Jid.isConference(realJid) && (-1 != realJid.indexOf('/'))) {
+        if (Jid.isConference(getConnection().getMucServer(), realJid) && (-1 != realJid.indexOf('/'))) {
             XmppServiceContact conference = (XmppServiceContact) getItemByUID(Jid.getBareJid(realJid));
             if (conference != null) {
                 String r = conference.getRealJid(Jid.getResource(realJid, ""));

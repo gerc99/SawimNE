@@ -62,7 +62,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
             @Override
             public void itemSelected(BaseActivity activity, int position) {
                 String jid = getCurrentJid(position);
-                if (Jid.isConference(jid)) {
+                if (Jid.isConference(xmpp.getConnection().getMucServer(), jid)) {
                     Contact c = xmpp.createTempContact(jid);
                     xmpp.addContact(c);
                     xmpp.getConnection().sendPresence((XmppServiceContact) c);
@@ -94,7 +94,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
             public void onCreateContextMenu(ContextMenu menu, int listItem) {
                 menu.clear();
                 String jid = getCurrentJid(listItem);
-                if (Jid.isConference(jid)) {
+                if (Jid.isConference(xmpp.getConnection().getMucServer(), jid)) {
                     menu.add(Menu.FIRST, COMMAND_ADD, 2, JLocale.getString(R.string.service_discovery_add));
 
                 } else if (Jid.isKnownGate(jid)) {
@@ -229,7 +229,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
         if (isConferenceList) {
             return jid;
         }
-        if (Jid.isConference(serverJid)) {
+        if (Jid.isConference(xmpp.getConnection().getMucServer(), serverJid)) {
             return Jid.getResource(jid, jid);
         }
         return Jid.makeReadableJid(jid);
@@ -314,7 +314,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
         totalCount = 0;
         shortView = false;
         serverJid = jid;
-        isConferenceList = (-1 == jid.indexOf('@')) && Jid.isConference('@' + jid);
+        isConferenceList = (-1 == jid.indexOf('@')) && Jid.isConference(xmpp.getConnection().getMucServer(), '@' + jid);
         clear();
         if (0 == jid.length()) {
             /*groupItem.addGroup(0, SawimApplication.getContext().getString(R.string.my_conference), Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN, new VirtualListItem.OnGroupListListener() {
@@ -328,7 +328,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
             rebuild(groupItem);
             return;
         }
-        if (Jid.isConference(serverJid)) {
+        if (Jid.isConference(xmpp.getConnection().getMucServer(), serverJid)) {
             shortView = true;
         }
         VirtualListItem wait = model.createNewParser(false);
@@ -345,7 +345,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
         //if (item.opened)
         //    addBookmarks();
         for (int i = 0; i < conf.getKeys().length; ++i) {
-            if (conferences && !Jid.isConference(conf.getKeys()[i])) {
+            if (conferences && !Jid.isConference(xmpp.getConnection().getMucServer(), conf.getKeys()[i])) {
                 conferences = false;
                 addBuildInList();
             }

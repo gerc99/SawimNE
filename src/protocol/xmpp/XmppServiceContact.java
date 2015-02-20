@@ -38,7 +38,7 @@ public class XmppServiceContact extends XmppContact {
     private String myNick;
     private String baseMyNick;
 
-    public XmppServiceContact(String jid, String name) {
+    public XmppServiceContact(String jid, String name, boolean isConference) {
         super(jid, name);
 
         isGate = Jid.isGate(jid);
@@ -53,7 +53,7 @@ public class XmppServiceContact extends XmppContact {
             return;
         }
 
-        isConference = Jid.isConference(jid);
+        this.isConference = isConference;
         if (isConference) {
             setMyName("_");
             if (jid.equals(name)) {
