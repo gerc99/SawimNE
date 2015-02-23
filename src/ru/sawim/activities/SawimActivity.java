@@ -213,7 +213,7 @@ public class SawimActivity extends BaseActivity {
         SawimFragment virtualListView = (SawimFragment) fragmentManager.findFragmentByTag(VirtualListView.TAG);
         if (getRosterView() != null) {
             if (getRosterView().hasBack())
-                super.onBackPressed();
+                back();
         } else if (chatView != null && chatView.isVisible()) {
             if (chatView.hasBack())
                 super.onBackPressed();
