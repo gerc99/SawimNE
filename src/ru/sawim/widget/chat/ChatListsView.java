@@ -9,6 +9,7 @@ import android.widget.LinearLayout;
 import ru.sawim.SawimResources;
 import ru.sawim.Scheme;
 import ru.sawim.widget.IcsLinearLayout;
+import ru.sawim.widget.MyListView;
 import ru.sawim.widget.Util;
 
 /**
@@ -27,23 +28,27 @@ public class ChatListsView extends IcsLinearLayout {
 
     private boolean isShowDividerForUnreadMessage = false;
 
-    public ChatListsView(Context context, boolean isTablet, View chatListView, View nickList) {
+    public ChatListsView(Context context, boolean isTablet, MyListView chatListView, MyListView nickList) {
         super(context);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
         setOrientation(HORIZONTAL);
         layoutParams.weight = 2;
         setLayoutParams(layoutParams);
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        LinearLayout.LayoutParams chatListViewLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
         if (isTablet)
-            lp.weight = 1;
-        addViewInLayout(chatListView, CHAT_LIST_VIEW_INDEX, lp);
+            chatListViewLayoutParams.weight = 1;
+        addViewInLayout(chatListView, CHAT_LIST_VIEW_INDEX, chatListViewLayoutParams);
 
         if (isTablet) {
-            lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-            lp.weight = 3;
-            addViewInLayout(nickList, NICKS_LIST_VIEW_INDEX, lp);
+            LinearLayout.LayoutParams nickListViewLayoutParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+            nickListViewLayoutParams.weight = 3;
+            addViewInLayout(nickList, NICKS_LIST_VIEW_INDEX, nickListViewLayoutParams);
         }
         textPaint.setStrokeWidth(Util.dipToPixels(context, 5));
+    }
+
+    public MyListView getChatListView() {
+        return (MyListView) getChildAt(CHAT_LIST_VIEW_INDEX);
     }
 
     public void update() {

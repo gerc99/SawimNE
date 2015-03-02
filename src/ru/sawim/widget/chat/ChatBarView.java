@@ -9,6 +9,7 @@ import ru.sawim.SawimApplication;
 import ru.sawim.SawimResources;
 import ru.sawim.Scheme;
 import ru.sawim.widget.IcsLinearLayout;
+import ru.sawim.widget.MyImageButton;
 import ru.sawim.widget.SimpleItemView;
 
 /**
@@ -25,7 +26,7 @@ public class ChatBarView extends IcsLinearLayout {
 
     SimpleItemView itemView;
 
-    public ChatBarView(Context context, View chatsImage) {
+    public ChatBarView(Context context, MyImageButton chatsImage) {
         super(context);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
         setOrientation(HORIZONTAL);
@@ -47,6 +48,10 @@ public class ChatBarView extends IcsLinearLayout {
             chatsImageLP.gravity = Gravity.CENTER_VERTICAL;
             addViewInLayout(chatsImage, CHATS_IMAGE_INDEX, chatsImageLP);
         }
+    }
+
+    public MyImageButton getChatsImage() {
+        return (MyImageButton) getChildAt(CHATS_IMAGE_INDEX);
     }
 
     public void update() {

@@ -2,13 +2,13 @@ package ru.sawim.widget.chat;
 
 import android.content.Context;
 import android.view.Gravity;
-import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import ru.sawim.R;
 import ru.sawim.SawimResources;
 import ru.sawim.Scheme;
+import ru.sawim.widget.FixedEditText;
 import ru.sawim.widget.IcsLinearLayout;
+import ru.sawim.widget.MyImageButton;
 import ru.sawim.widget.Util;
 
 /**
@@ -25,7 +25,7 @@ public class ChatInputBarView extends IcsLinearLayout {
     private static final int MESSAGE_EDITOR_INDEX = 2;
     private static final int SEND_BUTTON_INDEX = 3;
 
-    public ChatInputBarView(Context context, ImageButton menuButton, ImageButton smileButton, EditText messageEditor, ImageButton sendButton) {
+    public ChatInputBarView(Context context, MyImageButton menuButton, MyImageButton smileButton, FixedEditText messageEditor, MyImageButton sendButton) {
         super(context);
         int padding = Util.dipToPixels(context, 5);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -49,7 +49,23 @@ public class ChatInputBarView extends IcsLinearLayout {
         addViewInLayout(sendButton, SEND_BUTTON_INDEX, sendButtonLP);
     }
 
-    public void setImageButtons(ImageButton menuButton, ImageButton smileButton, ImageButton sendButton, boolean isSearchMode) {
+    public MyImageButton getMenuButton() {
+        return (MyImageButton) getChildAt(MENU_BUTTON_INDEX);
+    }
+
+    public MyImageButton getSmileButton() {
+        return (MyImageButton) getChildAt(SMILE_BUTTON_INDEX);
+    }
+
+    public FixedEditText getMessageEditor() {
+        return (FixedEditText) getChildAt(MESSAGE_EDITOR_INDEX);
+    }
+
+    public MyImageButton getSendButton() {
+        return (MyImageButton) getChildAt(SEND_BUTTON_INDEX);
+    }
+
+    public void setImageButtons(MyImageButton menuButton, MyImageButton smileButton, MyImageButton sendButton, boolean isSearchMode) {
         menuButton.setImageDrawable(SawimResources.MENU_ICON);
         smileButton.setImageResource(Scheme.isBlack() ? R.drawable.ic_emoji_dark : R.drawable.ic_emoji_light);
         if (isSearchMode) {

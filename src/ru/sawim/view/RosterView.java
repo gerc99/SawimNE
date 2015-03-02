@@ -62,16 +62,11 @@ public class RosterView extends SawimFragment implements ListView.OnItemClickLis
     public static final int MODE_SHARE_TEXT = 2;
     private int mode;
 
-    private LinearLayout rosterBarLayout;
-    private LinearLayout barLinearLayout;
     private RosterViewRoot rosterViewLayout;
     private AdapterView.AdapterContextMenuInfo contextMenuInfo;
     private Handler handler;
     private MyImageButton chatsImage;
     private TabPageIndicator tabPageIndicator;
-    private ViewPager viewPager;
-    private CustomPagerAdapter pagerAdapter;
-    private ProgressBar progressBar;
     private EditText queryEditText;
     private boolean isSearchMode;
 
@@ -79,8 +74,6 @@ public class RosterView extends SawimFragment implements ListView.OnItemClickLis
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         handler = new Handler(this);
-        rosterBarLayout = new LinearLayout(activity);
-        barLinearLayout = new LinearLayout(activity);
         chatsImage = new MyImageButton(activity);
         queryEditText = new EditText(activity);
         queryEditText.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
@@ -103,7 +96,7 @@ public class RosterView extends SawimFragment implements ListView.OnItemClickLis
             }
         });
 
-        progressBar = new ProgressBar(activity, null, android.R.attr.progressBarStyleHorizontal);
+        ProgressBar progressBar = new ProgressBar(activity, null, android.R.attr.progressBarStyleHorizontal);
         progressBar.setMax(100);
         progressBar.getProgressDrawable().setBounds(progressBar.getProgressDrawable().getBounds());
         LinearLayout.LayoutParams ProgressBarLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -111,7 +104,7 @@ public class RosterView extends SawimFragment implements ListView.OnItemClickLis
         progressBar.setLayoutParams(ProgressBarLP);
         progressBar.setVisibility(View.GONE);
 
-        viewPager = new ViewPager(activity);
+        ViewPager viewPager = new ViewPager(activity);
         tabPageIndicator = new TabPageIndicator(getActivity());
         ViewPager.LayoutParams viewPagerLayoutParams = new ViewPager.LayoutParams();
         viewPagerLayoutParams.height = ViewPager.LayoutParams.WRAP_CONTENT;
@@ -167,11 +160,12 @@ public class RosterView extends SawimFragment implements ListView.OnItemClickLis
         onlineListView.setOnItemClickListener(this);
         activeListView.setOnItemClickListener(this);
 
-        List<View> pages = new ArrayList<View>();
+        List<View> pages = new ArrayList<>();
         pages.add(allListView);
         pages.add(onlineListView);
         pages.add(activeListView);
-        pagerAdapter = new CustomPagerAdapter(pages);
+        CustomPagerAdapter pagerAdapter = new CustomPagerAdapter(pages);
+        rosterViewLayout.getViewPager().setAdapter(pagerAdapter);
     }
 
     @Override
@@ -180,8 +174,7 @@ public class RosterView extends SawimFragment implements ListView.OnItemClickLis
         if (rosterViewLayout.getParent() != null)
             ((ViewGroup) rosterViewLayout.getParent()).removeView(rosterViewLayout);
 
-        viewPager.setAdapter(pagerAdapter);
-        tabPageIndicator.setViewPager(viewPager);
+        tabPageIndicator.setViewPager(rosterViewLayout.getViewPager());
         tabPageIndicator.setCurrentItem(RosterHelper.getInstance().getCurrPage());
         return rosterViewLayout;
     }
@@ -191,12 +184,8 @@ public class RosterView extends SawimFragment implements ListView.OnItemClickLis
         super.onDetach();
         contextMenuInfo = null;
         handler = null;
-        viewPager = null;
-        pagerAdapter = null;
         tabPageIndicator = null;
         rosterViewLayout = null;
-        rosterBarLayout = null;
-        barLinearLayout = null;
         chatsImage = null;
     }
 
@@ -232,10 +221,10 @@ public class RosterView extends SawimFragment implements ListView.OnItemClickLis
                 oldProgressBarPercent = percent;
                 BaseActivity activity = (BaseActivity) getActivity();
                 if (100 != percent) {
-                    progressBar.setVisibility(ProgressBar.VISIBLE);
-                    progressBar.setProgress(percent);
+                    rosterViewLayout.getProgressBar().setVisibility(ProgressBar.VISIBLE);
+                    rosterViewLayout.getProgressBar().setProgress(percent);
                 } else {
-                    progressBar.setVisibility(ProgressBar.GONE);
+                    rosterViewLayout.getProgressBar().setVisibility(ProgressBar.GONE);
                 }
                 if (100 == percent || 0 == percent) {
                     activity.supportInvalidateOptionsMenu();
@@ -313,8 +302,9 @@ public class RosterView extends SawimFragment implements ListView.OnItemClickLis
         chatsImageLP.gravity = Gravity.RIGHT;
         chatsImageLP.weight = 4;
         spinnerLP.weight = 1;
-        barLinearLayout.removeAllViews();
+        LinearLayout barLinearLayout = new LinearLayout(getActivity());
         if (SawimApplication.isManyPane()) {
+            LinearLayout rosterBarLayout = new LinearLayout(getActivity());
             LinearLayout.LayoutParams rosterBarLayoutLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
             rosterBarLayoutLP.weight = 2;
             rosterBarLayout.setLayoutParams(rosterBarLayoutLP);
@@ -322,9 +312,14 @@ public class RosterView extends SawimFragment implements ListView.OnItemClickLis
             if (isSearchMode) {
                 barLinearLayout.addView(queryEditText);
             } else {
-                if (RosterHelper.getInstance().getProtocolCount() > 0)
+                if (RosterHelper.getInstance().getProtocolCount() > 0) {
+                    if (tabPageIndicator.getParent() != null)
+                        ((ViewGroup) tabPageIndicator.getParent()).removeView(tabPageIndicator);
                     rosterBarLayout.addView(tabPageIndicator);
+                }
             }
+            if (chatsImage.getParent() != null)
+                ((ViewGroup) chatsImage.getParent()).removeView(chatsImage);
             rosterBarLayout.addView(chatsImage);
             barLinearLayout.addView(rosterBarLayout);
             ChatView chatView = (ChatView) getActivity().getSupportFragmentManager()
@@ -336,9 +331,14 @@ public class RosterView extends SawimFragment implements ListView.OnItemClickLis
             if (isSearchMode) {
                 barLinearLayout.addView(queryEditText);
             } else {
-                if (RosterHelper.getInstance().getProtocolCount() > 0)
+                if (RosterHelper.getInstance().getProtocolCount() > 0) {
+                    if (tabPageIndicator.getParent() != null)
+                        ((ViewGroup) tabPageIndicator.getParent()).removeView(tabPageIndicator);
                     barLinearLayout.addView(tabPageIndicator);
+                }
             }
+            if (chatsImage.getParent() != null)
+                ((ViewGroup) chatsImage.getParent()).removeView(chatsImage);
             barLinearLayout.addView(chatsImage);
             actionBar.setCustomView(barLinearLayout);
         }
@@ -374,8 +374,8 @@ public class RosterView extends SawimFragment implements ListView.OnItemClickLis
                 SawimApplication.returnFromAcc = false;
                 if (getRosterAdapter().getCount() == 0)
                     Toast.makeText(getActivity(), R.string.press_menu_for_connect, Toast.LENGTH_LONG).show();
-                if (pagerAdapter != null)
-                    pagerAdapter.notifyDataSetChanged();
+                if (getPagerAdapter() != null)
+                    getPagerAdapter().notifyDataSetChanged();
             }
         } else {
             if (!SawimApplication.isManyPane()) {
@@ -390,13 +390,17 @@ public class RosterView extends SawimFragment implements ListView.OnItemClickLis
     }
 
     public RosterAdapter getRosterAdapter() {
-        if (viewPager == null) return null;
+        if (rosterViewLayout.getViewPager() == null) return null;
         return (RosterAdapter) getListView().getAdapter();
     }
 
     public MyListView getListView() {
-        if (viewPager == null) return null;
-        return (MyListView) pagerAdapter.instantiateItem(viewPager, viewPager.getCurrentItem());
+        if (rosterViewLayout.getViewPager() == null) return null;
+        return (MyListView) getPagerAdapter().instantiateItem(rosterViewLayout.getViewPager(), rosterViewLayout.getViewPager().getCurrentItem());
+    }
+
+    public CustomPagerAdapter getPagerAdapter() {
+        return (CustomPagerAdapter) rosterViewLayout.getViewPager().getAdapter();
     }
 
     private void openChat(Protocol p, Contact c, String sharingText) {

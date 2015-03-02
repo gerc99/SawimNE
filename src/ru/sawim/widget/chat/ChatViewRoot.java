@@ -24,13 +24,21 @@ public class ChatViewRoot extends IcsLinearLayout {
     private static final int CHAT_INPUT_BAR_VIEW_INDEX = 1;
     private static final int HINT_VIEW_INDEX = 2;
 
-    public ChatViewRoot(Context context, View chatListsView, View chatInputBarView) {
+    public ChatViewRoot(Context context, ChatListsView chatListsView, ChatInputBarView chatInputBarView) {
         super(context);
         setOrientation(LinearLayout.VERTICAL);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
         setLayoutParams(layoutParams);
         addViewInLayout(chatListsView, CHAT_LISTS_VIEW_INDEX, chatListsView.getLayoutParams());
         addViewInLayout(chatInputBarView, CHAT_INPUT_BAR_VIEW_INDEX, chatInputBarView.getLayoutParams());
+    }
+
+    public ChatListsView getChatListsView() {
+        return (ChatListsView) getChildAt(CHAT_LISTS_VIEW_INDEX);
+    }
+
+    public ChatInputBarView getChatInputBarView() {
+        return (ChatInputBarView) getChildAt(CHAT_INPUT_BAR_VIEW_INDEX);
     }
 
     public void update() {
