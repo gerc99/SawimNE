@@ -185,7 +185,7 @@ public class HistoryStorage {
                 && mess.getText().toString().equals(messFromDataBase.getText().toString());
     }
 
-    public synchronized boolean addNextListMessages(List<MessData> messDataList, final Chat chat, int limit, int offset, boolean addedAtTheBeginning) {
+    public boolean addNextListMessages(List<MessData> messDataList, final Chat chat, int limit, int offset, boolean addedAtTheBeginning) {
         boolean isAdded;
         Cursor cursor = null;
         try {

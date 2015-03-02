@@ -698,8 +698,10 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
 
     @Override
     public void addMessage(Contact contact, MessData mess) {
-        if (chat != null && chat.getContact() == contact) {
-            handler.sendMessage(Message.obtain(handler, ADD_MESSAGE, new Object[]{contact, mess}));
+        synchronized (getMessagesAdapter().getItems()) {
+            if (chat != null && chat.getContact() == contact) {
+                handler.sendMessage(Message.obtain(handler, ADD_MESSAGE, new Object[]{contact, mess}));
+            }
         }
     }
 
@@ -738,75 +740,79 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     }
 
     private void loadStory(boolean isScroll, boolean isLoad) {
-        if (isOldChat) {
-            isOldChat = false;
-            return;
-        }
-        if (chat != null && getMessagesAdapter() != null) {
-            boolean hasUnreadMessages = unreadMessageCount > 0;
-            boolean isBottomScroll = chat.currentPosition == 0;
-            boolean isFirstOpenChat = chat.currentPosition == -2;
-            int limit = HISTORY_MESSAGES_LIMIT;
-            if (chat.currentPosition > 0) {
-                limit = chat.currentPosition;
-            } else if (unreadMessageCount > 0) {
-                limit += unreadMessageCount;
+        synchronized (getMessagesAdapter().getItems()) {
+            if (isOldChat) {
+                isOldChat = false;
+                return;
             }
+            if (chat != null && getMessagesAdapter() != null) {
+                boolean hasUnreadMessages = unreadMessageCount > 0;
+                boolean isBottomScroll = chat.currentPosition == 0;
+                boolean isFirstOpenChat = chat.currentPosition == -2;
+                int limit = HISTORY_MESSAGES_LIMIT;
+                if (chat.currentPosition > 0) {
+                    limit = chat.currentPosition;
+                } else if (unreadMessageCount > 0) {
+                    limit += unreadMessageCount;
+                }
 
-            boolean isAdded = false;
-            int oldCount = getMessagesAdapter().getCount();
-            if (!isScroll && isLoad) {
-                isAdded = chat.getHistory().addNextListMessages(getMessagesAdapter().getItems(), chat, limit, oldCount, true);
-            } else if (isScroll && !isLoad) {
-                isAdded = chat.getHistory().addNextListMessages(getMessagesAdapter().getItems(), chat, HISTORY_MESSAGES_LIMIT, oldCount, true);
-            }
-            int newCount = getMessagesAdapter().getCount();
-            if (isAdded && (isLoad || isScroll)) {
-                int position = newCount - unreadMessageCount;
-                getMessagesAdapter().setPosition(position);
-                getMessagesAdapter().notifyDataSetChanged();
-                if (isScroll && !isLoad) {
-                    chatListView.setSelection(newCount == oldCount ? 0 : newCount - oldCount + 1);
-                } else {
-                    if (hasUnreadMessages) {
-                        if (isFirstOpenChat || isBottomScroll) {
-                            chatListView.setSelectionFromTop(position, offsetNewMessage);
-                        } else if (!isBottomScroll) {
-                            chatListView.setSelectionFromTop(chat.firstVisiblePosition, chat.offset);
-                        }
+                boolean isAdded = false;
+                int oldCount = getMessagesAdapter().getCount();
+                if (!isScroll && isLoad) {
+                    isAdded = chat.getHistory().addNextListMessages(getMessagesAdapter().getItems(), chat, limit, oldCount, true);
+                } else if (isScroll && !isLoad) {
+                    isAdded = chat.getHistory().addNextListMessages(getMessagesAdapter().getItems(), chat, HISTORY_MESSAGES_LIMIT, oldCount, true);
+                }
+                int newCount = getMessagesAdapter().getCount();
+                if (isAdded && (isLoad || isScroll)) {
+                    int position = newCount - unreadMessageCount;
+                    getMessagesAdapter().setPosition(position);
+                    getMessagesAdapter().notifyDataSetChanged();
+                    if (isScroll && !isLoad) {
+                        chatListView.setSelection(newCount == oldCount ? 0 : newCount - oldCount + 1);
                     } else {
-                        if (!isFirstOpenChat) {
-                            if (isBottomScroll) {
-                                chatListView.setSelectionFromTop(chat.firstVisiblePosition, -chat.offset);
-                            } else {
-                                chatListView.setSelectionFromTop(chat.firstVisiblePosition + 1, chat.offset);
+                        if (hasUnreadMessages) {
+                            if (isFirstOpenChat || isBottomScroll) {
+                                chatListView.setSelectionFromTop(position, offsetNewMessage);
+                            } else if (!isBottomScroll) {
+                                chatListView.setSelectionFromTop(chat.firstVisiblePosition, chat.offset);
+                            }
+                        } else {
+                            if (!isFirstOpenChat) {
+                                if (isBottomScroll) {
+                                    chatListView.setSelectionFromTop(chat.firstVisiblePosition, -chat.offset);
+                                } else {
+                                    chatListView.setSelectionFromTop(chat.firstVisiblePosition + 1, chat.offset);
+                                }
                             }
                         }
                     }
                 }
+                if (chat.currentPosition > 0) {
+                    chat.currentPosition = -1;
+                }
+                unreadMessageCount = 0;
             }
-            if (chat.currentPosition > 0) {
-                chat.currentPosition = -1;
-            }
-            unreadMessageCount = 0;
         }
     }
 
     private void addUnreadMessagesFromHistoryToList() {
-        if (unreadMessageCount == 0) return;
-        if (isOldChat) {
-            isOldChat = false;
-        }
-        boolean isBottomScroll = chat.currentPosition == 0;
-        getMessagesAdapter().setPosition(getMessagesAdapter().getCount());
-        boolean isAdded = chat.getHistory().addNextListMessages(getMessagesAdapter().getItems(), chat, unreadMessageCount, 0, false);
-        if (isAdded) {
-            getMessagesAdapter().notifyDataSetChanged();
-            if (isBottomScroll) {
-                chatListView.setSelectionFromTop(getMessagesAdapter().getCount() - unreadMessageCount, chatListView.getHeight() / 4);
+        synchronized (getMessagesAdapter().getItems()) {
+            if (unreadMessageCount == 0) return;
+            if (isOldChat) {
+                isOldChat = false;
             }
-            chat.currentPosition = -1;
-            unreadMessageCount = 0;
+            boolean isBottomScroll = chat.currentPosition == 0;
+            getMessagesAdapter().setPosition(getMessagesAdapter().getCount());
+            boolean isAdded = chat.getHistory().addNextListMessages(getMessagesAdapter().getItems(), chat, unreadMessageCount, 0, false);
+            if (isAdded) {
+                getMessagesAdapter().notifyDataSetChanged();
+                if (isBottomScroll) {
+                    chatListView.setSelectionFromTop(getMessagesAdapter().getCount() - unreadMessageCount, chatListView.getHeight() / 4);
+                }
+                chat.currentPosition = -1;
+                unreadMessageCount = 0;
+            }
         }
     }
 
