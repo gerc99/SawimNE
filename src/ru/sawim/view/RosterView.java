@@ -382,7 +382,6 @@ public class RosterView extends SawimFragment implements ListView.OnItemClickLis
                 FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                 FragmentTransaction transaction = fragmentManager.beginTransaction();
                 StartWindowView newFragment = new StartWindowView();
-                transaction.addToBackStack(null);
                 transaction.replace(R.id.fragment_container, newFragment, StartWindowView.TAG);
                 transaction.commit();
                 getActivity().supportInvalidateOptionsMenu();
@@ -392,7 +391,12 @@ public class RosterView extends SawimFragment implements ListView.OnItemClickLis
 
     public RosterAdapter getRosterAdapter() {
         if (viewPager == null) return null;
-        return (RosterAdapter) ((MyListView) pagerAdapter.instantiateItem(viewPager, viewPager.getCurrentItem())).getAdapter();
+        return (RosterAdapter) getListView().getAdapter();
+    }
+
+    public MyListView getListView() {
+        if (viewPager == null) return null;
+        return (MyListView) pagerAdapter.instantiateItem(viewPager, viewPager.getCurrentItem());
     }
 
     private void openChat(Protocol p, Contact c, String sharingText) {
@@ -436,37 +440,54 @@ public class RosterView extends SawimFragment implements ListView.OnItemClickLis
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+        TreeNode treeNode = getRosterAdapter().getItem(position);
         if (getMode() == MODE_SHARE || getMode() == MODE_SHARE_TEXT) {
             if (RosterHelper.getInstance().getCurrPage() == RosterHelper.ACTIVE_CONTACTS) {
-                Object o = getRosterAdapter().getItem(position);
-                if (o instanceof Chat) {
-                    Chat chat = (Chat) o;
-                    sharing(chat.getProtocol(), chat.getContact());
+                if (treeNode.getType() == TreeNode.CONTACT) {
+                    Contact contact = (Contact) treeNode;
+                    sharing(contact.getProtocol(), contact);
                 }
             } else {
-                TreeNode item = (TreeNode) getRosterAdapter().getItem(position);
-                if (item.getType() == TreeNode.CONTACT) {
-                    sharing(((Contact) item).getProtocol(), (Contact) item);
+                if (treeNode.getType() == TreeNode.CONTACT) {
+                    sharing(((Contact) treeNode).getProtocol(), (Contact) treeNode);
                 }
             }
         } else {
             if (RosterHelper.getInstance().getCurrPage() == RosterHelper.ACTIVE_CONTACTS) {
-                Object o = getRosterAdapter().getItem(position);
-                if (o instanceof Chat) {
-                    Chat chat = (Chat) o;
-                    openChat(chat.getProtocol(), chat.getContact(), null);
+                if (treeNode.getType() == TreeNode.CONTACT) {
+                    Contact contact = (Contact) treeNode;
+                    openChat(contact.getProtocol(), contact, null);
                 }
             } else {
-                TreeNode item = (TreeNode) getRosterAdapter().getItem(position);
-                if (item.getType() == TreeNode.CONTACT) {
-                    openChat(((Contact) item).getProtocol(), ((Contact) item), null);
+                if (treeNode.getType() == TreeNode.CONTACT) {
+                    openChat(((Contact) treeNode).getProtocol(), ((Contact) treeNode), null);
                 }
             }
         }
         if (RosterHelper.getInstance().getCurrPage() != RosterHelper.ACTIVE_CONTACTS) {
-            TreeNode item = (TreeNode) getRosterAdapter().getItem(position);
-            if (item.getType() == TreeNode.PROTOCOL || item.getType() == TreeNode.GROUP) {
-                TreeBranch group = (TreeBranch) item;
+            if (treeNode.getType() == TreeNode.PROTOCOL) {
+                ProtocolBranch group = (ProtocolBranch) treeNode;
+                RosterHelper roster = RosterHelper.getInstance();
+                final int count = roster.getProtocolCount();
+                int currProtocol = 0;
+                for (int i = 0; i < count; ++i) {
+                    Protocol p = roster.getProtocol(i);
+                    if (p == null) return;
+                    ProtocolBranch root = p.getProtocolBranch(i);
+                    if (root.getGroupId() != group.getGroupId()) {
+                        root.setExpandFlag(false);
+                    } else {
+                        currProtocol = i;
+                    }
+                }
+                group.setExpandFlag(!group.isExpanded());
+                update();
+                getListView().smoothScrollToPosition(currProtocol);
+            } else if (treeNode.getType() == TreeNode.GROUP) {
+                TreeBranch group = treeNode.getType() == TreeNode.PROTOCOL ?
+                        (TreeBranch) treeNode :
+                        RosterHelper.getGroupById(RosterHelper.getInstance().getProtocol(treeNode).getGroupItems(), treeNode.getGroupId());
+                if (group == null) group = (TreeBranch) treeNode;
                 group.setExpandFlag(!group.isExpanded());
                 update();
             }
@@ -477,23 +498,22 @@ public class RosterView extends SawimFragment implements ListView.OnItemClickLis
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         contextMenuInfo = (AdapterView.AdapterContextMenuInfo) menuInfo;
+        TreeNode treeNode = getRosterAdapter().getItem(contextMenuInfo.position);
         if (RosterHelper.getInstance().getCurrPage() == RosterHelper.ACTIVE_CONTACTS) {
-            Object o = getRosterAdapter().getItem(contextMenuInfo.position);
-            if (o instanceof Chat) {
-                Chat chat = (Chat) o;
-                new ContactMenu(chat.getProtocol(), chat.getContact()).getContextMenu(menu);
+            if (treeNode.getType() == TreeNode.CONTACT) {
+                Contact contact = (Contact) treeNode;
+                new ContactMenu(contact.getProtocol(), contact).getContextMenu(menu);
             }
         } else {
-            TreeNode node = (TreeNode) getRosterAdapter().getItem(contextMenuInfo.position);
-            if (node.getType() == TreeNode.PROTOCOL) {
-                RosterHelper.getInstance().showProtocolMenu((BaseActivity) getActivity(), ((ProtocolBranch) node).getProtocol());
-            } else if (node.getType() == TreeNode.GROUP) {
-                Protocol p = RosterHelper.getInstance().getProtocol((Group) node);
+            if (treeNode.getType() == TreeNode.PROTOCOL) {
+                RosterHelper.getInstance().showProtocolMenu((BaseActivity) getActivity(), ((ProtocolBranch) treeNode).getProtocol());
+            } else if (treeNode.getType() == TreeNode.GROUP) {
+                Protocol p = RosterHelper.getInstance().getProtocol((Group) treeNode);
                 if (p.isConnected()) {
-                    new ManageContactListForm(p, (Group) node).showMenu((BaseActivity) getActivity());
+                    new ManageContactListForm(p, (Group) treeNode).showMenu((BaseActivity) getActivity());
                 }
-            } else if (node.getType() == TreeNode.CONTACT) {
-                new ContactMenu(((Contact) node).getProtocol(), (Contact) node).getContextMenu(menu);
+            } else if (treeNode.getType() == TreeNode.CONTACT) {
+                new ContactMenu(((Contact) treeNode).getProtocol(), (Contact) treeNode).getContextMenu(menu);
             }
         }
     }
@@ -503,17 +523,16 @@ public class RosterView extends SawimFragment implements ListView.OnItemClickLis
         AdapterView.AdapterContextMenuInfo menuInfo = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         if (menuInfo == null)
             menuInfo = contextMenuInfo;
+        TreeNode treeNode = getRosterAdapter().getItem(menuInfo.position);
+        if (treeNode == null) return false;
         if (RosterHelper.getInstance().getCurrPage() == RosterHelper.ACTIVE_CONTACTS) {
-            Object o = getRosterAdapter().getItem(menuInfo.position);
-            if (o instanceof Chat) {
-                Chat chat = (Chat) o;
-                contactMenuItemSelected(chat.getContact(), item);
+            if (treeNode.getType() == TreeNode.CONTACT) {
+                Contact contact = (Contact) treeNode;
+                contactMenuItemSelected(contact, item);
             }
         } else {
-            TreeNode node = (TreeNode) getRosterAdapter().getItem(menuInfo.position);
-            if (node == null) return false;
-            if (node.getType() == TreeNode.CONTACT) {
-                contactMenuItemSelected((Contact) node, item);
+            if (treeNode.getType() == TreeNode.CONTACT) {
+                contactMenuItemSelected((Contact) treeNode, item);
                 return true;
             }
         }

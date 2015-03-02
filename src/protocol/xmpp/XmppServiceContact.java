@@ -18,6 +18,7 @@ import ru.sawim.icons.Icon;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.view.menu.MyMenu;
 
+import java.util.List;
 import java.util.Vector;
 
 public class XmppServiceContact extends XmppContact {
@@ -100,7 +101,11 @@ public class XmppServiceContact extends XmppContact {
     }
 
     public boolean isConference() {
-        return !isSingleUserContact();
+        return isConference;
+    }
+
+    public void setConference(boolean flag) {
+        isConference = flag;
     }
 
     public boolean isVisibleInContactList() {
@@ -245,9 +250,9 @@ public class XmppServiceContact extends XmppContact {
                 subcontacts.get(i).status = StatusInfo.STATUS_OFFLINE;
             }
             String startUin = getUserId() + '/';
-            Vector contactList = xmpp.getContactItems();
+            List<Contact> contactList = xmpp.getContactItems();
             for (int i = contactList.size() - 1; 0 <= i; --i) {
-                Contact c = (Contact) contactList.elementAt(i);
+                Contact c = contactList.get(i);
                 if (c.getUserId().startsWith(startUin)) {
                     c.setOfflineStatus();
                 }

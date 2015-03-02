@@ -1,6 +1,3 @@
-
-
-
 package protocol.icq.action;
 
 import protocol.Contact;
@@ -15,7 +12,7 @@ import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
 import ru.sawim.modules.DebugLog;
 
-import java.util.Vector;
+import java.util.List;
 
 public class UpdateContactListAction extends IcqAction {
 
@@ -92,7 +89,7 @@ public class UpdateContactListAction extends IcqAction {
         } else {
             gItem = getIcq().getGroup(contact);
             contactToId = getIcq().createRandomId();
-            buf = packContact(contact, contactToId, gItem.getId(), action == ACTION_ADD_REQ_AUTH);
+            buf = packContact(contact, contactToId, gItem.getGroupId(), action == ACTION_ADD_REQ_AUTH);
             state = STATE_ADD;
         }
         sendSsiPacket(SnacPacket.CLI_ROSTERADD_COMMAND, buf);
@@ -129,7 +126,7 @@ public class UpdateContactListAction extends IcqAction {
             case ACTION_MOVE_FROM_NIL:
             case ACTION_DEL:
                 if (null != contact) {
-                    buf = packContact(contact, contactFromId, gItem.getId(), false);
+                    buf = packContact(contact, contactFromId, gItem.getGroupId(), false);
                     this.state = STATE_DELETE_CONTACT;
                 } else {
                     buf = packGroup(gItem);
@@ -142,7 +139,7 @@ public class UpdateContactListAction extends IcqAction {
 
             case ACTION_MOVE:
                 sendSsiPacket(SnacPacket.CLI_ROSTERUPDATE_COMMAND,
-                        packContact(contact, contactFromId, gItem.getId(), false));
+                        packContact(contact, contactFromId, gItem.getGroupId(), false));
 
                 this.state = STATE_MOVE1;
                 break;
@@ -250,7 +247,7 @@ public class UpdateContactListAction extends IcqAction {
 
             case STATE_MOVE1:
                 sendSsiPacket(SnacPacket.CLI_ROSTERDELETE_COMMAND,
-                        packContact(contact, contactFromId, gItem.getId(), false));
+                        packContact(contact, contactFromId, gItem.getGroupId(), false));
 
                 this.state = STATE_MOVE2;
                 break;
@@ -258,7 +255,7 @@ public class UpdateContactListAction extends IcqAction {
             case STATE_MOVE2:
                 contactToId = getIcq().createRandomId();
                 sendSsiPacket(SnacPacket.CLI_ROSTERADD_COMMAND,
-                        packContact(contact, contactToId, newGItem.getId(), action == ACTION_MOVE_REQ_AUTH));
+                        packContact(contact, contactToId, newGItem.getGroupId(), action == ACTION_MOVE_REQ_AUTH));
                 this.state = STATE_MOVE3;
                 break;
 
@@ -366,12 +363,12 @@ public class UpdateContactListAction extends IcqAction {
         Util stream = new Util();
 
         stream.writeLenAndUtf8String(gItem.getName());
-        stream.writeWordBE(gItem.getId());
+        stream.writeWordBE(gItem.getGroupId());
         stream.writeWordBE(0);
         stream.writeWordBE(1);
 
 
-        Vector items = gItem.getContacts();
+        List<Contact> items = gItem.getContacts();
         int size = items.size();
         if (size != 0) {
 
@@ -381,7 +378,7 @@ public class UpdateContactListAction extends IcqAction {
             stream.writeWordBE(0x00c8);
             stream.writeWordBE(size * 2);
             for (int i = 0; i < size; ++i) {
-                IcqContact item = (IcqContact) items.elementAt(i);
+                IcqContact item = (IcqContact) items.get(i);
                 stream.writeWordBE(item.getContactId());
             }
         } else {
@@ -394,7 +391,7 @@ public class UpdateContactListAction extends IcqAction {
     private byte[] packGroups() {
         Util stream = new Util();
 
-        Vector gItems = getIcq().getGroupItems();
+        List<Group> gItems = getIcq().getGroupItems();
         int size = gItems.size();
         stream.writeLenAndUtf8String("");
         stream.writeWordBE(0);
@@ -405,7 +402,7 @@ public class UpdateContactListAction extends IcqAction {
         stream.writeWordBE(size * 2);
 
         for (int i = 0; i < size; ++i) {
-            stream.writeWordBE(((Group) gItems.elementAt(i)).getId());
+            stream.writeWordBE((gItems.get(i)).getGroupId());
         }
 
         return stream.toByteArray();

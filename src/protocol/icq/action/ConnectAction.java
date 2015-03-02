@@ -15,6 +15,7 @@ import ru.sawim.comm.Util;
 import ru.sawim.modules.DebugLog;
 import ru.sawim.modules.crypto.MD5;
 
+import java.util.List;
 import java.util.Vector;
 
 public class ConnectAction extends IcqAction {
@@ -484,10 +485,10 @@ public class ConnectAction extends IcqAction {
             consumed = true;
         }
         if (newRosterLoaded) {
-            Vector contactItems = roster.mergeContacts();
+            List<Contact> contactItems = roster.mergeContacts();
             active();
             for (int i = 0; i < contactItems.size(); ++i) {
-                IcqContact contact = (IcqContact) contactItems.elementAt(i);
+                IcqContact contact = (IcqContact) contactItems.get(i);
                 String userId = contact.getUserId();
                 contact.setBooleanValue(Contact.SL_IGNORE, inList(ignoreList, userId));
                 contact.setBooleanValue(Contact.SL_VISIBLE, inList(visibleList, userId));

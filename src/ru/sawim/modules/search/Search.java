@@ -20,7 +20,8 @@ import ru.sawim.models.list.VirtualList;
 import ru.sawim.models.list.VirtualListModel;
 import ru.sawim.roster.RosterHelper;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 public final class Search implements FormListener, ControlStateListener {
     final public static int UIN = 0;
@@ -50,8 +51,9 @@ public final class Search implements FormListener, ControlStateListener {
     private Group group;
     private boolean waitResults = false;
     private String preferredNick;
+    private boolean isConference;
 
-    private Vector results = new Vector();
+    private ArrayList<UserInfo> results = new ArrayList<>();
     private Protocol protocol;
     private boolean icqFields;
     private byte type;
@@ -108,7 +110,7 @@ public final class Search implements FormListener, ControlStateListener {
     }
 
     private void showResults(BaseActivity activity) {
-        results.removeAllElements();
+        results.clear();
         searchId = Util.uniqueValue();
         waitResults = true;
         showWaitScreen(activity);
@@ -119,24 +121,23 @@ public final class Search implements FormListener, ControlStateListener {
         this.group = group;
     }
 
-    private Vector getGroups() {
-        Vector all = protocol.getGroupItems();
-        Vector groups = new Vector();
-        for (int i = 0; i < all.size(); ++i) {
-            Group g = (Group) all.elementAt(i);
+    private List<Group> getGroups() {
+        List<Group> all = protocol.getGroupItems();
+        List<Group> groups = new ArrayList<>();
+        for (Group g : all) {
             if (g.hasMode(Group.MODE_NEW_CONTACTS)) {
-                groups.addElement(g);
+                groups.add(g);
             }
         }
         return groups;
     }
 
     public void addResult(UserInfo info) {
-        results.addElement(info);
+        results.add(info);
     }
 
     private UserInfo getCurrentResult() {
-        return (UserInfo) results.elementAt(currentResultIndex);
+        return results.get(currentResultIndex);
     }
 
     private int getResultCount() {
@@ -179,6 +180,7 @@ public final class Search implements FormListener, ControlStateListener {
     }
 
     private void createSearchForm(boolean isConference) {
+        this.isConference = isConference;
         screen = VirtualList.getInstance();
         searchForm = new Forms((TYPE_LITE == type) ? R.string.add_user : R.string.search_user, this, true);
         if (TYPE_LITE == type) {
@@ -186,12 +188,12 @@ public final class Search implements FormListener, ControlStateListener {
             if (null != xmppGate) {
                 searchForm.addString(R.string.transport, xmppGate);
             }
-            Vector groups = getGroups();
+            List<Group> groups = getGroups();
             if (!groups.isEmpty()) {
                 String[] list = new String[groups.size()];
                 int def = 0;
                 for (int i = 0; i < groups.size(); ++i) {
-                    Group g = (Group) groups.elementAt(i);
+                    Group g = groups.get(i);
                     list[i] = g.getName();
                     if (g == group) {
                         def = i;
@@ -199,13 +201,13 @@ public final class Search implements FormListener, ControlStateListener {
                 }
                 searchForm.addSelector(GROUP, R.string.group, list, def);
             }
-            boolean request_auth = !isConference;
+            boolean requestAuth = !isConference;
 
             if (protocol instanceof Mrim) {
-                request_auth = false;
+                requestAuth = false;
             }
 
-            if (request_auth) {
+            if (requestAuth) {
                 searchForm.addCheckBox(REQ_AUTH, R.string.requauth, true);
             }
             searchForm.addButton(PROFILE, JLocale.getString(R.string.info));
@@ -353,7 +355,6 @@ public final class Search implements FormListener, ControlStateListener {
                 if ((null != xmppGate) && !userid.endsWith(xmppGate)) {
                     userid = userid.replace('@', '%') + '@' + xmppGate;
                 }
-
 
                 Contact contact = protocol.createTempContact(userid);
                 if (null != contact) {

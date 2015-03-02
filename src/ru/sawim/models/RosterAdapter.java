@@ -30,7 +30,7 @@ import ru.sawim.widget.roster.RosterItemView;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Created with IntelliJ IDEA.
@@ -44,11 +44,12 @@ public class RosterAdapter extends BaseAdapter implements View.OnClickListener{
     private static final int ITEM_PROTOCOL = 0;
     private static final int ITEM_GROUP = 1;
     private static final int ITEM_CONTACT = 2;
-    private static final int ITEM_TYPECOUNT = 3;
+    private static final int ITEM_LAYER = 3;
+    private static final int ITEM_TYPECOUNT = 4;
     private int type;
-    private List<Object> items = new ArrayList<Object>();
-    private Vector updateQueue = new Vector();
-    private List<Contact> originalContactList = new ArrayList<Contact>();
+    private List<TreeNode> items = new ArrayList<>();
+    private List<Group> updateQueue = new CopyOnWriteArrayList<>();
+    private List<Contact> originalContactList = new ArrayList<>();
 
     File avatarsFolder;
 
@@ -72,9 +73,9 @@ public class RosterAdapter extends BaseAdapter implements View.OnClickListener{
                 int count = RosterHelper.getInstance().getProtocolCount();
                 for (int i = 0; i < count; ++i) {
                     Protocol p = RosterHelper.getInstance().getProtocol(i);
-                    Vector allItems = p.getContactItems();
-                    for (int k = 0; k < allItems.size(); ++k) {
-                        originalContactList.add((Contact) allItems.get(k));
+                    List<Contact> allItems = p.getContactItems();
+                    for (Contact allItem : allItems) {
+                        originalContactList.add(allItem);
                     }
                 }
             }
@@ -102,11 +103,10 @@ public class RosterAdapter extends BaseAdapter implements View.OnClickListener{
 
     @Override
     public int getItemViewType(int position) {
-        Object o = items.get(position);
-        if (o instanceof String) return ITEM_GROUP;
-        if (o instanceof Chat) return ITEM_CONTACT;
-        if (o instanceof TreeNode) {
-            TreeNode node = (TreeNode) o;
+        TreeNode node = getItem(position);
+        if (node != null) {
+            if (node.getType() == TreeNode.LAYER)
+                return ITEM_LAYER;
             if (node.getType() == TreeNode.PROTOCOL)
                 return ITEM_PROTOCOL;
             if (node.getType() == TreeNode.GROUP)
@@ -123,8 +123,8 @@ public class RosterAdapter extends BaseAdapter implements View.OnClickListener{
     }
 
     @Override
-    public Object getItem(int i) {
-        if ((items.size() > i) && (i >= 0))
+    public TreeNode getItem(int i) {
+        if (items.size() > i && i >= 0)
             return items.get(i);
         return null;
     }
@@ -136,15 +136,15 @@ public class RosterAdapter extends BaseAdapter implements View.OnClickListener{
 
     @Override
     public boolean isEnabled(int position) {
-        Object o = items.get(position);
-        if (o instanceof String) return false;
+        TreeNode node = items.get(position);
+        if (node.getType() == TreeNode.LAYER) return false;
         return super.isEnabled(position);
     }
 
     public void putIntoQueue(Group g) {
         if (type == RosterHelper.ACTIVE_CONTACTS) return;
         if (-1 == updateQueue.indexOf(g)) {
-            updateQueue.addElement(g);
+            updateQueue.add(g);
         }
     }
 
@@ -154,7 +154,7 @@ public class RosterAdapter extends BaseAdapter implements View.OnClickListener{
         items.clear();
         if (type == RosterHelper.ACTIVE_CONTACTS) {
             for (int i = 0; i < roster.getProtocolCount(); ++i) {
-                ChatHistory.instance.addLayerToListOfChats(roster.getProtocol(i), items);
+                ChatHistory.instance.addLayerToListOfChats(roster.getProtocol(i), items, i);
             }
         } else {
             if (count > 1) {
@@ -168,7 +168,7 @@ public class RosterAdapter extends BaseAdapter implements View.OnClickListener{
                             roster.updateGroup(group);
                         }
                     }*/
-                    ProtocolBranch root = p.getProtocolBranch();
+                    ProtocolBranch root = p.getProtocolBranch(i);
                     items.add(root);
                     if (!root.isExpanded()) continue;
                     buildRoster(p);
@@ -181,14 +181,83 @@ public class RosterAdapter extends BaseAdapter implements View.OnClickListener{
     }
 
     private void buildRoster(Protocol p) {
-        RosterHelper roster = RosterHelper.getInstance();
-        synchronized (p.getRosterLockObject()) {
-            if (roster.useGroups) {
-                roster.rebuildFlatItemsWG(p, items);
-            } else {
-                roster.rebuildFlatItemsWOG(p, items);
+        if (RosterHelper.getInstance().useGroups) {
+            rebuildFlatItemsWG(p, items);
+        } else {
+            rebuildFlatItemsWOG(p, items);
+        }
+    }
+
+    public void rebuildFlatItemsWG(Protocol p, List<TreeNode> list) {
+        boolean hideOffline = RosterHelper.getInstance().getCurrPage() == RosterHelper.ONLINE_CONTACTS;
+        int contactCounter;
+        int onlineContactCounter;
+        boolean all = !hideOffline;
+        List<Group> groups = p.getGroupItems();
+        for (Group group : groups) {
+            contactCounter = 0;
+            onlineContactCounter = 0;
+            Group newGroup = copyGroupWithoutContacts(group);
+            list.add(newGroup);
+            List<Contact> contacts = group.getContacts();
+            int contactsSize = contacts.size();
+            for (Contact contact : contacts) {
+                if (all || contact.isVisibleInContactList()) {
+                    if (newGroup.isExpanded()) {
+                        list.add(contact);
+                    }
+                    contactCounter++;
+                }
+                if (contact.isOnline())
+                    ++onlineContactCounter;
+            }
+            if (hideOffline && (0 == contactCounter)) {
+                list.remove(list.size() - 1);
+            }
+            group.updateGroupData(contactsSize, onlineContactCounter);
+        }
+
+        Group group = p.getNotInListGroup();
+        list.add(group);
+        List<Contact> contacts = group.getContacts();
+        contactCounter = 0;
+        onlineContactCounter = 0;
+        int contactsSize = contacts.size();
+        for (Contact contact : contacts) {
+            if (all || contact.isVisibleInContactList()) {
+                if (group.isExpanded()) {
+                    list.add(contact);
+                }
+                contactCounter++;
+            }
+            if (contact.isOnline())
+                ++onlineContactCounter;
+        }
+        if (0 == contactCounter) {
+            list.remove(list.size() - 1);
+        }
+        group.updateGroupData(contactsSize, onlineContactCounter);
+        RosterHelper.sort(list, p.getGroupItems());
+    }
+
+    public void rebuildFlatItemsWOG(Protocol p, List<TreeNode> list) {
+        boolean hideOffline = RosterHelper.getInstance().getCurrPage() == RosterHelper.ONLINE_CONTACTS;
+        boolean all = !hideOffline;
+        List<Contact> contacts = p.getContactItems();
+        for (Contact contact : contacts) {
+            if (all || contact.isVisibleInContactList()) {
+                list.add(contact);
             }
         }
+        RosterHelper.sort(list, null);
+    }
+
+    public static Group copyGroupWithoutContacts(Group g) {
+        Group newGroup = new Group(g.getText());
+        newGroup.setGroupId(g.getGroupId());
+        newGroup.setMode(g.getMode());
+        newGroup.setExpandFlag(g.isExpanded());
+        return newGroup;
     }
 
     @Override
@@ -228,6 +297,9 @@ public class RosterAdapter extends BaseAdapter implements View.OnClickListener{
     }
 
     void populateFromGroup(RosterItemView rosterItemView, Group g) {
+        Group group = g;
+        g = RosterHelper.getGroupById(RosterHelper.getInstance().getProtocol(g).getGroupItems(), g.getGroupId());
+        if (g == null) g = group;
         rosterItemView.itemNameColor = Scheme.getColor(Scheme.THEME_GROUP);
         rosterItemView.itemNameFont = Typeface.DEFAULT;
         rosterItemView.itemName = g.getText();
@@ -321,7 +393,7 @@ public class RosterAdapter extends BaseAdapter implements View.OnClickListener{
 
     @Override
     public View getView(int i, View convertView, final ViewGroup viewGroup) {
-        final Object o = getItem(i);
+        final TreeNode item = getItem(i);
         int itemViewType = getItemViewType(i);
         if (type == RosterHelper.ACTIVE_CONTACTS) {
             if (convertView == null) {
@@ -329,15 +401,15 @@ public class RosterAdapter extends BaseAdapter implements View.OnClickListener{
             }
             RosterItemView rosterItemView = (RosterItemView) convertView;
             rosterItemView.setNull();
-            if (o != null) {
-                if (itemViewType == ITEM_GROUP) {
-                    rosterItemView.addLayer((String) o);
+            if (item != null) {
+                if (itemViewType == ITEM_LAYER) {
+                    rosterItemView.addLayer(item.getText());
                 }
                 if (itemViewType == ITEM_CONTACT) {
-                    Chat chat = (Chat) o;
-                    populateFromContact(rosterItemView, RosterHelper.getInstance(), chat.getProtocol(), chat.getContact());
+                    Contact contact = (Contact) item;
+                    populateFromContact(rosterItemView, RosterHelper.getInstance(), contact.getProtocol(), contact);
                 }
-                setShowDivider(rosterItemView, getItem(i + 1) instanceof Chat);
+                setShowDivider(rosterItemView, getItemViewType(i + 1) == ITEM_CONTACT);
             }
             rosterItemView.repaint();
         } else {
@@ -372,12 +444,11 @@ public class RosterAdapter extends BaseAdapter implements View.OnClickListener{
                 ProgressBar progressBar = (ProgressBar) ((ViewGroup) convertView).getChildAt(1);
                 MyImageButton imageButton = (MyImageButton) ((ViewGroup) convertView).getChildAt(2);
                 rosterItemView.setNull();
-                if (o != null) {
-                    final TreeNode treeNode = (TreeNode) o;
-                    progressBar.setVisibility(((ProtocolBranch) treeNode).getProtocol().getConnectingProgress() != 100 ? View.VISIBLE : View.GONE);
-                    imageButton.setTag(treeNode);
+                if (item != null) {
+                    progressBar.setVisibility(((ProtocolBranch) item).getProtocol().getConnectingProgress() != 100 ? View.VISIBLE : View.GONE);
+                    imageButton.setTag(item);
                     imageButton.setOnClickListener(this);
-                    populateFromProtocol(rosterItemView, (ProtocolBranch) treeNode);
+                    populateFromProtocol(rosterItemView, (ProtocolBranch) item);
                     setShowDivider(rosterItemView, true);
                 }
                 rosterItemView.repaint();
@@ -388,9 +459,8 @@ public class RosterAdapter extends BaseAdapter implements View.OnClickListener{
                 }
                 RosterItemView rosterItemView = (RosterItemView) convertView;
                 rosterItemView.setNull();
-                if (o != null) {
-                    final TreeNode treeNode = (TreeNode) o;
-                    populateFromGroup(rosterItemView, (Group) treeNode);
+                if (item != null) {
+                    populateFromGroup(rosterItemView, (Group) item);
                     setShowDivider(rosterItemView, true);
                 }
                 rosterItemView.repaint();
@@ -400,9 +470,9 @@ public class RosterAdapter extends BaseAdapter implements View.OnClickListener{
                 }
                 RosterItemView rosterItemView = (RosterItemView) convertView;
                 rosterItemView.setNull();
-                if (o != null) {
-                    final TreeNode treeNode = (TreeNode) o;
-                    populateFromContact(rosterItemView, RosterHelper.getInstance(), ((Contact) treeNode).getProtocol(), (Contact) treeNode);
+                if (item != null) {
+                    Contact contact = (Contact) item;
+                    populateFromContact(rosterItemView, RosterHelper.getInstance(), contact.getProtocol(), contact);
                     setShowDivider(rosterItemView, true);
                 }
                 rosterItemView.repaint();

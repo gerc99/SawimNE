@@ -1,15 +1,15 @@
 package protocol;
 
-import ru.sawim.comm.Util;
 import ru.sawim.roster.TreeBranch;
 
-import java.util.Vector;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 
 public class Group extends TreeBranch {
 
     private String name;
-    private final Vector<Contact> contacts = new Vector<Contact>();
+    private final List<Contact> contacts = new CopyOnWriteArrayList<>();
     private byte mode;
     private String caption = null;
     private int groupId;
@@ -59,7 +59,7 @@ public class Group extends TreeBranch {
         return -3;
     }
 
-    public final int getId() {
+    public final int getGroupId() {
         return groupId;
     }
 
@@ -71,14 +71,13 @@ public class Group extends TreeBranch {
         return (0 == contacts.size());
     }
 
-    public final Vector<Contact> getContacts() {
+    public final List<Contact> getContacts() {
         return contacts;
     }
 
     public final void updateGroupData() {
         int onlineCount = 0;
-        for (int i = 0; i < contacts.size(); ++i) {
-            Contact item = contacts.elementAt(i);
+        for (Contact item : contacts) {
             if (item.isOnline()) {
                 onlineCount++;
             }
@@ -100,11 +99,5 @@ public class Group extends TreeBranch {
     @Override
     public byte getType() {
         return GROUP;
-    }
-
-    public final void sort() {
-        if (isExpanded()) {
-            Util.sort(contacts);
-        }
     }
 }

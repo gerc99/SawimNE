@@ -176,11 +176,11 @@ public class SawimActivity extends BaseActivity {
         StartWindowView startWindowView = (StartWindowView) fragmentManager.findFragmentByTag(StartWindowView.TAG);
         if (RosterHelper.getInstance().getProtocolCount() == 0) {
             if (Options.getAccountCount() == 0) {
-                FragmentTransaction transaction = fragmentManager.beginTransaction();
                 if (SawimApplication.isManyPane()) {
                     setContentView(R.layout.main);
                     if (startWindowView == null) {
                         StartWindowView newFragment = new StartWindowView();
+                        FragmentTransaction transaction = fragmentManager.beginTransaction();
                         transaction.replace(R.id.fragment_container, newFragment, StartWindowView.TAG);
                         transaction.commit();
                         supportInvalidateOptionsMenu();
@@ -211,7 +211,7 @@ public class SawimActivity extends BaseActivity {
         SawimFragment chatView = (SawimFragment) fragmentManager.findFragmentByTag(ChatView.TAG);
         SawimFragment formView = (SawimFragment) fragmentManager.findFragmentByTag(FormView.TAG);
         SawimFragment virtualListView = (SawimFragment) fragmentManager.findFragmentByTag(VirtualListView.TAG);
-        if (getRosterView() != null) {
+        if (getRosterView() != null && getRosterView().isVisible()) {
             if (getRosterView().hasBack())
                 back();
         } else if (chatView != null && chatView.isVisible()) {

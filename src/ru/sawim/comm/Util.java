@@ -3,6 +3,7 @@ package ru.sawim.comm;
 import android.util.Base64;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
+import ru.sawim.roster.TreeNode;
 
 import java.io.ByteArrayOutputStream;
 import java.util.*;
@@ -717,7 +718,7 @@ public class Util {
         return stringArray;
     }
 
-    public static int compareNodes(Sortable node1, Sortable node2) {
+    public static int compareNodes(TreeNode node1, TreeNode node2) {
         int result = node1.getNodeWeight() - node2.getNodeWeight();
         if (0 == result) {
             result = node1.getText().toLowerCase().compareTo(node2.getText().toLowerCase());
@@ -725,7 +726,7 @@ public class Util {
         return result;
     }
 
-    public static <T extends Sortable> void sort(List<T> subnodes) {
+    public static <T extends TreeNode> void sort(List<T> subnodes) {
         Collections.sort(subnodes, new Comparator<T>() {
             @Override
             public int compare(T t1, T t2) {
@@ -771,17 +772,17 @@ public class Util {
         return sb.toString();
     }
 
-    public static void removeAll(Vector to, Vector all) {
+    public static void removeAll(List to, List all) {
         synchronized (to) {
             int current = 0;
             for (int index = 0; index < to.size(); ++index) {
-                if (0 <= all.indexOf(to.elementAt(index))) continue;
+                if (0 <= all.indexOf(to.get(index))) continue;
                 if (current < index) {
-                    to.setElementAt(to.elementAt(index), current);
+                    to.set(current, to.get(index));
                     current++;
                 }
             }
-            if (current < to.size()) to.setSize(current);
+            //if (current < to.size()) to.listIterator(current);
         }
     }
 }

@@ -69,6 +69,27 @@ public class Jid {
         return false;
     }
 
+    private static boolean isConferenceDomain(String jid, int start) {
+        return jid.startsWith("conference.", start)
+                || jid.startsWith("conf.", start)
+                || jid.startsWith("muc.", start)
+                || jid.startsWith("irc.", start);
+    }
+
+    public static boolean isConference(String jid) {
+        int index = jid.indexOf('@');
+        if (-1 < index) {
+            if (isConferenceDomain(jid, index + 1)) {
+                return true;
+            }
+            int index1 = jid.lastIndexOf('%', index);
+            if (-1 < index1) {
+                return isConferenceDomain(jid, index1 + 1);
+            }
+        }
+        return false;
+    }
+
     public static String makeReadableJid(String jid) {
         jid = jid.replace("@conference.jabber.ru", "@c.j.ru");
         return jid.replace("@conference.", "@c.");
@@ -91,17 +112,17 @@ public class Jid {
     }
 
     public static boolean isMrim(String jid) {
-        return (-1 != jid.indexOf("@mrim."));
+        return (jid.contains("@mrim."));
     }
 
     public static boolean isIrcConference(String jid) {
-        return (-1 != jid.indexOf("@irc."));
+        return (jid.contains("@irc."));
     }
 
     public static boolean isKnownGate(String jid) {
         if (Jid.isGate(jid)) {
-            for (int i = 0; i < transports.length; ++i) {
-                if (jid.startsWith(transports[i])) {
+            for (String transport : transports) {
+                if (jid.startsWith(transport)) {
                     return true;
                 }
             }

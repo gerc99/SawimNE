@@ -9,7 +9,9 @@ import ru.sawim.chat.message.Message;
 import ru.sawim.comm.JLocale;
 import ru.sawim.comm.Util;
 import ru.sawim.modules.history.HistoryStorage;
+import ru.sawim.roster.Layer;
 import ru.sawim.roster.RosterHelper;
+import ru.sawim.roster.TreeNode;
 
 import java.util.*;
 
@@ -35,13 +37,13 @@ public final class ChatHistory {
         });
     }
 
-    public void addLayerToListOfChats(Protocol p, List<Object> items) {
+    public void addLayerToListOfChats(Protocol p, List<TreeNode> items, int id) {
         boolean hasLayer = false;
-        items.add(p.getUserId());
+        items.add(new Layer(p.getUserId(), id));
         for (int i = 0; i < historyTable.size(); ++i) {
             Chat chat = chatAt(i);
             if (chat.getProtocol() == p) {
-                items.add(chat);
+                items.add(chat.getContact());
                 hasLayer = true;
             }
         }
@@ -166,11 +168,11 @@ public final class ChatHistory {
         return Message.getIcon(icon);
     }
 
-    public BitmapDrawable getUnreadMessageIcon(Vector contacts) {
+    public BitmapDrawable getUnreadMessageIcon(List<Contact> contacts) {
         int icon = Message.ICON_NONE;
         Chat chat;
         for (int i = contacts.size() - 1; 0 <= i; --i) {
-            chat = getChat((Contact) contacts.elementAt(i));
+            chat = getChat(contacts.get(i));
             if (chat != null) {
                 icon = getMoreImportant(icon, chat.getNewMessageIcon());
             }

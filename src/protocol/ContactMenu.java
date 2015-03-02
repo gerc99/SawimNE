@@ -18,7 +18,7 @@ import ru.sawim.modules.history.HistoryStorage;
 import ru.sawim.view.TextBoxView;
 import ru.sawim.view.menu.MyMenu;
 
-import java.util.Vector;
+import java.util.List;
 
 public class ContactMenu implements TextBoxView.TextBoxListener {
 
@@ -243,24 +243,22 @@ public class ContactMenu implements TextBoxView.TextBoxListener {
             Contact find = null;
             Contact current = contact;
             current.annotations = messageTextbox.getString();
-            Vector contacts = protocol.getContactItems();
+            List<Contact> contacts = protocol.getContactItems();
             int size = contacts.size();
             String jid = current.getUserId();
             StringBuilder xml = new StringBuilder();
             xml.append("<iq type='set' id='notes").append(Util.xmlEscape(jid));
             xml.append("'><query xmlns='jabber:iq:private'><storage xmlns='storage:rosternotes'>");
-            synchronized (contacts) {
-                for (int i = 0; i < size; i++) {
-                    find = (Contact) contacts.elementAt(i);
-                    //if (find.annotations.equals("")) find.annotations = null;
-                    if (find.annotations != null) {
-                        xml.append("<note jid='").append(Util.xmlEscape(find.getUserId()));
-                        xml.append("'>").append(Util.xmlEscape(find.annotations)).append("</note>");
-                    }
+            for (Contact contact1 : contacts) {
+                find = contact1;
+                //if (find.annotations.equals("")) find.annotations = null;
+                if (find.annotations != null) {
+                    xml.append("<note jid='").append(Util.xmlEscape(find.getUserId()));
+                    xml.append("'>").append(Util.xmlEscape(find.annotations)).append("</note>");
                 }
-                xml.append("</storage></query></iq>");
-                ((Xmpp) protocol).saveAnnotations(xml.toString());
             }
+            xml.append("</storage></query></iq>");
+            ((Xmpp) protocol).saveAnnotations(xml.toString());
             messageTextbox.back();
             return;
         }

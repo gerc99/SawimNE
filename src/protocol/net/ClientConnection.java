@@ -19,13 +19,13 @@ import ru.sawim.comm.JLocale;
 import ru.sawim.modules.DebugLog;
 import ru.sawim.roster.RosterHelper;
 
-import java.util.Vector;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public abstract class ClientConnection implements Runnable {
     private long keepAliveInterv;
     private boolean usePong;
     protected boolean connect;
-    private Vector<PlainMessage> messages = new Vector<PlainMessage>();
+    private CopyOnWriteArrayList<PlainMessage> messages = new CopyOnWriteArrayList<>();
 
     private long nextPingTime;
     private long pongTime;
@@ -146,14 +146,13 @@ public abstract class ClientConnection implements Runnable {
     }
 
     public final void addMessage(PlainMessage msg) {
-        messages.addElement(msg);
+        messages.add(msg);
         markMessageSended(-1, Message.ICON_NONE);
     }
 
     public final boolean isMessageExist(long msgId) {
         if (-1 < msgId) {
-            for (int i = 0; i < messages.size(); ++i) {
-                PlainMessage m = messages.elementAt(i);
+            for (PlainMessage m : messages) {
                 if (m.getMessageId() == msgId) {
                     return true;
                 }
@@ -164,8 +163,7 @@ public abstract class ClientConnection implements Runnable {
 
     public final void markMessageSended(long msgId, int status) {
         PlainMessage msg = null;
-        for (int i = 0; i < messages.size(); ++i) {
-            PlainMessage m = messages.elementAt(i);
+        for (PlainMessage m : messages) {
             if (m.getMessageId() == msgId) {
                 msg = m;
                 break;
@@ -174,14 +172,14 @@ public abstract class ClientConnection implements Runnable {
         if (null != msg) {
             msg.setSendingState(getProtocol(), status);
             if (PlainMessage.NOTIFY_FROM_CLIENT == status) {
-                messages.removeElement(msg);
+                messages.remove(msg);
             }
         }
         long date = SawimApplication.getCurrentGmtTime() - 5 * 60;
         for (int i = messages.size() - 1; i >= 0; --i) {
-            PlainMessage m = messages.elementAt(i);
+            PlainMessage m = messages.get(i);
             if (date > m.getNewDate()) {
-                messages.removeElement(m);
+                messages.remove(m);
             }
         }
     }

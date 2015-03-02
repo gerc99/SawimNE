@@ -17,6 +17,7 @@ import ru.sawim.models.list.VirtualListModel;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.view.TextBoxView;
 
+import java.util.List;
 import java.util.Vector;
 
 
@@ -276,10 +277,10 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
     }
 
     private void addBookmarks() {
-        Vector all = xmpp.getContactItems();
+        List<Contact> all = xmpp.getContactItems();
         boolean notEmpty = false;
-        for (int i = 0; i < all.size(); ++i) {
-            XmppContact contact = (XmppContact) all.elementAt(i);
+        for (Contact anAll : all) {
+            XmppContact contact = (XmppContact) anAll;
             if (contact.isConference()) {
                 addUnique(contact.getName(), contact.getUserId());
                 notEmpty = true;

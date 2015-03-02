@@ -7,14 +7,16 @@ import ru.sawim.R;
 import ru.sawim.comm.JLocale;
 import ru.sawim.comm.Util;
 
-import java.util.Vector;
+import java.util.List;
 
 public class ProtocolBranch extends TreeBranch {
 
     private Protocol protocol;
+    private int id;
 
-    public ProtocolBranch(Protocol p) {
+    public ProtocolBranch(Protocol p, int id) {
         protocol = p;
+        this.id = id;
         setExpandFlag(false);
     }
 
@@ -28,9 +30,9 @@ public class ProtocolBranch extends TreeBranch {
 
     public boolean isEmpty() {
         if (Options.getBoolean(Options.OPTION_CL_HIDE_OFFLINE)) {
-            Vector contacts = protocol.getContactItems();
+            List<Contact> contacts = protocol.getContactItems();
             for (int i = contacts.size() - 1; 0 <= i; --i) {
-                if (((Contact) contacts.elementAt(i)).isVisibleInContactList()) {
+                if (contacts.get(i).isVisibleInContactList()) {
                     return false;
                 }
             }
@@ -45,21 +47,16 @@ public class ProtocolBranch extends TreeBranch {
         return PROTOCOL;
     }
 
+    @Override
+    public int getGroupId() {
+        return id;
+    }
+
     public String getText() {
         return protocol.getUserId();
     }
 
     public int getNodeWeight() {
         return 0;
-    }
-
-    public void sort() {
-        synchronized (protocol.getRosterLockObject()) {
-            if (Options.getBoolean(JLocale.getString(R.string.pref_user_groups))) {
-                Util.sort(protocol.getGroupItems());
-            } else {
-                Util.sort(protocol.getContactItems());
-            }
-        }
     }
 }

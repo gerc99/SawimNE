@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.widget.Toast;
 import ru.sawim.activities.SawimActivity;
+import ru.sawim.comm.Util;
 import ru.sawim.listener.OnUpdateChat;
 import ru.sawim.listener.OnUpdateRoster;
 import protocol.*;
@@ -17,7 +18,6 @@ import ru.sawim.SawimApplication;
 import ru.sawim.activities.BaseActivity;
 import ru.sawim.comm.JLocale;
 import ru.sawim.comm.StringConvertor;
-import ru.sawim.comm.Util;
 import ru.sawim.forms.ManageContactListForm;
 import ru.sawim.forms.SmsForm;
 import ru.sawim.modules.AutoAbsence;
@@ -27,10 +27,7 @@ import ru.sawim.view.StatusesView;
 import ru.sawim.view.XStatusesView;
 import ru.sawim.view.menu.MyMenu;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
 
 public final class RosterHelper {
 
@@ -48,9 +45,7 @@ public final class RosterHelper {
     private Contact currentContact;
     private List<FileTransfer> transfers = new ArrayList<FileTransfer>();
     private OnUpdateRoster onUpdateRoster;
-    private TreeNode selectedItem = null;
     public boolean useGroups;
-    private boolean hideOffline;
     private Protocol[] protocolList;
     private int count = 0;
 
@@ -220,12 +215,20 @@ public final class RosterHelper {
         return null;
     }
 
-    public Protocol[] getProtocols() {
-        Protocol[] all = new Protocol[getProtocolCount()];
-        for (int i = 0; i < all.length; ++i) {
-            all[i] = getProtocol(i);
+    public final Protocol getProtocol(int accountIndex) {
+        return protocolList[accountIndex];
+    }
+
+    public final Protocol getProtocol(TreeNode treeNode) {
+        for (int i = 0; i < getProtocolCount(); ++i) {
+            if (getGroupById(getProtocol(i).getGroupItems(), treeNode.getGroupId()) != null) {
+                return getProtocol(i);
+            }
+            if (getProtocol(i).getNotInListGroup().getGroupId() == treeNode.getGroupId()) {
+                return getProtocol(i);
+            }
         }
-        return all;
+        return null;
     }
 
     public Protocol getProtocol(Contact c) {
@@ -237,8 +240,15 @@ public final class RosterHelper {
         return null;
     }
 
+    public Protocol[] getProtocols() {
+        Protocol[] all = new Protocol[getProtocolCount()];
+        for (int i = 0; i < all.length; ++i) {
+            all[i] = getProtocol(i);
+        }
+        return all;
+    }
+
     public void activate(Contact c) {
-        setAlwaysVisibleNode(c);
         updateRoster();
     }
 
@@ -431,117 +441,59 @@ public final class RosterHelper {
         }
     }
 
-    public final void setAlwaysVisibleNode(TreeNode node) {
-        selectedItem = node;
-    }
-
-    public final Protocol getProtocol(int accountIndex) {
-        return protocolList[accountIndex];
-    }
-
     public final int getProtocolCount() {
         return count;
     }
 
     public void updateOptions() {
         useGroups = Options.getBoolean(JLocale.getString(R.string.pref_user_groups)) && getCurrPage() != ACTIVE_CONTACTS;
-        hideOffline = getCurrPage() == ONLINE_CONTACTS;
     }
 
-    public final Protocol getProtocol(Group g) {
-        for (int i = 0; i < getProtocolCount(); ++i) {
-            if (-1 < getProtocol(i).getGroupItems().indexOf(g)) {
-                return getProtocol(i);
+    public static <T extends TreeNode> void sort(List<T> subnodes, final List<Group> groups) {
+        Collections.sort(subnodes, new Comparator<T>() {
+            @Override
+            public int compare(T node1, T node2) {
+                if (node1.getType() == TreeNode.PROTOCOL || node2.getType() == TreeNode.PROTOCOL) {
+                    return node1.getNodeWeight() - node1.getNodeWeight();
+                }
+                if (groups != null) {
+                    if (node1.getGroupId() == node2.getGroupId()) {
+                        return Util.compareNodes(node1, node2);
+                    } else {
+                        Group group1 = getGroupById(groups, node1.getGroupId());
+                        Group group2 = getGroupById(groups, node2.getGroupId());
+                        if (group1 != null && group2 != null) {
+                            return group1.getNodeWeight() - group2.getNodeWeight();
+                        }
+                    }
+                } else {
+                    return Util.compareNodes(node1, node2);
+                }
+                return 0;
             }
-            if (getProtocol(i).getNotInListGroup() == g) {
-                return getProtocol(i);
+        });
+    }
+
+    public static Group getGroupById(List<Group> groups, int id) {
+        for (int i = groups.size() - 1; i >= 0; --i) {
+            Group group = groups.get(i);
+            if (group.getGroupId() == id) {
+                return group;
             }
         }
         return null;
     }
 
-    public void rebuildFlatItemsWG(Protocol p, List<Object> list) {
-        Vector contacts;
-        Group g;
-        Contact c;
-        int contactCounter;
-        int onlineContactCounter;
-        boolean all = !hideOffline;
-        Vector groups = p.getGroupItems();
-        Util.sort(groups);
-        for (int groupIndex = 0; groupIndex < groups.size(); ++groupIndex) {
-            g = (Group) groups.elementAt(groupIndex);
-            g.sort();
-            contactCounter = 0;
-            onlineContactCounter = 0;
-            list.add(g);
-            contacts = g.getContacts();
-            int contactsSize = contacts.size();
-            for (int contactIndex = 0; contactIndex < contactsSize; contactIndex++) {
-                c = (Contact) contacts.elementAt(contactIndex);
-                if (all || c.isVisibleInContactList()/* || (c == selectedItem)*/) {
-                    if (g.isExpanded()) {
-                        list.add(c);
-                    }
-                    contactCounter++;
-                }
-                if (c.isOnline())
-                    ++onlineContactCounter;
-            }
-            if (hideOffline && (0 == contactCounter)) {
-                list.remove(list.size() - 1);
-            }
-            g.updateGroupData(contactsSize, onlineContactCounter);
-        }
-
-        g = p.getNotInListGroup();
-        g.sort();
-        list.add(g);
-        contacts = g.getContacts();
-        contactCounter = 0;
-        onlineContactCounter = 0;
-        int contactsSize = contacts.size();
-        for (int contactIndex = 0; contactIndex < contactsSize; contactIndex++) {
-            c = (Contact) contacts.elementAt(contactIndex);
-            if (all || c.isVisibleInContactList()/* || (c == selectedItem)*/) {
-                if (g.isExpanded()) {
-                    list.add(c);
-                }
-                contactCounter++;
-            }
-            if (c.isOnline())
-                ++onlineContactCounter;
-        }
-        if (0 == contactCounter) {
-            list.remove(list.size() - 1);
-        }
-        g.updateGroupData(contactsSize, onlineContactCounter);
-    }
-
-    public void rebuildFlatItemsWOG(Protocol p, List<Object> list) {
-        boolean all = !hideOffline;
-        Contact c;
-        Vector contacts = p.getContactItems();
-        Util.sort(contacts);
-        for (int contactIndex = 0; contactIndex < contacts.size(); ++contactIndex) {
-            c = (Contact) contacts.elementAt(contactIndex);
-            if (all || c.isVisibleInContactList()/* || (c == selectedItem)*/) {
-                list.add(c);
-            }
-        }
-    }
-
     public void updateGroup(Protocol protocol, Group group, Contact contact) {
         if (group == null) return;
-        Vector allItems = protocol.getContactItems();
-        Vector groupItems = group.getContacts();
-        groupItems.removeAllElements();
+        List<Contact> allItems = protocol.getContactItems();
+        List<Contact> groupItems = group.getContacts();
+        groupItems.clear();
         int size = allItems.size();
-        int groupId = group.getId();
-        for (int i = 0; i < size; ++i) {
-            Contact item = (Contact) allItems.elementAt(i);
+        int groupId = group.getGroupId();
+        for (Contact item : allItems) {
             if (item.getGroupId() == groupId && contact != item) {
-                groupItems.addElement(item);
+                groupItems.add(item);
             }
         }
         group.updateGroupData();
@@ -552,7 +504,7 @@ public final class RosterHelper {
         updateGroup(protocol, group, null);
     }
 
-    public void updateGroup(Group group) {
+    /*public void updateGroup(Group group) {
         if (useGroups) {
             group.updateGroupData();
             group.sort();
@@ -561,16 +513,16 @@ public final class RosterHelper {
             if (p != null)
                 Util.sort(p.getContactItems());
         }
-    }
+    }*/
 
     public void removeFromGroup(Protocol protocol, Group g, Contact c) {
         if (g == null) return;
-        if (g.getContacts().removeElement(c))
+        if (g.getContacts().remove(c))
             updateGroup(protocol, g, c);
     }
 
     public void addToGroup(Group group, Contact contact) {
-        group.getContacts().addElement(contact);
+        group.getContacts().add(contact);
     }
 
     public void putIntoQueue(Group group) {

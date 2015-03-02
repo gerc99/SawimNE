@@ -15,10 +15,14 @@ import ru.sawim.comm.Util;
 import ru.sawim.icons.Icon;
 import ru.sawim.icons.ImageCache;
 import ru.sawim.io.FileSystem;
+import ru.sawim.roster.Layer;
+import ru.sawim.roster.TreeNode;
 import ru.sawim.widget.roster.RosterItemView;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -34,7 +38,7 @@ public class MucUsersAdapter extends BaseAdapter {
     private static final int ITEM_CONTACT = 1;
     private static final int ITEM_TYPECOUNT = 2;
     private XmppServiceContact conference;
-    private List<Object> items = new ArrayList<Object>();
+    private List<TreeNode> items = new ArrayList<>();
     private Xmpp protocol;
 
     File avatarsFolder;
@@ -51,9 +55,7 @@ public class MucUsersAdapter extends BaseAdapter {
 
     public void update() {
         items.clear();
-        synchronized (conference.subcontacts) {
-            Util.sort(conference.subcontacts);
-        }
+
         final int moderators = getContactCount(XmppServiceContact.ROLE_MODERATOR);
         final int participants = getContactCount(XmppServiceContact.ROLE_PARTICIPANT);
         final int visitors = getContactCount(XmppServiceContact.ROLE_VISITOR);
@@ -61,6 +63,21 @@ public class MucUsersAdapter extends BaseAdapter {
         addLayerToListOfSubcontacts(R.string.list_of_moderators, moderators, XmppServiceContact.ROLE_MODERATOR);
         addLayerToListOfSubcontacts(R.string.list_of_participants, participants, XmppServiceContact.ROLE_PARTICIPANT);
         addLayerToListOfSubcontacts(R.string.list_of_visitors, visitors, XmppServiceContact.ROLE_VISITOR);
+
+        sort(items);
+    }
+
+    public static <T extends TreeNode> void sort(final List<T> subnodes) {
+        Collections.sort(subnodes, new Comparator<T>() {
+            @Override
+            public int compare(T node1, T node2) {
+                if (node1.getType() == TreeNode.LAYER || node2.getType() == TreeNode.LAYER) return 0;
+                if (node1.getGroupId() == node2.getGroupId()) {
+                    return Util.compareNodes(node1, node2);
+                }
+                return -1;
+            }
+        });
     }
 
     @Override
@@ -75,16 +92,18 @@ public class MucUsersAdapter extends BaseAdapter {
 
     @Override
     public int getItemViewType(int position) {
-        Object o = items.get(position);
-        if (o instanceof String) return ITEM_GROUP;
-        if (o instanceof XmppContact.SubContact) return ITEM_CONTACT;
+        TreeNode treeNode = getItem(position);
+        if (treeNode != null) {
+            if (treeNode.getType() == TreeNode.LAYER) return ITEM_GROUP;
+            if (treeNode.getType() == TreeNode.CONTACT) return ITEM_CONTACT;
+        }
         return -1;
     }
 
     @Override
     public boolean isEnabled(int position) {
-        Object o = items.get(position);
-        if (o instanceof String) return false;
+        TreeNode treeNode = items.get(position);
+        if (treeNode.getType() == TreeNode.LAYER) return false;
         return super.isEnabled(position);
     }
 
@@ -94,7 +113,7 @@ public class MucUsersAdapter extends BaseAdapter {
     }
 
     @Override
-    public Object getItem(int position) {
+    public TreeNode getItem(int position) {
         if ((items.size() > position) && (position >= 0))
             return items.get(position);
         return null;
@@ -120,8 +139,7 @@ public class MucUsersAdapter extends BaseAdapter {
     private final int getContactCount(byte priority) {
         int count = 0;
         List<XmppContact.SubContact> subcontacts = conference.subcontacts;
-        for (int i = 0; i < subcontacts.size(); ++i) {
-            XmppContact.SubContact contact = subcontacts.get(i);
+        for (XmppContact.SubContact contact : subcontacts) {
             if (contact != null)
                 if (contact.priority == priority) {
                     count++;
@@ -130,13 +148,12 @@ public class MucUsersAdapter extends BaseAdapter {
         return (count);
     }
 
-    private final XmppContact.SubContact getContact(String nick) {
+    private XmppContact.SubContact getContact(String nick) {
         if (TextUtils.isEmpty(nick)) {
             return null;
         }
         List<XmppContact.SubContact> subcontacts = conference.subcontacts;
-        for (int i = 0; i < subcontacts.size(); ++i) {
-            XmppContact.SubContact contact = subcontacts.get(i);
+        for (XmppContact.SubContact contact : subcontacts) {
             if (nick.equals(contact.resource)) {
                 return contact;
             }
@@ -144,12 +161,12 @@ public class MucUsersAdapter extends BaseAdapter {
         return null;
     }
 
-    private void addLayerToListOfSubcontacts(int layer, int size, byte priority) {
+    private void addLayerToListOfSubcontacts(int layerStrId, int size, byte priority) {
         boolean hasLayer = false;
-        items.add(JLocale.getString(layer)/* + "(" + size + ")"*/);
+        Layer layer = new Layer(JLocale.getString(layerStrId), priority);
+        items.add(layer/* + "(" + size + ")"*/);
         List<XmppContact.SubContact> subcontacts = conference.subcontacts;
-        for (int i = 0; i < subcontacts.size(); ++i) {
-            XmppContact.SubContact contact = subcontacts.get(i);
+        for (XmppContact.SubContact contact : subcontacts) {
             if (contact.priority == priority) {
                 items.add(contact);
                 hasLayer = true;
@@ -201,20 +218,21 @@ public class MucUsersAdapter extends BaseAdapter {
 
     @Override
     public View getView(int i, View convertView, ViewGroup viewGroup) {
-        Object o = items.get(i);
+        TreeNode treeNode = items.get(i);
+        int itemViewType = getItemViewType(i);
         if (convertView == null) {
             convertView = new RosterItemView(viewGroup.getContext());
         }
         RosterItemView rosterItemView = (RosterItemView) convertView;
         rosterItemView.setNull();
-        if (o == null) return rosterItemView;
-        if (o instanceof String) {
-            rosterItemView.addLayer((String) o);
+        if (treeNode == null) return rosterItemView;
+        if (itemViewType == ITEM_GROUP) {
+            rosterItemView.addLayer(treeNode.getText());
             rosterItemView.itemNameFont = Typeface.DEFAULT_BOLD;
         }
-        if (o instanceof XmppContact.SubContact)
-            populateFrom(rosterItemView, protocol, (XmppContact.SubContact) o);
-        setShowDivider(rosterItemView, getItem(i + 1) instanceof XmppContact.SubContact);
+        if (itemViewType == ITEM_CONTACT)
+            populateFrom(rosterItemView, protocol, (XmppContact.SubContact) treeNode);
+        setShowDivider(rosterItemView, getItemViewType(i + 1) == ITEM_CONTACT);
         ((RosterItemView) convertView).repaint();
         return rosterItemView;
     }

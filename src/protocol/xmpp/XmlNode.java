@@ -5,15 +5,13 @@ import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
 
 import java.io.UnsupportedEncodingException;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Vector;
+import java.util.*;
 
 public final class XmlNode {
     public String name;
     public String value;
     private Hashtable attribs = new Hashtable();
-    private Vector children = new Vector();
+    private List<XmlNode> children = new ArrayList<>();
 
     private static final int MAX_BIN_VALUE_SIZE = 54 * 1024;
     private static final int MAX_VALUE_SIZE = 10 * 1024;
@@ -34,14 +32,14 @@ public final class XmlNode {
     }
 
     private XmlNode unsafeChildAt(int index) {
-        return (XmlNode) children.elementAt(index);
+        return children.get(index);
     }
 
     public XmlNode childAt(int index) {
         if (children.size() <= index) {
             return null;
         }
-        return (XmlNode) children.elementAt(index);
+        return children.get(index);
     }
 
     public int childrenCount() {
@@ -94,7 +92,7 @@ public final class XmlNode {
     }
 
     private void setName(String tagName) {
-        if (-1 == tagName.indexOf(':') || -1 != tagName.indexOf("stream:")) {
+        if (-1 == tagName.indexOf(':') || tagName.contains("stream:")) {
             name = tagName;
             return;
         }
@@ -199,7 +197,7 @@ public final class XmlNode {
         String s = sb.toString();
         try {
             s = new String(s.getBytes("ISO8859-1"), "UTF-8");
-        } catch (UnsupportedEncodingException e) {
+        } catch (UnsupportedEncodingException ignored) {
         }
         return s;
     }
@@ -275,7 +273,7 @@ public final class XmlNode {
                 if (!xml.parseNode(socket, ch)) {
                     break;
                 }
-                children.addElement(xml);
+                children.add(xml);
             }
 
             ch = socket.readChar();
@@ -307,14 +305,14 @@ public final class XmlNode {
 
     public final XmlNode popChildNode() {
         XmlNode node = childAt(0);
-        children.removeElementAt(0);
+        children.remove(0);
         return node;
     }
 
     public final void removeNode(String name) {
         for (int i = 0; i < children.size(); ++i) {
             if (unsafeChildAt(i).is(name)) {
-                children.removeElementAt(i);
+                children.remove(i);
                 return;
             }
         }
@@ -470,8 +468,8 @@ public final class XmlNode {
         if (null == subtags) {
             return true;
         }
-        for (int subtagIndex = 0; subtagIndex < subtags.length; ++subtagIndex) {
-            if (!contains(subtags[subtagIndex])) {
+        for (String subtag : subtags) {
+            if (!contains(subtag)) {
                 return false;
             }
         }
@@ -482,7 +480,7 @@ public final class XmlNode {
         XmlNode content = getFirstNode(subtag);
         if (null == content) {
             content = new XmlNode(subtag);
-            children.addElement(content);
+            children.add(content);
         }
         content.value = value;
     }
@@ -500,10 +498,10 @@ public final class XmlNode {
         }
 
         XmlNode node = new XmlNode(tag);
-        children.addElement(node);
+        children.add(node);
         if (null != subtags) {
-            for (int i = 0; i < subtags.length; ++i) {
-                node.children.addElement(new XmlNode(subtags[i]));
+            for (String subtag1 : subtags) {
+                node.children.add(new XmlNode(subtag1));
             }
         }
         node.setValue(subtag, value);
@@ -514,7 +512,7 @@ public final class XmlNode {
             XmlNode node = unsafeChildAt(i);
             if (node.is(tag) && (0 < node.childrenCount())) {
                 if (null != node.unsafeChildAt(0).value) {
-                    children.removeElementAt(i);
+                    children.remove(i);
                 }
             }
         }
@@ -533,7 +531,7 @@ public final class XmlNode {
     public void cleanXmlTree() {
         for (int i = childrenCount() - 1; i >= 0; --i) {
             if (unsafeChildAt(i).isEmptySubNodes()) {
-                children.removeElementAt(i);
+                children.remove(i);
             }
         }
     }

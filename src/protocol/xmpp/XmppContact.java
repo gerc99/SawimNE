@@ -8,10 +8,11 @@ import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.comm.*;
 import ru.sawim.io.RosterStorage;
+import ru.sawim.roster.TreeNode;
 import ru.sawim.view.menu.MyMenu;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 
 public class XmppContact extends Contact {
@@ -154,7 +155,7 @@ public class XmppContact extends Contact {
         return StringConvertor.notNull((null == c) ? null : c.realJid);
     }
 
-    public static class SubContact implements Sortable {
+    public static class SubContact implements TreeNode {
         public String avatarHash;
         public String resource;
         public String statusText;
@@ -176,9 +177,19 @@ public class XmppContact extends Contact {
         public int getNodeWeight() {
             return 0;
         }
+
+        @Override
+        public byte getType() {
+            return TreeNode.CONTACT;
+        }
+
+        @Override
+        public int getGroupId() {
+            return 0;
+        }
     }
 
-    public final List<SubContact> subcontacts = new ArrayList<>();
+    public final List<SubContact> subcontacts = new CopyOnWriteArrayList<>();
 
     private void removeSubContact(String resource) {
         for (int i = subcontacts.size() - 1; i >= 0; --i) {

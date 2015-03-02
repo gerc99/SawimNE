@@ -23,7 +23,8 @@ import ru.sawim.roster.ProtocolBranch;
 import ru.sawim.roster.RosterHelper;
 
 import java.io.*;
-import java.util.Vector;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 abstract public class Protocol {
 
@@ -33,7 +34,6 @@ abstract public class Protocol {
     private static final int TYPE_GROUP = 0;
     private static final int TYPE_CONTACT = 1;
 
-    private final Object rosterLockObject = new Object();
     public ClientInfo clientInfo;
     protected Roster roster = new Roster();
     protected StatusInfo info;
@@ -48,7 +48,7 @@ abstract public class Protocol {
     private boolean needSave = false;
     private long lastStatusChangeTime;
     private byte progress = 100;
-    private Vector autoGrand = new Vector();
+    private CopyOnWriteArrayList<String> autoGrand = new CopyOnWriteArrayList<>();
     private Group notInListGroup;
 
     public abstract String getUserIdName();
@@ -129,7 +129,7 @@ abstract public class Protocol {
 
     public final void init() {
         notInListGroup = new Group(SawimApplication.getContext().getString(R.string.group_not_in_list));
-        notInListGroup.setMode(Group.MODE_NONE);
+        notInListGroup.setMode(Group.MODE_BOTTOM2);
         notInListGroup.setGroupId(Group.NOT_IN_GROUP);
         initStatusInfo();
         initStatus();
@@ -149,37 +149,31 @@ abstract public class Protocol {
     }
 
     public final void setContactListStub() {
-        synchronized (rosterLockObject) {
-            roster = new Roster();
-        }
+        roster = new Roster();
     }
 
-    public final void setRoster(Vector<Group> groups, Vector<Contact> contacts) {
+    public final void setRoster(List<Group> groups, List<Contact> contacts) {
         setRoster(new Roster(groups, contacts), false);
     }
 
     public final void setRoster(Roster roster, boolean needSave) {
         Roster oldRoster;
-        synchronized (rosterLockObject) {
-            oldRoster = this.roster;
-            if (null != oldRoster) {
-                Util.removeAll(oldRoster.getGroupItems(), roster.getGroupItems());
-                Util.removeAll(oldRoster.getContactItems(), roster.getContactItems());
-            }
-            this.roster = roster;
+        oldRoster = this.roster;
+        if (null != oldRoster) {
+            Util.removeAll(oldRoster.getGroupItems(), roster.getGroupItems());
+            Util.removeAll(oldRoster.getContactItems(), roster.getContactItems());
         }
+        this.roster = roster;
         ChatHistory.instance.restoreContactsWithChat(this);
-        synchronized (rosterLockObject) {
-            for (int i = 0; i < roster.getContactItems().size(); ++i) {
-                oldRoster.getContactItems().addElement(roster.getContactItems().elementAt(i));
-            }
-            for (int i = 0; i < roster.getGroupItems().size(); ++i) {
-                Group g = roster.getGroupItems().elementAt(i);
-                RosterHelper.getInstance().updateGroup(this, g);
-                oldRoster.getGroupItems().addElement(g);
-            }
-            RosterHelper.getInstance().updateGroup(this, notInListGroup);
+        for (int i = 0; i < roster.getContactItems().size(); ++i) {
+            oldRoster.getContactItems().add(roster.getContactItems().get(i));
         }
+        for (int i = 0; i < roster.getGroupItems().size(); ++i) {
+            Group g = roster.getGroupItems().get(i);
+            RosterHelper.getInstance().updateGroup(this, g);
+            oldRoster.getGroupItems().add(g);
+        }
+        RosterHelper.getInstance().updateGroup(this, notInListGroup);
         if (RosterHelper.getInstance().getProtocolCount() == 0) return;
         RosterHelper.getInstance().updateRoster();
         if (needSave)
@@ -187,14 +181,12 @@ abstract public class Protocol {
     }
 
     public final void setContactListAddition(Group group) {
-        synchronized (rosterLockObject) {
-            RosterHelper.getInstance().updateGroup(this, group);
-            RosterHelper.getInstance().updateGroup(this, notInListGroup);
-            Vector<Contact> groupItems = group.getContacts();
-            for (int i = 0; i < groupItems.size(); ++i) {
-                if (-1 == roster.getContactItems().indexOf(groupItems.elementAt(i))) {
-                    roster.getContactItems().addElement(groupItems.elementAt(i));
-                }
+        RosterHelper.getInstance().updateGroup(this, group);
+        RosterHelper.getInstance().updateGroup(this, notInListGroup);
+        List<Contact> groupItems = group.getContacts();
+        for (int i = 0; i < groupItems.size(); ++i) {
+            if (-1 == roster.getContactItems().indexOf(groupItems.get(i))) {
+                roster.getContactItems().add(groupItems.get(i));
             }
         }
         RosterHelper.getInstance().updateRoster();
@@ -255,7 +247,7 @@ abstract public class Protocol {
     }
 
     private void autoGrandAuth(String userId) {
-        autoGrand.addElement(userId);
+        autoGrand.add(userId);
     }
 
     public final void safeLoad() {
@@ -329,10 +321,10 @@ abstract public class Protocol {
                             byte type = dis.readByte();
                             switch (type) {
                                 case TYPE_GROUP:
-                                    roster.getContactItems().addElement(loadContact(dis));
+                                    roster.getContactItems().add(loadContact(dis));
                                     break;
                                 case TYPE_CONTACT:
-                                    roster.getGroupItems().addElement(loadGroup(dis));
+                                    roster.getGroupItems().add(loadGroup(dis));
                                     break;
                             }
                         }
@@ -362,10 +354,10 @@ abstract public class Protocol {
         for (int i = 0; i < totalCount; ++i) {
             if (i < cItemsCount) {
                 dos.writeByte(TYPE_GROUP);
-                saveContact(dos, roster.getContactItems().elementAt(i));
+                saveContact(dos, roster.getContactItems().get(i));
             } else {
                 dos.writeByte(TYPE_CONTACT);
-                saveGroup(dos, roster.getGroupItems().elementAt(i - cItemsCount));
+                saveGroup(dos, roster.getGroupItems().get(i - cItemsCount));
             }
             if ((baos.size() >= 4000) || (i == totalCount - 1)) {
                 buf = baos.toByteArray();
@@ -410,7 +402,7 @@ abstract public class Protocol {
     }
 
     protected void saveGroup(DataOutputStream out, Group group) throws Exception {
-        out.writeInt(group.getId());
+        out.writeInt(group.getGroupId());
         out.writeUTF(group.getName());
         out.writeBoolean(group.isExpanded());
     }
@@ -563,18 +555,18 @@ abstract public class Protocol {
 
     private ProtocolBranch branch;
 
-    public final ProtocolBranch getProtocolBranch() {
+    public final ProtocolBranch getProtocolBranch(int id) {
         if (null == branch) {
-            branch = new ProtocolBranch(this);
+            branch = new ProtocolBranch(this, id);
         }
         return branch;
     }
 
-    public final Vector<Contact> getContactItems() {
+    public final List<Contact> getContactItems() {
         return roster.getContactItems();
     }
 
-    public final Vector<Group> getGroupItems() {
+    public final List<Group> getGroupItems() {
         return roster.getGroupItems();
     }
 
@@ -600,14 +592,12 @@ abstract public class Protocol {
 
     protected void setStatusesOffline() {
         for (int i = roster.getContactItems().size() - 1; i >= 0; --i) {
-            Contact c = roster.getContactItems().elementAt(i);
+            Contact c = roster.getContactItems().get(i);
             c.setOfflineStatus();
         }
-        synchronized (rosterLockObject) {
-            if (RosterHelper.getInstance().useGroups) {
-                for (int i = roster.getGroupItems().size() - 1; i >= 0; --i) {
-                    (roster.getGroupItems().elementAt(i)).updateGroupData();
-                }
+        if (RosterHelper.getInstance().useGroups) {
+            for (int i = roster.getGroupItems().size() - 1; i >= 0; --i) {
+                (roster.getGroupItems().get(i)).updateGroupData();
             }
         }
     }
@@ -712,10 +702,6 @@ abstract public class Protocol {
         return notInListGroup;
     }
 
-    public final Object getRosterLockObject() {
-        return rosterLockObject;
-    }
-
     public final void markMessages(Contact contact) {
         if (Options.getBoolean(JLocale.getString(R.string.pref_sort_up_with_msg))) {
             ui_updateContact(contact);
@@ -729,13 +715,11 @@ abstract public class Protocol {
     }
 
     public final void ui_updateContact(final Contact contact) {
-        synchronized (rosterLockObject) {
-            Group group = getGroup(contact);
-            if (null == group) {
-                group = notInListGroup;
-            }
-            RosterHelper.getInstance().putIntoQueue(group);
+        Group group = getGroup(contact);
+        if (null == group) {
+            group = notInListGroup;
         }
+        RosterHelper.getInstance().putIntoQueue(group);
         RosterHelper.getInstance().updateRoster(contact);
         if (RosterHelper.getInstance().getUpdateChatListener() != null)
             RosterHelper.getInstance().getUpdateChatListener().updateChat();
@@ -748,16 +732,14 @@ abstract public class Protocol {
         Group g = getGroup(contact);
         boolean hasnt = !inContactList(contact);
         if (hasnt) {
-            roster.getContactItems().addElement(contact);
+            roster.getContactItems().add(contact);
         }
         ui_addContactToGroup(contact, g);
         ui_updateContact(contact);
     }
 
     private void cl_moveContact(Contact contact, Group to) {
-        synchronized (rosterLockObject) {
-            ui_addContactToGroup(contact, to);
-        }
+        ui_addContactToGroup(contact, to);
         ui_updateContact(contact);
     }
 
@@ -765,10 +747,8 @@ abstract public class Protocol {
         if (-1 != roster.getGroupItems().indexOf(group)) {
             DebugLog.panic("Group '" + group.getName() + "' already added");
         }
-        synchronized (rosterLockObject) {
-            roster.getGroupItems().addElement(group);
-            ui_updateGroup(group);
-        }
+        roster.getGroupItems().add(group);
+        ui_updateGroup(group);
     }
 
     private void cl_renameGroup(Group group) {
@@ -776,7 +756,7 @@ abstract public class Protocol {
     }
 
     private void cl_removeGroup(final Group group) {
-        roster.getGroupItems().removeElement(group);
+        roster.getGroupItems().remove(group);
         RosterHelper.getInstance().updateRoster(group);
     }
 
@@ -790,7 +770,7 @@ abstract public class Protocol {
         }
         boolean inCL = inContactList(contact);
         if (inCL) {
-            roster.getContactItems().removeElement(contact);
+            roster.getContactItems().remove(contact);
             ui_removeFromAnyGroup(contact);
         }
         if (contact.hasChat()) {
@@ -854,7 +834,7 @@ abstract public class Protocol {
             if (SystemNotice.SYS_NOTICE_AUTHREQ == notice.getSysnoteType()) {
                 if (autoGrand.contains(contact.getUserId())) {
                     grandAuth(contact.getUserId());
-                    autoGrand.removeElement(contact.getUserId());
+                    autoGrand.remove(contact.getUserId());
                     chat.resetAuthRequests();
                 }
             }

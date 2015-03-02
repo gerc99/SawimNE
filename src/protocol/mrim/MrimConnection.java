@@ -849,7 +849,7 @@ public final class MrimConnection extends ClientConnection {
     void removeGroup(MrimGroup group) {
         int flags = CONTACT_FLAG_GROUP | CONTACT_FLAG_REMOVED;
         putPacketIntoQueue(MrimPacket.getModifyContactPacket(
-                group.getId(), flags, 0,
+                group.getGroupId(), flags, 0,
                 group.getName(), group.getName(), ""));
     }
 
@@ -862,7 +862,7 @@ public final class MrimConnection extends ClientConnection {
     void renameGroup(MrimGroup group) {
         int flags = group.getFlags() | CONTACT_FLAG_GROUP;
         putPacketIntoQueue(MrimPacket.getModifyContactPacket(
-                group.getId(), flags, 0,
+                group.getGroupId(), flags, 0,
                 group.getName(), group.getName(), ""));
     }
 

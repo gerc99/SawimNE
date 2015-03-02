@@ -3,23 +3,24 @@ package protocol;
 import protocol.mrim.MrimPhoneContact;
 import protocol.xmpp.XmppServiceContact;
 
-import java.util.Vector;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 
 public class TemporaryRoster {
     private Protocol protocol;
-    private Vector oldGroups;
-    private Vector oldContacts;
+    private List<Group> oldGroups;
+    private List<Contact> oldContacts;
     private Contact[] existContacts;
-    private Vector groups = new Vector();
-    private Vector contacts = new Vector();
+    private List<Group> groups = new CopyOnWriteArrayList<>();
+    private List<Contact> contacts = new CopyOnWriteArrayList<>();
 
     public TemporaryRoster(Protocol protocol) {
         this.protocol = protocol;
         this.oldGroups = protocol.getGroupItems();
         this.oldContacts = protocol.getContactItems();
         existContacts = new Contact[oldContacts.size()];
-        oldContacts.copyInto(existContacts);
+        System.arraycopy(existContacts, 0, oldContacts.toArray(), 0, oldContacts.size());
     }
 
     public Contact makeContact(String userId) {
@@ -34,9 +35,9 @@ public class TemporaryRoster {
         return protocol.createContact(userId, userId);
     }
 
-    private Group getGroup(Vector list, String name) {
+    private Group getGroup(List list, String name) {
         for (int j = list.size() - 1; 0 <= j; --j) {
-            Group g = (Group) list.elementAt(j);
+            Group g = (Group) list.get(j);
             if (name.equals(g.getName())) {
                 return g;
             }
@@ -47,8 +48,8 @@ public class TemporaryRoster {
     public void useOld() {
         groups = oldGroups;
         contacts = oldContacts;
-        oldGroups = new Vector();
-        oldContacts = new Vector();
+        oldGroups = new CopyOnWriteArrayList<>();
+        oldContacts = new CopyOnWriteArrayList<>();
         existContacts = new Contact[0];
     }
 
@@ -76,8 +77,8 @@ public class TemporaryRoster {
         return g;
     }
 
-    public final Vector mergeContacts() {
-        Vector newContacts = contacts;
+    public final List<Contact> mergeContacts() {
+        List<Contact> newContacts = contacts;
         boolean sync = protocol.isReconnect();
 //        sync |= Options.getBoolean(Options.OPTION_SAVE_TEMP_CONTACT);
         if (sync) {
@@ -101,30 +102,30 @@ public class TemporaryRoster {
                 o.setGroup(g);
                 o.setTempFlag(true);
                 o.setBooleanValue(Contact.CONTACT_NO_AUTH, false);
-                newContacts.addElement(o);
+                newContacts.add(o);
             }
         }
         return newContacts;
     }
 
     public void addGroup(Group g) {
-        groups.addElement(g);
+        groups.add(g);
     }
 
     public void addContact(Contact c) {
         c.setTempFlag(false);
-        contacts.addElement(c);
+        contacts.add(c);
     }
 
-    public Vector getGroups() {
+    public List<Group> getGroups() {
         return groups;
     }
 
     public Group getGroupById(int groupId) {
         Group group;
         for (int i = oldGroups.size() - 1; 0 <= i; --i) {
-            group = (Group) oldGroups.elementAt(i);
-            if (group.getId() == groupId) {
+            group = oldGroups.get(i);
+            if (group.getGroupId() == groupId) {
                 return group;
             }
         }

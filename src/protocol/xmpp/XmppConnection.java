@@ -30,9 +30,11 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Vector;
-
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public final class XmppConnection extends ClientConnection {
 
@@ -112,7 +114,7 @@ public final class XmppConnection extends ClientConnection {
     private String verHash = "";
     private String featureList = "";
 
-    private final Vector packets = new Vector();
+    private final LinkedBlockingQueue<String> packets = new LinkedBlockingQueue<>();
 
     private boolean isGTalk_ = false;
     private boolean authorized_ = false;
@@ -229,24 +231,22 @@ public final class XmppConnection extends ClientConnection {
         write(forPongPacket);
     }
 
-    public void putPacketIntoQueue(Object packet) {
-        synchronized (packets) {
-            packets.addElement(packet);
-        }
+    public void putPacketIntoQueue(String packet) {
+        packets.add(packet);
     }
 
     private boolean hasOutPackets() {
-        synchronized (packets) {
-            return !packets.isEmpty();
-        }
+        return !packets.isEmpty();
     }
 
     private void sendPacket() throws SawimException {
         String packet = null;
-        synchronized (packets) {
-            packet = (String) packets.elementAt(0);
-            packets.removeElementAt(0);
+        try {
+            packet = packets.take();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
+        //packets.remove(0);
         writePacket(packet);
     }
 
@@ -678,7 +678,7 @@ public final class XmppConnection extends ClientConnection {
                     }
                     setProgress(80);
                     getXmpp().s_updateOnlineStatus();
-                    requestVCard(xmpp.getUserId(), "-", "---");
+                    requestVCard(fullJid_, "-", "---");
                     String xcode = Xmpp.xStatus.getCode(xmpp.getProfile().xstatusIndex);
                     if ((null != xcode) && !xcode.startsWith(XmppXStatus.XSTATUS_START)) {
                         setXStatus();
@@ -1176,8 +1176,8 @@ public final class XmppConnection extends ClientConnection {
         }
         Xmpp xmpp = getXmpp();
         Group group = xmpp.getOrCreateGroup(JLocale.getString(Xmpp.CONFERENCE_GROUP));
-        Vector groups = xmpp.getGroupItems();
-        Vector contacts = xmpp.getContactItems();
+        List<Group> groups = xmpp.getGroupItems();
+        List<Contact> contacts = xmpp.getContactItems();
         while (0 < storage.childrenCount()) {
             XmlNode item = storage.popChildNode();
 
@@ -1198,7 +1198,7 @@ public final class XmppConnection extends ClientConnection {
             conference.setPassword(password);
             conference.setGroup(group);
             if (-1 == contacts.indexOf(conference)) {
-                contacts.addElement(conference);
+                contacts.add(conference);
             }
             if (conference.isAutoJoin()) {
                 xmpp.join(conference);
@@ -1506,7 +1506,7 @@ public final class XmppConnection extends ClientConnection {
         if (null != statusNode) {
             statusNode = statusNode.childAt(0);
         }
-        if (-1 == "|mood|activity|tune".indexOf(eventType)) {
+        if (!"|mood|activity|tune".contains(eventType)) {
             return;
         }
         if ((null == statusNode) || (0 == statusNode.childrenCount())) {
@@ -1670,7 +1670,7 @@ public final class XmppConnection extends ClientConnection {
 
         msg.removeNode(S_SUBJECT);
         msg.removeNode(S_BODY);
-        if ((null != subject) && (-1 == text.indexOf(subject))) {
+        if ((null != subject) && (!text.contains(subject))) {
             text = subject + "\n\n" + text;
         }
         text = StringConvertor.trim(text);
@@ -2081,14 +2081,14 @@ public final class XmppConnection extends ClientConnection {
         }
     }
 
-    public void updateContacts(Vector contacts) {
+    public void updateContacts(List contacts) {
         StringBuilder xml = new StringBuilder();
 
         int itemCount = 0;
         xml.append("<iq type='set' id='").append(generateId())
                 .append("'><query xmlns='jabber:iq:roster'>");
-        for (int i = 0; i < contacts.size(); ++i) {
-            XmppContact contact = (XmppContact) contacts.elementAt(i);
+        for (Object contact1 : contacts) {
+            XmppContact contact = (XmppContact) contact1;
             if (Jid.isConference(getMucServer(), contact.getUserId())) {
                 continue;
             }
@@ -2114,8 +2114,8 @@ public final class XmppConnection extends ClientConnection {
 
     private void parseRosterExchange(XmlNode x, String domain) {
         StringBuffer xml = new StringBuffer();
-        Xmpp j = (Xmpp) protocol;
-        Vector subscribes = new Vector();
+        Xmpp j = protocol;
+        List<XmppContact> subscribes = new ArrayList<>();
         for (int i = 0; i < x.childrenCount(); ++i) {
             XmlNode item = x.childAt(i);
             String jid = item.getAttribute(XmlNode.S_JID);
@@ -2145,7 +2145,7 @@ public final class XmppConnection extends ClientConnection {
                 }
                 contact.setTempFlag(false);
                 if (!contact.isAuth()) {
-                    subscribes.addElement(contact);
+                    subscribes.add(contact);
                 }
             }
 
@@ -2171,9 +2171,9 @@ public final class XmppConnection extends ClientConnection {
                     + "'><query xmlns='jabber:iq:roster'>"
                     + xml.toString() + "</query></iq>");
             xml = new StringBuffer();
-            for (int i = 0; i < subscribes.size(); ++i) {
+            for (XmppContact subscribe : subscribes) {
                 xml.append("<presence type='subscribe' to='")
-                        .append(Util.xmlEscape(((Contact) subscribes.elementAt(i)).getUserId()))
+                        .append(Util.xmlEscape(subscribe.getUserId()))
                         .append("'/>");
             }
             if (0 < xml.length()) {
@@ -2184,10 +2184,10 @@ public final class XmppConnection extends ClientConnection {
 
     public String getConferenceStorage() {
         StringBuilder xml = new StringBuilder();
-        Vector contacts = getXmpp().getContactItems();
+        List<Contact> contacts = getXmpp().getContactItems();
         xml.append("<storage xmlns='storage:bookmarks'>");
         for (int i = 0; i < contacts.size(); ++i) {
-            XmppContact contact = (XmppContact) contacts.elementAt(i);
+            XmppContact contact = (XmppContact) contacts.get(i);
             if (!contact.isConference() || contact.isTemp()) {
                 continue;
             }
@@ -2237,13 +2237,13 @@ public final class XmppConnection extends ClientConnection {
             return;
         }
         gate = "@" + gate;
-        Vector contacts = getXmpp().getContactItems();
+        List<Contact> contacts = getXmpp().getContactItems();
         StringBuilder xml = new StringBuilder();
 
         xml.append("<iq type='set' id='").append(generateId())
                 .append("'><query xmlns='jabber:iq:roster'>");
         for (int i = 0; i < contacts.size(); ++i) {
-            XmppContact contact = (XmppContact) contacts.elementAt(i);
+            XmppContact contact = (XmppContact) contacts.get(i);
             if (!contact.getUserId().endsWith(gate)) {
                 continue;
             }
@@ -2466,10 +2466,10 @@ public final class XmppConnection extends ClientConnection {
 
     void setConferencesXStatus(String status, String msg, int priority) {
         String xml;
-        Vector contacts = getXmpp().getContactItems();
+        List<Contact> contacts = getXmpp().getContactItems();
         for (int i = 0; i < contacts.size(); ++i) {
-            XmppContact contact = (XmppContact) contacts.elementAt(i);
-            if ((contact).isConference() && contact.isOnline()) {
+            XmppContact contact = (XmppContact) contacts.get(i);
+            if (contact.isConference() && contact.isOnline()) {
                 if (0 <= priority) {
                     xml = "<presence to='" + Util.xmlEscape(contact.getUserId()) + "'>";
                     xml += (StringConvertor.isEmpty(status) ? "" : "<show>" + status + "</show>");
@@ -2728,55 +2728,55 @@ public final class XmppConnection extends ClientConnection {
         if (null == x) {
             return;
         }
-        Vector contacts = getXmpp().getContactItems();
+        List<Contact> contacts = getXmpp().getContactItems();
         for (int i = contacts.size() - 1; i >= 0; --i) {
-            XmppContact c = (XmppContact) contacts.elementAt(i);
+            XmppContact c = (XmppContact) contacts.get(i);
             if (c.isOnline() && Jid.isPyIcqGate(c.getUserId())) {
                 setXStatusToIcqTransport((XmppServiceContact) c);
             }
         }
     }
 
-    private String getVerHash(Vector features) {
+    private String getVerHash(List<String> features) {
         StringBuilder sb = new StringBuilder();
         sb.append("client/phone/" + "/" + SawimApplication.NAME + "<");
-        for (int i = 0; i < features.size(); ++i) {
-            sb.append(features.elementAt(i)).append('<');
+        for (String feature : features) {
+            sb.append(feature).append('<');
         }
         return Util.base64encode(MD5.calculate(StringConvertor.stringToByteArrayUtf8(sb.toString())));
     }
 
-    private String getFeatures(Vector features) {
+    private String getFeatures(List<String> features) {
         StringBuilder sb = new StringBuilder();
         sb.append("<identity category='client' type='phone' name='" + SawimApplication.NAME + "'/>");
         for (int i = 0; i < features.size(); ++i) {
-            sb.append("<feature var='").append(features.elementAt(i)).append("'/>");
+            sb.append("<feature var='").append(features.get(i)).append("'/>");
         }
         return sb.toString();
     }
 
     private void initFeatures() {
-        Vector features = new Vector();
-        features.addElement("bugs");
+        List<String> features = new ArrayList<>();
+        features.add("bugs");
 
-        features.addElement("http://jabber.org/protocol/activity");
-        features.addElement("http://jabber.org/protocol/activity+notify");
+        features.add("http://jabber.org/protocol/activity");
+        features.add("http://jabber.org/protocol/activity+notify");
 
-        features.addElement("http://jabber.org/protocol/chatstates");
+        features.add("http://jabber.org/protocol/chatstates");
 
-        features.addElement("http://jabber.org/protocol/disco#info");
+        features.add("http://jabber.org/protocol/disco#info");
 
-        features.addElement("http://jabber.org/protocol/mood");
-        features.addElement("http://jabber.org/protocol/mood+notify");
+        features.add("http://jabber.org/protocol/mood");
+        features.add("http://jabber.org/protocol/mood+notify");
 
-        features.addElement("http://jabber.org/protocol/rosterx");
+        features.add("http://jabber.org/protocol/rosterx");
 
-        features.addElement(S_FEATURE_XSTATUS);
+        features.add(S_FEATURE_XSTATUS);
 
-        features.addElement("jabber:iq:last");
-        features.addElement("jabber:iq:version");
-        features.addElement("urn:xmpp:attention:0");
-        features.addElement("urn:xmpp:time");
+        features.add("jabber:iq:last");
+        features.add("jabber:iq:version");
+        features.add("urn:xmpp:attention:0");
+        features.add("urn:xmpp:time");
 
         verHash = getVerHash(features);
         featureList = getFeatures(features);

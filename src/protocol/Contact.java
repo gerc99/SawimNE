@@ -9,7 +9,6 @@ import ru.sawim.activities.BaseActivity;
 import ru.sawim.chat.Chat;
 import ru.sawim.chat.ChatHistory;
 import ru.sawim.comm.JLocale;
-import ru.sawim.comm.Sortable;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.icons.Icon;
 import ru.sawim.icons.ImageList;
@@ -18,7 +17,7 @@ import ru.sawim.roster.TreeNode;
 import ru.sawim.view.menu.MyMenu;
 
 
-abstract public class Contact implements TreeNode, Sortable {
+abstract public class Contact implements TreeNode {
     public static final ImageList serverListsIcons = ImageList.createImageList("/serverlists.png");
 
     protected String userId;
@@ -74,12 +73,13 @@ abstract public class Contact implements TreeNode, Sortable {
         groupId = id;
     }
 
+    @Override
     public final int getGroupId() {
         return groupId;
     }
 
     public final void setGroup(Group group) {
-        setGroupId((null == group) ? Group.NOT_IN_GROUP : group.getId());
+        setGroupId((null == group) ? Group.NOT_IN_GROUP : group.getGroupId());
     }
 
     public String getDefaultGroupName() {

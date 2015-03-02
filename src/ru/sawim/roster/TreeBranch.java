@@ -1,9 +1,6 @@
-
 package ru.sawim.roster;
 
-import ru.sawim.comm.Sortable;
-
-public abstract class TreeBranch implements TreeNode, Sortable {
+public abstract class TreeBranch implements TreeNode {
 
     public TreeBranch() {
     }
@@ -21,10 +18,6 @@ public abstract class TreeBranch implements TreeNode, Sortable {
      */
     public final void setExpandFlag(boolean value) {
         expanded = value;
-        sort();
-    }
-
-    public void sort() {
     }
 
     public abstract boolean isEmpty();

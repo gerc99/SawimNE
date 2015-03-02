@@ -10,7 +10,6 @@
 package protocol.xmpp;
 
 import protocol.net.TcpSocket;
-import ru.sawim.SawimApplication;
 import ru.sawim.SawimException;
 import ru.sawim.modules.DebugLog;
 import ru.sawim.modules.zlib.ZLibInputStream;
@@ -19,12 +18,12 @@ import ru.sawim.modules.zlib.ZLibOutputStream;
 import javax.net.ssl.SSLContext;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Vector;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * @author Vladimir Krukov
  */
-final class Socket implements Runnable {
+final class Socket extends Thread {
     private TcpSocket socket = new TcpSocket();
     private volatile boolean connected;
     private byte[] inputBuffer = new byte[1024];
@@ -34,7 +33,7 @@ final class Socket implements Runnable {
     private ZLibOutputStream zOut;
     private boolean compressed;
     private boolean secured;
-    private final Vector<Object> read = new Vector<Object>();
+    private final LinkedBlockingQueue<Object> read = new LinkedBlockingQueue<>();
 
     public Socket() {
     }
@@ -66,7 +65,7 @@ final class Socket implements Runnable {
             int bRead = 0;
             try {
                 bRead = zIn.read(data);
-            } catch (IOException e) {
+            } catch (IOException ignored) {
             }
             if (-1 == bRead) {
                 throw new SawimException(120, 13);
@@ -102,18 +101,11 @@ final class Socket implements Runnable {
         inputBufferIndex = 0;
     }
 
-    public void sleep(long ms) {
-        try {
-            Thread.sleep(ms);
-        } catch (Exception ignored) {
-        }
-    }
-
     private void fillBuffer() throws SawimException {
         inputBufferIndex = 0;
         inputBufferLength = read(inputBuffer);
         while (0 == inputBufferLength) {
-            sleep(100);
+            //sleep(100);
             inputBufferLength = read(inputBuffer);
         }
     }
@@ -145,7 +137,7 @@ final class Socket implements Runnable {
         Object readObject = null;
         while (connected && null == readObject) {
             readObject = XmlNode.parse(this);
-            if (null == readObject) sleep(100);
+            //if (null == readObject) sleep(100);
         }
         return readObject;
     }
@@ -161,9 +153,7 @@ final class Socket implements Runnable {
                 readObject = e;
             }
             if (null != readObject) {
-                synchronized (read) {
-                    read.addElement(readObject);
-                }
+                read.add(readObject);
             }
         }
     }
@@ -173,18 +163,16 @@ final class Socket implements Runnable {
         if (wait) {
             readObject = readObject();
         } else {
-            synchronized (read) {
-                if (0 < read.size()) {
-                    readObject = read.elementAt(0);
-                    read.removeElementAt(0);
+            if (0 < read.size()) {
+                try {
+                    readObject = read.take();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
+                //read.remove(0);
             }
         }
         if (readObject instanceof SawimException) throw (SawimException) readObject;
         return (XmlNode) readObject;
-    }
-
-    public void start() {
-        SawimApplication.getExecutor().submit(this);
     }
 }

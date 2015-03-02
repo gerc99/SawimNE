@@ -13,7 +13,6 @@ import android.os.Looper;
 import android.os.Message;
 import de.duenndns.ssl.MemorizingTrustManager;
 import protocol.Protocol;
-import protocol.StatusInfo;
 import ru.sawim.comm.JLocale;
 import ru.sawim.io.FileSystem;
 import ru.sawim.io.HomeDirectory;

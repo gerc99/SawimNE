@@ -6,7 +6,6 @@ import protocol.icq.packet.Packet;
 import protocol.icq.packet.SnacPacket;
 import protocol.icq.packet.ToIcqSrvPacket;
 import protocol.icq.plugin.XtrazMessagePlugin;
-import ru.sawim.Options;
 import ru.sawim.R;
 import ru.sawim.activities.BaseActivity;
 import ru.sawim.chat.message.PlainMessage;
@@ -411,13 +410,13 @@ public class Icq extends Protocol {
             return true;
         }
         for (int i = getGroupItems().size() - 1; i >= 0; --i) {
-            Group group = (Group) getGroupItems().elementAt(i);
-            if (group.getId() == id) {
+            Group group = getGroupItems().get(i);
+            if (group.getGroupId() == id) {
                 return true;
             }
         }
         for (int i = getContactItems().size() - 1; i >= 0; --i) {
-            IcqContact item = (IcqContact) getContactItems().elementAt(i);
+            IcqContact item = (IcqContact) getContactItems().get(i);
             if ((item.getContactId() == id)) {
                 return true;
             }
