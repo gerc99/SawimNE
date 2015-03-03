@@ -21,8 +21,6 @@ import ru.sawim.widget.roster.RosterItemView;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -56,28 +54,16 @@ public class MucUsersAdapter extends BaseAdapter {
     public void update() {
         items.clear();
 
+        List<XmppContact.SubContact> subContacts = new ArrayList<>();
+        subContacts.addAll(conference.subcontacts);
+        Util.sort(subContacts);
+
         final int moderators = getContactCount(XmppServiceContact.ROLE_MODERATOR);
         final int participants = getContactCount(XmppServiceContact.ROLE_PARTICIPANT);
         final int visitors = getContactCount(XmppServiceContact.ROLE_VISITOR);
-
-        addLayerToListOfSubcontacts(R.string.list_of_moderators, moderators, XmppServiceContact.ROLE_MODERATOR);
-        addLayerToListOfSubcontacts(R.string.list_of_participants, participants, XmppServiceContact.ROLE_PARTICIPANT);
-        addLayerToListOfSubcontacts(R.string.list_of_visitors, visitors, XmppServiceContact.ROLE_VISITOR);
-
-        sort(items);
-    }
-
-    public static <T extends TreeNode> void sort(final List<T> subnodes) {
-        Collections.sort(subnodes, new Comparator<T>() {
-            @Override
-            public int compare(T node1, T node2) {
-                if (node1.getType() == TreeNode.LAYER || node2.getType() == TreeNode.LAYER) return 0;
-                if (node1.getGroupId() == node2.getGroupId()) {
-                    return Util.compareNodes(node1, node2);
-                }
-                return -1;
-            }
-        });
+        addLayerToListOfSubcontacts(subContacts, R.string.list_of_moderators, moderators, XmppServiceContact.ROLE_MODERATOR);
+        addLayerToListOfSubcontacts(subContacts, R.string.list_of_participants, participants, XmppServiceContact.ROLE_PARTICIPANT);
+        addLayerToListOfSubcontacts(subContacts, R.string.list_of_visitors, visitors, XmppServiceContact.ROLE_VISITOR);
     }
 
     @Override
@@ -161,11 +147,10 @@ public class MucUsersAdapter extends BaseAdapter {
         return null;
     }
 
-    private void addLayerToListOfSubcontacts(int layerStrId, int size, byte priority) {
+    private void addLayerToListOfSubcontacts(List<XmppContact.SubContact> subcontacts, int layerStrId, int size, byte priority) {
         boolean hasLayer = false;
         Layer layer = new Layer(JLocale.getString(layerStrId), priority);
         items.add(layer/* + "(" + size + ")"*/);
-        List<XmppContact.SubContact> subcontacts = conference.subcontacts;
         for (XmppContact.SubContact contact : subcontacts) {
             if (contact.priority == priority) {
                 items.add(contact);
