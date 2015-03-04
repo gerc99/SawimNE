@@ -21,6 +21,7 @@ import android.support.v7.app.ActionBar;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.*;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -87,7 +88,6 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     private int unreadMessageCount;
     private String sharingText;
     private boolean sendByEnter;
-    private static int offsetNewMessage;
     private int newMessageCount = 0;
 
     private String oldSearchQuery = "";
@@ -340,6 +340,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                 }
             });
         }
+
         return SawimApplication.isManyPane() ? chatViewLayout : drawerLayout;
     }
 
@@ -466,7 +467,6 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
         }
         View item = chatListView.getChildAt(0);
         chat.offset = (item == null) ? 0 : Math.abs(isScrollEnd() ? item.getTop() : item.getBottom());
-        offsetNewMessage = chatListView.getHeight() / 4;
 
         chat.setVisibleChat(false);
         RosterHelper.getInstance().setOnUpdateChat(null);
@@ -504,6 +504,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
             oldChatHash = chat.hashCode();
             loadStory(false, true);
         }
+        Log.e("resume", "The " + chatViewLayout.getChatListsView().getChatListView().getHeight());
     }
 
     public boolean isScrollEnd() {
@@ -744,7 +745,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                     } else {
                         if (hasUnreadMessages) {
                             if (isFirstOpenChat || isBottomScroll) {
-                                chatListView.setSelectionFromTop(position, offsetNewMessage);
+                                chatListView.setSelectionFromTop(position, 30);
                             } else if (!isBottomScroll) {
                                 chatListView.setSelectionFromTop(chat.firstVisiblePosition, chat.offset);
                             }
