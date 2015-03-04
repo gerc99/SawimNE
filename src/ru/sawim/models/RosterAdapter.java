@@ -39,7 +39,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * Time: 17:03
  * To change this template use File | Settings | File Templates.
  */
-public class RosterAdapter extends BaseAdapter implements View.OnClickListener{
+public class RosterAdapter extends BaseAdapter implements View.OnClickListener {
 
     private static final int ITEM_PROTOCOL = 0;
     private static final int ITEM_GROUP = 1;
@@ -377,7 +377,7 @@ public class RosterAdapter extends BaseAdapter implements View.OnClickListener{
             rosterItemView.itemSixthImage = icClient.getImage().getBitmap();
     }
 
-    public BitmapDrawable getImageChat(Chat chat, boolean showMess) {
+    public static BitmapDrawable getImageChat(Chat chat, boolean showMess) {
         if (chat.getContact().isTyping()) {
             return Message.getIcon(Message.ICON_TYPE);
         } else {

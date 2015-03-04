@@ -67,7 +67,7 @@ import java.util.List;
  * Time: 20:30
  * To change this template use File | Settings | File Templates.
  */
-public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Callback {
+public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Callback, ChatsDialogFragment.OnForceGoToChatListener {
 
     public static final String TAG = ChatView.class.getSimpleName();
 
@@ -95,7 +95,6 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     private int searchPositionsCount;
     private List<Integer> searchMessagesIds;
 
-    private RosterAdapter chatsSpinnerAdapter;
     private MyListView nickList;
     private ChatViewRoot chatViewLayout;
     private SmileysPopup smileysPopup;
@@ -103,7 +102,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     private ActionBarDrawerToggle drawerToggle;
     private DrawerLayout drawerLayout;
     private ChatBarView chatBarLayout;
-    private DialogFragment chatsDialogFragment;
+    private ChatsDialogFragment chatsDialogFragment;
 
     public static ChatView newInstance(String protocolId, String contactId) {
         ChatView chatView = new ChatView();
@@ -370,7 +369,6 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
         smileysPopup = null;
         drawerLayout = null;
         mucUsersView = null;
-        chatsSpinnerAdapter = null;
         chatsDialogFragment = null;
     }
 
@@ -551,41 +549,14 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     }
 
     private void initLabel() {
-        chatsSpinnerAdapter = new RosterAdapter();
-        chatsSpinnerAdapter.setType(RosterHelper.ACTIVE_CONTACTS);
-        chatBarLayout.updateLabelIcon(chatsSpinnerAdapter.getImageChat(chat, false));
+        chatBarLayout.updateLabelIcon(RosterAdapter.getImageChat(chat, false));
         chatBarLayout.updateTextView(chat.getContact().getName());
         chatBarLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                chatsDialogFragment = new DialogFragment() {
-                    @Override
-                    public Dialog onCreateDialog(Bundle savedInstanceState) {
-                        final Context context = getActivity();
-                        View dialogView = LayoutInflater.from(context).inflate(R.layout.chats_dialog, null);
-                        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
-                        dialogBuilder.setView(dialogView);
-                        dialogBuilder.setInverseBackgroundForced(Util.isNeedToInverseDialogBackground());
-                        MyListView lv = (MyListView) dialogView.findViewById(R.id.listView);
-                        lv.setAdapter(chatsSpinnerAdapter);
-                        lv.setFastScrollEnabled(true);
-                        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                            @Override
-                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                Object o = parent.getAdapter().getItem(position);
-                                if (o instanceof Chat) {
-                                    forceGoToChat((Chat) o);
-                                    dismiss();
-                                }
-                            }
-                        });
-                        Dialog dialog = dialogBuilder.create();
-                        dialog.setCanceledOnTouchOutside(true);
-                        return dialog;
-                    }
-                };
-                chatsDialogFragment.show(getFragmentManager().beginTransaction(), "force-go-to-chat");
-                chatsSpinnerAdapter.refreshList();
+                chatsDialogFragment = new ChatsDialogFragment();
+                chatsDialogFragment.setForceGoToChatListener(ChatView.this);
+                chatsDialogFragment.show(getFragmentManager(), "force-go-to-chat");
             }
         });
     }
@@ -717,8 +688,8 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
             @Override
             public void run() {
                 updateChatIcon();
-                if (chatsSpinnerAdapter != null && chatsDialogFragment != null && chatsDialogFragment.isVisible())
-                    chatsSpinnerAdapter.refreshList();
+                if (chatsDialogFragment != null && chatsDialogFragment.isVisible())
+                    chatsDialogFragment.refreshList();
             }
         });
     }
@@ -823,9 +794,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
         BitmapDrawable confIcon = StatusInfo.STATUS_OFFLINE == chat.getContact().getStatusIndex()
                 ? SawimResources.usersIcon : SawimResources.usersIconOn;
         if (SawimApplication.isManyPane()) {
-            if (chatsSpinnerAdapter != null) {
-                chatBarLayout.updateLabelIcon(chat.getContact().isConference() ? confIcon : chatsSpinnerAdapter.getImageChat(chat, false));
-            }
+            chatBarLayout.updateLabelIcon(chat.getContact().isConference() ? confIcon : RosterAdapter.getImageChat(chat, false));
         } else {
             ((BaseActivity) getActivity()).getSupportActionBar().setIcon(confIcon);
             if (icMess == null) {
@@ -834,9 +803,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                 chatBarLayout.setVisibilityChatsImage(View.VISIBLE);
                 chatBarLayout.getChatsImage().setImageDrawable(icMess);
             }
-            if (chatsSpinnerAdapter != null) {
-                chatBarLayout.updateLabelIcon(chat.getContact().isConference() ? null : chatsSpinnerAdapter.getImageChat(chat, false));
-            }
+            chatBarLayout.updateLabelIcon(chat.getContact().isConference() ? null : RosterAdapter.getImageChat(chat, false));
         }
     }
 
@@ -1334,4 +1301,9 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
             TextFormatter.getInstance().detectEmotions(s);
         }
     };
+
+    @Override
+    public void onForceGoToChat(Chat selectedChat) {
+        forceGoToChat(selectedChat);
+    }
 }
