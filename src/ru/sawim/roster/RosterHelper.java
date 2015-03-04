@@ -463,7 +463,7 @@ public final class RosterHelper {
                         Group group1 = getGroupById(groups, node1.getGroupId());
                         Group group2 = getGroupById(groups, node2.getGroupId());
                         if (group1 != null && group2 != null) {
-                            return group1.getNodeWeight() - group2.getNodeWeight();
+                            return Util.compareNodes(group1, group2);
                         }
                     }
                 } else {
