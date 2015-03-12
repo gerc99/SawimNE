@@ -56,6 +56,9 @@ public class Jid {
     }
 
     public static boolean isConference(String server, String jid) {
+        if (server == null) {
+            return Jid.isConference(jid);
+        }
         int index = jid.indexOf('@');
         if (-1 < index) {
             if (jid.startsWith(server, index + 1)) {

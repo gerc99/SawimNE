@@ -29,6 +29,7 @@ public abstract class ClientConnection implements Runnable {
 
     private long nextPingTime;
     private long pongTime;
+    private long lastConnect = 0;
 
     private static final int PING_INTERVAL = 90;
     private static final int PONG_TIMEOUT = 4 * 60;
@@ -38,7 +39,7 @@ public abstract class ClientConnection implements Runnable {
 
     protected final void setPingInterval(long interval) {
         keepAliveInterv = Math.min(keepAliveInterv, interval);
-        nextPingTime = SawimApplication.getCurrentGmtTime() + keepAliveInterv;
+        nextPingTime = getCurrentGmtTime() + keepAliveInterv;
     }
 
     protected final long getPingInterval() {
@@ -53,7 +54,7 @@ public abstract class ClientConnection implements Runnable {
     private void initPingValues() {
         usePong = false;
         keepAliveInterv = PING_INTERVAL;
-        nextPingTime = SawimApplication.getCurrentGmtTime() + keepAliveInterv;
+        nextPingTime = getCurrentGmtTime() + keepAliveInterv;
         wakeup(nextPingTime);
     }
 
@@ -68,6 +69,7 @@ public abstract class ClientConnection implements Runnable {
         try {
             getProtocol().setConnectingProgress(0);
             connect();
+            lastConnect = System.currentTimeMillis();
             while (isConnected()) {
                 boolean doing = processPacket();
                 if (!doing) {
@@ -95,6 +97,7 @@ public abstract class ClientConnection implements Runnable {
                 DebugLog.panic("die2 " + getId(), ex);
             }
         }
+        lastConnect = 0;
         disconnect();
         unregisterAlarm();
         try {
@@ -103,6 +106,10 @@ public abstract class ClientConnection implements Runnable {
             DebugLog.panic("die3 " + getId(), e);
         }
         connect = false;
+    }
+
+    public long getLastSessionEstablished() {
+        return lastConnect;
     }
 
     private String getId() {
@@ -121,7 +128,7 @@ public abstract class ClientConnection implements Runnable {
     }
 
     private void doPingIfNeeeded() throws SawimException {
-        long now = SawimApplication.getCurrentGmtTime();
+        long now = getCurrentGmtTime();
         if (usePong && (pongTime + PONG_TIMEOUT < now)) {
             throw new SawimException(120, 9);
         }
@@ -138,7 +145,7 @@ public abstract class ClientConnection implements Runnable {
     }
 
     protected final void updateTimeout() {
-        pongTime = SawimApplication.getCurrentGmtTime();
+        pongTime = getCurrentGmtTime();
     }
 
     public final boolean isConnected() {
@@ -175,13 +182,17 @@ public abstract class ClientConnection implements Runnable {
                 messages.remove(msg);
             }
         }
-        long date = SawimApplication.getCurrentGmtTime() - 5 * 60;
+        long date = getCurrentGmtTime() - 5 * 60;
         for (int i = messages.size() - 1; i >= 0; --i) {
             PlainMessage m = messages.get(i);
             if (date > m.getNewDate()) {
                 messages.remove(m);
             }
         }
+    }
+
+    private long getCurrentGmtTime() {
+        return SawimApplication.getCurrentGmtTime() / 100;
     }
 
     protected void pingForPong() throws SawimException {

@@ -1,11 +1,9 @@
 
 package ru.sawim.chat.message;
 
-import protocol.Contact;
 import protocol.Protocol;
 import ru.sawim.R;
 import ru.sawim.comm.JLocale;
-import ru.sawim.comm.StringConvertor;
 
 public class PlainMessage extends Message {
 
@@ -16,18 +14,21 @@ public class PlainMessage extends Message {
     public static final String CMD_ME = "/me ";
 
     public PlainMessage(String contactUin, Protocol protocol, long date, String text, boolean offline) {
-        super(date, protocol.getUserId(), contactUin, true);
-        if (text.length() > 0 && '\n' == text.charAt(0)) {
-            text = text.substring(1);
-        }
-        this.text = text;
-        this.offline = offline;
+        this(contactUin, protocol, date, text, offline, true);
     }
 
     public PlainMessage(Protocol protocol, String rcvr, long date, String text) {
-        super(date, protocol.getUserId(), rcvr, false);
-        this.text = StringConvertor.notNull(text);
-        this.offline = false;
+        this(rcvr, protocol, date, text, false, false);
+    }
+
+    public PlainMessage(String contactUin, Protocol protocol, long date, String text, boolean offline, boolean isIncoming) {
+        this(contactUin, protocol.getUserId(), date, text, offline, isIncoming);
+    }
+
+    public PlainMessage(String contactUin, String myId, long date, String text, boolean offline, boolean isIncoming) {
+        super(date, myId, contactUin, isIncoming);
+        this.text = text;
+        this.offline = offline;
     }
 
     public boolean isOffline() {

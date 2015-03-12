@@ -275,7 +275,9 @@ public final class MrimConnection extends ClientConnection {
                 msg = PlainMessage.CMD_WAKEUP;
             }
             mrim.addMessage(new PlainMessage(from, mrim,
-                    (null == date) ? SawimApplication.getCurrentGmtTime() : Util.createGmtDate(date),
+                    /*(null == date)
+                            ? */SawimApplication.getCurrentGmtTime()
+                            /*: Util.getLocalDateString(date, !offline)*/,
                     msg, offline));
         }
     }

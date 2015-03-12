@@ -1,5 +1,6 @@
 package protocol.xmpp;
 
+import android.util.Log;
 import protocol.*;
 import protocol.net.ClientConnection;
 import ru.sawim.Options;
@@ -16,6 +17,7 @@ import ru.sawim.comm.Util;
 import ru.sawim.icons.ImageCache;
 import ru.sawim.io.FileSystem;
 import ru.sawim.io.RosterStorage;
+import ru.sawim.listener.OnMoreMessagesLoaded;
 import ru.sawim.modules.DebugLog;
 import ru.sawim.modules.crypto.MD5;
 import ru.sawim.modules.crypto.SHA1;
@@ -30,15 +32,12 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public final class XmppConnection extends ClientConnection {
 
-    public static final boolean DEBUGLOG = false;
+    public static final boolean DEBUGLOG = true;
     private static final int MESSAGE_COUNT_AFTER_CONNECT = 20;
 
     private static final String[] statusCodes = {
@@ -60,6 +59,7 @@ public final class XmppConnection extends ClientConnection {
 
     private static final String S_TEXT = "text";
     private static final String S_FROM = "from";
+    private static final String S_TO = "to";
     private static final String S_TYPE = "type";
     private static final String S_ERROR = "error";
     private static final String S_NONE = "none";
@@ -130,13 +130,15 @@ public final class XmppConnection extends ClientConnection {
     private AdHoc adhoc;
     private AffiliationListConf affListConf = null;
     private MirandaNotes notes = null;
-
     private SASL_ScramSha1 scramSHA1;
+    private MessageArchiveManagement messageArchiveManagement = new MessageArchiveManagement();
 
     private String myAvatarHash = null;
 
     private HashMap<String, String> serverDiscoItems = new HashMap<>();
     private String mucServer;
+
+    private boolean hasMessageArchiveManagement = false;
 
     private byte nativeStatus2StatusIndex(String rawStatus) {
         rawStatus = StringConvertor.notNull(rawStatus);
@@ -170,6 +172,7 @@ public final class XmppConnection extends ClientConnection {
         protocol = xmpp;
         resource = xmpp.getResource();
         fullJid_ = xmpp.getUserId() + '/' + resource;
+        domain_ = Jid.getDomain(fullJid_);
         domain_ = Jid.getDomain(fullJid_);
     }
 
@@ -518,7 +521,7 @@ public final class XmppConnection extends ClientConnection {
         return key + Util.uniqueValue();
     }
 
-    private String generateId() {
+    public static String generateId() {
         return "sawim" + Util.uniqueValue();
     }
 
@@ -664,7 +667,11 @@ public final class XmppConnection extends ClientConnection {
                             xmpp.getContactItems().add(contact);
                         }
                         RosterHelper.getInstance().updateGroup(xmpp, g);
+                        if (hasMessageArchiveManagement) {
+                            //messageArchiveManagement.query(this, contact);
+                        }
                     }
+
                     RosterHelper.getInstance().updateGroup(xmpp, xmpp.getNotInListGroup());
                     RosterHelper.getInstance().updateRoster();
                     setProgress(70);
@@ -688,6 +695,10 @@ public final class XmppConnection extends ClientConnection {
                     putPacketIntoQueue("<iq type='get' id='getnotes'><query xmlns='jabber:iq:private'><storage xmlns='storage:rosternotes'/></query></iq>");
                     setProgress(100);
 
+                    if (hasMessageArchiveManagement) {
+                        //messageArchiveManagement.catchup(this);
+                        messageArchiveManagement.query(this);
+                    }
                 } else if (IQ_TYPE_SET == iqType) {
                     while (0 < iqQuery.childrenCount()) {
                         XmlNode itemNode = iqQuery.popChildNode();
@@ -719,7 +730,6 @@ public final class XmppConnection extends ClientConnection {
                     }
                 }
                 return;
-
             } else if ("http://jabber.org/protocol/disco#info".equals(xmlns)) {
                 if (IQ_TYPE_GET == iqType) {
                     StringBuilder sb = new StringBuilder();
@@ -738,12 +748,15 @@ public final class XmppConnection extends ClientConnection {
                 while (0 < iqQuery.childrenCount()) {
                     XmlNode featureNode = iqQuery.popChildNode();
                     String feature = featureNode.getAttribute("var");
-                    if (feature != null && feature.equals("http://jabber.org/protocol/muc")) {
-                        mucServer = serverDiscoItems.get(iq.getId());
-
-                        write(GET_ROSTER_XML);
+                    if (feature != null) {
+                        if (feature.equals("http://jabber.org/protocol/muc")) {
+                            mucServer = serverDiscoItems.get(iq.getId());
+                        } else if (feature.equals("urn:xmpp:mam:0")) {
+                            hasMessageArchiveManagement = true;
+                        }
                     }
                 }
+                write(GET_ROSTER_XML);
                 String name = iqQuery.getFirstNodeAttribute("identity", XmlNode.S_NAME);
                 xmpp.setConferenceInfo(from, name);
                 return;
@@ -912,13 +925,13 @@ public final class XmppConnection extends ClientConnection {
             String jid = Jid.isConference(getMucServer(), from) ? from : Jid.getBareJid(from);
             //MagicEye.addAction(xmpp, jid, "get_time");
 
-            putPacketIntoQueue("<iq type='result' to='" + Util.xmlEscape(from)
+            /*putPacketIntoQueue("<iq type='result' to='" + Util.xmlEscape(from)
                     + "' id='" + Util.xmlEscape(id) + "'>"
                     + "<time xmlns='urn:xmpp:time'><tzo>"
                     + (0 <= SawimApplication.gmtOffset ? "+" : "-") + Util.makeTwo(Math.abs(SawimApplication.gmtOffset)) + ":00"
                     + "</tzo><utc>"
                     + Util.getUtcDateString(SawimApplication.getCurrentGmtTime())
-                    + "</utc></time></iq>");
+                    + "</utc></time></iq>");*/
             return;
         } else if (("ping").equals(queryName)) {
             writePacket("<iq to='" + Util.xmlEscape(from) + "' id='" + Util.xmlEscape(id) + "' type='result'/>");
@@ -1588,12 +1601,14 @@ public final class XmppConnection extends ClientConnection {
 
     private void parseMessage(XmlNode msg) {
         msg.removeNode("html");
-
+        if (parseMamMessage(msg)) {
+            return;
+        }
+        String fullJid = msg.getAttribute(S_FROM);
         String type = msg.getAttribute(S_TYPE);
         boolean isGroupchat = ("groupchat").equals(type);
         boolean isError = S_ERROR.equals(type);
 
-        String fullJid = msg.getAttribute(S_FROM);
         boolean isConference = Jid.isConference(getMucServer(), fullJid);
         if (!isGroupchat) {
             fullJid = Jid.realJidToSawimJid(fullJid);
@@ -1678,7 +1693,7 @@ public final class XmppConnection extends ClientConnection {
         Message message = null;
         final String date = getDate(msg);
         final boolean isOnlineMessage = (null == date);
-        long time = isOnlineMessage ? SawimApplication.getCurrentGmtTime() : Util.createGmtDate(date);
+        long time = isOnlineMessage ? SawimApplication.getCurrentGmtTime() : new Delay().getTime(date);
         final XmppContact c = (XmppContact) getXmpp().getItemByUID(from);
         if (msg.contains(S_ERROR)) {
             final String errorText = getError(msg.getFirstNode(S_ERROR));
@@ -1777,8 +1792,62 @@ public final class XmppConnection extends ClientConnection {
                 return;
             }
         }
-        if (message != null)
+        if (message != null) {
             getXmpp().addMessage(message, S_HEADLINE.equals(type));
+        }
+    }
+
+    private boolean parseMamMessage(XmlNode msg) {
+        XmlNode finMamXmlNode = msg.getFirstNode("fin", "urn:xmpp:mam:0");
+        if (finMamXmlNode != null) {
+            messageArchiveManagement.processFin(this, finMamXmlNode);
+            return true;
+        }
+        XmlNode mamXmlNode = msg.getFirstNode("result", "urn:xmpp:mam:0");
+        if (mamXmlNode != null) {
+            final MessageArchiveManagement.Query query = messageArchiveManagement.findQuery(mamXmlNode.getAttribute("queryid"));
+            XmlNode forwardedXmlNode = mamXmlNode.getFirstNode("forwarded", "urn:xmpp:forward:0");
+            final String date = getDate(forwardedXmlNode);
+            final boolean isOnlineMessage = (null == date);
+            long time = isOnlineMessage ? SawimApplication.getCurrentGmtTime() : new Delay().getTime(date);
+            msg = forwardedXmlNode.getFirstNode("message");
+
+            String text = msg.getFirstNodeValue(S_BODY);
+            String type = msg.getAttribute(S_TYPE);
+            String from = msg.getAttribute(S_FROM);
+            String to = msg.getAttribute(S_TO);
+            String coo = "";
+            boolean isIncoming = false;
+            if (from != null && to != null && Jid.getBareJid(from).equals(Jid.getBareJid(fullJid_))) {
+                isIncoming = false;
+                coo = to;
+            } else if (from != null && to != null) {
+                isIncoming = true;
+                coo = from;
+            } else {
+                Log.e("MAM ERROR MEASSAGE", from + " " + to);
+                coo = from;
+            }
+            from = Jid.getBareJid(coo);
+            XmppContact c = (XmppContact) getXmpp().getItemByUID(from);
+            Message message = new PlainMessage(from, isIncoming ? getXmpp().getUserId() : from, time, text, !isOnlineMessage, isIncoming);
+            getXmpp().addMessage(message, S_HEADLINE.equals(type));
+            if (c == null) {
+                c = (XmppContact) getXmpp().createTempContact(from);
+                getXmpp().addLocalContact(c);
+            }
+            if (c != null && !c.isConference()) {
+                if (query == null) {
+                    messageArchiveManagement.query(this, c);
+                } else {
+                    if (query.getWith() == null) {
+                        messageArchiveManagement.query(this, c, query.getStart());
+                    }
+                }
+            }
+            return true;
+        }
+        return false;
     }
 
     private void parseBlogMessage(String to, XmlNode msg, String text, String botNick) {
@@ -1808,7 +1877,7 @@ public final class XmppConnection extends ClientConnection {
         }
 
         String date = getDate(msg);
-        long time = (null == date) ? SawimApplication.getCurrentGmtTime() : Util.createGmtDate(date);
+        long time = (null == date) ? SawimApplication.getCurrentGmtTime() : new Delay().getTime(date);
         PlainMessage message = new PlainMessage(to, getXmpp(), time, text, false);
         if (null != nick) {
             message.setName(('@' == nick.charAt(0)) ? nick.substring(1) : nick);
@@ -2396,12 +2465,15 @@ public final class XmppConnection extends ClientConnection {
             if (!StringConvertor.isEmpty(password)) {
                 xNode += "<password>" + Util.xmlEscape(password) + "</password>";
             }
+            /*long time = conf.getLastMessageTransmitted();
+            if (0 != time)
+                xNode += "<history since='" + time + "'/>";*/
             HistoryStorage historyStorage = getXmpp().getChat(conf).getHistory();
-            long time = historyStorage.getLastMessageTime();
+            long time = historyStorage.getMessageTime(true);
             if (0 != time)
                 xNode += "<history maxstanzas='"
                         + MESSAGE_COUNT_AFTER_CONNECT
-                        + "' seconds='" + (SawimApplication.getCurrentGmtTime() - time) + "'/>";
+                        + "' seconds='" + (SawimApplication.getCurrentGmtTime() / 1000 - time / 1000) + "'/>";
 
             if (!StringConvertor.isEmpty(xNode)) {
                 xml += "<x xmlns='http://jabber.org/protocol/muc'>" + xNode + "</x>";
@@ -2855,5 +2927,21 @@ public final class XmppConnection extends ClientConnection {
         }
         putPacketIntoQueue(stanza);
         return true;
+    }
+
+    public boolean hasMessageArchiveManagement() {
+        return hasMessageArchiveManagement;
+    }
+
+    public void queryMessageArchiveManagement(Contact contact, long startTime, long endTime, OnMoreMessagesLoaded moreMessagesLoadedListener) {
+        if (contact.isConference()) return;
+        MessageArchiveManagement.Query query = messageArchiveManagement.query(this, contact, startTime, endTime);
+        if (query != null) {
+            query.setOnMoreMessagesLoaded(moreMessagesLoadedListener);
+        }
+    }
+
+    public MessageArchiveManagement getMessageArchiveManagement() {
+        return messageArchiveManagement;
     }
 }

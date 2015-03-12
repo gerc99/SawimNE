@@ -37,7 +37,7 @@ public class MessagesAdapter extends BaseAdapter {
         items = new ArrayList<>();
     }
 
-    public List getItems() {
+    public List<MessData> getItems() {
         return items;
     }
 

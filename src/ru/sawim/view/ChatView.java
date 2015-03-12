@@ -26,15 +26,13 @@ import android.view.*;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
+import protocol.xmpp.*;
+import ru.sawim.listener.OnMoreMessagesLoaded;
 import ru.sawim.listener.OnUpdateChat;
 import protocol.Contact;
 import protocol.ContactMenu;
 import protocol.Protocol;
 import protocol.StatusInfo;
-import protocol.xmpp.Jid;
-import protocol.xmpp.MirandaNotes;
-import protocol.xmpp.Xmpp;
-import protocol.xmpp.XmppServiceContact;
 import ru.sawim.*;
 import ru.sawim.activities.BaseActivity;
 import ru.sawim.chat.Chat;
@@ -59,6 +57,8 @@ import ru.sawim.widget.chat.ChatInputBarView;
 import ru.sawim.widget.chat.ChatListsView;
 import ru.sawim.widget.chat.ChatViewRoot;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -504,7 +504,6 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
             oldChatHash = chat.hashCode();
             loadStory(false, true);
         }
-        Log.e("resume", "The " + chatViewLayout.getChatListsView().getChatListView().getHeight());
     }
 
     public boolean isScrollEnd() {
@@ -627,6 +626,21 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
         }
     }
 
+    public void sort() {
+        Collections.sort(getMessagesAdapter().getItems(), new Comparator<MessData>() {
+            @Override
+            public int compare(MessData left, MessData right) {
+                if (left.getTime() < right.getTime()) {
+                    return -1;
+                } else if (left.getTime() > right.getTime()) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            }
+        });
+    }
+
     @Override
     public boolean handleMessage(Message msg) {
         switch (msg.what) {
@@ -635,6 +649,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                 MessData mess = (MessData) ((Object[]) msg.obj)[1];
                 if (chat != null && chat.getContact() == c) {
                     getMessagesAdapter().getItems().add(mess);
+                    sort();
                     newMessageCount++;
 
                     setScroll();
@@ -655,6 +670,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     }
 
     private MessagesAdapter getMessagesAdapter() {
+        if (chatViewLayout == null) return null;
         return (MessagesAdapter) chatViewLayout.getChatListsView().getChatListView().getAdapter();
     }
 
@@ -710,16 +726,50 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
         });
     }
 
-    private void loadStory(boolean isScroll, boolean isLoad) {
+    private void setPositionAfterHistoryLoaded(boolean hasUnreadMessages, boolean isBottomScroll,
+                                               boolean isFirstOpenChat, boolean isScroll, boolean isLoad, boolean isAdded, int oldCount) {
+        if (getMessagesAdapter() == null) return;
+        int newCount = getMessagesAdapter().getCount();
+        if (isAdded && (isLoad || isScroll)) {
+            int position = newCount - unreadMessageCount;
+            getMessagesAdapter().setPosition(position);
+            getMessagesAdapter().notifyDataSetChanged();
+            MyListView chatListView = chatViewLayout.getChatListsView().getChatListView();
+            if (isScroll && !isLoad) {
+                chatListView.setSelection(newCount == oldCount ? 0 : newCount - oldCount + 1);
+            } else {
+                if (hasUnreadMessages) {
+                    if (isFirstOpenChat || isBottomScroll) {
+                        chatListView.setSelectionFromTop(position, 30);
+                    } else if (!isBottomScroll) {
+                        chatListView.setSelectionFromTop(chat.firstVisiblePosition, chat.offset);
+                    }
+                } else {
+                    if (!isFirstOpenChat) {
+                        if (isBottomScroll) {
+                            chatListView.setSelectionFromTop(chat.firstVisiblePosition, -chat.offset);
+                        } else {
+                            chatListView.setSelectionFromTop(chat.firstVisiblePosition + 1, chat.offset);
+                        }
+                    }
+                }
+            }
+        }
+        if (chat.currentPosition > 0) {
+            chat.currentPosition = -1;
+        }
+        unreadMessageCount = 0;
+    }
+    private void loadStory(final boolean isScroll, final boolean isLoad) {
         synchronized (getMessagesAdapter().getItems()) {
             if (isOldChat) {
                 isOldChat = false;
                 return;
             }
             if (chat != null && getMessagesAdapter() != null) {
-                boolean hasUnreadMessages = unreadMessageCount > 0;
-                boolean isBottomScroll = chat.currentPosition == 0;
-                boolean isFirstOpenChat = chat.currentPosition == -2;
+                final boolean hasUnreadMessages = unreadMessageCount > 0;
+                final boolean isBottomScroll = chat.currentPosition == 0;
+                final boolean isFirstOpenChat = chat.currentPosition == -2;
                 int limit = HISTORY_MESSAGES_LIMIT;
                 if (chat.currentPosition > 0) {
                     limit = chat.currentPosition;
@@ -728,42 +778,31 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                 }
 
                 boolean isAdded = false;
-                int oldCount = getMessagesAdapter().getCount();
+                final int oldCount = getMessagesAdapter().getCount();
                 if (!isScroll && isLoad) {
                     isAdded = chat.getHistory().addNextListMessages(getMessagesAdapter().getItems(), chat, limit, oldCount, true);
                 } else if (isScroll && !isLoad) {
                     isAdded = chat.getHistory().addNextListMessages(getMessagesAdapter().getItems(), chat, HISTORY_MESSAGES_LIMIT, oldCount, true);
                 }
-                int newCount = getMessagesAdapter().getCount();
-                if (isAdded && (isLoad || isScroll)) {
-                    int position = newCount - unreadMessageCount;
-                    getMessagesAdapter().setPosition(position);
-                    getMessagesAdapter().notifyDataSetChanged();
-                    MyListView chatListView = chatViewLayout.getChatListsView().getChatListView();
-                    if (isScroll && !isLoad) {
-                        chatListView.setSelection(newCount == oldCount ? 0 : newCount - oldCount + 1);
-                    } else {
-                        if (hasUnreadMessages) {
-                            if (isFirstOpenChat || isBottomScroll) {
-                                chatListView.setSelectionFromTop(position, 30);
-                            } else if (!isBottomScroll) {
-                                chatListView.setSelectionFromTop(chat.firstVisiblePosition, chat.offset);
-                            }
-                        } else {
-                            if (!isFirstOpenChat) {
-                                if (isBottomScroll) {
-                                    chatListView.setSelectionFromTop(chat.firstVisiblePosition, -chat.offset);
-                                } else {
-                                    chatListView.setSelectionFromTop(chat.firstVisiblePosition + 1, chat.offset);
+                if (chat.getProtocol() instanceof Xmpp) {
+                    long time = chat.getHistory().getMessageTime(false);
+                    ((Xmpp) chat.getProtocol()).queryMessageArchiveManagement(chat.getContact(), 0, time - 1, new OnMoreMessagesLoaded() {
+                            @Override
+                            public void onLoaded() {
+                                if (getActivity() != null) {
+                                    getActivity().runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            setPositionAfterHistoryLoaded(hasUnreadMessages, isBottomScroll,
+                                                    isFirstOpenChat, isScroll, isLoad, true, oldCount);
+                                        }
+                                    });
                                 }
                             }
-                        }
-                    }
+                        });
                 }
-                if (chat.currentPosition > 0) {
-                    chat.currentPosition = -1;
-                }
-                unreadMessageCount = 0;
+                setPositionAfterHistoryLoaded(hasUnreadMessages, isBottomScroll,
+                        isFirstOpenChat, isScroll, isLoad, isAdded, oldCount);
             }
         }
     }

@@ -1,11 +1,13 @@
 package ru.sawim.comm;
 
+import android.text.format.DateUtils;
 import android.util.Base64;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.roster.TreeNode;
 
 import java.io.ByteArrayOutputStream;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 
@@ -267,74 +269,6 @@ public class Util {
         return Math.abs(Math.max(Integer.MIN_VALUE + 1, rand.nextInt()));
     }
 
-    private final static int TIME_SECOND = 0;
-    private final static int TIME_MINUTE = 1;
-    private final static int TIME_HOUR = 2;
-    private final static int TIME_DAY = 3;
-    private final static int TIME_MON = 4;
-    private final static int TIME_YEAR = 5;
-
-    final private static byte[] dayCounts = {
-            31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
-    };
-
-    private final static int[] calFields = {
-            Calendar.YEAR, Calendar.MONTH, Calendar.DAY_OF_MONTH,
-            Calendar.HOUR_OF_DAY, Calendar.MINUTE, Calendar.SECOND};
-
-    private final static int[] ofsFieldsA = {0, 4, 6, 9, 12, 15};
-    private final static int[] ofsFieldsB = {0, 5, 8, 11, 14, 17};
-    private final static String[] months = {"Jan", "Feb", "Mar", "Apr",
-            "May", "Jun", "Jul", "Aug",
-            "Sep", "Oct", "Nov", "Dec"};
-
-    public static long createGmtDate(String sdate) {
-        Calendar c = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
-        try {
-            sdate = sdate.trim();
-            int[] ofs = sdate.endsWith("Z") ? ofsFieldsB : ofsFieldsA;
-            long result;
-            if (Character.isDigit(sdate.charAt(0))) {
-                int fieldLength = 4;
-                for (int i = 0; i < calFields.length; ++i) {
-                    int begIndex = ofs[i];
-                    int field = strToIntDef(sdate.substring(begIndex, begIndex + fieldLength), 0);
-                    if (1 == i) {
-                        field += Calendar.JANUARY - 1;
-                    }
-                    fieldLength = 2;
-                    c.set(calFields[i], field);
-                }
-                result = Math.max(0, c.getTime().getTime() / 1000);
-
-            } else {
-                String[] rfcDate = Util.explode(sdate, ' ');
-                c.set(Calendar.YEAR, strToIntDef(rfcDate[3], 0));
-
-                for (int i = 0; i < months.length; ++i) {
-                    if (months[i].equals(rfcDate[2])) {
-                        c.set(Calendar.MONTH, i);
-                        break;
-                    }
-                }
-                c.set(Calendar.DAY_OF_MONTH, strToIntDef(rfcDate[1], 0));
-                c.set(Calendar.HOUR_OF_DAY, strToIntDef(rfcDate[4].substring(0, 2), 0));
-                c.set(Calendar.MINUTE, strToIntDef(rfcDate[4].substring(3, 5), 0));
-                c.set(Calendar.SECOND, strToIntDef(rfcDate[4].substring(6), 0));
-
-                long delta = strToIntDef(rfcDate[5].substring(1, 3), 0) * 60 * 60
-                        + strToIntDef(rfcDate[5].substring(3, 5), 0) * 60;
-                if ('+' == rfcDate[5].charAt(0)) {
-                    delta = -delta;
-                }
-                result = Math.max(0, c.getTime().getTime() / 1000 + delta);
-            }
-            return result;
-        } catch (Exception ignored) {
-        }
-        return 0;
-    }
-
     public static long createLocalDate(String date) {
         try {
             date = date.replace('.', ' ').replace(':', ' ');
@@ -346,79 +280,25 @@ public class Util {
             c.set(Calendar.HOUR_OF_DAY, Util.strToIntDef(values[3], 0));
             c.set(Calendar.MINUTE, Util.strToIntDef(values[4], 0));
             c.set(Calendar.SECOND, 0);
-            return localTimeToGmtTime(c.getTime().getTime() / 1000);
+            return c.getTime().getTime();
         } catch (Exception ignored) {
             return 0;
         }
     }
 
-    public static long createCurrentLocalTime() {
-        return gmtTimeToLocalTime(SawimApplication.getCurrentGmtTime());
-    }
-
-    public static String getLocalDayOfWeek_(long gmtTime) {
-        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
-        cal.setTime(new Date(Util.gmtTimeToLocalTime(gmtTime) * 1000));
-        String[] days = {"", "sunday", "monday", "tuesday", "wednesday",
-                "thursday", "friday", "saturday"};
-        return days[cal.get(Calendar.DAY_OF_WEEK)];
-    }
-
+    private static final int SHORT_DATE_FLAGS = DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE
+            | DateUtils.FORMAT_NO_YEAR | DateUtils.FORMAT_ABBREV_ALL;
+    private static final int FULL_DATE_FLAGS = DateUtils.FORMAT_SHOW_TIME
+            | DateUtils.FORMAT_ABBREV_ALL | DateUtils.FORMAT_SHOW_DATE;
     public static String getLocalDateString(long gmtDate, boolean onlyTime) {
-        if (0 == gmtDate) return "***error***";
-        int[] localDate = createDate(gmtTimeToLocalTime(gmtDate));
-        StringBuilder sb = new StringBuilder(16);
-        if (!onlyTime) {
-            sb.append(Util.makeTwo(localDate[TIME_DAY]))
-                    .append('.')
-                    .append(Util.makeTwo(localDate[TIME_MON]))
-                    .append('.')
-                    .append(localDate[TIME_YEAR])
-                    .append(' ');
-        }
-        sb.append(Util.makeTwo(localDate[TIME_HOUR]))
-                .append(':')
-                .append(Util.makeTwo(localDate[TIME_MINUTE]));
-        return sb.toString();
+        return DateUtils.formatDateTime(SawimApplication.getContext(), new Date(gmtDate).getTime(),
+                    onlyTime ? SHORT_DATE_FLAGS : FULL_DATE_FLAGS);
     }
 
-    public static String getDate(String format, long anyDate) {
-        if (0 == anyDate) return "error";
-        int[] localDate = createDate(anyDate);
-        format = format.replace("%H", Util.makeTwo(localDate[TIME_HOUR]));
-        format = format.replace("%M", Util.makeTwo(localDate[TIME_MINUTE]));
-        format = format.replace("%S", Util.makeTwo(localDate[TIME_SECOND]));
-        format = format.replace("%Y", "" + localDate[TIME_YEAR]);
-        format = format.replace("%y", Util.makeTwo(localDate[TIME_YEAR] % 100));
-        format = format.replace("%m", Util.makeTwo(localDate[TIME_MON]));
-        format = format.replace("%d", Util.makeTwo(localDate[TIME_DAY]));
-        return format;
-    }
-
-    public static String getUtcDateString(long gmtTime) {
-        return getDate("%Y-%m-%dT%H:%M:%SZ", gmtTime);
-    }
-
-    public static String xep0082UtcTime(long date) {
-        int[] loclaDate = createDate(date);
-
-        StringBuilder sb = new StringBuilder();
-
-        sb.append(loclaDate[TIME_YEAR]);
-
-        sb.append(Util.makeTwo(loclaDate[TIME_MON]));
-
-        sb.append(Util.makeTwo(loclaDate[TIME_DAY]))
-                .append('T');
-
-        sb.append(Util.makeTwo(loclaDate[TIME_HOUR]))
-                .append(':')
-                .append(Util.makeTwo(loclaDate[TIME_MINUTE]))
-                .append(':')
-                .append(Util.makeTwo(loclaDate[TIME_SECOND]));
-
-
-        return sb.toString();
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
+    public static String getTimestamp(long time) {
+        DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
+        return DATE_FORMAT.format(time);
     }
 
     public static long createGmtTime(int year, int mon, int day,
@@ -431,55 +311,10 @@ public class Util {
             c.set(Calendar.HOUR_OF_DAY, hour);
             c.set(Calendar.MINUTE, min);
             c.set(Calendar.SECOND, sec);
-            return c.getTime().getTime() / 1000;
+            return c.getTime().getTime();
         } catch (Exception ignored) {
             return 0;
         }
-    }
-
-    private static int[] createDate(long value) {
-        int total_days, last_days, i;
-        int sec, min, hour, day, mon, year;
-
-        sec = (int) (value % 60);
-
-        min = (int) ((value / 60) % 60);
-        value -= 60 * min;
-
-        hour = (int) ((value / 3600) % 24);
-        value -= 3600 * hour;
-
-        total_days = (int) (value / (3600 * 24));
-
-        year = 1970;
-        for (; ; ) {
-            last_days = total_days - ((year % 4 == 0) && (year != 2000) ? 366 : 365);
-            if (last_days <= 0) break;
-            total_days = last_days;
-            year++;
-        }
-
-        int febrDays = ((year % 4 == 0) && (year != 2000)) ? 29 : 28;
-
-        mon = 1;
-        for (i = 0; i < 12; ++i) {
-            last_days = total_days - ((i == 1) ? febrDays : dayCounts[i]);
-            if (last_days <= 0) break;
-            mon++;
-            total_days = last_days;
-        }
-
-        day = total_days;
-
-        return new int[]{sec, min, hour, day, mon, year};
-    }
-
-    public static long gmtTimeToLocalTime(long gmtTime) {
-        return gmtTime + SawimApplication.gmtOffset * 3600L;
-    }
-
-    public static long localTimeToGmtTime(long localTime) {
-        return localTime - SawimApplication.gmtOffset * 3600L;
     }
 
     public static String longitudeToString(long seconds) {
@@ -546,7 +381,7 @@ public class Util {
     }
 
     public static int uniqueValue() {
-        int time = (int) (SawimApplication.getCurrentGmtTime() & 0x7FFF);
+        int time = (int) (SawimApplication.getCurrentGmtTime() / 1000 & 0x7FFF);
         return (time << 16) | (rand.nextInt() & 0xFFFF);
     }
 

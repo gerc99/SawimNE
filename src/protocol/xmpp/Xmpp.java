@@ -14,6 +14,7 @@ import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
 import ru.sawim.icons.ImageList;
 import ru.sawim.io.RosterStorage;
+import ru.sawim.listener.OnMoreMessagesLoaded;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
 import ru.sawim.modules.FileTransfer;
@@ -475,6 +476,12 @@ public final class Xmpp extends Protocol implements FormListener {
 
     public void sendFile(FileTransfer transfer, String filename, String description) {
         getConnection().setIBB(new IBBFileTransfer(filename, description, transfer));
+    }
+
+    public void queryMessageArchiveManagement(Contact contact, long startTime, long endTime, OnMoreMessagesLoaded moreMessagesLoadedListener) {
+        if (getConnection() != null) {
+            getConnection().queryMessageArchiveManagement(contact, startTime, endTime, moreMessagesLoadedListener);
+        }
     }
 
     protected void s_updateXStatus() {

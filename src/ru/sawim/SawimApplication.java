@@ -33,7 +33,6 @@ import javax.net.ssl.X509TrustManager;
 import java.io.InputStream;
 import java.security.SecureRandom;
 import java.util.List;
-import java.util.TimeZone;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -67,7 +66,6 @@ public class SawimApplication extends Application {
     public static int sortType;
     public static boolean hideIconsClient;
     public static int autoAbsenceTime;
-    public static int gmtOffset;
 
     private static SawimApplication instance;
     private final SawimServiceConnection serviceConnection = new SawimServiceConnection();
@@ -116,7 +114,6 @@ public class SawimApplication extends Application {
         Scheme.load();
         updateOptions();
         Updater.startUIUpdater();
-        gmtOffset = TimeZone.getDefault().getOffset(System.currentTimeMillis()) / (1000 * 60 * 60);
         try {
             gc();
             Emotions.instance.load();
@@ -238,7 +235,7 @@ public class SawimApplication extends Application {
     }
 
     public static long getCurrentGmtTime() {
-        return System.currentTimeMillis() / 1000;
+        return System.currentTimeMillis();
     }
 
     public static java.io.InputStream getResourceAsStream(String name) {

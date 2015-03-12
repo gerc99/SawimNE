@@ -34,7 +34,7 @@ public final class MessData {
         this.nick = nick;
         this.time = time;
         this.rowData = flags;
-        boolean today = (SawimApplication.getCurrentGmtTime() - 24 * 60 * 60 < time);
+        boolean today = (SawimApplication.getCurrentGmtTime() / 1000 - 24 * 60 * 60 < time);
         strTime = ru.sawim.comm.Util.getLocalDateString(time, today);
 
         CharSequence parsedText = parsedText(currentContact, text, true);
@@ -46,7 +46,7 @@ public final class MessData {
         this.nick = nick;
         this.time = time;
         this.rowData = flags;
-        boolean today = (SawimApplication.getCurrentGmtTime() - 24 * 60 * 60 < time);
+        boolean today = (SawimApplication.getCurrentGmtTime() / 1000 - 24 * 60 * 60 < time);
         strTime = ru.sawim.comm.Util.getLocalDateString(time, today);
 
         CharSequence parsedText = parsedText(currentContact, text, false);

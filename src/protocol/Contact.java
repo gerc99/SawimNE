@@ -12,6 +12,7 @@ import ru.sawim.comm.JLocale;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.icons.Icon;
 import ru.sawim.icons.ImageList;
+import ru.sawim.modules.history.HistoryStorage;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.roster.TreeNode;
 import ru.sawim.view.menu.MyMenu;
@@ -32,6 +33,7 @@ abstract public class Contact implements TreeNode {
     String version = "";
     public long chaingingStatusTime = 0;
     public String avatarHash;
+    private long lastMessageTransmitted;
 
     public final boolean isOnline() {
         return (StatusInfo.STATUS_OFFLINE != status);
@@ -334,5 +336,22 @@ abstract public class Contact implements TreeNode {
         if (hasChat()) {
             menu.add(Menu.NONE, ContactMenu.USER_MENU_CLOSE_CHAT, Menu.NONE, R.string.close);
         }
+    }
+
+    public boolean setLastMessageTransmitted(long value) {
+        long before = getLastMessageTransmitted();
+        if (value - before > 1000) {
+            lastMessageTransmitted = value;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public long getLastMessageTransmitted() {
+        if (lastMessageTransmitted == 0) {
+            return HistoryStorage.getHistory(getProtocol().getUserId(), getUserId()).getMessageTime(true);
+        }
+        return lastMessageTransmitted;
     }
 }

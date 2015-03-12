@@ -2,6 +2,7 @@ package ru.sawim.modules.history;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.util.Log;
 import protocol.Contact;
 import protocol.Protocol;
 import ru.sawim.Options;
@@ -13,7 +14,6 @@ import ru.sawim.chat.MessData;
 import ru.sawim.chat.message.Message;
 import ru.sawim.chat.message.PlainMessage;
 import ru.sawim.comm.JLocale;
-import ru.sawim.comm.Util;
 import ru.sawim.io.SawimProvider;
 import ru.sawim.modules.DebugLog;
 import ru.sawim.roster.RosterHelper;
@@ -111,12 +111,12 @@ public class HistoryStorage {
         return ids;
     }
 
-    public synchronized long getLastMessageTime() {
+    public synchronized long getMessageTime(boolean last) {
         long lastMessageTime = 0;
         Cursor cursor = null;
         try {
             cursor = SawimApplication.getContext().getContentResolver()
-                    .query(SawimProvider.HISTORY_RESOLVER_URI, null, WHERE_ACC_CONTACT_ID, new String[]{protocolId, uniqueUserId}, null);
+                    .query(SawimProvider.HISTORY_RESOLVER_URI, null, WHERE_ACC_CONTACT_ID, new String[]{protocolId, uniqueUserId}, SawimProvider.DATE + (last ? " DESC" : " ASC") + " LIMIT 1");
             if (cursor.moveToLast()) {
                 do {
                     boolean isIncoming = cursor.getInt(cursor.getColumnIndex(SawimProvider.INCOMING)) == 0;
@@ -165,7 +165,7 @@ public class HistoryStorage {
                     false, Chat.isHighlight(message.getProcessedText(), contact.getMyName()));
             cursor = SawimApplication.getContext().getContentResolver()
                     .query(SawimProvider.HISTORY_RESOLVER_URI, null, WHERE_ACC_CONTACT_ID,
-                            new String[]{chat.getProtocol().getUserId(), contact.getUserId()}, SawimProvider.ROW_AUTO_ID + " DESC LIMIT 1");
+                            new String[]{chat.getProtocol().getUserId(), contact.getUserId()}, SawimProvider.DATE + " DESC LIMIT 1");
             if (cursor.moveToFirst()) {
                 MessData messFromDataBase = buildMessage(chat, cursor);
                 hasMessage = hasMessage(mess, messFromDataBase);
@@ -191,7 +191,7 @@ public class HistoryStorage {
         try {
             cursor = SawimApplication.getContext().getContentResolver()
                     .query(SawimProvider.HISTORY_RESOLVER_URI, null, WHERE_ACC_CONTACT_ID,
-                            new String[]{protocolId, uniqueUserId}, SawimProvider.ROW_AUTO_ID + " DESC LIMIT " + limit + " OFFSET " + offset);
+                            new String[]{protocolId, uniqueUserId}, SawimProvider.DATE + " DESC LIMIT " + limit + " OFFSET " + offset);
             if (addedAtTheBeginning) {
                 isAdded = cursor.moveToFirst();
                 if (isAdded) {
@@ -223,7 +223,7 @@ public class HistoryStorage {
         boolean isIncoming = cursor.getInt(cursor.getColumnIndex(SawimProvider.INCOMING)) == 0;
         String from = cursor.getString(cursor.getColumnIndex(SawimProvider.AUTHOR));
         String text = cursor.getString(cursor.getColumnIndex(SawimProvider.MESSAGE));
-        long date = Util.createLocalDate(Util.getLocalDateString(cursor.getLong(cursor.getColumnIndex(SawimProvider.DATE)), false));
+        long date = cursor.getLong(cursor.getColumnIndex(SawimProvider.DATE));
         short rowData = cursor.getShort(cursor.getColumnIndex(SawimProvider.ROW_DATA));
         PlainMessage message;
         if (isIncoming) {
