@@ -27,7 +27,7 @@ public final class XmlNode {
     private XmlNode() {
     }
 
-    private XmlNode(String name) {
+    public XmlNode(String name) {
         this.name = name;
     }
 
@@ -50,7 +50,7 @@ public final class XmlNode {
         return (String) attribs.get(key);
     }
 
-    private void putAttribute(String key, String value) {
+    public void putAttribute(String key, String value) {
         if (S_JID.equals(key)) {
             key = S_JID;
         } else if (S_NAME.equals(key)) {
@@ -60,12 +60,12 @@ public final class XmlNode {
     }
 
     public String getXmlns() {
-        String xmlns = getAttribute("xmlns");
+        String xmlns = getAttribute(S_XMLNS);
         if (null == xmlns) {
             Enumeration e = attribs.keys();
             while (e.hasMoreElements()) {
                 String key = (String) e.nextElement();
-                if (key.startsWith("xmlns:")) {
+                if (key.startsWith(S_XMLNS + ":")) {
                     return getAttribute(key);
                 }
             }
@@ -565,9 +565,14 @@ public final class XmlNode {
         sb.append("</").append(name).append(">");
     }
 
+    public static XmlNode addXmlns(String name, String xmlns) {
+        XmlNode child = new XmlNode(name);
+        child.putAttribute(S_XMLNS, xmlns);
+        return child;
+    }
+
     public static XmlNode getEmptyVCard() {
-        XmlNode vCard = new XmlNode("vCard");
-        vCard.putAttribute(S_XMLNS, "vcard-temp");
+        XmlNode vCard = XmlNode.addXmlns("vCard", "vcard-temp");
         vCard.putAttribute("version", "2.0");
         vCard.putAttribute("prodid", "-/" + "/HandGen/" + "/NONSGML vGen v1.0/" + "/EN");
         return vCard;

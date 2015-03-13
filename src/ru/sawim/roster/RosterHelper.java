@@ -469,7 +469,7 @@ public final class RosterHelper {
                 } else {
                     return Util.compareNodes(node1, node2);
                 }
-                return node1.getNodeWeight() - node2.getNodeWeight();
+                return -1;
             }
         });
     }

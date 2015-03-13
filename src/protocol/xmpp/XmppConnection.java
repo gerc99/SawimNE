@@ -1,5 +1,6 @@
 package protocol.xmpp;
 
+import android.support.v4.util.Pair;
 import android.util.Log;
 import protocol.*;
 import protocol.net.ClientConnection;
@@ -37,6 +38,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public final class XmppConnection extends ClientConnection {
 
+    private static final String LOG_TAG = XmppConnection.class.getSimpleName();
     public static final boolean DEBUGLOG = true;
     private static final int MESSAGE_COUNT_AFTER_CONNECT = 20;
 
@@ -115,6 +117,7 @@ public final class XmppConnection extends ClientConnection {
     private String featureList = "";
 
     private final LinkedBlockingQueue<String> packets = new LinkedBlockingQueue<>();
+    private final Map<String, Pair<XmlNode, OnIqReceived>> packetCallbacks = new Hashtable<>();
 
     private boolean isGTalk_ = false;
     private boolean authorized_ = false;
@@ -132,13 +135,9 @@ public final class XmppConnection extends ClientConnection {
     private MirandaNotes notes = null;
     private SASL_ScramSha1 scramSHA1;
     private MessageArchiveManagement messageArchiveManagement = new MessageArchiveManagement();
+    private ServerFeatures serverFeatures = new ServerFeatures();
 
     private String myAvatarHash = null;
-
-    private HashMap<String, String> serverDiscoItems = new HashMap<>();
-    private String mucServer;
-
-    private boolean hasMessageArchiveManagement = false;
 
     private byte nativeStatus2StatusIndex(String rawStatus) {
         rawStatus = StringConvertor.notNull(rawStatus);
@@ -172,7 +171,6 @@ public final class XmppConnection extends ClientConnection {
         protocol = xmpp;
         resource = xmpp.getResource();
         fullJid_ = xmpp.getUserId() + '/' + resource;
-        domain_ = Jid.getDomain(fullJid_);
         domain_ = Jid.getDomain(fullJid_);
     }
 
@@ -236,6 +234,16 @@ public final class XmppConnection extends ClientConnection {
 
     public void putPacketIntoQueue(String packet) {
         packets.add(packet);
+    }
+
+    public synchronized void putPacketIntoQueue(final XmlNode packet, final OnIqReceived callback) {
+        if (packet.getId() == null) {
+            packet.putAttribute(XmlNode.S_ID, generateId());
+        }
+        if (callback != null) {
+            packetCallbacks.put(packet.getId(), new Pair<>(packet, callback));
+        }
+        requestSetIq(packet.toString());
     }
 
     private boolean hasOutPackets() {
@@ -365,6 +373,7 @@ public final class XmppConnection extends ClientConnection {
     protected final void connect() throws SawimException {
         connect = true;
         setProgress(0);
+        packetCallbacks.clear();
         initFeatures();
         protocol.net.SrvResolver resolver = new protocol.net.SrvResolver();
         String server = Config.getConfigValue(domain_, "/jabber-servers.txt");
@@ -391,6 +400,7 @@ public final class XmppConnection extends ClientConnection {
         setProgress(30);
         socket.start();
         requestDiscoServerItems();
+        requestConferenceInfo(domain_);
         setProgress(50);
         usePong();
         setProgress(60);
@@ -617,6 +627,26 @@ public final class XmppConnection extends ClientConnection {
         String from = StringConvertor.notNull(iq.getAttribute(S_FROM));
         byte iqType = getIqType(iq);
         String id = iq.getId();
+        if (id != null && packetCallbacks.containsKey(id)) {
+            String myJid = Jid.getBareJid(fullJid_);
+            final Pair<XmlNode, OnIqReceived> packetCallbackDuple = packetCallbacks.get(id);
+            if (packetCallbackDuple.first.getAttribute(S_TO).equals(myJid)) {
+                if (from.equals(myJid)) {
+                    packetCallbackDuple.second.onIqReceived(iq);
+                    packetCallbacks.remove(id);
+                } else {
+                    Log.e(LOG_TAG, myJid + "-" + from + ": ignoring spoofed iq packet");
+                }
+            } else {
+                if (from.equals(packetCallbackDuple.first.getAttribute(S_TO))) {
+                    packetCallbackDuple.second.onIqReceived(iq);
+                    packetCallbacks.remove(id);
+                } else {
+                    Log.e(LOG_TAG, myJid + "-" + from + ": ignoring spoofed iq packet");
+                }
+            }
+            return;
+        }
         if (StringConvertor.isEmpty(id)) {
             id = generateId();
         }
@@ -667,7 +697,7 @@ public final class XmppConnection extends ClientConnection {
                             xmpp.getContactItems().add(contact);
                         }
                         RosterHelper.getInstance().updateGroup(xmpp, g);
-                        if (hasMessageArchiveManagement) {
+                        if (serverFeatures.hasMessageArchiveManagement()) {
                             //messageArchiveManagement.query(this, contact);
                         }
                     }
@@ -695,7 +725,7 @@ public final class XmppConnection extends ClientConnection {
                     putPacketIntoQueue("<iq type='get' id='getnotes'><query xmlns='jabber:iq:private'><storage xmlns='storage:rosternotes'/></query></iq>");
                     setProgress(100);
 
-                    if (hasMessageArchiveManagement) {
+                    if (serverFeatures.hasMessageArchiveManagement()) {
                         //messageArchiveManagement.catchup(this);
                         messageArchiveManagement.query(this);
                     }
@@ -745,18 +775,9 @@ public final class XmppConnection extends ClientConnection {
                 if (IQ_TYPE_RESULT != iqType) {
                     return;
                 }
-                while (0 < iqQuery.childrenCount()) {
-                    XmlNode featureNode = iqQuery.popChildNode();
-                    String feature = featureNode.getAttribute("var");
-                    if (feature != null) {
-                        if (feature.equals("http://jabber.org/protocol/muc")) {
-                            mucServer = serverDiscoItems.get(iq.getId());
-                        } else if (feature.equals("urn:xmpp:mam:0")) {
-                            hasMessageArchiveManagement = true;
-                        }
-                    }
-                }
+                serverFeatures.parse(iqQuery, iq.getId());
                 write(GET_ROSTER_XML);
+                enableCarbons();
                 String name = iqQuery.getFirstNodeAttribute("identity", XmlNode.S_NAME);
                 xmpp.setConferenceInfo(from, name);
                 return;
@@ -766,12 +787,12 @@ public final class XmppConnection extends ClientConnection {
                     sendIqError(S_QUERY, xmlns, from, id);
                     return;
                 }
-                if (serverDiscoItems.isEmpty()) {
+                if (serverFeatures.getServerDiscoItems().isEmpty()) {
                     while (0 < iqQuery.childrenCount()) {
                         String jid = iqQuery.popChildNode().getAttribute(XmlNode.S_JID);
                         String discoId = generateId();
                         requestConferenceInfo(jid, discoId);
-                        serverDiscoItems.put(discoId, jid);
+                        serverFeatures.getServerDiscoItems().put(discoId, jid);
                     }
                 }
                 ServiceDiscovery disco = serviceDiscovery;
@@ -980,7 +1001,7 @@ public final class XmppConnection extends ClientConnection {
     }
 
     public String getMucServer() {
-        return mucServer;
+        return serverFeatures.mucServer();
     }
 
     private void loadMirandaNotes(XmlNode storage) {
@@ -1604,6 +1625,9 @@ public final class XmppConnection extends ClientConnection {
         if (parseMamMessage(msg)) {
             return;
         }
+        if (parseCarbonMessage(msg)) {
+            return;
+        }
         String fullJid = msg.getAttribute(S_FROM);
         String type = msg.getAttribute(S_TYPE);
         boolean isGroupchat = ("groupchat").equals(type);
@@ -1816,7 +1840,7 @@ public final class XmppConnection extends ClientConnection {
             String type = msg.getAttribute(S_TYPE);
             String from = msg.getAttribute(S_FROM);
             String to = msg.getAttribute(S_TO);
-            String coo = "";
+            String coo;
             boolean isIncoming = false;
             if (from != null && to != null && Jid.getBareJid(from).equals(Jid.getBareJid(fullJid_))) {
                 isIncoming = false;
@@ -1848,6 +1872,57 @@ public final class XmppConnection extends ClientConnection {
             return true;
         }
         return false;
+    }
+
+    private boolean parseCarbonMessage(XmlNode msg) {
+        XmlNode forwarded;
+        XmlNode receivedNode = msg.getFirstNode("received", "urn:xmpp:carbons:2");
+        XmlNode sentNode = msg.getFirstNode("sent", "urn:xmpp:carbons:2");
+        if (receivedNode != null) {
+            forwarded = receivedNode.getFirstNode("forwarded", "urn:xmpp:forward:0");
+        } else if (sentNode != null) {
+            forwarded = sentNode.getFirstNode("forwarded", "urn:xmpp:forward:0");
+        } else {
+            return false;
+        }
+        if (forwarded == null) {
+            return false;
+        }
+        msg = forwarded.getFirstNode("message");
+        if (msg == null) {
+            return false;
+        }
+        String type = msg.getAttribute(S_TYPE);
+        if (msg.getFirstNode("x","http://jabber.org/protocol/muc#user") != null
+                && "chat".equals(type)) {
+            return false;
+        }
+        String text = msg.getFirstNodeValue(S_BODY);
+        if (text == null) {
+            return false;
+        }
+        String fullJid;
+        if (receivedNode != null) {
+            fullJid = msg.getAttribute(S_FROM);
+            if (fullJid == null) {
+                return false;
+            } else {
+                //updateLastseen
+            }
+        } else {
+            fullJid = msg.getAttribute(S_TO);
+            if (fullJid == null) {
+                return false;
+            }
+        }
+        fullJid = Jid.getBareJid(fullJid);
+        boolean isIncoming = receivedNode != null;
+        final String date = getDate(msg);
+        final boolean isOnlineMessage = (null == date);
+        long time = isOnlineMessage ? SawimApplication.getCurrentGmtTime() : new Delay().getTime(date);
+        Message message = new PlainMessage(fullJid, isIncoming ? getXmpp().getUserId() : fullJid, time, text, !isOnlineMessage, isIncoming);
+        getXmpp().addMessage(message, S_HEADLINE.equals(type));
+        return true;
     }
 
     private void parseBlogMessage(String to, XmlNode msg, String text, String botNick) {
@@ -2579,6 +2654,11 @@ public final class XmppConnection extends ClientConnection {
                 + "' id='" + Util.xmlEscape(id) + "'><query xmlns='" + xmlns + "'/></iq>");
     }
 
+    private void requestSetIq(String xmlns) {
+        putPacketIntoQueue("<iq type='set' from='" + Util.xmlEscape(fullJid_)
+                + "' id='" + Util.xmlEscape(generateId()) + "'>" + xmlns + "'/></iq>");
+    }
+
     private void requestIq(String jid, String xmlns) {
         requestIq(jid, xmlns, generateId());
     }
@@ -2602,6 +2682,18 @@ public final class XmppConnection extends ClientConnection {
 
     public void requestDiscoServerItems() {
         requestIq(domain_, "http://jabber.org/protocol/disco#items");
+    }
+
+    private void enableCarbons() {
+        if (!serverFeatures.hasCarbon() || serverFeatures.isCarbonsEnabled()) return;
+        XmlNode xmlNode = XmlNode.addXmlns("enable", "urn:xmpp:carbons:2");
+        putPacketIntoQueue(xmlNode, new OnIqReceived() {
+            @Override
+            public void onIqReceived(XmlNode xmlNode) {
+                XmlNode errorNode = xmlNode.getFirstNode(S_ERROR);
+                serverFeatures.setCarbonsEnabled(errorNode == null);
+            }
+        });
     }
 
     public void requestAffiliationListConf(String jidConference, String affiliation) {
@@ -2830,26 +2922,20 @@ public final class XmppConnection extends ClientConnection {
     private void initFeatures() {
         List<String> features = new ArrayList<>();
         features.add("bugs");
-
         features.add("http://jabber.org/protocol/activity");
         features.add("http://jabber.org/protocol/activity+notify");
-
         features.add("http://jabber.org/protocol/chatstates");
-
         features.add("http://jabber.org/protocol/disco#info");
-
         features.add("http://jabber.org/protocol/mood");
         features.add("http://jabber.org/protocol/mood+notify");
-
         features.add("http://jabber.org/protocol/rosterx");
-
         features.add(S_FEATURE_XSTATUS);
-
         features.add("jabber:iq:last");
         features.add("jabber:iq:version");
         features.add("urn:xmpp:attention:0");
         features.add("urn:xmpp:time");
-
+        features.add("urn:xmpp:mam:0");
+        features.add("urn:xmpp:carbons:2");
         verHash = getVerHash(features);
         featureList = getFeatures(features);
     }
@@ -2927,10 +3013,6 @@ public final class XmppConnection extends ClientConnection {
         }
         putPacketIntoQueue(stanza);
         return true;
-    }
-
-    public boolean hasMessageArchiveManagement() {
-        return hasMessageArchiveManagement;
     }
 
     public void queryMessageArchiveManagement(Contact contact, long startTime, long endTime, OnMoreMessagesLoaded moreMessagesLoadedListener) {
