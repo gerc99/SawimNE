@@ -21,7 +21,6 @@ import android.support.v7.app.ActionBar;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.*;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -874,12 +873,17 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
             chatListView.setSelection(position);
             searchPositionsCount--;
         } else {
-            searchPositionsCount = 0;
-            searchMessagesIds = null;
-            getMessagesAdapter().setQuery(null);
-            getMessagesAdapter().notifyDataSetChanged();
-            Toast.makeText(getActivity().getApplicationContext(), R.string.not_found, Toast.LENGTH_LONG).show();
+            resetSearchMode(true);
         }
+    }
+
+    private void resetSearchMode(boolean showToast) {
+        searchPositionsCount = 0;
+        searchMessagesIds = null;
+        getMessagesAdapter().setQuery(null);
+        getMessagesAdapter().notifyDataSetChanged();
+        if (showToast)
+            Toast.makeText(getActivity().getApplicationContext(), R.string.not_found, Toast.LENGTH_LONG).show();
     }
 
     private void enableSearchMode() {
@@ -900,9 +904,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
 
     private void destroySearchMode() {
         isSearchMode = false;
-        searchPositionsCount = 0;
-        searchMessagesIds = null;
-        getMessagesAdapter().setQuery(null);
+        resetSearchMode(false);
         MyImageButton menuButton = chatViewLayout.getChatInputBarView().getMenuButton();
         MyImageButton smileButton = chatViewLayout.getChatInputBarView().getSmileButton();
         MyImageButton sendButton = chatViewLayout.getChatInputBarView().getSendButton();
@@ -1325,10 +1327,12 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
             }
             if (isSearchMode) {
                 String query = text.toLowerCase();
-                if (oldSearchQuery != null && !oldSearchQuery.equals(query)) {
+                if ((oldSearchQuery != null && !oldSearchQuery.isEmpty()) && query.isEmpty()) {
                     oldSearchQuery = query;
-                    searchPositionsCount = 0;
-                    searchMessagesIds = null;
+                    resetSearchMode(false);
+                } else if (oldSearchQuery != null && !oldSearchQuery.equals(query)) {
+                    oldSearchQuery = query;
+                    resetSearchMode(false);
                     searchTextFromMessage();
                 }
             }
