@@ -228,18 +228,20 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
             drawerToggle.setDrawerIndicatorEnabled(true);
             drawerToggle.syncState();
         }
-        chatBarLayout.getChatsImage().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                final Chat newChat = ChatHistory.instance.chatAt(ChatHistory.instance.getPreferredItem());
-                if (newChat == null) return;
-                if (0 < newChat.getAuthRequestCounter()) {
-                    showAuthorizationDialog((BaseActivity) getActivity(), newChat);
-                } else {
-                    forceGoToChat(newChat);
+        if (!SawimApplication.isManyPane()) {
+            chatBarLayout.getChatsImage().setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    final Chat newChat = ChatHistory.instance.chatAt(ChatHistory.instance.getPreferredItem());
+                    if (newChat == null) return;
+                    if (0 < newChat.getAuthRequestCounter()) {
+                        showAuthorizationDialog((BaseActivity) getActivity(), newChat);
+                    } else {
+                        forceGoToChat(newChat);
+                    }
                 }
-            }
-        });
+            });
+        }
         if (SawimApplication.isManyPane()) {
             menuButton.setVisibility(ImageButton.VISIBLE);
             menuButton.setOnClickListener(new View.OnClickListener() {
@@ -840,7 +842,9 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                 chatBarLayout.setVisibilityChatsImage(View.GONE);
             } else {
                 chatBarLayout.setVisibilityChatsImage(View.VISIBLE);
-                chatBarLayout.getChatsImage().setImageDrawable(icMess);
+                if (!SawimApplication.isManyPane()) {
+                    chatBarLayout.getChatsImage().setImageDrawable(icMess);
+                }
             }
             chatBarLayout.updateLabelIcon(chat.getContact().isConference() ? null : RosterAdapter.getImageChat(chat, false));
         }
