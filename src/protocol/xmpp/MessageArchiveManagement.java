@@ -8,7 +8,7 @@ import ru.sawim.listener.OnMoreMessagesLoaded;
 import ru.sawim.roster.RosterHelper;
 
 import java.util.HashSet;
-import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by gerc on 05.03.2015.
@@ -76,8 +76,8 @@ public class MessageArchiveManagement {
             return;
         } else if (endCatchup - startCatchup >= MAX_CATCHUP) {
             startCatchup = endCatchup - MAX_CATCHUP;
-            List<Contact> contacts = connection.getProtocol().getContactItems();
-            for (Contact contact : contacts) {
+            ConcurrentHashMap<String, Contact> contacts = connection.getProtocol().getContactItems();
+            for (Contact contact : contacts.values()) {
                 long lastMessageTransmitted = contact.getLastMessageTransmitted();
                 if (!contact.isConference() && startCatchup > lastMessageTransmitted) {
                     query(connection, contact, startCatchup);
@@ -91,7 +91,7 @@ public class MessageArchiveManagement {
 
     private long getLastMessageTransmitted(XmppConnection connection) {
         long timestamp = 0;
-        for (Contact contact : connection.getProtocol().getContactItems()) {
+        for (Contact contact : connection.getProtocol().getContactItems().values()) {
             long lastMessageTransmitted = contact.getLastMessageTransmitted();
             if (lastMessageTransmitted > timestamp) {
                 timestamp = lastMessageTransmitted;
@@ -103,8 +103,8 @@ public class MessageArchiveManagement {
     public Query query(XmppConnection connection) {
         long endCatchup = connection.getLastSessionEstablished();
         long startCatchup = endCatchup - MAX_CATCHUP;
-        List<Contact> contacts = connection.getProtocol().getContactItems();
-        for (Contact contact : contacts) {
+        ConcurrentHashMap<String, Contact> contacts = connection.getProtocol().getContactItems();
+        for (Contact contact : contacts.values()) {
             long lastMessageTransmitted = contact.getLastMessageTransmitted();
             if (!contact.isConference() && startCatchup > lastMessageTransmitted) {
                 //query(connection, contact, endCatchup);
@@ -207,7 +207,7 @@ public class MessageArchiveManagement {
                 RosterHelper.getInstance().getUpdateChatListener().updateChat();
             }
         } else {
-            for (Contact c : protocol.getContactItems()) {
+            for (Contact c : protocol.getContactItems().values()) {
                 if (c.setLastMessageTransmitted(query.getEnd())) {
                 }
             }

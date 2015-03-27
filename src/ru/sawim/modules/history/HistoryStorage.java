@@ -2,7 +2,6 @@ package ru.sawim.modules.history;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.util.Log;
 import protocol.Contact;
 import protocol.Protocol;
 import ru.sawim.Options;
@@ -165,10 +164,12 @@ public class HistoryStorage {
                     false, Chat.isHighlight(message.getProcessedText(), contact.getMyName()));
             cursor = SawimApplication.getContext().getContentResolver()
                     .query(SawimProvider.HISTORY_RESOLVER_URI, null, WHERE_ACC_CONTACT_ID,
-                            new String[]{chat.getProtocol().getUserId(), contact.getUserId()}, SawimProvider.DATE + " DESC LIMIT 1");
+                            new String[]{chat.getProtocol().getUserId(), contact.getUserId()}, SawimProvider.DATE + " DESC LIMIT 20");
             if (cursor.moveToFirst()) {
-                MessData messFromDataBase = buildMessage(chat, cursor);
-                hasMessage = hasMessage(mess, messFromDataBase);
+                do {
+                    MessData messFromDataBase = buildMessage(chat, cursor);
+                    hasMessage = hasMessage(mess, messFromDataBase);
+                } while (cursor.moveToNext());
             }
         } catch (Exception e) {
             DebugLog.panic(e);
@@ -302,9 +303,11 @@ public class HistoryStorage {
                 SawimApplication.getContext().getContentResolver()
                         .update(SawimProvider.HISTORY_UNREAD_MESSAGES_RESOLVER_URI, values, WHERE_ACC_CONTACT_ID, new String[]{protocolId, uniqueUserId});
             } else {
+                Contact contact = RosterHelper.getInstance().getProtocol(protocolId).getItemByUID(uniqueUserId);
                 ContentValues values = new ContentValues();
                 values.put(SawimProvider.ACCOUNT_ID, protocolId);
                 values.put(SawimProvider.CONTACT_ID, uniqueUserId);
+                values.put(SawimProvider.IS_CONFERENCE, contact.isConference() ? 1 : 0);
                 values.put(SawimProvider.UNREAD_MESSAGES_COUNT, count);
                 SawimApplication.getContext().getContentResolver().insert(SawimProvider.HISTORY_UNREAD_MESSAGES_RESOLVER_URI, values);
             }
@@ -340,6 +343,7 @@ public class HistoryStorage {
                     String account = cursor.getString(cursor.getColumnIndex(SawimProvider.ACCOUNT_ID));
                     String userId = cursor.getString(cursor.getColumnIndex(SawimProvider.CONTACT_ID));
                     short unreadMessageCount = cursor.getShort(cursor.getColumnIndex(SawimProvider.UNREAD_MESSAGES_COUNT));
+                    boolean isConference = cursor.getInt(cursor.getColumnIndex(SawimProvider.IS_CONFERENCE)) == 1;
                     if (unreadMessageCount == 0) {
                         continue;
                     }
@@ -347,7 +351,7 @@ public class HistoryStorage {
                     if (protocol != null) {
                         Contact contact = protocol.getItemByUID(userId);
                         if (contact == null) {
-                            contact = protocol.createTempContact(userId);
+                            contact = protocol.createContact(userId, userId, isConference);
                         }
                         Chat chat = protocol.getChat(contact);
                         chat.setOtherMessageCounter(unreadMessageCount);

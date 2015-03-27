@@ -292,7 +292,7 @@ public final class StringConvertor {
         if (StringConvertor.isEmpty(msg)) {
             return "";
         }
-        return msg.trim();
+        return msg/*.trim()*/;
     }
 
     public static byte[] stringToByteArrayUtf8(String val) {

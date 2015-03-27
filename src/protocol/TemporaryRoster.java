@@ -4,23 +4,24 @@ import protocol.mrim.MrimPhoneContact;
 import protocol.xmpp.XmppServiceContact;
 
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 
 public class TemporaryRoster {
     private Protocol protocol;
     private List<Group> oldGroups;
-    private List<Contact> oldContacts;
+    private ConcurrentHashMap<String, Contact> oldContacts;
     private Contact[] existContacts;
     private List<Group> groups = new CopyOnWriteArrayList<>();
-    private List<Contact> contacts = new CopyOnWriteArrayList<>();
+    private ConcurrentHashMap<String, Contact> contacts = new ConcurrentHashMap<>();
 
     public TemporaryRoster(Protocol protocol) {
         this.protocol = protocol;
         this.oldGroups = protocol.getGroupItems();
         this.oldContacts = protocol.getContactItems();
         existContacts = new Contact[oldContacts.size()];
-        System.arraycopy(existContacts, 0, oldContacts.toArray(), 0, oldContacts.size());
+        System.arraycopy(existContacts, 0, oldContacts.values().toArray(), 0, oldContacts.size());
     }
 
     public Contact makeContact(String userId) {
@@ -32,7 +33,7 @@ public class TemporaryRoster {
                 return c;
             }
         }
-        return protocol.createContact(userId, userId);
+        return protocol.createContact(userId, userId, false);
     }
 
     private Group getGroup(List list, String name) {
@@ -49,7 +50,7 @@ public class TemporaryRoster {
         groups = oldGroups;
         contacts = oldContacts;
         oldGroups = new CopyOnWriteArrayList<>();
-        oldContacts = new CopyOnWriteArrayList<>();
+        oldContacts = new ConcurrentHashMap<>();
         existContacts = new Contact[0];
     }
 
@@ -77,8 +78,8 @@ public class TemporaryRoster {
         return g;
     }
 
-    public final List<Contact> mergeContacts() {
-        List<Contact> newContacts = contacts;
+    public final ConcurrentHashMap<String, Contact> mergeContacts() {
+        ConcurrentHashMap<String, Contact> newContacts = contacts;
         boolean sync = protocol.isReconnect();
 //        sync |= Options.getBoolean(Options.OPTION_SAVE_TEMP_CONTACT);
         if (sync) {
@@ -102,7 +103,7 @@ public class TemporaryRoster {
                 o.setGroup(g);
                 o.setTempFlag(true);
                 o.setBooleanValue(Contact.CONTACT_NO_AUTH, false);
-                newContacts.add(o);
+                newContacts.put(o.getUserId(), o);
             }
         }
         return newContacts;
@@ -114,7 +115,7 @@ public class TemporaryRoster {
 
     public void addContact(Contact c) {
         c.setTempFlag(false);
-        contacts.add(c);
+        contacts.put(c.getUserId(), c);
     }
 
     public List<Group> getGroups() {

@@ -100,7 +100,7 @@ public class Mrim extends Protocol {
         return phoneGroup;
     }
 
-    protected Contact createContact(String uin, String name) {
+    public Contact createContact(String uin, String name, boolean isConference) {
         name = (null == name) ? uin : name;
         if (-1 == uin.indexOf('@')) {
             if (0 < Util.strToIntDef(uin, 0)) {
@@ -249,7 +249,7 @@ public class Mrim extends Protocol {
         final int serverFlags = 0;
         byte booleanValues = dis.readByte();
         int flags = dis.readInt();
-        MrimContact c = (MrimContact) createContact(uin, name);
+        MrimContact c = (MrimContact) createContact(uin, name, false);
         c.setPhones(phones);
         c.init(contactId, name, phones, groupId, serverFlags, flags);
         c.setBooleanValues(booleanValues);

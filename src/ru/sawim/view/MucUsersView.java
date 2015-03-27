@@ -86,7 +86,7 @@ public class MucUsersView {
                                 String jid = Jid.realJidToSawimJid(xmppServiceContact.getUserId() + "/" + nick);
                                 XmppServiceContact c = (XmppServiceContact) protocol.getItemByUID(jid);
                                 if (null == c) {
-                                    c = (XmppServiceContact) protocol.createTempContact(jid);
+                                    c = (XmppServiceContact) protocol.createTempContact(jid, false);
                                     protocol.addTempContact(c);
                                 }
                                 chatView.pause(chatView.getCurrentChat());

@@ -17,6 +17,7 @@ import ru.sawim.modules.crypto.MD5;
 
 import java.util.List;
 import java.util.Vector;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ConnectAction extends IcqAction {
 
@@ -485,10 +486,10 @@ public class ConnectAction extends IcqAction {
             consumed = true;
         }
         if (newRosterLoaded) {
-            List<Contact> contactItems = roster.mergeContacts();
+            ConcurrentHashMap<String, Contact> contactItems = roster.mergeContacts();
             active();
-            for (int i = 0; i < contactItems.size(); ++i) {
-                IcqContact contact = (IcqContact) contactItems.get(i);
+            for (Contact c : contactItems.values()) {
+                IcqContact contact = (IcqContact) c;
                 String userId = contact.getUserId();
                 contact.setBooleanValue(Contact.SL_IGNORE, inList(ignoreList, userId));
                 contact.setBooleanValue(Contact.SL_VISIBLE, inList(visibleList, userId));

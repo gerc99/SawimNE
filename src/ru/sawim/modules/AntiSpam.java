@@ -96,7 +96,7 @@ public class AntiSpam {
         if (message.isOffline()) {
             return true;
         }
-        Contact contact = protocol.createTempContact(uin);
+        Contact contact = protocol.createTempContact(uin, false);
 
         String[] msgs = Util.explode(Options.getString(JLocale.getString(R.string.pref_antispam_answer)), '\n');
         for (int i = 0; i < msgs.length; ++i) {

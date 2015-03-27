@@ -21,6 +21,7 @@ public class SawimProvider extends ContentProvider {
     public static final String ROW_AUTO_ID = "_id";
     public static final String ACCOUNT_ID = "account_id";
     public static final String CONTACT_ID = "contact_id";
+    public static final String IS_CONFERENCE = "is_conference";
     public static final String ROW_DATA = "row_data";
 
     public static final String INCOMING = "incoming";
@@ -50,6 +51,7 @@ public class SawimProvider extends ContentProvider {
             + ROW_AUTO_ID + " integer primary key autoincrement, "
             + ACCOUNT_ID + " text not null, "
             + CONTACT_ID + " text not null, "
+            + IS_CONFERENCE + " int, "
             + UNREAD_MESSAGES_COUNT + " int);";
 
     public static final String CREATE_AVATAR_HASHES_TABLE = "create table if not exists "

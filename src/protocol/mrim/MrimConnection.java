@@ -296,7 +296,7 @@ public final class MrimConnection extends ClientConnection {
 
         MrimChatContact chat = (MrimChatContact) mrim.getItemByUID(from);
         if (null == chat) {
-            chat = (MrimChatContact) mrim.createTempContact(from);
+            chat = (MrimChatContact) mrim.createTempContact(from, true);
             mrim.addTempContact(chat);
         }
         chat.setName(chatName);

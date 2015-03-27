@@ -394,7 +394,7 @@ public class Icq extends Protocol {
         return g;
     }
 
-    protected Contact createContact(String uin, String name) {
+    public Contact createContact(String uin, String name, boolean isConference) {
         name = (null == name) ? uin : name;
         try {
             IcqContact c = new IcqContact(uin);
@@ -474,7 +474,7 @@ public class Icq extends Protocol {
         int ignoreId = dis.readInt();
 
 
-        IcqContact contact = (IcqContact) createContact(uin, name);
+        IcqContact contact = (IcqContact) createContact(uin, name, false);
         contact.setContactId(contactId);
         contact.setGroupId(groupId);
         contact.setBooleanValues(flags);

@@ -118,7 +118,7 @@ public class Vk extends Protocol {
     }
 
     @Override
-    protected Contact createContact(String uin, String name) {
+    public Contact createContact(String uin, String name, boolean isConference) {
         int id;
         try {
             id = Integer.parseInt(uin);

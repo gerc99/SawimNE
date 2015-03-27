@@ -18,8 +18,7 @@ import ru.sawim.icons.Icon;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.view.menu.MyMenu;
 
-import java.util.List;
-import java.util.Vector;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class XmppServiceContact extends XmppContact {
 
@@ -98,6 +97,10 @@ public class XmppServiceContact extends XmppContact {
 
     public boolean isSingleUserContact() {
         return isPrivate || isGate;
+    }
+
+    public void setPrivate(boolean isPrivate) {
+        this.isPrivate = isPrivate;
     }
 
     public boolean isConference() {
@@ -250,9 +253,8 @@ public class XmppServiceContact extends XmppContact {
                 subcontacts.get(i).status = StatusInfo.STATUS_OFFLINE;
             }
             String startUin = getUserId() + '/';
-            List<Contact> contactList = xmpp.getContactItems();
-            for (int i = contactList.size() - 1; 0 <= i; --i) {
-                Contact c = contactList.get(i);
+            ConcurrentHashMap<String, Contact> contactList = xmpp.getContactItems();
+            for (Contact c : contactList.values()) {
                 if (c.getUserId().startsWith(startUin)) {
                     c.setOfflineStatus();
                 }
@@ -297,7 +299,7 @@ public class XmppServiceContact extends XmppContact {
 
     public Contact getPrivateContact(String nick) {
         String jid = Jid.realJidToSawimJid(getUserId() + "/" + nick);
-        return getProtocol().createTempContact(jid);
+        return getProtocol().createTempContact(jid, false);
     }
 
     public void setSubject(String subject) {

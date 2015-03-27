@@ -27,8 +27,8 @@ import ru.sawim.view.menu.JuickMenu;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Vector;
+import java.util.concurrent.ConcurrentHashMap;
 
 public final class Xmpp extends Protocol implements FormListener {
 
@@ -197,7 +197,7 @@ public final class Xmpp extends Protocol implements FormListener {
 
     public final Group createGroup(String name) {
         Group group = new Group(name);
-        group.setGroupId(name.hashCode());
+        group.setGroupId(getUserId().hashCode() + name.hashCode());
         int mode = Group.MODE_FULL_ACCESS;
         if (JLocale.getString(Xmpp.CONFERENCE_GROUP).equals(name)) {
             mode &= ~Group.MODE_EDITABLE;
@@ -222,42 +222,30 @@ public final class Xmpp extends Protocol implements FormListener {
         return group;
     }
 
-    protected final Contact createContact(String jid, String name) {
+    public final Contact createContact(String jid, String name, boolean isConference) {
         name = (null == name) ? jid : name;
         jid = Jid.realJidToSawimJid(jid);
 
-        boolean isGate = (-1 == jid.indexOf('@'));
-        boolean isConference = Jid.isConference(jid);
-        if (getConnection() != null) {
-            isConference = Jid.isConference(getConnection().getMucServer(), jid);
-        }
-        if (isGate || isConference) {
-            XmppServiceContact c = new XmppServiceContact(jid, name, isConference);
-            if (c.isConference()) {
-                c.setGroup(getOrCreateGroup(c.getDefaultGroupName()));
-                c.setMyName(getDefaultName());
-
-            } else if (isConference) {
-                XmppServiceContact conf = (XmppServiceContact) getItemByUID(Jid.getBareJid(jid));
-                if (null != conf) {
-                    c.setPrivateContactStatus(conf);
-                    c.setMyName(conf.getMyName());
-                }
-            }
-            c.avatarHash = RosterStorage.getAvatarHash(c.getUserId());
+        if (isConference) {
+            XmppServiceContact c = new XmppServiceContact(jid, name, true);
+            c.setGroup(getOrCreateGroup(c.getDefaultGroupName()));
+            c.setMyName(Jid.getNick(getUserId()));
             return c;
+        }
+        boolean isPrivate = (-1 != jid.indexOf('/'));
+        if (isPrivate) {
+            XmppServiceContact conf = (XmppServiceContact) getItemByUID(Jid.getBareJid(jid));
+            if (null != conf) {
+                XmppServiceContact c = new XmppServiceContact(jid, name, true);
+                c.setPrivateContactStatus(conf);
+                c.setMyName(conf.getMyName());
+                c.avatarHash = RosterStorage.getAvatarHash(c.getUserId());
+                return c;
+            }
         }
         Contact contact = new XmppContact(jid, name);
         contact.avatarHash = RosterStorage.getAvatarHash(contact.getUserId());
         return contact;
-    }
-
-    private String getDefaultName() {
-        String nick = getProfile().nick;
-        if (StringConvertor.isEmpty(nick)) {
-            return Jid.getNick(getUserId());
-        }
-        return nick;
     }
 
     protected void sendSomeMessage(PlainMessage msg) {
@@ -291,7 +279,6 @@ public final class Xmpp extends Protocol implements FormListener {
         XmppContact contact = (XmppContact) super.loadContact(dis);
         if (contact instanceof XmppServiceContact) {
             XmppServiceContact serviceContact = (XmppServiceContact) contact;
-            serviceContact.setConference(dis.readBoolean());
             if (serviceContact.isConference()) {
                 String userNick = dis.readUTF();
                 boolean isAutoJoin = dis.readBoolean();
@@ -307,7 +294,6 @@ public final class Xmpp extends Protocol implements FormListener {
         super.saveContact(dos, contact);
         if (contact instanceof XmppServiceContact) {
             XmppServiceContact serviceContact = (XmppServiceContact) contact;
-            dos.writeBoolean(serviceContact.isConference());
             if (serviceContact.isConference()) {
                 dos.writeUTF(serviceContact.getMyName());
                 dos.writeBoolean(serviceContact.isAutoJoin());
@@ -512,9 +498,8 @@ public final class Xmpp extends Protocol implements FormListener {
         if (Jid.isGate(jid)) {
             return false;
         }
-        List<Contact> all = getContactItems();
-        for (int i = all.size() - 1; 0 <= i; --i) {
-            XmppContact c = (XmppContact) all.get(i);
+        for (Contact contact : getContactItems().values()) {
+            XmppContact c = (XmppContact) contact;
             if (Jid.isGate(c.getUserId())) {
                 if (jid.endsWith(c.getUserId())) {
                     return true;
@@ -529,10 +514,9 @@ public final class Xmpp extends Protocol implements FormListener {
             getConnection().sendPresenceUnavailable(conf.getUserId() + "/" + conf.getMyName());
             conf.nickOffline(this, conf.getMyName(), 0, null, null);
 
-            List<Contact> all = getContactItems();
             String conferenceJid = conf.getUserId() + '/';
-            for (int i = all.size() - 1; 0 <= i; --i) {
-                XmppContact c = (XmppContact) all.get(i);
+            for (Contact contact : getContactItems().values()) {
+                XmppContact c = (XmppContact) contact;
                 if (c.getUserId().startsWith(conferenceJid) && getChat(c).getAllUnreadMessageCount() == 0) {
                     removeContact(c);
                 }
@@ -731,7 +715,7 @@ public final class Xmpp extends Protocol implements FormListener {
         }
 
         String realJid = contact.getUserId();
-        if (Jid.isConference(getConnection().getMucServer(), realJid) && (-1 != realJid.indexOf('/'))) {
+        if (contact.isConference() && (-1 != realJid.indexOf('/'))) {
             XmppServiceContact conference = (XmppServiceContact) getItemByUID(Jid.getBareJid(realJid));
             if (conference != null) {
                 String r = conference.getRealJid(Jid.getResource(realJid, ""));
@@ -831,11 +815,11 @@ public final class Xmpp extends Protocol implements FormListener {
     private static final int JID_INVITE_TO = 8;
     private static final int REASON_INVITE = 9;
 
-    public String onlineConference(List<Contact> contacts) {
+    public String onlineConference(ConcurrentHashMap<String, Contact> contacts) {
         String list[] = new String[contacts.size()];
         String items = "";
-        for (int i = 1; i < contacts.size(); ++i) {
-            XmppContact c = (XmppContact) contacts.get(i);
+        for (int i = 1; i < contacts.values().size(); ++i) {
+            XmppContact c = (XmppContact) contacts.values().iterator().next();
             if (c.isConference() && c.isOnline()) {
                 list[i] = c.getUserId();
                 items += "|" + list[i];

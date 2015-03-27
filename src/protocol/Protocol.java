@@ -24,6 +24,7 @@ import ru.sawim.roster.RosterHelper;
 
 import java.io.*;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 abstract public class Protocol {
@@ -152,22 +153,19 @@ abstract public class Protocol {
         roster = new Roster();
     }
 
-    public final void setRoster(List<Group> groups, List<Contact> contacts) {
+    public final void setRoster(List<Group> groups, ConcurrentHashMap<String, Contact> contacts) {
         setRoster(new Roster(groups, contacts), false);
     }
 
     public final void setRoster(Roster roster, boolean needSave) {
-        Roster oldRoster;
-        oldRoster = this.roster;
+        Roster oldRoster = this.roster;
         if (null != oldRoster) {
             Util.removeAll(oldRoster.getGroupItems(), roster.getGroupItems());
-            Util.removeAll(oldRoster.getContactItems(), roster.getContactItems());
+            roster.getContactItems().putAll(oldRoster.getContactItems());
         }
         this.roster = roster;
         ChatHistory.instance.restoreContactsWithChat(this);
-        for (int i = 0; i < roster.getContactItems().size(); ++i) {
-            oldRoster.getContactItems().add(roster.getContactItems().get(i));
-        }
+        oldRoster.getContactItems().putAll(roster.getContactItems());
         for (int i = 0; i < roster.getGroupItems().size(); ++i) {
             Group g = roster.getGroupItems().get(i);
             RosterHelper.getInstance().updateGroup(this, g);
@@ -183,14 +181,14 @@ abstract public class Protocol {
     public final void setContactListAddition(Group group) {
         RosterHelper.getInstance().updateGroup(this, group);
         RosterHelper.getInstance().updateGroup(this, notInListGroup);
-        List<Contact> groupItems = group.getContacts();
+        /*List<Contact> groupItems = group.getContacts();
         for (int i = 0; i < groupItems.size(); ++i) {
-            if (-1 == roster.getContactItems().indexOf(groupItems.get(i))) {
+            if (!inContactList(groupItems.get(i))) {
                 roster.getContactItems().add(groupItems.get(i));
             }
-        }
+        }*/
         RosterHelper.getInstance().updateRoster();
-        needSave();
+        safeSave();
     }
 
     public final boolean isConnecting() {
@@ -321,7 +319,8 @@ abstract public class Protocol {
                             byte type = dis.readByte();
                             switch (type) {
                                 case TYPE_GROUP:
-                                    roster.getContactItems().add(loadContact(dis));
+                                    Contact c = loadContact(dis);
+                                    roster.getContactItems().put(c.getUserId(), c);
                                     break;
                                 case TYPE_CONTACT:
                                     roster.getGroupItems().add(loadGroup(dis));
@@ -354,7 +353,7 @@ abstract public class Protocol {
         for (int i = 0; i < totalCount; ++i) {
             if (i < cItemsCount) {
                 dos.writeByte(TYPE_GROUP);
-                saveContact(dos, roster.getContactItems().get(i));
+                saveContact(dos, roster.getContactItems().values().iterator().next());
             } else {
                 dos.writeByte(TYPE_CONTACT);
                 saveGroup(dos, roster.getGroupItems().get(i - cItemsCount));
@@ -372,7 +371,8 @@ abstract public class Protocol {
         String name = dis.readUTF();
         int groupId = dis.readInt();
         byte booleanValues = dis.readByte();
-        Contact contact = createContact(uin, name);
+        boolean isConference = dis.readBoolean();
+        Contact contact = createContact(uin, name, isConference);
         contact.setGroupId(groupId);
         contact.setBooleanValues(booleanValues);
         return contact;
@@ -397,6 +397,7 @@ abstract public class Protocol {
     protected void saveContact(DataOutputStream out, Contact contact) throws Exception {
         out.writeUTF(contact.getUserId());
         out.writeUTF(contact.getName());
+        out.writeBoolean(contact.isConference());
         out.writeInt(contact.getGroupId());
         out.writeByte(contact.getBooleanValues());
     }
@@ -522,22 +523,22 @@ abstract public class Protocol {
 
     abstract public Group createGroup(String name);
 
-    abstract protected Contact createContact(String uin, String name);
+    public abstract Contact createContact(String uin, String name, boolean isConference);
 
-    public final Contact createTempContact(String uin, String name) {
+    public final Contact createTempContact(String uin, String name, boolean isConference) {
         Contact contact = getItemByUID(uin);
         if (null != contact) {
             return contact;
         }
-        contact = createContact(uin, name);
+        contact = createContact(uin, name, isConference);
         if (null != contact) {
             contact.setTempFlag(true);
         }
         return contact;
     }
 
-    public final Contact createTempContact(String uin) {
-        return createTempContact(uin, uin);
+    public final Contact createTempContact(String uin, boolean isConference) {
+        return createTempContact(uin, uin, isConference);
     }
 
     abstract protected void s_searchUsers(Search cont);
@@ -562,7 +563,7 @@ abstract public class Protocol {
         return branch;
     }
 
-    public final List<Contact> getContactItems() {
+    public final ConcurrentHashMap<String, Contact> getContactItems() {
         return roster.getContactItems();
     }
 
@@ -591,8 +592,7 @@ abstract public class Protocol {
     }
 
     protected void setStatusesOffline() {
-        for (int i = roster.getContactItems().size() - 1; i >= 0; --i) {
-            Contact c = roster.getContactItems().get(i);
+        for (Contact c : roster.getContactItems().values()) {
             c.setOfflineStatus();
         }
         if (RosterHelper.getInstance().useGroups) {
@@ -611,7 +611,7 @@ abstract public class Protocol {
     }
 
     public final Group getGroup(Contact contact) {
-        return getGroupById(contact.getGroupId());
+        return roster.getGroup(contact);
     }
 
     public final Group getGroup(String name) {
@@ -732,7 +732,7 @@ abstract public class Protocol {
         Group g = getGroup(contact);
         boolean hasnt = !inContactList(contact);
         if (hasnt) {
-            roster.getContactItems().add(contact);
+            roster.getContactItems().put(contact.getUserId(), contact);
         }
         ui_addContactToGroup(contact, g);
         ui_updateContact(contact);
@@ -802,10 +802,10 @@ abstract public class Protocol {
     }
 
     public final void addMessage(Message message) {
-        addMessage(message, false);
+        addMessage(message, false, false);
     }
 
-    public final void addMessage(Message message, boolean silent) {
+    public final void addMessage(Message message, boolean silent, boolean isConference) {
         Contact contact = getItemByUID(message.getSndrUin());
         boolean isPlain = message instanceof PlainMessage;
         boolean isSystem = message instanceof SystemNotice;
@@ -813,7 +813,7 @@ abstract public class Protocol {
             return;
         }
         if (null == contact) {
-            contact = createTempContact(message.getSndrUin());
+            contact = createTempContact(message.getSndrUin(), isConference);
             addTempContact(contact);
         }
         if (null == contact) {

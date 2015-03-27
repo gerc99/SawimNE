@@ -29,7 +29,10 @@ import ru.sawim.widget.roster.RosterItemView;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -73,9 +76,11 @@ public class RosterAdapter extends BaseAdapter implements View.OnClickListener {
                 int count = RosterHelper.getInstance().getProtocolCount();
                 for (int i = 0; i < count; ++i) {
                     Protocol p = RosterHelper.getInstance().getProtocol(i);
-                    List<Contact> allItems = p.getContactItems();
-                    for (Contact allItem : allItems) {
-                        originalContactList.add(allItem);
+                    ConcurrentHashMap<String, Contact> allItems = p.getContactItems();
+                    Enumeration<Contact> e = allItems.elements();
+                    while (e.hasMoreElements()) {
+                        Contact contact = e.nextElement();
+                        originalContactList.add(contact);
                     }
                 }
             }
@@ -243,8 +248,8 @@ public class RosterAdapter extends BaseAdapter implements View.OnClickListener {
     public void rebuildFlatItemsWOG(Protocol p, List<TreeNode> list) {
         boolean hideOffline = RosterHelper.getInstance().getCurrPage() == RosterHelper.ONLINE_CONTACTS;
         boolean all = !hideOffline;
-        List<Contact> contacts = p.getContactItems();
-        for (Contact contact : contacts) {
+        ConcurrentHashMap<String, Contact> contacts = p.getContactItems();
+        for (Contact contact : contacts.values()) {
             if (all || contact.isVisibleInContactList()) {
                 list.add(contact);
             }

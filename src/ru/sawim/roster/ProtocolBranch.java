@@ -7,7 +7,9 @@ import ru.sawim.R;
 import ru.sawim.comm.JLocale;
 import ru.sawim.comm.Util;
 
+import java.util.Enumeration;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ProtocolBranch extends TreeBranch {
 
@@ -30,11 +32,17 @@ public class ProtocolBranch extends TreeBranch {
 
     public boolean isEmpty() {
         if (Options.getBoolean(Options.OPTION_CL_HIDE_OFFLINE)) {
-            List<Contact> contacts = protocol.getContactItems();
-            for (int i = contacts.size() - 1; 0 <= i; --i) {
-                if (contacts.get(i).isVisibleInContactList()) {
+            ConcurrentHashMap<String, Contact> allItems = protocol.getContactItems();
+            Enumeration<Contact> e = allItems.elements();
+            while (e.hasMoreElements()) {
+                Contact contact = e.nextElement();
+                if (contact.isVisibleInContactList()) {
                     return false;
                 }
+            }
+
+            for (int i = allItems.size() - 1; 0 <= i; --i) {
+
             }
             return true;
         }

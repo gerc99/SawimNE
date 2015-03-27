@@ -68,7 +68,7 @@ public final class AdHoc implements FormListener, ControlStateListener {
             }
         }
         commandsListForm.clearForm();
-        if (1 < resources.length && !Jid.isConference(protocol.getConnection().getMucServer(), contact.getUserId())) {
+        if (1 < resources.length && !contact.isConference()) {
             commandsListForm.addSelector(FORM_RESOURCE, R.string.resource, resources, selectedResource);
         }
         if (0 < names.length) {
@@ -89,7 +89,7 @@ public final class AdHoc implements FormListener, ControlStateListener {
             jid = contact.getUserId();
 
         } else if (1 < contact.subcontacts.size()) {
-            if (!Jid.isConference(protocol.getConnection().getMucServer(), contact.getUserId())) {
+            if (!contact.isConference()) {
                 String resource = commandsListForm.getSelectorString(FORM_RESOURCE);
                 jid = contact.getUserId() + "/" + resource;
             } else {

@@ -18,7 +18,8 @@ import ru.sawim.modules.history.HistoryStorage;
 import ru.sawim.view.TextBoxView;
 import ru.sawim.view.menu.MyMenu;
 
-import java.util.List;
+import java.util.Enumeration;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ContactMenu implements TextBoxView.TextBoxListener {
 
@@ -243,14 +244,15 @@ public class ContactMenu implements TextBoxView.TextBoxListener {
             Contact find = null;
             Contact current = contact;
             current.annotations = messageTextbox.getString();
-            List<Contact> contacts = protocol.getContactItems();
-            int size = contacts.size();
+            ConcurrentHashMap<String, Contact> contacts = protocol.getContactItems();
             String jid = current.getUserId();
             StringBuilder xml = new StringBuilder();
             xml.append("<iq type='set' id='notes").append(Util.xmlEscape(jid));
             xml.append("'><query xmlns='jabber:iq:private'><storage xmlns='storage:rosternotes'>");
-            for (Contact contact1 : contacts) {
-                find = contact1;
+            Enumeration<Contact> e = contacts.elements();
+            while (e.hasMoreElements()) {
+                Contact contact = e.nextElement();
+                find = contact;
                 //if (find.annotations.equals("")) find.annotations = null;
                 if (find.annotations != null) {
                     xml.append("<note jid='").append(Util.xmlEscape(find.getUserId()));

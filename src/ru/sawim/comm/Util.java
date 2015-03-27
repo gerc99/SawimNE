@@ -9,6 +9,7 @@ import ru.sawim.roster.TreeNode;
 import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 public class Util {
@@ -607,11 +608,11 @@ public class Util {
         return sb.toString();
     }
 
-    public static void removeAll(List to, List all) {
+    public static <T extends Sortable> void removeAll(List<T> to, List<T> all) {
         synchronized (to) {
             int current = 0;
             for (int index = 0; index < to.size(); ++index) {
-                if (0 <= all.indexOf(to.get(index))) continue;
+                if (indexOf(all, to.get(index))) continue;
                 if (current < index) {
                     to.set(current, to.get(index));
                     current++;
@@ -619,6 +620,15 @@ public class Util {
             }
             //if (current < to.size()) to.listIterator(current);
         }
+    }
+
+    private static <T extends Sortable> boolean indexOf(List<T> all, Sortable s) {
+        for (T sortable : all) {
+            if (sortable.getText().equals(s.getText())) {
+                return true;
+            }
+        }
+        return false;
     }
 }
 

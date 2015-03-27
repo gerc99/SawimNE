@@ -486,12 +486,10 @@ public final class RosterHelper {
 
     public void updateGroup(Protocol protocol, Group group, Contact contact) {
         if (group == null) return;
-        List<Contact> allItems = protocol.getContactItems();
         List<Contact> groupItems = group.getContacts();
         groupItems.clear();
-        int size = allItems.size();
         int groupId = group.getGroupId();
-        for (Contact item : allItems) {
+        for (Contact item : protocol.getContactItems().values()) {
             if (item.getGroupId() == groupId && contact != item) {
                 groupItems.add(item);
             }
@@ -504,25 +502,10 @@ public final class RosterHelper {
         updateGroup(protocol, group, null);
     }
 
-    /*public void updateGroup(Group group) {
-        if (useGroups) {
-            group.updateGroupData();
-            group.sort();
-        } else {
-            Protocol p = getProtocol(group);
-            if (p != null)
-                Util.sort(p.getContactItems());
-        }
-    }*/
-
     public void removeFromGroup(Protocol protocol, Group g, Contact c) {
         if (g == null) return;
         if (g.getContacts().remove(c))
             updateGroup(protocol, g, c);
-    }
-
-    public void addToGroup(Group group, Contact contact) {
-        group.getContacts().add(contact);
     }
 
     public void putIntoQueue(Group group) {
@@ -644,7 +627,7 @@ public final class RosterHelper {
                 new ManageContactListForm(p).showMenu(activity);
                 return true;
             case RosterHelper.MENU_MYSELF:
-                p.showUserInfo(activity, p.createTempContact(p.getUserId(), p.getNick()));
+                p.showUserInfo(activity, p.createTempContact(p.getUserId(), p.getNick(), false));
                 return true;
             case RosterHelper.MENU_MICROBLOG:
                 ((Mrim) p).getMicroBlog().activate(activity);

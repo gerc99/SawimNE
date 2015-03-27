@@ -13,6 +13,7 @@ import ru.sawim.chat.message.PlainMessage;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Vector;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created with IntelliJ IDEA.
@@ -63,20 +64,20 @@ public class VkConnection implements Runnable {
         return running && api.isLogged() && !api.isError();
     }
 
-    private Vector<Contact> to(JSONArray list) throws JSONException {
-        Vector<Contact> cl = new Vector<Contact>();
+    private ConcurrentHashMap<String, Contact> to(JSONArray list) throws JSONException {
+        ConcurrentHashMap<String, Contact> cl = new ConcurrentHashMap<>();
         for (int i = 0; i < list.length(); ++i) {
             JSONObject o = list.getJSONObject(i);
             String userId = "" + o.getInt("uid");
             String name = o.getString("first_name") + " " + o.getString("last_name");
-            VkContact c = (VkContact) vk.createContact(userId, name);
+            VkContact c = (VkContact) vk.createContact(userId, name, false);
             c.setGroupId(1);
             if (0 == o.getInt("online")) {
                 c.setOfflineStatus();
             } else {
                 c.setOnlineStatus();
             }
-            cl.add(c);
+            cl.put(c.getUserId(), c);
         }
         return cl;
     }
@@ -125,7 +126,7 @@ public class VkConnection implements Runnable {
 
     private void processContacts() {
         try {
-            Vector<Contact> contacts = to(api.getFriends().getJSONArray("response"));
+            ConcurrentHashMap<String, Contact> contacts = to(api.getFriends().getJSONArray("response"));
             Vector<Group> groups = groups();
             vk.setRoster(new Roster(groups, contacts), false);
         } catch (Exception e) {
@@ -140,7 +141,7 @@ public class VkConnection implements Runnable {
             for (int i = 0; i < ids.length(); ++i) {
                 ids_.add(ids.getInt(i));
             }
-            for (Object o : vk.getContactItems()) {
+            for (Object o : vk.getContactItems().values()) {
                 VkContact c = (VkContact) o;
                 boolean online = ids_.contains(c.getUid());
                 if (online != c.isOnline()) {

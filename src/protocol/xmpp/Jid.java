@@ -3,7 +3,6 @@ package protocol.xmpp;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
 public class Jid {
     private static final String[] transports = {"mrim.", "icq.", "picq.", "pyicq.", "sicq.", "j2j."};
     private static final String[] icqTransports = {"icq.", "picq.", "pyicq."};
@@ -53,44 +52,6 @@ public class Jid {
     public static boolean isJID(String jid) {
         Matcher matcher = pattern.matcher(jid);
         return matcher.matches();
-    }
-
-    public static boolean isConference(String server, String jid) {
-        if (server == null) {
-            return Jid.isConference(jid);
-        }
-        int index = jid.indexOf('@');
-        if (-1 < index) {
-            if (jid.startsWith(server, index + 1)) {
-                return true;
-            }
-            int index1 = jid.lastIndexOf('%', index);
-            if (-1 < index1) {
-                return jid.startsWith("irc.", index1 + 1);
-            }
-        }
-        return false;
-    }
-
-    private static boolean isConferenceDomain(String jid, int start) {
-        return jid.startsWith("conference.", start)
-                || jid.startsWith("conf.", start)
-                || jid.startsWith("muc.", start)
-                || jid.startsWith("irc.", start);
-    }
-
-    public static boolean isConference(String jid) {
-        int index = jid.indexOf('@');
-        if (-1 < index) {
-            if (isConferenceDomain(jid, index + 1)) {
-                return true;
-            }
-            int index1 = jid.lastIndexOf('%', index);
-            if (-1 < index1) {
-                return isConferenceDomain(jid, index1 + 1);
-            }
-        }
-        return false;
     }
 
     public static String makeReadableJid(String jid) {

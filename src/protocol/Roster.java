@@ -1,25 +1,26 @@
 package protocol;
 
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Created by admin on 09.01.14.
  */
 public class Roster {
-    private List<Contact> contacts = new CopyOnWriteArrayList<>();
+    private ConcurrentHashMap<String, Contact> contacts = new ConcurrentHashMap<>();
     private List<Group> groups = new CopyOnWriteArrayList<>();
 
-    public Roster(List<Group> groups, List<Contact> contacts) {
+    public Roster(List<Group> groups, ConcurrentHashMap<String, Contact> contacts) {
         this.groups = groups;
         this.contacts = contacts;
     }
 
     public Roster() {
-        this(new CopyOnWriteArrayList<Group>(), new CopyOnWriteArrayList<Contact>());
+        this(new CopyOnWriteArrayList<Group>(), new ConcurrentHashMap<String, Contact>());
     }
 
-    public final List<Contact> getContactItems() {
+    public final ConcurrentHashMap<String, Contact> getContactItems() {
         return contacts;
     }
 
@@ -28,13 +29,7 @@ public class Roster {
     }
 
     public final Contact getItemByUID(String uid) {
-        for (int i = contacts.size() - 1; i >= 0; --i) {
-            Contact contact = contacts.get(i);
-            if (contact.getUserId().equals(uid)) {
-                return contact;
-            }
-        }
-        return null;
+        return contacts.get(uid);
     }
 
     public final Group getGroupById(int id) {
@@ -62,7 +57,7 @@ public class Roster {
     }
 
     public boolean hasContact(Contact contact) {
-        return -1 != contacts.indexOf(contact);
+        return getContactItems().contains(contact);
     }
 
     public void setNull() {

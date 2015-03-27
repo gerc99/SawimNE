@@ -65,7 +65,7 @@ public class OpenUriActivity extends ActionBarActivity {
             return;
         }
         try {
-            Contact c = xmpp.createTempContact(Jid.getBareJid(jid));
+            Contact c = xmpp.createTempContact(Jid.getBareJid(jid), false);
             while (xmpp.isConnecting()) {
                 try {
                     Thread.sleep(2000);

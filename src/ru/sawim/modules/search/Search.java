@@ -8,6 +8,7 @@ import protocol.Group;
 import protocol.Protocol;
 import protocol.icq.Icq;
 import protocol.mrim.Mrim;
+import protocol.xmpp.Xmpp;
 import ru.sawim.R;
 import ru.sawim.activities.BaseActivity;
 import ru.sawim.comm.JLocale;
@@ -88,7 +89,7 @@ public final class Search implements FormListener, ControlStateListener {
             if ((null != xmppGate) && !userid.endsWith(xmppGate)) {
                 userid = userid.replace('@', '%') + '@' + xmppGate;
             }
-            Contact contact = protocol.createTempContact(userid);
+            Contact contact = protocol.createTempContact(userid, isConference);
             if (null != contact) {
                 searchForm.back();
                 protocol.showUserInfo(activity, contact);
@@ -181,6 +182,9 @@ public final class Search implements FormListener, ControlStateListener {
 
     private void createSearchForm(boolean isConference) {
         this.isConference = isConference;
+        if (isConference) {
+            putToGroup(((Xmpp) protocol).getOrCreateGroup(JLocale.getString(Xmpp.CONFERENCE_GROUP)));
+        }
         screen = VirtualList.getInstance();
         searchForm = new Forms((TYPE_LITE == type) ? R.string.add_user : R.string.search_user, this, true);
         if (TYPE_LITE == type) {
@@ -356,7 +360,7 @@ public final class Search implements FormListener, ControlStateListener {
                     userid = userid.replace('@', '%') + '@' + xmppGate;
                 }
 
-                Contact contact = protocol.createTempContact(userid);
+                Contact contact = protocol.createTempContact(userid, isConference);
                 if (null != contact) {
                     if (contact.isTemp()) {
                         String g = null;
@@ -369,9 +373,11 @@ public final class Search implements FormListener, ControlStateListener {
                         contact.setName(preferredNick);
                         contact.setGroup(protocol.getGroup(g));
                         protocol.addContact(contact);
-                        if (searchForm.getCheckBoxValue(REQ_AUTH)
-                                && contact.isSingleUserContact()) {
-                            protocol.requestAuth(contact);
+                        if (!isConference) {
+                            if (searchForm.getCheckBoxValue(REQ_AUTH)
+                                    && contact.isSingleUserContact()) {
+                                protocol.requestAuth(contact);
+                            }
                         }
                     }
                     RosterHelper.getInstance().activate(contact);
@@ -390,7 +396,7 @@ public final class Search implements FormListener, ControlStateListener {
 
         Contact contact = protocol.getItemByUID(uin);
         if (null == contact) {
-            contact = protocol.createTempContact(uin);
+            contact = protocol.createTempContact(uin, isConference);
             contact.setBooleanValue(Contact.CONTACT_NO_AUTH, true);
             protocol.addTempContact(contact);
             contact.setOfflineStatus();

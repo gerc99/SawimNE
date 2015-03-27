@@ -1142,7 +1142,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                 String jid = Jid.realJidToSawimJid(contact.getUserId() + "/" + nick);
                 XmppServiceContact c = (XmppServiceContact) protocol.getItemByUID(jid);
                 if (null == c) {
-                    c = (XmppServiceContact) protocol.createTempContact(jid);
+                    c = (XmppServiceContact) protocol.createTempContact(jid, false);
                     protocol.addTempContact(c);
                 }
                 pause(getCurrentChat());
