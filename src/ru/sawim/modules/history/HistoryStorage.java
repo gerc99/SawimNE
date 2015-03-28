@@ -139,7 +139,7 @@ public class HistoryStorage {
         return lastMessageTime;
     }
 
-    public Cursor getLastCursor() {
+    public static Cursor getLastCursor() {
         Cursor cursor = null;
         try {
             cursor = SawimApplication.getContext().getContentResolver().query(SawimProvider.HISTORY_RESOLVER_URI, null,
@@ -158,25 +158,15 @@ public class HistoryStorage {
     public synchronized static boolean hasLastMessage(Chat chat, Message message) {
         Contact contact = chat.getContact();
         boolean hasMessage = false;
-        Cursor cursor = null;
+        Cursor cursor = getLastCursor();
+        if (cursor == null) return false;
         try {
             MessData mess = Chat.buildMessage(contact, message, contact.isConference() ? message.getName() : chat.getFrom(message),
                     false, Chat.isHighlight(message.getProcessedText(), contact.getMyName()));
-            cursor = SawimApplication.getContext().getContentResolver()
-                    .query(SawimProvider.HISTORY_RESOLVER_URI, null, WHERE_ACC_CONTACT_ID,
-                            new String[]{chat.getProtocol().getUserId(), contact.getUserId()}, SawimProvider.DATE + " DESC LIMIT 20");
-            if (cursor.moveToFirst()) {
-                do {
-                    MessData messFromDataBase = buildMessage(chat, cursor);
-                    hasMessage = hasMessage(mess, messFromDataBase);
-                } while (cursor.moveToNext());
-            }
+            MessData messFromDataBase = buildMessage(chat, cursor);
+            hasMessage = hasMessage(mess, messFromDataBase);
         } catch (Exception e) {
             DebugLog.panic(e);
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
         }
         return hasMessage;
     }

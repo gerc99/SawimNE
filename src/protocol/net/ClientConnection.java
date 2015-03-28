@@ -192,7 +192,7 @@ public abstract class ClientConnection implements Runnable {
     }
 
     private long getCurrentGmtTime() {
-        return SawimApplication.getCurrentGmtTime() / 100;
+        return SawimApplication.getCurrentGmtTime() / 1000;
     }
 
     protected void pingForPong() throws SawimException {

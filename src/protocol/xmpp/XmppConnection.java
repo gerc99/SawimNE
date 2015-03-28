@@ -40,7 +40,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 public final class XmppConnection extends ClientConnection {
 
     private static final String LOG_TAG = XmppConnection.class.getSimpleName();
-    public static final boolean DEBUGLOG = true;
+    public static final boolean DEBUGLOG = false;
     private static final int MESSAGE_COUNT_AFTER_CONNECT = 20;
 
     private static final String[] statusCodes = {
@@ -1847,13 +1847,13 @@ public final class XmppConnection extends ClientConnection {
             }
             from = Jid.getBareJid(coo);
             XmppContact c = (XmppContact) getXmpp().getItemByUID(from);
-            Message message = new PlainMessage(from, isIncoming ? getXmpp().getUserId() : from, time, text, !isOnlineMessage, isIncoming);
-            getXmpp().addMessage(message, S_HEADLINE.equals(type), c.isConference());
             if (c == null) {
                 c = (XmppContact) getXmpp().createTempContact(from, false);
                 getXmpp().addLocalContact(c);
             }
-            if (c != null && !c.isConference()) {
+            Message message = new PlainMessage(from, isIncoming ? getXmpp().getUserId() : from, time, text, !isOnlineMessage, isIncoming);
+            getXmpp().addMessage(message, S_HEADLINE.equals(type), c.isConference());
+            if (!c.isConference()) {
                 if (query == null) {
                     messageArchiveManagement.query(this, c);
                 } else {
