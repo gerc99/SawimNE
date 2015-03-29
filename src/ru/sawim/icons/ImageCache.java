@@ -2,10 +2,11 @@ package ru.sawim.icons;
 
 
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.text.TextUtils;
 import ru.sawim.SawimApplication;
-import ru.sawim.SawimResources;
 import ru.sawim.comm.LruCache;
+import ru.sawim.comm.StringConvertor;
 import ru.sawim.widget.Util;
 
 import java.io.*;
@@ -72,13 +73,16 @@ public class ImageCache {
                                         }
                                     }
                                 }
-                                Bitmap bmp = Util.decodeBitmap(fileContent, AVATAR_SIZE);
-                                bitmap = RoundedAvatars.getRoundedBitmap(Util.getAvatarBitmap(bmp, AVATAR_SIZE, (bmp != null) ? bmp.getPixel(0, 0) : 0x00000000));
-                                if (bitmap != null) {
-                                    bitmapLruCache.put(hash, bitmap);
-                                    if (onImageLoadListener != null) {
-                                        onImageLoadListener.onLoad();
-                                    }
+                                bitmap = Util.decodeBitmap(fileContent, AVATAR_SIZE);
+                            } else {
+                                String letter = hash;
+                                bitmap = Avatars.getSquareBitmap(letter, Avatars.getColorForName(letter), Color.WHITE, Util.dipToPixels(SawimApplication.getContext(), AVATAR_SIZE));
+                                save(file, bitmap);
+                            }
+                            if (bitmap != null) {
+                                bitmapLruCache.put(hash, bitmap);
+                                if (onImageLoadListener != null) {
+                                    onImageLoadListener.onLoad();
                                 }
                             }
                         }
@@ -89,10 +93,17 @@ public class ImageCache {
         return bitmap;
     }
 
-    public boolean save(File pathCacheFolder, String id, String hash, byte[] avatarBytes) {
-        File file = getFile(pathCacheFolder, hash);
-        Bitmap bmp = Util.decodeBitmap(avatarBytes, AVATAR_SIZE);
-        Bitmap bitmap = Util.getAvatarBitmap(bmp, AVATAR_SIZE, (bmp != null) ? bmp.getPixel(0,0) : 0x00000000);
+    public boolean save(File pathCacheFolder, String hash, byte[] avatarBytes) {
+        Bitmap bitmap = null;
+        File file = null;
+        if (hash != null) {
+            file = getFile(pathCacheFolder, hash);
+            bitmap = Util.decodeBitmap(avatarBytes, AVATAR_SIZE);
+        }
+        return save(file, bitmap);
+    }
+
+    public boolean save(File file, Bitmap bitmap) {
         if (bitmap != null) {
             OutputStream os = null;
             try {
@@ -105,8 +116,7 @@ public class ImageCache {
                 if (os != null) {
                     try {
                         os.close();
-                    } catch (IOException ignore) {
-                    }
+                    } catch (IOException ignore) {}
                 }
             }
         }

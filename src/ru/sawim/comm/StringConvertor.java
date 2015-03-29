@@ -360,5 +360,16 @@ public final class StringConvertor {
     public static String notNull(String value) {
         return (null == value) ? "" : value;
     }
+
+    public static final char DEFAULT_ALPHABET_INDEX = '?';
+    public static char getAlphabetIndex(String name) {
+        for (int c = 0; c < name.length(); c++) {
+            char character = name.charAt(c);
+            if (Character.isLetterOrDigit(character)) {
+                return Character.toUpperCase(character);
+            }
+        }
+        return DEFAULT_ALPHABET_INDEX;
+    }
 }
 

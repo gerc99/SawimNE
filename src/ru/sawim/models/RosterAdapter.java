@@ -18,6 +18,7 @@ import ru.sawim.chat.Chat;
 import ru.sawim.chat.ChatHistory;
 import ru.sawim.chat.message.Message;
 import ru.sawim.comm.JLocale;
+import ru.sawim.comm.StringConvertor;
 import ru.sawim.icons.Icon;
 import ru.sawim.icons.ImageCache;
 import ru.sawim.io.FileSystem;
@@ -329,8 +330,10 @@ public class RosterAdapter extends BaseAdapter implements View.OnClickListener {
             rosterItemView.itemDesc = statusMessage;
         }
         if (Options.getBoolean(JLocale.getString(R.string.pref_users_avatars))) {
+            String hash = (item.avatarHash == null || item.avatarHash.isEmpty()) ? String.valueOf(StringConvertor.getAlphabetIndex(item.getName())) : item.avatarHash;
             Bitmap avatar = ImageCache.getInstance().get(avatarsFolder,
-                    SawimApplication.getExecutor(), item.avatarHash, SawimResources.DEFAULT_AVATAR, new ImageCache.OnImageLoadListener() {
+                    SawimApplication.getExecutor(), hash,
+                    SawimResources.DEFAULT_AVATAR, new ImageCache.OnImageLoadListener() {
                         @Override
                         public void onLoad() {
                             rosterItemView.post(new Runnable() {

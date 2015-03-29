@@ -1168,9 +1168,8 @@ public final class XmppConnection extends ClientConnection {
                         c.avatarHash = avatarHash;
                         RosterStorage.updateAvatarHash(c.getUserId(), avatarHash);
                     }
+                    ImageCache.getInstance().save(FileSystem.openDir(FileSystem.AVATARS), avatarHash, avatarBytes);
                 }
-                ImageCache.getInstance().save(FileSystem.openDir(FileSystem.AVATARS),
-                        from, avatarHash, avatarBytes);
             } else {
                 if (from.equals(getXmpp().getUserId())) {
                     if (myAvatarHash != null) {

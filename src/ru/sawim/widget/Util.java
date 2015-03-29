@@ -56,7 +56,6 @@ public class Util {
     }
 
     public static Bitmap decodeBitmap(byte[] bytes, int maxSize) {
-        Bitmap tmp;
         BitmapFactory.Options opts = new BitmapFactory.Options();
         opts.inJustDecodeBounds = true;
         BitmapFactory.decodeByteArray(bytes, 0, bytes.length, opts);
@@ -70,8 +69,7 @@ public class Util {
         opts = new BitmapFactory.Options();
         opts.inSampleSize = scaleFactor;
         opts.inJustDecodeBounds = false;
-        tmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length, opts);
-        return tmp;
+        return BitmapFactory.decodeByteArray(bytes, 0, bytes.length, opts);
     }
 
     public static Bitmap decodeBitmap(byte[] bytes, int reqWidth, int reqHeight) {
