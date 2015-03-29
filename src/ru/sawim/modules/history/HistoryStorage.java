@@ -147,10 +147,6 @@ public class HistoryStorage {
             cursor.moveToLast();
         } catch (Exception e) {
             DebugLog.panic(e);
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
         }
         return cursor;
     }
@@ -159,14 +155,19 @@ public class HistoryStorage {
         Contact contact = chat.getContact();
         boolean hasMessage = false;
         Cursor cursor = getLastCursor();
-        if (cursor == null) return false;
         try {
-            MessData mess = Chat.buildMessage(contact, message, contact.isConference() ? message.getName() : chat.getFrom(message),
-                    false, Chat.isHighlight(message.getProcessedText(), contact.getMyName()));
-            MessData messFromDataBase = buildMessage(chat, cursor);
-            hasMessage = hasMessage(mess, messFromDataBase);
+            if (cursor != null) {
+                MessData mess = Chat.buildMessage(contact, message, contact.isConference() ? message.getName() : chat.getFrom(message),
+                        false, Chat.isHighlight(message.getProcessedText(), contact.getMyName()));
+                MessData messFromDataBase = buildMessage(chat, cursor);
+                hasMessage = hasMessage(mess, messFromDataBase);
+            }
         } catch (Exception e) {
             DebugLog.panic(e);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
         }
         return hasMessage;
     }
