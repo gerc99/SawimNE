@@ -76,7 +76,7 @@ public class ImageCache {
                                 bitmap = Util.decodeBitmap(fileContent, AVATAR_SIZE);
                             } else {
                                 String letter = hash;
-                                bitmap = Avatars.getSquareBitmap(letter, Avatars.getColorForName(letter), Color.WHITE, Util.dipToPixels(SawimApplication.getContext(), AVATAR_SIZE));
+                                bitmap = Avatars.getSquareBitmap(letter, Avatars.getColorForName(letter), Color.WHITE, AVATAR_SIZE);
                                 save(file, bitmap);
                             }
                             if (bitmap != null) {
