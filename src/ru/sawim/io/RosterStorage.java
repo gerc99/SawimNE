@@ -35,7 +35,7 @@ public class RosterStorage {
         } catch (Exception e) {
             DebugLog.panic(e);
         } finally {
-            if (c != null){
+            if (c != null) {
                 c.close();
             }
         }

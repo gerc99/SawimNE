@@ -2495,7 +2495,7 @@ public final class XmppConnection extends ClientConnection {
             to = toContact.getReciverJid();
         }
         String type = S_CHAT;
-        if (getXmpp().getItemByUID(to).isConference() && (-1 == to.indexOf('/'))) {
+        if (getXmpp().getItemByUID(Jid.getBareJid(to)).isConference() && (-1 == to.indexOf('/'))) {
             type = S_GROUPCHAT;
         }
         message.setMessageId(Util.uniqueValue());
