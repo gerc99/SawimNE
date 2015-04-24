@@ -329,6 +329,8 @@ public class RosterView extends SawimFragment implements ListView.OnItemClickLis
             actionBar.setCustomView(barLinearLayout);
         } else {
             if (isSearchMode) {
+                if (queryEditText.getParent() != null)
+                    ((ViewGroup) queryEditText.getParent()).removeView(queryEditText);
                 barLinearLayout.addView(queryEditText);
             } else {
                 if (RosterHelper.getInstance().getProtocolCount() > 0) {
@@ -357,6 +359,9 @@ public class RosterView extends SawimFragment implements ListView.OnItemClickLis
     public void onResume() {
         super.onResume();
         resume();
+        if (isSearchMode) {
+            getRosterAdapter().filterData(queryEditText.getText().toString());
+        }
         if (Scheme.isChangeTheme(Scheme.getThemeId())) {
             ((SawimActivity) getActivity()).recreateActivity();
         }

@@ -415,8 +415,8 @@ public class Icq extends Protocol {
                 return true;
             }
         }
-        for (int i = getContactItems().size() - 1; i >= 0; --i) {
-            IcqContact item = (IcqContact) getContactItems().get(i);
+        for (Contact c : getContactItems().values()) {
+            IcqContact item = (IcqContact) c;
             if ((item.getContactId() == id)) {
                 return true;
             }

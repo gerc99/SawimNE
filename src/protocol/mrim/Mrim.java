@@ -230,8 +230,8 @@ public class Mrim extends Protocol {
     }
 
     public MrimContact getContactByPhone(String phone) {
-        for (int i = getContactItems().size() - 1; i >= 0; i--) {
-            MrimContact contact = (MrimContact) getContactItems().get(i);
+        for (Contact c : getContactItems().values()) {
+            MrimContact contact = (MrimContact) c;
             String phones = contact.getPhones();
             if ((null != phones) && (phones.contains(phone))) {
                 return contact;

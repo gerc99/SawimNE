@@ -77,10 +77,7 @@ public class RosterAdapter extends BaseAdapter implements View.OnClickListener {
                 int count = RosterHelper.getInstance().getProtocolCount();
                 for (int i = 0; i < count; ++i) {
                     Protocol p = RosterHelper.getInstance().getProtocol(i);
-                    ConcurrentHashMap<String, Contact> allItems = p.getContactItems();
-                    Enumeration<Contact> e = allItems.elements();
-                    while (e.hasMoreElements()) {
-                        Contact contact = e.nextElement();
+                    for (Contact contact : p.getContactItems().values()) {
                         originalContactList.add(contact);
                     }
                 }
