@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.*;
+import android.media.ThumbnailUtils;
 import android.os.Build;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -29,6 +30,13 @@ public class Util {
         DisplayMetrics metrics = new DisplayMetrics();
         activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
         return decodeBitmap(buffer, metrics.widthPixels, metrics.heightPixels);
+    }
+
+    public static Bitmap getAvatarBitmap(byte[] buffer, int size) {
+        Bitmap avatarTmp = BitmapFactory.decodeByteArray(buffer, 0, buffer.length);
+        if (avatarTmp == null) return null;
+        Bitmap scaled = ThumbnailUtils.extractThumbnail(avatarTmp, size, size, ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
+        return scaled;
     }
 
     public static Bitmap getAvatarBitmap(Bitmap avatarTmp, int size, int backgroundColor) {

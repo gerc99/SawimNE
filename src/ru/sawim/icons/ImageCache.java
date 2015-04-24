@@ -73,7 +73,7 @@ public class ImageCache {
                                         }
                                     }
                                 }
-                                bitmap = Util.decodeBitmap(fileContent, AVATAR_SIZE);
+                                bitmap = Util.getAvatarBitmap(fileContent, AVATAR_SIZE);
                             } else {
                                 String letter = hash;
                                 bitmap = Avatars.getSquareBitmap(letter, Avatars.getColorForName(letter), Color.WHITE, AVATAR_SIZE);
@@ -98,7 +98,7 @@ public class ImageCache {
         File file = null;
         if (hash != null) {
             file = getFile(pathCacheFolder, hash);
-            bitmap = Util.decodeBitmap(avatarBytes, AVATAR_SIZE);
+            bitmap = Util.getAvatarBitmap(avatarBytes, AVATAR_SIZE);
         }
         return save(file, bitmap);
     }

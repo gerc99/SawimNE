@@ -157,10 +157,15 @@ public class HistoryStorage {
         Cursor cursor = getLastCursor();
         try {
             if (cursor != null) {
+                short rowData = cursor.getShort(cursor.getColumnIndex(SawimProvider.ROW_DATA));
                 MessData mess = Chat.buildMessage(contact, message, contact.isConference() ? message.getName() : chat.getFrom(message),
                         false, Chat.isHighlight(message.getProcessedText(), contact.getMyName()));
                 MessData messFromDataBase = buildMessage(chat, cursor);
-                hasMessage = hasMessage(mess, messFromDataBase);
+                boolean isMessage = (rowData & MessData.PRESENCE) == 0
+                        && (rowData & MessData.SERVICE) == 0 && (rowData & MessData.PROGRESS) == 0;
+                if (isMessage) {
+                    hasMessage = hasMessage(mess, messFromDataBase);
+                }
             }
         } catch (Exception e) {
             DebugLog.panic(e);
