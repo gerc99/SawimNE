@@ -327,7 +327,7 @@ public class RosterAdapter extends BaseAdapter implements View.OnClickListener {
             rosterItemView.itemDesc = statusMessage;
         }
         if (Options.getBoolean(JLocale.getString(R.string.pref_users_avatars))) {
-            String hash = (item.avatarHash == null || item.avatarHash.isEmpty()) ? String.valueOf(StringConvertor.getAlphabetIndex(item.getName())) : item.avatarHash;
+            String hash = (item.avatarHash == null || item.avatarHash.isEmpty()) ? item.getName().substring(0, 1) : item.avatarHash;
             Bitmap avatar = ImageCache.getInstance().get(avatarsFolder,
                     SawimApplication.getExecutor(), hash,
                     SawimResources.DEFAULT_AVATAR, new ImageCache.OnImageLoadListener() {
