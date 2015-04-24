@@ -44,7 +44,7 @@ public class XtrazMessagePlugin {
     }
 
     public SnacPacket getPacket() {
-        time = SawimApplication.getCurrentGmtTime() * 1000;
+        time = SawimApplication.getCurrentGmtTime();
         if (!isRequest()) {
             return new SnacPacket(SnacPacket.CLI_ICBM_FAMILY,
                     SnacPacket.CLI_ACKMSG_COMMAND,

@@ -1,5 +1,3 @@
-
-
 package protocol.icq.action;
 
 import protocol.icq.Icq;
@@ -17,9 +15,8 @@ public abstract class IcqAction {
     }
 
     protected final boolean isNotActive(long timeout) {
-        return lastActivity + timeout < SawimApplication.getCurrentGmtTime();
+        return lastActivity / 1000 + timeout < SawimApplication.getCurrentGmtTime() / 1000;
     }
-
 
     public abstract boolean isCompleted();
 
@@ -44,7 +41,6 @@ public abstract class IcqAction {
     }
 
     public abstract void init() throws SawimException;
-
 
     public abstract boolean forward(Packet packet) throws SawimException;
 }
