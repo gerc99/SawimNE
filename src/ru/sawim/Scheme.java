@@ -43,7 +43,7 @@ public class Scheme {
 
     private static final int[] baseTheme = {
             0xE4E4E4,
-            0xffebeb,
+            0x000000,
             0xc8c8c8,
             0xCB0000,
             0xCB0000,

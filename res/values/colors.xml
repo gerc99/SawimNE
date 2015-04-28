@@ -4,8 +4,11 @@
 
     <color name="colorPrimary">#ff384850</color>
     <color name="colorPrimaryDark">#ff283339</color>
+    <color name="colorPrimaryLight">#ff79919d</color>
     <color name="textColorPrimary">#ff000000</color>
-    <color name="windowBackground">#ffebebeb</color>
+    <color name="textColorPrimaryLight">#ffebebeb</color>
+    <color name="windowBackground">#ffb0bec5</color>
+    <color name="windowBackgroundLight">#ff384850</color>
     <color name="navigationBarColor">#000000</color>
-    <color name="colorAccent">#FF80AB</color>
+    <color name="colorAccent">#ff6863ff</color>
 </resources>

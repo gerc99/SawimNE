@@ -8,8 +8,9 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:textColorPrimary">@color/textColorPrimary</item>
-        <item name="android:windowBackground">@color/windowBackground</item>
+
+        <item name="android:textColorPrimary">@color/textColorPrimaryLight</item>
+        <item name="android:windowBackground">@color/windowBackgroundLight</item>
     </style>
 
     <style name="BaseThemeLight" parent="Theme.AppCompat.Light">
@@ -17,8 +18,8 @@
         <item name="vpiIconPageIndicatorStyle">@style/Widget.IconPageIndicator</item>
         <item name="vpiTabPageIndicatorStyle">@style/CustomTabPageIndicatorLight</item>
 
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorPrimary">@color/colorPrimaryLight</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryLight</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:textColorPrimary">@color/textColorPrimary</item>
         <item name="android:windowBackground">@color/windowBackground</item>
@@ -26,7 +27,7 @@
 
     <style name="CustomTabPageIndicatorLight" parent="Widget.TabPageIndicator">
         <item name="android:background">@drawable/vpi__tab_indicator</item>
-        <item name="android:textColor">#fff0f0f0</item>
+        <item name="android:textColor">#FF555555</item>
         <item name="android:textSize">16sp</item>
         <item name="android:divider">@drawable/custom_tab_indicator_divider</item>
         <item name="android:dividerPadding">10dp</item>
