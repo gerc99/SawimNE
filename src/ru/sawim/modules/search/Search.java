@@ -22,6 +22,7 @@ import ru.sawim.models.list.VirtualListModel;
 import ru.sawim.roster.RosterHelper;
 
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 
 public final class Search implements FormListener, ControlStateListener {
@@ -123,9 +124,10 @@ public final class Search implements FormListener, ControlStateListener {
     }
 
     private List<Group> getGroups() {
-        List<Group> all = protocol.getGroupItems();
         List<Group> groups = new ArrayList<>();
-        for (Group g : all) {
+        Enumeration<Group> e = protocol.getGroupItems().elements();
+        while (e.hasMoreElements()) {
+            Group g = e.nextElement();
             if (g.hasMode(Group.MODE_NEW_CONTACTS)) {
                 groups.add(g);
             }

@@ -12,6 +12,7 @@ import ru.sawim.comm.JLocale;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.icons.Icon;
 import ru.sawim.icons.ImageList;
+import ru.sawim.io.RosterStorage;
 import ru.sawim.modules.history.HistoryStorage;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.roster.TreeNode;
@@ -196,9 +197,9 @@ abstract public class Contact implements TreeNode {
         return ChatHistory.instance.getChat(this) != null;
     }
 
-    public final void updateChatState(Chat chat) {
+    public final void updateChatState(Protocol protocol, Chat chat) {
         if (null != chat) {
-            chat.getHistory().updateUnreadMessagesCount(chat.getAllUnreadMessageCount());
+            protocol.getStorage().updateUnreadMessagesCount(protocol.getUserId(), getUserId(), chat.getAllUnreadMessageCount());
         }
     }
 

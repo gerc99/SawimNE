@@ -213,7 +213,7 @@ public class XmppContact extends Contact {
         return null;
     }
 
-    protected SubContact getSubContact(String resource) {
+    protected SubContact getSubContact(Xmpp xmpp, String resource) {
         SubContact c = getExistSubContact(resource);
         if (null != c) {
             return c;
@@ -221,7 +221,7 @@ public class XmppContact extends Contact {
         c = new SubContact();
         c.resource = resource;
         c.status = StatusInfo.STATUS_OFFLINE;
-        c.avatarHash = RosterStorage.getAvatarHash(getUserId() + "/" + resource);
+        c.avatarHash = xmpp.getStorage().getAvatarHash(getUserId() + "/" + resource);
         subcontacts.add(c);
         return c;
     }
@@ -264,7 +264,7 @@ public class XmppContact extends Contact {
         return (byte) 0;
     }
 
-    public void __setStatus(String resource, int priority, int priorityA, byte index, String statusText, String roleText) {
+    public void __setStatus(Xmpp xmpp, String resource, int priority, int priorityA, byte index, String statusText, String roleText) {
         if (StatusInfo.STATUS_OFFLINE == index) {
             resource = StringConvertor.notNull(resource);
             if (resource.equals(currentResource)) {
@@ -275,7 +275,7 @@ public class XmppContact extends Contact {
                 setOfflineStatus();
             }
         } else {
-            SubContact c = getSubContact(resource);
+            SubContact c = getSubContact(xmpp, resource);
             c.priority = (byte) priority;
             c.priorityA = (byte) priorityA;
             c.status = index;

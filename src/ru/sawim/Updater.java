@@ -1,5 +1,6 @@
 package ru.sawim;
 
+import ru.sawim.modules.AutoAbsence;
 import ru.sawim.roster.RosterHelper;
 
 import java.util.Timer;
@@ -29,6 +30,6 @@ public class Updater extends TimerTask {
     }
 
     public void run() {
-        RosterHelper.getInstance().timerAction();
+        AutoAbsence.getInstance().updateTime();
     }
 }

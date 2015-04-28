@@ -196,8 +196,9 @@ public class RosterAdapter extends BaseAdapter implements View.OnClickListener {
         int contactCounter;
         int onlineContactCounter;
         boolean all = !hideOffline;
-        List<Group> groups = p.getGroupItems();
-        for (Group group : groups) {
+        Enumeration<Group> e = p.getGroupItems().elements();
+        while (e.hasMoreElements()) {
+            Group group = e.nextElement();
             contactCounter = 0;
             onlineContactCounter = 0;
             Group newGroup = copyGroupWithoutContacts(group);

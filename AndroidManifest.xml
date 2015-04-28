@@ -77,9 +77,5 @@
         <activity android:name="de.duenndns.ssl.MemorizingActivity" android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
 
         <service android:enabled="true" android:name=".service.SawimService" android:stopWithTask="true"/>
-        <provider
-                android:name=".io.SawimProvider"
-                android:authorities="ru.sawim.contentprovider" >
-        </provider>
     </application>
 </manifest>

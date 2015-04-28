@@ -3,6 +3,7 @@ package protocol;
 import protocol.mrim.MrimPhoneContact;
 import protocol.xmpp.XmppServiceContact;
 
+import java.util.Enumeration;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -10,10 +11,10 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class TemporaryRoster {
     private Protocol protocol;
-    private List<Group> oldGroups;
+    private ConcurrentHashMap<Integer, Group> oldGroups;
     private ConcurrentHashMap<String, Contact> oldContacts;
     private Contact[] existContacts;
-    private List<Group> groups = new CopyOnWriteArrayList<>();
+    private ConcurrentHashMap<Integer, Group> groups = new ConcurrentHashMap<>();
     private ConcurrentHashMap<String, Contact> contacts = new ConcurrentHashMap<>();
 
     public TemporaryRoster(Protocol protocol) {
@@ -36,9 +37,10 @@ public class TemporaryRoster {
         return protocol.createContact(userId, userId, false);
     }
 
-    private Group getGroup(List list, String name) {
-        for (int j = list.size() - 1; 0 <= j; --j) {
-            Group g = (Group) list.get(j);
+    private Group getGroup(ConcurrentHashMap<Integer, Group> list, String name) {
+        Enumeration<Group> e = groups.elements();
+        while (e.hasMoreElements()) {
+            Group g = e.nextElement();
             if (name.equals(g.getName())) {
                 return g;
             }
@@ -49,7 +51,7 @@ public class TemporaryRoster {
     public void useOld() {
         groups = oldGroups;
         contacts = oldContacts;
-        oldGroups = new CopyOnWriteArrayList<>();
+        oldGroups = new ConcurrentHashMap<>();
         oldContacts = new ConcurrentHashMap<>();
         existContacts = new Contact[0];
     }
@@ -110,7 +112,7 @@ public class TemporaryRoster {
     }
 
     public void addGroup(Group g) {
-        groups.add(g);
+        groups.put(g.getGroupId(), g);
     }
 
     public void addContact(Contact c) {
@@ -118,18 +120,11 @@ public class TemporaryRoster {
         contacts.put(c.getUserId(), c);
     }
 
-    public List<Group> getGroups() {
+    public ConcurrentHashMap<Integer, Group> getGroups() {
         return groups;
     }
 
     public Group getGroupById(int groupId) {
-        Group group;
-        for (int i = oldGroups.size() - 1; 0 <= i; --i) {
-            group = oldGroups.get(i);
-            if (group.getGroupId() == groupId) {
-                return group;
-            }
-        }
-        return null;
+        return oldGroups.get(groupId);
     }
 }

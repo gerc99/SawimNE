@@ -14,18 +14,10 @@ import java.io.DataOutputStream;
 import java.util.Vector;
 
 
-public final class Storage {
+public final class BlobStorage {
 
-    private static final String TABLE_NAME = "recordstore";
-    public static final String COLUMN_ID = "_id";
-    private static final String COLUMN_DATA = "data";
+    private static final String WHERE_ID = DatabaseHelper.ROW_AUTO_ID + " = ?";
 
-    private static final String SQL_CREATE_ENTRIES = "CREATE TABLE " + TABLE_NAME +
-            " (" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-            COLUMN_DATA + " BLOB)";
-
-    private SQLiteDatabase db;
-    private DatabaseHelper dbHelper;
     private String name;
 
     public static String[] getList() {
@@ -33,46 +25,43 @@ public final class Storage {
         return context.databaseList();
     }
 
-    public static void delete(String recordStoreName) {
-        Context context = SawimApplication.getInstance();
-        context.deleteDatabase(recordStoreName);
+    public static void delete(String tableName) {
+        SawimApplication.getDatabaseHelper().getWritableDatabase().execSQL("DROP TABLE IF EXISTS " + tableName);
     }
 
-    public void dropTable() {
-        dbHelper.dropTable(db);
-    }
-
-    public Storage(String recordStoreName) {
+    public BlobStorage(String recordStoreName) {
         name = recordStoreName;
-        Context context = SawimApplication.getContext();
-        dbHelper = new DatabaseHelper(context, recordStoreName, SQL_CREATE_ENTRIES, TABLE_NAME, 3);
+        String CREATE_BLOB_TABLE = "create table if not exists "
+                + recordStoreName + " ("
+                + DatabaseHelper.ROW_AUTO_ID + " integer primary key autoincrement, "
+                + DatabaseHelper.ROW_DATA + " blob);";
+        SawimApplication.getDatabaseHelper().getWritableDatabase().execSQL(CREATE_BLOB_TABLE);
     }
 
     public void open() {
-        db = dbHelper.getWritableDatabase();
         StorageConvertor.convertStorage(name, this);
     }
 
     public void close() {
-        dbHelper.close();
+        SawimApplication.getDatabaseHelper().close();
     }
 
     public SQLiteDatabase getDB() {
-        return db;
+        return SawimApplication.getDatabaseHelper().getWritableDatabase();
     }
 
     public void addRecord(byte data[]) {
         ContentValues values = new ContentValues();
-        values.put(COLUMN_DATA, data);
-        db.insert(TABLE_NAME, null, values);
+        values.put(DatabaseHelper.ROW_DATA, data);
+        SawimApplication.getDatabaseHelper().getWritableDatabase().insert(name, null, values);
     }
 
     public byte[] getRecord(int id) {
-        String where = COLUMN_ID + " = " + id;
-        Cursor cursor = db.query(TABLE_NAME, null, where, null, null, null, null);
+        Cursor cursor = SawimApplication.getDatabaseHelper().getWritableDatabase().query(name, null,
+                WHERE_ID, new String[]{String.valueOf(id)}, null, null, null);
         byte[] bytes = new byte[0];
         if (cursor.moveToFirst()) {
-            bytes = cursor.getBlob(cursor.getColumnIndex(COLUMN_DATA));
+            bytes = cursor.getBlob(cursor.getColumnIndex(DatabaseHelper.ROW_DATA));
         }
         cursor.close();
         return bytes;
@@ -80,19 +69,17 @@ public final class Storage {
 
     public void setRecord(int id, byte data[]) {
         ContentValues values = new ContentValues();
-        values.put(COLUMN_DATA, data);
-        String where = COLUMN_ID + " = " + id;
-        db.update(TABLE_NAME, values, where, null);
+        values.put(DatabaseHelper.ROW_DATA, data);
+        SawimApplication.getDatabaseHelper().getWritableDatabase().update(name, values, WHERE_ID, new String[]{String.valueOf(id)});
     }
 
     public void deleteRecord(int id) {
-        String where = COLUMN_ID + " = " + id;
-        db.delete(TABLE_NAME, where, null);
+        SawimApplication.getDatabaseHelper().getWritableDatabase().delete(name, WHERE_ID, new String[]{String.valueOf(id)});
     }
 
     public int getNumRecords() {
-        String selectCount = "SELECT COUNT(*) FROM " + TABLE_NAME;
-        Cursor cursor = db.rawQuery(selectCount, null);
+        String selectCount = "SELECT COUNT(*) FROM " + name;
+        Cursor cursor = SawimApplication.getDatabaseHelper().getWritableDatabase().rawQuery(selectCount, null);
         int num = 0;
         if (cursor.moveToFirst()) {
             num = cursor.getInt(0);
@@ -102,7 +89,7 @@ public final class Storage {
     }
 
     public boolean exist() {
-        String[] recordStores = Storage.getList();
+        String[] recordStores = BlobStorage.getList();
         for (String recordStore : recordStores) {
             if (name.equals(recordStore)) {
                 return true;
@@ -115,7 +102,8 @@ public final class Storage {
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             DataOutputStream dos = new DataOutputStream(baos);
-            for (String str : strings) {
+            for (int i = 0; i < strings.size(); ++i) {
+                String str = strings.elementAt(i);
                 dos.writeUTF(StringConvertor.notNull(str));
                 addRecord(baos.toByteArray());
                 baos.reset();

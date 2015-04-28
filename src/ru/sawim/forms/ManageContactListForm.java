@@ -18,6 +18,7 @@ import ru.sawim.view.TextBoxView;
 import ru.sawim.view.menu.MyMenu;
 
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Vector;
 
@@ -62,12 +63,12 @@ public final class ManageContactListForm implements FormListener, TextBoxView.Te
     }
 
     public void showContactMove(BaseActivity a) {
-        List<Group> groups = protocol.getGroupItems();
         Group myGroup = protocol.getGroup(contact);
         Vector items = new Vector();
         final ArrayList<Integer> itemsId = new ArrayList<Integer>();
-        for (int i = 0; i < groups.size(); ++i) {
-            Group g = (Group) groups.get(i);
+        Enumeration<Group> e = protocol.getGroupItems().elements();
+        while (e.hasMoreElements()) {
+            Group g = e.nextElement();
             if ((myGroup != g) && g.hasMode(Group.MODE_NEW_CONTACTS)) {
                 items.add(g.getName());
                 itemsId.add(g.getGroupId());
@@ -170,10 +171,10 @@ public final class ManageContactListForm implements FormListener, TextBoxView.Te
     }
 
     private List<Group> getGroups(byte mode) {
-        List<Group> all = protocol.getGroupItems();
         List<Group> groups = new ArrayList<>();
-        for (int i = 0; i < all.size(); ++i) {
-            Group g = all.get(i);
+        Enumeration<Group> e = protocol.getGroupItems().elements();
+        while (e.hasMoreElements()) {
+            Group g = e.nextElement();
             if (g.hasMode(mode)) {
                 if ((Group.MODE_REMOVABLE == mode) && !g.isEmpty()) continue;
                 groups.add(g);
@@ -187,7 +188,7 @@ public final class ManageContactListForm implements FormListener, TextBoxView.Te
             String[] list = new String[groups.size()];
             int def = 0;
             for (int i = 0; i < groups.size(); ++i) {
-                Group g = (Group) groups.get(i);
+                Group g = groups.get(i);
                 list[i] = g.getName();
                 if (g == group) {
                     def = i;
@@ -262,7 +263,7 @@ public final class ManageContactListForm implements FormListener, TextBoxView.Te
         switch (action) {
             case RENAME_GROUP: {
                 List<Group> groups = getGroups(Group.MODE_EDITABLE);
-                Group g = (Group) groups.get(form.getSelectorValue(GROUP));
+                Group g = groups.get(form.getSelectorValue(GROUP));
                 String oldGroupName = form.getSelectorString(GROUP);
                 String newGroupName = form.getTextFieldValue(GROUP_NEW_NAME);
                 boolean isExist = null != protocol.getGroup(newGroupName);
@@ -283,7 +284,7 @@ public final class ManageContactListForm implements FormListener, TextBoxView.Te
             }
             case DEL_GROUP: {
                 List<Group> groups = getGroups(Group.MODE_REMOVABLE);
-                Group g = (Group) groups.get(form.getSelectorValue(GROUP));
+                Group g = groups.get(form.getSelectorValue(GROUP));
                 String oldGroupName = form.getSelectorString(GROUP);
                 if (oldGroupName.equals(g.getName())) {
                     protocol.removeGroup(g);

@@ -12,7 +12,8 @@ import ru.sawim.comm.JLocale;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
 import ru.sawim.icons.Icon;
-import ru.sawim.io.Storage;
+import ru.sawim.io.BlobStorage;
+import ru.sawim.io.RosterStorage;
 import ru.sawim.modules.Answerer;
 import ru.sawim.modules.AntiSpam;
 import ru.sawim.modules.DebugLog;
@@ -23,20 +24,19 @@ import ru.sawim.roster.ProtocolBranch;
 import ru.sawim.roster.RosterHelper;
 
 import java.io.*;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 abstract public class Protocol {
 
-    private static final int ROSTER_STORAGE_VERSION = 1;
     private static final int RECONNECT_COUNT = 10;
 
-    private static final int TYPE_GROUP = 0;
-    private static final int TYPE_CONTACT = 1;
-
     public ClientInfo clientInfo;
-    protected Roster roster = new Roster();
+
+    private RosterStorage storage;
+    private Roster roster = new Roster();
     protected StatusInfo info;
     protected XStatusInfo xstatusInfo;
     private Profile profile;
@@ -46,7 +46,6 @@ abstract public class Protocol {
     private String rmsName = null;
     private boolean isReconnect;
     private int reconnect_attempts;
-    private boolean needSave = false;
     private long lastStatusChangeTime;
     private byte progress = 100;
     private CopyOnWriteArrayList<String> autoGrand = new CopyOnWriteArrayList<>();
@@ -92,6 +91,12 @@ abstract public class Protocol {
 
         String rms = "roster-" + getUserId();
         rmsName = (32 < rms.length()) ? rms.substring(0, 32) : rms;
+
+        storage = new RosterStorage(rmsName);
+    }
+
+    public RosterStorage getStorage() {
+        return storage;
     }
 
     public final String getPassword() {
@@ -153,40 +158,28 @@ abstract public class Protocol {
         roster = new Roster();
     }
 
-    public final void setRoster(List<Group> groups, ConcurrentHashMap<String, Contact> contacts) {
-        setRoster(new Roster(groups, contacts), false);
+    public final void setRoster(ConcurrentHashMap<Integer, Group> groups, ConcurrentHashMap<String, Contact> contacts) {
+        setRoster(new Roster(groups, contacts), true);
     }
 
     public final void setRoster(Roster roster, boolean needSave) {
-        Roster oldRoster = this.roster;
-        if (null != oldRoster) {
-            Util.removeAll(oldRoster.getGroupItems(), roster.getGroupItems());
-            roster.getContactItems().putAll(oldRoster.getContactItems());
-        }
         this.roster = roster;
         ChatHistory.instance.restoreContactsWithChat(this);
-        oldRoster.getContactItems().putAll(roster.getContactItems());
-        for (int i = 0; i < roster.getGroupItems().size(); ++i) {
-            Group g = roster.getGroupItems().get(i);
-            RosterHelper.getInstance().updateGroup(this, g);
-            oldRoster.getGroupItems().add(g);
+        Enumeration<Group> e = roster.getGroupItems().elements();
+        while (e.hasMoreElements()) {
+            Group group = e.nextElement();
+            RosterHelper.getInstance().updateGroup(this, group);
         }
         RosterHelper.getInstance().updateGroup(this, notInListGroup);
         if (RosterHelper.getInstance().getProtocolCount() == 0) return;
         RosterHelper.getInstance().updateRoster();
         if (needSave)
-            needSave();
+            safeSave();
     }
 
     public final void setContactListAddition(Group group) {
         RosterHelper.getInstance().updateGroup(this, group);
         RosterHelper.getInstance().updateGroup(this, notInListGroup);
-        /*List<Contact> groupItems = group.getContacts();
-        for (int i = 0; i < groupItems.size(); ++i) {
-            if (!inContactList(groupItems.get(i))) {
-                roster.getContactItems().add(groupItems.get(i));
-            }
-        }*/
         RosterHelper.getInstance().updateRoster();
         safeSave();
     }
@@ -257,7 +250,7 @@ abstract public class Protocol {
             return;
         }
         try {
-            load();
+            storage.load(this);
         } catch (Exception e) {
             DebugLog.panic("roster load", e);
             setRoster(new Roster(), false);
@@ -265,126 +258,12 @@ abstract public class Protocol {
     }
 
     public final void needSave() {
-        needSave = true;
-        RosterHelper.getInstance().needRosterSave();
+
     }
 
     public final boolean safeSave() {
-        boolean save = needSave;
-        needSave = false;
-
-        if (!save || "".equals(getUserId())) {
-            return false;
-        }
-        synchronized (this) {
-            try {
-                Storage.delete(rmsName);
-            } catch (Exception e) {
-            }
-            Storage storage = new Storage(rmsName);
-            try {
-                storage.open();
-                save(storage);
-            } catch (Exception e) {
-                DebugLog.panic("roster save", e);
-            }
-            storage.close();
-        }
+        storage.save(this);
         return true;
-    }
-
-    private void load() throws Exception {
-        Roster roster = new Roster();
-        Storage storage = new Storage(rmsName);
-        storage.open();
-        try {
-            byte[] buf = storage.getRecord(1);
-            if (buf.length != 0) {
-                ByteArrayInputStream bais = new ByteArrayInputStream(buf);
-                DataInputStream dis = new DataInputStream(bais);
-                if (dis.readInt() != ROSTER_STORAGE_VERSION) {
-                    throw new Exception();
-                }
-                loadProtocolData(storage.getRecord(2));
-                for (int marker = 3; marker <= storage.getNumRecords(); ++marker) {
-                    try {
-                        buf = storage.getRecord(marker);
-                        if ((null == buf) || (0 == buf.length)) {
-                            continue;
-                        }
-
-                        bais = new ByteArrayInputStream(buf);
-                        dis = new DataInputStream(bais);
-                        while (0 < dis.available()) {
-                            byte type = dis.readByte();
-                            switch (type) {
-                                case TYPE_GROUP:
-                                    Contact c = loadContact(dis);
-                                    roster.getContactItems().put(c.getUserId(), c);
-                                    break;
-                                case TYPE_CONTACT:
-                                    roster.getGroupItems().add(loadGroup(dis));
-                                    break;
-                            }
-                        }
-                    } catch (EOFException e) {
-                    }
-                }
-                DebugLog.memoryUsage("clload");
-            }
-        } finally {
-            storage.close();
-        }
-        setRoster(roster, false);
-    }
-
-    private void save(Storage storage) throws Exception {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        DataOutputStream dos = new DataOutputStream(baos);
-        dos.writeInt(ROSTER_STORAGE_VERSION);
-        byte[] buf = baos.toByteArray();
-        storage.addRecord(buf);
-        baos.reset();
-        buf = saveProtocolData();
-        storage.addRecord(buf);
-        baos.reset();
-        int cItemsCount = roster.getContactItems().size();
-        int totalCount = cItemsCount + roster.getGroupItems().size();
-        for (int i = 0; i < totalCount; ++i) {
-            if (i < cItemsCount) {
-                dos.writeByte(TYPE_GROUP);
-                saveContact(dos, roster.getContactItems().values().iterator().next());
-            } else {
-                dos.writeByte(TYPE_CONTACT);
-                saveGroup(dos, roster.getGroupItems().get(i - cItemsCount));
-            }
-            if ((baos.size() >= 4000) || (i == totalCount - 1)) {
-                buf = baos.toByteArray();
-                storage.addRecord(buf);
-                baos.reset();
-            }
-        }
-    }
-
-    protected Contact loadContact(DataInputStream dis) throws Exception {
-        String uin = dis.readUTF();
-        String name = dis.readUTF();
-        int groupId = dis.readInt();
-        byte booleanValues = dis.readByte();
-        boolean isConference = dis.readBoolean();
-        Contact contact = createContact(uin, name, isConference);
-        contact.setGroupId(groupId);
-        contact.setBooleanValues(booleanValues);
-        return contact;
-    }
-
-    protected Group loadGroup(DataInputStream dis) throws Exception {
-        int groupId = dis.readInt();
-        String name = dis.readUTF();
-        Group group = createGroup(name);
-        group.setGroupId(groupId);
-        group.setExpandFlag(dis.readBoolean());
-        return group;
     }
 
     protected void loadProtocolData(byte[] data) throws Exception {
@@ -395,17 +274,7 @@ abstract public class Protocol {
     }
 
     protected void saveContact(DataOutputStream out, Contact contact) throws Exception {
-        out.writeUTF(contact.getUserId());
-        out.writeUTF(contact.getName());
-        out.writeBoolean(contact.isConference());
-        out.writeInt(contact.getGroupId());
-        out.writeByte(contact.getBooleanValues());
-    }
 
-    protected void saveGroup(DataOutputStream out, Group group) throws Exception {
-        out.writeInt(group.getGroupId());
-        out.writeUTF(group.getName());
-        out.writeBoolean(group.isExpanded());
     }
 
     protected void s_removeContact(Contact contact) {
@@ -567,7 +436,7 @@ abstract public class Protocol {
         return roster.getContactItems();
     }
 
-    public final List<Group> getGroupItems() {
+    public final ConcurrentHashMap<Integer, Group> getGroupItems() {
         return roster.getGroupItems();
     }
 
@@ -596,8 +465,10 @@ abstract public class Protocol {
             c.setOfflineStatus();
         }
         if (RosterHelper.getInstance().useGroups) {
-            for (int i = roster.getGroupItems().size() - 1; i >= 0; --i) {
-                (roster.getGroupItems().get(i)).updateGroupData();
+            Enumeration<Group> e = roster.getGroupItems().elements();
+            while (e.hasMoreElements()) {
+                Group group = e.nextElement();
+                group.updateGroupData();
             }
         }
     }
@@ -629,10 +500,12 @@ abstract public class Protocol {
     protected abstract void s_updateOnlineStatus();
 
     public final void setOnlineStatus(int statusIndex, String msg, boolean save) {
-        profile.statusIndex = (byte) statusIndex;
-        profile.statusMessage = msg;
-        if (save) {
-            Options.saveAccount(profile);
+        if (profile != null) {
+            profile.statusIndex = (byte) statusIndex;
+            profile.statusMessage = msg;
+            if (save) {
+                Options.saveAccount(profile);
+            }
         }
 
         setLastStatusChangeTime();
@@ -744,10 +617,10 @@ abstract public class Protocol {
     }
 
     private void cl_addGroup(Group group) {
-        if (-1 != roster.getGroupItems().indexOf(group)) {
+        if (roster.getGroupItems().contains(group)) {
             DebugLog.panic("Group '" + group.getName() + "' already added");
         }
-        roster.getGroupItems().add(group);
+        roster.getGroupItems().put(group.getGroupId(), group);
         ui_updateGroup(group);
     }
 

@@ -13,7 +13,7 @@ import ru.sawim.activities.BaseActivity;
 import ru.sawim.chat.message.Message;
 import ru.sawim.comm.JLocale;
 import ru.sawim.comm.Util;
-import ru.sawim.io.Storage;
+import ru.sawim.io.BlobStorage;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
 import ru.sawim.models.list.VirtualList;
@@ -23,12 +23,9 @@ import ru.sawim.view.VirtualListView;
 import java.util.Vector;
 
 public final class Answerer implements FormListener {
-    private Vector dictionary = new Vector();
-    private VirtualList list;
-    private VirtualListModel model = new VirtualListModel();
-    Forms form;
 
-    private int selItem = 0;
+    private static final String STORAGE_NAME = "answerer";
+
     private static final int MENU_EDIT = 0;
     private static final int MENU_ADD = 1;
     private static final int MENU_CLEAR = 2;
@@ -37,6 +34,13 @@ public final class Answerer implements FormListener {
 
     private static final int FORM_EDIT_QUESTION = 0;
     private static final int FORM_EDIT_ANSWER = 1;
+
+    private Vector dictionary = new Vector();
+    private VirtualList list;
+    private VirtualListModel model = new VirtualListModel();
+    Forms form;
+
+    private int selItem = 0;
 
     private Answerer() {
     }
@@ -133,7 +137,7 @@ public final class Answerer implements FormListener {
     }
 
     public void load() {
-        Storage storage = new Storage("module-answerer");
+        BlobStorage storage = new BlobStorage(STORAGE_NAME);
         try {
             storage.open();
             dictionary = storage.loadListOfString();
@@ -151,8 +155,8 @@ public final class Answerer implements FormListener {
     }
 
     private void save() {
-        Storage.delete("module-answerer");
-        Storage storage = new Storage("module-answerer");
+        BlobStorage.delete(STORAGE_NAME);
+        BlobStorage storage = new BlobStorage(STORAGE_NAME);
         try {
             if (0 == dictionary.size()) {
                 return;

@@ -6,7 +6,7 @@ import protocol.Profile;
 import protocol.StatusInfo;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
-import ru.sawim.io.Storage;
+import ru.sawim.io.BlobStorage;
 import ru.sawim.modules.DebugLog;
 import ru.sawim.roster.RosterHelper;
 
@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Options {
+
+    private static final String ACCOUNTS_STORAGE_NAME = "accounts";
 
     static final String OPTIONS_CURR_ACCOUNT = "current_account";
     public static final String OPTION_PRIVATE_STATUS = "private_status";
@@ -137,7 +139,7 @@ public class Options {
                 current = 0;
             }
             setCurrentAccount(current);
-            Storage s = new Storage("j-accounts");
+            BlobStorage s = new BlobStorage(ACCOUNTS_STORAGE_NAME);
             try {
                 s.open();
                 for (; num < listOfProfiles.size(); ++num) {
@@ -177,7 +179,7 @@ public class Options {
     }
 
     public static void loadAccounts() {
-        Storage s = new Storage("j-accounts");
+        BlobStorage s = new BlobStorage(ACCOUNTS_STORAGE_NAME);
         try {
             synchronized (listOfProfiles) {
                 listOfProfiles.clear();
@@ -204,7 +206,7 @@ public class Options {
         if (StringConvertor.isEmpty(account.userId)) {
             return;
         }
-        Storage s = new Storage("j-accounts");
+        BlobStorage s = new BlobStorage(ACCOUNTS_STORAGE_NAME);
         try {
             s.open();
             byte[] hash = writeAccount(account);

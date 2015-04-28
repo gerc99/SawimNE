@@ -473,7 +473,6 @@ public class Icq extends Protocol {
         int invisibleId = dis.readInt();
         int ignoreId = dis.readInt();
 
-
         IcqContact contact = (IcqContact) createContact(uin, name, false);
         contact.setContactId(contactId);
         contact.setGroupId(groupId);

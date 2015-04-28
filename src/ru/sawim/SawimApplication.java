@@ -14,9 +14,7 @@ import android.os.Message;
 import de.duenndns.ssl.MemorizingTrustManager;
 import protocol.Protocol;
 import ru.sawim.comm.JLocale;
-import ru.sawim.io.FileSystem;
-import ru.sawim.io.HomeDirectory;
-import ru.sawim.io.StorageConvertor;
+import ru.sawim.io.*;
 import ru.sawim.modules.Answerer;
 import ru.sawim.modules.AutoAbsence;
 import ru.sawim.modules.DebugLog;
@@ -50,7 +48,6 @@ public class SawimApplication extends Application {
 
     public static final String DATABASE_NAME = "sawim.db";
     public static final int DATABASE_VERSION = 4;
-    public static final String AUTHORITY = "ru.sawim.contentprovider";
 
     public static String NAME;
     public static String VERSION;
@@ -72,6 +69,8 @@ public class SawimApplication extends Application {
     private final NetworkStateReceiver networkStateReceiver = new NetworkStateReceiver();
     public boolean isBindService = false;
 
+    private DatabaseHelper databaseHelper;
+
     private Handler uiHandler;
     private ExecutorService backgroundExecutor;
 
@@ -92,6 +91,7 @@ public class SawimApplication extends Application {
         VERSION = getVersion();
         Thread.setDefaultUncaughtExceptionHandler(ExceptionHandler.inContext(getContext()));
         super.onCreate();
+        databaseHelper = new DatabaseHelper(getApplicationContext());
         uiHandler = new Handler(Looper.getMainLooper());
         backgroundExecutor = Executors
                 .newCachedThreadPool(new ThreadFactory() {
@@ -135,7 +135,12 @@ public class SawimApplication extends Application {
             @Override
             public void run() {
                 StorageConvertor.historyConvert();
-                HistoryStorage.loadUnreadMessages();
+                int count = RosterHelper.getInstance().getProtocolCount();
+                for (int i = 0; i < count; ++i) {
+                    Protocol p = RosterHelper.getInstance().getProtocol(i);
+                    p.getStorage().loadUnreadMessages();
+                }
+
             }
         },"loadMessage").start();
         if (RosterHelper.getInstance() != null) {
@@ -286,5 +291,9 @@ public class SawimApplication extends Application {
 
     public static int getFontSize() {
         return fontSize;
+    }
+
+    public static DatabaseHelper getDatabaseHelper() {
+        return instance.databaseHelper;
     }
 }

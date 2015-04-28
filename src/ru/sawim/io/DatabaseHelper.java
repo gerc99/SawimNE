@@ -10,39 +10,48 @@ import ru.sawim.SawimApplication;
  */
 public class DatabaseHelper extends SQLiteOpenHelper {
 
-    private String sqlCreateEntries;
-    private String tableName;
+    public static final String TABLE_CHAT_HISTORY = "history";
+
+    public static final String ROW_AUTO_ID = "_id";
+    public static final String ACCOUNT_ID = "account_id";
+    public static final String GROUP_NAME = "group_name";
+    public static final String GROUP_ID = "group_id";
+    public static final String GROUP_IS_EXPAND = "group_is_expand";
+    public static final String CONTACT_ID = "contact_id";
+    public static final String CONTACT_NAME = "contact_name";
+    public static final String IS_CONFERENCE = "is_conference";
+    public static final String CONFERENCE_MY_NAME = "conference_my_name";
+    public static final String CONFERENCE_IS_AUTOJOIN = "is_conference_autojoin";
+    public static final String ROW_DATA = "row_data";
+    public static final String UNREAD_MESSAGES_COUNT = "unread_messages_count";
+    public static final String AVATAR_HASH = "avatar_hash";
+
+    public static final String INCOMING = "incoming";
+    public static final String SENDING_STATE = "sanding_state";
+    public static final String AUTHOR = "author";
+    public static final String MESSAGE = "msgtext";
+    public static final String DATE = "date";
+
+    public static final String CREATE_CHAT_HISTORY_TABLE = "create table if not exists "
+            + TABLE_CHAT_HISTORY + " ("
+            + ROW_AUTO_ID + " integer primary key autoincrement, "
+            + ACCOUNT_ID + " text not null, "
+            + CONTACT_ID + " text not null, "
+            + SENDING_STATE + " int, "
+            + INCOMING + " int, "
+            + AUTHOR + " text not null, "
+            + MESSAGE + " text not null, "
+            + DATE + " long not null, "
+            + ROW_DATA + " int);";
 
     public DatabaseHelper(Context context) {
         super(context, SawimApplication.DATABASE_NAME, null, SawimApplication.DATABASE_VERSION);
     }
 
-    public DatabaseHelper(Context context, String baseName, String sqlCreateEntries, String tableName, int version) {
-        super(context, baseName, null, version);
-        this.sqlCreateEntries = sqlCreateEntries;
-        this.tableName = tableName;
-    }
-
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(SawimProvider.CREATE_CHAT_HISTORY_TABLE);
-        db.execSQL(SawimProvider.CREATE_UNREAD_MESSAGES_TABLE);
-        db.execSQL(SawimProvider.CREATE_AVATAR_HASHES_TABLE);
-        if (sqlCreateEntries != null) {
-            db.execSQL(sqlCreateEntries);
-        }
+        db.execSQL(CREATE_CHAT_HISTORY_TABLE);
     }
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        if (oldVersion <= 1 && newVersion >= 2) {
-            db.execSQL(SawimProvider.CREATE_UNREAD_MESSAGES_TABLE);
-        }
-        if (oldVersion <= 3 && newVersion >= 4) {
-            db.execSQL(SawimProvider.CREATE_AVATAR_HASHES_TABLE);
-        }
-    }
-
-    public void dropTable(SQLiteDatabase db) {
-        db.execSQL("DROP TABLE IF EXISTS " + tableName);
-        onCreate(db);
     }
 }

@@ -12,6 +12,7 @@ import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
 import ru.sawim.modules.DebugLog;
 
+import java.util.Enumeration;
 import java.util.List;
 
 public class UpdateContactListAction extends IcqAction {
@@ -391,8 +392,7 @@ public class UpdateContactListAction extends IcqAction {
     private byte[] packGroups() {
         Util stream = new Util();
 
-        List<Group> gItems = getIcq().getGroupItems();
-        int size = gItems.size();
+        int size = getIcq().getGroupItems().size();
         stream.writeLenAndUtf8String("");
         stream.writeWordBE(0);
         stream.writeWordBE(0);
@@ -401,8 +401,10 @@ public class UpdateContactListAction extends IcqAction {
         stream.writeWordBE(0xc8);
         stream.writeWordBE(size * 2);
 
-        for (int i = 0; i < size; ++i) {
-            stream.writeWordBE((gItems.get(i)).getGroupId());
+        Enumeration<Group> e = getIcq().getGroupItems().elements();
+        while (e.hasMoreElements()) {
+            Group group = e.nextElement();
+            stream.writeWordBE(group.getGroupId());
         }
 
         return stream.toByteArray();

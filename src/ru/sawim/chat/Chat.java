@@ -175,7 +175,7 @@ public final class Chat {
         boolean notEmpty = (0 < authRequestCounter);
         authRequestCounter = 0;
         if (notEmpty) {
-            contact.updateChatState(this);
+            contact.updateChatState(getProtocol(), this);
             protocol.markMessages(contact);
         }
     }
@@ -189,7 +189,7 @@ public final class Chat {
         otherMessageCounter = 0;
         sysNoticeCounter = 0;
         if (notEmpty) {
-            contact.updateChatState(this);
+            contact.updateChatState(getProtocol(), this);
             protocol.markMessages(contact);
         }
     }
@@ -335,7 +335,7 @@ public final class Chat {
         addMessage(mData);
         if (!isVisibleChat()) {
             otherMessageCounter = inc(otherMessageCounter);
-            contact.updateChatState(this);
+            contact.updateChatState(getProtocol(), this);
         }
     }
 
@@ -363,7 +363,7 @@ public final class Chat {
             addMessage(message, from, true, isHighlight);
         }
         if (inc) {
-            contact.updateChatState(this);
+            contact.updateChatState(getProtocol(), this);
         }
     }
 

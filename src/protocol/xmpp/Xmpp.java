@@ -239,12 +239,12 @@ public final class Xmpp extends Protocol implements FormListener {
                 XmppServiceContact c = new XmppServiceContact(jid, name, true);
                 c.setPrivateContactStatus(conf);
                 c.setMyName(conf.getMyName());
-                c.avatarHash = RosterStorage.getAvatarHash(c.getUserId());
+                c.avatarHash = getStorage().getAvatarHash(c.getUserId());
                 return c;
             }
         }
         Contact contact = new XmppContact(jid, name);
-        contact.avatarHash = RosterStorage.getAvatarHash(contact.getUserId());
+        contact.avatarHash = getStorage().getAvatarHash(contact.getUserId());
         return contact;
     }
 
@@ -274,39 +274,12 @@ public final class Xmpp extends Protocol implements FormListener {
         }
     }
 
-    @Override
-    protected Contact loadContact(DataInputStream dis) throws Exception {
-        XmppContact contact = (XmppContact) super.loadContact(dis);
-        if (contact instanceof XmppServiceContact) {
-            XmppServiceContact serviceContact = (XmppServiceContact) contact;
-            if (serviceContact.isConference()) {
-                String userNick = dis.readUTF();
-                boolean isAutoJoin = dis.readBoolean();
-                serviceContact.setMyName(userNick);
-                serviceContact.setAutoJoin(isAutoJoin);
-            }
-        }
-        return contact;
-    }
-
-    @Override
-    protected void saveContact(DataOutputStream dos, Contact contact) throws Exception {
-        super.saveContact(dos, contact);
-        if (contact instanceof XmppServiceContact) {
-            XmppServiceContact serviceContact = (XmppServiceContact) contact;
-            if (serviceContact.isConference()) {
-                dos.writeUTF(serviceContact.getMyName());
-                dos.writeBoolean(serviceContact.isAutoJoin());
-            }
-        }
-    }
-
     void setConfContactStatus(XmppServiceContact conf, String resource, byte status, String statusText, int role, int priorityA, String roleText) {
-        conf.__setStatus(resource, role, priorityA, status, statusText, roleText);
+        conf.__setStatus(this, resource, role, priorityA, status, statusText, roleText);
     }
 
     void setContactStatus(XmppContact c, String resource, byte status, String text, int priority) {
-        c.__setStatus(resource, priority, 0, status, text, null);
+        c.__setStatus(this, resource, priority, 0, status, text, null);
     }
 
     protected final void s_addedContact(Contact contact) {
@@ -877,7 +850,6 @@ public final class Xmpp extends Protocol implements FormListener {
                             join(enterConf);
                         }
                     }
-                    needSave();
                     safeSave();
                 }
             }

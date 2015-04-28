@@ -183,7 +183,7 @@ public final class ChatHistory {
     public void registerChat(Chat item) {
         if (!contains(historyTable, item.getContact())) {
             historyTable.add(item);
-            item.getContact().updateChatState(item);
+            item.getContact().updateChatState(item.getProtocol(), item);
         }
     }
 
@@ -203,7 +203,7 @@ public final class ChatHistory {
         closeHistory(item);
         historyTable.remove(item);
         Contact c = item.getContact();
-        c.updateChatState(null);
+        c.updateChatState(item.getProtocol(), null);
         item.getProtocol().ui_updateContact(c);
         if (0 < item.getAllUnreadMessageCount()) {
             RosterHelper.getInstance().markMessages(c);
@@ -216,7 +216,7 @@ public final class ChatHistory {
             if (key.getProtocol() == p) {
                 closeHistory(key);
                 historyTable.remove(key);
-                key.getContact().updateChatState(null);
+                key.getContact().updateChatState(key.getProtocol(), null);
             }
         }
         RosterHelper.getInstance().markMessages(null);
@@ -256,8 +256,8 @@ public final class ChatHistory {
                 Contact newContact = p.getItemByUID(contact.getUserId());
                 if (null != newContact) {
                     chat.setContact(newContact);
-                    contact.updateChatState(null);
-                    newContact.updateChatState(chat);
+                    contact.updateChatState(chat.getProtocol(), null);
+                    newContact.updateChatState(chat.getProtocol(), chat);
                     continue;
                 }
                 if (contact.isSingleUserContact()) {

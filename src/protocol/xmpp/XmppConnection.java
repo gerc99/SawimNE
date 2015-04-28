@@ -702,7 +702,7 @@ public final class XmppConnection extends ClientConnection {
                             //messageArchiveManagement.query(this, contact);
                         }
                     }
-
+                    getXmpp().safeSave();
                     RosterHelper.getInstance().updateGroup(xmpp, xmpp.getNotInListGroup());
                     RosterHelper.getInstance().updateRoster();
                     setProgress(70);
@@ -1158,18 +1158,18 @@ public final class XmppConnection extends ClientConnection {
                     XmppContact.SubContact sc = ((XmppServiceContact) c).getExistSubContact(Jid.getResource(from, null));
                     if (null != sc) {
                         sc.avatarHash = avatarHash;
-                        RosterStorage.updateAvatarHash(c.getUserId() + "/" + sc.resource, avatarHash);
+                        getXmpp().getStorage().updateAvatarHash(c.getUserId() + "/" + sc.resource, avatarHash);
                     } else {
                         c.avatarHash = avatarHash;
-                        RosterStorage.updateAvatarHash(c.getUserId(), avatarHash);
+                        getXmpp().getStorage().updateAvatarHash(c.getUserId(), avatarHash);
                     }
                 } else {
                     if (c != null) {
                         c.avatarHash = avatarHash;
-                        RosterStorage.updateAvatarHash(c.getUserId(), avatarHash);
+                        getXmpp().getStorage().updateAvatarHash(c.getUserId(), avatarHash);
                     }
-                    ImageCache.getInstance().save(FileSystem.openDir(FileSystem.AVATARS), avatarHash, avatarBytes);
                 }
+                ImageCache.getInstance().save(FileSystem.openDir(FileSystem.AVATARS), avatarHash, avatarBytes);
             } else {
                 if (from.equals(getXmpp().getUserId())) {
                     if (myAvatarHash != null) {
@@ -1181,15 +1181,15 @@ public final class XmppConnection extends ClientConnection {
                     XmppContact.SubContact sc = ((XmppServiceContact) c).getExistSubContact(Jid.getResource(from, null));
                     if (null != sc) {
                         sc.avatarHash = "";
-                        RosterStorage.updateAvatarHash(c.getUserId() + "/" + sc.resource, "");
+                        getXmpp().getStorage().updateAvatarHash(c.getUserId() + "/" + sc.resource, "");
                     } else {
                         c.avatarHash = "";
-                        RosterStorage.updateAvatarHash(c.getUserId(), "");
+                        getXmpp().getStorage().updateAvatarHash(c.getUserId(), "");
                     }
                 } else {
                     if (c != null) {
                         c.avatarHash = "";
-                        RosterStorage.updateAvatarHash(c.getUserId(), "");
+                        getXmpp().getStorage().updateAvatarHash(c.getUserId(), "");
                     }
                 }
             }
@@ -1205,7 +1205,6 @@ public final class XmppConnection extends ClientConnection {
         }
         Xmpp xmpp = getXmpp();
         Group group = xmpp.getOrCreateGroup(JLocale.getString(Xmpp.CONFERENCE_GROUP));
-        List<Group> groups = xmpp.getGroupItems();
         ConcurrentHashMap<String, Contact> contacts = xmpp.getContactItems();
         while (0 < storage.childrenCount()) {
             XmlNode item = storage.popChildNode();
@@ -1804,7 +1803,7 @@ public final class XmppConnection extends ClientConnection {
             }
         }
         if (subject == null && isConference && !isOnlineMessage) {
-            if (HistoryStorage.hasLastMessage(getXmpp().getChat(c), message)) {
+            if (HistoryStorage.getHistory(getXmpp().getUserId(), c.getUserId()).hasLastMessage(getXmpp().getChat(c), message)) {
                 return;
             }
         }

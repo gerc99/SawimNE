@@ -1,30 +1,29 @@
 package protocol;
 
-import java.util.List;
+import java.util.Enumeration;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Created by admin on 09.01.14.
  */
 public class Roster {
     private ConcurrentHashMap<String, Contact> contacts = new ConcurrentHashMap<>();
-    private List<Group> groups = new CopyOnWriteArrayList<>();
+    private ConcurrentHashMap<Integer, Group> groups = new ConcurrentHashMap<>();
 
-    public Roster(List<Group> groups, ConcurrentHashMap<String, Contact> contacts) {
+    public Roster(ConcurrentHashMap<Integer, Group> groups, ConcurrentHashMap<String, Contact> contacts) {
         this.groups = groups;
         this.contacts = contacts;
     }
 
     public Roster() {
-        this(new CopyOnWriteArrayList<Group>(), new ConcurrentHashMap<String, Contact>());
+        this(new ConcurrentHashMap<Integer, Group>(), new ConcurrentHashMap<String, Contact>());
     }
 
     public final ConcurrentHashMap<String, Contact> getContactItems() {
         return contacts;
     }
 
-    public final List<Group> getGroupItems() {
+    public final ConcurrentHashMap<Integer, Group> getGroupItems() {
         return groups;
     }
 
@@ -33,13 +32,7 @@ public class Roster {
     }
 
     public final Group getGroupById(int id) {
-        for (int i = groups.size() - 1; 0 <= i; --i) {
-            Group group = groups.get(i);
-            if (group.getGroupId() == id) {
-                return group;
-            }
-        }
-        return null;
+        return groups.get(id);
     }
 
     public final Group getGroup(Contact contact) {
@@ -47,8 +40,9 @@ public class Roster {
     }
 
     public final Group getGroup(String name) {
-        for (int i = groups.size() - 1; 0 <= i; --i) {
-            Group group = groups.get(i);
+        Enumeration<Group> e = groups.elements();
+        while (e.hasMoreElements()) {
+            Group group = e.nextElement();
             if (group.getName().equals(name)) {
                 return group;
             }

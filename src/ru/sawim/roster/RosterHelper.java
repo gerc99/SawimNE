@@ -28,6 +28,7 @@ import ru.sawim.view.XStatusesView;
 import ru.sawim.view.menu.MyMenu;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public final class RosterHelper {
 
@@ -96,7 +97,6 @@ public final class RosterHelper {
             Protocol protocol = protocols[i];
             if (null != protocol) {
                 SawimApplication.getInstance().setStatus(protocol, StatusInfo.STATUS_OFFLINE, "");
-                protocol.needSave();
                 protocol.dismiss();
             }
         }
@@ -347,26 +347,6 @@ public final class RosterHelper {
         return statusView;
     }
 
-    private int contactListSaveDelay = 0;
-
-    public final void needRosterSave() {
-        contactListSaveDelay = 60 * 4 /* * 250 = 60 sec */;
-    }
-
-    public final void timerAction() {
-        AutoAbsence.getInstance().updateTime();
-        /*if (0 < contactListSaveDelay) {
-            contactListSaveDelay--;
-            if (0 == contactListSaveDelay) {
-                int count = contactList.getProtocolCount();
-                for (int i = 0; i < count; ++i) {
-                    Protocol p = contactList.getProtocol(i);
-                    p.safeSave();
-                }
-            }
-        }*/
-    }
-
     public void addTransfer(FileTransfer ft) {
         transfers.add(ft);
     }
@@ -449,7 +429,7 @@ public final class RosterHelper {
         useGroups = Options.getBoolean(JLocale.getString(R.string.pref_user_groups)) && getCurrPage() != ACTIVE_CONTACTS;
     }
 
-    public static <T extends TreeNode> void sort(List<T> subnodes, final List<Group> groups) {
+    public static <T extends TreeNode> void sort(List<T> subnodes, final ConcurrentHashMap<Integer, Group> groups) {
         Collections.sort(subnodes, new Comparator<T>() {
             @Override
             public int compare(T node1, T node2) {
@@ -474,9 +454,10 @@ public final class RosterHelper {
         });
     }
 
-    public static Group getGroupById(List<Group> groups, int id) {
-        for (int i = groups.size() - 1; i >= 0; --i) {
-            Group group = groups.get(i);
+    public static Group getGroupById(ConcurrentHashMap<Integer, Group> groups, int id) {
+        Enumeration<Group> e = groups.elements();
+        while (e.hasMoreElements()) {
+            Group group = e.nextElement();
             if (group.getGroupId() == id) {
                 return group;
             }

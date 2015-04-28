@@ -18,7 +18,7 @@ public final class StorageConvertor {
 
     private StorageConvertor() { }
 
-    static void convertStorage(String fromStorageName, Storage toStorage) {
+    static void convertStorage(String fromStorageName, BlobStorage toStorage) {
         String normalizedName = normalizeStorageName(fromStorageName);
         if (isExists(normalizedName)) {
             Context context = SawimApplication.getContext();

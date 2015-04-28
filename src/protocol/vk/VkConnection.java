@@ -82,11 +82,11 @@ public class VkConnection implements Runnable {
         return cl;
     }
 
-    private Vector<Group> groups() {
-        Vector<Group> groups = new Vector<Group>();
+    private ConcurrentHashMap<Integer, Group> groups() {
+        ConcurrentHashMap<Integer, Group> groups = new ConcurrentHashMap<>();
         Group g = vk.createGroup("General");
         g.setGroupId(1);
-        groups.add(g);
+        groups.put(g.getGroupId(), g);
         return groups;
     }
 
@@ -123,12 +123,10 @@ public class VkConnection implements Runnable {
         ru.sawim.modules.DebugLog.println("vk done");
     }
 
-
     private void processContacts() {
         try {
             ConcurrentHashMap<String, Contact> contacts = to(api.getFriends().getJSONArray("response"));
-            Vector<Group> groups = groups();
-            vk.setRoster(new Roster(groups, contacts), false);
+            vk.setRoster(groups(), contacts);
         } catch (Exception e) {
             ru.sawim.modules.DebugLog.panic("Vk processContacts", e);
         }
