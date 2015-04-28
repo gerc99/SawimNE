@@ -17,7 +17,7 @@ import protocol.mrim.Mrim;
 import protocol.xmpp.Xmpp;
 import ru.sawim.R;
 import ru.sawim.comm.StringConvertor;
-import ru.sawim.io.Storage;
+import ru.sawim.io.BlobStorage;
 import ru.sawim.models.XStatusesAdapter;
 import ru.sawim.widget.Util;
 
@@ -29,6 +29,9 @@ import ru.sawim.widget.Util;
  * To change this template use File | Settings | File Templates.
  */
 public class XStatusesView extends DialogFragment {
+
+    private static final String STORAGE_PREFIX = "_xstatus";
+
     private XStatusesAdapter statusesAdapter;
     protected String[] xst_titles = new String[100];
     protected String[] xst_descs = new String[100];
@@ -87,7 +90,7 @@ public class XStatusesView extends DialogFragment {
 
     private void load() {
         try {
-            Storage storage = new Storage(getProtocolId() + "-xstatus");
+            BlobStorage storage = new BlobStorage(getProtocolId() + STORAGE_PREFIX);
             storage.open();
             storage.loadXStatuses(xst_titles, xst_descs);
             storage.close();
@@ -113,7 +116,7 @@ public class XStatusesView extends DialogFragment {
             xst_titles[xstatus] = StringConvertor.notNull(title);
             xst_descs[xstatus] = StringConvertor.notNull(desc);
             try {
-                Storage storage = new Storage(getProtocolId() + "-xstatus");
+                BlobStorage storage = new BlobStorage(getProtocolId() + STORAGE_PREFIX);
                 storage.open();
                 storage.saveXStatuses(xst_titles, xst_descs);
                 storage.close();

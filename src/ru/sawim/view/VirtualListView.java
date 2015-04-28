@@ -49,8 +49,6 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.virtual_list, container, false);
-        if (!Scheme.isSystemBackground())
-            v.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
         return v;
     }
 

@@ -22,9 +22,6 @@ public class RosterViewRoot extends LinearLayout {
         super(context);
         setOrientation(LinearLayout.VERTICAL);
         setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-        if (!Scheme.isSystemBackground()) {
-            setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
-        }
         addViewInLayout(progressBar, PROGRESS_BAR_INDEX, progressBar.getLayoutParams(), true);
         addViewInLayout(rosterView, VIEW_PAGER_INDEX, rosterView.getLayoutParams(), true);
     }

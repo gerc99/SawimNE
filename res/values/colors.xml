@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="goblinGreen">#c8c8c8</color>
+
+    <color name="colorPrimary">#ff384850</color>
+    <color name="colorPrimaryDark">#ff283339</color>
+    <color name="textColorPrimary">#ff000000</color>
+    <color name="windowBackground">#ffebebeb</color>
+    <color name="navigationBarColor">#000000</color>
+    <color name="colorAccent">#FF80AB</color>
 </resources>

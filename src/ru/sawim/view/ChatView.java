@@ -191,11 +191,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
         if (chatViewLayout.getParent() != null) {
             ((ViewGroup) chatViewLayout.getParent()).removeView(chatViewLayout);
         }
-        if (Scheme.isSystemBackground()) {
-            chatViewLayout.setBackgroundResource(Util.getSystemBackground(activity));
-        } else {
-            chatViewLayout.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
-        }
+
         chatBarLayout.update();
         chatViewLayout.update();
         chatViewLayout.getChatListsView().update();

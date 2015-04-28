@@ -1,6 +1,5 @@
 ﻿[Black Holo] ;;
 isBlack = true
-isSystemBackground = false
 0  = 0x000000
 1  = 0xFFFFFF
 2  = 0x555555

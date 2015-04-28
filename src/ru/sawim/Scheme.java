@@ -37,14 +37,13 @@ public class Scheme {
     public static final byte FONT_STYLE_BOLD = 1;
 
     private static boolean[] isBlack;
-    private static boolean[] isSystemBackground;
 
     private Scheme() {
     }
 
     private static final int[] baseTheme = {
             0xE4E4E4,
-            0x000000,
+            0xffebeb,
             0xc8c8c8,
             0xCB0000,
             0xCB0000,
@@ -78,7 +77,6 @@ public class Scheme {
         } catch (Exception ignored) {
         }
         isBlack = new boolean[themes.size() + 1];
-        isSystemBackground = new boolean[themes.size() + 1];
         themeNames = new String[themes.size() + 1];
         themeColors = new int[themes.size() + 1][];
 
@@ -87,7 +85,6 @@ public class Scheme {
         for (int i = 0; i < themes.size(); ++i) {
             Config config = (Config) themes.elementAt(i);
             isBlack[i + 1] = Boolean.valueOf(config.getValues()[0]);
-            isSystemBackground[i + 1] = Boolean.valueOf(config.getValues()[1]);
             themeNames[i + 1] = config.getName();
             themeColors[i + 1] = configToTheme(config);
         }
@@ -96,10 +93,6 @@ public class Scheme {
 
     public static boolean isBlack() {
         return isBlack[getThemeId()];
-    }
-
-    public static boolean isSystemBackground() {
-        return isSystemBackground[getThemeId()];
     }
 
     private static int[] configToTheme(Config config) {
