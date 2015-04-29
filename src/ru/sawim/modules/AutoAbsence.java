@@ -35,8 +35,8 @@ public final class AutoAbsence {
     }
 
     public final void updateTime() {
-        if (0 < activityOutTime && SawimApplication.isPaused() && SawimApplication.autoAbsenceTime > 0) {
-            if (activityOutTime < SawimApplication.getCurrentGmtTime()) {
+        if (0 < activityOutTime && SawimApplication.isPaused()) {
+            if (activityOutTime < SawimApplication.getCurrentGmtTime() / 1000) {
                 activityOutTime = -1;
                 away();
             }
@@ -102,7 +102,7 @@ public final class AutoAbsence {
     public final void userActivity() {
         if (!SawimApplication.isPaused()) {
             activityOutTime = SawimApplication.autoAbsenceTime > 0
-                    ? SawimApplication.getCurrentGmtTime() + SawimApplication.autoAbsenceTime
+                    ? SawimApplication.getCurrentGmtTime() / 1000 + SawimApplication.autoAbsenceTime
                     : -1;
         }
     }

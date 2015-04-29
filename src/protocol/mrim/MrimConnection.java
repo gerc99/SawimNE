@@ -190,7 +190,7 @@ public final class MrimConnection extends ClientConnection {
 
         secondCounter++;
         if (4 == secondCounter) {
-            inTypingTask(SawimApplication.getCurrentGmtTime());
+            inTypingTask(SawimApplication.getCurrentGmtTime() / 1000);
             if (null != typingTo) {
                 outTypingCounter++;
                 if (9 == outTypingCounter) {
@@ -372,7 +372,7 @@ public final class MrimConnection extends ClientConnection {
     }
 
     private void beginTyping(MrimContact c, boolean flag) {
-        long now = SawimApplication.getCurrentGmtTime();
+        long now = SawimApplication.getCurrentGmtTime() / 1000;
         inTypingTask(now);
         for (int i = 0; i < typingTasks.length; ++i) {
             if (null == typingTasks[i]) {

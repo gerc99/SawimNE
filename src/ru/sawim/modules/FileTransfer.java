@@ -101,8 +101,8 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
     private void setData(byte[] fileBytes) {
         this.fileBytes = fileBytes;
 
-        long time = SawimApplication.getCurrentGmtTime();
-        boolean today = (SawimApplication.getCurrentGmtTime() - 24 * 60 * 60 < time);
+        long time = SawimApplication.getCurrentGmtTime() / 1000;
+        boolean today = (SawimApplication.getCurrentGmtTime() / 1000 - 24 * 60 * 60 < time);
         startTime = ru.sawim.comm.Util.getLocalDateString(time, today);
     }
 
@@ -161,7 +161,7 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
 
     public void processPhoto(BaseActivity activity, final byte[] data) {
         setData(data);
-        String timestamp = Util.getLocalDateString(SawimApplication.getCurrentGmtTime(), false);
+        String timestamp = Util.getLocalDateString(SawimApplication.getCurrentGmtTime() / 1000, false);
         String photoName = "photo-"
                 + timestamp.replace('.', '-').replace(' ', '-')
                 + ".jpg";

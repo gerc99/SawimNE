@@ -277,7 +277,7 @@ public class SawimApplication extends Application {
     }
 
     public static void minimize() {
-        ru.sawim.modules.AutoAbsence.getInstance().userActivity();
+        AutoAbsence.getInstance().userActivity();
         instance.paused = true;
     }
 

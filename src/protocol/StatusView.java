@@ -59,9 +59,9 @@ public final class StatusView {
         if (contact instanceof XmppServiceContact) {
             return;
         }
-        long signonTime = contact.chaingingStatusTime;
+        long signonTime = contact.chaingingStatusTime / 1000;
         if (0 < signonTime) {
-            long now = SawimApplication.getCurrentGmtTime();
+            long now = SawimApplication.getCurrentGmtTime() / 1000;
             boolean today = (now - 24 * 60 * 60) < signonTime;
             if (contact.isOnline()) {
                 addInfo(R.string.li_signon_time, Util.getLocalDateString(signonTime, today));

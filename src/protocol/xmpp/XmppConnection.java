@@ -917,7 +917,7 @@ public final class XmppConnection extends ClientConnection {
                     String jid = getXmpp().getItemByUID(Jid.getBareJid(from)).isConference() ? from : Jid.getBareJid(from);
                     //MagicEye.addAction(xmpp, jid, "last_activity_request");
 
-                    long time = SawimApplication.getCurrentGmtTime() - xmpp.getLastStatusChangeTime();
+                    long time = SawimApplication.getCurrentGmtTime() / 1000 - xmpp.getLastStatusChangeTime();
                     putPacketIntoQueue("<iq type='result' to='" + Util.xmlEscape(from)
                             + "' id='" + Util.xmlEscape(id) + "'>"
                             + "<query xmlns='jabber:iq:last' seconds='"
@@ -1217,19 +1217,35 @@ public final class XmppConnection extends ClientConnection {
             boolean autojoin = isTrue(item.getAttribute("autojoin"));
             String password = item.getAttribute("password");
 
-            XmppServiceContact conference = (XmppServiceContact) xmpp.getItemByUID(jid);
-            if (conference == null) {
-                conference = new XmppServiceContact(jid, name, true);
+            Contact contact = xmpp.getItemByUID(jid);
+            if (contact != null && contact.isConference()) {
+                XmppServiceContact conference = (XmppServiceContact) contact;
+                if (conference == null) {
+                    conference = new XmppServiceContact(jid, name, true);
+                }
+                conference.setName(Jid.getNick(jid));
+                conference.setMyName(nick);
+                conference.setTempFlag(false);
+                conference.setBooleanValue(Contact.CONTACT_NO_AUTH, false);
+                conference.setAutoJoin(autojoin);
+                conference.setPassword(password);
+                conference.setGroup(group);
+                contacts.put(conference.getUserId(), conference);
+                requestVCard(conference.getUserId(), null, conference.avatarHash);
+            } else {
+                Log.e("!isConference", "" + jid);
+                XmppServiceContact conference = new XmppServiceContact(jid, name, true);
+                conference.setName(Jid.getNick(jid));
+                conference.setMyName(nick);
+                conference.setTempFlag(false);
+                conference.setBooleanValue(Contact.CONTACT_NO_AUTH, false);
+                conference.setAutoJoin(autojoin);
+                conference.setPassword(password);
+                conference.setGroup(group);
+                contacts.put(conference.getUserId(), conference);
+                requestVCard(conference.getUserId(), null, conference.avatarHash);
             }
-            conference.setName(Jid.getNick(jid));
-            conference.setMyName(nick);
-            conference.setTempFlag(false);
-            conference.setBooleanValue(Contact.CONTACT_NO_AUTH, false);
-            conference.setAutoJoin(autojoin);
-            conference.setPassword(password);
-            conference.setGroup(group);
-            contacts.put(conference.getUserId(), conference);
-            requestVCard(conference.getUserId(), null, conference.avatarHash);
+
         }
         xmpp.setContactListAddition(group);
         for (Contact contact : contacts.values()) {
