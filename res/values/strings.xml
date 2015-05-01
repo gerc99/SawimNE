@@ -160,7 +160,7 @@
     <string name="del_group">Remove group</string>
     <string name="ms_xstatus_menu">XStatus menu</string>
 
-    <string name="all_contacts">All contacts</string>
+    <string name="all_contacts">All</string>
     <string name="online_contacts">Online</string>
     <string name="active_contacts">Active contacts</string>
     <string name="options_account">Accounts</string>

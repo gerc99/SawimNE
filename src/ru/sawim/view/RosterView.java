@@ -15,7 +15,6 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.*;
 import android.widget.*;
-import com.viewpagerindicator.TabPageIndicator;
 import ru.sawim.activities.SawimActivity;
 import ru.sawim.listener.OnUpdateRoster;
 import protocol.Contact;
@@ -36,6 +35,7 @@ import ru.sawim.roster.TreeBranch;
 import ru.sawim.roster.TreeNode;
 import ru.sawim.widget.MyImageButton;
 import ru.sawim.widget.MyListView;
+import ru.sawim.widget.SlidingTabLayout;
 import ru.sawim.widget.roster.RosterViewRoot;
 
 import java.util.ArrayList;
@@ -66,7 +66,7 @@ public class RosterView extends SawimFragment implements ListView.OnItemClickLis
     private AdapterView.AdapterContextMenuInfo contextMenuInfo;
     private Handler handler;
     private MyImageButton chatsImage;
-    private TabPageIndicator tabPageIndicator;
+    private SlidingTabLayout slidingTabLayout;
     private EditText queryEditText;
     private boolean isSearchMode;
 
@@ -105,12 +105,20 @@ public class RosterView extends SawimFragment implements ListView.OnItemClickLis
         progressBar.setVisibility(View.GONE);
 
         ViewPager viewPager = new ViewPager(activity);
-        tabPageIndicator = new TabPageIndicator(getActivity());
+        slidingTabLayout = new SlidingTabLayout(getActivity());
         ViewPager.LayoutParams viewPagerLayoutParams = new ViewPager.LayoutParams();
         viewPagerLayoutParams.height = ViewPager.LayoutParams.WRAP_CONTENT;
         viewPagerLayoutParams.width = ViewPager.LayoutParams.MATCH_PARENT;
         viewPager.setLayoutParams(viewPagerLayoutParams);
-        tabPageIndicator.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        slidingTabLayout.setDistributeEvenly(true); // To make the Tabs Fixed set this true, This makes the tabs Space Evenly in Available width
+        // Setting Custom Color for the Scroll bar indicator of the Tab View
+        slidingTabLayout.setCustomTabColorizer(new SlidingTabLayout.TabColorizer() {
+            @Override
+            public int getIndicatorColor(int position) {
+                return getResources().getColor(R.color.tabsScrollColor);
+            }
+        });
+        slidingTabLayout.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -173,9 +181,9 @@ public class RosterView extends SawimFragment implements ListView.OnItemClickLis
                              Bundle savedInstanceState) {
         if (rosterViewLayout.getParent() != null)
             ((ViewGroup) rosterViewLayout.getParent()).removeView(rosterViewLayout);
+        rosterViewLayout.getViewPager().setCurrentItem(RosterHelper.getInstance().getCurrPage());
+        slidingTabLayout.setViewPager(rosterViewLayout.getViewPager());
 
-        tabPageIndicator.setViewPager(rosterViewLayout.getViewPager());
-        tabPageIndicator.setCurrentItem(RosterHelper.getInstance().getCurrPage());
         return rosterViewLayout;
     }
 
@@ -184,7 +192,7 @@ public class RosterView extends SawimFragment implements ListView.OnItemClickLis
         super.onDetach();
         contextMenuInfo = null;
         handler = null;
-        tabPageIndicator = null;
+        slidingTabLayout = null;
         rosterViewLayout = null;
         chatsImage = null;
     }
@@ -313,9 +321,9 @@ public class RosterView extends SawimFragment implements ListView.OnItemClickLis
                 barLinearLayout.addView(queryEditText);
             } else {
                 if (RosterHelper.getInstance().getProtocolCount() > 0) {
-                    if (tabPageIndicator.getParent() != null)
-                        ((ViewGroup) tabPageIndicator.getParent()).removeView(tabPageIndicator);
-                    rosterBarLayout.addView(tabPageIndicator);
+                    if (slidingTabLayout.getParent() != null)
+                        ((ViewGroup) slidingTabLayout.getParent()).removeView(slidingTabLayout);
+                    rosterBarLayout.addView(slidingTabLayout);
                 }
             }
             if (chatsImage.getParent() != null)
@@ -334,9 +342,9 @@ public class RosterView extends SawimFragment implements ListView.OnItemClickLis
                 barLinearLayout.addView(queryEditText);
             } else {
                 if (RosterHelper.getInstance().getProtocolCount() > 0) {
-                    if (tabPageIndicator.getParent() != null)
-                        ((ViewGroup) tabPageIndicator.getParent()).removeView(tabPageIndicator);
-                    barLinearLayout.addView(tabPageIndicator);
+                    if (slidingTabLayout.getParent() != null)
+                        ((ViewGroup) slidingTabLayout.getParent()).removeView(slidingTabLayout);
+                    barLinearLayout.addView(slidingTabLayout);
                 }
             }
             if (chatsImage.getParent() != null)
@@ -345,7 +353,7 @@ public class RosterView extends SawimFragment implements ListView.OnItemClickLis
             actionBar.setCustomView(barLinearLayout);
         }
         barLinearLayout.setLayoutParams(barLinearLayoutLP);
-        tabPageIndicator.setLayoutParams(spinnerLP);
+        slidingTabLayout.setLayoutParams(spinnerLP);
         chatsImage.setLayoutParams(chatsImageLP);
     }
 

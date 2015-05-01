@@ -161,7 +161,7 @@
     <string name="rename_group">Переименовать группу</string>
     <string name="del_group">Удалить группу</string>
 
-    <string name="all_contacts">Все контакты</string>
+    <string name="all_contacts">Все</string>
     <string name="online_contacts">В сети</string>
     <string name="active_contacts">Активные</string>
     <string name="options_account">Учетные записи</string>

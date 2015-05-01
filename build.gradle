@@ -21,7 +21,6 @@ def mtmProject = project(':deps:mtm')
 
 dependencies {
     compile mtmProject
-    compile 'com.viewpagerindicator:library:2.4.1'
     compile 'com.android.support:support-v4:21.+'
     compile 'com.android.support:appcompat-v7:21.+'
 }
