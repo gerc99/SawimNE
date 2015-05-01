@@ -17,9 +17,7 @@ import ru.sawim.models.list.VirtualListModel;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.view.TextBoxView;
 
-import java.util.List;
 import java.util.Vector;
-
 
 public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
 
@@ -36,7 +34,6 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
 
     private VirtualList screen;
     private VirtualListModel model = new VirtualListModel();
-    private static VirtualListItem groupItem;
 
     private static final int COMMAND_ADD = 0;
     private static final int COMMAND_SET = 1;
@@ -55,15 +52,13 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
         isMucUsers(false);
         screen = VirtualList.getInstance();
         xmpp = protocol;
-        screen.setProtocol(xmpp);
         screen.setModel(model);
         screen.setCaption(JLocale.getString(R.string.service_discovery));
-        groupItem = model.createNewParser(true);
         screen.setClickListListener(new VirtualList.OnClickListListener() {
             @Override
             public void itemSelected(BaseActivity activity, int position) {
                 String jid = getCurrentJid(position);
-                if (xmpp.getItemByUID(jid).isConference()) {
+                if (jid.contains("@")) {
                     Contact c = xmpp.createTempContact(jid, true);
                     xmpp.addContact(c);
                     xmpp.getConnection().sendPresence((XmppServiceContact) c);
@@ -230,10 +225,10 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
         if (isConferenceList) {
             return jid;
         }
-        //if (xmpp.getConnection().getMucServer().equals(serverJid)) {
+        if (serverJid.contains("@")) {
             return Jid.getResource(jid, jid);
-        //}
-        //return Jid.makeReadableJid(jid);
+        }
+        return Jid.makeReadableJid(jid);
     }
 
     public void addItem(String name, String jid) {
@@ -254,9 +249,9 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
 
         model.addPar(item);
         jids.addElement(shortJid);
-        //if (0 == (jids.size() % 50)) {
-        screen.updateModel();
-        //}
+        if (0 == (jids.size() % 50)) {
+            screen.updateModel();
+        }
     }
 
     public void showIt(BaseActivity activity) {
@@ -296,23 +291,15 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
         totalCount = 0;
         shortView = false;
         serverJid = jid;
-        isConferenceList = (-1 == jid.indexOf('@'));
         clear();
         if (0 == jid.length()) {
-            /*groupItem.addGroup(0, SawimApplication.getContext().getString(R.string.my_conference), Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN, new VirtualListItem.OnGroupListListener() {
-                @Override
-                public void select() {
-                    groupItem.opened = !groupItem.opened;
-                    setServer("");
-                }
-            });
-            model.addPar(groupItem);*/
-            rebuild(groupItem);
+            rebuild();
             return;
         }
-        //if (xmpp.getConnection().getMucServer().startsWith(serverJid)) {
+        isConferenceList = (-1 == jid.indexOf('@'));
+        if (serverJid.contains("@")) {
             shortView = true;
-        //}
+        }
         VirtualListItem wait = model.createNewParser(false);
         wait.addDescription(JLocale.getString(R.string.wait),
                 Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
@@ -321,15 +308,13 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
         xmpp.getConnection().requestDiscoItems(serverJid);
     }
 
-    private void rebuild(VirtualListItem item) {
+    private void rebuild() {
         Config conf = new Config().loadLocale("/jabber-services.txt");
         boolean conferences = true;
-        //if (item.opened)
-        //    addBookmarks();
         for (int i = 0; i < conf.getKeys().length; ++i) {
-            if (conferences/* && !xmpp.getConnection().getMucServer().equals(conf.getKeys()[i])*/) {
-            //    conferences = false;
-            //    addBuildInList();
+            if (conferences && !conf.getKeys()[i].contains("@")) {
+                conferences = false;
+                addBuildInList();
             }
             addUnique(conf.getValues()[i], conf.getKeys()[i]);
         }
@@ -378,7 +363,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
             int currentIndex = getJidIndex(screen.getCurrItem()) + 1;
             for (int i = currentIndex; i < jids.size(); ++i) {
                 String jid = (String) jids.elementAt(i);
-                if (-1 != jid.indexOf(text)) {
+                if (jid.contains(text)) {
                     setCurrTextIndex(i);
                     break;
                 }

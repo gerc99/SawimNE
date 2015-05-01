@@ -51,7 +51,7 @@ public class XStatusesView extends DialogFragment {
         dialogBuilder.setView(dialogView);
         dialogBuilder.setTitle(R.string.ms_xstatus_menu);
         dialogBuilder.setInverseBackgroundForced(Util.isNeedToInverseDialogBackground());
-        statusesAdapter = new XStatusesAdapter(getActivity(), protocol);
+        statusesAdapter = new XStatusesAdapter(protocol);
         final ListView lv = (ListView) dialogView.findViewById(R.id.statuses_view);
         statusesAdapter.setSelectedItem(protocol.getProfile().xstatusIndex + 1);
         lv.setAdapter(statusesAdapter);

@@ -47,7 +47,7 @@ public class SmileysPopup {
         grid.setColumnWidth(Util.dipToPixels(activity, 60));
         grid.setNumColumns(-1);
 
-        final SmilesAdapter smilesAdapter = new SmilesAdapter(activity);
+        final SmilesAdapter smilesAdapter = new SmilesAdapter();
         grid.setAdapter(smilesAdapter);
         smilesAdapter.setOnItemClickListener(new SmilesAdapter.OnAdapterItemClickListener() {
             @Override

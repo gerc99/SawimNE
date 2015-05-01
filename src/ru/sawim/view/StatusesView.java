@@ -37,7 +37,7 @@ public class StatusesView extends DialogFragment {
         dialogBuilder.setTitle(R.string.ms_status_menu);
         dialogBuilder.setView(dialogView);
         dialogBuilder.setInverseBackgroundForced(Util.isNeedToInverseDialogBackground());
-        StatusesAdapter statusesAdapter = new StatusesAdapter(getActivity(), protocol, type);
+        StatusesAdapter statusesAdapter = new StatusesAdapter(protocol, type);
         ListView lv = (ListView) dialogView.findViewById(R.id.statuses_view);
         if (type == ADAPTER_STATUS)
             statusesAdapter.setSelectedItem(protocol.getProfile().statusIndex);

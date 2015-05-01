@@ -3,11 +3,11 @@ package ru.sawim.models.list;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
-import protocol.Protocol;
 import ru.sawim.activities.BaseActivity;
 import ru.sawim.view.VirtualListView;
 
 public class VirtualList {
+
     private VirtualListModel model;
     private String caption;
     private static VirtualList instance;
@@ -15,7 +15,6 @@ public class VirtualList {
     private OnBuildOptionsMenu buildOptionsMenu;
     private OnBuildContextMenu buildContextMenu;
     private OnClickListListener itemClickListListener;
-    private Protocol protocol;
 
     public static VirtualList getInstance() {
         if (instance == null) {
@@ -63,19 +62,10 @@ public class VirtualList {
             model = null;
         }
         caption = null;
-        protocol = null;
     }
 
     public void setVirtualListListener(OnVirtualListListener l) {
         virtualListListener = l;
-    }
-
-    public void setProtocol(Protocol protocol) {
-        this.protocol = protocol;
-    }
-
-    public Protocol getProtocol() {
-        return protocol;
     }
 
     public interface OnClickListListener {

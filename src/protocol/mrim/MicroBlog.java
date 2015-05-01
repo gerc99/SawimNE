@@ -38,7 +38,6 @@ public final class MicroBlog implements TextBoxView.TextBoxListener {
     public void activate(BaseActivity activity) {
         list = VirtualList.getInstance();
         list.setCaption(JLocale.getString(R.string.microblog));
-        list.setProtocol(mrim);
         list.setModel(model);
         list.setClickListListener(new VirtualList.OnClickListListener() {
             @Override

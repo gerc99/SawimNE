@@ -106,6 +106,7 @@ public class VirtualListItem {
     }
 
     public void addBr() {
+        itemSelectable = false;
         descStr = "\n";
     }
 

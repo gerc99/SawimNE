@@ -24,12 +24,10 @@ import ru.sawim.icons.Icon;
  */
 public class XStatusesAdapter extends BaseAdapter {
 
-    private Context baseContext;
     private XStatusInfo statusInfo;
     private int selectedItem;
 
-    public XStatusesAdapter(Context context, Protocol p) {
-        baseContext = context;
+    public XStatusesAdapter(Protocol p) {
         statusInfo = p.getXStatusInfo();
     }
 
@@ -57,7 +55,7 @@ public class XStatusesAdapter extends BaseAdapter {
         ItemWrapper wr;
         View row = convView;
         if (row == null) {
-            LayoutInflater inf = LayoutInflater.from(baseContext);
+            LayoutInflater inf = LayoutInflater.from(viewGroup.getContext());
             row = inf.inflate(R.layout.status_item, null);
             wr = new ItemWrapper(row);
             row.setTag(wr);

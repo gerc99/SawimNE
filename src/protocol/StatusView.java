@@ -128,7 +128,6 @@ public final class StatusView {
     public void init(Protocol p, Contact c) {
         list = VirtualList.getInstance();
         model = new VirtualListModel();
-        list.setProtocol(p);
         list.setModel(model);
         list.setOnBuildContextMenu(new VirtualList.OnBuildContextMenu() {
             @Override

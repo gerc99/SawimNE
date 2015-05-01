@@ -38,7 +38,6 @@ public final class AffiliationListConf implements FormListener, TextBoxView.Text
         xmpp = protocol;
         searchBox = new TextBoxView();
         screen.setCaption(JLocale.getString(R.string.conf_aff_list));
-        screen.setProtocol(protocol);
         screen.setModel(model);
         screen.setClickListListener(new VirtualList.OnClickListListener() {
             @Override

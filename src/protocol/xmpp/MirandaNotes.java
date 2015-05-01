@@ -39,7 +39,6 @@ public final class MirandaNotes {
         model = new VirtualListModel();
         screen.setCaption(JLocale.getString(R.string.notes));
         xmpp = protocol;
-        screen.setProtocol(xmpp);
         screen.setModel(model);
         screen.setBuildOptionsMenu(new VirtualList.OnBuildOptionsMenu() {
             @Override

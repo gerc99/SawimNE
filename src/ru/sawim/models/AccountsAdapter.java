@@ -25,12 +25,6 @@ import ru.sawim.roster.RosterHelper;
  */
 public class AccountsAdapter extends BaseAdapter {
 
-    private final Context baseContext;
-
-    public AccountsAdapter(Context context) {
-        baseContext = context;
-    }
-
     @Override
     public int getCount() {
         return Options.getAccountCount();
@@ -50,7 +44,7 @@ public class AccountsAdapter extends BaseAdapter {
     public View getView(int position, View convView, ViewGroup viewGroup) {
         ItemWrapper wr;
         if (convView == null) {
-            LayoutInflater inf = LayoutInflater.from(baseContext);
+            LayoutInflater inf = LayoutInflater.from(viewGroup.getContext());
             convView = inf.inflate(R.layout.accounts_list_item, null);
             wr = new ItemWrapper(convView);
             convView.setTag(wr);

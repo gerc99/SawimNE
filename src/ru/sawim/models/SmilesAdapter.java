@@ -20,12 +20,10 @@ import ru.sawim.modules.Emotions;
  */
 public class SmilesAdapter extends BaseAdapter {
 
-    private Context baseContext;
     Emotions emotions;
     private OnAdapterItemClickListener onItemClickListener;
 
-    public SmilesAdapter(Context context) {
-        baseContext = context;
+    public SmilesAdapter() {
         emotions = Emotions.instance;
     }
 
@@ -48,7 +46,7 @@ public class SmilesAdapter extends BaseAdapter {
     public View getView(int i, View convView, ViewGroup viewGroup) {
         ItemWrapper wr;
         if (convView == null) {
-            convView = new ImageView(baseContext) {
+            convView = new ImageView(viewGroup.getContext()) {
                 @Override
                 protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
                     setMeasuredDimension(View.MeasureSpec.getSize(widthMeasureSpec), View.MeasureSpec.getSize(widthMeasureSpec));

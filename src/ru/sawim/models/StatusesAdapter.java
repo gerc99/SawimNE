@@ -27,15 +27,13 @@ import ru.sawim.view.StatusesView;
  */
 public class StatusesAdapter extends BaseAdapter {
 
-    private Context baseContext;
     private Protocol protocol;
     StatusInfo statusInfo;
 
     private int type;
     private int selectedItem;
 
-    public StatusesAdapter(Context context, Protocol p, int type) {
-        baseContext = context;
+    public StatusesAdapter(Protocol p, int type) {
         protocol = p;
         statusInfo = protocol.getStatusInfo();
         this.type = type;
@@ -69,7 +67,7 @@ public class StatusesAdapter extends BaseAdapter {
         ItemWrapper wr;
         View row = convView;
         if (row == null) {
-            LayoutInflater inf = LayoutInflater.from(baseContext);
+            LayoutInflater inf = LayoutInflater.from(viewGroup.getContext());
             row = inf.inflate(R.layout.status_item, null);
             wr = new ItemWrapper(row);
             row.setTag(wr);

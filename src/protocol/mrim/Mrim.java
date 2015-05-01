@@ -320,7 +320,6 @@ public class Mrim extends Protocol {
             }
             VirtualList tl = VirtualList.getInstance();
             tl.setCaption(JLocale.getString(R.string.list_of_users));
-            tl.setProtocol(this);
             tl.setModel(list);
             tl.show(activity);
             tl.updateModel();

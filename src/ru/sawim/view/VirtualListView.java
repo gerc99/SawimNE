@@ -57,18 +57,16 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
         super.onActivityCreated(savedInstanceState);
         Activity currentActivity = getActivity();
         currentActivity.setTitle(list.getCaption());
-        final VirtualListAdapter adapter = new VirtualListAdapter(currentActivity, list);
+        final VirtualListAdapter adapter = new VirtualListAdapter();
         lv = (MyListView) currentActivity.findViewById(R.id.list_view);
         lv.setAdapter(adapter);
         lv.setOnItemClickListener(new ListView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                for (int i = 0; i < list.getModel().elements.size(); ++i) {
-                    VirtualListItem item = adapter.getItem(i);
-                    if (item.getGroupListListener() != null) {
-                        item.getGroupListListener().select();
-                        return;
-                    }
+                VirtualListItem item = adapter.getItem(position);
+                if (item.getGroupListListener() != null) {
+                    item.getGroupListListener().select();
+                    return;
                 }
                 if (list.getClickListListener() != null)
                     list.getClickListListener().itemSelected((BaseActivity) getActivity(), position);

@@ -28,16 +28,10 @@ import java.util.List;
  */
 public class VirtualListAdapter extends BaseAdapter {
 
-    private Context baseContext;
-    private VirtualList list;
-    private LayoutInflater inf;
     private List<VirtualListItem> items = new ArrayList<VirtualListItem>();
     private int selectedItem = -1;
 
-    public VirtualListAdapter(Context context, VirtualList list) {
-        this.baseContext = context;
-        this.list = list;
-        inf = LayoutInflater.from(baseContext);
+    public VirtualListAdapter() {
     }
 
     public void refreshList(List<VirtualListItem> list) {
@@ -63,6 +57,11 @@ public class VirtualListAdapter extends BaseAdapter {
     }
 
     @Override
+    public boolean isEnabled(int position) {
+        return getItem(position).isItemSelectable();
+    }
+
+    @Override
     public long getItemId(int i) {
         return i;
     }
@@ -76,7 +75,7 @@ public class VirtualListAdapter extends BaseAdapter {
         ViewHolder holder;
         VirtualListItem element = getItem(i);
         if (convertView == null) {
-            convertView = inf.inflate(R.layout.virtual_list_item, null);
+            convertView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.virtual_list_item, null);
             holder = new ViewHolder();
             holder.descriptionLayout = (LinearLayout) convertView.findViewById(R.id.descriptionLayout);
             holder.labelView = (TextView) convertView.findViewById(R.id.label);

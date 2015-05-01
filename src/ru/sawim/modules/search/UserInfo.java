@@ -73,7 +73,6 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
         if (!searchResult) {
             addMenu();
         }
-        profileView.setProtocol(protocol);
         profileView.setModel(new VirtualListModel());
         profileView.setClickListListener(new VirtualList.OnClickListListener() {
             @Override
@@ -136,7 +135,6 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
                 protocol.getAvatar(this);
             }
         }
-        profileView.setProtocol(protocol);
         profileView.setModel(profile);
         profileView.updateModel();
     }
@@ -301,7 +299,6 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
         profileView.updateModel();
         profile.setInfoMessage(JLocale.getString(R.string.wait));
         addContextMenu();
-        profileView.setProtocol(protocol);
         profileView.setModel(profile);
         profileView.updateModel();
     }

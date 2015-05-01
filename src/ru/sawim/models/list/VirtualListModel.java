@@ -9,7 +9,6 @@ import ru.sawim.icons.Icon;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public final class VirtualListModel {
     public List<VirtualListItem> elements = new ArrayList<VirtualListItem>();
     private String header = null;

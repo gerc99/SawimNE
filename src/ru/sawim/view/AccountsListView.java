@@ -45,7 +45,7 @@ public class AccountsListView extends Fragment {
         super.onActivityCreated(savedInstanceState);
         SawimApplication.returnFromAcc = true;
         ListView accountsList = (ListView) getActivity().findViewById(R.id.AccountsList);
-        accountsListAdapter = new AccountsAdapter(getActivity());
+        accountsListAdapter = new AccountsAdapter();
         getActivity().setTitle(getString(R.string.options_account));
         accountsList.setCacheColorHint(0x00000000);
         accountsList.setAdapter(accountsListAdapter);
