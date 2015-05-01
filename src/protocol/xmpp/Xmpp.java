@@ -225,18 +225,24 @@ public final class Xmpp extends Protocol implements FormListener {
     public final Contact createContact(String jid, String name, boolean isConference) {
         name = (null == name) ? jid : name;
         jid = Jid.realJidToSawimJid(jid);
-
+        boolean isGate = (-1 == jid.indexOf('@'));
+        boolean isPrivate = (-1 != jid.indexOf('/'));
         if (isConference) {
-            XmppServiceContact c = new XmppServiceContact(jid, name, true);
+            XmppServiceContact c = new XmppServiceContact(jid, name, true, false);
             c.setGroup(getOrCreateGroup(c.getDefaultGroupName()));
             c.setMyName(Jid.getNick(getUserId()));
+            c.avatarHash = getStorage().getAvatarHash(c.getUserId());
             return c;
         }
-        boolean isPrivate = (-1 != jid.indexOf('/'));
+        if (isGate) {
+            XmppServiceContact c = new XmppServiceContact(jid, name, false, true);
+            c.avatarHash = getStorage().getAvatarHash(c.getUserId());
+            return c;
+        }
         if (isPrivate) {
             XmppServiceContact conf = (XmppServiceContact) getItemByUID(Jid.getBareJid(jid));
             if (null != conf) {
-                XmppServiceContact c = new XmppServiceContact(jid, name, true);
+                XmppServiceContact c = new XmppServiceContact(jid, name, true, false);
                 c.setPrivateContactStatus(conf);
                 c.setMyName(conf.getMyName());
                 c.avatarHash = getStorage().getAvatarHash(c.getUserId());

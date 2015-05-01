@@ -97,6 +97,9 @@ public class RosterStorage {
                     new String[]{protocol.getUserId()}, null, null, null);
             for (Contact contact : protocol.getContactItems().values()) {
                 Group group = protocol.getGroup(contact);
+                if (group == null) {
+                    group = protocol.getNotInListGroup();
+                }
                 ContentValues values = getRosterValues(protocol, group, contact);
                 SawimApplication.getDatabaseHelper().getWritableDatabase().insertWithOnConflict(storeName, null, values, SQLiteDatabase.CONFLICT_REPLACE);
             }

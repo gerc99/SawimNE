@@ -1218,34 +1218,21 @@ public final class XmppConnection extends ClientConnection {
             String password = item.getAttribute("password");
 
             Contact contact = xmpp.getItemByUID(jid);
+            XmppServiceContact conference;
             if (contact != null && contact.isConference()) {
-                XmppServiceContact conference = (XmppServiceContact) contact;
-                if (conference == null) {
-                    conference = new XmppServiceContact(jid, name, true);
-                }
-                conference.setName(Jid.getNick(jid));
-                conference.setMyName(nick);
-                conference.setTempFlag(false);
-                conference.setBooleanValue(Contact.CONTACT_NO_AUTH, false);
-                conference.setAutoJoin(autojoin);
-                conference.setPassword(password);
-                conference.setGroup(group);
-                contacts.put(conference.getUserId(), conference);
-                requestVCard(conference.getUserId(), null, conference.avatarHash);
+                conference = (XmppServiceContact) contact;
             } else {
-                Log.e("!isConference", "" + jid);
-                XmppServiceContact conference = new XmppServiceContact(jid, name, true);
-                conference.setName(Jid.getNick(jid));
-                conference.setMyName(nick);
-                conference.setTempFlag(false);
-                conference.setBooleanValue(Contact.CONTACT_NO_AUTH, false);
-                conference.setAutoJoin(autojoin);
-                conference.setPassword(password);
-                conference.setGroup(group);
-                contacts.put(conference.getUserId(), conference);
-                requestVCard(conference.getUserId(), null, conference.avatarHash);
+                conference = new XmppServiceContact(jid, name, true, false);
             }
-
+            conference.setName(Jid.getNick(jid));
+            conference.setMyName(nick);
+            conference.setTempFlag(false);
+            conference.setBooleanValue(Contact.CONTACT_NO_AUTH, false);
+            conference.setAutoJoin(autojoin);
+            conference.setPassword(password);
+            conference.setGroup(group);
+            contacts.put(conference.getUserId(), conference);
+            requestVCard(conference.getUserId(), null, conference.avatarHash);
         }
         xmpp.setContactListAddition(group);
         for (Contact contact : contacts.values()) {

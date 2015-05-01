@@ -38,10 +38,10 @@ public class XmppServiceContact extends XmppContact {
     private String myNick;
     private String baseMyNick;
 
-    public XmppServiceContact(String jid, String name, boolean isConference) {
+    public XmppServiceContact(String jid, String name, boolean isConference, boolean isGate) {
         super(jid, name);
 
-        isGate = Jid.isGate(jid);
+        this.isGate = isGate;
         if (isGate) {
             return;
         }
@@ -97,10 +97,6 @@ public class XmppServiceContact extends XmppContact {
 
     public boolean isSingleUserContact() {
         return isPrivate || isGate;
-    }
-
-    public void setPrivate(boolean isPrivate) {
-        this.isPrivate = isPrivate;
     }
 
     public boolean isConference() {

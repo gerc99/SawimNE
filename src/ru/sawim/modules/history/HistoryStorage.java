@@ -110,7 +110,7 @@ public class HistoryStorage {
         Cursor cursor = null;
         try {
             cursor = SawimApplication.getDatabaseHelper().getWritableDatabase().query(DatabaseHelper.TABLE_CHAT_HISTORY, null, WHERE_ACC_CONTACT_ID,
-                    new String[]{protocolId, uniqueUserId}, null, null, DatabaseHelper.DATE + (last ? " DESC" : " ASC") + " LIMIT 1");
+                    new String[]{protocolId, uniqueUserId}, null, null, DatabaseHelper.DATE + (last ? " DESC" : " ASC"));
             if (cursor.moveToLast()) {
                 do {
                     boolean isIncoming = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.INCOMING)) == 0;
@@ -149,18 +149,22 @@ public class HistoryStorage {
     public synchronized boolean hasLastMessage(Chat chat, Message message) {
         Contact contact = chat.getContact();
         boolean hasMessage = false;
-        Cursor cursor = getLastCursor();
+        Cursor cursor = null;
         try {
-            if (cursor != null) {
-                short rowData = cursor.getShort(cursor.getColumnIndex(DatabaseHelper.ROW_DATA));
-                MessData mess = Chat.buildMessage(contact, message, contact.isConference() ? message.getName() : chat.getFrom(message),
-                        false, Chat.isHighlight(message.getProcessedText(), contact.getMyName()));
-                MessData messFromDataBase = buildMessage(chat, cursor);
-                boolean isMessage = (rowData & MessData.PRESENCE) == 0
-                        && (rowData & MessData.SERVICE) == 0 && (rowData & MessData.PROGRESS) == 0;
-                if (isMessage) {
-                    hasMessage = hasMessage(mess, messFromDataBase);
-                }
+            cursor = SawimApplication.getDatabaseHelper().getWritableDatabase().query(DatabaseHelper.TABLE_CHAT_HISTORY, null, WHERE_ACC_CONTACT_ID,
+                    new String[]{protocolId, uniqueUserId}, null, null, DatabaseHelper.DATE + " DESC");
+            if (cursor.moveToLast()) {
+                do {
+                    short rowData = cursor.getShort(cursor.getColumnIndex(DatabaseHelper.ROW_DATA));
+                    MessData mess = Chat.buildMessage(contact, message, contact.isConference() ? message.getName() : chat.getFrom(message),
+                            false, Chat.isHighlight(message.getProcessedText(), contact.getMyName()));
+                    MessData messFromDataBase = buildMessage(chat, cursor);
+                    boolean isMessage = (rowData & MessData.PRESENCE) == 0
+                            && (rowData & MessData.SERVICE) == 0 && (rowData & MessData.PROGRESS) == 0;
+                    if (isMessage) {
+                        hasMessage = hasMessage(mess, messFromDataBase);
+                    }
+                } while (cursor.moveToPrevious());
             }
         } catch (Exception e) {
             DebugLog.panic(e);
