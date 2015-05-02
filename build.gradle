@@ -23,6 +23,7 @@ dependencies {
     compile mtmProject
     compile 'com.android.support:support-v4:21.+'
     compile 'com.android.support:appcompat-v7:21.+'
+    compile 'com.github.anrwatchdog:anrwatchdog:1.1.+'
 }
 
 android {

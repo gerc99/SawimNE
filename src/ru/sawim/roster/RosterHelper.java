@@ -449,7 +449,7 @@ public final class RosterHelper {
                 } else {
                     return Util.compareNodes(node1, node2);
                 }
-                return -1;
+                return 0;
             }
         });
     }

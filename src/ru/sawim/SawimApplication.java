@@ -11,6 +11,7 @@ import android.content.res.Configuration;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import com.github.anrwatchdog.ANRWatchDog;
 import de.duenndns.ssl.MemorizingTrustManager;
 import protocol.Protocol;
 import ru.sawim.comm.JLocale;
@@ -91,6 +92,7 @@ public class SawimApplication extends Application {
         VERSION = getVersion();
         Thread.setDefaultUncaughtExceptionHandler(ExceptionHandler.inContext(getContext()));
         super.onCreate();
+        new ANRWatchDog().start();
         databaseHelper = new DatabaseHelper(getApplicationContext());
         uiHandler = new Handler(Looper.getMainLooper());
         backgroundExecutor = Executors

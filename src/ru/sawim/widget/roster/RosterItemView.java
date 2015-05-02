@@ -1,10 +1,8 @@
 package ru.sawim.widget.roster;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.Typeface;
+import android.graphics.*;
+import android.support.annotation.NonNull;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.view.View;
@@ -29,6 +27,8 @@ public class RosterItemView extends View {
     public int itemNameColor;
     public int itemDescColor;
     public Typeface itemNameFont;
+
+    public int avatarBorderColor = -1;
 
     public Bitmap itemFirstImage = null;
     public Bitmap itemSecondImage = null;
@@ -186,10 +186,37 @@ public class RosterItemView extends View {
     public void buildDrawingCache(boolean autoScale) {
     }
 
+    private Bitmap getRoundedBitmap(Bitmap bitmap, int borderWidth, int borderColor) {
+        int bitmapWidth = bitmap.getWidth();
+        int bitmapHeight = bitmap.getHeight();
+
+        Bitmap output = Bitmap.createBitmap(bitmapWidth, bitmapHeight, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(output);
+
+        Paint paintBorder = new Paint();
+        paintBorder.setStyle(Paint.Style.STROKE);
+        paintBorder.setAntiAlias(true);
+        paintBorder.setStrokeWidth(borderWidth);
+        paintBorder.setColor(borderColor);
+
+        canvas.drawBitmap(bitmap, 0, 0, null);
+
+        float halfWidth = bitmapWidth / 2;
+        canvas.drawCircle(halfWidth, halfWidth, halfWidth - borderWidth / 2, paintBorder);
+        return output;
+    }
+
     @Override
-    public void draw(Canvas canvas) {
-        if (itemFirstImage != null)
-            canvas.drawBitmap(itemFirstImage, firstImageX, firstImageY, null);
+    public void draw(@NonNull Canvas canvas) {
+        if (itemFirstImage != null) {
+            Bitmap bitmap;
+            if (avatarBorderColor == -1) {
+                bitmap = itemFirstImage;
+            } else {
+                bitmap = getRoundedBitmap(itemFirstImage, (int) (3 * getResources().getDisplayMetrics().density), avatarBorderColor);
+            }
+            canvas.drawBitmap(bitmap, firstImageX, firstImageY, null);
+        }
         if (itemSecondImage != null)
             canvas.drawBitmap(itemSecondImage, secondImageX, secondImageY, null);
         if (itemThirdImage != null)

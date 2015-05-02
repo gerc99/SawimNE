@@ -36,6 +36,20 @@ abstract public class Contact implements TreeNode {
     public String avatarHash;
     private long lastMessageTransmitted;
 
+    public static int getStatusColor(byte status) {
+        switch (status) {
+            case StatusInfo.STATUS_OFFLINE:
+                return SawimApplication.getInstance().getResources().getColor(R.color.status_offline);
+            case StatusInfo.STATUS_ONLINE:
+                return SawimApplication.getInstance().getResources().getColor(R.color.status_online);
+            case StatusInfo.STATUS_AWAY:
+                return SawimApplication.getInstance().getResources().getColor(R.color.status_away);
+            case StatusInfo.STATUS_DND:
+                return SawimApplication.getInstance().getResources().getColor(R.color.status_dnd);
+        }
+        return SawimApplication.getInstance().getResources().getColor(R.color.status_offline);
+    }
+
     public final boolean isOnline() {
         return (StatusInfo.STATUS_OFFLINE != status);
     }

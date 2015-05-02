@@ -757,71 +757,68 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
         }
         unreadMessageCount = 0;
     }
-    private void loadStory(final boolean isScroll, final boolean isLoad) {
-        synchronized (getMessagesAdapter().getItems()) {
-            if (isOldChat) {
-                isOldChat = false;
-                return;
-            }
-            if (chat != null && getMessagesAdapter() != null) {
-                final boolean hasUnreadMessages = unreadMessageCount > 0;
-                final boolean isBottomScroll = chat.currentPosition == 0;
-                final boolean isFirstOpenChat = chat.currentPosition == -2;
-                int limit = HISTORY_MESSAGES_LIMIT;
-                if (chat.currentPosition > 0) {
-                    limit = chat.currentPosition;
-                } else if (unreadMessageCount > 0) {
-                    limit += unreadMessageCount;
-                }
 
-                boolean isAdded = false;
-                final int oldCount = getMessagesAdapter().getCount();
-                if (!isScroll && isLoad) {
-                    isAdded = chat.getHistory().addNextListMessages(getMessagesAdapter().getItems(), chat, limit, oldCount, true);
-                } else if (isScroll && !isLoad) {
-                    isAdded = chat.getHistory().addNextListMessages(getMessagesAdapter().getItems(), chat, HISTORY_MESSAGES_LIMIT, oldCount, true);
-                }
-                if (chat.getProtocol() instanceof Xmpp) {
-                    long time = chat.getHistory().getMessageTime(false);
-                    ((Xmpp) chat.getProtocol()).queryMessageArchiveManagement(chat.getContact(), 0, time - 1, new OnMoreMessagesLoaded() {
-                            @Override
-                            public void onLoaded() {
-                                if (getActivity() != null) {
-                                    getActivity().runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            setPositionAfterHistoryLoaded(hasUnreadMessages, isBottomScroll,
-                                                    isFirstOpenChat, isScroll, isLoad, true, oldCount);
-                                        }
-                                    });
-                                }
-                            }
-                        });
-                }
-                setPositionAfterHistoryLoaded(hasUnreadMessages, isBottomScroll,
-                        isFirstOpenChat, isScroll, isLoad, isAdded, oldCount);
+    private void loadStory(final boolean isScroll, final boolean isLoad) {
+        if (isOldChat) {
+            isOldChat = false;
+            return;
+        }
+        if (chat != null && getMessagesAdapter() != null) {
+            final boolean hasUnreadMessages = unreadMessageCount > 0;
+            final boolean isBottomScroll = chat.currentPosition == 0;
+            final boolean isFirstOpenChat = chat.currentPosition == -2;
+            int limit = HISTORY_MESSAGES_LIMIT;
+            if (chat.currentPosition > 0) {
+                limit = chat.currentPosition;
+            } else if (unreadMessageCount > 0) {
+                limit += unreadMessageCount;
             }
+
+            boolean isAdded = false;
+            final int oldCount = getMessagesAdapter().getCount();
+            if (!isScroll && isLoad) {
+                isAdded = chat.getHistory().addNextListMessages(getMessagesAdapter().getItems(), chat, limit, oldCount, true);
+            } else if (isScroll && !isLoad) {
+                isAdded = chat.getHistory().addNextListMessages(getMessagesAdapter().getItems(), chat, HISTORY_MESSAGES_LIMIT, oldCount, true);
+            }
+            if (chat.getProtocol() instanceof Xmpp) {
+                long time = chat.getHistory().getMessageTime(false);
+                ((Xmpp) chat.getProtocol()).queryMessageArchiveManagement(chat.getContact(), 0, time - 1, new OnMoreMessagesLoaded() {
+                    @Override
+                    public void onLoaded() {
+                        if (getActivity() != null) {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    setPositionAfterHistoryLoaded(hasUnreadMessages, isBottomScroll,
+                                            isFirstOpenChat, isScroll, isLoad, true, oldCount);
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+            setPositionAfterHistoryLoaded(hasUnreadMessages, isBottomScroll,
+                    isFirstOpenChat, isScroll, isLoad, isAdded, oldCount);
         }
     }
 
     private void addUnreadMessagesFromHistoryToList() {
-        synchronized (getMessagesAdapter().getItems()) {
-            if (unreadMessageCount == 0) return;
-            if (isOldChat) {
-                isOldChat = false;
+        if (unreadMessageCount == 0) return;
+        if (isOldChat) {
+            isOldChat = false;
+        }
+        boolean isBottomScroll = chat.currentPosition == 0;
+        getMessagesAdapter().setPosition(getMessagesAdapter().getCount());
+        boolean isAdded = chat.getHistory().addNextListMessages(getMessagesAdapter().getItems(), chat, unreadMessageCount, 0, false);
+        if (isAdded) {
+            getMessagesAdapter().notifyDataSetChanged();
+            if (isBottomScroll) {
+                MyListView chatListView = chatViewLayout.getChatListsView().getChatListView();
+                chatListView.setSelectionFromTop(getMessagesAdapter().getCount() - unreadMessageCount, chatListView.getHeight() / 4);
             }
-            boolean isBottomScroll = chat.currentPosition == 0;
-            getMessagesAdapter().setPosition(getMessagesAdapter().getCount());
-            boolean isAdded = chat.getHistory().addNextListMessages(getMessagesAdapter().getItems(), chat, unreadMessageCount, 0, false);
-            if (isAdded) {
-                getMessagesAdapter().notifyDataSetChanged();
-                if (isBottomScroll) {
-                    MyListView chatListView = chatViewLayout.getChatListsView().getChatListView();
-                    chatListView.setSelectionFromTop(getMessagesAdapter().getCount() - unreadMessageCount, chatListView.getHeight() / 4);
-                }
-                chat.currentPosition = -1;
-                unreadMessageCount = 0;
-            }
+            chat.currentPosition = -1;
+            unreadMessageCount = 0;
         }
     }
 

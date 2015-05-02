@@ -1,12 +1,10 @@
 package ru.sawim.icons;
 
-
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.text.TextUtils;
 import ru.sawim.SawimApplication;
 import ru.sawim.comm.LruCache;
-import ru.sawim.comm.StringConvertor;
 import ru.sawim.widget.Util;
 
 import java.io.*;
@@ -37,7 +35,8 @@ public class ImageCache {
         return localInstance;
     }
 
-    public Bitmap get(final File pathCacheFolder, Executor executor, final String hash, final Bitmap defaultImage, final OnImageLoadListener onImageLoadListener) {
+    public Bitmap get(final File pathCacheFolder, Executor executor, final String hash,
+                      final Bitmap defaultImage, final OnImageLoadListener onImageLoadListener) {
         Bitmap bitmap = defaultImage;
         if (!TextUtils.isEmpty(hash)) {
             bitmap = bitmapLruCache.get(hash);
@@ -52,32 +51,34 @@ public class ImageCache {
                         if (bitmap == null) {
                             File file = getFile(pathCacheFolder, hash);
                             if (file.exists()) {
-                                FileInputStream inputStream = null;
-                                try {
-                                    inputStream = new FileInputStream(file);
-                                } catch (FileNotFoundException e) {
-                                    e.printStackTrace();
-                                }
-                                byte fileContent[] = new byte[(int) file.length()];
-                                try {
-                                    if (inputStream != null) {
-                                        inputStream.read(fileContent);
+                                if (hash.length() == 1) {
+                                    String letter = hash;
+                                    bitmap = Avatars.getRoundedBitmap(letter, Avatars.getColorForName(letter), Color.WHITE, AVATAR_SIZE);
+                                    save(file, bitmap);
+                                } else {
+                                    FileInputStream inputStream = null;
+                                    try {
+                                        inputStream = new FileInputStream(file);
+                                    } catch (FileNotFoundException e) {
+                                        e.printStackTrace();
                                     }
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                } finally {
-                                    if (inputStream != null) {
-                                        try {
-                                            inputStream.close();
-                                        } catch (IOException ignore) {
+                                    byte fileContent[] = new byte[(int) file.length()];
+                                    try {
+                                        if (inputStream != null) {
+                                            inputStream.read(fileContent);
+                                        }
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    } finally {
+                                        if (inputStream != null) {
+                                            try {
+                                                inputStream.close();
+                                            } catch (IOException ignore) {
+                                            }
                                         }
                                     }
+                                    bitmap = Util.getAvatarBitmap(fileContent, AVATAR_SIZE);
                                 }
-                                bitmap = Util.getAvatarBitmap(fileContent, AVATAR_SIZE);
-                            } else if (hash.length() == 1) {
-                                String letter = hash;
-                                bitmap = Avatars.getSquareBitmap(letter, Avatars.getColorForName(letter), Color.WHITE, AVATAR_SIZE);
-                                save(file, bitmap);
                             }
                             if (bitmap != null) {
                                 bitmapLruCache.put(hash, bitmap);
@@ -98,12 +99,17 @@ public class ImageCache {
         File file = null;
         if (hash != null) {
             file = getFile(pathCacheFolder, hash);
-            bitmap = Util.getAvatarBitmap(avatarBytes, AVATAR_SIZE);
+            if (file.exists()) {
+                return true;
+            }
+            bitmap = Avatars.getRoundedBitmap(Util.getAvatarBitmap(avatarBytes, AVATAR_SIZE));
         }
         return save(file, bitmap);
     }
 
     public boolean save(File file, Bitmap bitmap) {
+        if (file == null) return false;
+        if (file.exists()) return true;
         if (bitmap != null) {
             OutputStream os = null;
             try {

@@ -57,6 +57,7 @@ public class RosterStorage {
                     boolean groupIsExpand = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.GROUP_IS_EXPAND)) == 1;
                     String userId = cursor.getString(cursor.getColumnIndex(DatabaseHelper.CONTACT_ID));
                     String userName = cursor.getString(cursor.getColumnIndex(DatabaseHelper.CONTACT_NAME));
+                    String avatarHash = cursor.getString(cursor.getColumnIndex(DatabaseHelper.AVATAR_HASH));
                     boolean isConference = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.IS_CONFERENCE)) == 1;
                     String conferenceMyNick = cursor.getString(cursor.getColumnIndex(DatabaseHelper.CONFERENCE_MY_NAME));
                     boolean conferenceIsAutoJoin = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.CONFERENCE_IS_AUTOJOIN)) == 1;
@@ -77,6 +78,7 @@ public class RosterStorage {
                         serviceContact.setMyName(conferenceMyNick);
                         serviceContact.setAutoJoin(conferenceIsAutoJoin);
                     }
+                    contact.avatarHash = avatarHash;
                     roster.getContactItems().put(contact.getUserId(), contact);
                 } while (cursor.moveToNext());
             }

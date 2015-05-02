@@ -26,6 +26,56 @@ public class Avatars {
         return output;
     }
 
+    public static Bitmap getRoundedBitmap2(Bitmap bitmap) {
+        int bitmapWidth = bitmap.getWidth();
+        int bitmapHeight = bitmap.getHeight();
+
+        Bitmap output = Bitmap.createBitmap(bitmapWidth, bitmapHeight, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(output);
+
+        final Rect rect = new Rect(0, 0, bitmapWidth, bitmapHeight);
+        RectF rectF = new RectF(rect);
+        Paint paint = new Paint();
+        paint.setAntiAlias(true);
+        paint.setDither(true);
+
+        BitmapShader shader = new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
+        paint.setShader(shader);
+
+        canvas.drawOval(rectF, paint);
+
+        return output;
+    }
+
+    public static Bitmap getRoundedBitmap(String letter, int backColor, int letterColor, int avatarSize) {
+        int bitmapWidth = avatarSize;
+        int bitmapHeight = avatarSize;
+
+        Bitmap output = Bitmap.createBitmap(bitmapWidth, bitmapHeight, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(output);
+
+        final Rect rect = new Rect(0, 0, bitmapWidth, bitmapHeight);
+        RectF rectF = new RectF(rect);
+        Paint paint = new Paint();
+        paint.setAntiAlias(true);
+        paint.setDither(true);
+        paint.setColor(backColor);
+
+        canvas.drawOval(rectF, paint);
+
+        Paint paintLetter = new Paint();
+        paintLetter.setColor(letterColor);
+        float target = (float) rect.height() * .6f;
+        paintLetter.setTextSize(target);
+        paintLetter.setAntiAlias(true);
+        paintLetter.setTextAlign(Paint.Align.CENTER);
+        Rect bounds = new Rect();
+        paintLetter.getTextBounds(letter, 0, letter.length(), bounds);
+        int y = (output.getHeight() + bounds.height()) / 2;
+        canvas.drawText(letter, rect.width() / 2, y, paintLetter);
+        return output;
+    }
+
     public static Bitmap getSquareBitmap(String letter, int backColor, int letterColor, int avatarSize) {
         Bitmap output = null;
         try {
@@ -43,7 +93,6 @@ public class Avatars {
             paintLetter.setAntiAlias(true);
             paintLetter.setTextAlign(Paint.Align.CENTER);
             Rect bounds = new Rect();
-            paintLetter.setTextAlign(Paint.Align.CENTER);
             paintLetter.getTextBounds(letter, 0, letter.length(), bounds);
             int y = (output.getHeight() + bounds.height()) / 2;
             canvas.drawRect(0, 0, avatarSize, avatarSize, paintMain);

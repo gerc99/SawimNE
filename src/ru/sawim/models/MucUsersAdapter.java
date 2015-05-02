@@ -6,12 +6,12 @@ import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import protocol.Contact;
 import protocol.xmpp.Xmpp;
 import protocol.xmpp.XmppContact;
 import protocol.xmpp.XmppServiceContact;
 import ru.sawim.*;
 import ru.sawim.comm.JLocale;
-import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
 import ru.sawim.icons.Icon;
 import ru.sawim.icons.ImageCache;
@@ -239,9 +239,10 @@ public class MucUsersAdapter extends BaseAdapter {
                         }
                     });
             rosterItemView.itemFirstImage = avatar;
+            rosterItemView.avatarBorderColor = Contact.getStatusColor(c.status);
         }
 
-        rosterItemView.itemSecondImage = protocol.getStatusInfo().getIcon(c.status).getImage().getBitmap();
+    //    rosterItemView.itemSecondImage = protocol.getStatusInfo().getIcon(c.status).getImage().getBitmap();
         rosterItemView.itemNameColor = Scheme.getColor(Scheme.THEME_TEXT);
         rosterItemView.itemNameFont = Typeface.DEFAULT;
         rosterItemView.itemName = c.resource;

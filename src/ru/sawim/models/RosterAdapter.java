@@ -343,10 +343,11 @@ public class RosterAdapter extends BaseAdapter implements View.OnClickListener {
                         }
                     });
             rosterItemView.itemFirstImage = avatar;
+            rosterItemView.avatarBorderColor = Contact.getStatusColor(item.getStatusIndex());
         }
-        Icon icStatus = item.getLeftIcon(p);
-        if (icStatus != null)
-            rosterItemView.itemSecondImage = icStatus.getImage().getBitmap();
+        //Icon icStatus = item.getLeftIcon(p);
+        //if (icStatus != null)
+        //    rosterItemView.itemSecondImage = icStatus.getImage().getBitmap();
         if (item.isTyping()) {
             rosterItemView.itemSecondImage = Message.getIcon(Message.ICON_TYPE).getBitmap();
         } else {

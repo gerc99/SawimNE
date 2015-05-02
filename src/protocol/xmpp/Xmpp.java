@@ -231,12 +231,10 @@ public final class Xmpp extends Protocol implements FormListener {
             XmppServiceContact c = new XmppServiceContact(jid, name, true, false);
             c.setGroup(getOrCreateGroup(c.getDefaultGroupName()));
             c.setMyName(Jid.getNick(getUserId()));
-            c.avatarHash = getStorage().getAvatarHash(c.getUserId());
             return c;
         }
         if (isGate) {
             XmppServiceContact c = new XmppServiceContact(jid, name, false, true);
-            c.avatarHash = getStorage().getAvatarHash(c.getUserId());
             return c;
         }
         if (isPrivate) {
@@ -245,12 +243,10 @@ public final class Xmpp extends Protocol implements FormListener {
                 XmppServiceContact c = new XmppServiceContact(jid, name, true, false);
                 c.setPrivateContactStatus(conf);
                 c.setMyName(conf.getMyName());
-                c.avatarHash = getStorage().getAvatarHash(c.getUserId());
                 return c;
             }
         }
         Contact contact = new XmppContact(jid, name);
-        contact.avatarHash = getStorage().getAvatarHash(contact.getUserId());
         return contact;
     }
 

@@ -13,4 +13,9 @@
     <color name="colorAccent">#ff6863ff</color>
 
     <color name="tabsScrollColor">#ff568c30</color>
+
+    <color name="status_offline">#ff434343</color>
+    <color name="status_online">#ff67bb6b</color>
+    <color name="status_away">#ff1b77d2</color>
+    <color name="status_dnd">#fff44437</color>
 </resources>
