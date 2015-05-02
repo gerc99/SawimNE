@@ -163,6 +163,9 @@ public class HistoryStorage {
                             && (rowData & MessData.SERVICE) == 0 && (rowData & MessData.PROGRESS) == 0;
                     if (isMessage) {
                         hasMessage = hasMessage(mess, messFromDataBase);
+                        if (hasMessage) {
+                            return true;
+                        }
                     }
                 } while (cursor.moveToPrevious());
             }
