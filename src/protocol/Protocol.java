@@ -381,6 +381,7 @@ abstract public class Protocol {
         }
         setStatusesOffline();
         closeConnection();
+
         RosterHelper.getInstance().updateProgressBar();
         RosterHelper.getInstance().updateRoster();
         SawimApplication.getInstance().updateConnectionState();
@@ -816,11 +817,17 @@ abstract public class Protocol {
                 } catch (Exception ignored) {
                 }
                 if (isConnected() || isConnecting()) {
+                    if (profile != null) {
+                        profile.statusIndex = StatusInfo.STATUS_OFFLINE;
+                    }
                     disconnect(false);
                     startConnection();
                 }
                 return;
             }
+        }
+        if (profile != null) {
+            profile.statusIndex = StatusInfo.STATUS_OFFLINE;
         }
         disconnect(false);
         showException(e);
