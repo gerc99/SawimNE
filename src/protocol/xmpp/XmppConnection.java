@@ -2006,19 +2006,6 @@ public final class XmppConnection extends ClientConnection {
 
             String auth = "<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' ";
 
-            String googleToken = null;
-
-            if (isMechanism(x2, "X-GOOGLE-TOKEN")) {
-
-                DebugLog.systemPrintln("[INFO-JABBER] Using X-GOOGLE-TOKEN");
-
-                isGTalk_ = true;
-                googleToken = getGoogleToken(getXmpp().getUserId(), getXmpp().getPassword());
-                if (null == googleToken) {
-                    throw new SawimException(111, 1);
-                }
-            }
-
             if (isMechanism(x2, "DIGEST-MD5")) {
 
                 DebugLog.systemPrintln("[INFO-JABBER] Using DIGEST-MD5");
@@ -2031,9 +2018,6 @@ public final class XmppConnection extends ClientConnection {
                 auth += Util.xmlEscape(scramSHA1.init(protocol.getUserId(), protocol.getPassword()));
                 auth += "</auth>";
 
-            } else if (null != googleToken) {
-                auth += "mechanism='X-GOOGLE-TOKEN'>" + googleToken + "</auth>";
-                /* PLAIN authentication */
             } else {
                 boolean canUsePlain = true;
                 canUsePlain = socket.isSecured();
@@ -2151,64 +2135,6 @@ public final class XmppConnection extends ClientConnection {
                         .append("\",qop=auth,response=").append(quote).append(hResp.getDigestHex())
                         .append(quote).append(",charset=utf-8").toString()
         ));
-    }
-
-
-    /**
-     * Generates X-GOOGLE-TOKEN response by communication with
-     * http://www.google.com
-     * (From mGTalk project)
-     *
-     * @param jid
-     * @param passwd
-     * @return
-     */
-    private String getGoogleToken(String jid, String passwd) {
-        try {
-            String escapedJid = Util.urlEscape(jid);
-            String first = "Email=" + escapedJid
-                    + "&Passwd=" + Util.urlEscape(passwd)
-                    + "&PersistentCookie=false&source=googletalk";
-            HttpURLConnection c = (HttpURLConnection) new URL("https://www.google.com:443/accounts/ClientAuth?" + first).openConnection();
-
-            DebugLog.systemPrintln("[INFO-JABBER] Connecting to www.google.com");
-
-            if (c.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                InputStream is = c.getInputStream();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-                String str = reader.readLine();
-                if (str.startsWith("SID=")) {
-                    String SID = str.substring(4, str.length());
-                    str = reader.readLine();
-                    String LSID = str.substring(5, str.length());
-                    first = "SID=" + SID + "&LSID=" + LSID + "&service=mail&Session=true";
-                    c.disconnect();
-                    is.close();
-                    c = (HttpURLConnection) new URL("https://www.google.com:443/accounts/IssueAuthToken?" + first).openConnection();
-
-                    DebugLog.systemPrintln("[INFO-JABBER] Next www.google.com connection");
-                    is = c.getInputStream();
-                    if (c.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                        BufferedReader reader2 = new BufferedReader(
-                                new InputStreamReader(is, "UTF-8"));
-
-                        str = reader2.readLine();
-                        c.disconnect();
-                        is.close();
-                        Util data = new Util();
-                        data.writeByte(0);
-                        data.writeUtf8String(Jid.getNick(jid));
-                        data.writeByte(0);
-                        data.writeUtf8String(str);
-                        String token = Util.base64encode(data.toByteArray());
-                        return token;
-                    }
-                }
-            }
-        } catch (Exception ex) {
-            DebugLog.systemPrintln("EX: " + ex.toString());
-        }
-        return null;
     }
 
     private void updateConfPrivate(XmppServiceContact conf, String resource) {
