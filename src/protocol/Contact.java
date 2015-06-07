@@ -68,6 +68,9 @@ abstract public class Contact implements TreeNode {
         return (byte) 0;
     }
 
+    public void setConference(boolean flag) {
+    }
+
     public boolean isConference() {
         return false;
     }
@@ -146,7 +149,7 @@ abstract public class Contact implements TreeNode {
         return statusText;
     }
 
-    protected final void setStatus(byte statusIndex, String text) {
+    public final void setStatus(byte statusIndex, String text) {
         if (!isOnline() && (StatusInfo.STATUS_OFFLINE != statusIndex)) {
             setTimeOfChaingingStatus(SawimApplication.getCurrentGmtTime());
         }
@@ -211,9 +214,14 @@ abstract public class Contact implements TreeNode {
         return ChatHistory.instance.getChat(this) != null;
     }
 
-    public final void updateChatState(Protocol protocol, Chat chat) {
+    public final void updateChatState(final Protocol protocol, final Chat chat) {
         if (null != chat) {
-            protocol.getStorage().updateUnreadMessagesCount(protocol.getUserId(), getUserId(), chat.getAllUnreadMessageCount());
+            SawimApplication.getExecutor().execute(new Runnable() {
+                @Override
+                public void run() {
+                    protocol.getStorage().updateUnreadMessagesCount(protocol.getUserId(), getUserId(), chat.getAllUnreadMessageCount());
+                }
+            });
         }
     }
 

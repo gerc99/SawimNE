@@ -501,10 +501,7 @@ public class RosterView extends SawimFragment implements ListView.OnItemClickLis
                 update();
                 getListView().smoothScrollToPosition(currProtocol);
             } else if (treeNode.getType() == TreeNode.GROUP) {
-                TreeBranch group = treeNode.getType() == TreeNode.PROTOCOL ?
-                        (TreeBranch) treeNode :
-                        RosterHelper.getGroupById(RosterHelper.getInstance().getProtocol(treeNode).getGroupItems(), treeNode.getGroupId());
-                if (group == null) group = (TreeBranch) treeNode;
+                Group group = RosterHelper.getInstance().getGroupWithContacts((Group) treeNode);
                 group.setExpandFlag(!group.isExpanded());
                 update();
             }

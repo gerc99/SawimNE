@@ -10,9 +10,7 @@ import ru.sawim.chat.message.PlainMessage;
 import ru.sawim.chat.message.SystemNotice;
 import ru.sawim.comm.JLocale;
 import ru.sawim.comm.StringConvertor;
-import ru.sawim.comm.Util;
 import ru.sawim.icons.Icon;
-import ru.sawim.io.BlobStorage;
 import ru.sawim.io.RosterStorage;
 import ru.sawim.modules.Answerer;
 import ru.sawim.modules.AntiSpam;
@@ -23,9 +21,7 @@ import ru.sawim.modules.search.UserInfo;
 import ru.sawim.roster.ProtocolBranch;
 import ru.sawim.roster.RosterHelper;
 
-import java.io.*;
 import java.util.Enumeration;
-import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -159,10 +155,10 @@ abstract public class Protocol {
     }
 
     public final void setRoster(ConcurrentHashMap<Integer, Group> groups, ConcurrentHashMap<String, Contact> contacts) {
-        setRoster(new Roster(groups, contacts), true);
+        setRoster(new Roster(groups, contacts));
     }
 
-    public final void setRoster(Roster roster, boolean needSave) {
+    public final void setRoster(Roster roster) {
         this.roster = roster;
         ChatHistory.instance.restoreContactsWithChat(this);
         Enumeration<Group> e = roster.getGroupItems().elements();
@@ -173,15 +169,12 @@ abstract public class Protocol {
         RosterHelper.getInstance().updateGroup(this, notInListGroup);
         if (RosterHelper.getInstance().getProtocolCount() == 0) return;
         RosterHelper.getInstance().updateRoster();
-        if (needSave)
-            safeSave();
     }
 
     public final void setContactListAddition(Group group) {
         RosterHelper.getInstance().updateGroup(this, group);
         RosterHelper.getInstance().updateGroup(this, notInListGroup);
         RosterHelper.getInstance().updateRoster();
-        safeSave();
     }
 
     public final boolean isConnecting() {
@@ -199,6 +192,7 @@ abstract public class Protocol {
             SawimApplication.getInstance().updateConnectionState();
             RosterHelper.getInstance().updateConnectionStatus();
             RosterHelper.getInstance().updateRoster();
+        //    safeLoad();
         } else if (0 == percent) {
             SawimApplication.getInstance().updateConnectionState();
             RosterHelper.getInstance().updateConnectionStatus();
@@ -242,39 +236,21 @@ abstract public class Protocol {
     }
 
     public final void safeLoad() {
+        SawimApplication.getExecutor().execute(new Runnable() {
+            @Override
+            public void run() {
+                load();
+            }
+        });
+    }
+
+    public final void load() {
         if ("".equals(getUserId())) {
-            setRoster(new Roster(), false);
+            setRoster(new Roster());
             return;
         }
-        if (isConnected()) {
-            return;
-        }
-        try {
-            storage.load(this);
-        } catch (Exception e) {
-            DebugLog.panic("roster load", e);
-            setRoster(new Roster(), false);
-        }
-    }
-
-    public final void needSave() {
-
-    }
-
-    public final boolean safeSave() {
-        storage.save(this);
-        return true;
-    }
-
-    protected void loadProtocolData(byte[] data) throws Exception {
-    }
-
-    protected byte[] saveProtocolData() throws Exception {
-        return new byte[0];
-    }
-
-    protected void saveContact(DataOutputStream out, Contact contact) throws Exception {
-
+        storage.load(Protocol.this);
+        RosterHelper.getInstance().updateRoster();
     }
 
     protected void s_removeContact(Contact contact) {
@@ -312,7 +288,7 @@ abstract public class Protocol {
         }
         contact.setName(name);
         ui_updateContact(contact);
-        needSave();
+        storage.save(this, contact, getGroup(contact));
     }
 
     abstract protected void s_moveContact(Contact contact, Group to);
@@ -332,7 +308,7 @@ abstract public class Protocol {
         s_addContact(contact);
         contact.setTempFlag(false);
         cl_addContact(contact);
-        needSave();
+        storage.save(this, contact, getGroup(contact));
         s_addedContact(contact);
     }
 
@@ -345,7 +321,7 @@ abstract public class Protocol {
     public final void removeGroup(Group group) {
         s_removeGroup(group);
         cl_removeGroup(group);
-        needSave();
+        storage.deleteGroup(this, group);
     }
 
     abstract protected void s_renameGroup(Group group, String name);
@@ -354,7 +330,7 @@ abstract public class Protocol {
         s_renameGroup(group, name);
         group.setName(name);
         cl_renameGroup(group);
-        needSave();
+        storage.updateGroup(this, group);
     }
 
     abstract protected void s_addGroup(Group group);
@@ -362,7 +338,7 @@ abstract public class Protocol {
     public final void addGroup(Group group) {
         s_addGroup(group);
         cl_addGroup(group);
-        needSave();
+        storage.addGroup(this, group);
     }
 
     abstract public boolean isConnected();
@@ -517,17 +493,13 @@ abstract public class Protocol {
     }
 
     public void setStatus(int statusIndex, String msg, boolean save) {
-        if (profile == null) {
-            disconnect(true);
-            return;
-        }
         boolean connected = StatusInfo.STATUS_OFFLINE != profile.statusIndex;
         boolean connecting = StatusInfo.STATUS_OFFLINE != statusIndex;
         if (connected && !connecting) {
             disconnect(true);
         }
         setOnlineStatus(statusIndex, msg, save);
-        if (!connected && connecting) {
+        if ((!connected && connecting) || (connected && connecting)) {
             connect();
         }
     }
@@ -586,6 +558,7 @@ abstract public class Protocol {
 
     public final void ui_changeContactStatus(Contact contact) {
         ui_updateContact(contact);
+        getStorage().save(this, contact, getGroup(contact));
     }
 
     public final void ui_updateContact(final Contact contact) {
@@ -654,7 +627,7 @@ abstract public class Protocol {
             if (isConnected()) {
                 s_removedContact(contact);
             }
-            needSave();
+            storage.deleteContact(this, contact);
         }
     }
 
@@ -817,17 +790,11 @@ abstract public class Protocol {
                 } catch (Exception ignored) {
                 }
                 if (isConnected() || isConnecting()) {
-                    if (profile != null) {
-                        profile.statusIndex = StatusInfo.STATUS_OFFLINE;
-                    }
                     disconnect(false);
                     startConnection();
                 }
                 return;
             }
-        }
-        if (profile != null) {
-            profile.statusIndex = StatusInfo.STATUS_OFFLINE;
         }
         disconnect(false);
         showException(e);
@@ -841,7 +808,6 @@ abstract public class Protocol {
         disconnect(false);
         userCloseConnection();
         ChatHistory.instance.unregisterChats(this);
-        safeSave();
         profile = null;
         roster.setNull();
         roster = null;
@@ -940,5 +906,9 @@ abstract public class Protocol {
             ChatHistory.instance.registerChat(chat);
         }
         return chat;
+    }
+
+    public boolean isStreamManagementSupported() {
+        return false;
     }
 }

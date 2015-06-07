@@ -12,6 +12,7 @@ import ru.sawim.roster.TreeNode;
 import ru.sawim.view.menu.MyMenu;
 
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 
@@ -189,31 +190,18 @@ public class XmppContact extends Contact {
         }
     }
 
-    public final List<SubContact> subcontacts = new CopyOnWriteArrayList<>();
+    public final ConcurrentHashMap<String, SubContact> subcontacts = new ConcurrentHashMap<>();
 
     private void removeSubContact(String resource) {
-        for (int i = subcontacts.size() - 1; i >= 0; --i) {
-            SubContact c = subcontacts.get(i);
-            if (c.resource.equals(resource)) {
-                c.status = StatusInfo.STATUS_OFFLINE;
-                c.statusText = null;
-                subcontacts.remove(i);
-                return;
-            }
-        }
+        subcontacts.remove(resource);
     }
 
     public SubContact getExistSubContact(String resource) {
-        for (int i = subcontacts.size() - 1; i >= 0; --i) {
-            SubContact c = subcontacts.get(i);
-            if (c.resource.equals(resource)) {
-                return c;
-            }
-        }
-        return null;
+        if (resource == null) return null;
+        return subcontacts.get(resource);
     }
 
-    protected SubContact getSubContact(Xmpp xmpp, String resource) {
+    public SubContact getSubContact(Xmpp xmpp, String resource) {
         SubContact c = getExistSubContact(resource);
         if (null != c) {
             return c;
@@ -222,7 +210,7 @@ public class XmppContact extends Contact {
         c.resource = resource;
         c.status = StatusInfo.STATUS_OFFLINE;
         c.avatarHash = xmpp.getStorage().getAvatarHash(getUserId() + "/" + resource);
-        subcontacts.add(c);
+        subcontacts.put(resource, c);
         return c;
     }
 
@@ -242,17 +230,16 @@ public class XmppContact extends Contact {
             return currentContact;
         }
         try {
-            currentContact = subcontacts.get(0);
+            currentContact = subcontacts.elements().nextElement();
             byte maxPriority = currentContact.priority;
-            for (int i = 1; i < subcontacts.size(); ++i) {
-                SubContact contact = subcontacts.get(i);
+            for (SubContact contact : subcontacts.values()) {
                 if (maxPriority < contact.priority) {
                     maxPriority = contact.priority;
                     currentContact = contact;
                 }
             }
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
         return currentContact;
     }
@@ -270,6 +257,7 @@ public class XmppContact extends Contact {
             if (resource.equals(currentResource)) {
                 currentResource = null;
             }
+            xmpp.getStorage().delete(xmpp, this, getExistSubContact(resource));
             removeSubContact(resource);
             if (0 == subcontacts.size()) {
                 setOfflineStatus();
@@ -281,6 +269,7 @@ public class XmppContact extends Contact {
             c.status = index;
             c.statusText = statusText;
             c.roleText = roleText;
+            xmpp.getStorage().save(xmpp, this, xmpp.getGroup(this), c);
         }
     }
 

@@ -48,9 +48,9 @@ public final class AdHoc implements FormListener, ControlStateListener {
 
     private String[] getResources() {
         String[] resources = new String[contact.subcontacts.size()];
-        for (int i = resources.length - 1; 0 <= i; --i) {
-            XmppContact.SubContact sub = contact.subcontacts.get(i);
-            resources[i] = sub.resource;
+        int i = 0;
+        for (XmppContact.SubContact sub : contact.subcontacts.values()) {
+            resources[++i] = sub.resource;
         }
         return resources;
     }
@@ -97,7 +97,7 @@ public final class AdHoc implements FormListener, ControlStateListener {
             }
 
         } else if (1 == contact.subcontacts.size()) {
-            XmppContact.SubContact sub = contact.subcontacts.get(0);
+            XmppContact.SubContact sub = contact.subcontacts.elements().nextElement();
             if (StringConvertor.isEmpty(sub.resource)) {
                 jid = contact.getUserId();
             } else {

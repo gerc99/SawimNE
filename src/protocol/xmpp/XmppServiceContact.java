@@ -219,7 +219,7 @@ public class XmppServiceContact extends XmppContact {
     }
 
     void nickOffline(Xmpp xmpp, String nick, int code, String reasone, String presenceUnavailable) {
-        StringBuffer textPresence = new StringBuffer();
+        StringBuilder textPresence = new StringBuilder();
         textPresence.append(": ").append(xmpp.getStatusInfo().getName(StatusInfo.STATUS_OFFLINE)).append(" ").append(presenceUnavailable);
         if (getMyName().equals(nick)) {
             if (isOnline()) {
@@ -245,8 +245,8 @@ public class XmppServiceContact extends XmppContact {
                 xmpp.addMessage(new SystemNotice(xmpp,
                         SystemNotice.SYS_NOTICE_ERROR, getUserId(), text));
             }
-            for (int i = 0; i < subcontacts.size(); ++i) {
-                subcontacts.get(i).status = StatusInfo.STATUS_OFFLINE;
+            for (XmppContact.SubContact contact : subcontacts.values()) {
+                contact.status = StatusInfo.STATUS_OFFLINE;
             }
             String startUin = getUserId() + '/';
             ConcurrentHashMap<String, Contact> contactList = xmpp.getContactItems();
@@ -314,13 +314,7 @@ public class XmppServiceContact extends XmppContact {
         if (StringConvertor.isEmpty(nick)) {
             return null;
         }
-        for (int i = 0; i < subcontacts.size(); ++i) {
-            XmppContact.SubContact contact = subcontacts.get(i);
-            if (nick.equals(contact.resource)) {
-                return contact;
-            }
-        }
-        return null;
+        return subcontacts.get(nick);
     }
 
     protected void initContextMenu(Protocol protocol, ContextMenu contactMenu) {
@@ -444,9 +438,9 @@ public class XmppServiceContact extends XmppContact {
             setClient(XmppClient.CLIENT_NONE, null);
         } else {
             if (subcontacts.isEmpty()) {
-                subcontacts.add(sc);
+                subcontacts.put(nick, sc);
             } else {
-                subcontacts.set(0, sc);
+                subcontacts.replace(nick, sc);
             }
             setStatus(sc.status, sc.statusText);
             setClient(sc.client, null);

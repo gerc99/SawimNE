@@ -17,7 +17,6 @@ import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
 import ru.sawim.icons.ImageCache;
 import ru.sawim.io.FileSystem;
-import ru.sawim.io.RosterStorage;
 import ru.sawim.listener.OnMoreMessagesLoaded;
 import ru.sawim.modules.DebugLog;
 import ru.sawim.modules.crypto.MD5;
@@ -43,6 +42,16 @@ public final class XmppConnection extends ClientConnection {
     public static final boolean DEBUGLOG = false;
     private static final int MESSAGE_COUNT_AFTER_CONNECT = 20;
 
+/*	String smSessionId = "";
+    boolean smSupported = false;
+    boolean smEnabled = false;
+    long smPacketsIn;
+    long smPacketsOut;*/
+
+    String rebindSessionId = "";
+    boolean rebindSupported = false;
+    boolean rebindEnabled = false;
+
     private static final String[] statusCodes = {
             "unavailable",
             "",
@@ -62,6 +71,7 @@ public final class XmppConnection extends ClientConnection {
 
     private static final String S_TEXT = "text";
     private static final String S_FROM = "from";
+    private static final String S_IQ = "iq";
     private static final String S_TO = "to";
     private static final String S_TYPE = "type";
     private static final String S_ERROR = "error";
@@ -137,6 +147,7 @@ public final class XmppConnection extends ClientConnection {
     private SASL_ScramSha1 scramSHA1;
     private MessageArchiveManagement messageArchiveManagement = new MessageArchiveManagement();
     private ServerFeatures serverFeatures = new ServerFeatures();
+    private List<String> rosterConferenceServers = new ArrayList<>();
 
     private String myAvatarHash = null;
 
@@ -188,19 +199,14 @@ public final class XmppConnection extends ClientConnection {
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
-        write(getOpenStreamXml(domain_));
-        readXmlNode(true);
-        parseAuth(readXmlNode(true));
+        openStreamXml();
     }
 
     private void setStreamTls() throws SawimException {
         setProgress(15);
         socket.startTls(SawimApplication.sc, domain_);
-        write(getOpenStreamXml(domain_));
-
         DebugLog.println("tls turn on");
-        readXmlNode(true); // "stream:stream"
-        parseAuth(readXmlNode(true));
+        openStreamXml();
     }
 
     public Xmpp getXmpp() {
@@ -226,10 +232,16 @@ public final class XmppConnection extends ClientConnection {
     }
 
     protected final void ping() throws SawimException {
+        //if (isSessionManagementEnabled()) {
+        //    XmppSession.getInstance().save(this);
+        //}
         write(pingPacket);
     }
 
     protected final void pingForPong() throws SawimException {
+        //if (isSessionManagementEnabled()) {
+        //    XmppSession.getInstance().save(this);
+        //}
         write(forPongPacket);
     }
 
@@ -258,7 +270,6 @@ public final class XmppConnection extends ClientConnection {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        //packets.remove(0);
         writePacket(packet);
     }
 
@@ -275,6 +286,8 @@ public final class XmppConnection extends ClientConnection {
     }
 
     protected final void closeSocket() {
+        if (!isSessionManagementEnabled())
+            loggedOut();
         if (socket != null) {
             socket.close();
             socket = null;
@@ -400,11 +413,39 @@ public final class XmppConnection extends ClientConnection {
 
         setProgress(30);
         socket.start();
-        requestDiscoServerItems();
-        requestConferenceInfo(domain_);
+		if (isSessionManagementEnabled()) {
+            usePong();
+            getXmpp().load();
+            getXmpp().s_updateOnlineStatus();
+            setProgress(100);
+        } else {
+			requestDiscoServerItems();
+			requestConferenceInfo(domain_);
+			setProgress(50);
+			usePong();
+			setProgress(60);
+        }
+    }
+	
+	private boolean tryRebind() throws SawimException {
         setProgress(50);
-        usePong();
-        setProgress(60);
+
+        write("<rebind xmlns='p1:rebind'><jid>" +
+                fullJid_ + "</jid>" +
+                "<sid>" + rebindSessionId + "</sid></rebind>");
+
+        XmlNode rebind = readXmlNode(true);
+        if (rebind != null && rebind.is("rebind")) {
+            DebugLog.systemPrintln("[INFO-JABBER] rebound session ID=" + rebindSessionId);
+            rebindEnabled = true;
+            XmppSession.getInstance().save(this);
+            XmppSession.getInstance().load(this);
+        //    getXmpp().safeLoad();
+            setAuthStatus(true);
+            return true;
+        }
+        DebugLog.systemPrintln("[INFO-JABBER] failed to rebind");
+        return false;
     }
 
     private boolean processInPacket() throws SawimException {
@@ -449,10 +490,152 @@ public final class XmppConnection extends ClientConnection {
         setAuthStatus(S_RESULT.equals(answer.getAttribute(S_TYPE)));
     }
 
+    private void openStreamXml() throws SawimException {
+        write(getOpenStreamXml(domain_));
+        readXmlNode(true); // "stream:stream"
+        parseAuth(readXmlNode(true));
+    }
+
+    private void saveRebindSessionId(XmlNode x) throws SawimException {
+        if (x.is("stream:stream")) {
+            XmppSession.getInstance().load(this);
+            if (rebindSupported) {
+                rebindSessionId = x.getId();
+                XmppSession.getInstance().save(this);
+                DebugLog.systemPrintln("[INFO-JABBER] rebind supported ID=" + rebindSessionId);
+            }
+            return;
+        }
+    }
+
+    private void parseStreamFeatures(XmlNode x) throws SawimException {
+        XmlNode x2;
+        x2 = x.getFirstNode("rebind", "p1:rebind");
+        if (x2 != null) {
+            rebindSupported = true;
+            XmppSession.getInstance().load(this);
+            if (tryRebind()) {
+                return;
+            }
+        }
+        x2 = x.getFirstNode("push", "p1:push");
+        if (x2 != null) {
+            XmppSession.getInstance().enableRebind(this);
+        }
+        if (0 == x.childrenCount()) {
+            nonSaslLogin();
+            return;
+        }
+
+        /*x2 = x.getFirstNode("sm", "urn:xmpp:sm:3");
+        if (null != x2) {
+            smSupported = true;
+        }*/
+
+        x2 = x.getFirstNode("starttls");
+        if (null != x2) {
+            DebugLog.println("starttls");
+            sendRequest("<starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls'/>");
+            return;
+        }
+        x2 = x.getFirstNode("compression");
+        if ((null != x2) && "zlib".equals(x2.getFirstNodeValue("method"))) {
+            sendRequest("<compress xmlns='http://jabber.org/protocol/compress'><method>zlib</method></compress>");
+            return;
+        }
+
+        x2 = x.getFirstNode("mechanisms");
+        if ((null != x2) && x2.contains("mechanism")) {
+            String auth = "<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' ";
+            String googleToken = null;
+            if (isMechanism(x2, "X-GOOGLE-TOKEN")) {
+                DebugLog.systemPrintln("[INFO-JABBER] Using X-GOOGLE-TOKEN");
+                isGTalk_ = true;
+                googleToken = getGoogleToken(getXmpp().getUserId(), getXmpp().getPassword());
+                if (null == googleToken) {
+                    throw new SawimException(111, 1);
+                }
+            }
+            if (isMechanism(x2, "DIGEST-MD5")) {
+                DebugLog.systemPrintln("[INFO-JABBER] Using DIGEST-MD5");
+                auth += "mechanism='DIGEST-MD5'/>";
+            } else if (isMechanism(x2, "SCRAM-SHA-1")) {
+                auth += "mechanism='SCRAM-SHA-1'>";
+                scramSHA1 = new SASL_ScramSha1();
+                auth += Util.xmlEscape(scramSHA1.init(protocol.getUserId(), protocol.getPassword()));
+                auth += "</auth>";
+            } else if (null != googleToken) {
+                auth += "mechanism='X-GOOGLE-TOKEN'>" + googleToken + "</auth>";
+                /* PLAIN authentication */
+            } else {
+                boolean canUsePlain = true;
+                canUsePlain = socket.isSecured();
+                if (canUsePlain && isMechanism(x2, "PLAIN")) {
+                    DebugLog.systemPrintln("[INFO-JABBER] Using PLAIN");
+                    auth += "mechanism='PLAIN'>";
+                    Util data = new Util();
+                    data.writeUtf8String(getXmpp().getUserId());
+                    data.writeByte(0);
+                    data.writeUtf8String(Jid.getNick(getXmpp().getUserId()));
+                    data.writeByte(0);
+                    data.writeUtf8String(getXmpp().getPassword());
+                    auth += Util.base64encode(data.toByteArray());
+                    auth += "</auth>";
+                } else if (canUsePlain && isGTalk_) {
+                    nonSaslLogin();
+                    return;
+                } else {
+                    setAuthStatus(false);
+                    return;
+                }
+            }
+            sendRequest(auth);
+            return;
+        }
+        /*if (smSupported) {
+            XmppSession.getInstance().load(this);
+            if (!smSessionId.equals("")) {
+                sendRequest("<resume xmlns='urn:xmpp:sm:3' previd='" + smSessionId + "' h='" + smPacketsIn + "' />");
+                return;
+            }
+        }*/
+        if (x.contains("bind")) {
+            resourceBinding();
+            return;
+        }
+        x2 = x.getFirstNode("auth", "http://jabber.org/features/iq-auth");
+        if (null != x2) {
+            nonSaslLogin();
+            return;
+        }
+    }
+
+    private void resourceBinding() throws SawimException {
+        DebugLog.systemPrintln("[INFO-JABBER] Send bind request");
+        sendRequest("<iq type='set' id='bind'>"
+                + "<bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'>"
+                + "<resource>" + Util.xmlEscape(resource) + "</resource>"
+                + "</bind>"
+                + "</iq>");
+    }
+
     private void loginParse(XmlNode x) throws SawimException {
         if (x.is("stream:features")) {
             parseStreamFeatures(x);
             return;
+        /*} else if (x.is("resumed")) {
+            XmppSession.getInstance().save(this);
+            setAuthStatus(true);
+            DebugLog.systemPrintln("[INFO-JABBER] Resumed session ID=" + smSessionId);
+        } else if (x.is("failed")) {
+            // expired session
+            DebugLog.systemPrintln("[INFO-JABBER] Failed to resume session ID=" + smSessionId);
+            setSessionManagementEnabled(false);
+            smSessionId = "";
+            smPacketsIn = 0;
+            smPacketsOut = 0;
+            XmppSession.getInstance().save(this);
+            resourceBinding();*/
         } else if (x.is("compressed")) {
             setStreamCompression();
             return;
@@ -480,6 +663,7 @@ public final class XmppConnection extends ClientConnection {
             DebugLog.systemPrintln("auth " + authorized_);
 
             sendRequest(getOpenStreamXml(domain_));
+            saveRebindSessionId(readXmlNode(true)); // "stream:stream"
             return;
 
         } else if (x.is("iq")) {
@@ -512,12 +696,22 @@ public final class XmppConnection extends ClientConnection {
 
     private void parse(XmlNode x) throws SawimException {
         if (x.is("iq")) {
+            //if (isSessionManagementEnabled()) {
+            //    smPacketsIn++;
+            //}
             parseIq(x);
 
         } else if (x.is("presence")) {
+            //if (isSessionManagementEnabled()) {
+            //    smPacketsIn++;
+            //}
             parsePresence(x);
 
         } else if (x.is("message")) {
+            //if (isSessionManagementEnabled()) {
+            //    smPacketsIn++;
+            //    XmppSession.getInstance().save(this);
+            //}
             parseMessage(x);
 
         } else if (x.is("stream:error")) {
@@ -525,8 +719,28 @@ public final class XmppConnection extends ClientConnection {
 
             XmlNode err = (null == x.childAt(0)) ? x : x.childAt(0);
             DebugLog.systemPrintln("[INFO-JABBER] Stream error!: " + err.name + "," + err.value);
-        }
+        /*} else if (x.is("r")) {
+            sendAck();
+        } else if (x.is("enabled")) {
+            setSessionManagementEnabled(true);
+            smSessionId = x.getAttribute("id");
+            XmppSession.getInstance().save(this);
+            DebugLog.systemPrintln("[INFO-JABBER] XmppSession management enabled with ID=" + smSessionId);
+        */}
     }
+
+    /*private void sendAck() {
+        putPacketIntoQueue("<a xmlns='urn:xmpp:sm:3' h='" + String.valueOf(smPacketsIn) + "'/>");
+    }*/
+
+    public boolean isSessionManagementEnabled() {
+        return /*smEnabled || */rebindEnabled;
+    }
+
+    /*public void setSessionManagementEnabled(boolean flag) {
+        smEnabled = flag;
+        XmppSession.getInstance().enable(this);
+    }*/
 
     private String generateId(String key) {
         return key + Util.uniqueValue();
@@ -561,38 +775,20 @@ public final class XmppConnection extends ClientConnection {
         if (null == errorNode) {
             DebugLog.println("Error without description is stupid");
         } else {
-            /*DebugLog.systemPrintln(
+            DebugLog.systemPrintln(
                     "[INFO-JABBER] <IQ> error received: " +
                     "Code=" + errorNode.getAttribute(S_CODE) + " " +
-                    "Value=" + getError(errorNode));*/
+                    "Value=" + getError(errorNode));
         }
-
-
         XmlNode query = iqNode.childAt(0);
         if (null == query) {
-
         } else if (S_VCARD.equals(query.name)) {
             loadVCard(null, from);
-
         } else if (S_QUERY.equals(query.name)) {
             String xmlns = query.getXmlns();
             if ("jabber:iq:register".equals(xmlns) && (null != xmppForm)) {
                 xmppForm.error(getError(errorNode));
                 xmppForm = null;
-
-            } else if ("jabber:iq:roster".equals(query.name)) {
-
-            } else if ("http://jabber.org/protocol/disco#items".equals(xmlns)) {
-                ServiceDiscovery disco = serviceDiscovery;
-                if (null != disco) {
-                    serviceDiscovery = null;
-                    disco.setError(getError(errorNode));
-                }
-                AdHoc commands = adhoc;
-                if ((null != commands) && commands.getJid().equals(from)) {
-                    adhoc = null;
-                    commands.addItems(null);
-                }
             }
         }
     }
@@ -615,12 +811,17 @@ public final class XmppConnection extends ClientConnection {
         if (IQ_TYPE_RESULT != iqType) {
             return;
         }
-        if (id.startsWith(S_VCARD)) {
-            loadVCard(null, from);
-        }
-        if ((null != xmppForm) && xmppForm.getId().equals(id)) {
-            xmppForm.success();
-            xmppForm = null;
+        if ("p1:rebind".equals(id)) {
+            //rebindEnabled = true;
+            DebugLog.systemPrintln("[INFO-JABBER] p1 session management enabled with id = " + rebindSessionId);
+        } else {
+            if (id.startsWith(S_VCARD)) {
+                loadVCard(null, from);
+            }
+            if ((null != xmppForm) && xmppForm.getId().equals(id)) {
+                xmppForm.success();
+                xmppForm = null;
+            }
         }
     }
 
@@ -631,21 +832,8 @@ public final class XmppConnection extends ClientConnection {
         if (id != null && packetCallbacks.containsKey(id)) {
             String myJid = Jid.getBareJid(fullJid_);
             final Pair<XmlNode, OnIqReceived> packetCallbackDuple = packetCallbacks.get(id);
-            if (packetCallbackDuple.first.getAttribute(S_TO).equals(myJid)) {
-                if (from.equals(myJid)) {
-                    packetCallbackDuple.second.onIqReceived(iq);
-                    packetCallbacks.remove(id);
-                } else {
-                    Log.e(LOG_TAG, myJid + "-" + from + ": ignoring spoofed iq packet");
-                }
-            } else {
-                if (from.equals(packetCallbackDuple.first.getAttribute(S_TO))) {
-                    packetCallbackDuple.second.onIqReceived(iq);
-                    packetCallbacks.remove(id);
-                } else {
-                    Log.e(LOG_TAG, myJid + "-" + from + ": ignoring spoofed iq packet");
-                }
-            }
+            packetCallbackDuple.second.onIqReceived(iq);
+            packetCallbacks.remove(id);
             return;
         }
         if (StringConvertor.isEmpty(id)) {
@@ -667,7 +855,7 @@ public final class XmppConnection extends ClientConnection {
             return;
         }
         String queryName = iqQuery.name;
-        Xmpp xmpp = getXmpp();
+        final Xmpp xmpp = getXmpp();
         if (S_QUERY.equals(queryName)) {
             String xmlns = iqQuery.getXmlns();
             if ("jabber:iq:roster".equals(xmlns)) {
@@ -677,14 +865,48 @@ public final class XmppConnection extends ClientConnection {
                 if ((IQ_TYPE_RESULT == iqType) && !rosterLoaded) {
                     rosterLoaded = true;
                     while (0 < iqQuery.childrenCount()) {
-                        XmlNode itemNode = iqQuery.popChildNode();
-                        String jid = itemNode.getAttribute(XmlNode.S_JID);
+                        final XmlNode itemNode = iqQuery.popChildNode();
+                        final String jid = itemNode.getAttribute(XmlNode.S_JID);
+                        /*requestIq(Jid.getDomain(jid), "http://jabber.org/protocol/disco#info", null, new OnIqReceived() {
+                            @Override
+                            public void onIqReceived(XmlNode iq) {
+                                String id = iq.getId();
+                                XmlNode iqQuery = iq.childAt(0);
+                                String from = StringConvertor.notNull(iq.getAttribute(S_FROM));
+                                byte iqType = getIqType(iq);
+                                while (0 < iqQuery.childrenCount()) {
+                                    XmlNode featureNode = iqQuery.popChildNode();
+                                    String feature = featureNode.getAttribute("var");
+                                    if (feature != null) {
+                                        switch (feature) {
+                                            case "http://jabber.org/protocol/muc":
+                                                if (!rosterConferenceServers.contains(from)) {
+                                                    rosterConferenceServers.add(from);
+                                                }
+                                                Contact c = xmpp.getItemByUID(jid);
+                                                c.setConference(true);
+                                                c.setBooleanValue(Contact.CONTACT_NO_AUTH, false);
+                                                c.setTempFlag(false);
+                                                XmppServiceContact conference = (XmppServiceContact) c;
+                                                if (conference.isAutoJoin()) {
+                                                    xmpp.join(conference);
+                                                }
+                                                xmpp.rejoin();
+
+                                                xmpp.safeSave();
+                                                RosterHelper.getInstance().updateGroup(xmpp, xmpp.getNotInListGroup());
+                                                RosterHelper.getInstance().updateRoster();
+                                                break;
+                                        }
+                                    }
+                                }
+                            }
+                        });*/
                         Contact contact = xmpp.getItemByUID(jid);
                         if (contact == null) {
                             contact = xmpp.createContact(jid, jid, false);
                         }
                         contact.setName(itemNode.getAttribute(XmlNode.S_NAME));
-
                         String groupName = itemNode.getFirstNodeValue(S_GROUP);
                         if (StringConvertor.isEmpty(groupName)) {
                             groupName = contact.getDefaultGroupName();
@@ -692,17 +914,17 @@ public final class XmppConnection extends ClientConnection {
                         Group g = xmpp.getOrCreateGroup(groupName);
                         contact.setGroup(g);
 
-                        String subscription = itemNode.getAttribute("subscription");
-                        contact.setBooleanValue(Contact.CONTACT_NO_AUTH, isNoAutorized(subscription));
                         if (!xmpp.getContactItems().contains(contact)) {
                             xmpp.getContactItems().put(contact.getUserId(), contact);
                         }
                         RosterHelper.getInstance().updateGroup(xmpp, g);
+                        String subscription = itemNode.getAttribute("subscription");
+                        contact.setBooleanValue(Contact.CONTACT_NO_AUTH, isNoAutorized(subscription));
+                        getXmpp().getStorage().save(getXmpp(), contact, g);
                         if (serverFeatures.hasMessageArchiveManagement()) {
                             //messageArchiveManagement.query(this, contact);
                         }
                     }
-                    getXmpp().safeSave();
                     RosterHelper.getInstance().updateGroup(xmpp, xmpp.getNotInListGroup());
                     RosterHelper.getInstance().updateRoster();
                     setProgress(70);
@@ -724,7 +946,10 @@ public final class XmppConnection extends ClientConnection {
                     setProgress(90);
                     getBookmarks();
                     putPacketIntoQueue("<iq type='get' id='getnotes'><query xmlns='jabber:iq:private'><storage xmlns='storage:rosternotes'/></query></iq>");
-                    setProgress(100);
+                    //if (smSupported && !isSessionManagementEnabled()) {
+                    //    putPacketIntoQueue("<enable xmlns='urn:xmpp:sm:3' resume='true' />");
+                    //}
+					setProgress(100);
 
                     if (serverFeatures.hasMessageArchiveManagement()) {
                         //messageArchiveManagement.catchup(this);
@@ -774,48 +999,6 @@ public final class XmppConnection extends ClientConnection {
                     write(sb.toString());
                     return;
                 }
-                if (IQ_TYPE_RESULT != iqType) {
-                    return;
-                }
-                serverFeatures.parse(iqQuery, iq.getId());
-                write(GET_ROSTER_XML);
-                enableCarbons();
-                String name = iqQuery.getFirstNodeAttribute("identity", XmlNode.S_NAME);
-                xmpp.setConferenceInfo(from, name);
-                return;
-
-            } else if ("http://jabber.org/protocol/disco#items".equals(xmlns)) {
-                if (IQ_TYPE_GET == iqType) {
-                    sendIqError(S_QUERY, xmlns, from, id);
-                    return;
-                }
-                if (serverFeatures.getServerDiscoItems().isEmpty()) {
-                    while (0 < iqQuery.childrenCount()) {
-                        String jid = iqQuery.popChildNode().getAttribute(XmlNode.S_JID);
-                        String discoId = generateId();
-                        requestConferenceInfo(jid, discoId);
-                        serverFeatures.getServerDiscoItems().put(discoId, jid);
-                    }
-                }
-                ServiceDiscovery disco = serviceDiscovery;
-                if (null != disco) {
-                    serviceDiscovery = null;
-                    disco.setTotalCount(iqQuery.childrenCount());
-                    while (0 < iqQuery.childrenCount()) {
-                        XmlNode item = iqQuery.popChildNode();
-                        String name = item.getAttribute(XmlNode.S_NAME);
-                        String jid = item.getAttribute(XmlNode.S_JID);
-                        disco.addItem(name, jid);
-                    }
-                    disco.update();
-                    return;
-                }
-                AdHoc commands = adhoc;
-                if ((null != commands) && commands.getJid().equals(from)) {
-                    adhoc = null;
-                    commands.addItems(iqQuery);
-                }
-                return;
             } else if ("http://jabber.org/protocol/muc#admin".equals(xmlns)) {
                 if (IQ_TYPE_GET == iqType) {
                     sendIqError(S_QUERY, xmlns, from, id);
@@ -833,17 +1016,6 @@ public final class XmppConnection extends ClientConnection {
                     String reasone = item.getFirstNodeValue("reason");
                     uslist.setAffiliation(affiliation);
                     uslist.addItem(reasone, jid);
-                }
-                return;
-            } else if ("jabber:iq:register".equals(xmlns)) {
-                if ((null != xmppForm) && xmppForm.getId().equals(id)) {
-                    if (xmppForm.isWaiting()) {
-                        xmppForm.loadFromXml(iqQuery, iqQuery);
-                        xmppForm = null;
-
-                    } else {
-                        processEmptyId(id, iqType, from);
-                    }
                 }
                 return;
             } else if ("jabber:iq:private".equals(xmlns)) {
@@ -875,26 +1047,6 @@ public final class XmppConnection extends ClientConnection {
                 }
                 return;
             } else if ("jabber:iq:version".equals(xmlns)) {
-                if (IQ_TYPE_RESULT == iqType) {
-                    String name = iqQuery.getFirstNodeValue(XmlNode.S_NAME);
-                    String ver = iqQuery.getFirstNodeValue("version");
-                    String os = iqQuery.getFirstNodeValue("os");
-                    name = Util.notUrls(name);
-                    ver = Util.notUrls(ver);
-                    os = Util.notUrls(os);
-                    String jid = getXmpp().getItemByUID(Jid.getBareJid(from)).isConference() ? from : Jid.getBareJid(from);
-
-                    DebugLog.println("ver " + jid + " " + name + " " + ver + " in " + os);
-
-                    StatusView sv = RosterHelper.getInstance().getStatusView();
-                    Contact c = sv.getContact();
-
-                    if ((null != c) && c.getUserId().equals(jid)) {
-                        sv.setClientVersion(name + " " + ver + " " + os);
-                        getXmpp().updateStatusView(sv, c);
-                    }
-                    return;
-                }
                 String platform = Util.xmlEscape(SawimApplication.PHONE);
                 if (IQ_TYPE_GET == iqType) {
                     putPacketIntoQueue("<iq type='result' to='"
@@ -907,11 +1059,10 @@ public final class XmppConnection extends ClientConnection {
                             + platform
                             + "</os></query></iq>");
 
-                    String jid = getXmpp().getItemByUID(Jid.getBareJid(from)).isConference() ? from : Jid.getBareJid(from);
+                    //String jid = getXmpp().getItemByUID(Jid.getBareJid(from)).isConference() ? from : Jid.getBareJid(from);
                     //MagicEye.addAction(xmpp, jid, "get_version");
                 }
                 return;
-
             } else if ("jabber:iq:last".equals(xmlns)) {
                 if (IQ_TYPE_GET == iqType) {
                     String jid = getXmpp().getItemByUID(Jid.getBareJid(from)).isConference() ? from : Jid.getBareJid(from);
@@ -933,12 +1084,7 @@ public final class XmppConnection extends ClientConnection {
                 return;
 
             } else if ("http://jabber.org/protocol/muc#owner".equals(xmlns)) {
-                if (IQ_TYPE_RESULT == iqType) {
-                    if (null != xmppForm) {
-                        xmppForm.loadFromXml(iqQuery, iq);
-                        xmppForm = null;
-                    }
-                }
+
             }
 
         } else if (S_TIME.equals(queryName)) {
@@ -1000,10 +1146,6 @@ public final class XmppConnection extends ClientConnection {
         if (IQ_TYPE_GET == iqType) {
             sendIqError(iqQuery.name, iqQuery.getXmlns(), from, id);
         }
-    }
-
-    public String getMucServer() {
-        return serverFeatures.mucServer();
     }
 
     private void loadMirandaNotes(XmlNode storage) {
@@ -1232,6 +1374,7 @@ public final class XmppConnection extends ClientConnection {
             conference.setPassword(password);
             conference.setGroup(group);
             contacts.put(conference.getUserId(), conference);
+            getXmpp().getStorage().save(getXmpp(), conference, group);
             requestVCard(conference.getUserId(), null, conference.avatarHash);
         }
         xmpp.setContactListAddition(group);
@@ -1250,7 +1393,7 @@ public final class XmppConnection extends ClientConnection {
         if (!Options.getBoolean(JLocale.getString(R.string.pref_users_avatars))) return;
         if (newAvatarHash == null) {
             if (avatarHash == null) {
-                getVCard(id);
+            //    getVCard(id);
             }
         } else {
             if (!newAvatarHash.equals(avatarHash)) {
@@ -1627,7 +1770,7 @@ public final class XmppConnection extends ClientConnection {
         boolean isError = S_ERROR.equals(type);
 
         final Contact contact = getXmpp().getItemByUID(Jid.getBareJid(fullJid));
-        boolean isConference = contact.isConference();
+        boolean isConference = contact != null && contact.isConference();
         if (!isGroupchat) {
             fullJid = Jid.realJidToSawimJid(fullJid);
         }
@@ -1981,101 +2124,7 @@ public final class XmppConnection extends ClientConnection {
         }
         return false;
     }
-
-    private void parseStreamFeatures(XmlNode x) throws SawimException {
-        XmlNode x2;
-        if (0 == x.childrenCount()) {
-            nonSaslLogin();
-            return;
-        }
-
-        x2 = x.getFirstNode("starttls");
-        if (null != x2) {
-            DebugLog.println("starttls");
-            sendRequest("<starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls'/>");
-            return;
-        }
-        x2 = x.getFirstNode("compression");
-        if ((null != x2) && "zlib".equals(x2.getFirstNodeValue("method"))) {
-            sendRequest("<compress xmlns='http://jabber.org/protocol/compress'><method>zlib</method></compress>");
-            return;
-        }
-
-        x2 = x.getFirstNode("mechanisms");
-        if ((null != x2) && x2.contains("mechanism")) {
-
-            String auth = "<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' ";
-
-            String googleToken = null;
-
-            if (isMechanism(x2, "X-GOOGLE-TOKEN")) {
-
-                DebugLog.systemPrintln("[INFO-JABBER] Using X-GOOGLE-TOKEN");
-
-                isGTalk_ = true;
-                googleToken = getGoogleToken(getXmpp().getUserId(), getXmpp().getPassword());
-                if (null == googleToken) {
-                    throw new SawimException(111, 1);
-                }
-            }
-
-            if (isMechanism(x2, "DIGEST-MD5")) {
-
-                DebugLog.systemPrintln("[INFO-JABBER] Using DIGEST-MD5");
-
-                auth += "mechanism='DIGEST-MD5'/>";
-
-            } else if (isMechanism(x2, "SCRAM-SHA-1")) {
-                auth += "mechanism='SCRAM-SHA-1'>";
-                scramSHA1 = new SASL_ScramSha1();
-                auth += Util.xmlEscape(scramSHA1.init(protocol.getUserId(), protocol.getPassword()));
-                auth += "</auth>";
-
-            } else if (null != googleToken) {
-                auth += "mechanism='X-GOOGLE-TOKEN'>" + googleToken + "</auth>";
-                /* PLAIN authentication */
-            } else {
-                boolean canUsePlain = true;
-                canUsePlain = socket.isSecured();
-                if (canUsePlain && isMechanism(x2, "PLAIN")) {
-                    DebugLog.systemPrintln("[INFO-JABBER] Using PLAIN");
-                    auth += "mechanism='PLAIN'>";
-                    Util data = new Util();
-                    data.writeUtf8String(getXmpp().getUserId());
-                    data.writeByte(0);
-                    data.writeUtf8String(Jid.getNick(getXmpp().getUserId()));
-                    data.writeByte(0);
-                    data.writeUtf8String(getXmpp().getPassword());
-                    auth += Util.base64encode(data.toByteArray());
-                    auth += "</auth>";
-
-                } else if (canUsePlain && isGTalk_) {
-                    nonSaslLogin();
-                    return;
-                } else {
-                    setAuthStatus(false);
-                    return;
-                }
-            }
-            sendRequest(auth);
-            return;
-        }
-        if (x.contains("bind")) {
-            DebugLog.systemPrintln("[INFO-JABBER] Send bind request");
-            sendRequest("<iq type='set' id='bind'>"
-                    + "<bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'>"
-                    + "<resource>" + Util.xmlEscape(resource) + "</resource>"
-                    + "</bind>"
-                    + "</iq>");
-            return;
-        }
-        x2 = x.getFirstNode("auth", "http://jabber.org/features/iq-auth");
-        if (null != x2) {
-            nonSaslLogin();
-            return;
-        }
-    }
-
+	
     private void parseChallenge(XmlNode x) throws SawimException {
 
         DebugLog.systemPrintln("[INFO-JABBER] Received challenge");
@@ -2640,9 +2689,18 @@ public final class XmppConnection extends ClientConnection {
         putPacketIntoQueue("<presence type='" + Util.xmlEscape(type) + "' to='" + Util.xmlEscape(jid) + "'/>");
     }
 
-    private void requestIq(String jid, String xmlns, String id) {
-        putPacketIntoQueue("<iq type='get' to='" + Util.xmlEscape(jid)
-                + "' id='" + Util.xmlEscape(id) + "'><query xmlns='" + xmlns + "'/></iq>");
+    private void requestIq(String jid, String xmlns, String id, OnIqReceived iqReceivedListener) {
+        XmlNode xmlNode = new XmlNode(S_IQ);
+        xmlNode.putAttribute(S_TYPE, S_GET);
+        xmlNode.putAttribute(S_TO, Util.xmlEscape(jid));
+        if (id == null) {
+            xmlNode.putAttribute(XmlNode.S_ID, generateId());
+        } else {
+            xmlNode.putAttribute(XmlNode.S_ID, id);
+        }
+        xmlNode.value = XmlNode.addXmlns(S_QUERY, xmlns).toString();
+        packetCallbacks.put(xmlNode.getId(), new Pair<>(xmlNode, iqReceivedListener));
+        putPacketIntoQueue(xmlNode.toString());
     }
 
     private void requestSetIq(String xmlns) {
@@ -2650,29 +2708,127 @@ public final class XmppConnection extends ClientConnection {
                 + "' id='" + Util.xmlEscape(generateId()) + "'>" + xmlns + "'/></iq>");
     }
 
-    private void requestIq(String jid, String xmlns) {
-        requestIq(jid, xmlns, generateId());
+    private void requestIq(String jid, String xmlns, OnIqReceived iqReceivedListener) {
+        requestIq(jid, xmlns, generateId(), iqReceivedListener);
     }
 
     public void requestClientVersion(String jid) {
-        requestIq(jid, "jabber:iq:version");
+        requestIq(jid, "jabber:iq:version", new OnIqReceived() {
+            @Override
+            public void onIqReceived(XmlNode iq) {
+                XmlNode iqQuery = iq.childAt(0);
+                String from = StringConvertor.notNull(iq.getAttribute(S_FROM));
+                String name = iqQuery.getFirstNodeValue(XmlNode.S_NAME);
+                    String ver = iqQuery.getFirstNodeValue("version");
+                    String os = iqQuery.getFirstNodeValue("os");
+                    name = Util.notUrls(name);
+                    ver = Util.notUrls(ver);
+                    os = Util.notUrls(os);
+                    String jid = getXmpp().getItemByUID(Jid.getBareJid(from)).isConference() ? from : Jid.getBareJid(from);
+
+                    DebugLog.println("ver " + jid + " " + name + " " + ver + " in " + os);
+
+                    StatusView sv = RosterHelper.getInstance().getStatusView();
+                    Contact c = sv.getContact();
+
+                    if ((null != c) && c.getUserId().equals(jid)) {
+                        sv.setClientVersion(name + " " + ver + " " + os);
+                        getXmpp().updateStatusView(sv, c);
+                    }
+            }
+        });
     }
 
-    public void requestConferenceInfo(String jid, String id) {
-        requestIq(jid, "http://jabber.org/protocol/disco#info", id);
+    public void requestConferenceInfo(final String jid, final String id) {
+        requestIq(jid, "http://jabber.org/protocol/disco#info", id, new OnIqReceived() {
+            @Override
+            public void onIqReceived(XmlNode iq) {
+                XmlNode iqQuery = iq.childAt(0);
+                String from = StringConvertor.notNull(iq.getAttribute(S_FROM));
+                if (serverFeatures.getServerDiscoItems().get(iq.getId()) != null) {
+                    serverFeatures.parseServerFeatures(iqQuery, iq.getId());
+                }
+                try {
+                    write(GET_ROSTER_XML);
+                } catch (SawimException e) {
+                    e.printStackTrace();
+                }
+                enableCarbons();
+                String name = iqQuery.getFirstNodeAttribute("identity", XmlNode.S_NAME);
+                getXmpp().setConferenceInfo(from, name);
+            }
+        });
     }
 
     public void requestConferenceInfo(String jid) {
-        requestIq(jid, "http://jabber.org/protocol/disco#info", generateId());
-    }
-
-    public void requestDiscoItems(String server) {
-        requestIq(server, "http://jabber.org/protocol/disco#items");
-        serviceDiscovery = getXmpp().getServiceDiscovery();
+        requestConferenceInfo(jid, generateId());
     }
 
     public void requestDiscoServerItems() {
-        requestIq(domain_, "http://jabber.org/protocol/disco#items");
+        requestDiscoItems(domain_);
+    }
+
+    public void requestDiscoItems(String server) {
+        serviceDiscovery = getXmpp().getServiceDiscovery();
+        requestIq(server, "http://jabber.org/protocol/disco#items", new OnIqReceived() {
+            @Override
+            public void onIqReceived(XmlNode iq) {
+                XmlNode iqQuery = iq.childAt(0);
+                String from = StringConvertor.notNull(iq.getAttribute(S_FROM));
+                byte iqType = getIqType(iq);
+                String xmlns = iqQuery.getXmlns();
+                if (IQ_TYPE_ERROR == iqType) {
+                    XmlNode errorNode = iq.getFirstNode(S_ERROR);
+                    iq.removeNode(S_ERROR);
+
+                    if (null == errorNode) {
+                        DebugLog.println("Error without description is stupid");
+                    } else {
+                        DebugLog.systemPrintln(
+                                "[INFO-JABBER] <IQ> error received: " +
+                                        "Code=" + errorNode.getAttribute(S_CODE) + " " +
+                                        "Value=" + getError(errorNode));
+                    }
+                    ServiceDiscovery disco = serviceDiscovery;
+                    if (null != disco) {
+                        serviceDiscovery = null;
+                        disco.setError(getError(errorNode));
+                    }
+                    AdHoc commands = adhoc;
+                    if ((null != commands) && commands.getJid().equals(from)) {
+                        adhoc = null;
+                        commands.addItems(null);
+                    }
+                    return;
+                }
+                if (serverFeatures.getServerDiscoItems().isEmpty()) {
+                    while (0 < iqQuery.childrenCount()) {
+                        String jid = iqQuery.popChildNode().getAttribute(XmlNode.S_JID);
+                        String discoId = generateId();
+                        requestConferenceInfo(jid, discoId);
+                        serverFeatures.getServerDiscoItems().put(discoId, jid);
+                    }
+                }
+                ServiceDiscovery disco = serviceDiscovery;
+                if (null != disco) {
+                    serviceDiscovery = null;
+                    disco.setTotalCount(iqQuery.childrenCount());
+                    while (0 < iqQuery.childrenCount()) {
+                        XmlNode item = iqQuery.popChildNode();
+                        String name = item.getAttribute(XmlNode.S_NAME);
+                        String jid = item.getAttribute(XmlNode.S_JID);
+                        disco.addItem(name, jid);
+                    }
+                    disco.update();
+                    return;
+                }
+                AdHoc commands = adhoc;
+                if ((null != commands) && commands.getJid().equals(from)) {
+                    adhoc = null;
+                    commands.addItems(iqQuery);
+                }
+            }
+        });
     }
 
     private void enableCarbons() {
@@ -2766,7 +2922,25 @@ public final class XmppConnection extends ClientConnection {
 
     XmppForm register(String jid) {
         xmppForm = new XmppForm(XmppForm.TYPE_REGISTER, getXmpp(), jid);
-        requestIq(jid, "jabber:iq:register", xmppForm.getId());
+        requestIq(jid, "jabber:iq:register", xmppForm.getId(), new OnIqReceived() {
+            @Override
+            public void onIqReceived(XmlNode iq) {
+                String id = iq.getId();
+                XmlNode iqQuery = iq.childAt(0);
+                String from = StringConvertor.notNull(iq.getAttribute(S_FROM));
+                byte iqType = getIqType(iq);
+                String xmlns = iqQuery.getXmlns();
+                if ((null != xmppForm) && xmppForm.getId().equals(id)) {
+                    if (xmppForm.isWaiting()) {
+                        xmppForm.loadFromXml(iqQuery, iqQuery);
+                        xmppForm = null;
+
+                    } else {
+                        processEmptyId(id, iqType, from);
+                    }
+                }
+            }
+        });
         return xmppForm;
     }
 
@@ -2777,7 +2951,19 @@ public final class XmppConnection extends ClientConnection {
 
     XmppForm requestOwnerForm(String jid) {
         xmppForm = new XmppForm(XmppForm.TYPE_OWNER, getXmpp(), jid);
-        requestIq(jid, "http://jabber.org/protocol/muc#owner", xmppForm.getId());
+        requestIq(jid, "http://jabber.org/protocol/muc#owner", xmppForm.getId(), new OnIqReceived() {
+            @Override
+            public void onIqReceived(XmlNode iq) {
+                XmlNode iqQuery = iq.childAt(0);
+                String from = StringConvertor.notNull(iq.getAttribute(S_FROM));
+                byte iqType = getIqType(iq);
+                String xmlns = iqQuery.getXmlns();
+                if (null != xmppForm) {
+                    xmppForm.loadFromXml(iqQuery, iq);
+                    xmppForm = null;
+                }
+            }
+        });
         return xmppForm;
     }
 

@@ -57,7 +57,7 @@ public final class BlobStorage {
     }
 
     public byte[] getRecord(int id) {
-        Cursor cursor = SawimApplication.getDatabaseHelper().getWritableDatabase().query(name, null,
+        Cursor cursor = SawimApplication.getDatabaseHelper().getReadableDatabase().query(name, null,
                 WHERE_ID, new String[]{String.valueOf(id)}, null, null, null);
         byte[] bytes = new byte[0];
         if (cursor.moveToFirst()) {
@@ -79,7 +79,7 @@ public final class BlobStorage {
 
     public int getNumRecords() {
         String selectCount = "SELECT COUNT(*) FROM " + name;
-        Cursor cursor = SawimApplication.getDatabaseHelper().getWritableDatabase().rawQuery(selectCount, null);
+        Cursor cursor = SawimApplication.getDatabaseHelper().getReadableDatabase().rawQuery(selectCount, null);
         int num = 0;
         if (cursor.moveToFirst()) {
             num = cursor.getInt(0);

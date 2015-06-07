@@ -11,6 +11,7 @@ import android.content.res.Configuration;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+
 import com.github.anrwatchdog.ANRWatchDog;
 import de.duenndns.ssl.MemorizingTrustManager;
 import protocol.Protocol;
@@ -145,9 +146,6 @@ public class SawimApplication extends Application {
 
             }
         },"loadMessage").start();
-        if (RosterHelper.getInstance() != null) {
-            RosterHelper.getInstance().autoConnect();
-        }
     }
 
     public Handler getUiHandler() {
@@ -231,7 +229,6 @@ public class SawimApplication extends Application {
     }
 
     public void quit(boolean isForceClose) {
-        RosterHelper.getInstance().safeSave();
         HistoryStorage.saveUnreadMessages();
         AutoAbsence.getInstance().online();
         int count = RosterHelper.getInstance().getProtocolCount();

@@ -1,12 +1,11 @@
 package ru.sawim.widget;
 
 import android.content.Context;
-import android.support.v7.internal.widget.TintSpinner;
 import android.util.AttributeSet;
 import android.widget.AdapterView;
 import android.widget.Spinner;
 
-public class MySpinner extends TintSpinner {
+public class MySpinner extends Spinner {
 
     AdapterView.OnItemSelectedListener listener;
 

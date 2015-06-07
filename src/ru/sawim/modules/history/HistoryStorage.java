@@ -80,12 +80,12 @@ public class HistoryStorage {
                 new String[]{protocolId, uniqueUserId, md.getNick(), md.getText().toString()});
     }
 
-    public synchronized List<Integer> getSearchMessagesIds(String search) {
+    public List<Integer> getSearchMessagesIds(String search) {
         List<Integer> ids = new ArrayList<>();
         if (search == null || search.isEmpty()) return ids;
         Cursor cursor = null;
         try {
-            cursor = SawimApplication.getDatabaseHelper().getWritableDatabase().query(DatabaseHelper.TABLE_CHAT_HISTORY, null, WHERE_ACC_CONTACT_ID, new String[]{protocolId, uniqueUserId}, null, null, null);
+            cursor = SawimApplication.getDatabaseHelper().getReadableDatabase().query(DatabaseHelper.TABLE_CHAT_HISTORY, null, WHERE_ACC_CONTACT_ID, new String[]{protocolId, uniqueUserId}, null, null, null);
             if (cursor.moveToFirst()) {
                 for (int i = 0; i < cursor.getCount(); i++) {
                     cursor.moveToPosition(i);
@@ -109,9 +109,9 @@ public class HistoryStorage {
         long lastMessageTime = 0;
         Cursor cursor = null;
         try {
-            cursor = SawimApplication.getDatabaseHelper().getWritableDatabase().query(DatabaseHelper.TABLE_CHAT_HISTORY, null, WHERE_ACC_CONTACT_ID,
-                    new String[]{protocolId, uniqueUserId}, null, null, DatabaseHelper.DATE + (last ? " DESC" : " ASC"));
-            if (cursor.moveToLast()) {
+            cursor = SawimApplication.getDatabaseHelper().getReadableDatabase().query(DatabaseHelper.TABLE_CHAT_HISTORY, null, WHERE_ACC_CONTACT_ID,
+                    new String[]{protocolId, uniqueUserId}, null, null, DatabaseHelper.DATE + " ASC");
+            if (last ? cursor.moveToLast() : cursor.moveToFirst()) {
                 do {
                     boolean isIncoming = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.INCOMING)) == 0;
                     int sendingState = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.SENDING_STATE));
@@ -122,7 +122,7 @@ public class HistoryStorage {
                         lastMessageTime = cursor.getLong(cursor.getColumnIndex(DatabaseHelper.DATE));
                         break;
                     }
-                } while (cursor.moveToPrevious());
+                } while (last ? cursor.moveToPrevious() : cursor.moveToFirst());
             }
         } catch (Exception e) {
             DebugLog.panic(e);
@@ -137,7 +137,7 @@ public class HistoryStorage {
     public Cursor getLastCursor() {
         Cursor cursor = null;
         try {
-            cursor = SawimApplication.getDatabaseHelper().getWritableDatabase().query(DatabaseHelper.TABLE_CHAT_HISTORY, null,
+            cursor = SawimApplication.getDatabaseHelper().getReadableDatabase().query(DatabaseHelper.TABLE_CHAT_HISTORY, null,
                     null, null, null, null, null);
             cursor.moveToLast();
         } catch (Exception e) {
@@ -151,8 +151,8 @@ public class HistoryStorage {
         boolean hasMessage = false;
         Cursor cursor = null;
         try {
-            cursor = SawimApplication.getDatabaseHelper().getWritableDatabase().query(DatabaseHelper.TABLE_CHAT_HISTORY, null, WHERE_ACC_CONTACT_ID,
-                    new String[]{protocolId, uniqueUserId}, null, null, DatabaseHelper.DATE + " DESC");
+            cursor = SawimApplication.getDatabaseHelper().getReadableDatabase().query(DatabaseHelper.TABLE_CHAT_HISTORY, null, WHERE_ACC_CONTACT_ID,
+                    new String[]{protocolId, uniqueUserId}, null, null, DatabaseHelper.ROW_AUTO_ID + " DESC");
             if (cursor.moveToLast()) {
                 do {
                     short rowData = cursor.getShort(cursor.getColumnIndex(DatabaseHelper.ROW_DATA));
@@ -184,35 +184,23 @@ public class HistoryStorage {
                 && mess.getText().toString().equals(messFromDataBase.getText().toString());
     }
 
-    public boolean addNextListMessages(List<MessData> messDataList, final Chat chat, int limit, int offset, boolean addedAtTheBeginning) {
-        boolean isAdded;
+    public List<MessData> addNextListMessages(final Chat chat, int limit, int offset) {
+        List<MessData> list = new ArrayList<>();
         Cursor cursor = null;
         try {
-            cursor = SawimApplication.getDatabaseHelper().getWritableDatabase().query(DatabaseHelper.TABLE_CHAT_HISTORY, null, WHERE_ACC_CONTACT_ID,
-                    new String[]{protocolId, uniqueUserId}, null, null, DatabaseHelper.DATE + " DESC LIMIT " + limit + " OFFSET " + offset);
-            if (addedAtTheBeginning) {
-                isAdded = cursor.moveToFirst();
-                if (isAdded) {
-                    do {
-                        MessData mess = buildMessage(chat, cursor);
-                        messDataList.add(0, mess);
-                    } while (cursor.moveToNext());
-                }
-            } else {
-                isAdded = cursor.moveToLast();
-                if (isAdded) {
-                    do {
-                        MessData mess = buildMessage(chat, cursor);
-                        messDataList.add(mess);
-                    } while (cursor.moveToPrevious());
-                }
+            cursor = SawimApplication.getDatabaseHelper().getReadableDatabase().query(DatabaseHelper.TABLE_CHAT_HISTORY, null, WHERE_ACC_CONTACT_ID,
+                    new String[]{protocolId, uniqueUserId}, null, null, DatabaseHelper.ROW_AUTO_ID + " DESC LIMIT " + limit + " OFFSET " + offset);
+            if (cursor.moveToLast()) {
+                do {
+                    list.add(buildMessage(chat, cursor));
+                } while (cursor.moveToPrevious());
             }
         } finally {
             if (cursor != null) {
                 cursor.close();
             }
         }
-        return isAdded;
+        return list;
     }
 
     private static MessData buildMessage(Chat chat, Cursor cursor) {
@@ -249,7 +237,7 @@ public class HistoryStorage {
         Cursor cursor = null;
         int count = 0;
         try {
-            cursor = SawimApplication.getDatabaseHelper().getWritableDatabase().query(DatabaseHelper.TABLE_CHAT_HISTORY, null, WHERE_ACC_CONTACT_ID, new String[]{protocolId, uniqueUserId}, null, null, null);
+            cursor = SawimApplication.getDatabaseHelper().getReadableDatabase().query(DatabaseHelper.TABLE_CHAT_HISTORY, null, WHERE_ACC_CONTACT_ID, new String[]{protocolId, uniqueUserId}, null, null, null);
             count = cursor.getCount();
         } finally {
             if (cursor != null) {
@@ -263,7 +251,7 @@ public class HistoryStorage {
         int id = -1;
         Cursor cursor = null;
         try {
-            cursor = SawimApplication.getDatabaseHelper().getWritableDatabase().query(DatabaseHelper.TABLE_CHAT_HISTORY, null, WHERE_ACC_CONTACT_ID,
+            cursor = SawimApplication.getDatabaseHelper().getReadableDatabase().query(DatabaseHelper.TABLE_CHAT_HISTORY, null, WHERE_ACC_CONTACT_ID,
                     new String[]{protocolId, uniqueUserId}, null, null, DatabaseHelper.ROW_AUTO_ID + " DESC LIMIT 1");
             if (cursor.moveToFirst()) {
                 id = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.ROW_AUTO_ID));

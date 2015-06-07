@@ -7,7 +7,7 @@ buildscript {
     }
 }
 
-apply plugin: 'android'
+apply plugin: 'com.android.application'
 task wrapper(type: Wrapper) {
     gradleVersion = '1.11'
 }
@@ -21,18 +21,18 @@ def mtmProject = project(':deps:mtm')
 
 dependencies {
     compile mtmProject
-    compile 'com.android.support:support-v4:21.+'
-    compile 'com.android.support:appcompat-v7:21.+'
+    compile 'com.android.support:support-v4:22.+'
+    compile 'com.android.support:appcompat-v7:22.+'
     compile 'com.github.anrwatchdog:anrwatchdog:1.1.+'
 }
 
 android {
     compileSdkVersion 21
-    buildToolsVersion "21.1.1"
+    buildToolsVersion "21.1.2"
     defaultConfig {
         minSdkVersion 9
-        targetSdkVersion 19
-        versionCode 55
+        targetSdkVersion 22
+        versionCode 56
         versionName '1.3.6'
     }
     lintOptions {
@@ -84,8 +84,7 @@ android {
         buildTypes {
             release {
                 minifyEnabled true
-                proguardFile getDefaultProguardFile('proguard-android.txt')
-                proguardFile file('proguard-android.txt')
+                proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-android.txt'
                 signingConfig signingConfigs.sawim
             }
         }

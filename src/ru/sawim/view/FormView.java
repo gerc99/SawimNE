@@ -6,8 +6,6 @@ import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.support.v7.internal.widget.TintCheckBox;
-import android.support.v7.internal.widget.TintEditText;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -75,7 +73,6 @@ public class FormView extends DialogFragment implements Forms.OnUpdateForm, View
         getDialog().setTitle(getLastForms().getCaption());
         getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         getDialog().setCanceledOnTouchOutside(false);
-        ((TextView) getDialog().findViewById(android.R.id.title)).setSingleLine(false);
         View v = inflater.inflate(R.layout.form, container, false);
         textView = (TextView) v.findViewById(R.id.textView);
         progressBar = (ProgressBar) v.findViewById(R.id.progressBar);
@@ -183,7 +180,7 @@ public class FormView extends DialogFragment implements Forms.OnUpdateForm, View
                     drawText(context, c, listLayout);
                     break;
                 case Forms.CONTROL_INPUT:
-                    TintEditText editText = new TintEditText(context);
+                    EditText editText = new EditText(context);
                     drawText(context, c, listLayout);
                     editText.setHint(R.string.enter_the);
                     editText.setText(c.text);
@@ -203,7 +200,7 @@ public class FormView extends DialogFragment implements Forms.OnUpdateForm, View
                     listLayout.addView(editText);
                     break;
                 case Forms.CONTROL_CHECKBOX:
-                    TintCheckBox checkBox = new TintCheckBox(context);
+                    CheckBox checkBox = new CheckBox(context);
                     checkBox.setText(c.description);
                     checkBox.setChecked(c.selected);
                     checkBox.setOnClickListener(new View.OnClickListener() {

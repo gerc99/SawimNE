@@ -240,35 +240,6 @@ public class Mrim extends Protocol {
         return null;
     }
 
-    protected Contact loadContact(DataInputStream dis) throws Exception {
-        int contactId = dis.readInt();
-        String uin = dis.readUTF();
-        String name = dis.readUTF();
-        String phones = dis.readUTF();
-        int groupId = dis.readInt();
-        final int serverFlags = 0;
-        byte booleanValues = dis.readByte();
-        int flags = dis.readInt();
-        MrimContact c = (MrimContact) createContact(uin, name, false);
-        c.setPhones(phones);
-        c.init(contactId, name, phones, groupId, serverFlags, flags);
-        c.setBooleanValues(booleanValues);
-        return c;
-    }
-
-    protected void saveContact(DataOutputStream out, Contact contact) throws Exception {
-        MrimContact mrimContact = (MrimContact) contact;
-        if (contact instanceof MrimPhoneContact) return;
-        out.writeByte(0);
-        out.writeInt(mrimContact.getContactId());
-        out.writeUTF(contact.getUserId());
-        out.writeUTF(contact.getName());
-        out.writeUTF(StringConvertor.notNull(mrimContact.getPhones()));
-        out.writeInt(contact.getGroupId());
-        out.writeByte(contact.getBooleanValues());
-        out.writeInt(mrimContact.getFlags());
-    }
-
     public void getAvatar(UserInfo userInfo) {
         new GetAvatar().getAvatar(userInfo);
     }

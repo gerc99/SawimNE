@@ -20,7 +20,6 @@ import ru.sawim.comm.JLocale;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.forms.ManageContactListForm;
 import ru.sawim.forms.SmsForm;
-import ru.sawim.modules.AutoAbsence;
 import ru.sawim.modules.FileTransfer;
 import ru.sawim.view.LoginView;
 import ru.sawim.view.StatusesView;
@@ -131,11 +130,17 @@ public final class RosterHelper {
     }
 
     public void loadAccounts() {
-        int count = getProtocolCount();
-        for (int i = 0; i < count; ++i) {
-            Protocol protocol = getProtocol(i);
-            protocol.safeLoad();
-        }
+        SawimApplication.getExecutor().execute(new Runnable() {
+            @Override
+            public void run() {
+                int count = getProtocolCount();
+                for (int i = 0; i < count; ++i) {
+                    Protocol protocol = getProtocol(i);
+                    protocol.load();
+                }
+                autoConnect();
+            }
+        });
     }
 
     private byte getRealType(byte type) {
@@ -219,9 +224,10 @@ public final class RosterHelper {
         return protocolList[accountIndex];
     }
 
-    public final Protocol getProtocol(TreeNode treeNode) {
+    public final Protocol getProtocol(Group treeNode) {
+        if (treeNode == null) return null;
         for (int i = 0; i < getProtocolCount(); ++i) {
-            if (getGroupById(getProtocol(i).getGroupItems(), treeNode.getGroupId()) != null) {
+            if (getProtocol(i).getGroupItems().get(treeNode.getGroupId()) != null) {
                 return getProtocol(i);
             }
             if (getProtocol(i).getNotInListGroup().getGroupId() == treeNode.getGroupId()) {
@@ -246,6 +252,15 @@ public final class RosterHelper {
             all[i] = getProtocol(i);
         }
         return all;
+    }
+
+    public Group getGroupWithContacts(Group g) {
+        Protocol protocol = RosterHelper.getInstance().getProtocol(g);
+        if (protocol != null && protocol.getGroupItems() != null) {
+            Group group = protocol.getGroupItems().get(g.getGroupId());
+            if (group != null) g = group;
+        }
+        return g;
     }
 
     public void activate(Contact c) {
@@ -281,8 +296,6 @@ public final class RosterHelper {
     }
 
     public void autoConnect() {
-        if (!SawimApplication.getInstance().isNetworkAvailable())
-            return;
         int count = getProtocolCount();
         for (int i = 0; i < count; ++i) {
             Profile profile = Options.getAccount(i);
@@ -315,14 +328,6 @@ public final class RosterHelper {
             }
         }
         return false;
-    }
-
-    public void safeSave() {
-        int count = getProtocolCount();
-        for (int i = 0; i < count; ++i) {
-            Protocol p = getProtocol(i);
-            p.safeSave();
-        }
     }
 
     public final void markMessages(Contact contact) {
@@ -440,8 +445,8 @@ public final class RosterHelper {
                     if (node1.getGroupId() == node2.getGroupId()) {
                         return Util.compareNodes(node1, node2);
                     } else {
-                        Group group1 = getGroupById(groups, node1.getGroupId());
-                        Group group2 = getGroupById(groups, node2.getGroupId());
+                        Group group1 = groups.get(node1.getGroupId());
+                        Group group2 = groups.get(node2.getGroupId());
                         if (group1 != null && group2 != null) {
                             return Util.compareNodes(group1, group2);
                         }
@@ -452,17 +457,6 @@ public final class RosterHelper {
                 return 0;
             }
         });
-    }
-
-    public static Group getGroupById(ConcurrentHashMap<Integer, Group> groups, int id) {
-        Enumeration<Group> e = groups.elements();
-        while (e.hasMoreElements()) {
-            Group group = e.nextElement();
-            if (group.getGroupId() == id) {
-                return group;
-            }
-        }
-        return null;
     }
 
     public void updateGroup(Protocol protocol, Group group, Contact contact) {

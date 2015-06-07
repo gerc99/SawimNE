@@ -77,5 +77,10 @@
         <activity android:name="de.duenndns.ssl.MemorizingActivity" android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
 
         <service android:enabled="true" android:name=".service.SawimService" android:stopWithTask="true"/>
+        <receiver android:name=".receiver.PowerSaveModeReceiver">
+            <intent-filter>
+                <action android:name="android.os.action.POWER_SAVE_MODE_CHANGED"/>
+            </intent-filter>
+        </receiver>
     </application>
 </manifest>

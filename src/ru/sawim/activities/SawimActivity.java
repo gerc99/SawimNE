@@ -174,6 +174,7 @@ public class SawimActivity extends BaseActivity {
         SawimApplication.maximize();
         FragmentManager fragmentManager = getSupportFragmentManager();
         StartWindowView startWindowView = (StartWindowView) fragmentManager.findFragmentByTag(StartWindowView.TAG);
+        //RosterHelper.getInstance().loadAccounts();
         if (RosterHelper.getInstance().getProtocolCount() == 0) {
             if (Options.getAccountCount() == 0) {
                 if (SawimApplication.isManyPane()) {

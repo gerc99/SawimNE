@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public final class FileTransfer implements FileBrowserListener, PhotoListener, Runnable {
@@ -159,9 +160,11 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
         }
     }
 
+    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy_HH-mm");
     public void processPhoto(BaseActivity activity, final byte[] data) {
         setData(data);
-        String timestamp = Util.getLocalDateString(SawimApplication.getCurrentGmtTime() / 1000, false);
+        DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
+        String timestamp = DATE_FORMAT.format(SawimApplication.getCurrentGmtTime());
         String photoName = "photo-"
                 + timestamp.replace('.', '-').replace(' ', '-')
                 + ".jpg";
@@ -251,12 +254,7 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
     }
 
     private void setFileName(String name) {
-        name = name.replace(':', '.');
-        name = name.replace('/', '_');
-        name = name.replace('\\', '_');
-        name = name.replace('%', '_');
-        name = name.replace(' ', '_');
-        filename = name;
+        filename = name.replaceAll("[^a-zA-Z0-9.-]", "_");
     }
 
     private String getTransferClient() {

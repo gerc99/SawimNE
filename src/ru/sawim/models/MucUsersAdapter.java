@@ -22,6 +22,7 @@ import ru.sawim.widget.roster.RosterItemView;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -56,7 +57,9 @@ public class MucUsersAdapter extends BaseAdapter {
         items.clear();
 
         List<XmppContact.SubContact> subContacts = new ArrayList<>();
-        subContacts.addAll(conference.subcontacts);
+        for (XmppContact.SubContact contact : conference.subcontacts.values()) {
+            subContacts.add(contact);
+        }
         Util.sort(subContacts);
 
         final int moderators = getContactCount(XmppServiceContact.ROLE_MODERATOR);
@@ -125,7 +128,7 @@ public class MucUsersAdapter extends BaseAdapter {
 
     private final int getContactCount(byte priority) {
         int count = 0;
-        List<XmppContact.SubContact> subcontacts = conference.subcontacts;
+        Collection<XmppContact.SubContact> subcontacts = conference.subcontacts.values();
         for (XmppContact.SubContact contact : subcontacts) {
             if (contact != null)
                 if (contact.priority == priority) {
@@ -139,7 +142,7 @@ public class MucUsersAdapter extends BaseAdapter {
         if (TextUtils.isEmpty(nick)) {
             return null;
         }
-        List<XmppContact.SubContact> subcontacts = conference.subcontacts;
+        Collection<XmppContact.SubContact> subcontacts = conference.subcontacts.values();
         for (XmppContact.SubContact contact : subcontacts) {
             if (nick.equals(contact.resource)) {
                 return contact;
@@ -225,7 +228,9 @@ public class MucUsersAdapter extends BaseAdapter {
 
     void populateFrom(final RosterItemView rosterItemView, Xmpp protocol, XmppContact.SubContact c) {
         if (Options.getBoolean(JLocale.getString(R.string.pref_users_avatars))) {
-            String hash = (c.avatarHash == null || c.avatarHash.isEmpty()) ? c.resource.substring(0, 1) : c.avatarHash;
+            String hash = (c.avatarHash == null || c.avatarHash.isEmpty()) ?
+                    c.resource.isEmpty() ? "" : c.resource.substring(0, 1)
+                    : c.avatarHash;
             Bitmap avatar = ImageCache.getInstance().get(avatarsFolder, SawimApplication.getExecutor(), hash,
                     SawimResources.DEFAULT_AVATAR, new ImageCache.OnImageLoadListener() {
                         @Override

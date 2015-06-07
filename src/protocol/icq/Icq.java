@@ -447,61 +447,6 @@ public class Icq extends Protocol {
         return id;
     }
 
-    protected void loadProtocolData(byte[] data) throws Exception {
-        ByteArrayInputStream bais = new ByteArrayInputStream(data);
-        DataInputStream dis = new DataInputStream(bais);
-        ssiListLastChangeTime = dis.readInt();
-        ssiNumberOfItems = dis.readUnsignedShort();
-    }
-
-    protected byte[] saveProtocolData() throws Exception {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        DataOutputStream dos = new DataOutputStream(baos);
-        dos.writeInt(getSsiListLastChangeTime());
-        dos.writeShort((short) getSsiNumberOfItems());
-        return baos.toByteArray();
-    }
-
-    protected Contact loadContact(DataInputStream dis) throws Exception {
-        int contactId = dis.readInt();
-        int groupId = dis.readInt();
-        byte flags = dis.readByte();
-        String uin = dis.readUTF();
-        String name = dis.readUTF();
-
-        int visibleId = dis.readInt();
-        int invisibleId = dis.readInt();
-        int ignoreId = dis.readInt();
-
-        IcqContact contact = (IcqContact) createContact(uin, name, false);
-        contact.setContactId(contactId);
-        contact.setGroupId(groupId);
-        contact.setBooleanValues(flags);
-        contact.setName(name);
-
-        setVisibleId(contact, visibleId);
-        setInvisibleId(contact, invisibleId);
-        setIgnoreId(contact, ignoreId);
-
-        contact.setOfflineStatus();
-        return contact;
-    }
-
-    protected void saveContact(DataOutputStream out, Contact contact) throws Exception {
-        IcqContact icqContact = ((IcqContact) contact);
-        out.writeByte(0);
-        out.writeInt(icqContact.getContactId());
-        out.writeInt(icqContact.getGroupId());
-        out.writeByte(icqContact.getBooleanValues());
-        out.writeUTF(icqContact.getUserId());
-        out.writeUTF(icqContact.getName());
-
-        out.writeInt(getVisibleId(icqContact));
-        out.writeInt(getInvisibleId(icqContact));
-        out.writeInt(getIgnoreId(icqContact));
-
-    }
-
     public void getAvatar(UserInfo userInfo) {
         new GetAvatar().getAvatar(userInfo);
     }

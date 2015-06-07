@@ -50,9 +50,106 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
 
     public void init(Xmpp protocol) {
         isMucUsers(false);
-        screen = VirtualList.getInstance();
         xmpp = protocol;
+        screen = VirtualList.getInstance();
         screen.setModel(model);
+    }
+
+    private String getJid(int num) {
+        if (num < jids.size()) {
+            String rawJid = (String) jids.elementAt(num);
+            if (rawJid.endsWith("@")) {
+                return rawJid + serverJid;
+            }
+            return rawJid;
+        }
+        return "";
+    }
+
+    private int getJidIndex(int textIndex) {
+        if (!model.isItemSelectable(textIndex)) return -1;
+        int index = -1;
+        for (int i = 0; i <= textIndex; ++i) {
+            if (model.isItemSelectable(i)) index++;
+        }
+        return index;
+    }
+
+    private String getCurrentJid(int currItem) {
+        int currentIndex = getJidIndex(currItem);
+        return (-1 == currentIndex) ? "" : getJid(currentIndex);
+    }
+
+    private void addServer(boolean active) {
+        if (serverJid != null && 0 < serverJid.length()) {
+            VirtualListItem item = model.createNewParser(active);
+            item.addDescription(serverJid, Scheme.THEME_TEXT, Scheme.FONT_STYLE_BOLD);
+            model.addPar(item);
+            if (active) {
+                jids.addElement(serverJid);
+            }
+        }
+    }
+
+    private void clear() {
+        model.clear();
+        jids.removeAllElements();
+        addServer(false);
+    }
+
+    public void setTotalCount(int count) {
+        model.clear();
+        jids.removeAllElements();
+        addServer(true);
+        totalCount = count;
+        shortView |= (totalCount > 400);
+        screen.updateModel();
+    }
+
+    private String makeShortJid(String jid) {
+        if (isConferenceList) {
+            return jid.substring(0, jid.indexOf('@') + 1);
+        }
+        return jid;
+    }
+
+    private String makeReadableJid(String jid) {
+        if (isConferenceList) {
+            return jid;
+        }
+        if (serverJid.contains("@")) {
+            return Jid.getResource(jid, jid);
+        }
+        return Jid.makeReadableJid(jid);
+    }
+
+    public void addItem(String name, String jid) {
+        if (StringConvertor.isEmpty(jid)) {
+            return;
+        }
+        String shortJid = makeShortJid(jid);
+        String visibleJid = makeReadableJid(shortJid);
+        VirtualListItem item = model.createNewParser(true);
+        item.addLabel(20, visibleJid, Scheme.THEME_TEXT,
+                shortView ? Scheme.FONT_STYLE_PLAIN : Scheme.FONT_STYLE_BOLD);
+        if (!shortView) {
+            if (StringConvertor.isEmpty(name)) {
+                name = shortJid;
+            }
+            item.addDescription(20, name, Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
+        }
+
+        model.addPar(item);
+        jids.addElement(shortJid);
+        if (0 == (jids.size() % 50)) {
+            screen.updateModel();
+        }
+    }
+
+    public void showIt(BaseActivity activity) {
+        if (StringConvertor.isEmpty(serverJid)) {
+            setServer("");
+        }
         screen.setCaption(JLocale.getString(R.string.service_discovery));
         screen.setClickListListener(new VirtualList.OnClickListListener() {
             @Override
@@ -161,103 +258,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
                 }
             }
         });
-    }
 
-    private String getJid(int num) {
-        if (num < jids.size()) {
-            String rawJid = (String) jids.elementAt(num);
-            if (rawJid.endsWith("@")) {
-                return rawJid + serverJid;
-            }
-            return rawJid;
-        }
-        return "";
-    }
-
-    private int getJidIndex(int textIndex) {
-        if (!model.isItemSelectable(textIndex)) return -1;
-        int index = -1;
-        for (int i = 0; i <= textIndex; ++i) {
-            if (model.isItemSelectable(i)) index++;
-        }
-        return index;
-    }
-
-    private String getCurrentJid(int currItem) {
-        int currentIndex = getJidIndex(currItem);
-        return (-1 == currentIndex) ? "" : getJid(currentIndex);
-    }
-
-    private void addServer(boolean active) {
-        if (0 < serverJid.length()) {
-            VirtualListItem item = model.createNewParser(active);
-            item.addDescription(serverJid, Scheme.THEME_TEXT, Scheme.FONT_STYLE_BOLD);
-            model.addPar(item);
-            if (active) {
-                jids.addElement(serverJid);
-            }
-        }
-    }
-
-    private void clear() {
-        model.clear();
-        jids.removeAllElements();
-        addServer(false);
-    }
-
-    public void setTotalCount(int count) {
-        model.clear();
-        jids.removeAllElements();
-        addServer(true);
-        totalCount = count;
-        shortView |= (totalCount > 400);
-        screen.updateModel();
-    }
-
-    private String makeShortJid(String jid) {
-        if (isConferenceList) {
-            return jid.substring(0, jid.indexOf('@') + 1);
-        }
-        return jid;
-    }
-
-    private String makeReadableJid(String jid) {
-        if (isConferenceList) {
-            return jid;
-        }
-        if (serverJid.contains("@")) {
-            return Jid.getResource(jid, jid);
-        }
-        return Jid.makeReadableJid(jid);
-    }
-
-    public void addItem(String name, String jid) {
-        if (StringConvertor.isEmpty(jid)) {
-            return;
-        }
-        String shortJid = makeShortJid(jid);
-        String visibleJid = makeReadableJid(shortJid);
-        VirtualListItem item = model.createNewParser(true);
-        item.addLabel(20, visibleJid, Scheme.THEME_TEXT,
-                shortView ? Scheme.FONT_STYLE_PLAIN : Scheme.FONT_STYLE_BOLD);
-        if (!shortView) {
-            if (StringConvertor.isEmpty(name)) {
-                name = shortJid;
-            }
-            item.addDescription(20, name, Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
-        }
-
-        model.addPar(item);
-        jids.addElement(shortJid);
-        if (0 == (jids.size() % 50)) {
-            screen.updateModel();
-        }
-    }
-
-    public void showIt(BaseActivity activity) {
-        if (StringConvertor.isEmpty(serverJid)) {
-            setServer("");
-        }
         screen.show(activity);
     }
 
@@ -292,6 +293,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
         shortView = false;
         serverJid = jid;
         clear();
+        isConferenceList = false;
         if (0 == jid.length()) {
             rebuild();
             return;

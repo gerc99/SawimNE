@@ -169,7 +169,6 @@ final class Socket extends Thread {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                //read.remove(0);
             }
         }
         if (readObject instanceof SawimException) throw (SawimException) readObject;

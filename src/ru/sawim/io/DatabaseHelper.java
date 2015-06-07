@@ -19,12 +19,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String GROUP_IS_EXPAND = "group_is_expand";
     public static final String CONTACT_ID = "contact_id";
     public static final String CONTACT_NAME = "contact_name";
+    public static final String STATUS = "status";
+    public static final String STATUS_TEXT = "status_text";
     public static final String IS_CONFERENCE = "is_conference";
     public static final String CONFERENCE_MY_NAME = "conference_my_name";
     public static final String CONFERENCE_IS_AUTOJOIN = "is_conference_autojoin";
     public static final String ROW_DATA = "row_data";
     public static final String UNREAD_MESSAGES_COUNT = "unread_messages_count";
     public static final String AVATAR_HASH = "avatar_hash";
+    public static final String SUB_CONTACT_RESOURCE = "sub_contact_resources";
+    public static final String SUB_CONTACT_STATUS = "sub_contact_status";
+    public static final String SUB_CONTACT_PRIORITY = "sub_contact_priority";
+    public static final String SUB_CONTACT_PRIORITY_A = "sub_contact_priority_a";
 
     public static final String INCOMING = "incoming";
     public static final String SENDING_STATE = "sanding_state";
@@ -53,5 +59,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+    }
+
+    @Override
+    public SQLiteDatabase getWritableDatabase() {
+        SQLiteDatabase db = super.getWritableDatabase();
+        db.execSQL("PRAGMA foreign_keys=ON;");
+        return db;
     }
 }

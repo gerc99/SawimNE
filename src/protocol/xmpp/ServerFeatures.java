@@ -6,23 +6,28 @@ import java.util.HashMap;
  * Created by gerc on 12.03.2015.
  */
 public class ServerFeatures {
+
     private HashMap<String, String> serverDiscoItems = new HashMap<>();
     private String mucServer;
     private boolean hasMessageArchiveManagement;
     private boolean hasCarbon;
     private boolean carbonsEnabled;
 
-    public void parse(XmlNode iqQuery, String id) {
+    public void parseServerFeatures(XmlNode iqQuery, String id) {
         while (0 < iqQuery.childrenCount()) {
             XmlNode featureNode = iqQuery.popChildNode();
             String feature = featureNode.getAttribute("var");
             if (feature != null) {
-                if (feature.equals("http://jabber.org/protocol/muc")) {
-                    mucServer = serverDiscoItems.get(id);
-                } else if (feature.equals("urn:xmpp:mam:0")) {
-                    hasMessageArchiveManagement = true;
-                } else if (feature.equals("urn:xmpp:carbons:2")) {
-                    hasCarbon = true;
+                switch (feature) {
+                    case "http://jabber.org/protocol/muc":
+                        mucServer = serverDiscoItems.get(id);
+                        break;
+                    case "urn:xmpp:mam:0":
+                        hasMessageArchiveManagement = true;
+                        break;
+                    case "urn:xmpp:carbons:2":
+                        hasCarbon = true;
+                        break;
                 }
             }
         }

@@ -13,7 +13,6 @@ import ru.sawim.comm.JLocale;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
 import ru.sawim.icons.ImageList;
-import ru.sawim.io.RosterStorage;
 import ru.sawim.listener.OnMoreMessagesLoaded;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
@@ -24,9 +23,8 @@ import ru.sawim.roster.RosterHelper;
 import ru.sawim.view.TextBoxView;
 import ru.sawim.view.menu.JuickMenu;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -34,7 +32,7 @@ public final class Xmpp extends Protocol implements FormListener {
 
     public final static int PRIORITY = 50;
     private XmppConnection connection;
-    private Vector rejoinList = new Vector();
+    private List<String> rejoinList = new ArrayList<>();
     private String resource;
     private ServiceDiscovery disco = null;
     private AffiliationListConf alistc = null;
@@ -108,17 +106,17 @@ public final class Xmpp extends Protocol implements FormListener {
 
     public void addRejoin(String jid) {
         if (!rejoinList.contains(jid)) {
-            rejoinList.addElement(jid);
+            rejoinList.add(jid);
         }
     }
 
     public void removeRejoin(String jid) {
-        rejoinList.removeElement(jid);
+        rejoinList.remove(jid);
     }
 
     public void rejoin() {
         for (int i = 0; i < rejoinList.size(); ++i) {
-            String jid = (String) rejoinList.elementAt(i);
+            String jid = rejoinList.get(i);
             XmppServiceContact conf = (XmppServiceContact) getItemByUID(jid);
             if (null != conf) {
                 join(conf);
@@ -181,6 +179,10 @@ public final class Xmpp extends Protocol implements FormListener {
 
     protected final void userCloseConnection() {
         //rejoinList.removeAllElements();
+        if (null != connection) {
+            XmppSession.getInstance().clear(connection);
+            connection.loggedOut();
+        }
     }
 
     protected final void closeConnection() {
@@ -191,18 +193,26 @@ public final class Xmpp extends Protocol implements FormListener {
         }
     }
 
+    public boolean isStreamManagementSupported() {
+        return XmppSession.getInstance().isStreamManagementSupported(getUserId());
+    }
+
     public static final int GENERAL_GROUP = R.string.group_general;
     public static final int GATE_GROUP = R.string.group_transports;
     public static final int CONFERENCE_GROUP = R.string.group_conferences;
 
-    public final Group createGroup(String name) {
-        Group group = new Group(name);
-        group.setGroupId(getUserId().hashCode() + name.hashCode());
+    private int generateGroupId(String groupName) {
+        return getUserId().hashCode() ^ groupName.hashCode();
+    }
+
+    public final Group createGroup(String groupName) {
+        Group group = new Group(groupName);
+        group.setGroupId(generateGroupId(groupName));
         int mode = Group.MODE_FULL_ACCESS;
-        if (JLocale.getString(Xmpp.CONFERENCE_GROUP).equals(name)) {
+        if (JLocale.getString(Xmpp.CONFERENCE_GROUP).equals(groupName)) {
             mode &= ~Group.MODE_EDITABLE;
             mode |= Group.MODE_TOP;
-        } else if (JLocale.getString(Xmpp.GATE_GROUP).equals(name)) {
+        } else if (JLocale.getString(Xmpp.GATE_GROUP).equals(groupName)) {
             mode &= ~Group.MODE_EDITABLE;
             mode |= Group.MODE_BOTTOM;
         }
@@ -214,7 +224,7 @@ public final class Xmpp extends Protocol implements FormListener {
         if (StringConvertor.isEmpty(groupName)) {
             return null;
         }
-        Group group = getGroup(groupName);
+        Group group = getGroupById(generateGroupId(groupName));
         if (null == group) {
             group = createGroup(groupName);
             addGroup(group);
@@ -225,8 +235,8 @@ public final class Xmpp extends Protocol implements FormListener {
     public final Contact createContact(String jid, String name, boolean isConference) {
         name = (null == name) ? jid : name;
         jid = Jid.realJidToSawimJid(jid);
-        boolean isGate = (-1 == jid.indexOf('@'));
-        boolean isPrivate = (-1 != jid.indexOf('/'));
+        boolean isGate = !jid.contains("@");
+        boolean isPrivate = jid.contains("/");
         if (isConference) {
             XmppServiceContact c = new XmppServiceContact(jid, name, true, false);
             c.setGroup(getOrCreateGroup(c.getDefaultGroupName()));
@@ -267,7 +277,7 @@ public final class Xmpp extends Protocol implements FormListener {
         connection.setStatus(getProfile().statusIndex, "", PRIORITY);
         if (isReconnect()) {
             for (int i = 0; i < rejoinList.size(); ++i) {
-                String jid = (String) rejoinList.elementAt(i);
+                String jid = rejoinList.get(i);
                 XmppServiceContact c = (XmppServiceContact) getItemByUID(jid);
                 if (null != c && !c.isOnline()) {
                     connection.sendPresence(c);
@@ -662,8 +672,9 @@ public final class Xmpp extends Protocol implements FormListener {
     public void showListOfSubcontacts(BaseActivity activity, final XmppContact c) {
         final Vector items = new Vector();
         int selected = 0;
-        for (int i = 0; i < c.subcontacts.size(); ++i) {
-            XmppContact.SubContact contact = c.subcontacts.get(i);
+        int i = 0;
+        for (XmppContact.SubContact contact : c.subcontacts.values()) {
+            ++i;
             items.add(contact.resource);
             if (contact.resource.equals(c.currentResource)) {
                 selected = i;
@@ -852,7 +863,7 @@ public final class Xmpp extends Protocol implements FormListener {
                             join(enterConf);
                         }
                     }
-                    safeSave();
+                    getStorage().save(this, enterConf, getGroup(enterConf));
                 }
             }
             enterData.back();

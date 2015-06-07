@@ -103,7 +103,11 @@ public class Jid {
     }
 
     public static String getNick(String jid) {
-        return jid.substring(0, jid.indexOf('@'));
+        int index = jid.indexOf('@');
+        if (index != -1) {
+            return jid.substring(0, index);
+        }
+        return jid;
     }
 
     public static String getNormalJid(String jid) {
