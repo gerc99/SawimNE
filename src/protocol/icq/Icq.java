@@ -390,7 +390,7 @@ public class Icq extends Protocol {
     public Group createGroup(String name) {
         Group g = new Group(name);
         g.setMode(Group.MODE_FULL_ACCESS);
-        g.setGroupId(createRandomId());
+        g.setGroupId(generateGroupId(g.getName()));
         return g;
     }
 

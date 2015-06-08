@@ -9,8 +9,6 @@ import ru.sawim.roster.TreeNode;
 import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-
 
 public class Util {
     private ByteArrayOutputStream stream = new ByteArrayOutputStream();
@@ -574,7 +572,7 @@ public class Util {
         });
     }
 
-    private static void putCh(StringBuffer sb, int ch) {
+    private static void putCh(StringBuilder sb, int ch) {
         String s = Integer.toHexString(ch);
         sb.append("%");
         if (1 == s.length()) sb.append('0');
@@ -582,7 +580,7 @@ public class Util {
     }
 
     public static String urlEscape(String param) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (int i = 0; i < param.length(); ++i) {
             char ch = param.charAt(i);
             char lowerCh = Character.toLowerCase(ch);

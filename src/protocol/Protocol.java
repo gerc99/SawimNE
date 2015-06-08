@@ -304,11 +304,10 @@ abstract public class Protocol {
     protected void s_addedContact(Contact contact) {
     }
 
-    public final void addContact(Contact contact) {
+    public void addContact(Contact contact) {
         s_addContact(contact);
         contact.setTempFlag(false);
         cl_addContact(contact);
-        storage.save(this, contact, getGroup(contact));
         s_addedContact(contact);
     }
 
@@ -556,9 +555,8 @@ abstract public class Protocol {
         ChatHistory.instance.sort();
     }
 
-    public final void ui_changeContactStatus(Contact contact) {
+    public void ui_changeContactStatus(Contact contact) {
         ui_updateContact(contact);
-        getStorage().save(this, contact, getGroup(contact));
     }
 
     public final void ui_updateContact(final Contact contact) {
@@ -605,6 +603,10 @@ abstract public class Protocol {
     private void cl_removeGroup(final Group group) {
         roster.getGroupItems().remove(group);
         RosterHelper.getInstance().updateRoster(group);
+    }
+
+    public int generateGroupId(String groupName) {
+        return getUserId().hashCode() ^ groupName.hashCode();
     }
 
     public final void addLocalContact(Contact contact) {

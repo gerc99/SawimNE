@@ -6,11 +6,14 @@ import ru.sawim.comm.Util;
 
 import java.io.UnsupportedEncodingException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public final class XmlNode {
+
     public String name;
     public String value;
-    private Hashtable attribs = new Hashtable();
+
+    private ConcurrentHashMap<String, String> attribs = new ConcurrentHashMap<>();
     private List<XmlNode> children = new ArrayList<>();
 
     private static final int MAX_BIN_VALUE_SIZE = 54 * 1024;
@@ -47,7 +50,7 @@ public final class XmlNode {
     }
 
     public String getAttribute(String key) {
-        return (String) attribs.get(key);
+        return attribs.get(key);
     }
 
     public void putAttribute(String key, String value) {
@@ -65,7 +68,7 @@ public final class XmlNode {
             Enumeration e = attribs.keys();
             while (e.hasMoreElements()) {
                 String key = (String) e.nextElement();
-                if (key.startsWith(S_XMLNS + ":")) {
+                if (key.startsWith(S_XMLNS.concat(":"))) {
                     return getAttribute(key);
                 }
             }
@@ -131,7 +134,7 @@ public final class XmlNode {
         return out.toString();
     }
 
-    private void readEscapedChar(StringBuffer out, Socket socket) throws SawimException {
+    private void readEscapedChar(StringBuilder out, Socket socket) throws SawimException {
         StringBuilder buffer = new StringBuilder(6);
         int limit = 6;
         char ch = socket.readChar();
@@ -181,7 +184,7 @@ public final class XmlNode {
         if (endCh == ch) {
             return null;
         }
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         while (endCh != ch) {
             if (sb.length() < limit) {
                 if ('\t' == ch) {
@@ -216,9 +219,9 @@ public final class XmlNode {
             }
             return false;
         }
-        StringBuffer tagName = new StringBuffer();
+        StringBuilder tagName = new StringBuilder();
         while (' ' != ch && '>' != ch) {
-            tagName.append((char) ch);
+            tagName.append(ch);
             ch = socket.readChar();
             if ('/' == ch) {
                 setName(tagName.toString());
@@ -243,7 +246,7 @@ public final class XmlNode {
             }
             StringBuilder attrName = new StringBuilder();
             while ('=' != ch) {
-                attrName.append((char) ch);
+                attrName.append(ch);
                 ch = socket.readChar();
             }
 
@@ -411,7 +414,7 @@ public final class XmlNode {
         return null != getFirstNode(name);
     }
 
-    private String _toString(StringBuffer sb, String spaces) {
+    private String _toString(StringBuilder sb, String spaces) {
         sb.append(spaces).append("<").append(name);
         if (0 != attribs.size()) {
             Enumeration e = attribs.keys();
@@ -439,7 +442,7 @@ public final class XmlNode {
     }
 
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         _toString(sb, "");
         return sb.toString();
     }
@@ -536,13 +539,13 @@ public final class XmlNode {
         }
     }
 
-    public void toString(StringBuffer sb) {
+    public void toString(StringBuilder sb) {
         sb.append('<').append(name);
         if (0 != attribs.size()) {
             Enumeration e = attribs.keys();
             while (e.hasMoreElements()) {
                 String k = (String) e.nextElement();
-                String v = (String) attribs.get(k);
+                String v = attribs.get(k);
                 sb.append(' ').append(Util.xmlEscape(k)).append("='")
                         .append(Util.xmlEscape(v)).append("'");
             }

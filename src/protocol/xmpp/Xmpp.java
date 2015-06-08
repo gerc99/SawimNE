@@ -197,13 +197,19 @@ public final class Xmpp extends Protocol implements FormListener {
         return XmppSession.getInstance().isStreamManagementSupported(getUserId());
     }
 
+    public final void ui_changeContactStatus(Contact contact) {
+        super.ui_changeContactStatus(contact);
+        getStorage().save(this, contact, getGroup(contact));
+    }
+
+    public final void addContact(Contact contact) {
+        super.addContact(contact);
+        getStorage().save(this, contact, getGroup(contact));
+    }
+
     public static final int GENERAL_GROUP = R.string.group_general;
     public static final int GATE_GROUP = R.string.group_transports;
     public static final int CONFERENCE_GROUP = R.string.group_conferences;
-
-    private int generateGroupId(String groupName) {
-        return getUserId().hashCode() ^ groupName.hashCode();
-    }
 
     public final Group createGroup(String groupName) {
         Group group = new Group(groupName);

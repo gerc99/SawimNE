@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 import protocol.Contact;
 import protocol.Group;
+import protocol.Profile;
 import protocol.Protocol;
 import protocol.Roster;
 import protocol.xmpp.Xmpp;
@@ -53,6 +54,7 @@ public class RosterStorage {
     }
 
     public synchronized void load(Protocol protocol) {
+        if (protocol.getProfile().protocolType != Profile.PROTOCOL_JABBER) return;
         Roster roster = new Roster();
         Cursor cursor = null;
         try {

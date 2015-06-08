@@ -1241,33 +1241,33 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
         hideKeyboard();
         final String text = getText();
         resetText();
-        SawimApplication.getExecutor().execute(new Runnable() {
+        /*SawimApplication.getExecutor().execute(new Runnable() {
             @Override
-            public void run() {
+            public void run() {*/
                 if (chat != null) {
                     chat.sendMessage(text);
                 }
-                MyListView chatListView = chatViewLayout.getChatListsView().getChatListView();
-                if (chatListView != null) {
-                    chatListView.post(new Runnable() {
-                        @Override
-                        public void run() {
+                //MyListView chatListView = chatViewLayout.getChatListsView().getChatListView();
+                //if (chatListView != null) {
+                //    chatListView.post(new Runnable() {
+                //        @Override
+                //        public void run() {
                             if (chat != null) {
                                 chat.savedMessage = null;
                                 getMessagesAdapter().setPosition(-1);
                                 chat.currentPosition = 0;
                                 newMessageCount = 0;
-                                getMessagesAdapter().notifyDataSetChanged();
+                //                getMessagesAdapter().notifyDataSetChanged();
                                 if (isScrollEnd) {
                                     MyListView chatListView = chatViewLayout.getChatListsView().getChatListView();
                                     chatListView.setSelectionFromTop(getMessagesAdapter().getCount(), -chat.offset);
                                 }
                             }
-                        }
-                    });
-                }
-            }
-        });
+                //        }
+                //    });
+                //}
+        //    }
+        //});
     }
 
     public static void showAuthorizationDialog(final BaseActivity activity, final Chat newChat) {

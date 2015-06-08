@@ -137,8 +137,8 @@ public final class RosterHelper {
                 for (int i = 0; i < count; ++i) {
                     Protocol protocol = getProtocol(i);
                     protocol.load();
+                    autoConnect(i);
                 }
-                autoConnect();
             }
         });
     }
@@ -255,11 +255,12 @@ public final class RosterHelper {
     }
 
     public Group getGroupWithContacts(Group g) {
+        Group group = g;
         Protocol protocol = RosterHelper.getInstance().getProtocol(g);
         if (protocol != null && protocol.getGroupItems() != null) {
-            Group group = protocol.getGroupItems().get(g.getGroupId());
-            if (group != null) g = group;
+            g = protocol.getGroupItems().get(g.getGroupId());
         }
+        if (g == null) g = group;
         return g;
     }
 
@@ -298,12 +299,16 @@ public final class RosterHelper {
     public void autoConnect() {
         int count = getProtocolCount();
         for (int i = 0; i < count; ++i) {
-            Profile profile = Options.getAccount(i);
-            Protocol protocol = getProtocol(profile);
-            if (checkPassword(protocol)) {
-                if (profile.isConnected()) {
-                    protocol.connect();
-                }
+            autoConnect(i);
+        }
+    }
+
+    public void autoConnect(int i) {
+        Profile profile = Options.getAccount(i);
+        Protocol protocol = getProtocol(profile);
+        if (checkPassword(protocol)) {
+            if (profile.isConnected()) {
+                protocol.connect();
             }
         }
     }

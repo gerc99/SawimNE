@@ -25,12 +25,7 @@ import ru.sawim.modules.history.HistoryStorage;
 import ru.sawim.modules.search.UserInfo;
 import ru.sawim.roster.RosterHelper;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -1202,7 +1197,7 @@ public final class XmppConnection extends ClientConnection {
         userInfo.vCard.setValue("DESC", userInfo.about);
         userInfo.vCard.cleanXmlTree();
 
-        StringBuffer packet = new StringBuffer();
+        StringBuilder packet = new StringBuilder();
         packet.append("<iq type='set' to='").append(Util.xmlEscape(userInfo.uin))
                 .append("' id='").append(generateId()).append("'>");
         userInfo.vCard.toString(packet);
@@ -2186,7 +2181,7 @@ public final class XmppConnection extends ClientConnection {
 
         String quote = "\"";
         return Util.base64encode(StringConvertor.stringToByteArrayUtf8(
-                new StringBuffer().append("username=\"").append(user).append("\",realm=\"").append(realm)
+                new StringBuilder().append("username=\"").append(user).append("\",realm=\"").append(realm)
                         .append("\",nonce=\"").append(nonce).append("\",cnonce=\"").append(cnonce)
                         .append("\",nc=00000001,digest-uri=\"").append(digestUri)
                         .append("\",qop=auth,response=").append(quote).append(hResp.getDigestHex())
@@ -2235,7 +2230,7 @@ public final class XmppConnection extends ClientConnection {
     }
 
     private void parseRosterExchange(XmlNode x, String domain) {
-        StringBuffer xml = new StringBuffer();
+        StringBuilder xml = new StringBuilder();
         Xmpp j = protocol;
         List<XmppContact> subscribes = new ArrayList<>();
         for (int i = 0; i < x.childrenCount(); ++i) {
@@ -2292,7 +2287,7 @@ public final class XmppConnection extends ClientConnection {
             putPacketIntoQueue("<iq type='set' id='" + generateId()
                     + "'><query xmlns='jabber:iq:roster'>"
                     + xml.toString() + "</query></iq>");
-            xml = new StringBuffer();
+            xml = new StringBuilder();
             for (XmppContact subscribe : subscribes) {
                 xml.append("<presence type='subscribe' to='")
                         .append(Util.xmlEscape(subscribe.getUserId()))

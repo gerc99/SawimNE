@@ -301,7 +301,8 @@ public class RosterAdapter extends BaseAdapter implements View.OnClickListener {
     }
 
     void populateFromGroup(RosterItemView rosterItemView, Group g) {
-        Group group = RosterHelper.getInstance().getGroupWithContacts(g);
+        Group group = g;
+        g = RosterHelper.getInstance().getGroupWithContacts(g);
         if (g == null) g = group;
         rosterItemView.itemNameColor = Scheme.getColor(Scheme.THEME_GROUP);
         rosterItemView.itemNameFont = Typeface.DEFAULT;
