@@ -13,7 +13,6 @@ task wrapper(type: Wrapper) {
 }
 
 repositories {
-    maven { url "http://dl.bintray.com/populov/maven" }
     mavenCentral()
 }
 
