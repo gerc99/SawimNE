@@ -83,7 +83,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
     private void addServer(boolean active) {
         if (serverJid != null && 0 < serverJid.length()) {
             VirtualListItem item = model.createNewParser(active);
-            item.addDescription(serverJid, Scheme.THEME_TEXT, Scheme.FONT_STYLE_BOLD);
+            item.addDescription(serverJid, R.attr.text, Scheme.FONT_STYLE_BOLD);
             model.addPar(item);
             if (active) {
                 jids.addElement(serverJid);
@@ -130,13 +130,13 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
         String shortJid = makeShortJid(jid);
         String visibleJid = makeReadableJid(shortJid);
         VirtualListItem item = model.createNewParser(true);
-        item.addLabel(20, visibleJid, Scheme.THEME_TEXT,
+        item.addLabel(20, visibleJid, R.attr.text,
                 shortView ? Scheme.FONT_STYLE_PLAIN : Scheme.FONT_STYLE_BOLD);
         if (!shortView) {
             if (StringConvertor.isEmpty(name)) {
                 name = shortJid;
             }
-            item.addDescription(20, name, Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
+            item.addDescription(20, name, R.attr.text, Scheme.FONT_STYLE_PLAIN);
         }
 
         model.addPar(item);
@@ -304,7 +304,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
         }
         VirtualListItem wait = model.createNewParser(false);
         wait.addDescription(JLocale.getString(R.string.wait),
-                Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
+                R.attr.text, Scheme.FONT_STYLE_PLAIN);
         model.addPar(wait);
         screen.updateModel();
         xmpp.getConnection().requestDiscoItems(serverJid);
@@ -329,7 +329,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
     void setError(String description) {
         clear();
         VirtualListItem error = model.createNewParser(false);
-        error.addDescription(description, Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
+        error.addDescription(description, R.attr.text, Scheme.FONT_STYLE_PLAIN);
         model.addPar(error);
         screen.updateModel();
     }

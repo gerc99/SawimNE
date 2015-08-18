@@ -6,6 +6,8 @@ import android.graphics.Paint;
 import android.text.TextPaint;
 import android.view.View;
 import android.widget.LinearLayout;
+
+import ru.sawim.R;
 import ru.sawim.SawimResources;
 import ru.sawim.Scheme;
 import ru.sawim.widget.IcsLinearLayout;
@@ -69,7 +71,7 @@ public class ChatListsView extends IcsLinearLayout {
     public void dispatchDraw(Canvas canvas) {
         super.dispatchDraw(canvas);
         if (isShowDividerForUnreadMessage) {
-            textPaint.setColor(Scheme.getColor(Scheme.THEME_UNREAD_MESSAGE_DIVIDER));
+            textPaint.setColor(Scheme.getColor(R.attr.unread_message_divider));
             canvas.drawLine(getPaddingLeft(), getHeight(), getChildAt(CHAT_LIST_VIEW_INDEX).getWidth() - getPaddingRight(), getHeight(), textPaint);
         }
     }

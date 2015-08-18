@@ -5,6 +5,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import protocol.Contact;
+import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.SawimResources;
 import ru.sawim.Scheme;
@@ -85,7 +86,7 @@ public class MessagesAdapter extends BaseAdapter {
         String nick = mData.getNick();
         boolean incoming = mData.isIncoming();
 
-        item.setLinkTextColor(Scheme.getColor(Scheme.THEME_LINKS));
+        item.setLinkTextColor(Scheme.getColor(R.attr.link));
         item.setTypeface(mData.isHighLight() ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT);
         item.setBackgroundColor(0);
         item.setLayout(mData.layout);
@@ -98,9 +99,9 @@ public class MessagesAdapter extends BaseAdapter {
             item.setTextSize(SawimApplication.getFontSize());
             item.setMsgTextSize(SawimApplication.getFontSize());
             if (mData.isMe()) {
-                item.setTextColor(Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG));
+                item.setTextColor(Scheme.getColor(incoming ? R.attr.chat_in_msg_text : R.attr.chat_out_msg_text));
             } else {
-                item.setTextColor(Scheme.getColor(Scheme.THEME_CHAT_INMSG));
+                item.setTextColor(Scheme.getColor(R.attr.chat_in_msg_text));
             }
         } else {
             if (incoming) {
@@ -112,20 +113,20 @@ public class MessagesAdapter extends BaseAdapter {
             }
             item.setTextSize(SawimApplication.getFontSize());
             item.setCheckImage(mData.getIconIndex() == Message.ICON_OUT_MSG_FROM_CLIENT ? SawimResources.MESSAGE_ICON_CHECK.getBitmap() : null);
-            item.setNick(Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG),
+            item.setNick(Scheme.getColor(incoming ? R.attr.chat_in_msg_text : R.attr.chat_out_msg_text),
                     SawimApplication.getFontSize(), Typeface.DEFAULT_BOLD, nick);
-            item.setMsgTime(Scheme.getColor(incoming ? Scheme.THEME_CHAT_INMSG : Scheme.THEME_CHAT_OUTMSG),
+            item.setMsgTime(Scheme.getColor(incoming ? R.attr.chat_in_msg_text : R.attr.chat_out_msg_text),
                     SawimApplication.getFontSize() * 2 / 3, Typeface.DEFAULT, mData.getStrTime());
             item.setMsgTextSize(SawimApplication.getFontSize());
             item.setTextColor(Scheme.getColor(mData.getMessColor()));
         }
         if (query != null) {
             item.setLayout(MessageItemView.makeLayout(
-                    Util.highlightText(query, mData.layout.getText().toString(), Scheme.getColor(Scheme.THEME_LINKS)),
+                    Util.highlightText(query, mData.layout.getText().toString(), Scheme.getColor(R.attr.link)),
                     Typeface.DEFAULT_BOLD, mData.layout.getWidth()));
         }
         if (mData.isMarked() && isMultiQuoteMode) {
-            item.setTextColor(Scheme.getColor(Scheme.THEME_ITEM_SELECTED));
+            item.setTextColor(Scheme.getColor(R.attr.item_selected));
         }
         item.setShowDivider(position == index);
         item.repaint();

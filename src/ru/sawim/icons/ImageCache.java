@@ -95,16 +95,15 @@ public class ImageCache {
     }
 
     public boolean save(File pathCacheFolder, String hash, byte[] avatarBytes) {
-        Bitmap bitmap = null;
-        File file = null;
         if (hash != null) {
-            file = getFile(pathCacheFolder, hash);
+            File file = getFile(pathCacheFolder, hash);
             if (file.exists()) {
                 return true;
             }
-            bitmap = Avatars.getRoundedBitmap(Util.getAvatarBitmap(avatarBytes, AVATAR_SIZE));
+            Bitmap bitmap = Avatars.getRoundedBitmap(Util.getAvatarBitmap(avatarBytes, AVATAR_SIZE));
+            return save(file, bitmap);
         }
-        return save(file, bitmap);
+        return false;
     }
 
     public boolean save(File file, Bitmap bitmap) {

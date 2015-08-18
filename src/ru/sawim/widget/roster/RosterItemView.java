@@ -2,10 +2,13 @@ package ru.sawim.widget.roster;
 
 import android.content.Context;
 import android.graphics.*;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.view.View;
+
+import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
 import ru.sawim.widget.Util;
@@ -52,8 +55,16 @@ public class RosterItemView extends View {
 
     public RosterItemView(Context context) {
         super(context);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            setLayerType(View.LAYER_TYPE_HARDWARE, null);
+        }
         setPadding(PADDING_W, PADDING_H, PADDING_W, PADDING_H);
         initPaint();
+    }
+
+    @Override
+    public boolean hasOverlappingRendering() {
+        return false;
     }
 
     public static void initPaint() {
@@ -66,7 +77,7 @@ public class RosterItemView extends View {
     }
 
     public void addLayer(String text) {
-        itemDescColor = Scheme.getColor(Scheme.THEME_PROTOCOL_BACKGROUND);
+        itemDescColor = Scheme.getColor(R.attr.protocol_background);
         itemDesc = text;
     }
 
@@ -242,9 +253,10 @@ public class RosterItemView extends View {
 
         boolean isLayer = itemName == null && itemDesc != null;
         if (isShowDivider) {
-            paintDivider.setColor(Scheme.getColor(Scheme.THEME_DIVIDER));
+            paintDivider.setColor(Scheme.getColor(R.attr.divider));
             paintDivider.setStrokeWidth((int) ((isLayer ? 2 : 1) * getResources().getDisplayMetrics().density + 0.5f));
-            canvas.drawLine(getPaddingLeft(), getScrollY() + getMeasuredHeight(), getWidth() - getPaddingRight(), getScrollY() + getMeasuredHeight(), paintDivider);
+            canvas.drawLine(getPaddingLeft() + (itemFirstImage == null ? 0 : itemFirstImage.getWidth()),
+                    getScrollY() + getMeasuredHeight(), getWidth() - getPaddingRight(), getScrollY() + getMeasuredHeight(), paintDivider);
         }
     }
 }

@@ -59,12 +59,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-    }
-
-    @Override
-    public SQLiteDatabase getWritableDatabase() {
-        SQLiteDatabase db = super.getWritableDatabase();
-        db.execSQL("PRAGMA foreign_keys=ON;");
-        return db;
+        if (oldVersion <= 4 && newVersion >= 7) {
+            try {
+                db.execSQL("DROP TABLE IF EXISTS " + RosterStorage.storeName);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

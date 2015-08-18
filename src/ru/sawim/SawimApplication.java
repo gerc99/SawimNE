@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -27,11 +28,18 @@ import ru.sawim.roster.RosterHelper;
 import ru.sawim.service.SawimService;
 import ru.sawim.service.SawimServiceConnection;
 import ru.sawim.text.TextFormatter;
+import ru.sawim.widget.Util;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.X509TrustManager;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.security.SecureRandom;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -49,7 +57,7 @@ public class SawimApplication extends Application {
     public static final String LOG_TAG = SawimApplication.class.getSimpleName();
 
     public static final String DATABASE_NAME = "sawim.db";
-    public static final int DATABASE_VERSION = 4;
+    public static final int DATABASE_VERSION = 7;
 
     public static String NAME;
     public static String VERSION;
@@ -70,6 +78,7 @@ public class SawimApplication extends Application {
     private final SawimServiceConnection serviceConnection = new SawimServiceConnection();
     private final NetworkStateReceiver networkStateReceiver = new NetworkStateReceiver();
     public boolean isBindService = false;
+    public static final HashMap<String, String> actionQueue = new HashMap<>();
 
     private DatabaseHelper databaseHelper;
 
@@ -93,7 +102,7 @@ public class SawimApplication extends Application {
         VERSION = getVersion();
         Thread.setDefaultUncaughtExceptionHandler(ExceptionHandler.inContext(getContext()));
         super.onCreate();
-        new ANRWatchDog().start();
+        //new ANRWatchDog().start();
         databaseHelper = new DatabaseHelper(getApplicationContext());
         uiHandler = new Handler(Looper.getMainLooper());
         backgroundExecutor = Executors
@@ -114,29 +123,29 @@ public class SawimApplication extends Application {
 
         HomeDirectory.init();
         Options.init();
-        Scheme.load();
         updateOptions();
         Updater.startUIUpdater();
-        try {
-            gc();
-            Emotions.instance.load();
-            Answerer.getInstance().load();
-            gc();
-            sc = SSLContext.getInstance("TLS");
-            MemorizingTrustManager mtm = new MemorizingTrustManager(this);
-            sc.init(null, new X509TrustManager[] {mtm}, new SecureRandom());
-            Options.loadAccounts();
-            RosterHelper.getInstance().initAccounts();
-            RosterHelper.getInstance().loadAccounts();
-        } catch (Exception e) {
-            DebugLog.panic("init", e);
-        }
-        DebugLog.startTests();
-        TextFormatter.init();
 
         new Thread(new Runnable() {
             @Override
             public void run() {
+                try {
+                    gc();
+                    Emotions.instance.load();
+                    Answerer.getInstance().load();
+                    gc();
+                    sc = SSLContext.getInstance("TLS");
+                    MemorizingTrustManager mtm = new MemorizingTrustManager(SawimApplication.this);
+                    sc.init(null, new X509TrustManager[] {mtm}, new SecureRandom());
+                    Options.loadAccounts();
+                    RosterHelper.getInstance().initAccounts();
+                    RosterHelper.getInstance().loadAccounts();
+                } catch (Exception e) {
+                    DebugLog.panic("init", e);
+                }
+                DebugLog.startTests();
+                TextFormatter.init();
+
                 StorageConvertor.historyConvert();
                 int count = RosterHelper.getInstance().getProtocolCount();
                 for (int i = 0; i < count; ++i) {
@@ -145,7 +154,7 @@ public class SawimApplication extends Application {
                 }
 
             }
-        },"loadMessage").start();
+        },"load").start();
     }
 
     public Handler getUiHandler() {

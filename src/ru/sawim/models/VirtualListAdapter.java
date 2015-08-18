@@ -86,8 +86,8 @@ public class VirtualListAdapter extends BaseAdapter {
         if (element == null) return convertView;
         ((ViewGroup) convertView).setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
 
-        holder.labelView.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
-        holder.descView.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
+        holder.labelView.setTextColor(Scheme.getColor(R.attr.text));
+        holder.descView.setTextColor(Scheme.getColor(R.attr.text));
         holder.descView.setOnTextLinkClickListener(new TextLinkClick(null, null));
 
         holder.labelView.setVisibility(TextView.GONE);
@@ -117,7 +117,7 @@ public class VirtualListAdapter extends BaseAdapter {
             if (element.getThemeTextDesc() > -1) {
                 holder.descView.setTextColor(Scheme.getColor(element.getThemeTextDesc()));
             }
-            holder.descView.setLinkTextColor(Scheme.getColor(Scheme.THEME_LINKS));
+            holder.descView.setLinkTextColor(Scheme.getColor(R.attr.link));
             holder.descView.setTextSize(SawimApplication.getFontSize());
             holder.descView.setText(element.getDescStr());
             holder.descView.repaint();
@@ -129,7 +129,7 @@ public class VirtualListAdapter extends BaseAdapter {
         }
         LinearLayout activeItem = (LinearLayout) convertView;
         if (i == selectedItem && selectedItem != -1) {
-            activeItem.setBackgroundColor(Scheme.getColor(Scheme.THEME_ITEM_SELECTED));
+            activeItem.setBackgroundColor(Scheme.getColor(R.attr.item_selected));
         } else {
             activeItem.setBackgroundColor(0);
         }

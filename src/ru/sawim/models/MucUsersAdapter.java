@@ -243,17 +243,17 @@ public class MucUsersAdapter extends BaseAdapter {
                             });
                         }
                     });
-            rosterItemView.itemFirstImage = avatar;
             rosterItemView.avatarBorderColor = Contact.getStatusColor(c.status);
+            rosterItemView.itemFirstImage = avatar;
         }
 
     //    rosterItemView.itemSecondImage = protocol.getStatusInfo().getIcon(c.status).getImage().getBitmap();
-        rosterItemView.itemNameColor = Scheme.getColor(Scheme.THEME_TEXT);
+        rosterItemView.itemNameColor = Scheme.getColor(R.attr.text);
         rosterItemView.itemNameFont = Typeface.DEFAULT;
         rosterItemView.itemName = c.resource;
         if (SawimApplication.showStatusLine) {
             String statusMessage = c.statusText == null ? protocol.getStatusInfo().getName(c.status) : c.statusText;
-            rosterItemView.itemDescColor = Scheme.getColor(Scheme.THEME_CONTACT_STATUS);
+            rosterItemView.itemDescColor = Scheme.getColor(R.attr.contact_status);
             rosterItemView.itemDesc = statusMessage;
         }
         Icon ic = protocol.clientInfo.getIcon(c.client);

@@ -12,12 +12,10 @@ import ru.sawim.comm.JLocale;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.icons.Icon;
 import ru.sawim.icons.ImageList;
-import ru.sawim.io.RosterStorage;
 import ru.sawim.modules.history.HistoryStorage;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.roster.TreeNode;
 import ru.sawim.view.menu.MyMenu;
-
 
 abstract public class Contact implements TreeNode {
     public static final ImageList serverListsIcons = ImageList.createImageList("/serverlists.png");
@@ -66,9 +64,6 @@ abstract public class Contact implements TreeNode {
 
     public byte subcontactsS() {
         return (byte) 0;
-    }
-
-    public void setConference(boolean flag) {
     }
 
     public boolean isConference() {
@@ -264,17 +259,17 @@ abstract public class Contact implements TreeNode {
         return isOnline() || hasChat() || isTemp();
     }
 
-    public final byte getTextTheme() {
+    public final int getTextTheme() {
         if (isTemp()) {
-            return Scheme.THEME_CONTACT_TEMP;
+            return R.attr.contact_temp;
         }
         if (hasChat()) {
-            return Scheme.THEME_CONTACT_WITH_CHAT;
+            return R.attr.contact_with_chat;
         }
         if (isOnline()) {
-            return Scheme.THEME_CONTACT_ONLINE;
+            return R.attr.contact_online;
         }
-        return Scheme.THEME_CONTACT_OFFLINE;
+        return R.attr.contact_offline;
     }
 
     public final String getText() {

@@ -257,7 +257,7 @@ public class XmppContact extends Contact {
             if (resource.equals(currentResource)) {
                 currentResource = null;
             }
-            xmpp.getStorage().delete(xmpp, this, getExistSubContact(resource));
+            xmpp.getStorage().delete(this, getExistSubContact(resource));
             removeSubContact(resource);
             if (0 == subcontacts.size()) {
                 setOfflineStatus();
@@ -269,7 +269,7 @@ public class XmppContact extends Contact {
             c.status = index;
             c.statusText = statusText;
             c.roleText = roleText;
-            xmpp.getStorage().save(xmpp, this, xmpp.getGroup(this), c);
+            xmpp.getStorage().save(this, c);
         }
     }
 

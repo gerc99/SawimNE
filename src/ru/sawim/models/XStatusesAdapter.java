@@ -65,7 +65,7 @@ public class XStatusesAdapter extends BaseAdapter {
         int item = getItem(position);
         LinearLayout activeItem = (LinearLayout) row;
         if (item == selectedItem) {
-            activeItem.setBackgroundColor(Scheme.getColor(Scheme.THEME_ITEM_SELECTED));
+            activeItem.setBackgroundColor(Scheme.getColor(R.attr.item_selected));
         } else {
             activeItem.setBackgroundColor(0);
         }
@@ -86,7 +86,7 @@ public class XStatusesAdapter extends BaseAdapter {
 
         void populateFrom(int item) {
             Icon ic = statusInfo.getIcon(item - 1);
-            itemXStatus.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
+            itemXStatus.setTextColor(Scheme.getColor(R.attr.text));
             itemXStatus.setText(statusInfo.getName(item - 1));
             if (ic != null) {
                 itemImage.setVisibility(ImageView.VISIBLE);

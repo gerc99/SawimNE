@@ -1,10 +1,13 @@
 package ru.sawim.widget.chat;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.LinearLayout;
+
+import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.SawimResources;
 import ru.sawim.Scheme;
@@ -64,7 +67,7 @@ public class ChatBarView extends IcsLinearLayout {
     }
 
     public void updateTextView(String text) {
-        itemView.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
+        itemView.setTextColor(Color.WHITE);
         itemView.setTextSize(SawimApplication.getFontSize());
         itemView.setText(text);
     }

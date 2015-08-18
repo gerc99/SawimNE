@@ -5,15 +5,23 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.*;
+import android.graphics.drawable.Drawable;
 import android.media.ThumbnailUtils;
 import android.os.Build;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.BackgroundColorSpan;
 import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.LinearLayout;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import ru.sawim.R;
 import ru.sawim.Scheme;
 
 /**
@@ -158,6 +166,22 @@ public class Util {
         return result;
     }
 
+    public static int getColorFromAttribute(Context context, int resid) {
+        TypedValue typedValue = new TypedValue();
+        Resources.Theme theme = context.getTheme();
+        theme.resolveAttribute(resid, typedValue, true);
+        int color = typedValue.data;
+        return color;
+    }
+
+    public static Drawable getDrawableFromAttribute(Context context, int theme, int resid) {
+        TypedArray a = context.getTheme().obtainStyledAttributes(theme, new int[]{resid});
+        int attributeResourceId = a.getResourceId(0, 0);
+        Drawable drawable = context.getResources().getDrawable(attributeResourceId);
+        a.recycle();
+        return drawable;
+    }
+
     public static int dipToPixels(Context context, int dipValue) {
         Resources r = context.getResources();
         int px = (int) (dipValue * r.getDisplayMetrics().density + 0.5f);
@@ -172,5 +196,26 @@ public class Util {
     public static boolean isNeedToFixSpinnerAdapter() {
         // workaround for buggy GingerBread Spinner
         return Scheme.isBlack() && Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN;
+    }
+
+    public static int copyAllBytes(InputStream in, OutputStream out, long length) throws IOException {
+        int byteCount = 0;
+        long contentLength = length;
+        if (contentLength > Integer.MAX_VALUE) {
+            throw new IllegalArgumentException("HTTP entity too large to be buffered in memory");
+        }
+        int BUFFER_SIZE = 4096;
+        int bufferSize = (contentLength <= 0) ? BUFFER_SIZE : (int) contentLength;
+        final byte[] buffer = new byte[bufferSize];
+        while (true) {
+            int read = in.read(buffer);
+            if (read == -1) {
+                break;
+            }
+            out.write(buffer, 0, read);
+            byteCount += read;
+        }
+        in.close();
+        return byteCount;
     }
 }

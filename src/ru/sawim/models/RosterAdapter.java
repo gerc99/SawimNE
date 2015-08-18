@@ -26,6 +26,7 @@ import ru.sawim.roster.ProtocolBranch;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.roster.TreeNode;
 import ru.sawim.widget.MyImageButton;
+import ru.sawim.widget.Util;
 import ru.sawim.widget.roster.RosterItemView;
 
 import java.io.File;
@@ -184,6 +185,7 @@ public class RosterAdapter extends BaseAdapter implements View.OnClickListener {
     }
 
     private void buildRoster(Protocol p) {
+        if (p == null) return;
         if (RosterHelper.getInstance().useGroups) {
             rebuildFlatItemsWG(p, items);
         } else {
@@ -272,7 +274,7 @@ public class RosterAdapter extends BaseAdapter implements View.OnClickListener {
     }
 
     void populateFromProtocol(RosterItemView rosterItemView, ProtocolBranch o) {
-        rosterItemView.itemNameColor = Scheme.getColor(Scheme.THEME_GROUP);
+        rosterItemView.itemNameColor = Scheme.getColor(R.attr.group);
         rosterItemView.itemNameFont = Typeface.DEFAULT;
         rosterItemView.itemName = o.getText();
 
@@ -304,7 +306,7 @@ public class RosterAdapter extends BaseAdapter implements View.OnClickListener {
         Group group = g;
         g = RosterHelper.getInstance().getGroupWithContacts(g);
         if (g == null) g = group;
-        rosterItemView.itemNameColor = Scheme.getColor(Scheme.THEME_GROUP);
+        rosterItemView.itemNameColor = Scheme.getColor(R.attr.group);
         rosterItemView.itemNameFont = Typeface.DEFAULT;
         rosterItemView.itemName = g.getText();
 
@@ -324,7 +326,7 @@ public class RosterAdapter extends BaseAdapter implements View.OnClickListener {
                     item.getText() : item.getText() + " (" + item.subcontactsS() + ")";
         if (SawimApplication.showStatusLine) {
             String statusMessage = roster.getStatusMessage(p, item);
-            rosterItemView.itemDescColor = Scheme.getColor(Scheme.THEME_CONTACT_STATUS);
+            rosterItemView.itemDescColor = Scheme.getColor(R.attr.contact_status);
             rosterItemView.itemDesc = statusMessage;
         }
         if (Options.getBoolean(JLocale.getString(R.string.pref_users_avatars))) {
@@ -439,7 +441,7 @@ public class RosterAdapter extends BaseAdapter implements View.OnClickListener {
                     LinearLayout.LayoutParams rosterLinearLayout = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
                     rosterLinearLayout.gravity = Gravity.LEFT;
                     rosterLinearLayout.weight = 1;
-                    convertView.setBackgroundColor(Scheme.getColor(Scheme.THEME_ITEM_SELECTED));
+                    convertView.setBackgroundColor(Scheme.getColor(R.attr.item_selected));
                     rosterItemView.setLayoutParams(rosterLinearLayout);
                     imageButton.setImageDrawable(SawimResources.MENU_ICON);
                     ((ViewGroup) convertView).setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);

@@ -48,7 +48,7 @@ public class ChatViewRoot extends IcsLinearLayout {
     public void showHint() {
         hideHint();
         TextView hint = new TextView(getContext());
-        hint.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
+        hint.setTextColor(Scheme.getColor(R.attr.text));
         hint.setTextSize(SawimApplication.getFontSize());
         hint.setGravity(Gravity.CENTER);
         hint.setText(R.string.select_contact);

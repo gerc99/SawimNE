@@ -41,7 +41,7 @@ public class HistoryStorage {
         addText(md.getIconIndex(), md.isIncoming(), md.getNick(), md.getText().toString(), md.getTime(), md.getRowData());
     }
 
-    public void addText(int iconIndex, boolean isIncoming, String nick, String text, long time, short rowData) {
+    public synchronized void addText(int iconIndex, boolean isIncoming, String nick, String text, long time, short rowData) {
         try {
             ContentValues values = new ContentValues();
             values.put(DatabaseHelper.ACCOUNT_ID, protocolId);
@@ -58,7 +58,7 @@ public class HistoryStorage {
         }
     }
 
-    public void updateText(MessData md) {
+    public synchronized void updateText(MessData md) {
         try {
             ContentValues values = new ContentValues();
             values.put(DatabaseHelper.SENDING_STATE, md.getIconIndex());
@@ -151,8 +151,8 @@ public class HistoryStorage {
         boolean hasMessage = false;
         Cursor cursor = null;
         try {
-            cursor = SawimApplication.getDatabaseHelper().getReadableDatabase().query(DatabaseHelper.TABLE_CHAT_HISTORY, null, WHERE_ACC_CONTACT_ID,
-                    new String[]{protocolId, uniqueUserId}, null, null, DatabaseHelper.ROW_AUTO_ID + " DESC");
+            cursor = SawimApplication.getDatabaseHelper().getReadableDatabase().query(DatabaseHelper.TABLE_CHAT_HISTORY, null, /*WHERE_ACC_CONTACT_ID*/DatabaseHelper.CONTACT_ID + " = ?",
+                    new String[]{/*protocolId, */uniqueUserId}, null, null, DatabaseHelper.ROW_AUTO_ID + " DESC");
             if (cursor.moveToLast()) {
                 do {
                     short rowData = cursor.getShort(cursor.getColumnIndex(DatabaseHelper.ROW_DATA));

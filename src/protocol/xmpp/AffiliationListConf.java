@@ -113,7 +113,7 @@ public final class AffiliationListConf implements FormListener, TextBoxView.Text
     private void addServer(boolean active) {
         if (0 < serverJid.length()) {
             VirtualListItem item = model.createNewParser(active);
-            item.addDescription(serverJid, Scheme.THEME_TEXT, Scheme.FONT_STYLE_BOLD);
+            item.addDescription(serverJid, R.attr.text, Scheme.FONT_STYLE_BOLD);
             model.addPar(item);
             screen.updateModel();
             if (active) {
@@ -143,12 +143,12 @@ public final class AffiliationListConf implements FormListener, TextBoxView.Text
             return;
         }
         VirtualListItem item = model.createNewParser(true);
-        item.addLabel(jid, Scheme.THEME_CHAT_INMSG,
+        item.addLabel(jid, R.attr.chat_in_msg_text,
                 Scheme.FONT_STYLE_BOLD);
         if (StringConvertor.isEmpty(reasone)) {
             reasone = "";
         }
-        item.addDescription(reasone, Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
+        item.addDescription(reasone, R.attr.text, Scheme.FONT_STYLE_PLAIN);
         model.addPar(item);
         screen.updateModel();
         jids.addElement(jid);
@@ -169,7 +169,7 @@ public final class AffiliationListConf implements FormListener, TextBoxView.Text
         clear();
         VirtualListItem wait = model.createNewParser(false);
         wait.addDescription(JLocale.getString(R.string.wait),
-                Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
+                R.attr.text, Scheme.FONT_STYLE_PLAIN);
         model.addPar(wait);
         screen.updateModel();
     }

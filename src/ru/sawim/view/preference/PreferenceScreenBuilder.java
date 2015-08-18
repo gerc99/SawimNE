@@ -32,7 +32,7 @@ public class PreferenceScreenBuilder {
                 Preference preference = preferenceScreen.findPreference(key);
                 SawimApplication.updateOptions();
                 if (TextUtils.equals(key, activity.getString(R.string.pref_color_scheme))) {
-                    Scheme.setColorScheme(Scheme.getThemeId(((ListPreference) preference).getValue()));
+                    Scheme.setColorScheme(((ListPreference) preference).getValue());
                     Intent intent = activity.getIntent().addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                     activity.finishFromChild(activity);
                     activity.startActivity(intent);

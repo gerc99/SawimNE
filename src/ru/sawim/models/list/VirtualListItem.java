@@ -22,8 +22,8 @@ public class VirtualListItem {
     private Drawable image;
     private CharSequence label = null;
     private CharSequence descStr = null;
-    private byte themeTextLabel = -1;
-    private byte themeTextDesc = -1;
+    private int themeTextLabel = -1;
+    private int themeTextDesc = -1;
     private byte font;
     private boolean itemSelectable;
     private OnGroupListListener groupListListener;
@@ -33,26 +33,26 @@ public class VirtualListItem {
         this.itemSelectable = itemSelectable;
     }
 
-    public void addLabel(CharSequence text, byte themeText, byte font) {
+    public void addLabel(CharSequence text, int themeText, byte font) {
         label = text;
         this.themeTextLabel = themeText;
         this.font = font;
     }
 
-    public void addLabel(int marginLeft, CharSequence text, byte themeText, byte font) {
+    public void addLabel(int marginLeft, CharSequence text, int themeText, byte font) {
         this.marginLeft = marginLeft;
         label = text;
         this.themeTextLabel = themeText;
         this.font = font;
     }
 
-    public void addDescription(CharSequence text, byte themeText, byte font) {
+    public void addDescription(CharSequence text, int themeText, byte font) {
         descStr = text;
         this.themeTextDesc = themeText;
         this.font = font;
     }
 
-    public void addDescription(int marginLeft, CharSequence text, byte themeText, byte font) {
+    public void addDescription(int marginLeft, CharSequence text, int themeText, byte font) {
         this.marginLeft = marginLeft;
         descStr = text;
         this.themeTextDesc = themeText;
@@ -63,7 +63,7 @@ public class VirtualListItem {
         return groupListListener;
     }
 
-    public void addGroup(int marginLeft, CharSequence text, byte themeText, byte font, OnGroupListListener groupListListener) {
+    public void addGroup(int marginLeft, CharSequence text, int themeText, byte font, OnGroupListListener groupListListener) {
         addImage(opened ? SawimResources.groupDownIcon : SawimResources.groupRightIcons);
         addDescription(marginLeft, text, themeText, font);
         this.groupListListener = groupListListener;
@@ -81,11 +81,11 @@ public class VirtualListItem {
         return builder;
     }
 
-    public byte getThemeTextLabel() {
+    public int getThemeTextLabel() {
         return themeTextLabel;
     }
 
-    public byte getThemeTextDesc() {
+    public int getThemeTextDesc() {
         return themeTextDesc;
     }
 

@@ -34,7 +34,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 public final class XmppConnection extends ClientConnection {
 
     private static final String LOG_TAG = XmppConnection.class.getSimpleName();
-    public static final boolean DEBUGLOG = false;
+    public static final boolean DEBUGLOG = true;
     private static final int MESSAGE_COUNT_AFTER_CONNECT = 20;
 
 /*	String smSessionId = "";
@@ -241,6 +241,8 @@ public final class XmppConnection extends ClientConnection {
     }
 
     public void putPacketIntoQueue(String packet) {
+        if (DEBUGLOG)
+            DebugLog.println("[PUT PACKET]:\n" + packet);
         packets.add(packet);
     }
 
@@ -410,8 +412,6 @@ public final class XmppConnection extends ClientConnection {
         socket.start();
 		if (isSessionManagementEnabled()) {
             usePong();
-            getXmpp().load();
-            getXmpp().s_updateOnlineStatus();
             setProgress(100);
         } else {
 			requestDiscoServerItems();
@@ -424,21 +424,26 @@ public final class XmppConnection extends ClientConnection {
 	
 	private boolean tryRebind() throws SawimException {
         setProgress(50);
+        XmppSession.getInstance().load(this);
+        if (rebindSessionId != null) {
+            write("<rebind xmlns='p1:rebind'><jid>" +
+                    fullJid_ + "</jid>" +
+                    "<sid>" + rebindSessionId + "</sid></rebind>");
+            XmlNode rebind = readXmlNode(true);
+            if (rebind != null && rebind.is("rebind")) {
+                DebugLog.systemPrintln("[INFO-JABBER] rebound session ID=" + rebindSessionId);
+                rebindEnabled = true;
+                getXmpp().s_updateOnlineStatus();
 
-        write("<rebind xmlns='p1:rebind'><jid>" +
-                fullJid_ + "</jid>" +
-                "<sid>" + rebindSessionId + "</sid></rebind>");
-
-        XmlNode rebind = readXmlNode(true);
-        if (rebind != null && rebind.is("rebind")) {
-            DebugLog.systemPrintln("[INFO-JABBER] rebound session ID=" + rebindSessionId);
-            rebindEnabled = true;
-            XmppSession.getInstance().save(this);
-            XmppSession.getInstance().load(this);
-        //    getXmpp().safeLoad();
-            setAuthStatus(true);
-            return true;
+                XmppSession.getInstance().save(this);
+                XmppSession.getInstance().load(this);
+                getXmpp().load();
+                setAuthStatus(true);
+                return true;
+            }
         }
+        XmppSession.getInstance().clearRebindSessionId(this);
+        //getXmpp().getStorage().setOfflineStatuses(getXmpp());
         DebugLog.systemPrintln("[INFO-JABBER] failed to rebind");
         return false;
     }
@@ -493,6 +498,7 @@ public final class XmppConnection extends ClientConnection {
 
     private void saveRebindSessionId(XmlNode x) throws SawimException {
         if (x.is("stream:stream")) {
+            Log.e("saveRebindSessionId", ""+rebindSupported);
             XmppSession.getInstance().load(this);
             if (rebindSupported) {
                 rebindSessionId = x.getId();
@@ -508,7 +514,6 @@ public final class XmppConnection extends ClientConnection {
         x2 = x.getFirstNode("rebind", "p1:rebind");
         if (x2 != null) {
             rebindSupported = true;
-            XmppSession.getInstance().load(this);
             if (tryRebind()) {
                 return;
             }

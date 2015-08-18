@@ -262,8 +262,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
             }
         });
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-            messageEditor.setBackgroundColor(Scheme.getColor(Scheme.THEME_BACKGROUND));
-            messageEditor.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
+            messageEditor.setTextColor(Scheme.getColor(R.attr.text));
         }
         sendByEnter = Options.getBoolean(JLocale.getString(R.string.pref_simple_input));
         if (sendByEnter) {
@@ -404,9 +403,11 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
         }
         if (savedInstanceState != null) {
             Protocol protocol = RosterHelper.getInstance().getProtocol(savedInstanceState.getString(PROTOCOL_ID));
-            Contact contact = protocol.getItemByUID(savedInstanceState.getString(CONTACT_ID));
-            if (contact != null) {
-                initChat(protocol, contact);
+            if (protocol != null) {
+                Contact contact = protocol.getItemByUID(savedInstanceState.getString(CONTACT_ID));
+                if (contact != null) {
+                    initChat(protocol, contact);
+                }
             }
         }
     }
@@ -708,6 +709,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
 
     @Override
     public void updateChat() {
+        if (getActivity() == null) return;
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -720,6 +722,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
 
     @Override
     public void updateMucList() {
+        if (getActivity() == null) return;
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -813,17 +816,19 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                 });
             }
             final List<MessData> finalMessDataList = messDataList;
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (finalMessDataList != null) {
-                        getMessagesAdapter().getItems().addAll(0, finalMessDataList);
-                        setPositionAfterHistoryLoaded(hasUnreadMessages, isBottomScroll,
-                                isFirstOpenChat, isScroll, isLoad, !finalMessDataList.isEmpty(), oldCount);
-                        messagesLoaded = true;
+            if (getActivity() != null) {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (finalMessDataList != null) {
+                            getMessagesAdapter().getItems().addAll(0, finalMessDataList);
+                            setPositionAfterHistoryLoaded(hasUnreadMessages, isBottomScroll,
+                                    isFirstOpenChat, isScroll, isLoad, !finalMessDataList.isEmpty(), oldCount);
+                            messagesLoaded = true;
+                        }
                     }
-                }
-            });
+                });
+            }
         }
     }
 
@@ -840,19 +845,21 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
             public void run() {
                 final List<MessData> messDataList = chat.getHistory().addNextListMessages(chat, unreadMessageCount, 0);
                 if (!messDataList.isEmpty()) {
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            getMessagesAdapter().getItems().addAll(messDataList);
-                            getMessagesAdapter().notifyDataSetChanged();
-                            if (isBottomScroll) {
-                                MyListView chatListView = chatViewLayout.getChatListsView().getChatListView();
-                                chatListView.setSelectionFromTop(getMessagesAdapter().getCount() - unreadMessageCount, chatListView.getHeight() / 4);
+                    if (getActivity() != null) {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                getMessagesAdapter().getItems().addAll(messDataList);
+                                getMessagesAdapter().notifyDataSetChanged();
+                                if (isBottomScroll) {
+                                    MyListView chatListView = chatViewLayout.getChatListsView().getChatListView();
+                                    chatListView.setSelectionFromTop(getMessagesAdapter().getCount() - unreadMessageCount, chatListView.getHeight() / 4);
+                                }
+                                chat.currentPosition = -1;
+                                unreadMessageCount = 0;
                             }
-                            chat.currentPosition = -1;
-                            unreadMessageCount = 0;
-                        }
-                    });
+                        });
+                    }
                 }
             }
         });
@@ -907,18 +914,20 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                         messDataList = chat.getHistory().addNextListMessages(chat, position, oldCount);
                     }
                     final List<MessData> finalMessDataList = messDataList;
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (finalMessDataList != null) {
-                                getMessagesAdapter().getItems().addAll(0, finalMessDataList);
+                    if (getActivity() != null) {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (finalMessDataList != null) {
+                                    getMessagesAdapter().getItems().addAll(0, finalMessDataList);
+                                }
+                                getMessagesAdapter().notifyDataSetChanged();
+                                MyListView chatListView = chatViewLayout.getChatListsView().getChatListView();
+                                chatListView.setSelection(position);
+                                searchPositionsCount--;
                             }
-                            getMessagesAdapter().notifyDataSetChanged();
-                            MyListView chatListView = chatViewLayout.getChatListsView().getChatListView();
-                            chatListView.setSelection(position);
-                            searchPositionsCount--;
-                        }
-                    });
+                        });
+                    }
                 }
             });
         } else {
@@ -1241,33 +1250,33 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
         hideKeyboard();
         final String text = getText();
         resetText();
-        /*SawimApplication.getExecutor().execute(new Runnable() {
+        SawimApplication.getExecutor().execute(new Runnable() {
             @Override
-            public void run() {*/
+            public void run() {
                 if (chat != null) {
                     chat.sendMessage(text);
                 }
-                //MyListView chatListView = chatViewLayout.getChatListsView().getChatListView();
-                //if (chatListView != null) {
-                //    chatListView.post(new Runnable() {
-                //        @Override
-                //        public void run() {
+                MyListView chatListView = chatViewLayout.getChatListsView().getChatListView();
+                if (chatListView != null) {
+                    chatListView.post(new Runnable() {
+                        @Override
+                        public void run() {
                             if (chat != null) {
                                 chat.savedMessage = null;
                                 getMessagesAdapter().setPosition(-1);
                                 chat.currentPosition = 0;
                                 newMessageCount = 0;
-                //                getMessagesAdapter().notifyDataSetChanged();
+                                getMessagesAdapter().notifyDataSetChanged();
                                 if (isScrollEnd) {
                                     MyListView chatListView = chatViewLayout.getChatListsView().getChatListView();
                                     chatListView.setSelectionFromTop(getMessagesAdapter().getCount(), -chat.offset);
                                 }
                             }
-                //        }
-                //    });
-                //}
-        //    }
-        //});
+                        }
+                    });
+                }
+            }
+        });
     }
 
     public static void showAuthorizationDialog(final BaseActivity activity, final Chat newChat) {

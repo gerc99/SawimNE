@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import protocol.Contact;
@@ -17,9 +18,9 @@ import protocol.Protocol;
 import ru.sawim.Options;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
-import ru.sawim.Scheme;
 import ru.sawim.chat.Chat;
 import ru.sawim.chat.ChatHistory;
+import ru.sawim.listener.OnAccountsLoaded;
 import ru.sawim.modules.DebugLog;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.view.*;
@@ -29,25 +30,27 @@ import ru.sawim.view.menu.MyMenuItem;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SawimActivity extends BaseActivity {
+public class SawimActivity extends BaseActivity implements OnAccountsLoaded {
 
     public static final String LOG_TAG = SawimActivity.class.getSimpleName();
     public static final String NOTIFY = "ru.sawim.notify";
     public static final String NOTIFY_REPLY = "ru.sawim.notify.reply";
     public static final String NOTIFY_CAPTCHA = "ru.sawim.notify.captcha";
     public static final String NOTIFY_UPLOAD = "ru.sawim.notify.upload";
-    public static final String SHOW_FRAGMENT = "ru.sawim.show_fragment";
+    public static final String ACTION_ACC_LOADED = "onAccountsLoaded";
 
-    private static List<Fragment> backgroundFragmentsStack = new ArrayList<>();
     private boolean isOpenNewChat = false;
-    private BroadcastReceiver broadcastReceiver;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        setTheme(Scheme.isBlack() ? R.style.BaseTheme : R.style.BaseThemeLight);
+        BaseActivity.setTheme(this);
         super.onCreate(savedInstanceState);
 
         setContentView(SawimApplication.isManyPane() ? R.layout.main_twopane : R.layout.main);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
         if (savedInstanceState == null && !SawimApplication.isManyPane()) {
             RosterView rosterView = new RosterView();
             rosterView.setMode(RosterView.MODE_DEFAULT);
@@ -55,15 +58,12 @@ public class SawimActivity extends BaseActivity {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.fragment_container, rosterView, RosterView.TAG).commit();
         }
-        broadcastReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                if (intent.getAction().equals(SHOW_FRAGMENT)) {
-                    showLastFragmentFromBackStack();
-                }
-            }
-        };
-        registerReceiver(broadcastReceiver, new IntentFilter(SHOW_FRAGMENT));
+
+        if (SawimApplication.actionQueue.get(ACTION_ACC_LOADED) != null) {
+            onAccountsLoaded();
+            SawimApplication.actionQueue.remove(ACTION_ACC_LOADED);
+        }
+        RosterHelper.getInstance().setOnAccountsLoaded(this);
     }
 
     @Override
@@ -148,30 +148,13 @@ public class SawimActivity extends BaseActivity {
         return false;
     }
 
-    private void showLastFragmentFromBackStack() {
-        if (backgroundFragmentsStack.size() > 0) {
-            Fragment fragment = backgroundFragmentsStack.get(backgroundFragmentsStack.size() - 1);
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment, fragment.getTag());
-            backgroundFragmentsStack.remove(backgroundFragmentsStack.size() - 1);
-        }
-    }
-
-    public static void addFragmentToStack(Fragment fragment) {
-        if (SawimApplication.isPaused()) {
-            backgroundFragmentsStack.add(fragment);
-        }
-    }
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unregisterReceiver(broadcastReceiver);
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        SawimApplication.maximize();
+    public void onAccountsLoaded() {
         FragmentManager fragmentManager = getSupportFragmentManager();
         StartWindowView startWindowView = (StartWindowView) fragmentManager.findFragmentByTag(StartWindowView.TAG);
         //RosterHelper.getInstance().loadAccounts();
@@ -194,10 +177,15 @@ public class SawimActivity extends BaseActivity {
             if (startWindowView != null)
                 fragmentManager.popBackStack();
         }
+        RosterHelper.getInstance().setOnAccountsLoaded(null);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        SawimApplication.maximize();
         handleIntent();
         if (!isOpenNewChat && SawimApplication.isManyPane()) openChat(null, null);
-
-        showLastFragmentFromBackStack();
     }
 
     @Override

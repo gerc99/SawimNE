@@ -193,6 +193,12 @@ public final class Xmpp extends Protocol implements FormListener {
         }
     }
 
+    protected void setStatusesOffline() {
+        if (!isStreamManagementSupported()) {
+            super.setStatusesOffline();
+        }
+    }
+
     public boolean isStreamManagementSupported() {
         return XmppSession.getInstance().isStreamManagementSupported(getUserId());
     }
@@ -281,6 +287,7 @@ public final class Xmpp extends Protocol implements FormListener {
 
     protected void s_updateOnlineStatus() {
         connection.setStatus(getProfile().statusIndex, "", PRIORITY);
+        if (isStreamManagementSupported()) return;
         if (isReconnect()) {
             for (int i = 0; i < rejoinList.size(); ++i) {
                 String jid = rejoinList.get(i);
@@ -407,8 +414,8 @@ public final class Xmpp extends Protocol implements FormListener {
     }
 
     protected String processUin(String uin) {
-        String android_id = Settings.Secure.getString(SawimApplication.getContext().getContentResolver(),Settings.Secure.ANDROID_ID);
-        resource = Jid.getResource(uin, "Sawim"+" ("+android_id+")");
+        String android_id = Settings.Secure.getString(SawimApplication.getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+        resource = Jid.getResource(uin, "Sawim" + " (" + android_id + ")");
         return Jid.getBareJid(uin);
     }
 

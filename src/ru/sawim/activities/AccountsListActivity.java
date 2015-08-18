@@ -3,6 +3,7 @@ package ru.sawim.activities;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -26,6 +27,8 @@ public class AccountsListActivity extends BaseActivity implements XmppRegistrati
         setTheme(Scheme.isBlack() ? R.style.BaseTheme : R.style.BaseThemeLight);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(true);
         getSupportActionBar().setDisplayUseLogoEnabled(true);

@@ -1,17 +1,25 @@
 package ru.sawim.widget.chat;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.text.*;
 import android.text.style.BackgroundColorSpan;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
+
+import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.SawimResources;
 import ru.sawim.Scheme;
@@ -30,6 +38,7 @@ public class MessageItemView extends View {
 
     private static final TextPaint messageTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
     private static final TextPaint textPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
+    static Paint highlightPaint;
 
     public static final int PADDING_LEFT = Util.dipToPixels(SawimApplication.getContext(), 18);
     public static final int PADDING_TOP = Util.dipToPixels(SawimApplication.getContext(), 7);
@@ -40,7 +49,7 @@ public class MessageItemView extends View {
     public static final int BACKGROUND_INCOMING = 1;
     public static final int BACKGROUND_OUTCOMING = 2;
 
-    private int backgroundIndex = BACKGROUND_NONE;
+    //private int backgroundIndex = BACKGROUND_NONE;
     private String msgTimeText;
     private String nickText;
     private int nickColor;
@@ -65,7 +74,22 @@ public class MessageItemView extends View {
 
     public MessageItemView(Context context) {
         super(context);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            setLayerType(View.LAYER_TYPE_HARDWARE, null);
+        }
         textPaint.setAntiAlias(true);
+
+        if (highlightPaint == null) {
+            highlightPaint = new Paint();
+            highlightPaint.setStyle(Paint.Style.FILL);
+            highlightPaint.setColor(0xff79919d);
+            highlightPaint.setAntiAlias(true);
+        }
+    }
+
+    @Override
+    public boolean hasOverlappingRendering() {
+        return false;
     }
 
     public void setTextSize(int size) {
@@ -84,7 +108,7 @@ public class MessageItemView extends View {
         if (width <= 0) return null;
         DisplayMetrics displayMetrics = SawimApplication.getContext().getResources().getDisplayMetrics();
         messageTextPaint.setAntiAlias(true);
-        messageTextPaint.linkColor = Scheme.getColor(Scheme.THEME_LINKS);
+        messageTextPaint.linkColor = Scheme.getColor(R.attr.link);
         messageTextPaint.setTextAlign(Paint.Align.LEFT);
         messageTextPaint.setTextSize(SawimApplication.getFontSize() * displayMetrics.scaledDensity);
         messageTextPaint.setTypeface(msgTextTypeface);
@@ -141,7 +165,7 @@ public class MessageItemView extends View {
     }
 
     public void setBackgroundIndex(int index) {
-        this.backgroundIndex = index;
+        //this.backgroundIndex = index;
     }
 
     public void setNick(int nickColor, int nickSize, Typeface nickTypeface, String nickText) {
@@ -192,16 +216,18 @@ public class MessageItemView extends View {
         int width = getWidth();
         int stopX = width - getPaddingRight();
         if (isShowDivider) {
-            textPaint.setColor(Scheme.getColor(Scheme.THEME_TEXT));
+            textPaint.setColor(Scheme.getColor(R.attr.text));
             canvas.drawLine(getPaddingLeft(), getScrollY() - 2, stopX, getScrollY() - 2, textPaint);
         }
-        if (backgroundIndex == BACKGROUND_INCOMING) {
-            setDrawableBounds(SawimResources.backgroundDrawableIn, 0, getPaddingTop() / 2, width - getPaddingRight() / 2, getHeight() - getPaddingBottom() / 2);
-            SawimResources.backgroundDrawableIn.draw(canvas);
+        /*if (backgroundIndex == BACKGROUND_INCOMING) {
+            //setDrawableBounds(SawimResources.backgroundDrawableIn, 0, getPaddingTop() / 2, width - getPaddingRight() / 2, getHeight() - getPaddingBottom() / 2);
+            //SawimResources.backgroundDrawableIn.draw(canvas);
+            canvas.drawRoundRect(new RectF(0, titleHeight, width - getPaddingRight() / 2, getHeight() - getPaddingBottom() / 2), 5, 5, highlightPaint);
         } else if (backgroundIndex == BACKGROUND_OUTCOMING) {
-            setDrawableBounds(SawimResources.backgroundDrawableOut, getPaddingLeft() / 2, getPaddingTop() / 2, width - getPaddingRight() / 2, getHeight() - getPaddingBottom() / 2);
-            SawimResources.backgroundDrawableOut.draw(canvas);
-        }
+            //setDrawableBounds(SawimResources.backgroundDrawableOut, getPaddingLeft() / 2, getPaddingTop() / 2, width - getPaddingRight() / 2, getHeight() - getPaddingBottom() / 2);
+            //SawimResources.backgroundDrawableOut.draw(canvas);
+            canvas.drawRoundRect(new RectF(getPaddingLeft() / 2, titleHeight, width - getPaddingRight() / 2, getHeight() - getPaddingBottom() / 2), 5, 5, highlightPaint);
+        }*/
 
         if (nickText != null) {
             textPaint.setColor(nickColor);
@@ -261,7 +287,7 @@ public class MessageItemView extends View {
         return low;
     }
 
-    private static final BackgroundColorSpan linkHighlightColor = new BackgroundColorSpan(Scheme.getColor(Scheme.THEME_LINKS_HIGHLIGHT));
+    private static final BackgroundColorSpan linkHighlightColor = new BackgroundColorSpan(Scheme.getColor(R.attr.link_highlight));
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (layout.getText() == null) return super.onTouchEvent(event);

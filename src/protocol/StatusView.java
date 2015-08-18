@@ -78,7 +78,7 @@ public final class StatusView {
             if (null != img) {
                 line.addImage(img.getImage());
             }
-            line.addDescription(str, Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
+            line.addDescription(str, R.attr.text, Scheme.FONT_STYLE_PLAIN);
             model.addPar(line);
             list.updateModel();
         }
@@ -87,7 +87,7 @@ public final class StatusView {
     public void addStatusText(String text) {
         if (!StringConvertor.isEmpty(text)) {
             VirtualListItem line = model.createNewParser(true);
-            line.addDescription(text, Scheme.THEME_PARAM_VALUE, Scheme.FONT_STYLE_PLAIN);
+            line.addDescription(text, R.attr.param_value, Scheme.FONT_STYLE_PLAIN);
             model.addPar(line);
             list.updateModel();
         }

@@ -13,7 +13,7 @@ import ru.sawim.view.SawimFragment;
 public class EmptyActivity extends BaseActivity {
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         setTheme(Scheme.isBlack() ? R.style.BaseTheme : R.style.BaseThemeLight);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);

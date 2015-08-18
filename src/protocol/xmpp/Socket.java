@@ -10,6 +10,7 @@
 package protocol.xmpp;
 
 import protocol.net.TcpSocket;
+import ru.sawim.SawimApplication;
 import ru.sawim.SawimException;
 import ru.sawim.modules.DebugLog;
 import ru.sawim.modules.zlib.ZLibInputStream;
@@ -23,7 +24,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 /**
  * @author Vladimir Krukov
  */
-final class Socket extends Thread {
+final class Socket implements Runnable {
     private TcpSocket socket = new TcpSocket();
     private volatile boolean connected;
     private byte[] inputBuffer = new byte[1024];
@@ -105,7 +106,11 @@ final class Socket extends Thread {
         inputBufferIndex = 0;
         inputBufferLength = read(inputBuffer);
         while (0 == inputBufferLength) {
-            //sleep(100);
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             inputBufferLength = read(inputBuffer);
         }
     }
@@ -173,5 +178,9 @@ final class Socket extends Thread {
         }
         if (readObject instanceof SawimException) throw (SawimException) readObject;
         return (XmlNode) readObject;
+    }
+
+    public void start() {
+        SawimApplication.getExecutor().execute(this);
     }
 }

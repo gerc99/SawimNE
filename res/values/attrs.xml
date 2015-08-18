@@ -1,24 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-     Copyright (C) 2011 The Android Open Source Project
-
-
-     Licensed under the Apache License, Version 2.0 (the "License");
-     you may not use this file except in compliance with the License.
-     You may obtain a copy of the License at
-
-
-          http://www.apache.org/licenses/LICENSE-2.0
-
-
-     Unless required by applicable law or agreed to in writing, software
-     distributed under the License is distributed on an "AS IS" BASIS,
-     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     See the License for the specific language governing permissions and
-     limitations under the License.
--->
-
 
 <resources>
-
+     <declare-styleable name="Theme.AppCompat.Light">
+          <attr name="text" format="color" />
+          <attr name="item_selected" format="color" />
+          <attr name="param_value" format="color" />
+          <attr name="chat_in_msg_text" format="color" />
+          <attr name="chat_out_msg_text" format="color" />
+          <attr name="contact_online" format="color" />
+          <attr name="contact_with_chat" format="color" />
+          <attr name="contact_offline" format="color" />
+          <attr name="contact_temp" format="color" />
+          <attr name="group" format="color" />
+          <attr name="chat_highlight_msg" format="color" />
+          <attr name="contact_status" format="color" />
+          <attr name="protocol_background" format="color" />
+          <attr name="link" format="color" />
+          <attr name="link_highlight" format="color" />
+          <attr name="unread_message_divider" format="color" />
+     </declare-styleable>
+     <declare-styleable name="Theme.AppCompat" parent="Theme.AppCompat.Light"/>
 </resources>

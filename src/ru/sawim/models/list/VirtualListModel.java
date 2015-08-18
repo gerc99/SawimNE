@@ -1,6 +1,8 @@
 package ru.sawim.models.list;
 
 import android.graphics.Bitmap;
+
+import ru.sawim.R;
 import ru.sawim.Scheme;
 import ru.sawim.comm.JLocale;
 import ru.sawim.comm.StringConvertor;
@@ -33,7 +35,7 @@ public final class VirtualListModel {
     public final void addItem(String text, boolean active) {
         byte type = active ? Scheme.FONT_STYLE_BOLD : Scheme.FONT_STYLE_PLAIN;
         VirtualListItem item = createNewParser(true);
-        item.addDescription(text, Scheme.THEME_TEXT, type);
+        item.addDescription(text, R.attr.text, type);
         addPar(item);
     }
 
@@ -47,7 +49,7 @@ public final class VirtualListModel {
 
     public final void setInfoMessage(String text) {
         VirtualListItem par = createNewParser(false);
-        par.addDescription(text, Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
+        par.addDescription(text, R.attr.text, Scheme.FONT_STYLE_PLAIN);
         addPar(par);
     }
 
@@ -55,7 +57,7 @@ public final class VirtualListModel {
         if (null != header) {
             VirtualListItem line = createNewParser(false);
             line.addLabel(header,
-                    Scheme.THEME_TEXT, Scheme.FONT_STYLE_BOLD);
+                    R.attr.text, Scheme.FONT_STYLE_BOLD);
             addPar(line);
             header = null;
         }
@@ -70,8 +72,8 @@ public final class VirtualListModel {
             addHeader();
             VirtualListItem line = createNewParser(true);
             line.addLabel(langStr + ": ",
-                    Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
-            line.addDescription(str, Scheme.THEME_PARAM_VALUE, Scheme.FONT_STYLE_PLAIN);
+                    R.attr.text, Scheme.FONT_STYLE_PLAIN);
+            line.addDescription(str, R.attr.param_value, Scheme.FONT_STYLE_PLAIN);
             addPar(line);
         }
     }
@@ -86,7 +88,7 @@ public final class VirtualListModel {
             VirtualListItem line = createNewParser(true);
             if (!StringConvertor.isEmpty(langStr)) {
                 line.addLabel(langStr + ": ",
-                        Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
+                        R.attr.text, Scheme.FONT_STYLE_PLAIN);
             }
             line.addImage(img.getImage());
             addPar(line);
@@ -99,7 +101,7 @@ public final class VirtualListModel {
             VirtualListItem line = createNewParser(false);
             if (!StringConvertor.isEmpty(langStr)) {
                 line.addLabel(langStr + ": ",
-                        Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
+                        R.attr.text, Scheme.FONT_STYLE_PLAIN);
             }
             line.addBitmap(img);
             addPar(line);

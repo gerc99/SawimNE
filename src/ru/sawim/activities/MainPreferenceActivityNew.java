@@ -6,8 +6,10 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
-import android.support.v7.app.ActionBarActivity;;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+
 import ru.sawim.*;
 import ru.sawim.view.preference.PreferenceScreenBuilder;
 
@@ -15,13 +17,15 @@ import ru.sawim.view.preference.PreferenceScreenBuilder;
  * Created by gerc on 09.01.2015.
  */
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-public class MainPreferenceActivityNew extends ActionBarActivity {
+public class MainPreferenceActivityNew extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setTheme(Scheme.isBlack() ? R.style.BaseTheme : R.style.BaseThemeLight);
+        BaseActivity.setTheme(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         getFragmentManager().beginTransaction()
                 .add(R.id.fragment_container, new SettingsFragment())
                 .commit();

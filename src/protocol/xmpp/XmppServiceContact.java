@@ -301,13 +301,12 @@ public class XmppServiceContact extends XmppContact {
     public void setSubject(String subject) {
         XmppContact.SubContact c = getContact(getMyName());
         if (isConference && isOnline()) {
-            RosterHelper.getInstance().setSubject(getUserId(), subject);
             setStatus(c.status, subject);
         }
     }
 
     public String getSubject() {
-        return RosterHelper.getInstance().getSubject(getUserId());
+        return getStatusText();
     }
 
     public XmppContact.SubContact getContact(String nick) {

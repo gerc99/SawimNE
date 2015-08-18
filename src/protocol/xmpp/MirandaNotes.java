@@ -126,7 +126,7 @@ public final class MirandaNotes {
         notes.removeAllElements();
         VirtualListItem wait = model.createNewParser(true);
         wait.addDescription(JLocale.getString(R.string.wait),
-                Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
+                R.attr.text, Scheme.FONT_STYLE_PLAIN);
         model.addPar(wait);
         xmpp.getConnection().requestMirandaNotes();
         screen.show(activity);
@@ -144,8 +144,8 @@ public final class MirandaNotes {
 
     private void addNote(Note note) {
         VirtualListItem parser = model.createNewParser(true);
-        parser.addLabel(note.title + "\n" + "*" + note.tags, Scheme.THEME_PARAM_VALUE, Scheme.FONT_STYLE_BOLD);
-        parser.addDescription(note.text, Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
+        parser.addLabel(note.title + "\n" + "*" + note.tags, R.attr.param_value, Scheme.FONT_STYLE_BOLD);
+        parser.addDescription(note.text, R.attr.text, Scheme.FONT_STYLE_PLAIN);
         model.addPar(parser);
         screen.updateModel();
     }

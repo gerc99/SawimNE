@@ -184,9 +184,9 @@ public final class DebugLog {
     private synchronized void print(String text) {
         VirtualListItem record = model.createNewParser(true);
         String date = Util.getLocalDateString(SawimApplication.getCurrentGmtTime(), true);
-        record.addLabel(date + ": ", Scheme.THEME_NUMBER,
+        record.addLabel(date + ": ", R.attr.text,
                 Scheme.FONT_STYLE_PLAIN);
-        record.addDescription(text, Scheme.THEME_TEXT, Scheme.FONT_STYLE_PLAIN);
+        record.addDescription(text, R.attr.text, Scheme.FONT_STYLE_PLAIN);
 
         model.addPar(record);
         removeOldRecords();

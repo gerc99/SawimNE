@@ -14,6 +14,8 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
+
+import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
 import ru.sawim.text.InternalURLSpan;
@@ -115,7 +117,7 @@ public class MyTextView extends View {
         return false;
     }
 
-    private static final BackgroundColorSpan linkHighlightColor = new BackgroundColorSpan(Scheme.getColor(Scheme.THEME_LINKS_HIGHLIGHT));
+    private static final BackgroundColorSpan linkHighlightColor = new BackgroundColorSpan(Scheme.getColor(R.attr.link_highlight));
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (text == null) return super.onTouchEvent(event);

@@ -1,167 +1,95 @@
 package ru.sawim;
 
-import ru.sawim.comm.Config;
+import android.content.Context;
+
+import java.util.HashMap;
+
 import ru.sawim.comm.JLocale;
-import ru.sawim.comm.Util;
-
-import java.util.Vector;
-
+import ru.sawim.widget.Util;
 
 public class Scheme {
-
-    public static final byte THEME_BACKGROUND = 0;
-    public static final byte THEME_TEXT = 1;
-    public static final byte THEME_ITEM_SELECTED = 2;
-    public static final byte THEME_PARAM_VALUE = 3;
-
-    public static final byte THEME_CHAT_INMSG = 4;
-    public static final byte THEME_CHAT_OUTMSG = 5;
-
-    public static final byte THEME_CONTACT_ONLINE = 6;
-    public static final byte THEME_CONTACT_WITH_CHAT = 7;
-    public static final byte THEME_CONTACT_OFFLINE = 8;
-    public static final byte THEME_CONTACT_TEMP = 9;
-
-    public static final byte THEME_NUMBER = 10;
-
-    public static final byte THEME_GROUP = 11;
-    public static final byte THEME_CHAT_HIGHLIGHT_MSG = 12;
-    public static final byte THEME_CONTACT_STATUS = 13;
-    public static final byte THEME_PROTOCOL_BACKGROUND = 14;
-    public static final byte THEME_LINKS = 15;
-    public static final byte THEME_LINKS_HIGHLIGHT = 16;
-    public static final byte THEME_DIVIDER = 17;
-    public static final byte THEME_UNREAD_MESSAGE_DIVIDER = 18;
 
     public static final byte FONT_STYLE_PLAIN = 0;
     public static final byte FONT_STYLE_BOLD = 1;
 
-    private static boolean[] isBlack;
-
     private Scheme() {
     }
 
-    private static final int[] baseTheme = {
-            0xE4E4E4,
-            0x000000,
-            0xc8c8c8,
-            0xCB0000,
-            0xCB0000,
-            0x33B5E5,
-            0x000000,
-            0x669900,
-            0x000000,
-            0x777777,
-            0xA00000,
-            0x000000,
-            0xff8800,
-            0x777777,
-            0x000000,
-            0x0099CB,
-            0xB0F0FF,
-            0xafafaf,
-            0x669900};
+    private static HashMap<Integer, Integer> themeColorsMap = new HashMap<>();
 
-    private static int[] currentTheme = new int[baseTheme.length];
-    private static int[][] themeColors;
-    private static String[] themeNames;
-    private static int oldTheme;
+    private static final int[] themeColors = new int[] {
+            R.attr.text,
+            R.attr.item_selected,
+            R.attr.param_value,
+            R.attr.chat_in_msg_text,
+            R.attr.chat_out_msg_text,
+            R.attr.contact_online,
+            R.attr.contact_with_chat,
+            R.attr.contact_offline,
+            R.attr.contact_temp,
+            R.attr.group,
+            R.attr.chat_highlight_msg,
+            R.attr.contact_status,
+            R.attr.protocol_background,
+            R.attr.link,
+            R.attr.link_highlight,
+            R.attr.divider,
+            R.attr.unread_message_divider
+    };
 
-    public static void load() {
-        setColorScheme(baseTheme);
+    private static String[] themeNames = new String[] {"Light", "Black"};
+    private static String currentTheme;
+    private static String oldTheme = getSavedTheme();
+    private static boolean isLoad;
+    private static boolean isBlackTheme;
 
-        Vector themes = new Vector();
-        try {
-            String content = Config.loadResource("/themes.txt");
-            Config.parseIniConfig(content, themes);
-        } catch (Exception ignored) {
+    public static void load(Context context) {
+        if (!isLoad) {
+            themeColorsMap.clear();
+            for (int themeColor : themeColors) {
+                themeColorsMap.put(themeColor, Util.getColorFromAttribute(context, themeColor));
+            }
+            isLoad = true;
         }
-        isBlack = new boolean[themes.size() + 1];
-        themeNames = new String[themes.size() + 1];
-        themeColors = new int[themes.size() + 1][];
+    }
 
-        themeNames[0] = "Light Holo";
-        themeColors[0] = baseTheme;
-        for (int i = 0; i < themes.size(); ++i) {
-            Config config = (Config) themes.elementAt(i);
-            isBlack[i + 1] = Boolean.valueOf(config.getValues()[0]);
-            themeNames[i + 1] = config.getName();
-            themeColors[i + 1] = configToTheme(config);
-        }
-        Scheme.setColorScheme(getThemeId());
+    public static void init() {
+        currentTheme = getSavedTheme();
+        isBlackTheme = getSavedTheme().equals(themeNames[1]);
     }
 
     public static boolean isBlack() {
-        return isBlack[getThemeId()];
-    }
-
-    private static int[] configToTheme(Config config) {
-        String[] keys = config.getKeys();
-        String[] values = config.getValues();
-        int[] theme = new int[baseTheme.length];
-        System.arraycopy(baseTheme, 0, theme, 0, theme.length);
-        try {
-            for (int keyIndex = 2; keyIndex < keys.length; ++keyIndex) {
-                int index = Util.strToIntDef(keys[keyIndex], -1);
-                if ((0 <= index) && (index < theme.length)) {
-                    theme[index] = Integer.parseInt(values[keyIndex].substring(2), 16);
-                    if (1 == index) {
-                        theme[12] = theme[11] = theme[1];
-                    } else if (8 == index) {
-                        theme[13] = theme[8];
-                    }
-                }
-            }
-        } catch (Exception ignored) {
-        }
-        return theme;
-    }
-
-    public static int[] getScheme() {
-        return currentTheme;
+        return getSavedTheme().equals(themeNames[1]);
     }
 
     public static String[] getSchemeNames() {
         return themeNames;
     }
 
-    public static void setColorScheme(int schemeNum) {
-        if (themeNames.length <= schemeNum) {
-            schemeNum = 0;
-        }
-        setColorScheme(themeColors[schemeNum]);
+    public static String getSavedTheme() {
+        return Options.getString(JLocale.getString(R.string.pref_color_scheme));
     }
 
-    private static void setColorScheme(int[] scheme) {
-        System.arraycopy(scheme, 0, currentTheme, 0, currentTheme.length);
-    }
-
-    public static int getThemeId() {
-        return getThemeId(Options.getString(JLocale.getString(R.string.pref_color_scheme)));
-    }
-
-    public static int getThemeId(String theme) {
-        for (int i = 0; i < themeNames.length; ++i) {
-            if (theme.equals(themeNames[i])) {
-                return i;
-            }
-        }
-        return 0;
-    }
-
-    public static boolean isChangeTheme(int newTheme) {
-        if (oldTheme != newTheme) {
+    public static boolean isChangeTheme(String newTheme) {
+        if (!currentTheme.equals(newTheme)) return true;
+        if (oldTheme != null && !oldTheme.equals(newTheme)) {
             oldTheme = newTheme;
+            //isBlackTheme = !isBlackTheme;
+            isLoad = false;
             return true;
         }
         return false;
     }
 
-    public static int getColor(byte color) {
-        return 0xff000000 | getScheme()[color];
+    public static int getColor(int color) {
+        return 0xff000000 | themeColorsMap.get(color);
     }
 
     public static int getInversColor(int c) {
-        return 0xFF550000 ^ getScheme()[c];
+        return 0xFF550000 ^ themeColorsMap.get(c);
+    }
+
+    public static void setColorScheme(String colorScheme) {
+        currentTheme = colorScheme;
     }
 }

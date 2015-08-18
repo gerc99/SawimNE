@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.widget.Toast;
 import ru.sawim.activities.SawimActivity;
 import ru.sawim.comm.Util;
+import ru.sawim.listener.OnAccountsLoaded;
 import ru.sawim.listener.OnUpdateChat;
 import ru.sawim.listener.OnUpdateRoster;
 import protocol.*;
@@ -21,7 +22,6 @@ import ru.sawim.comm.StringConvertor;
 import ru.sawim.forms.ManageContactListForm;
 import ru.sawim.forms.SmsForm;
 import ru.sawim.modules.FileTransfer;
-import ru.sawim.view.LoginView;
 import ru.sawim.view.StatusesView;
 import ru.sawim.view.XStatusesView;
 import ru.sawim.view.menu.MyMenu;
@@ -44,7 +44,8 @@ public final class RosterHelper {
 
     private Contact currentContact;
     private List<FileTransfer> transfers = new ArrayList<FileTransfer>();
-    private OnUpdateRoster onUpdateRoster;
+    private OnUpdateRoster updateRoster;
+    private OnAccountsLoaded accountsLoaded;
     public boolean useGroups;
     private Protocol[] protocolList;
     private int count = 0;
@@ -92,13 +93,13 @@ public final class RosterHelper {
                 addProtocol(profile, true);
             }
         }
-        for (int i = 0; i < protocols.length; ++i) {
+        /*for (int i = 0; i < protocols.length; ++i) {
             Protocol protocol = protocols[i];
             if (null != protocol) {
                 SawimApplication.getInstance().setStatus(protocol, StatusInfo.STATUS_OFFLINE, "");
                 protocol.dismiss();
             }
-        }
+        }*/
     }
 
     public void setCurrentProtocol() {
@@ -139,6 +140,10 @@ public final class RosterHelper {
                     protocol.load();
                     autoConnect(i);
                 }
+                if (accountsLoaded != null) {
+                    accountsLoaded.onAccountsLoaded();
+                }
+                SawimApplication.actionQueue.put(SawimActivity.ACTION_ACC_LOADED, SawimActivity.ACTION_ACC_LOADED);
             }
         });
     }
@@ -221,6 +226,7 @@ public final class RosterHelper {
     }
 
     public final Protocol getProtocol(int accountIndex) {
+        if (protocolList == null) return null;
         return protocolList[accountIndex];
     }
 
@@ -283,14 +289,6 @@ public final class RosterHelper {
         if (protocol.getPassword() == null || "".equals(protocol.getPassword())) {
             Profile profile = protocol.getProfile();
             int editAccountNum = Options.getAccountIndex(profile);
-            LoginView loginView = new LoginView();
-            loginView.init(profile.protocolType, editAccountNum, true, new LoginView.OnAddListener() {
-                @Override
-                public void onAdd() {
-                }
-            });
-            SawimActivity.addFragmentToStack(loginView);
-            SawimApplication.getContext().sendBroadcast(new Intent(SawimActivity.SHOW_FRAGMENT));
             return false;
         }
         return true;
@@ -389,17 +387,17 @@ public final class RosterHelper {
     }
 
     public final void updateRoster() {
-        if (onUpdateRoster != null)
-            onUpdateRoster.updateRoster();
+        if (updateRoster != null)
+            updateRoster.updateRoster();
     }
 
     public void updateProgressBar() {
-        if (onUpdateRoster != null)
-            onUpdateRoster.updateProgressBar();
+        if (updateRoster != null)
+            updateRoster.updateProgressBar();
     }
 
     public void setOnUpdateRoster(OnUpdateRoster l) {
-        onUpdateRoster = l;
+        updateRoster = l;
     }
 
     public void setCurrPage(int curr) {
@@ -489,8 +487,8 @@ public final class RosterHelper {
     }
 
     public void putIntoQueue(Group group) {
-        if (onUpdateRoster != null)
-            onUpdateRoster.putIntoQueue(group);
+        if (updateRoster != null)
+            updateRoster.putIntoQueue(group);
     }
 
     public String getStatusMessage(Protocol protocol, Contact contact) {
@@ -616,17 +614,6 @@ public final class RosterHelper {
         return false;
     }
 
-    private HashMap<String, String> subjectsMap = new HashMap<String, String>();
-
-    public String getSubject(String id) {
-        if (subjectsMap.containsKey(id)) return subjectsMap.get(id);
-        else return null;
-    }
-
-    public void setSubject(String id, String subject) {
-        subjectsMap.put(id, subject);
-    }
-
     private OnUpdateChat updateChatListener;
 
     public void setOnUpdateChat(OnUpdateChat l) {
@@ -635,5 +622,9 @@ public final class RosterHelper {
 
     public OnUpdateChat getUpdateChatListener() {
         return updateChatListener;
+    }
+
+    public void setOnAccountsLoaded(OnAccountsLoaded accountsLoaded) {
+        this.accountsLoaded = accountsLoaded;
     }
 }

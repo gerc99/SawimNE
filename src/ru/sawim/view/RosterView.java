@@ -1,12 +1,17 @@
 package ru.sawim.view;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.*;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
@@ -16,6 +21,7 @@ import android.text.TextWatcher;
 import android.view.*;
 import android.widget.*;
 import ru.sawim.activities.SawimActivity;
+import ru.sawim.listener.OnAccountsLoaded;
 import ru.sawim.listener.OnUpdateRoster;
 import protocol.Contact;
 import protocol.ContactMenu;
@@ -31,11 +37,9 @@ import ru.sawim.models.RosterAdapter;
 import ru.sawim.modules.FileTransfer;
 import ru.sawim.roster.ProtocolBranch;
 import ru.sawim.roster.RosterHelper;
-import ru.sawim.roster.TreeBranch;
 import ru.sawim.roster.TreeNode;
 import ru.sawim.widget.MyImageButton;
 import ru.sawim.widget.MyListView;
-import ru.sawim.widget.SlidingTabLayout;
 import ru.sawim.widget.roster.RosterViewRoot;
 
 import java.util.ArrayList;
@@ -49,7 +53,7 @@ import java.util.List;
  * Time: 19:58
  * To change this template use File | Settings | File Templates.
  */
-public class RosterView extends SawimFragment implements ListView.OnItemClickListener, OnUpdateRoster, Handler.Callback {
+public class RosterView extends SawimFragment implements ListView.OnItemClickListener, OnUpdateRoster, Handler.Callback, OnAccountsLoaded {
 
     public static final String TAG = RosterView.class.getSimpleName();
 
@@ -66,7 +70,7 @@ public class RosterView extends SawimFragment implements ListView.OnItemClickLis
     private AdapterView.AdapterContextMenuInfo contextMenuInfo;
     private Handler handler;
     private MyImageButton chatsImage;
-    private SlidingTabLayout slidingTabLayout;
+    private TabLayout slidingTabLayout;
     private EditText queryEditText;
     private boolean isSearchMode;
 
@@ -104,28 +108,22 @@ public class RosterView extends SawimFragment implements ListView.OnItemClickLis
         progressBar.setLayoutParams(ProgressBarLP);
         progressBar.setVisibility(View.GONE);
 
-        ViewPager viewPager = new ViewPager(activity);
-        slidingTabLayout = new SlidingTabLayout(getActivity());
+        final ViewPager viewPager = new ViewPager(activity);
         ViewPager.LayoutParams viewPagerLayoutParams = new ViewPager.LayoutParams();
         viewPagerLayoutParams.height = ViewPager.LayoutParams.WRAP_CONTENT;
         viewPagerLayoutParams.width = ViewPager.LayoutParams.MATCH_PARENT;
         viewPager.setLayoutParams(viewPagerLayoutParams);
-        slidingTabLayout.setDistributeEvenly(true); // To make the Tabs Fixed set this true, This makes the tabs Space Evenly in Available width
-        // Setting Custom Color for the Scroll bar indicator of the Tab View
-        slidingTabLayout.setCustomTabColorizer(new SlidingTabLayout.TabColorizer() {
-            @Override
-            public int getIndicatorColor(int position) {
-                return getResources().getColor(R.color.tabsScrollColor);
-            }
-        });
-        slidingTabLayout.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 
+        rosterViewLayout = new RosterViewRoot(activity, progressBar, viewPager);
+        slidingTabLayout = (TabLayout) getActivity().getLayoutInflater().inflate(R.layout.tab_layout, rosterViewLayout, false);
+        viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
             }
 
             @Override
             public void onPageSelected(int position) {
+                viewPager.setCurrentItem(position);
                 if (position != RosterHelper.getInstance().getCurrPage()) {
                     getRosterAdapter().setType(position);
                     RosterHelper.getInstance().setCurrPage(position);
@@ -136,10 +134,15 @@ public class RosterView extends SawimFragment implements ListView.OnItemClickLis
 
             @Override
             public void onPageScrollStateChanged(int state) {
+
             }
         });
 
-        rosterViewLayout = new RosterViewRoot(activity, progressBar, viewPager);
+        RosterHelper.getInstance().setOnAccountsLoaded(this);
+        if (SawimApplication.actionQueue.get(SawimActivity.ACTION_ACC_LOADED) != null) {
+            onAccountsLoaded();
+            SawimApplication.actionQueue.remove(SawimActivity.ACTION_ACC_LOADED);
+        }
     }
 
     @Override
@@ -174,6 +177,9 @@ public class RosterView extends SawimFragment implements ListView.OnItemClickLis
         pages.add(activeListView);
         CustomPagerAdapter pagerAdapter = new CustomPagerAdapter(pages);
         rosterViewLayout.getViewPager().setAdapter(pagerAdapter);
+
+        slidingTabLayout.setTabTextColors(Color.BLACK, Color.WHITE);
+        slidingTabLayout.setupWithViewPager(rosterViewLayout.getViewPager());
     }
 
     @Override
@@ -181,15 +187,15 @@ public class RosterView extends SawimFragment implements ListView.OnItemClickLis
                              Bundle savedInstanceState) {
         if (rosterViewLayout.getParent() != null)
             ((ViewGroup) rosterViewLayout.getParent()).removeView(rosterViewLayout);
-        rosterViewLayout.getViewPager().setCurrentItem(RosterHelper.getInstance().getCurrPage());
-        slidingTabLayout.setViewPager(rosterViewLayout.getViewPager());
-
+        initBar();
         return rosterViewLayout;
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
+        RosterHelper.getInstance().setOnAccountsLoaded(null);
+        rosterViewLayout.getViewPager().setOnPageChangeListener(null);
         contextMenuInfo = null;
         handler = null;
         slidingTabLayout = null;
@@ -355,6 +361,8 @@ public class RosterView extends SawimFragment implements ListView.OnItemClickLis
         barLinearLayout.setLayoutParams(barLinearLayoutLP);
         slidingTabLayout.setLayoutParams(spinnerLP);
         chatsImage.setLayoutParams(chatsImageLP);
+
+        slidingTabLayout.getTabAt(RosterHelper.getInstance().getCurrPage()).select();
     }
 
     @Override
@@ -366,40 +374,48 @@ public class RosterView extends SawimFragment implements ListView.OnItemClickLis
     @Override
     public void onResume() {
         super.onResume();
-        resume();
+        initBar();
+        getRosterAdapter().setType(RosterHelper.getInstance().getCurrPage());
+        RosterHelper.getInstance().setOnUpdateRoster(RosterView.this);
+        update();
+        getActivity().supportInvalidateOptionsMenu();
         if (isSearchMode) {
             getRosterAdapter().filterData(queryEditText.getText().toString());
         }
-        if (Scheme.isChangeTheme(Scheme.getThemeId())) {
+        if (Scheme.isChangeTheme(Scheme.getSavedTheme())) {
             ((SawimActivity) getActivity()).recreateActivity();
         }
     }
 
-    public void resume() {
-        initBar();
-        getRosterAdapter().setType(RosterHelper.getInstance().getCurrPage());
-
-        if (RosterHelper.getInstance().getProtocolCount() > 0) {
-            RosterHelper.getInstance().setOnUpdateRoster(this);
-            update();
-            getActivity().supportInvalidateOptionsMenu();
-            if (SawimApplication.returnFromAcc) {
-                SawimApplication.returnFromAcc = false;
-                if (getRosterAdapter().getCount() == 0)
-                    Toast.makeText(getActivity(), R.string.press_menu_for_connect, Toast.LENGTH_LONG).show();
-                if (getPagerAdapter() != null)
-                    getPagerAdapter().notifyDataSetChanged();
+    @Override
+    public void onAccountsLoaded() {
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                initBar();
+                if (RosterHelper.getInstance().getProtocolCount() > 0) {
+                    RosterHelper.getInstance().setOnUpdateRoster(RosterView.this);
+                    update();
+                    getActivity().supportInvalidateOptionsMenu();
+                    if (SawimApplication.returnFromAcc) {
+                        SawimApplication.returnFromAcc = false;
+                        if (getRosterAdapter().getCount() == 0)
+                            Toast.makeText(getActivity(), R.string.press_menu_for_connect, Toast.LENGTH_LONG).show();
+                        if (getPagerAdapter() != null)
+                            getPagerAdapter().notifyDataSetChanged();
+                    }
+                } else {
+                    if (!SawimApplication.isManyPane()) {
+                        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                        FragmentTransaction transaction = fragmentManager.beginTransaction();
+                        StartWindowView newFragment = new StartWindowView();
+                        transaction.replace(R.id.fragment_container, newFragment, StartWindowView.TAG);
+                        transaction.commit();
+                        getActivity().supportInvalidateOptionsMenu();
+                    }
+                }
             }
-        } else {
-            if (!SawimApplication.isManyPane()) {
-                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                FragmentTransaction transaction = fragmentManager.beginTransaction();
-                StartWindowView newFragment = new StartWindowView();
-                transaction.replace(R.id.fragment_container, newFragment, StartWindowView.TAG);
-                transaction.commit();
-                getActivity().supportInvalidateOptionsMenu();
-            }
-        }
+        });
     }
 
     public RosterAdapter getRosterAdapter() {

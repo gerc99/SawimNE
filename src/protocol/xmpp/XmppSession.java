@@ -55,7 +55,7 @@ public class XmppSession {
     public void enableRebind(final XmppConnection connection) {
         if (connection == null) return;
         Log.i(XmppSession.class.getSimpleName(), "enableRebind = " + connection.rebindSupported);
-        //if (connection.rebindSupported) {
+        if (connection.rebindSupported) {
             //Log.i(XmppSession.class.getSimpleName(), "enableRebind regid = " + regid);
             //if (!isPlayServices) {
 
@@ -72,7 +72,7 @@ public class XmppSession {
                                 "<notification><type>gcm</type><id>" + regid + "</id></notification>" +
                                 "<appid>ru.sawim</appid></push></iq>");
                     }*/
-        //}
+        }
     }
 
     public void pushRegister(final XmppConnection connection) {
@@ -93,6 +93,14 @@ public class XmppSession {
                 }
             }
         }, "PushUnregister").start();
+    }
+
+    public void clearRebindSessionId(final XmppConnection connection) {
+        if (connection == null) {
+            return;
+        }
+        String accountId = connection.getXmpp().getUserId();
+        editor.putString(REBIND_SESSION_ID + accountId, null);
     }
 
     public void clear(final XmppConnection connection) {

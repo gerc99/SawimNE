@@ -77,7 +77,7 @@ public class StatusesAdapter extends BaseAdapter {
         int item = getItem(position);
         LinearLayout activeItem = (LinearLayout) row;
         if (item == selectedItem) {
-            activeItem.setBackgroundColor(Scheme.getColor(Scheme.THEME_ITEM_SELECTED));
+            activeItem.setBackgroundColor(Scheme.getColor(R.attr.item_selected));
         } else {
             activeItem.setBackgroundColor(0);
         }
@@ -99,7 +99,7 @@ public class StatusesAdapter extends BaseAdapter {
         void populateFrom(int item) {
             if (type == StatusesView.ADAPTER_STATUS) {
                 Icon ic = statusInfo.getIcon((byte) item);
-                itemStatus.setTextColor(Scheme.getColor(Scheme.THEME_TEXT));
+                itemStatus.setTextColor(Scheme.getColor(R.attr.text));
                 itemStatus.setText(statusInfo.getName((byte) item));
                 if (ic != null) {
                     itemImage.setVisibility(ImageView.VISIBLE);

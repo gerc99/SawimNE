@@ -4,8 +4,8 @@ import android.graphics.Typeface;
 import android.text.Layout;
 import android.text.SpannableStringBuilder;
 import protocol.Contact;
+import ru.sawim.R;
 import ru.sawim.SawimApplication;
-import ru.sawim.Scheme;
 import ru.sawim.chat.message.Message;
 import ru.sawim.text.TextFormatter;
 import ru.sawim.view.menu.JuickMenu;
@@ -130,10 +130,10 @@ public final class MessData {
         return isHighLight;
     }
 
-    public byte getMessColor() {
-        byte messColor = Scheme.THEME_TEXT;
+    public int getMessColor() {
+        int messColor = R.attr.text;
         if (isHighLight)
-            messColor = Scheme.THEME_CHAT_HIGHLIGHT_MSG;
+            messColor = R.attr.chat_highlight_msg;
         return messColor;
     }
 
