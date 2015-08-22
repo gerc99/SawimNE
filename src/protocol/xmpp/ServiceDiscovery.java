@@ -187,7 +187,8 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
             public void onCreateContextMenu(ContextMenu menu, int listItem) {
                 menu.clear();
                 String jid = getCurrentJid(listItem);
-                if (xmpp.getItemByUID(jid).isConference()) {
+                Contact item = xmpp.getItemByUID(jid);
+                if ( (item != null) && item.isConference()) {
                     menu.add(Menu.FIRST, COMMAND_ADD, 2, JLocale.getString(R.string.service_discovery_add));
 
                 } else if (Jid.isKnownGate(jid)) {
