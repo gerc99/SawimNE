@@ -30,30 +30,30 @@
 
 
 
-    <color name="light_primary">#9E9E9E</color>
-    <color name="light_primary_dark">#616161</color>
-    <color name="light_primary_light">#F5F5F5</color>
-    <color name="light_accent">#9E9E9E</color>
+    <color name="light_primary">#2196f3</color>
+    <color name="light_primary_dark">#2184df</color>
+    <color name="light_primary_light">#F5F500</color>
+    <color name="light_accent">#1976d2</color>
     <color name="light_primary_text">#212121</color>
     <color name="light_secondary_text">#727272</color>
-    <color name="light_icons">#212121</color>
+    <color name="light_icons">#2196f3</color>
     <color name="light_divider">#B6B6B6</color>
 
     <color name="light_text">#212121</color>
     <color name="light_item_selected">#727272</color>
     <color name="light_param_value">#727272</color>
-    <color name="light_chat_in_msg_text">#727272</color>
-    <color name="light_chat_out_msg_text">#727272</color>
-    <color name="light_contact_online">#212121</color>
-    <color name="light_contact_with_chat">#727272</color>
+    <color name="light_chat_in_msg_text">#e57373</color>
+    <color name="light_chat_out_msg_text">#42a5f5</color>
+    <color name="light_contact_online">#2196f3</color>
+    <color name="light_contact_with_chat">#2196f3</color>
     <color name="light_contact_offline">#727272</color>
     <color name="light_contact_temp">#727272</color>
     <color name="light_group">#212121</color>
-    <color name="light_chat_highlight_msg">#727272</color>
+    <color name="light_chat_highlight_msg">#1565c0</color>
     <color name="light_contact_status">#727272</color>
     <color name="light_protocol_background">#727272</color>
     <color name="light_link">#ff1b77d2</color>
-    <color name="light_link_highlight">#727272</color>
+    <color name="light_link_highlight">#0c41d2</color>
     <color name="light_unread_message_divider">#B6B6B6</color>
 
     <color name="tabs_scroll">#ff568c30</color>
