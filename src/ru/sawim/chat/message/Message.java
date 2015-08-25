@@ -27,6 +27,7 @@ public abstract class Message {
     private String senderName;
     private MessData mData = null;
     private long newDate;
+    private String serverMsgId;
 
     public static BitmapDrawable getIcon(int type) {
         switch (type) {
@@ -110,5 +111,13 @@ public abstract class Message {
 
     public boolean isWakeUp() {
         return false;
+    }
+
+    public void setServerMsgId(String serverMsgId) {
+        this.serverMsgId = serverMsgId;
+    }
+
+    public String getServerMsgId() {
+        return serverMsgId;
     }
 }

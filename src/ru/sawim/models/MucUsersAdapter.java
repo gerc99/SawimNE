@@ -231,8 +231,8 @@ public class MucUsersAdapter extends BaseAdapter {
             String hash = (c.avatarHash == null || c.avatarHash.isEmpty()) ?
                     c.resource.isEmpty() ? "" : c.resource.substring(0, 1)
                     : c.avatarHash;
-            Bitmap avatar = ImageCache.getInstance().get(avatarsFolder, SawimApplication.getExecutor(), hash,
-                    SawimResources.DEFAULT_AVATAR, new ImageCache.OnImageLoadListener() {
+            Bitmap avatar = ImageCache.getInstance().get(avatarsFolder, SawimApplication.getExecutor(), hash, null,
+                    new ImageCache.OnImageLoadListener() {
                         @Override
                         public void onLoad() {
                             rosterItemView.post(new Runnable() {

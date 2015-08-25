@@ -31,7 +31,7 @@ public class RosterStorage {
     public static final String storeName = "roster";
     public static final String subContactsTable = "subcontacts";
     public RosterStorage(String recordStoreName) {
-        String CREATE_ROSTER_TABLE = "create table if not exists "
+        final String CREATE_ROSTER_TABLE = "create table if not exists "
                 + storeName + " ("
                 + DatabaseHelper.ROW_AUTO_ID + " integer primary key autoincrement, "
                 + DatabaseHelper.ACCOUNT_ID + " text not null, "
@@ -43,13 +43,14 @@ public class RosterStorage {
                 + DatabaseHelper.STATUS + " int, "
                 + DatabaseHelper.STATUS_TEXT + " text, "
                 + DatabaseHelper.AVATAR_HASH + " text, "
+                + DatabaseHelper.FIRST_SERVER_MESSAGE_ID + " text, "
                 + DatabaseHelper.IS_CONFERENCE + " int, "
                 + DatabaseHelper.CONFERENCE_MY_NAME + " text, "
                 + DatabaseHelper.CONFERENCE_IS_AUTOJOIN + " int, "
                 + DatabaseHelper.ROW_DATA + " int, "
                 + DatabaseHelper.UNREAD_MESSAGES_COUNT + " int);";
 
-        String CREATE_SUB_CONTACTS_TABLE = "create table if not exists "
+        final String CREATE_SUB_CONTACTS_TABLE = "create table if not exists "
                 + subContactsTable + " ("
                 + DatabaseHelper.CONTACT_ID + " text not null, "
                 + DatabaseHelper.SUB_CONTACT_RESOURCE + " text, "
@@ -58,8 +59,13 @@ public class RosterStorage {
                 + DatabaseHelper.SUB_CONTACT_PRIORITY + " int, "
                 + DatabaseHelper.SUB_CONTACT_PRIORITY_A + " int);";
 
-        SawimApplication.getDatabaseHelper().getWritableDatabase().execSQL(CREATE_ROSTER_TABLE);
-        SawimApplication.getDatabaseHelper().getWritableDatabase().execSQL(CREATE_SUB_CONTACTS_TABLE);
+        SqlAsyncTask.execute(new SqlAsyncTask.OnTaskListener() {
+            @Override
+            public void run() {
+                SawimApplication.getDatabaseHelper().getWritableDatabase().execSQL(CREATE_ROSTER_TABLE);
+                SawimApplication.getDatabaseHelper().getWritableDatabase().execSQL(CREATE_SUB_CONTACTS_TABLE);
+            }
+        });
     }
 
     public synchronized void load(Protocol protocol) {
@@ -80,6 +86,7 @@ public class RosterStorage {
                     int status = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.STATUS));
                     String statusText = cursor.getString(cursor.getColumnIndex(DatabaseHelper.STATUS_TEXT));
                     String avatarHash = cursor.getString(cursor.getColumnIndex(DatabaseHelper.AVATAR_HASH));
+                    String firstServerMsgId = cursor.getString(cursor.getColumnIndex(DatabaseHelper.FIRST_SERVER_MESSAGE_ID));
 
                     boolean isConference = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.IS_CONFERENCE)) == 1;
                     String conferenceMyNick = cursor.getString(cursor.getColumnIndex(DatabaseHelper.CONFERENCE_MY_NAME));
@@ -98,6 +105,7 @@ public class RosterStorage {
                     if (contact == null) {
                         contact = protocol.createContact(userId, userName, isConference);
                     }
+                    contact.firstServerMsgId = firstServerMsgId;
                     contact.avatarHash = avatarHash;
                     if (protocol.isStreamManagementSupported()) {
                         contact.setStatus((byte) status, statusText);
@@ -155,116 +163,157 @@ public class RosterStorage {
         }
     }
 
-    public synchronized void save(Protocol protocol, Contact contact, Group group) {
-        Cursor cursor = null;
-        try {
-            SQLiteDatabase sqLiteDatabase = SawimApplication.getDatabaseHelper().getWritableDatabase();
-            cursor = sqLiteDatabase.query(storeName,
-                    new String[]{DatabaseHelper.ACCOUNT_ID, DatabaseHelper.CONTACT_ID},
-                    WHERE_ACC_CONTACT_ID, new String[]{protocol.getUserId(), contact.getUserId()}, null, null, null);
-            if (group == null) {
-                group = protocol.getNotInListGroup();
-            }
-            if (cursor != null && cursor.getCount() > 0) {
-                sqLiteDatabase.update(storeName, getRosterValues(protocol, group, contact),
-                        WHERE_ACC_CONTACT_ID, new String[]{protocol.getUserId(), contact.getUserId()});
-            } else {
-                sqLiteDatabase.insert(storeName, null, getRosterValues(protocol, group, contact));
-            }
-        } catch (Exception e) {
-            DebugLog.panic(e);
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
+    public void save(final Protocol protocol, final Contact contact, Group group) {
+        if (group == null) {
+            group = protocol.getNotInListGroup();
         }
-    }
-
-    public synchronized void save(XmppContact contact, XmppServiceContact.SubContact subContact) {
-        Cursor cursor = null;
-        try {
-            SQLiteDatabase sqLiteDatabase = SawimApplication.getDatabaseHelper().getWritableDatabase();
-            cursor = sqLiteDatabase.query(subContactsTable,
-                    null,
-                    WHERE_CONTACT_ID + " AND " + DatabaseHelper.SUB_CONTACT_RESOURCE + " = ?",
-                    new String[]{contact.getUserId(), subContact.resource}, null, null, null);
-
-            if (cursor != null && cursor.getCount() > 0) {
-                sqLiteDatabase.update(subContactsTable, getSubContactsValues(contact, subContact),
-                        WHERE_CONTACT_ID + " AND " + DatabaseHelper.SUB_CONTACT_RESOURCE + " = ?",
-                        new String[]{contact.getUserId(), subContact.resource});
-            } else {
-                sqLiteDatabase.insert(subContactsTable, null, getSubContactsValues(contact, subContact));
-            }
-        } catch (Exception e) {
-            DebugLog.panic(e);
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-    }
-
-    public synchronized void delete(Contact contact, XmppServiceContact.SubContact subContact) {
-        try {
-            SQLiteDatabase sqLiteDatabase = SawimApplication.getDatabaseHelper().getWritableDatabase();
-            if (contact.isConference() && subContact != null) {
-                sqLiteDatabase.delete(subContactsTable, WHERE_CONTACT_ID + " and "
-                                + DatabaseHelper.SUB_CONTACT_RESOURCE + "= ?",
-                        new String[]{contact.getUserId(), subContact.resource});
-            }
-        } catch (Exception e) {
-            DebugLog.panic(e);
-        }
-    }
-
-    public synchronized void deleteContact(Protocol protocol, Contact contact) {
-        SQLiteDatabase sqLiteDatabase = SawimApplication.getDatabaseHelper().getWritableDatabase();
-        sqLiteDatabase.delete(storeName, WHERE_ACC_CONTACT_ID, new String[]{protocol.getUserId(), contact.getUserId()});
-    }
-
-    public synchronized void deleteGroup(Protocol protocol, Group group) {
-        SQLiteDatabase sqLiteDatabase = SawimApplication.getDatabaseHelper().getWritableDatabase();
-        for (Contact contact : group.getContacts()) {
-            sqLiteDatabase.delete(storeName, DatabaseHelper.ACCOUNT_ID + "= ?" + " and " + DatabaseHelper.GROUP_ID + "= ?",
-                    new String[]{protocol.getUserId(), String.valueOf(group.getGroupId())});
-        }
-    }
-
-    public synchronized void updateGroup(Protocol protocol, Group group) {
-        SQLiteDatabase sqLiteDatabase = SawimApplication.getDatabaseHelper().getWritableDatabase();
-        for (Contact contact : group.getContacts()) {
-            ContentValues values = new ContentValues();
-            values.put(DatabaseHelper.GROUP_ID, group.getGroupId());
-            values.put(DatabaseHelper.GROUP_NAME, group.getName());
-            sqLiteDatabase.update(storeName, values, WHERE_ACC_CONTACT_ID, new String[]{protocol.getUserId(), contact.getUserId()});
-        }
-    }
-
-    public synchronized void addGroup(Protocol protocol, Group group) {
-        SQLiteDatabase sqLiteDatabase = SawimApplication.getDatabaseHelper().getWritableDatabase();
-        for (Contact contact : group.getContacts()) {
-            sqLiteDatabase.insert(storeName, null, getRosterValues(protocol, group, contact));
-        }
-    }
-
-    public synchronized void setOfflineStatuses(Protocol protocol) {
-        SQLiteDatabase sqLiteDatabase = SawimApplication.getDatabaseHelper().getWritableDatabase();
-        for (Contact contact : protocol.getContactItems().values()) {
-            ContentValues values = new ContentValues();
-            values.put(DatabaseHelper.STATUS, StatusInfo.STATUS_OFFLINE);
-            if (contact.isConference()) {
-                XmppServiceContact serviceContact = (XmppServiceContact) contact;
-                for (XmppContact.SubContact subContact : serviceContact.subcontacts.values()) {
-                    ContentValues values2 = new ContentValues();
-                    values2.put(DatabaseHelper.SUB_CONTACT_STATUS, StatusInfo.STATUS_OFFLINE);
-                    sqLiteDatabase.update(subContactsTable, values2,
-                            DatabaseHelper.SUB_CONTACT_RESOURCE + "= ?",
-                            new String[]{subContact.resource});
+        final Group finalGroup = group;
+        SqlAsyncTask.execute(new SqlAsyncTask.OnTaskListener() {
+            @Override
+            public void run() {
+                Cursor cursor = null;
+                try {
+                    SQLiteDatabase sqLiteDatabase = SawimApplication.getDatabaseHelper().getWritableDatabase();
+                    cursor = sqLiteDatabase.query(storeName,
+                            new String[]{DatabaseHelper.ACCOUNT_ID, DatabaseHelper.CONTACT_ID},
+                            WHERE_ACC_CONTACT_ID, new String[]{protocol.getUserId(), contact.getUserId()}, null, null, null);
+                    if (cursor != null && cursor.getCount() > 0) {
+                        sqLiteDatabase.update(storeName, getRosterValues(protocol, finalGroup, contact),
+                                WHERE_ACC_CONTACT_ID, new String[]{protocol.getUserId(), contact.getUserId()});
+                    } else {
+                        sqLiteDatabase.insert(storeName, null, getRosterValues(protocol, finalGroup, contact));
+                    }
+                } catch (Exception e) {
+                    DebugLog.panic(e);
+                } finally {
+                    if (cursor != null) {
+                        cursor.close();
+                    }
                 }
             }
-            sqLiteDatabase.update(storeName, values, WHERE_ACC_CONTACT_ID, new String[]{protocol.getUserId(), contact.getUserId()});
-        }
+        });
+    }
+
+    public void save(final XmppContact contact, final XmppServiceContact.SubContact subContact) {
+        SqlAsyncTask.execute(new SqlAsyncTask.OnTaskListener() {
+            @Override
+            public void run() {
+                Cursor cursor = null;
+                try {
+                    SQLiteDatabase sqLiteDatabase = SawimApplication.getDatabaseHelper().getWritableDatabase();
+                    cursor = sqLiteDatabase.query(subContactsTable,
+                            null,
+                            WHERE_CONTACT_ID + " AND " + DatabaseHelper.SUB_CONTACT_RESOURCE + " = ?",
+                            new String[]{contact.getUserId(), subContact.resource}, null, null, null);
+
+                    if (cursor != null && cursor.getCount() > 0) {
+                        sqLiteDatabase.update(subContactsTable, getSubContactsValues(contact, subContact),
+                                WHERE_CONTACT_ID + " AND " + DatabaseHelper.SUB_CONTACT_RESOURCE + " = ?",
+                                new String[]{contact.getUserId(), subContact.resource});
+                    } else {
+                        sqLiteDatabase.insert(subContactsTable, null, getSubContactsValues(contact, subContact));
+                    }
+                } catch (Exception e) {
+                    DebugLog.panic(e);
+                } finally {
+                    if (cursor != null) {
+                        cursor.close();
+                    }
+                }
+            }
+        });
+    }
+
+    public void delete(final Contact contact, final XmppServiceContact.SubContact subContact) {
+        SqlAsyncTask.execute(new SqlAsyncTask.OnTaskListener() {
+            @Override
+            public void run() {
+                try {
+                    SQLiteDatabase sqLiteDatabase = SawimApplication.getDatabaseHelper().getWritableDatabase();
+                    if (contact.isConference() && subContact != null) {
+                        sqLiteDatabase.delete(subContactsTable, WHERE_CONTACT_ID + " and "
+                                        + DatabaseHelper.SUB_CONTACT_RESOURCE + "= ?",
+                                new String[]{contact.getUserId(), subContact.resource});
+                    }
+                } catch (Exception e) {
+                    DebugLog.panic(e);
+                }
+            }
+        });
+    }
+
+    public void deleteContact(final Protocol protocol, final Contact contact) {
+        SqlAsyncTask.execute(new SqlAsyncTask.OnTaskListener() {
+            @Override
+            public void run() {
+                SQLiteDatabase sqLiteDatabase = SawimApplication.getDatabaseHelper().getWritableDatabase();
+                sqLiteDatabase.delete(storeName, WHERE_ACC_CONTACT_ID, new String[]{protocol.getUserId(), contact.getUserId()});
+            }
+        });
+    }
+
+    public void deleteGroup(final Protocol protocol, final Group group) {
+        SqlAsyncTask.execute(new SqlAsyncTask.OnTaskListener() {
+            @Override
+            public void run() {
+                SQLiteDatabase sqLiteDatabase = SawimApplication.getDatabaseHelper().getWritableDatabase();
+                for (Contact contact : group.getContacts()) {
+                    sqLiteDatabase.delete(storeName, DatabaseHelper.ACCOUNT_ID + "= ?" + " and " + DatabaseHelper.GROUP_ID + "= ?",
+                            new String[]{protocol.getUserId(), String.valueOf(group.getGroupId())});
+                }
+            }
+        });
+    }
+
+    public void updateGroup(final Protocol protocol, final Group group) {
+        SqlAsyncTask.execute(new SqlAsyncTask.OnTaskListener() {
+            @Override
+            public void run() {
+                SQLiteDatabase sqLiteDatabase = SawimApplication.getDatabaseHelper().getWritableDatabase();
+                for (Contact contact : group.getContacts()) {
+                    ContentValues values = new ContentValues();
+                    values.put(DatabaseHelper.GROUP_ID, group.getGroupId());
+                    values.put(DatabaseHelper.GROUP_NAME, group.getName());
+                    sqLiteDatabase.update(storeName, values, WHERE_ACC_CONTACT_ID, new String[]{protocol.getUserId(), contact.getUserId()});
+                }
+            }
+        });
+    }
+
+    public void addGroup(final Protocol protocol, final Group group) {
+        SqlAsyncTask.execute(new SqlAsyncTask.OnTaskListener() {
+            @Override
+            public void run() {
+                SQLiteDatabase sqLiteDatabase = SawimApplication.getDatabaseHelper().getWritableDatabase();
+                for (Contact contact : group.getContacts()) {
+                    sqLiteDatabase.insert(storeName, null, getRosterValues(protocol, group, contact));
+                }
+            }
+        });
+    }
+
+    public void setOfflineStatuses(final Protocol protocol) {
+        SqlAsyncTask.execute(new SqlAsyncTask.OnTaskListener() {
+            @Override
+            public void run() {
+                SQLiteDatabase sqLiteDatabase = SawimApplication.getDatabaseHelper().getWritableDatabase();
+                for (Contact contact : protocol.getContactItems().values()) {
+                    ContentValues values = new ContentValues();
+                    values.put(DatabaseHelper.STATUS, StatusInfo.STATUS_OFFLINE);
+                    if (contact.isConference()) {
+                        XmppServiceContact serviceContact = (XmppServiceContact) contact;
+                        for (XmppContact.SubContact subContact : serviceContact.subcontacts.values()) {
+                            ContentValues values2 = new ContentValues();
+                            values2.put(DatabaseHelper.SUB_CONTACT_STATUS, StatusInfo.STATUS_OFFLINE);
+                            sqLiteDatabase.update(subContactsTable, values2,
+                                    DatabaseHelper.SUB_CONTACT_RESOURCE + "= ?",
+                                    new String[]{subContact.resource});
+                        }
+                    }
+                    sqLiteDatabase.update(storeName, values, WHERE_ACC_CONTACT_ID, new String[]{protocol.getUserId(), contact.getUserId()});
+                }
+            }
+        });
     }
 
     private ContentValues getRosterValues(Protocol protocol, Group group, Contact contact) {
@@ -299,14 +348,34 @@ public class RosterStorage {
         return values;
     }
 
-    public synchronized void updateAvatarHash(String uniqueUserId, String hash) {
-        try {
-            ContentValues values = new ContentValues();
-            values.put(DatabaseHelper.AVATAR_HASH, hash);
-            SawimApplication.getDatabaseHelper().getWritableDatabase().update(storeName, values, WHERE_CONTACT_ID, new String[]{uniqueUserId});
-        } catch (Exception e) {
-            DebugLog.panic(e);
-        }
+    public static void updateFirstServerMsgId(final Contact contact) {
+        SqlAsyncTask.execute(new SqlAsyncTask.OnTaskListener() {
+            @Override
+            public void run() {
+                try {
+                    ContentValues values = new ContentValues();
+                    values.put(DatabaseHelper.FIRST_SERVER_MESSAGE_ID, contact.firstServerMsgId);
+                    SawimApplication.getDatabaseHelper().getWritableDatabase().update(storeName, values, WHERE_CONTACT_ID, new String[]{contact.getUserId()});
+                } catch (Exception e) {
+                    DebugLog.panic(e);
+                }
+            }
+        });
+    }
+
+    public static void updateAvatarHash(final String uniqueUserId, final String hash) {
+        SqlAsyncTask.execute(new SqlAsyncTask.OnTaskListener() {
+            @Override
+            public void run() {
+                try {
+                    ContentValues values = new ContentValues();
+                    values.put(DatabaseHelper.AVATAR_HASH, hash);
+                    SawimApplication.getDatabaseHelper().getWritableDatabase().update(storeName, values, WHERE_CONTACT_ID, new String[]{uniqueUserId});
+                } catch (Exception e) {
+                    DebugLog.panic(e);
+                }
+            }
+        });
     }
 
     public synchronized String getAvatarHash(String uniqueUserId) {
@@ -323,22 +392,27 @@ public class RosterStorage {
         } catch (Exception e) {
             DebugLog.panic(e);
         } finally {
-            if (cursor != null){
+            if (cursor != null) {
                 cursor.close();
             }
         }
         return hash;
     }
 
-    public synchronized void updateUnreadMessagesCount(final String protocolId, final String uniqueUserId, final int count) {
-        try {
-            SQLiteDatabase sqLiteDatabase = SawimApplication.getDatabaseHelper().getWritableDatabase();
-            ContentValues values = new ContentValues();
-            values.put(DatabaseHelper.UNREAD_MESSAGES_COUNT, count);
-            sqLiteDatabase.update(storeName, values, WHERE_ACC_CONTACT_ID, new String[]{protocolId, uniqueUserId});
-        } catch (Exception e) {
-            DebugLog.panic(e);
-        }
+    public void updateUnreadMessagesCount(final String protocolId, final String uniqueUserId, final int count) {
+        SqlAsyncTask.execute(new SqlAsyncTask.OnTaskListener() {
+            @Override
+            public void run() {
+                try {
+                    SQLiteDatabase sqLiteDatabase = SawimApplication.getDatabaseHelper().getWritableDatabase();
+                    ContentValues values = new ContentValues();
+                    values.put(DatabaseHelper.UNREAD_MESSAGES_COUNT, count);
+                    sqLiteDatabase.update(storeName, values, WHERE_ACC_CONTACT_ID, new String[]{protocolId, uniqueUserId});
+                } catch (Exception e) {
+                    DebugLog.panic(e);
+                }
+            }
+        });
     }
 
     public synchronized void loadUnreadMessages() {

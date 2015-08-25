@@ -1,9 +1,11 @@
 package protocol.xmpp;
 
-import android.util.Log;
+import android.util.Log;;
+
 import protocol.Contact;
 import protocol.Protocol;
 import ru.sawim.comm.Util;
+import ru.sawim.io.RosterStorage;
 import ru.sawim.listener.OnMoreMessagesLoaded;
 import ru.sawim.roster.RosterHelper;
 
@@ -17,48 +19,61 @@ public class MessageArchiveManagement {
 
     private static final long MILLISECONDS_IN_DAY = 24 * 60 * 60 * 1000;
     public static final long MAX_CATCHUP = MILLISECONDS_IN_DAY * 7;
+    public static final long MAX_MESSAGES = 10;
 
     private final HashSet<Query> queries = new HashSet<>();
 
-    public String getQueryMessageArchiveManagement(Contact contact, Query query) {
-        String iq = "<iq ";
+    private String getQueryMessageArchiveManagement(Contact contact, Query query) {
+        XmlNode xmlNode = new XmlNode(XmppConnection.S_IQ);
+        xmlNode.putAttribute(XmppConnection.S_TYPE, XmppConnection.S_SET);
         if (contact != null && contact.isConference()) {
-            iq += "to='" + contact.getUserId() + "'";
+            xmlNode.putAttribute(XmppConnection.S_TO, Util.xmlEscape(contact.getUserId()));
         }
-        iq += "type='set' id='" + XmppConnection.generateId() + "'>"
-                + "<query xmlns='urn:xmpp:mam:0' queryid='" + query.queryId + "'>"
-                + "<x xmlns='jabber:x:data'>"
-                + "<field var='FORM_TYPE'>"
-                + "<value>urn:xmpp:mam:0</value>"
-                + "</field>";
-        if (query.getStart() > 0) {
-            iq += "<field var='start'>";
-            iq += "<value>" + Util.getTimestamp(query.getStart()) + "</value>";
-            iq += "</field>";
+        xmlNode.putAttribute(XmlNode.S_ID, XmppConnection.generateId());
+
+        XmlNode queryNode = new XmlNode(XmppConnection.S_QUERY);
+        queryNode.putAttribute(XmlNode.S_XMLNS, "urn:xmpp:mam:0");
+        queryNode.putAttribute("queryid", query.queryId);
+
+        XmlNode xNode = new XmlNode("x");
+        xNode.putAttribute(XmlNode.S_XMLNS, "jabber:x:data");
+        xNode.putAttribute("type", "submit");
+
+        XmlNode formTypeNode = new XmlNode("field");
+        formTypeNode.putAttribute("var", "FORM_TYPE");
+        formTypeNode.putAttribute("type", "hidden");
+        formTypeNode.setValue("value", "urn:xmpp:mam:0");
+        xNode.addNode(formTypeNode);
+    /*    if (query.getStart() > 0) {
+            XmlNode startNode = new XmlNode("field");
+            startNode.putAttribute("var", "start");
+            startNode.setValue("value", Util.getTimestamp(query.getStart()));
+            xNode.addNode(startNode);
         }
         if (query.getEnd() > 0) {
-            iq += "<field var='end'>";
-            iq += "<value>" + Util.getTimestamp(query.getEnd()) + "</value>";
-            iq += "</field>";
+            XmlNode endNode = new XmlNode("field");
+            endNode.putAttribute("var", "end");
+            endNode.setValue("value", Util.getTimestamp(query.getEnd()));
+            xNode.addNode(endNode);
+        }*/
+        if (query.withJid != null && contact != null && !contact.isConference()) {
+            XmlNode withNode = new XmlNode("field");
+            withNode.putAttribute("var", "with");
+            withNode.setValue("value", query.withJid);
+            xNode.addNode(withNode);
         }
-        if (query.withJid != null) {
-            iq += "<field var='with'>"
-                    + "<value>" + query.withJid + "</value>"
-                    + "</field>";
+
+        XmlNode setNode = XmlNode.addXmlns("set", "http://jabber.org/protocol/rsm");
+        setNode.setValue("max", String.valueOf(MAX_MESSAGES));
+        if (query.getPagingOrder() == PagingOrder.REVERSE) {
+            setNode.setValue("before", query.getReference());
+        } else {
+            setNode.setValue("after", query.getReference());
         }
-        iq += "</x>";
-        if (query.getReference() != null) {
-            iq += "<set xmlns='http://jabber.org/protocol/rsm'>"
-                    /*+ "<max>10</max>"*/;
-            if (query.getPagingOrder() == PagingOrder.REVERSE) {
-                iq += "<before>" + query.getReference() + "</before>";
-            } else {
-                iq += "<after>" + query.getReference() + "</after>";
-            }
-            iq += "</set>";
-        }
-        iq += "</query></iq>";
-        return iq;
+        queryNode.addNode(setNode);
+        queryNode.addNode(xNode);
+        xmlNode.addNode(queryNode);
+        return xmlNode.toString();
     }
 
     private void queryMessageArchiveManagement(XmppConnection connection, Query query) {
@@ -74,14 +89,10 @@ public class MessageArchiveManagement {
         long endCatchup = connection.getLastSessionEstablished();
         if (startCatchup == 0) {
             return;
-        } else if (endCatchup - startCatchup >= MAX_CATCHUP) {
-            startCatchup = endCatchup - MAX_CATCHUP;
+        } else {
             ConcurrentHashMap<String, Contact> contacts = connection.getProtocol().getContactItems();
             for (Contact contact : contacts.values()) {
-                long lastMessageTransmitted = contact.getLastMessageTransmitted();
-                if (!contact.isConference() && startCatchup > lastMessageTransmitted) {
-                    query(connection, contact, startCatchup);
-                }
+                queryReverse(connection, contact, startCatchup);
             }
         }
         final Query query = new Query(connection.getXmpp().getUserId(), null, startCatchup, endCatchup);
@@ -100,32 +111,16 @@ public class MessageArchiveManagement {
         return timestamp;
     }
 
-    public Query query(XmppConnection connection) {
-        long endCatchup = connection.getLastSessionEstablished();
-        long startCatchup = endCatchup - MAX_CATCHUP;
-        ConcurrentHashMap<String, Contact> contacts = connection.getProtocol().getContactItems();
-        for (Contact contact : contacts.values()) {
-            long lastMessageTransmitted = contact.getLastMessageTransmitted();
-            if (!contact.isConference() && startCatchup > lastMessageTransmitted) {
-                //query(connection, contact, endCatchup);
-                final Query query = new Query(connection.getXmpp().getUserId(), contact.getUserId(), startCatchup, endCatchup);
-                queries.add(query);
-                queryMessageArchiveManagement(connection, query);
-            }
-        }
-        return null;
+    public Query queryReverse(XmppConnection connection, final Contact contact) {
+        return queryReverse(connection, contact, connection.getLastSessionEstablished());
     }
 
-    public Query query(XmppConnection connection, final Contact contact) {
-        return query(connection, contact, connection.getLastSessionEstablished());
-    }
-
-    public Query query(XmppConnection connection, final Contact contact, long end) {
+    public Query queryReverse(XmppConnection connection, final Contact contact, long end) {
         long lastMessageTransmitted = contact.getLastMessageTransmitted();
-        return query(connection, contact, lastMessageTransmitted, end);
+        return queryReverse(connection, contact, lastMessageTransmitted, end);
     }
 
-    public Query query(XmppConnection connection, Contact contact, long start, long end) {
+    public Query queryReverse(XmppConnection connection, Contact contact, long start, long end) {
         synchronized (queries) {
             if (start > end) {
                 return null;
@@ -138,26 +133,41 @@ public class MessageArchiveManagement {
         }
     }
 
-    public void processFin(XmppConnection connection, XmlNode fin) {
-        if (fin == null) {
-            return;
+    public Query prev(XmppConnection connection, Contact contact) {
+        synchronized (queries) {
+            Query query = new Query(connection.getXmpp().getUserId(), contact.getUserId(), 0, 0)
+                        .prev(contact.firstServerMsgId);
+            queries.add(query);
+            queryMessageArchiveManagement(connection, query);
+            return query;
         }
+    }
+
+    public void processFin(XmppConnection connection, XmlNode fin) {
         Query query = findQuery(fin.getAttribute("queryid"));
         if (query == null) {
             return;
         }
         boolean complete = XmppConnection.isTrue(fin.getAttribute("complete"));
         XmlNode set = fin.getFirstNode("set", "http://jabber.org/protocol/rsm");
-        String last = set == null ? null : set.getAttribute("last");
-        String first = set == null ? null : set.getAttribute("first");
+        String last = set == null ? null : set.getFirstNodeValue("last");
+        String first = set == null ? null : set.getFirstNodeValue("first");
         String relevant = query.getPagingOrder() == PagingOrder.NORMAL ? last : first;
-        String count = fin.getAttribute("count");
+        String count = set == null ? null : set.getFirstNodeValue("count");
         if (count != null) {
-            query.setMessageCount(Integer.valueOf(count));
+            query.setAllMessageCount(Integer.valueOf(count));
+        }
+        if (relevant != null) {
+            Contact contact = null;
+            if (query.getWith() != null) {
+                contact = connection.getProtocol().getItemByUID(query.getWith());
+            }
+            contact.firstServerMsgId = first;
+            RosterStorage.updateFirstServerMsgId(contact);
         }
         if (complete || relevant == null) {
             finalizeQuery(connection.getProtocol(), query);
-            Log.d("MAM", "finished mam after " + query.getMessageCount() + " messages");
+            Log.d("MAM", "finished mam after " + query.getAllMessagesCount() + " messages");
         } else {
             final Query nextQuery;
             if (query.getPagingOrder() == PagingOrder.NORMAL) {
@@ -165,10 +175,10 @@ public class MessageArchiveManagement {
             } else {
                 nextQuery = query.prev(first);
             }
-            queryMessageArchiveManagement(connection, nextQuery);
+        //    queryMessageArchiveManagement(connection, nextQuery);
             finalizeQuery(connection.getProtocol(), query);
             synchronized (queries) {
-                queries.add(nextQuery);
+            //    queries.add(nextQuery);
             }
         }
     }
@@ -198,10 +208,8 @@ public class MessageArchiveManagement {
         if (contact != null) {
             if (contact.setLastMessageTransmitted(query.getEnd())) {
             }
-            boolean hasMessages = query.getMessageCount() > 0;
-            if (hasMessages) {
-                query.messagesLoaded();
-            }
+            contact.setHasMessagesLeftOnServer(query.getMessagesCount() > 0);
+            query.messagesLoaded(query.getMessagesCount());
             RosterHelper.getInstance().updateRoster(contact);
             if (RosterHelper.getInstance().getUpdateChatListener() != null) {
                 RosterHelper.getInstance().getUpdateChatListener().updateChat();
@@ -211,7 +219,6 @@ public class MessageArchiveManagement {
                 if (c.setLastMessageTransmitted(query.getEnd())) {
                 }
             }
-
         }
     }
 
@@ -230,7 +237,8 @@ public class MessageArchiveManagement {
     }
 
     public class Query {
-        private int messageCount = 0;
+        private int allMessagesCount = 0;
+        private int messagesCount = 0;
         private long start;
         private long end;
         private String queryId;
@@ -296,21 +304,29 @@ public class MessageArchiveManagement {
             return end;
         }
 
-        public void setMessageCount(int messageCount) {
-            this.messageCount = messageCount;
+        public void setAllMessageCount(int messageCount) {
+            this.allMessagesCount = messageCount;
         }
 
-        public int getMessageCount() {
-            return messageCount;
+        public int getAllMessagesCount() {
+            return allMessagesCount;
+        }
+
+        public void incrementMessageCount() {
+            messagesCount++;
+        }
+
+        public int getMessagesCount() {
+            return messagesCount;
         }
 
         public void setOnMoreMessagesLoaded(OnMoreMessagesLoaded onMoreMessagesLoaded) {
             this.onMoreMessagesLoaded = onMoreMessagesLoaded;
         }
 
-        public void messagesLoaded() {
+        public void messagesLoaded(int messagesCount) {
             if (onMoreMessagesLoaded != null) {
-                onMoreMessagesLoaded.onLoaded();
+                onMoreMessagesLoaded.onLoaded(messagesCount);
             }
         }
     }

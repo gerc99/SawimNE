@@ -25,17 +25,31 @@ public final class BlobStorage {
         return context.databaseList();
     }
 
-    public static void delete(String tableName) {
-        SawimApplication.getDatabaseHelper().getWritableDatabase().execSQL("DROP TABLE IF EXISTS " + tableName);
+    public static void delete(final String tableName) {
+        SqlAsyncTask.execute(new SqlAsyncTask.OnTaskListener() {
+            @Override
+            public void run() {
+                try {
+                    SawimApplication.getDatabaseHelper().getWritableDatabase().execSQL("DROP TABLE IF EXISTS " + tableName);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
-    public BlobStorage(String recordStoreName) {
+    public BlobStorage(final String recordStoreName) {
         name = recordStoreName;
-        String CREATE_BLOB_TABLE = "create table if not exists "
-                + recordStoreName + " ("
-                + DatabaseHelper.ROW_AUTO_ID + " integer primary key autoincrement, "
-                + DatabaseHelper.ROW_DATA + " blob);";
-        SawimApplication.getDatabaseHelper().getWritableDatabase().execSQL(CREATE_BLOB_TABLE);
+        SqlAsyncTask.execute(new SqlAsyncTask.OnTaskListener() {
+            @Override
+            public void run() {
+                String CREATE_BLOB_TABLE = "create table if not exists "
+                        + recordStoreName + " ("
+                        + DatabaseHelper.ROW_AUTO_ID + " integer primary key autoincrement, "
+                        + DatabaseHelper.ROW_DATA + " blob);";
+                SawimApplication.getDatabaseHelper().getWritableDatabase().execSQL(CREATE_BLOB_TABLE);
+            }
+        });
     }
 
     public void open() {
@@ -46,14 +60,16 @@ public final class BlobStorage {
         SawimApplication.getDatabaseHelper().close();
     }
 
-    public SQLiteDatabase getDB() {
-        return SawimApplication.getDatabaseHelper().getWritableDatabase();
-    }
+    public void addRecord(final byte data[]) {
+        SqlAsyncTask.execute(new SqlAsyncTask.OnTaskListener() {
 
-    public void addRecord(byte data[]) {
-        ContentValues values = new ContentValues();
-        values.put(DatabaseHelper.ROW_DATA, data);
-        SawimApplication.getDatabaseHelper().getWritableDatabase().insert(name, null, values);
+            @Override
+            public void run() {
+                ContentValues values = new ContentValues();
+                values.put(DatabaseHelper.ROW_DATA, data);
+                SawimApplication.getDatabaseHelper().getWritableDatabase().insert(name, null, values);
+            }
+        });
     }
 
     public byte[] getRecord(int id) {
@@ -67,14 +83,24 @@ public final class BlobStorage {
         return bytes;
     }
 
-    public void setRecord(int id, byte data[]) {
-        ContentValues values = new ContentValues();
-        values.put(DatabaseHelper.ROW_DATA, data);
-        SawimApplication.getDatabaseHelper().getWritableDatabase().update(name, values, WHERE_ID, new String[]{String.valueOf(id)});
+    public void setRecord(final int id, final byte data[]) {
+        SqlAsyncTask.execute(new SqlAsyncTask.OnTaskListener() {
+            @Override
+            public void run() {
+                ContentValues values = new ContentValues();
+                values.put(DatabaseHelper.ROW_DATA, data);
+                SawimApplication.getDatabaseHelper().getWritableDatabase().update(name, values, WHERE_ID, new String[]{String.valueOf(id)});
+            }
+        });
     }
 
-    public void deleteRecord(int id) {
-        SawimApplication.getDatabaseHelper().getWritableDatabase().delete(name, WHERE_ID, new String[]{String.valueOf(id)});
+    public void deleteRecord(final int id) {
+        SqlAsyncTask.execute(new SqlAsyncTask.OnTaskListener() {
+            @Override
+            public void run() {
+                SawimApplication.getDatabaseHelper().getWritableDatabase().delete(name, WHERE_ID, new String[]{String.valueOf(id)});
+            }
+        });
     }
 
     public int getNumRecords() {

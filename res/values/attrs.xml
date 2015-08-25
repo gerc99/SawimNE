@@ -3,16 +3,17 @@
 <resources>
      <declare-styleable name="Theme.AppCompat.Light">
           <attr name="text" format="color" />
+          <attr name="list_divider" format="color" />
           <attr name="item_selected" format="color" />
           <attr name="param_value" format="color" />
           <attr name="chat_in_msg_text" format="color" />
           <attr name="chat_out_msg_text" format="color" />
+          <attr name="chat_highlight_msg" format="color" />
           <attr name="contact_online" format="color" />
           <attr name="contact_with_chat" format="color" />
           <attr name="contact_offline" format="color" />
           <attr name="contact_temp" format="color" />
           <attr name="group" format="color" />
-          <attr name="chat_highlight_msg" format="color" />
           <attr name="contact_status" format="color" />
           <attr name="protocol_background" format="color" />
           <attr name="link" format="color" />

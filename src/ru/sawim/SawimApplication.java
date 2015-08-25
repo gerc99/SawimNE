@@ -16,6 +16,7 @@ import android.os.Message;
 import com.github.anrwatchdog.ANRWatchDog;
 import de.duenndns.ssl.MemorizingTrustManager;
 import protocol.Protocol;
+import protocol.xmpp.Xmpp;
 import ru.sawim.comm.JLocale;
 import ru.sawim.io.*;
 import ru.sawim.modules.Answerer;
@@ -28,15 +29,10 @@ import ru.sawim.roster.RosterHelper;
 import ru.sawim.service.SawimService;
 import ru.sawim.service.SawimServiceConnection;
 import ru.sawim.text.TextFormatter;
-import ru.sawim.widget.Util;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.X509TrustManager;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.security.SecureRandom;
 import java.util.HashMap;
@@ -57,7 +53,7 @@ public class SawimApplication extends Application {
     public static final String LOG_TAG = SawimApplication.class.getSimpleName();
 
     public static final String DATABASE_NAME = "sawim.db";
-    public static final int DATABASE_VERSION = 7;
+    public static final int DATABASE_VERSION = 9;
 
     public static String NAME;
     public static String VERSION;
@@ -70,6 +66,7 @@ public class SawimApplication extends Application {
     private boolean paused = true;
     private static int fontSize;
     public static boolean showStatusLine;
+    public static boolean enableHistory;
     public static int sortType;
     public static boolean hideIconsClient;
     public static int autoAbsenceTime;
@@ -123,6 +120,7 @@ public class SawimApplication extends Application {
 
         HomeDirectory.init();
         Options.init();
+        initOptions();
         updateOptions();
         Updater.startUIUpdater();
 
@@ -220,6 +218,10 @@ public class SawimApplication extends Application {
         return version;
     }
 
+    public static void initOptions() {
+        enableHistory = Options.getBoolean(JLocale.getString(R.string.pref_history));
+    }
+
     public static void updateOptions() {
         SawimResources.initIcons();
         fontSize = Options.getInt(JLocale.getString(R.string.pref_font_scheme));
@@ -227,6 +229,14 @@ public class SawimApplication extends Application {
         hideIconsClient = Options.getBoolean(JLocale.getString(R.string.pref_hide_icons_clients));
         sortType = Options.getInt(R.array.sort_by_array, JLocale.getString(R.string.pref_cl_sort_by));
         autoAbsenceTime = Options.getInt(R.array.absence_array, JLocale.getString(R.string.pref_aa_time)) * 5 * 60;
+        if (Options.getBoolean(JLocale.getString(R.string.pref_history))
+                && enableHistory != Options.getBoolean(JLocale.getString(R.string.pref_history))) {
+            for (Protocol p : RosterHelper.getInstance().getProtocols()) {
+                if (p instanceof Xmpp) {
+                    ((Xmpp) p).getConnection().enableMessageArchiveManager();
+                }
+            }
+        }
     }
 
     public static boolean isManyPane() {

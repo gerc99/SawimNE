@@ -3,6 +3,8 @@ package ru.sawim.icons;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.text.TextUtils;
+import android.util.Log;
+
 import ru.sawim.SawimApplication;
 import ru.sawim.comm.LruCache;
 import ru.sawim.widget.Util;
@@ -52,8 +54,8 @@ public class ImageCache {
                             File file = getFile(pathCacheFolder, hash);
                             if (file.exists()) {
                                 if (hash.length() == 1) {
-                                    String letter = hash;
-                                    bitmap = Avatars.getRoundedBitmap(letter, Avatars.getColorForName(letter), Color.WHITE, AVATAR_SIZE);
+                                    String character = hash;
+                                    bitmap = Avatars.getRoundedBitmap(character, Avatars.getColorForName(character), Color.WHITE, AVATAR_SIZE);
                                     save(file, bitmap);
                                 } else {
                                     FileInputStream inputStream = null;
@@ -78,6 +80,12 @@ public class ImageCache {
                                         }
                                     }
                                     bitmap = Util.getAvatarBitmap(fileContent, AVATAR_SIZE);
+                                }
+                            } else {
+                                if (hash.length() == 1) {
+                                    String character = hash;
+                                    bitmap = Avatars.getRoundedBitmap(character, Avatars.getColorForName(character), Color.WHITE, AVATAR_SIZE);
+                                    save(file, bitmap);
                                 }
                             }
                             if (bitmap != null) {

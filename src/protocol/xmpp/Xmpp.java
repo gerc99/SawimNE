@@ -462,9 +462,9 @@ public final class Xmpp extends Protocol implements FormListener {
         getConnection().setIBB(new IBBFileTransfer(filename, description, transfer));
     }
 
-    public void queryMessageArchiveManagement(Contact contact, long startTime, long endTime, OnMoreMessagesLoaded moreMessagesLoadedListener) {
+    public void queryMessageArchiveManagement(Contact contact, OnMoreMessagesLoaded moreMessagesLoadedListener) {
         if (getConnection() != null) {
-            getConnection().queryMessageArchiveManagement(contact, startTime, endTime, moreMessagesLoadedListener);
+            getConnection().queryMessageArchiveManagement(contact, moreMessagesLoadedListener);
         }
     }
 

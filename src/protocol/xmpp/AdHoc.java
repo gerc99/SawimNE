@@ -50,7 +50,8 @@ public final class AdHoc implements FormListener, ControlStateListener {
         String[] resources = new String[contact.subcontacts.size()];
         int i = 0;
         for (XmppContact.SubContact sub : contact.subcontacts.values()) {
-            resources[++i] = sub.resource;
+            resources[i] = sub.resource;
+            i++;
         }
         return resources;
     }

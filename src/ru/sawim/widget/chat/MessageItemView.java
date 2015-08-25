@@ -1,17 +1,11 @@
 package ru.sawim.widget.chat;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.text.*;
 import android.text.style.BackgroundColorSpan;
 import android.util.DisplayMetrics;
@@ -21,7 +15,6 @@ import android.view.ViewConfiguration;
 
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
-import ru.sawim.SawimResources;
 import ru.sawim.Scheme;
 import ru.sawim.text.InternalURLSpan;
 import ru.sawim.text.TextLinkClickListener;
@@ -74,9 +67,6 @@ public class MessageItemView extends View {
 
     public MessageItemView(Context context) {
         super(context);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            setLayerType(View.LAYER_TYPE_HARDWARE, null);
-        }
         textPaint.setAntiAlias(true);
 
         if (highlightPaint == null) {
@@ -85,11 +75,6 @@ public class MessageItemView extends View {
             highlightPaint.setColor(0xff79919d);
             highlightPaint.setAntiAlias(true);
         }
-    }
-
-    @Override
-    public boolean hasOverlappingRendering() {
-        return false;
     }
 
     public void setTextSize(int size) {

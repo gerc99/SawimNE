@@ -115,7 +115,7 @@ public class RosterView extends SawimFragment implements ListView.OnItemClickLis
         viewPager.setLayoutParams(viewPagerLayoutParams);
 
         rosterViewLayout = new RosterViewRoot(activity, progressBar, viewPager);
-        slidingTabLayout = (TabLayout) getActivity().getLayoutInflater().inflate(R.layout.tab_layout, rosterViewLayout, false);
+        slidingTabLayout = (TabLayout) getActivity().getLayoutInflater().inflate(R.layout.tab_layout, null);
         viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -187,7 +187,6 @@ public class RosterView extends SawimFragment implements ListView.OnItemClickLis
                              Bundle savedInstanceState) {
         if (rosterViewLayout.getParent() != null)
             ((ViewGroup) rosterViewLayout.getParent()).removeView(rosterViewLayout);
-        initBar();
         return rosterViewLayout;
     }
 
@@ -326,11 +325,9 @@ public class RosterView extends SawimFragment implements ListView.OnItemClickLis
             if (isSearchMode) {
                 barLinearLayout.addView(queryEditText);
             } else {
-                if (RosterHelper.getInstance().getProtocolCount() > 0) {
-                    if (slidingTabLayout.getParent() != null)
-                        ((ViewGroup) slidingTabLayout.getParent()).removeView(slidingTabLayout);
-                    rosterBarLayout.addView(slidingTabLayout);
-                }
+                if (slidingTabLayout.getParent() != null)
+                    ((ViewGroup) slidingTabLayout.getParent()).removeView(slidingTabLayout);
+                rosterBarLayout.addView(slidingTabLayout);
             }
             if (chatsImage.getParent() != null)
                 ((ViewGroup) chatsImage.getParent()).removeView(chatsImage);
@@ -347,11 +344,9 @@ public class RosterView extends SawimFragment implements ListView.OnItemClickLis
                     ((ViewGroup) queryEditText.getParent()).removeView(queryEditText);
                 barLinearLayout.addView(queryEditText);
             } else {
-                if (RosterHelper.getInstance().getProtocolCount() > 0) {
-                    if (slidingTabLayout.getParent() != null)
-                        ((ViewGroup) slidingTabLayout.getParent()).removeView(slidingTabLayout);
-                    barLinearLayout.addView(slidingTabLayout);
-                }
+                if (slidingTabLayout.getParent() != null)
+                    ((ViewGroup) slidingTabLayout.getParent()).removeView(slidingTabLayout);
+                barLinearLayout.addView(slidingTabLayout);
             }
             if (chatsImage.getParent() != null)
                 ((ViewGroup) chatsImage.getParent()).removeView(chatsImage);

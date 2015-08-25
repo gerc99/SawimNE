@@ -1,33 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="goblinGreen">#c8c8c8</color>
-
     <color name="primary">#3F51B5</color>
     <color name="primary_dark">#303F9F</color>
     <color name="primary_light">#C5CAE9</color>
     <color name="accent">#536DFE</color>
     <color name="primary_text">#FFFFFF</color>
     <color name="secondary_text">#ffe6e6e6</color>
-    <color name="icons">#212121</color>
-    <color name="divider">#B6B6B6</color>
+    <color name="list_divider">#B6B6B6</color>
 
     <color name="text">#ffe6e6e6</color>
     <color name="item_selected">#ffe6e6e6</color>
     <color name="param_value">#ffe6e6e6</color>
     <color name="chat_in_msg_text">#ffe6e6e6</color>
     <color name="chat_out_msg_text">#ffe6e6e6</color>
+    <color name="chat_highlight_msg">#ffe6e6e6</color>
     <color name="contact_online">#ffe6e6e6</color>
     <color name="contact_with_chat">#ffe6e6e6</color>
     <color name="contact_offline">#ffe6e6e6</color>
     <color name="contact_temp">#ffe6e6e6</color>
     <color name="group">#ffe6e6e6</color>
-    <color name="chat_highlight_msg">#ffe6e6e6</color>
     <color name="contact_status">#ffe6e6e6</color>
     <color name="protocol_background">#ff585858</color>
     <color name="link">#ff1b77d2</color>
     <color name="link_highlight">#ffe6e6e6</color>
     <color name="unread_message_divider">#ffe6e6e6</color>
-
 
 
     <color name="light_primary">#2196f3</color>
@@ -36,20 +32,19 @@
     <color name="light_accent">#1976d2</color>
     <color name="light_primary_text">#212121</color>
     <color name="light_secondary_text">#727272</color>
-    <color name="light_icons">#2196f3</color>
-    <color name="light_divider">#B6B6B6</color>
+    <color name="light_list_divider">#B6B6B6</color>
 
     <color name="light_text">#212121</color>
     <color name="light_item_selected">#727272</color>
     <color name="light_param_value">#727272</color>
     <color name="light_chat_in_msg_text">#e57373</color>
     <color name="light_chat_out_msg_text">#42a5f5</color>
+    <color name="light_chat_highlight_msg">#1565c0</color>
     <color name="light_contact_online">#2196f3</color>
     <color name="light_contact_with_chat">#2196f3</color>
     <color name="light_contact_offline">#727272</color>
     <color name="light_contact_temp">#727272</color>
     <color name="light_group">#212121</color>
-    <color name="light_chat_highlight_msg">#1565c0</color>
     <color name="light_contact_status">#727272</color>
     <color name="light_protocol_background">#727272</color>
     <color name="light_link">#ff1b77d2</color>
@@ -63,4 +58,17 @@
     <color name="status_online">#ff67bb6b</color>
     <color name="status_away">#ff1b77d2</color>
     <color name="status_dnd">#fff44437</color>
+
+    <array name="avatar_colors">
+        <item>#FFe91e63</item>
+        <item>#FF9c27b0</item>
+        <item>#FF673ab7</item>
+        <item>#FF3f51b5</item>
+        <item>#FF5677fc</item>
+        <item>#FF03a9f4</item>
+        <item>#FF009688</item>
+        <item>#FFff5722</item>
+        <item>#FF795548</item>
+        <item>#FF607d8b</item>
+    </array>
 </resources>

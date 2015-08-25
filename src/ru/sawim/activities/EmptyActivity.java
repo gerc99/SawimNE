@@ -2,6 +2,7 @@ package ru.sawim.activities;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import ru.sawim.Container;
@@ -17,6 +18,8 @@ public class EmptyActivity extends BaseActivity {
         setTheme(Scheme.isBlack() ? R.style.BaseTheme : R.style.BaseThemeLight);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         Container.get(OnCreateListener.class).onCreate(this);
         Container.remove(OnCreateListener.class);
     }

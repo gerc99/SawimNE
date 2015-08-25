@@ -2,6 +2,9 @@ package ru.sawim.icons;
 
 import android.graphics.*;
 
+import ru.sawim.R;
+import ru.sawim.SawimApplication;
+
 public class Avatars {
 
     public static Bitmap getRoundedBitmap(Bitmap bitmap) {
@@ -89,7 +92,7 @@ public class Avatars {
         paintLetter.setTextAlign(Paint.Align.CENTER);
         Rect bounds = new Rect();
         paintLetter.getTextBounds(letter, 0, letter.length(), bounds);
-        int y = (output.getHeight() + bounds.height()) / 2;
+        int y = output.getHeight() / 2 + bounds.height() / 2;
         canvas.drawText(letter, rect.width() / 2, y, paintLetter);
         return output;
     }
@@ -123,13 +126,11 @@ public class Avatars {
         return output;
     }
 
-    public static int getColorForName(String name) {
-        if (name.isEmpty()) {
-            return 0xFF202020;
+    public static int getColorForName(String character) {
+        int colors[] = SawimApplication.getContext().getResources().getIntArray(R.array.avatar_colors);
+        if (character.isEmpty()) {
+            return colors[colors.length - 1];
         }
-        int colors[] = {0xFFe91e63, 0xFF9c27b0, 0xFF673ab7, 0xFF3f51b5,
-                0xFF5677fc, 0xFF03a9f4, 0xFF00bcd4, 0xFF009688, 0xFFff5722,
-                0xFF795548, 0xFF607d8b};
-        return colors[(int) ((name.hashCode() & 0xffffffffl) % colors.length)];
+        return colors[(int) ((character.hashCode() & 0xffffffffl) % colors.length)];
     }
 }

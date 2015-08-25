@@ -73,7 +73,7 @@ public final class StorageConvertor {
                             String text = is.readUTF();
                             long date = Util.createLocalDate(is.readUTF());
 
-                            historyStorage.addText(0, isIncoming, from, text, date, (short) 0);
+                            historyStorage.addText(0, isIncoming, from, text, date, (short) 0, "");
 
                             is.close();
                             Log.d(LOG_TAG, "Done converting record #" + (recordId + 1));

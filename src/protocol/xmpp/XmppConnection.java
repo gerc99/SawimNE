@@ -8,6 +8,7 @@ import ru.sawim.Options;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.SawimException;
+import ru.sawim.chat.Chat;
 import ru.sawim.chat.message.Message;
 import ru.sawim.chat.message.PlainMessage;
 import ru.sawim.chat.message.SystemNotice;
@@ -66,14 +67,14 @@ public final class XmppConnection extends ClientConnection {
 
     private static final String S_TEXT = "text";
     private static final String S_FROM = "from";
-    private static final String S_IQ = "iq";
-    private static final String S_TO = "to";
-    private static final String S_TYPE = "type";
+    public static final String S_IQ = "iq";
+    public static final String S_TO = "to";
+    public static final String S_TYPE = "type";
     private static final String S_ERROR = "error";
     private static final String S_NONE = "none";
     private static final String S_NODE = "node";
     private static final String S_NICK = "nick";
-    private static final String S_SET = "set";
+    public static final String S_SET = "set";
     private static final String S_REMOVE = "remove";
     private static final String S_RESULT = "result";
     private static final String S_GROUP = "group";
@@ -81,11 +82,11 @@ public final class XmppConnection extends ClientConnection {
     private static final String S_ITEMS = "items";
     private static final String S_TRUE = "true";
     private static final String S_FALSE = "false";
-    private static final String S_GET = "get";
+    public static final String S_GET = "get";
     private static final String S_TIME = "time";
     private static final String S_TITLE = "title";
     private static final String S_CODE = "code";
-    private static final String S_QUERY = "query";
+    public static final String S_QUERY = "query";
     private static final String S_STATUS = "status";
     private static final String S_VCARD = "vCard";
     private static final String S_SUBJECT = "subject";
@@ -410,12 +411,12 @@ public final class XmppConnection extends ClientConnection {
 
         setProgress(30);
         socket.start();
+        requestDiscoServerItems();
+        requestConferenceInfo(domain_);
 		if (isSessionManagementEnabled()) {
             usePong();
             setProgress(100);
         } else {
-			requestDiscoServerItems();
-			requestConferenceInfo(domain_);
 			setProgress(50);
 			usePong();
 			setProgress(60);
@@ -913,10 +914,8 @@ public final class XmppConnection extends ClientConnection {
                         String subscription = itemNode.getAttribute("subscription");
                         contact.setBooleanValue(Contact.CONTACT_NO_AUTH, isNoAutorized(subscription));
                         getXmpp().getStorage().save(getXmpp(), contact, g);
-                        if (serverFeatures.hasMessageArchiveManagement()) {
-                            //messageArchiveManagement.query(this, contact);
-                        }
                     }
+                    enableMessageArchiveManager();
                     RosterHelper.getInstance().updateGroup(xmpp, xmpp.getNotInListGroup());
                     RosterHelper.getInstance().updateRoster();
                     setProgress(70);
@@ -944,8 +943,8 @@ public final class XmppConnection extends ClientConnection {
 					setProgress(100);
 
                     if (serverFeatures.hasMessageArchiveManagement()) {
-                        //messageArchiveManagement.catchup(this);
-                        messageArchiveManagement.query(this);
+                        ////messageArchiveManagement.catchup(this);
+                        //messageArchiveManagement.query(this);
                     }
                 } else if (IQ_TYPE_SET == iqType) {
                     while (0 < iqQuery.childrenCount()) {
@@ -1315,15 +1314,15 @@ public final class XmppConnection extends ClientConnection {
                     XmppContact.SubContact sc = ((XmppServiceContact) c).getExistSubContact(Jid.getResource(from, null));
                     if (null != sc) {
                         sc.avatarHash = "";
-                        getXmpp().getStorage().updateAvatarHash(c.getUserId() + "/" + sc.resource, "");
+                        getXmpp().getStorage().updateAvatarHash(c.getUserId() + "/" + sc.resource, c.avatarHash);
                     } else {
                         c.avatarHash = "";
-                        getXmpp().getStorage().updateAvatarHash(c.getUserId(), "");
+                        getXmpp().getStorage().updateAvatarHash(c.getUserId(), c.avatarHash);
                     }
                 } else {
                     if (c != null) {
                         c.avatarHash = "";
-                        getXmpp().getStorage().updateAvatarHash(c.getUserId(), "");
+                        getXmpp().getStorage().updateAvatarHash(c.getUserId(), c.avatarHash);
                     }
                 }
             }
@@ -1385,7 +1384,7 @@ public final class XmppConnection extends ClientConnection {
         if (!Options.getBoolean(JLocale.getString(R.string.pref_users_avatars))) return;
         if (newAvatarHash == null) {
             if (avatarHash == null) {
-            //    getVCard(id);
+                getVCard(id);
             }
         } else {
             if (!newAvatarHash.equals(avatarHash)) {
@@ -1958,6 +1957,7 @@ public final class XmppConnection extends ClientConnection {
         }
         XmlNode mamXmlNode = msg.getFirstNode("result", "urn:xmpp:mam:0");
         if (mamXmlNode != null) {
+            String serverMsgId = mamXmlNode.getId();
             final MessageArchiveManagement.Query query = messageArchiveManagement.findQuery(mamXmlNode.getAttribute("queryid"));
             XmlNode forwardedXmlNode = mamXmlNode.getFirstNode("forwarded", "urn:xmpp:forward:0");
             final String date = getDate(forwardedXmlNode);
@@ -1969,32 +1969,40 @@ public final class XmppConnection extends ClientConnection {
             String type = msg.getAttribute(S_TYPE);
             String from = msg.getAttribute(S_FROM);
             String to = msg.getAttribute(S_TO);
-            String coo;
+            boolean isGroupchat = ("groupchat").equals(type);
+            String fromRes = Jid.getResource(from, null);
+            String title;
             boolean isIncoming = false;
             if (from != null && to != null && Jid.getBareJid(from).equals(Jid.getBareJid(fullJid_))) {
                 isIncoming = false;
-                coo = to;
+                title = to;
             } else if (from != null && to != null) {
                 isIncoming = true;
-                coo = from;
+                title = from;
             } else {
-                Log.e("MAM ERROR MEASSAGE", from + " " + to);
-                coo = from;
+                //Log.e("MAM ERROR MEASSAGE", from + " " + to);
+                title = from;
             }
-            from = Jid.getBareJid(coo);
+            from = Jid.getBareJid(title);
             XmppContact c = (XmppContact) getXmpp().getItemByUID(from);
             if (c == null) {
                 c = (XmppContact) getXmpp().createTempContact(from, false);
                 getXmpp().addLocalContact(c);
             }
             Message message = new PlainMessage(from, isIncoming ? getXmpp().getUserId() : from, time, text, !isOnlineMessage, isIncoming);
-            getXmpp().addMessage(message, S_HEADLINE.equals(type), c.isConference());
+            message.setServerMsgId(serverMsgId);
+            if (isGroupchat && fromRes != null) {
+                final XmppServiceContact conf = (XmppServiceContact) c;
+                message.setName(conf.getNick(fromRes));
+            }
+            HistoryStorage.getHistory(getProtocol().getUserId(), c.getUserId()).addMessageToHistory(c, message, Chat.getFrom(c, getProtocol(), message), false);
+            query.incrementMessageCount();
             if (!c.isConference()) {
                 if (query == null) {
-                    messageArchiveManagement.query(this, c);
+                    messageArchiveManagement.queryReverse(this, c);
                 } else {
                     if (query.getWith() == null) {
-                        messageArchiveManagement.query(this, c, query.getStart());
+                        messageArchiveManagement.queryReverse(this, c, query.getStart());
                     }
                 }
             }
@@ -2582,7 +2590,7 @@ public final class XmppConnection extends ClientConnection {
         xml += xXml + "</presence>";
         putPacketIntoQueue(xml);
         //if (!AutoAbsence.getInstance().isChangeStatus())
-        setConferencesXStatus(status, msg, priority);
+        //setConferencesXStatus(status, msg, priority);
     }
 
     void setConferencesXStatus(String status, String msg, int priority) {
@@ -2763,6 +2771,20 @@ public final class XmppConnection extends ClientConnection {
                 }
             }
         });
+    }
+
+    public void enableMessageArchiveManager() {
+        if (serverFeatures.hasMessageArchiveManagement()) {
+            XmlNode xmlNode = new XmlNode(S_IQ);
+            xmlNode.putAttribute(S_TYPE, S_SET);
+            xmlNode.putAttribute(XmlNode.S_ID, generateId());
+
+            XmlNode prefsNode = XmlNode.addXmlns("prefs", "urn:xmpp:mam:0");
+            prefsNode.putAttribute("default", "roster");
+            prefsNode.addSubTag("always");
+            xmlNode.addNode(prefsNode);
+            putPacketIntoQueue(xmlNode.toString());
+        }
     }
 
     private void enableCarbons() {
@@ -3126,10 +3148,11 @@ public final class XmppConnection extends ClientConnection {
         return true;
     }
 
-    public void queryMessageArchiveManagement(Contact contact, long startTime, long endTime, OnMoreMessagesLoaded moreMessagesLoadedListener) {
-        if (contact.isConference()) return;
+    public void queryMessageArchiveManagement(Contact contact, OnMoreMessagesLoaded moreMessagesLoadedListener) {
         if (!serverFeatures.hasMessageArchiveManagement()) return;
-        MessageArchiveManagement.Query query = messageArchiveManagement.query(this, contact, startTime, endTime);
+        if (!contact.isHasMessagesLeftOnServer()) return;
+        if (getMessageArchiveManagement().queryInProgress(contact, moreMessagesLoadedListener)) return;
+        MessageArchiveManagement.Query query = messageArchiveManagement.prev(this, contact);
         if (query != null) {
             query.setOnMoreMessagesLoaded(moreMessagesLoadedListener);
         }

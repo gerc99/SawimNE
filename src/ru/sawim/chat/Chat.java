@@ -86,6 +86,10 @@ public final class Chat {
     }
 
     public String getMyName() {
+        return getMyName(contact, protocol);
+    }
+
+    public static String getMyName(Contact contact, Protocol protocol) {
         if (contact instanceof XmppServiceContact) {
             String nick = contact.getMyName();
             if (null != nick) return nick;
@@ -269,6 +273,16 @@ public final class Chat {
         return senderName;
     }
 
+    public static String getFrom(Contact contact, Protocol protocol, Message message) {
+        String senderName = message.getName();
+        if (null == senderName) {
+            senderName = message.isIncoming()
+                    ? contact.getName()
+                    : getMyName(contact, protocol);
+        }
+        return senderName;
+    }
+
     public static MessData buildMessage(Contact contact, Message message, String from, boolean isSystemNotice, boolean isHighlight) {
         boolean incoming = message.isIncoming();
         String messageText = message.getProcessedText();
@@ -306,6 +320,7 @@ public final class Chat {
         }
 
         final MessData mData = new MessData(contact, message.getNewDate(), messageText, from, flags, isHighlight);
+        mData.setServerMsgId(message.getServerMsgId());
         if (!incoming && !mData.isMe()) {
             message.setVisibleIcon(mData);
         }

@@ -28,6 +28,7 @@ public final class MessData {
     public static final short SERVICE = 16;
     public static final short PRESENCE = 32;
     public static final short MARKED = 64;
+    private String serverMsgId;
 
     public MessData(Contact currentContact, long time, String text, String nick, short flags, boolean highLight) {
         isHighLight = highLight;
@@ -147,5 +148,13 @@ public final class MessData {
 
     public String getStrTime() {
         return strTime;
+    }
+
+    public String getServerMsgId() {
+        return serverMsgId;
+    }
+
+    public void setServerMsgId(String serverMsgId) {
+        this.serverMsgId = serverMsgId;
     }
 }

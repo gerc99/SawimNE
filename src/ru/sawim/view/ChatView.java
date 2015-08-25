@@ -22,6 +22,7 @@ import android.support.v7.app.ActionBar;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.*;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -104,6 +105,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     private DrawerLayout drawerLayout;
     private ChatBarView chatBarLayout;
     private ChatsDialogFragment chatsDialogFragment;
+    private int lastServerMessageCount;
 
     public static ChatView newInstance(String protocolId, String contactId) {
         ChatView chatView = new ChatView();
@@ -495,12 +497,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
             addUnreadMessagesFromHistoryToList();
         } else {
             oldChatHash = chat.hashCode();
-            SawimApplication.getExecutor().execute(new Runnable() {
-                @Override
-                public void run() {
-                    loadStory(false, true);
-                }
-            });
+            loadStory(false, true);
         }
 
         chat.resetUnreadMessages();
@@ -542,6 +539,20 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
             initList();
             initMucUsers();
         }
+
+        /*new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for (int i = 21; i < 100; i++) {
+                    try {
+                        Thread.sleep(3000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    chat.sendMessage(""+i);
+                }
+            }
+        }).start();*/
     }
 
     public Chat getCurrentChat() {
@@ -590,14 +601,8 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                 synchronized (getMessagesAdapter().getItems()) {
                     //if (oldFirstVisibleItem != firstVisibleItem) {
                     //    oldFirstVisibleItem = firstVisibleItem;
-                        if (messagesLoaded && visibleItemCount > 0 && firstVisibleItem < 5) {
-                            messagesLoaded = false;
-                            SawimApplication.getExecutor().execute(new Runnable() {
-                                @Override
-                                public void run() {
-                                    loadStory(isScroll, false);
-                                }
-                            });
+                        if (visibleItemCount > 0 && firstVisibleItem < 5) {
+                            loadStory(isScroll, false);
                         }
                     //} else {
                     //    oldFirstVisibleItem = -1;
@@ -775,61 +780,77 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     }
 
     private void loadStory(final boolean isScroll, final boolean isLoad) {
-        if (isOldChat) {
-            isOldChat = false;
-            return;
-        }
-        if (chat != null && getMessagesAdapter() != null) {
-            final boolean hasUnreadMessages = unreadMessageCount > 0;
-            final boolean isBottomScroll = chat.currentPosition == 0;
-            final boolean isFirstOpenChat = chat.currentPosition == -2;
-            int limit = HISTORY_MESSAGES_LIMIT;
-            if (chat.currentPosition > 0) {
-                limit = chat.currentPosition;
-            } else if (unreadMessageCount > 0) {
-                limit += unreadMessageCount;
-            }
+        if (!messagesLoaded) return;
+        messagesLoaded = false;
+        SawimApplication.getExecutor().execute(new Runnable() {
+            @Override
+            public void run() {
+                if (isOldChat) {
+                    isOldChat = false;
+                    return;
+                }
+                if (chat != null && getMessagesAdapter() != null) {
+                    final boolean hasUnreadMessages = unreadMessageCount > 0;
+                    final boolean isBottomScroll = chat.currentPosition == 0;
+                    final boolean isFirstOpenChat = chat.currentPosition == -2;
+                    int limit = HISTORY_MESSAGES_LIMIT;
+                    if (chat.currentPosition > 0) {
+                        limit = chat.currentPosition;
+                    } else if (unreadMessageCount > 0) {
+                        limit += unreadMessageCount;
+                    }
 
-            List<MessData> messDataList = null;
-            final int oldCount = getMessagesAdapter().getCount();
-            if (!isScroll && isLoad) {
-                messDataList = chat.getHistory().addNextListMessages(chat, limit, oldCount);
-            } else if (isScroll && !isLoad) {
-                messDataList = chat.getHistory().addNextListMessages(chat, HISTORY_MESSAGES_LIMIT, oldCount);
-            }
-            if ((messDataList != null && messDataList.isEmpty()) && chat.getProtocol() instanceof Xmpp) {
-                long time = chat.getHistory().getMessageTime(false);
-                ((Xmpp) chat.getProtocol()).queryMessageArchiveManagement(chat.getContact(), 0, time - 1, new OnMoreMessagesLoaded() {
-                    @Override
-                    public void onLoaded() {
-                        sort();
-                        if (getActivity() != null) {
-                            getActivity().runOnUiThread(new Runnable() {
+                    List<MessData> messDataList = null;
+                    final int oldCount = getMessagesAdapter().getCount();
+                    final long oldTimeStamp = oldCount == 0 ? 0 : getMessagesAdapter().getItem(0).getTime();
+                    if (!isScroll && isLoad) {
+                        messDataList = chat.getHistory().addNextListMessages(chat, limit, oldTimeStamp);
+                    } else if (isScroll && !isLoad) {
+                        messDataList = chat.getHistory().addNextListMessages(chat, HISTORY_MESSAGES_LIMIT, oldTimeStamp);
+                    }
+                    final List<MessData> finalMessDataList = messDataList;
+                    if ((finalMessDataList == null || finalMessDataList.isEmpty()) && chat.getProtocol() instanceof Xmpp) {
+                        ((Xmpp) chat.getProtocol()).queryMessageArchiveManagement(chat.getContact(), new OnMoreMessagesLoaded() {
+                            @Override
+                            public void onLoaded(int messagesCount) {
+                                lastServerMessageCount = messagesCount;
+                                //sort();
+                                final List<MessData> messDataList = chat.getHistory().addNextListMessages(chat, HISTORY_MESSAGES_LIMIT, oldTimeStamp);
+                                if (handler != null) {
+                                    handler.post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            if (messDataList != null) {
+                                                if (isLoad || isScroll) {
+                                                    getMessagesAdapter().getItems().addAll(0, messDataList);
+                                                    setPositionAfterHistoryLoaded(hasUnreadMessages, isBottomScroll,
+                                                            isFirstOpenChat, isScroll, isLoad, true, oldCount);
+                                                }
+                                            }
+                                            messagesLoaded = true;
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                    } else {
+                        if (handler != null) {
+                            handler.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    setPositionAfterHistoryLoaded(hasUnreadMessages, isBottomScroll,
-                                            isFirstOpenChat, isScroll, isLoad, true, oldCount);
+                                    if (finalMessDataList != null) {
+                                        getMessagesAdapter().getItems().addAll(0, finalMessDataList);
+                                        setPositionAfterHistoryLoaded(hasUnreadMessages, isBottomScroll,
+                                                isFirstOpenChat, isScroll, isLoad, !finalMessDataList.isEmpty(), oldCount);
+                                        messagesLoaded = true;
+                                    }
                                 }
                             });
                         }
                     }
-                });
+                }
             }
-            final List<MessData> finalMessDataList = messDataList;
-            if (getActivity() != null) {
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (finalMessDataList != null) {
-                            getMessagesAdapter().getItems().addAll(0, finalMessDataList);
-                            setPositionAfterHistoryLoaded(hasUnreadMessages, isBottomScroll,
-                                    isFirstOpenChat, isScroll, isLoad, !finalMessDataList.isEmpty(), oldCount);
-                            messagesLoaded = true;
-                        }
-                    }
-                });
-            }
-        }
+        });
     }
 
     private void addUnreadMessagesFromHistoryToList() {
@@ -901,7 +922,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
         final boolean idsIsNtEmpty = !searchMessagesIds.isEmpty();
         final int oldCount = getMessagesAdapter().getCount();
         if (idsIsNtEmpty) {
-            if (searchPositionsCount == 0) {
+            if (searchPositionsCount == 0 || searchPositionsCount == searchMessagesIds.size()) {
                 getMessagesAdapter().setQuery(query);
                 searchPositionsCount = searchMessagesIds.size();
             }

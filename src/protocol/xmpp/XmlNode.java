@@ -580,4 +580,18 @@ public final class XmlNode {
         vCard.putAttribute("prodid", "-/" + "/HandGen/" + "/NONSGML vGen v1.0/" + "/EN");
         return vCard;
     }
+
+    public XmlNode addSubTag(String subtag) {
+        XmlNode content = new XmlNode(subtag);
+        children.add(content);
+        return content;
+    }
+
+    public void addNode(XmlNode subNode) {
+        if (value == null) {
+            value = subNode.toString();
+        } else {
+            value += subNode.toString();
+        }
+    }
 }

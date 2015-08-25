@@ -33,6 +33,8 @@ abstract public class Contact implements TreeNode {
     public long chaingingStatusTime = 0;
     public String avatarHash;
     private long lastMessageTransmitted;
+    private boolean hasMessagesLeftOnServer = true;
+    public String firstServerMsgId;
 
     public static int getStatusColor(byte status) {
         switch (status) {
@@ -371,5 +373,13 @@ abstract public class Contact implements TreeNode {
             return HistoryStorage.getHistory(getProtocol().getUserId(), getUserId()).getMessageTime(true);
         }
         return lastMessageTransmitted;
+    }
+
+    public void setHasMessagesLeftOnServer(boolean hasMessagesLeftOnServer) {
+        this.hasMessagesLeftOnServer = hasMessagesLeftOnServer;
+    }
+
+    public boolean isHasMessagesLeftOnServer() {
+        return hasMessagesLeftOnServer;
     }
 }

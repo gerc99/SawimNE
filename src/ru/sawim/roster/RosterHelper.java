@@ -68,7 +68,7 @@ public final class RosterHelper {
         return exist == profile || (exist.protocolType == profile.protocolType) && exist.userId.equals(profile.userId);
     }
 
-    public void addProtocols(Vector accounts) {
+    private void addProtocols(Vector accounts) {
         int count = getProtocolCount();
         Protocol[] protocols = new Protocol[count];
         for (int i = 0; i < count; ++i) {
@@ -422,7 +422,7 @@ public final class RosterHelper {
         protocolList[i] = null;
     }
 
-    public void addProtocol(Protocol prot) {
+    private void addProtocol(Protocol prot) {
         if ((count < protocolList.length) && (null != prot)) {
             protocolList[count] = prot;
             count++;

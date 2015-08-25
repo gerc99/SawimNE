@@ -678,8 +678,6 @@ abstract public class Protocol {
         Chat chat = getChat(contact);
         boolean isHighlight = Chat.isHighlight(message.getProcessedText(), contact.getMyName());
         chat.addMessage(message, isPlain, isSystem, isHighlight);
-        if (contact.setLastMessageTransmitted(System.currentTimeMillis())) {
-        }
         if (isSystem) {
             SystemNotice notice = (SystemNotice) message;
             if (SystemNotice.SYS_NOTICE_AUTHREQ == notice.getSysnoteType()) {

@@ -13,6 +13,7 @@ import ru.sawim.chat.message.Message;
 import ru.sawim.chat.message.PlainMessage;
 import ru.sawim.comm.JLocale;
 import ru.sawim.io.DatabaseHelper;
+import ru.sawim.io.RosterStorage;
 import ru.sawim.modules.DebugLog;
 import ru.sawim.roster.RosterHelper;
 
@@ -38,10 +39,10 @@ public class HistoryStorage {
     }
 
     public void addText(MessData md) {
-        addText(md.getIconIndex(), md.isIncoming(), md.getNick(), md.getText().toString(), md.getTime(), md.getRowData());
+        addText(md.getIconIndex(), md.isIncoming(), md.getNick(), md.getText().toString(), md.getTime(), md.getRowData(), md.getServerMsgId());
     }
 
-    public synchronized void addText(int iconIndex, boolean isIncoming, String nick, String text, long time, short rowData) {
+    public synchronized void addText(int iconIndex, boolean isIncoming, String nick, String text, long time, short rowData, String serverMsgId) {
         try {
             ContentValues values = new ContentValues();
             values.put(DatabaseHelper.ACCOUNT_ID, protocolId);
@@ -52,6 +53,7 @@ public class HistoryStorage {
             values.put(DatabaseHelper.MESSAGE, text);
             values.put(DatabaseHelper.DATE, time);
             values.put(DatabaseHelper.ROW_DATA, rowData);
+            //values.put(DatabaseHelper.SERVER_MSG_ID, serverMsgId);
             SawimApplication.getDatabaseHelper().getWritableDatabase().insert(DatabaseHelper.TABLE_CHAT_HISTORY, null, values);
         } catch (Exception e) {
             DebugLog.panic(e);
@@ -67,12 +69,6 @@ public class HistoryStorage {
         } catch (Exception e) {
             DebugLog.panic(e);
         }
-    }
-
-    public void deleteLastMessage() {
-        String WHERE_ACC_CONTACT_AUTHOR_MESSAGE_ID = WHERE_ACC_CONTACT_ID + " = ? AND " + DatabaseHelper.ROW_AUTO_ID + "= ?";
-        SawimApplication.getDatabaseHelper().getWritableDatabase().delete(DatabaseHelper.TABLE_CHAT_HISTORY, WHERE_ACC_CONTACT_AUTHOR_MESSAGE_ID,
-                new String[]{protocolId, uniqueUserId, Integer.toString(getLastId())});
     }
 
     public void deleteText(MessData md) {
@@ -134,25 +130,51 @@ public class HistoryStorage {
         return lastMessageTime;
     }
 
-    public Cursor getLastCursor() {
+    /*public String getFirstServerMsgId() {
         Cursor cursor = null;
+        String firstServerMsgId = null;
         try {
-            cursor = SawimApplication.getDatabaseHelper().getReadableDatabase().query(DatabaseHelper.TABLE_CHAT_HISTORY, null,
+            cursor = SawimApplication.getDatabaseHelper().getReadableDatabase().query(DatabaseHelper.TABLE_CHAT_HISTORY, new String[]{DatabaseHelper.SERVER_MSG_ID},
                     null, null, null, null, null);
-            cursor.moveToLast();
+            if (cursor.moveToFirst()) {
+                firstServerMsgId = cursor.getString(cursor.getColumnIndex(DatabaseHelper.SERVER_MSG_ID));
+            }
         } catch (Exception e) {
             DebugLog.panic(e);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
         }
-        return cursor;
+        return firstServerMsgId;
     }
+
+    public String getLastServerMsgId() {
+        Cursor cursor = null;
+        String lastServerMsgId = null;
+        try {
+            cursor = SawimApplication.getDatabaseHelper().getReadableDatabase().query(DatabaseHelper.TABLE_CHAT_HISTORY, new String[]{DatabaseHelper.SERVER_MSG_ID},
+                    null, null, null, null, null);
+            if (cursor.moveToLast()) {
+                lastServerMsgId = cursor.getString(cursor.getColumnIndex(DatabaseHelper.SERVER_MSG_ID));
+            }
+        } catch (Exception e) {
+            DebugLog.panic(e);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return lastServerMsgId;
+    }*/
 
     public synchronized boolean hasLastMessage(Chat chat, Message message) {
         Contact contact = chat.getContact();
         boolean hasMessage = false;
         Cursor cursor = null;
         try {
-            cursor = SawimApplication.getDatabaseHelper().getReadableDatabase().query(DatabaseHelper.TABLE_CHAT_HISTORY, null, /*WHERE_ACC_CONTACT_ID*/DatabaseHelper.CONTACT_ID + " = ?",
-                    new String[]{/*protocolId, */uniqueUserId}, null, null, DatabaseHelper.ROW_AUTO_ID + " DESC");
+            cursor = SawimApplication.getDatabaseHelper().getReadableDatabase().query(DatabaseHelper.TABLE_CHAT_HISTORY, null, DatabaseHelper.CONTACT_ID + " = ?",
+                    new String[]{uniqueUserId}, null, null, DatabaseHelper.DATE + " DESC");
             if (cursor.moveToLast()) {
                 do {
                     short rowData = cursor.getShort(cursor.getColumnIndex(DatabaseHelper.ROW_DATA));
@@ -184,12 +206,19 @@ public class HistoryStorage {
                 && mess.getText().toString().equals(messFromDataBase.getText().toString());
     }
 
-    public List<MessData> addNextListMessages(final Chat chat, int limit, int offset) {
+    public List<MessData> addNextListMessages(final Chat chat, int limit, long timestamp) {
         List<MessData> list = new ArrayList<>();
         Cursor cursor = null;
         try {
-            cursor = SawimApplication.getDatabaseHelper().getReadableDatabase().query(DatabaseHelper.TABLE_CHAT_HISTORY, null, WHERE_ACC_CONTACT_ID,
-                    new String[]{protocolId, uniqueUserId}, null, null, DatabaseHelper.ROW_AUTO_ID + " DESC LIMIT " + limit + " OFFSET " + offset);
+            if (timestamp == 0) {
+                cursor = SawimApplication.getDatabaseHelper().getReadableDatabase().query(DatabaseHelper.TABLE_CHAT_HISTORY, null,
+                        DatabaseHelper.CONTACT_ID + " = ?",
+                        new String[]{uniqueUserId}, null, null, DatabaseHelper.DATE + " DESC", String.valueOf(limit));
+            } else {
+                cursor = SawimApplication.getDatabaseHelper().getReadableDatabase().query(DatabaseHelper.TABLE_CHAT_HISTORY, null,
+                        DatabaseHelper.CONTACT_ID + " = ? and " + DatabaseHelper.DATE + " < ?",
+                        new String[]{uniqueUserId, String.valueOf(timestamp)}, null, null, DatabaseHelper.DATE + " DESC", String.valueOf(limit));
+            }
             if (cursor.moveToLast()) {
                 do {
                     list.add(buildMessage(chat, cursor));
@@ -211,12 +240,14 @@ public class HistoryStorage {
         String text = cursor.getString(cursor.getColumnIndex(DatabaseHelper.MESSAGE));
         long date = cursor.getLong(cursor.getColumnIndex(DatabaseHelper.DATE));
         short rowData = cursor.getShort(cursor.getColumnIndex(DatabaseHelper.ROW_DATA));
+        //String serverMsgId = cursor.getString(cursor.getColumnIndex(DatabaseHelper.SERVER_MSG_ID));
         PlainMessage message;
         if (isIncoming) {
             message = new PlainMessage(from, chat.getProtocol(), date, text, true);
         } else {
             message = new PlainMessage(chat.getProtocol(), contact.getUserId(), date, text);
         }
+        //message.setServerMsgId(serverMsgId);
         MessData messData;
         if (rowData == 0) {
             messData = Chat.buildMessage(contact, message, contact.isConference() ? from : chat.getFrom(message),
@@ -231,6 +262,10 @@ public class HistoryStorage {
             messData.setIconIndex((byte) sendingState);
         }
         return messData;
+    }
+
+    public void addMessageToHistory(Contact contact, Message message, String from, boolean isSystemNotice) {
+        addText(Chat.buildMessage(contact, message, from, isSystemNotice, Chat.isHighlight(message.getProcessedText(), contact.getMyName())));
     }
 
     public synchronized int getHistorySize() {
@@ -266,6 +301,9 @@ public class HistoryStorage {
 
     public void removeHistory() {
         try {
+            Contact contact = RosterHelper.getInstance().getProtocol(protocolId).getItemByUID(uniqueUserId);
+            contact.firstServerMsgId = "";
+            RosterStorage.updateFirstServerMsgId(contact);
             RosterHelper.getInstance().getProtocol(protocolId).getStorage().updateUnreadMessagesCount(protocolId, uniqueUserId, 0);
             SawimApplication.getDatabaseHelper().getWritableDatabase().delete(DatabaseHelper.TABLE_CHAT_HISTORY, WHERE_ACC_CONTACT_ID, new String[]{protocolId, uniqueUserId});
         } catch (Exception e) {

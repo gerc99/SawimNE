@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import ru.sawim.R;
 import ru.sawim.Scheme;
 
 /**

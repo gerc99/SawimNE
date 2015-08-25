@@ -19,16 +19,17 @@ public class Scheme {
 
     private static final int[] themeColors = new int[] {
             R.attr.text,
+            R.attr.list_divider,
             R.attr.item_selected,
             R.attr.param_value,
             R.attr.chat_in_msg_text,
             R.attr.chat_out_msg_text,
+            R.attr.chat_highlight_msg,
             R.attr.contact_online,
             R.attr.contact_with_chat,
             R.attr.contact_offline,
             R.attr.contact_temp,
             R.attr.group,
-            R.attr.chat_highlight_msg,
             R.attr.contact_status,
             R.attr.protocol_background,
             R.attr.link,

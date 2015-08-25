@@ -178,7 +178,9 @@ public class XmppServiceContact extends XmppContact {
         }
         if (myNick.equals(nick)) {
             XmppContact.SubContact c = getContact(getMyName());
-            setStatus(c.status, getStatusText());
+            if (c != null) {
+                setStatus(c.status, getStatusText());
+            }
             xmpp.addRejoin(getUserId());
         }
         SubContact sc = getExistSubContact(nick);

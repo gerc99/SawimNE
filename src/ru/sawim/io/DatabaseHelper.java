@@ -27,6 +27,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String ROW_DATA = "row_data";
     public static final String UNREAD_MESSAGES_COUNT = "unread_messages_count";
     public static final String AVATAR_HASH = "avatar_hash";
+    public static final String FIRST_SERVER_MESSAGE_ID = "first_server_msg_id";
     public static final String SUB_CONTACT_RESOURCE = "sub_contact_resources";
     public static final String SUB_CONTACT_STATUS = "sub_contact_status";
     public static final String SUB_CONTACT_PRIORITY = "sub_contact_priority";
@@ -59,8 +60,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        if (oldVersion <= 4 && newVersion >= 7) {
+        if (newVersion <= 9) {
             try {
+                db.execSQL("DROP TABLE IF EXISTS " + RosterStorage.subContactsTable);
                 db.execSQL("DROP TABLE IF EXISTS " + RosterStorage.storeName);
             } catch (Exception e) {
                 e.printStackTrace();
