@@ -149,35 +149,35 @@ public class SawimActivity extends BaseActivity implements OnAccountsLoaded {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
-
-    @Override
     public void onAccountsLoaded() {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        StartWindowView startWindowView = (StartWindowView) fragmentManager.findFragmentByTag(StartWindowView.TAG);
-        //RosterHelper.getInstance().loadAccounts();
-        if (RosterHelper.getInstance().getProtocolCount() == 0) {
-            if (Options.getAccountCount() == 0) {
-                if (SawimApplication.isManyPane()) {
-                    setContentView(R.layout.main);
-                    if (startWindowView == null) {
-                        StartWindowView newFragment = new StartWindowView();
-                        FragmentTransaction transaction = fragmentManager.beginTransaction();
-                        transaction.replace(R.id.fragment_container, newFragment, StartWindowView.TAG);
-                        transaction.commit();
-                        supportInvalidateOptionsMenu();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                StartWindowView startWindowView = (StartWindowView) fragmentManager.findFragmentByTag(StartWindowView.TAG);
+                //RosterHelper.getInstance().loadAccounts();
+                if (RosterHelper.getInstance().getProtocolCount() == 0) {
+                    if (Options.getAccountCount() == 0) {
+                        if (SawimApplication.isManyPane()) {
+                            setContentView(R.layout.main);
+                            if (startWindowView == null) {
+                                StartWindowView newFragment = new StartWindowView();
+                                FragmentTransaction transaction = fragmentManager.beginTransaction();
+                                transaction.replace(R.id.fragment_container, newFragment, StartWindowView.TAG);
+                                transaction.commit();
+                                supportInvalidateOptionsMenu();
+                            }
+                        }
+                    } else {
+                        startActivity(new Intent(getBaseContext(), AccountsListActivity.class));
                     }
+                } else {
+                    if (startWindowView != null)
+                        fragmentManager.popBackStack();
                 }
-            } else {
-                startActivity(new Intent(this, AccountsListActivity.class));
+                RosterHelper.getInstance().setOnAccountsLoaded(null);
             }
-        } else {
-            if (startWindowView != null)
-                fragmentManager.popBackStack();
-        }
-        RosterHelper.getInstance().setOnAccountsLoaded(null);
+        });
     }
 
     @Override
@@ -197,15 +197,16 @@ public class SawimActivity extends BaseActivity implements OnAccountsLoaded {
     @Override
     public void onBackPressed() {
         FragmentManager fragmentManager = getSupportFragmentManager();
-        SawimFragment chatView = (SawimFragment) fragmentManager.findFragmentByTag(ChatView.TAG);
+        SawimFragment rosterView = getRosterView();
+        SawimFragment chatView = getChatView();
         SawimFragment formView = (SawimFragment) fragmentManager.findFragmentByTag(FormView.TAG);
         SawimFragment virtualListView = (SawimFragment) fragmentManager.findFragmentByTag(VirtualListView.TAG);
-        if (getRosterView() != null && getRosterView().isVisible()) {
-            if (getRosterView().hasBack())
-                back();
-        } else if (chatView != null && chatView.isVisible()) {
+        if (chatView != null && chatView.isVisible()) {
             if (chatView.hasBack())
                 super.onBackPressed();
+        } else if (rosterView != null && rosterView.isVisible()) {
+            if (rosterView.hasBack())
+                back();
         } else if (virtualListView != null) {
             if (virtualListView.hasBack())
                 back();
