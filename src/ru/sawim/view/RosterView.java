@@ -118,10 +118,10 @@ public class RosterView extends SawimFragment implements View.OnClickListener, O
         rosterViewLayout = new RosterViewRoot(activity, progressBar, listView, fab);
 
         RosterHelper.getInstance().setOnAccountsLoaded(this);
-        if (SawimApplication.actionQueue.get(SawimActivity.ACTION_ACC_LOADED) != null) {
+       // if (SawimApplication.actionQueue.get(SawimActivity.ACTION_ACC_LOADED) != null) {
             onAccountsLoaded();
-            SawimApplication.actionQueue.remove(SawimActivity.ACTION_ACC_LOADED);
-        }
+        //    SawimApplication.actionQueue.remove(SawimActivity.ACTION_ACC_LOADED);
+        //}
     }
 
     @Override
@@ -289,11 +289,6 @@ public class RosterView extends SawimFragment implements View.OnClickListener, O
         getRosterAdapter().setType(RosterHelper.ACTIVE_CONTACTS);
         RosterHelper.getInstance().setOnUpdateRoster(RosterView.this);
         update();
-        if (getRosterAdapter().getItemCount() == 0) {
-            getFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, new SearchContactFragment(), SearchContactFragment.TAG)
-                    .commit();
-        }
         getActivity().supportInvalidateOptionsMenu();
         if (Scheme.isChangeTheme(Scheme.getSavedTheme())) {
             ((SawimActivity) getActivity()).recreateActivity();
@@ -309,6 +304,13 @@ public class RosterView extends SawimFragment implements View.OnClickListener, O
                 if (RosterHelper.getInstance().getProtocolCount() > 0) {
                     RosterHelper.getInstance().setOnUpdateRoster(RosterView.this);
                     update();
+
+                    if (getRosterAdapter().getItemCount() == 0) {
+                        getFragmentManager().beginTransaction()
+                                .replace(R.id.fragment_container, new SearchContactFragment(), SearchContactFragment.TAG)
+                                .commit();
+                    }
+
                     getActivity().supportInvalidateOptionsMenu();
                     if (SawimApplication.returnFromAcc) {
                         SawimApplication.returnFromAcc = false;
@@ -321,6 +323,7 @@ public class RosterView extends SawimFragment implements View.OnClickListener, O
                         FragmentTransaction transaction = fragmentManager.beginTransaction();
                         StartWindowView newFragment = new StartWindowView();
                         transaction.replace(R.id.fragment_container, newFragment, StartWindowView.TAG);
+                        transaction.addToBackStack(null);
                         transaction.commit();
                         getActivity().supportInvalidateOptionsMenu();
                     }
