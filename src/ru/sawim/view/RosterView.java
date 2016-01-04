@@ -118,10 +118,8 @@ public class RosterView extends SawimFragment implements View.OnClickListener, O
         rosterViewLayout = new RosterViewRoot(activity, progressBar, listView, fab);
 
         RosterHelper.getInstance().setOnAccountsLoaded(this);
-       // if (SawimApplication.actionQueue.get(SawimActivity.ACTION_ACC_LOADED) != null) {
-            onAccountsLoaded();
-        //    SawimApplication.actionQueue.remove(SawimActivity.ACTION_ACC_LOADED);
-        //}
+
+        onAccountsLoaded();
     }
 
     @Override

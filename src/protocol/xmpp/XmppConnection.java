@@ -370,7 +370,8 @@ public final class XmppConnection extends ClientConnection {
     }*/
 
     public boolean isSessionManagementEnabled() {
-        return /*smEnabled || */Auth.rebindEnabled;
+        //return /*smEnabled || */Auth.rebindEnabled;
+        return false;
     }
 
     /*public void setSessionManagementEnabled(boolean flag) {

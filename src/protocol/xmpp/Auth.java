@@ -19,9 +19,9 @@ public class Auth {
 
     public static boolean authorized_ = false;
 
-    static String rebindSessionId = "";
+    /*static String rebindSessionId = "";
     static boolean rebindSupported = false;
-    static boolean rebindEnabled = false;
+    static boolean rebindEnabled = false;*/
 
     private static SASL_ScramSha1 scramSHA1;
 
@@ -77,7 +77,7 @@ public class Auth {
             DebugLog.systemPrintln("auth " + authorized_);
 
             connection.sendRequest(connection.getOpenStreamXml(connection.domain_));
-            saveRebindSessionId(connection, connection.readXmlNode(true)); // "stream:stream"
+        /*    saveRebindSessionId(connection, */connection.readXmlNode(true)/*)*/; // "stream:stream"
             return;
 
         } else if (x.is("iq")) {
@@ -110,7 +110,7 @@ public class Auth {
 
     public static void parseStreamFeatures(XmppConnection connection, XmlNode x) throws SawimException {
         XmlNode x2;
-        x2 = x.getFirstNode("rebind", "p1:rebind");
+        /*x2 = x.getFirstNode("rebind", "p1:rebind");
         if (x2 != null) {
             rebindSupported = true;
             if (tryRebind(connection)) {
@@ -120,7 +120,7 @@ public class Auth {
         x2 = x.getFirstNode("push", "p1:push");
         if (x2 != null) {
             XmppSession.getInstance().enableRebind(connection);
-        }
+        }*/
         if (0 == x.childrenCount()) {
             nonSaslLogin(connection);
             return;
@@ -217,7 +217,7 @@ public class Auth {
                 + "</iq>");
     }
 
-    private static void saveRebindSessionId(XmppConnection connection, XmlNode x) throws SawimException {
+    /*private static void saveRebindSessionId(XmppConnection connection, XmlNode x) throws SawimException {
         if (x.is("stream:stream")) {
             Log.e("saveRebindSessionId", "" + rebindSupported);
             XmppSession.getInstance().load(connection);
@@ -228,7 +228,7 @@ public class Auth {
             }
             return;
         }
-    }
+    }*/
 
     public static void nonSaslLogin(XmppConnection connection) throws SawimException {
         Xmpp protocol = connection.getXmpp();
@@ -245,7 +245,7 @@ public class Auth {
         setAuthStatus(connection, XmlConstants.S_RESULT.equals(answer.getAttribute(XmlConstants.S_TYPE)));
     }
 
-    private static boolean tryRebind(XmppConnection connection) throws SawimException {
+    /*private static boolean tryRebind(XmppConnection connection) throws SawimException {
         connection.setProgress(50);
         XmppSession.getInstance().load(connection);
         if (rebindSessionId != null) {
@@ -269,7 +269,7 @@ public class Auth {
         //getXmpp().getStorage().setOfflineStatuses(getXmpp());
         DebugLog.systemPrintln("[INFO-JABBER] failed to rebind");
         return false;
-    }
+    }*/
 
     public static void setAuthStatus(XmppConnection connection, boolean authorized) throws SawimException {
         if (!authorized_) {
