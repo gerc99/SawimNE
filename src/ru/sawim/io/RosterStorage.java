@@ -5,6 +5,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import java.util.Enumeration;
+
 import protocol.Contact;
 import protocol.Group;
 import protocol.Profile;
@@ -30,7 +32,7 @@ public class RosterStorage {
 
     public static final String storeName = "roster";
     public static final String subContactsTable = "subcontacts";
-    public RosterStorage(String recordStoreName) {
+    public RosterStorage() {
         final String CREATE_ROSTER_TABLE = "create table if not exists "
                 + storeName + " ("
                 + DatabaseHelper.ROW_AUTO_ID + " integer primary key autoincrement, "
@@ -54,6 +56,7 @@ public class RosterStorage {
                 + subContactsTable + " ("
                 + DatabaseHelper.CONTACT_ID + " text not null, "
                 + DatabaseHelper.SUB_CONTACT_RESOURCE + " text, "
+                + DatabaseHelper.AVATAR_HASH + " text, "
                 + DatabaseHelper.SUB_CONTACT_STATUS + " int, "
                 + DatabaseHelper.STATUS_TEXT + " text, "
                 + DatabaseHelper.SUB_CONTACT_PRIORITY + " int, "
@@ -69,59 +72,26 @@ public class RosterStorage {
     }
 
     public synchronized void load(Protocol protocol) {
-        if (protocol.getProfile().protocolType != Profile.PROTOCOL_JABBER) return;
-        Roster roster = new Roster();
+        Roster roster = protocol.getRoster();
+        if (roster == null) {
+            roster = new Roster();
+            protocol.setRoster(roster);
+        }
         Cursor cursor = null;
         try {
             cursor = SawimApplication.getDatabaseHelper().getReadableDatabase().query(storeName, null, WHERE_ACCOUNT_ID,
                     new String[]{protocol.getUserId()}, null, null, null);
             if (cursor.moveToFirst()) {
                 do {
-                    String account = cursor.getString(cursor.getColumnIndex(DatabaseHelper.ACCOUNT_ID));
-                    String groupName = cursor.getString(cursor.getColumnIndex(DatabaseHelper.GROUP_NAME));
-                    int groupId = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.GROUP_ID));
-                    boolean groupIsExpand = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.GROUP_IS_EXPAND)) == 1;
-                    String userId = cursor.getString(cursor.getColumnIndex(DatabaseHelper.CONTACT_ID));
-                    String userName = cursor.getString(cursor.getColumnIndex(DatabaseHelper.CONTACT_NAME));
-                    int status = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.STATUS));
-                    String statusText = cursor.getString(cursor.getColumnIndex(DatabaseHelper.STATUS_TEXT));
-                    String avatarHash = cursor.getString(cursor.getColumnIndex(DatabaseHelper.AVATAR_HASH));
-                    String firstServerMsgId = cursor.getString(cursor.getColumnIndex(DatabaseHelper.FIRST_SERVER_MESSAGE_ID));
-
-                    boolean isConference = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.IS_CONFERENCE)) == 1;
-                    String conferenceMyNick = cursor.getString(cursor.getColumnIndex(DatabaseHelper.CONFERENCE_MY_NAME));
-                    boolean conferenceIsAutoJoin = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.CONFERENCE_IS_AUTOJOIN)) == 1;
-
-                    byte booleanValues = (byte) cursor.getInt(cursor.getColumnIndex(DatabaseHelper.ROW_DATA));
-
-                    Group group = roster.getGroupItems().get(groupId);
-                    if (group == null) {
-                        group = protocol.createGroup(groupName);
-                        group.setExpandFlag(groupIsExpand);
-                        roster.getGroupItems().put(groupId, group);
-                    }
-
-                    Contact contact = protocol.getItemByUID(userId);
-                    if (contact == null) {
-                        contact = protocol.createContact(userId, userName, isConference);
-                    }
-                    contact.firstServerMsgId = firstServerMsgId;
-                    contact.avatarHash = avatarHash;
-                    if (protocol.isStreamManagementSupported()) {
-                        contact.setStatus((byte) status, statusText);
-                    }
-                    contact.setGroupId(groupId);
-                    contact.setBooleanValues(booleanValues);
-                    if (isConference) {
-                        XmppServiceContact serviceContact = (XmppServiceContact) contact;
-                        serviceContact.setMyName(conferenceMyNick);
-                        serviceContact.setAutoJoin(conferenceIsAutoJoin);
-                        serviceContact.setConference(true);
-
-                        loadSubContacts(protocol, serviceContact);
-                    }
+                    Contact contact = getContact(protocol, cursor);
                     roster.getContactItems().put(contact.getUserId(), contact);
                 } while (cursor.moveToNext());
+            }
+            Log.e("load", roster+" "+roster.getContactItems().size());
+            Enumeration<Group> e = protocol.getGroupItems().elements();
+            while (e.hasMoreElements()) {
+                Group group = e.nextElement();
+                Log.e("group", group+" "+group.getContacts().size());
             }
         } catch (Exception e) {
             DebugLog.panic(e);
@@ -131,6 +101,54 @@ public class RosterStorage {
             }
         }
         protocol.setRoster(roster);
+    }
+
+    public Contact getContact(Protocol protocol, Cursor cursor) {
+        String account = cursor.getString(cursor.getColumnIndex(DatabaseHelper.ACCOUNT_ID));
+        String groupName = cursor.getString(cursor.getColumnIndex(DatabaseHelper.GROUP_NAME));
+        int groupId = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.GROUP_ID));
+        boolean groupIsExpand = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.GROUP_IS_EXPAND)) == 1;
+        String userId = cursor.getString(cursor.getColumnIndex(DatabaseHelper.CONTACT_ID));
+        String userName = cursor.getString(cursor.getColumnIndex(DatabaseHelper.CONTACT_NAME));
+        int status = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.STATUS));
+        String statusText = cursor.getString(cursor.getColumnIndex(DatabaseHelper.STATUS_TEXT));
+        String avatarHash = cursor.getString(cursor.getColumnIndex(DatabaseHelper.AVATAR_HASH));
+        String firstServerMsgId = cursor.getString(cursor.getColumnIndex(DatabaseHelper.FIRST_SERVER_MESSAGE_ID));
+
+        boolean isConference = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.IS_CONFERENCE)) == 1;
+        String conferenceMyNick = cursor.getString(cursor.getColumnIndex(DatabaseHelper.CONFERENCE_MY_NAME));
+        boolean conferenceIsAutoJoin = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.CONFERENCE_IS_AUTOJOIN)) == 1;
+
+        byte booleanValues = (byte) cursor.getInt(cursor.getColumnIndex(DatabaseHelper.ROW_DATA));
+
+        Group group = protocol.getGroupItems().get(groupId);
+        if (group == null) {
+            group = protocol.createGroup(groupName);
+            group.setExpandFlag(groupIsExpand);
+            protocol.getGroupItems().put(groupId, group);
+        }
+
+        Contact contact = protocol.getItemByUID(userId);
+        if (contact == null) {
+            contact = protocol.createContact(userId, userName, isConference);
+        }
+        contact.firstServerMsgId = firstServerMsgId;
+        contact.avatarHash = avatarHash;
+        if (protocol.isStreamManagementSupported()) {
+            contact.setStatus((byte) status, statusText);
+        }
+        contact.setGroupId(groupId);
+        contact.setBooleanValues(booleanValues);
+        if (isConference) {
+            XmppServiceContact serviceContact = (XmppServiceContact) contact;
+            serviceContact.setMyName(conferenceMyNick);
+            serviceContact.setAutoJoin(conferenceIsAutoJoin);
+            serviceContact.setConference(true);
+
+            loadSubContacts(protocol, serviceContact);
+        }
+        RosterHelper.getInstance().updateGroup(protocol, group);
+        return contact;
     }
 
     public void loadSubContacts(Protocol protocol, XmppServiceContact serviceContact) {
@@ -378,12 +396,56 @@ public class RosterStorage {
         });
     }
 
+    public static void updateSubContactAvatarHash(final String uniqueUserId, final String resource, final String hash) {
+        SqlAsyncTask.execute(new SqlAsyncTask.OnTaskListener() {
+            @Override
+            public void run() {
+                try {
+                    String where = WHERE_CONTACT_ID + " and "
+                            + DatabaseHelper.SUB_CONTACT_RESOURCE + "= ?";
+                    String[] selectionArgs = new String[]{uniqueUserId, resource};
+                    ContentValues values = new ContentValues();
+                    values.put(DatabaseHelper.AVATAR_HASH, hash);
+                    SawimApplication.getDatabaseHelper().getWritableDatabase().update(subContactsTable, values, where, selectionArgs);
+                } catch (Exception e) {
+                    DebugLog.panic(e);
+                }
+            }
+        });
+    }
+
+    public synchronized String getSubContactAvatarHash(String uniqueUserId, String resource) {
+        String hash = null;
+        Cursor cursor = null;
+        try {
+            String where = WHERE_CONTACT_ID + " and "
+                        + DatabaseHelper.SUB_CONTACT_RESOURCE + "= ?";
+            String[] selectionArgs = new String[]{uniqueUserId, resource};
+            cursor = SawimApplication.getDatabaseHelper().getReadableDatabase().query(subContactsTable, null,
+                    where, selectionArgs, null, null, null);
+            if (cursor.moveToFirst()) {
+                do {
+                    hash = cursor.getString(cursor.getColumnIndex(DatabaseHelper.AVATAR_HASH));
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            DebugLog.panic(e);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return hash;
+    }
+
     public synchronized String getAvatarHash(String uniqueUserId) {
         String hash = null;
         Cursor cursor = null;
         try {
+            String where = WHERE_CONTACT_ID;
+            String[] selectionArgs = new String[]{uniqueUserId};
             cursor = SawimApplication.getDatabaseHelper().getReadableDatabase().query(storeName, null,
-                    WHERE_CONTACT_ID, new String[]{uniqueUserId}, null, null, null);
+                    where, selectionArgs, null, null, null);
             if (cursor.moveToFirst()) {
                 do {
                     hash = cursor.getString(cursor.getColumnIndex(DatabaseHelper.AVATAR_HASH));

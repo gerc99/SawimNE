@@ -12,8 +12,6 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import protocol.Protocol;
-import protocol.icq.Icq;
-import protocol.mrim.Mrim;
 import protocol.xmpp.Xmpp;
 import ru.sawim.R;
 import ru.sawim.comm.StringConvertor;
@@ -99,16 +97,7 @@ public class XStatusesView extends DialogFragment {
     }
 
     private String getProtocolId() {
-        if (protocol instanceof Icq) {
-            return "icq";
-        }
-        if (protocol instanceof Mrim) {
-            return "mrim";
-        }
-        if (protocol instanceof Xmpp) {
-            return "jabber";
-        }
-        return "";
+        return "jabber";
     }
 
     private final void setXStatus(int xstatus, String title, String desc) {

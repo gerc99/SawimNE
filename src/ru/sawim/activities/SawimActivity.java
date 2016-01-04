@@ -256,7 +256,6 @@ public class SawimActivity extends BaseActivity implements OnAccountsLoaded {
         return chatView;
     }
 
-    private static final int MENU_SEARCH = 6;
     private static final int MENU_OPTIONS = 7;
     private static final int MENU_QUIT = 14;
     private static final int MENU_DEBUG_LOG = 22;
@@ -266,6 +265,7 @@ public class SawimActivity extends BaseActivity implements OnAccountsLoaded {
         menu.clear();
         ChatView chatView = getChatView();
         RosterView rosterView = getRosterView();
+        SearchContactFragment searchContactFragment = (SearchContactFragment) getSupportFragmentManager().findFragmentByTag(SearchContactFragment.TAG);
         StartWindowView startWindowView = (StartWindowView) getSupportFragmentManager().findFragmentByTag(StartWindowView.TAG);
         VirtualListView virtualListView = (VirtualListView) getSupportFragmentManager().findFragmentByTag(VirtualListView.TAG);
         if (virtualListView != null && virtualListView.isAdded()) {
@@ -284,9 +284,10 @@ public class SawimActivity extends BaseActivity implements OnAccountsLoaded {
                     menu.add(Menu.NONE, myMenuItem.idItem, Menu.NONE, myMenuItem.nameItem);
                 }
             }
-            menu.add(Menu.NONE, MENU_SEARCH, Menu.NONE, R.string.search_user);
             menu.add(Menu.NONE, MENU_OPTIONS, Menu.NONE, R.string.options);
             menu.add(Menu.NONE, MENU_QUIT, Menu.NONE, R.string.quit);
+        } else if (searchContactFragment != null && searchContactFragment.isAdded()) {
+            searchContactFragment.onPrepareOptionsMenu_(menu);
         }
         return super.onPrepareOptionsMenu(menu);
     }
@@ -312,9 +313,6 @@ public class SawimActivity extends BaseActivity implements OnAccountsLoaded {
         if (RosterHelper.getInstance().protocolMenuItemSelected(this, RosterHelper.getInstance().getProtocol(0), item.getItemId()))
             return true;
         switch (item.getItemId()) {
-            case MENU_SEARCH:
-                getRosterView().enableSearchMode();
-                break;
             case MENU_OPTIONS:
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                     startActivity(new Intent(this, MainPreferenceActivityNew.class));

@@ -54,12 +54,12 @@ public class XmppSession {
 
     public void enableRebind(final XmppConnection connection) {
         if (connection == null) return;
-        Log.i(XmppSession.class.getSimpleName(), "enableRebind = " + connection.rebindSupported);
-        if (connection.rebindSupported) {
+        Log.i(XmppSession.class.getSimpleName(), "enableRebind = " + Auth.rebindSupported);
+        if (Auth.rebindSupported) {
             //Log.i(XmppSession.class.getSimpleName(), "enableRebind regid = " + regid);
             //if (!isPlayServices) {
 
-            connection.putPacketIntoQueue("<iq type='set' id='" + XmppConnection.generateId() + "'>" +
+    /*        connection.putPacketIntoQueue("<iq type='set' id='" + XmppConnection.generateId() + "'>" +
                     "<push xmlns='p1:push'><keepalive max='120'/><session duration='1440'/>" +
                     "<body send='all' groupchat='true' from='name'/>" +
                     "<offline>true</offline></push></iq>");
@@ -127,8 +127,8 @@ public class XmppSession {
     public void save(XmppConnection connection) {
         String accountId = connection.getXmpp().getUserId();
 
-        editor.putBoolean(REBIND_ENABLED + accountId, connection.rebindEnabled);
-        editor.putString(REBIND_SESSION_ID + accountId, connection.rebindSessionId);
+        editor.putBoolean(REBIND_ENABLED + accountId, Auth.rebindEnabled);
+        editor.putString(REBIND_SESSION_ID + accountId, Auth.rebindSessionId);
 
         /*editor.putBoolean(SM_ENABLED + accountId, connection.smEnabled);
         editor.putLong(SM_PACKETS_IN + accountId, connection.smPacketsIn);
@@ -141,16 +141,16 @@ public class XmppSession {
             Log.d("sawim-session", "Saved session for " + accountId);
             //Log.d("sawim-session", "smEnabled = " + connection.smEnabled);
             //Log.d("sawim-session", "smSessionId = " + connection.smSessionId);
-            Log.d("sawim-session", "rebindEnabled = " + connection.rebindEnabled);
-            Log.d("sawim-session", "rebindSessionId = " + connection.rebindSessionId);
+            Log.d("sawim-session", "rebindEnabled = " + Auth.rebindEnabled);
+            Log.d("sawim-session", "rebindSessionId = " + Auth.rebindSessionId);
         }
     }
 
     public void load(XmppConnection connection) {
         String accountId = connection.getXmpp().getUserId();
 
-        connection.rebindEnabled = preferences.getBoolean(REBIND_ENABLED + accountId, false);
-        connection.rebindSessionId = preferences.getString(REBIND_SESSION_ID + accountId, null);
+        Auth.rebindEnabled = preferences.getBoolean(REBIND_ENABLED + accountId, false);
+        Auth.rebindSessionId = preferences.getString(REBIND_SESSION_ID + accountId, null);
 
         /*connection.smEnabled = preferences.getBoolean(SM_ENABLED + accountId, false);
         connection.smPacketsIn = preferences.getLong(SM_PACKETS_IN + accountId, 0);
@@ -161,8 +161,8 @@ public class XmppSession {
             Log.d("sawim-session", "Loaded session for " + accountId);
             //Log.d("sawim-session", "smEnabled = " + connection.smEnabled);
             //Log.d("sawim-session", "smSessionId = " + connection.smSessionId);
-            Log.d("sawim-session", "rebindEnabled = " + connection.rebindEnabled);
-            Log.d("sawim-session", "rebindSessionId = " + connection.rebindSessionId);
+            Log.d("sawim-session", "rebindEnabled = " + Auth.rebindEnabled);
+            Log.d("sawim-session", "rebindSessionId = " + Auth.rebindSessionId);
         }
     }
 

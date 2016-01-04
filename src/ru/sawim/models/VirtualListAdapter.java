@@ -1,9 +1,9 @@
 package ru.sawim.models;
 
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -11,7 +11,7 @@ import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
 import ru.sawim.models.list.VirtualListItem;
-import ru.sawim.text.TextLinkClick;
+import ru.sawim.text.OnTextLinkClick;
 import ru.sawim.widget.MyTextView;
 
 import java.util.ArrayList;
@@ -24,71 +24,30 @@ import java.util.List;
  * Time: 13:07
  * To change this template use File | Settings | File Templates.
  */
-public class VirtualListAdapter extends BaseAdapter {
+public class VirtualListAdapter extends RecyclerView.Adapter<VirtualListAdapter.ViewHolder> {
 
-    private List<VirtualListItem> items = new ArrayList<VirtualListItem>();
+    private List<VirtualListItem> items = new ArrayList<>();
     private int selectedItem = -1;
 
     public VirtualListAdapter() {
-    }
-
-    public void refreshList(List<VirtualListItem> list) {
-        items.clear();
-        items.addAll(list);
-        notifyDataSetChanged();
+        //setHasStableIds(true);
     }
 
     @Override
-    public boolean hasStableIds() {
-        return true;
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.virtual_list_item, null));
     }
 
     @Override
-    public int getCount() {
-        return items.size();
-    }
-
-    @Override
-    public VirtualListItem getItem(int i) {
-        if (items.size() == 0) return null;
-        return items.get(i);
-    }
-
-    @Override
-    public boolean isEnabled(int position) {
-        return getItem(position).isItemSelectable();
-    }
-
-    @Override
-    public long getItemId(int i) {
-        return i;
-    }
-
-    public void setSelectedItem(int position) {
-        selectedItem = position;
-    }
-
-    @Override
-    public View getView(int i, View convertView, ViewGroup viewGroup) {
-        ViewHolder holder;
-        VirtualListItem element = getItem(i);
-        if (convertView == null) {
-            convertView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.virtual_list_item, null);
-            holder = new ViewHolder();
-            holder.descriptionLayout = (LinearLayout) convertView.findViewById(R.id.descriptionLayout);
-            holder.labelView = (TextView) convertView.findViewById(R.id.label);
-            holder.descView = (MyTextView) holder.descriptionLayout.findViewById(R.id.description);
-            holder.imageView = (ImageView) holder.descriptionLayout.findViewById(R.id.imageView);
-            convertView.setTag(holder);
-        } else {
-            holder = (ViewHolder) convertView.getTag();
-        }
-        if (element == null) return convertView;
-        ((ViewGroup) convertView).setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
+    public void onBindViewHolder(ViewHolder holder, int position) {
+        VirtualListItem element = getItem(position);
+        LinearLayout activeItem = (LinearLayout) holder.itemView;
+        if (element == null) return;
+        activeItem.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
 
         holder.labelView.setTextColor(Scheme.getColor(R.attr.text));
         holder.descView.setTextColor(Scheme.getColor(R.attr.text));
-        holder.descView.setOnTextLinkClickListener(new TextLinkClick(null, null));
+        holder.descView.setOnTextLinkClickListener(new OnTextLinkClick());
 
         holder.labelView.setVisibility(TextView.GONE);
         holder.descView.setVisibility(TextView.GONE);
@@ -127,19 +86,56 @@ public class VirtualListAdapter extends BaseAdapter {
             holder.imageView.setImageDrawable(element.getImage());
             holder.imageView.setAdjustViewBounds(true);
         }
-        LinearLayout activeItem = (LinearLayout) convertView;
-        if (i == selectedItem && selectedItem != -1) {
+        if (position == selectedItem && selectedItem != -1) {
             activeItem.setBackgroundColor(Scheme.getColor(R.attr.item_selected));
         } else {
             activeItem.setBackgroundColor(0);
         }
-        return convertView;
     }
 
-    private class ViewHolder {
+    public void refreshList(List<VirtualListItem> list) {
+        items.clear();
+        items.addAll(list);
+        notifyDataSetChanged();
+    }
+
+
+    public VirtualListItem getItem(int i) {
+        if (items.size() == 0) return null;
+        return items.get(i);
+    }
+
+    public boolean isEnabled(int position) {
+        return getItem(position).isItemSelectable();
+    }
+
+    @Override
+    public long getItemId(int i) {
+        return i;
+    }
+
+    @Override
+    public int getItemCount() {
+        return items.size();
+    }
+
+    public void setSelectedItem(int position) {
+        selectedItem = position;
+    }
+
+    static class ViewHolder extends RecyclerView.ViewHolder {
         LinearLayout descriptionLayout;
         TextView labelView;
         MyTextView descView;
         ImageView imageView;
+
+        public ViewHolder(View itemView) {
+            super(itemView);
+
+            descriptionLayout = (LinearLayout) itemView.findViewById(R.id.descriptionLayout);
+            labelView = (TextView) itemView.findViewById(R.id.label);
+            descView = (MyTextView) descriptionLayout.findViewById(R.id.description);
+            imageView = (ImageView) descriptionLayout.findViewById(R.id.imageView);
+        }
     }
 }

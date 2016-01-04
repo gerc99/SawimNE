@@ -241,7 +241,7 @@ public final class AffiliationListConf implements FormListener, TextBoxView.Text
                 try {
                     String affiliationsList = "owner" + "|" + "admin" + "|" + "member" + "|" + "outcast" + "|" + "none";
                     String reason = enterData.getTextFieldValue(REASON);
-                    xmpp.getConnection().setAffiliationListConf(serverJid,
+                    Muc.setAffiliationListConf(xmpp.getConnection(), serverJid,
                             enterData.getTextFieldValue(JID),
                             Util.explode(affiliationsList, '|')[enterData.getSelectorValue(AFFILIATION)],
                             reason);

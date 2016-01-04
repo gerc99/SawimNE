@@ -48,12 +48,9 @@ public final class Xmpp extends Protocol implements FormListener {
         bots.add(JuickMenu.PSTO);
         bots.add(JuickMenu.POINT);
 
-        byte type = getProfile().protocolType;
-        ImageList icons = createStatusIcons(type);
+        ImageList icons = createStatusIcons();
         final int[] statusIconIndex = {1, 0, 2, 0, -1, -1, -1, -1, -1, 2, -1, 3, -1, -1, 1};
-        final int[] statusOtherIconIndex = {1, 0, 3, 4, -1, -1, -1, -1, -1, 6, -1, 5, -1, -1, 1};
-        info = new StatusInfo(icons, type == Profile.PROTOCOL_JABBER ? statusIconIndex : statusOtherIconIndex,
-                type == Profile.PROTOCOL_JABBER ? statuses : statusesOther);
+        info = new StatusInfo(icons, statusIconIndex, statuses);
         xstatusInfo = Xmpp.xStatus.getInfo();
         clientInfo = XmppClient.get();
     }
@@ -74,28 +71,8 @@ public final class Xmpp extends Protocol implements FormListener {
             StatusInfo.STATUS_DND
     };
 
-    private ImageList createStatusIcons(byte type) {
+    private ImageList createStatusIcons() {
         String file = "jabber";
-        switch (type) {
-            case Profile.PROTOCOL_GTALK:
-                file = "gtalk";
-                break;
-            case Profile.PROTOCOL_FACEBOOK:
-                file = "facebook";
-                break;
-            case Profile.PROTOCOL_LJ:
-                file = "livejournal";
-                break;
-            case Profile.PROTOCOL_YANDEX:
-                file = "ya";
-                break;
-            case Profile.PROTOCOL_QIP:
-                file = "qip";
-                break;
-            case Profile.PROTOCOL_ODNOKLASSNIKI:
-                file = "ok";
-                break;
-        }
         ImageList icons = ImageList.createImageList("/" + file + "-status.png");
         if (0 < icons.size()) {
             return icons;
@@ -159,21 +136,10 @@ public final class Xmpp extends Protocol implements FormListener {
     }
 
     public boolean hasS2S() {
-        switch (getProfile().protocolType) {
-            case Profile.PROTOCOL_FACEBOOK:
-            case Profile.PROTOCOL_ODNOKLASSNIKI:
-                return false;
-        }
         return true;
     }
 
     public boolean hasVCardEditor() {
-        switch (getProfile().protocolType) {
-            case Profile.PROTOCOL_FACEBOOK:
-            case Profile.PROTOCOL_LJ:
-            case Profile.PROTOCOL_ODNOKLASSNIKI:
-                return false;
-        }
         return true;
     }
 
@@ -273,7 +239,7 @@ public final class Xmpp extends Protocol implements FormListener {
     }
 
     protected void sendSomeMessage(PlainMessage msg) {
-        getConnection().sendMessage(msg);
+        Messages.sendMessage(getConnection(), msg);
     }
 
     protected final void s_searchUsers(Search cont) {
@@ -293,7 +259,7 @@ public final class Xmpp extends Protocol implements FormListener {
                 String jid = rejoinList.get(i);
                 XmppServiceContact c = (XmppServiceContact) getItemByUID(jid);
                 if (null != c && !c.isOnline()) {
-                    connection.sendPresence(c);
+                    Presences.sendPresence(connection, c);
                 }
             }
         }
@@ -330,7 +296,7 @@ public final class Xmpp extends Protocol implements FormListener {
             }
         }
         if (contact.isOnline() && !contact.isSingleUserContact()) {
-            getConnection().sendPresenceUnavailable(contact.getUserId());
+            Presences.sendPresenceUnavailable(getConnection(), contact.getUserId());
         }
     }
 
@@ -365,52 +331,6 @@ public final class Xmpp extends Protocol implements FormListener {
 
     public void requestAuth(String uin) {
         connection.requestSubscribe(uin);
-    }
-
-    private String getYandexDomain(String domain) {
-        boolean nonPdd = "ya.ru".equals(domain)
-                || "narod.ru".equals(domain)
-                || domain.startsWith("yandex.");
-        return nonPdd ? "xmpp.yandex.ru" : "domain-xmpp.ya.ru";
-    }
-
-    String getDefaultServer(String domain) {
-        switch (getProfile().protocolType) {
-            case Profile.PROTOCOL_GTALK:
-                return "talk.google.com";
-            case Profile.PROTOCOL_FACEBOOK:
-                return "chat.facebook.com";
-            case Profile.PROTOCOL_LJ:
-                return "livejournal.com";
-            case Profile.PROTOCOL_YANDEX:
-                return getYandexDomain(domain);
-            case Profile.PROTOCOL_QIP:
-                return "webim.qip.ru";
-            case Profile.PROTOCOL_ODNOKLASSNIKI:
-                return "xmpp.odnoklassniki.ru";
-        }
-        if ("ya.ru".equals(domain)) {
-            return "xmpp.yandex.ru";
-        }
-        if ("gmail.com".equals(domain)) {
-            return "talk.google.com";
-        }
-        if ("qip.ru".equals(domain)) {
-            return "webim.qip.ru";
-        }
-        if ("livejournal.com".equals(domain)) {
-            return "livejournal.com";
-        }
-        if ("api.com".equals(domain)) {
-            return "vkmessenger.com";
-        }
-        if ("vkontakte.ru".equals(domain)) {
-            return "vkmessenger.com";
-        }
-        if ("chat.facebook.com".equals(domain)) {
-            return domain;
-        }
-        return null;
     }
 
     protected String processUin(String uin) {
@@ -469,12 +389,12 @@ public final class Xmpp extends Protocol implements FormListener {
     }
 
     protected void s_updateXStatus() {
-        connection.setXStatus();
+        XStatus.setXStatus(connection);
     }
 
     public void saveUserInfo(UserInfo userInfo) {
         if (isConnected()) {
-            getConnection().saveVCard(userInfo);
+            Vcard.saveVCard(getConnection(), userInfo);
         }
     }
 
@@ -482,13 +402,10 @@ public final class Xmpp extends Protocol implements FormListener {
         if (to instanceof XmppServiceContact) {
             return;
         }
-        if (Profile.PROTOCOL_LJ == getProfile().protocolType) {
-            return;
-        }
         XmppContact c = (XmppContact) to;
         XmppContact.SubContact s = c.getCurrentSubContact();
         if (null != s) {
-            connection.sendTypingNotify(to.getUserId() + "/" + s.resource, isTyping);
+            Messages.sendTypingNotify(connection, to.getUserId() + "/" + s.resource, isTyping);
         }
     }
 
@@ -509,7 +426,7 @@ public final class Xmpp extends Protocol implements FormListener {
 
     public void leave(XmppServiceContact conf) {
         if (conf.isOnline()) {
-            getConnection().sendPresenceUnavailable(conf.getUserId() + "/" + conf.getMyName());
+            Presences.sendPresenceUnavailable(getConnection(), conf.getUserId() + "/" + conf.getMyName());
             conf.nickOffline(this, conf.getMyName(), 0, null, null);
 
             String conferenceJid = conf.getUserId() + '/';
@@ -529,12 +446,12 @@ public final class Xmpp extends Protocol implements FormListener {
             c.doJoining();
         }
         if (connection == null) return;
-        connection.sendPresence(c);
+        Presences.sendPresence(connection, c);
         String password = c.getPassword();
         if (Jid.isIrcConference(jid) && !StringConvertor.isEmpty(password)) {
             String nickserv = jid.substring(jid.indexOf('%') + 1) + "/NickServ";
-            connection.sendMessage(nickserv, "/quote NickServ IDENTIFY " + password);
-            connection.sendMessage(nickserv, "IDENTIFY " + password);
+            Messages.sendMessage(connection, nickserv, "/quote NickServ IDENTIFY " + password);
+            Messages.sendMessage(connection, nickserv, "IDENTIFY " + password);
         }
     }
 
@@ -542,12 +459,12 @@ public final class Xmpp extends Protocol implements FormListener {
         final XmppContact contact = (XmppContact) c;
         switch (cmd) {
             case ContactMenu.GATE_CONNECT:
-                getConnection().sendPresence((XmppServiceContact) contact);
+                Presences.sendPresence(getConnection(), (XmppServiceContact) contact);
                 RosterHelper.getInstance().updateRoster();
                 break;
 
             case ContactMenu.GATE_DISCONNECT:
-                getConnection().sendPresenceUnavailable(c.getUserId());
+                Presences.sendPresenceUnavailable(getConnection(), c.getUserId());
                 RosterHelper.getInstance().updateRoster();
                 break;
 
@@ -623,25 +540,25 @@ public final class Xmpp extends Protocol implements FormListener {
             case ContactMenu.CONFERENCE_OWNERS:
                 AffiliationListConf alc = getAffiliationListConf();
                 alc.setServer(c.getUserId(), c.getMyName());
-                getConnection().requestAffiliationListConf(c.getUserId(), "owner");
+                Muc.requestAffiliationListConf(getConnection(), c.getUserId(), "owner");
                 alc.showIt(activity);
                 break;
             case ContactMenu.CONFERENCE_ADMINS:
                 AffiliationListConf al = getAffiliationListConf();
                 al.setServer(c.getUserId(), c.getMyName());
-                getConnection().requestAffiliationListConf(c.getUserId(), "admin");
+                Muc.requestAffiliationListConf(getConnection(), c.getUserId(), "admin");
                 al.showIt(activity);
                 break;
             case ContactMenu.CONFERENCE_MEMBERS:
                 AffiliationListConf affiliationListConf = getAffiliationListConf();
                 affiliationListConf.setServer(c.getUserId(), c.getMyName());
-                getConnection().requestAffiliationListConf(c.getUserId(), "member");
+                Muc.requestAffiliationListConf(getConnection(), c.getUserId(), "member");
                 affiliationListConf.showIt(activity);
                 break;
             case ContactMenu.CONFERENCE_INBAN:
                 AffiliationListConf aff = getAffiliationListConf();
                 aff.setServer(c.getUserId(), c.getMyName());
-                getConnection().requestAffiliationListConf(c.getUserId(), "outcast");
+                Muc.requestAffiliationListConf(getConnection(), c.getUserId(), "outcast");
                 aff.showIt(activity);
                 break;
 
@@ -870,7 +787,7 @@ public final class Xmpp extends Protocol implements FormListener {
                     if (isConnected()) {
                         boolean needUpdate = !enterConf.isTemp();
                         if (needUpdate) {
-                            getConnection().saveConferences();
+                            Muc.saveConferences(getConnection());
                         }
                         if (enterConf.isOnline() && !oldNick.equals(enterConf.getMyName())) {
                             join(enterConf);
@@ -886,7 +803,7 @@ public final class Xmpp extends Protocol implements FormListener {
         if (enterDataInvite == form) {
             if (apply) {
                 String[] onlineConferenceI = Util.explode(onlineConference(getContactItems()), '|');
-                getConnection().sendInvite(onlineConferenceI[enterDataInvite.getSelectorValue(JID_MESS_TO)], enterDataInvite.getTextFieldValue(JID_INVITE_TO), enterDataInvite.getTextFieldValue(REASON_INVITE));
+                Muc.sendInvite(getConnection(), onlineConferenceI[enterDataInvite.getSelectorValue(JID_MESS_TO)], enterDataInvite.getTextFieldValue(JID_INVITE_TO), enterDataInvite.getTextFieldValue(REASON_INVITE));
                 Toast.makeText(SawimApplication.getContext(), R.string.invitation_sent, Toast.LENGTH_LONG).show();
             }
             enterDataInvite.back();

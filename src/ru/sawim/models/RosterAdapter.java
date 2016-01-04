@@ -1,14 +1,15 @@
 package ru.sawim.models;
 
 import android.content.Context;
-import android.database.DataSetObserver;
 import android.graphics.Bitmap;
+import android.graphics.PorterDuff;
 import android.graphics.Typeface;
-import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import protocol.*;
@@ -41,17 +42,17 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * Time: 17:03
  * To change this template use File | Settings | File Templates.
  */
-public class RosterAdapter extends BaseAdapter implements View.OnClickListener {
+public class RosterAdapter extends RecyclerView.Adapter<RosterAdapter.ViewHolder> implements View.OnClickListener, View.OnLongClickListener {
 
     private static final int ITEM_PROTOCOL = 0;
     private static final int ITEM_GROUP = 1;
     private static final int ITEM_CONTACT = 2;
     private static final int ITEM_LAYER = 3;
-    private static final int ITEM_TYPECOUNT = 4;
     private int type;
     private List<TreeNode> items = new ArrayList<>();
     private List<Group> updateQueue = new CopyOnWriteArrayList<>();
     private List<Contact> originalContactList = new ArrayList<>();
+    private View.OnClickListener itemClickListener;
 
     File avatarsFolder;
 
@@ -93,13 +94,107 @@ public class RosterAdapter extends BaseAdapter implements View.OnClickListener {
     }
 
     @Override
-    public boolean hasStableIds() {
-        return true;
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int itemViewType) {
+        View convertView = null;
+        Context context = parent.getContext();
+        if (type == RosterHelper.ACTIVE_CONTACTS) {
+            convertView = new RosterItemView(SawimApplication.getInstance().getBaseContext());
+        }
+        if (itemViewType == ITEM_PROTOCOL) {
+            convertView = new LinearLayout(context);
+            RosterItemView rosterItemView = new RosterItemView(context);
+            MyImageButton imageButton = new MyImageButton(context);
+            ProgressBar progressBar = new ProgressBar(context, null, android.R.attr.progressBarStyleInverse);
+            LinearLayout.LayoutParams progressLinearLayout = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            progressLinearLayout.gravity = Gravity.RIGHT;
+            progressBar.setLayoutParams(progressLinearLayout);
+            progressBar.setMax(100);
+            LinearLayout.LayoutParams buttonLinearLayout = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            buttonLinearLayout.gravity = Gravity.RIGHT;
+            imageButton.setLayoutParams(buttonLinearLayout);
+            LinearLayout.LayoutParams rosterLinearLayout = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+            rosterLinearLayout.gravity = Gravity.LEFT;
+            rosterLinearLayout.weight = 1;
+            convertView.setBackgroundColor(Scheme.getColor(R.attr.item_selected));
+            rosterItemView.setLayoutParams(rosterLinearLayout);
+            imageButton.setImageDrawable(SawimResources.MENU_ICON);
+            ((ViewGroup) convertView).setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
+            ((ViewGroup) convertView).addView(rosterItemView);
+            ((ViewGroup) convertView).addView(progressBar);
+            ((ViewGroup) convertView).addView(imageButton);
+        }
+        if (itemViewType == ITEM_GROUP) {
+            convertView = new RosterItemView(SawimApplication.getInstance().getBaseContext());
+        }
+        if (itemViewType == ITEM_CONTACT) {
+            convertView = new RosterItemView(SawimApplication.getInstance().getBaseContext());
+        }
+        return new ViewHolder(convertView);
     }
 
     @Override
-    public int getViewTypeCount() {
-        return ITEM_TYPECOUNT;
+    public void onBindViewHolder(ViewHolder holder, int position) {
+        final TreeNode item = getItem(position);
+        int itemViewType = getItemViewType(position);
+        View convertView = holder.itemView;
+        convertView.setTag(position);
+        convertView.setOnClickListener(itemClickListener);
+        convertView.setOnLongClickListener(this);
+        if (type == RosterHelper.ACTIVE_CONTACTS) {
+            RosterItemView rosterItemView = (RosterItemView) holder.itemView;
+            rosterItemView.setNull();
+            if (item != null) {
+                if (itemViewType == ITEM_LAYER) {
+                    rosterItemView.addLayer(item.getText());
+                }
+                if (itemViewType == ITEM_CONTACT) {
+                    Contact contact = (Contact) item;
+                    populateFromContact(rosterItemView, RosterHelper.getInstance(), contact.getProtocol(), contact);
+                }
+                setShowDivider(rosterItemView, getItemViewType(position + 1) == ITEM_CONTACT);
+            }
+            rosterItemView.repaint();
+        } else {
+            if (itemViewType == ITEM_PROTOCOL) {
+                RosterItemView rosterItemView = (RosterItemView) ((ViewGroup) convertView).getChildAt(0);
+                ProgressBar progressBar = (ProgressBar) ((ViewGroup) convertView).getChildAt(1);
+                MyImageButton imageButton = (MyImageButton) ((ViewGroup) convertView).getChildAt(2);
+                rosterItemView.setNull();
+                if (item != null) {
+                    progressBar.setVisibility(((ProtocolBranch) item).getProtocol().getConnectingProgress() != 100 ? View.VISIBLE : View.GONE);
+                    imageButton.setTag(item);
+                    imageButton.setOnClickListener(this);
+                    populateFromProtocol(rosterItemView, (ProtocolBranch) item);
+                    setShowDivider(rosterItemView, true);
+                }
+                rosterItemView.repaint();
+            } else if (itemViewType == ITEM_GROUP) {
+                RosterItemView rosterItemView = (RosterItemView) convertView;
+                rosterItemView.setNull();
+                if (item != null) {
+                    populateFromGroup(rosterItemView, (Group) item);
+                    setShowDivider(rosterItemView, true);
+                }
+                rosterItemView.repaint();
+            } else if (itemViewType == ITEM_CONTACT) {
+                RosterItemView rosterItemView = (RosterItemView) convertView;
+                rosterItemView.setNull();
+                if (item != null) {
+                    Contact contact = (Contact) item;
+                    populateFromContact(rosterItemView, RosterHelper.getInstance(), contact.getProtocol(), contact);
+                    setShowDivider(rosterItemView, true);
+                }
+                rosterItemView.repaint();
+            }
+        }
+    }
+
+    @Override
+    public void onViewRecycled(ViewHolder holder) {
+        View convertView = holder.itemView;
+        convertView.setOnClickListener(null);
+        convertView.setOnLongClickListener(null);
+        super.onViewRecycled(holder);
     }
 
     @Override
@@ -118,12 +213,6 @@ public class RosterAdapter extends BaseAdapter implements View.OnClickListener {
         return -1;
     }
 
-    @Override
-    public int getCount() {
-        return items.size();
-    }
-
-    @Override
     public TreeNode getItem(int i) {
         if (items.size() > i && i >= 0)
             return items.get(i);
@@ -136,10 +225,14 @@ public class RosterAdapter extends BaseAdapter implements View.OnClickListener {
     }
 
     @Override
+    public int getItemCount() {
+        return items.size();
+    }
+
     public boolean isEnabled(int position) {
         TreeNode node = items.get(position);
         if (node.getType() == TreeNode.LAYER) return false;
-        return super.isEnabled(position);
+        return true;
     }
 
     public void putIntoQueue(Group g) {
@@ -195,6 +288,8 @@ public class RosterAdapter extends BaseAdapter implements View.OnClickListener {
         int contactCounter;
         int onlineContactCounter;
         boolean all = !hideOffline;
+        Log.e("load222", p.getRoster()+" "+p.getContactItems().size());
+        Log.e("load22", " " + p.getGroupItems().size());
         Enumeration<Group> e = p.getGroupItems().elements();
         while (e.hasMoreElements()) {
             Group group = e.nextElement();
@@ -204,6 +299,7 @@ public class RosterAdapter extends BaseAdapter implements View.OnClickListener {
             list.add(newGroup);
             List<Contact> contacts = group.getContacts();
             int contactsSize = contacts.size();
+            Log.e("load333", " " + contactsSize);
             for (Contact contact : contacts) {
                 if (all || contact.isVisibleInContactList()) {
                     if (newGroup.isExpanded()) {
@@ -263,20 +359,13 @@ public class RosterAdapter extends BaseAdapter implements View.OnClickListener {
         return newGroup;
     }
 
-    @Override
-    public void unregisterDataSetObserver(DataSetObserver observer) {
-        if (observer != null) {
-            super.unregisterDataSetObserver(observer);
-        }
-    }
-
     void populateFromProtocol(RosterItemView rosterItemView, ProtocolBranch o) {
         rosterItemView.itemNameColor = Scheme.getColor(R.attr.group);
         rosterItemView.itemNameFont = Typeface.DEFAULT;
         rosterItemView.itemName = o.getText();
 
         rosterItemView.itemSecondImage = new Icon(o.isExpanded() ?
-                SawimResources.groupDownIcon : SawimResources.groupRightIcons).getImage().getBitmap();
+                SawimResources.groupDownIcon : SawimResources.groupRightIcons).getImage();
 
         Icon icGroup = o.getProtocol().getCurrentStatusIcon();
         if (icGroup != null)
@@ -294,9 +383,17 @@ public class RosterAdapter extends BaseAdapter implements View.OnClickListener {
             }
         }
 
-        BitmapDrawable messIcon = ChatHistory.instance.getUnreadMessageIcon(o.getProtocol());
+        Drawable messIcon = ChatHistory.instance.getUnreadMessageIcon(o.getProtocol());
+        if (messIcon != null) {
+            messIcon = messIcon.mutate();
+            if (messIcon == SawimResources.PERSONAL_MESSAGE_ICON) {
+                messIcon.setColorFilter(Scheme.getColor(R.attr.personal_unread_message), PorterDuff.Mode.MULTIPLY);
+            } else {
+                messIcon.setColorFilter(Scheme.getColor(R.attr.unread_message), PorterDuff.Mode.MULTIPLY);
+            }
+        }
         if (!o.isExpanded() && messIcon != null)
-            rosterItemView.itemFifthImage = messIcon.getBitmap();
+            rosterItemView.itemFifthImage = messIcon;
     }
 
     void populateFromGroup(RosterItemView rosterItemView, Group g) {
@@ -310,9 +407,17 @@ public class RosterAdapter extends BaseAdapter implements View.OnClickListener {
         rosterItemView.itemFirstImage = new Icon(g.isExpanded() ?
                 SawimResources.groupDownIcon : SawimResources.groupRightIcons).getImage().getBitmap();
 
-        BitmapDrawable messIcon = ChatHistory.instance.getUnreadMessageIcon(g.getContacts());
+        Drawable messIcon = ChatHistory.instance.getUnreadMessageIcon(g.getContacts());
+        if (messIcon != null) {
+            messIcon = messIcon.mutate();
+            if (messIcon == SawimResources.PERSONAL_MESSAGE_ICON) {
+                messIcon.setColorFilter(Scheme.getColor(R.attr.personal_unread_message), PorterDuff.Mode.MULTIPLY);
+            } else {
+                messIcon.setColorFilter(Scheme.getColor(R.attr.unread_message), PorterDuff.Mode.MULTIPLY);
+            }
+        }
         if (!g.isExpanded() && messIcon != null)
-            rosterItemView.itemFifthImage = messIcon.getBitmap();
+            rosterItemView.itemFifthImage = messIcon;
     }
 
     void populateFromContact(final RosterItemView rosterItemView, RosterHelper roster, Protocol p, Contact item) {
@@ -347,11 +452,18 @@ public class RosterAdapter extends BaseAdapter implements View.OnClickListener {
         //if (icStatus != null)
         //    rosterItemView.itemSecondImage = icStatus.getImage().getBitmap();
         if (item.isTyping()) {
-            rosterItemView.itemSecondImage = Message.getIcon(Message.ICON_TYPE).getBitmap();
+            rosterItemView.itemSecondImage = Message.getIcon(Message.ICON_TYPE);
         } else {
-            BitmapDrawable icMess = ChatHistory.instance.getUnreadMessageIcon(item);
-            if (icMess != null)
-                rosterItemView.itemSecondImage = icMess.getBitmap();
+            Drawable icMess = ChatHistory.instance.getUnreadMessageIcon(item);
+            if (icMess != null) {
+                icMess = icMess.mutate();
+                if (icMess == SawimResources.PERSONAL_MESSAGE_ICON) {
+                    icMess.setColorFilter(Scheme.getColor(R.attr.personal_unread_message), PorterDuff.Mode.MULTIPLY);
+                } else {
+                    icMess.setColorFilter(Scheme.getColor(R.attr.unread_message), PorterDuff.Mode.MULTIPLY);
+                }
+                rosterItemView.itemSecondImage = icMess;
+            }
         }
 
         if (item.getXStatusIndex() != XStatusInfo.XSTATUS_NONE) {
@@ -382,12 +494,20 @@ public class RosterAdapter extends BaseAdapter implements View.OnClickListener {
             rosterItemView.itemSixthImage = icClient.getImage().getBitmap();
     }
 
-    public static BitmapDrawable getImageChat(Chat chat, boolean showMess) {
+    public static Drawable getImageChat(Chat chat, boolean showMess) {
         if (chat.getContact().isTyping()) {
             return Message.getIcon(Message.ICON_TYPE);
         } else {
             Icon icStatus = chat.getProtocol().getStatusInfo().getIcon(chat.getContact().getStatusIndex());
-            BitmapDrawable icMess = Message.getIcon(chat.getNewMessageIcon());
+            Drawable icMess = Message.getIcon(chat.getNewMessageIcon());
+            if (icMess != null) {
+                icMess = icMess.mutate();
+                if (icMess == SawimResources.PERSONAL_MESSAGE_ICON) {
+                    icMess.setColorFilter(Scheme.getColor(R.attr.personal_unread_message), PorterDuff.Mode.MULTIPLY);
+                } else {
+                    icMess.setColorFilter(Scheme.getColor(R.attr.unread_message), PorterDuff.Mode.MULTIPLY);
+                }
+            }
             return icMess == null || !showMess ? icStatus.getImage() : icMess;
         }
     }
@@ -396,98 +516,24 @@ public class RosterAdapter extends BaseAdapter implements View.OnClickListener {
         rosterItemView.isShowDivider = value;
     }
 
-    @Override
-    public View getView(int i, View convertView, final ViewGroup viewGroup) {
-        final TreeNode item = getItem(i);
-        int itemViewType = getItemViewType(i);
-        if (type == RosterHelper.ACTIVE_CONTACTS) {
-            if (convertView == null) {
-                convertView = new RosterItemView(SawimApplication.getInstance().getBaseContext());
-            }
-            RosterItemView rosterItemView = (RosterItemView) convertView;
-            rosterItemView.setNull();
-            if (item != null) {
-                if (itemViewType == ITEM_LAYER) {
-                    rosterItemView.addLayer(item.getText());
-                }
-                if (itemViewType == ITEM_CONTACT) {
-                    Contact contact = (Contact) item;
-                    populateFromContact(rosterItemView, RosterHelper.getInstance(), contact.getProtocol(), contact);
-                }
-                setShowDivider(rosterItemView, getItemViewType(i + 1) == ITEM_CONTACT);
-            }
-            rosterItemView.repaint();
-        } else {
-            if (itemViewType == ITEM_PROTOCOL) {
-                if (convertView == null) {
-                    Context context = viewGroup.getContext();
-                    convertView = new LinearLayout(context);
-                    RosterItemView rosterItemView = new RosterItemView(context);
-                    MyImageButton imageButton = new MyImageButton(context);
-                    ProgressBar progressBar = new ProgressBar(context, null, android.R.attr.progressBarStyleInverse);
-                    LinearLayout.LayoutParams progressLinearLayout = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-                    progressLinearLayout.gravity = Gravity.RIGHT;
-                    progressLinearLayout.weight = 4;
-                    progressBar.setLayoutParams(progressLinearLayout);
-                    progressBar.setMax(100);
-                    LinearLayout.LayoutParams buttonLinearLayout = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-                    buttonLinearLayout.gravity = Gravity.RIGHT;
-                    buttonLinearLayout.weight = 4;
-                    imageButton.setLayoutParams(buttonLinearLayout);
-                    LinearLayout.LayoutParams rosterLinearLayout = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-                    rosterLinearLayout.gravity = Gravity.LEFT;
-                    rosterLinearLayout.weight = 1;
-                    convertView.setBackgroundColor(Scheme.getColor(R.attr.item_selected));
-                    rosterItemView.setLayoutParams(rosterLinearLayout);
-                    imageButton.setImageDrawable(SawimResources.MENU_ICON);
-                    ((ViewGroup) convertView).setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
-                    ((ViewGroup) convertView).addView(rosterItemView);
-                    ((ViewGroup) convertView).addView(progressBar);
-                    ((ViewGroup) convertView).addView(imageButton);
-                }
-                RosterItemView rosterItemView = (RosterItemView) ((ViewGroup) convertView).getChildAt(0);
-                ProgressBar progressBar = (ProgressBar) ((ViewGroup) convertView).getChildAt(1);
-                MyImageButton imageButton = (MyImageButton) ((ViewGroup) convertView).getChildAt(2);
-                rosterItemView.setNull();
-                if (item != null) {
-                    progressBar.setVisibility(((ProtocolBranch) item).getProtocol().getConnectingProgress() != 100 ? View.VISIBLE : View.GONE);
-                    imageButton.setTag(item);
-                    imageButton.setOnClickListener(this);
-                    populateFromProtocol(rosterItemView, (ProtocolBranch) item);
-                    setShowDivider(rosterItemView, true);
-                }
-                rosterItemView.repaint();
-                return convertView;
-            } else if (itemViewType == ITEM_GROUP) {
-                if (convertView == null) {
-                    convertView = new RosterItemView(SawimApplication.getInstance().getBaseContext());
-                }
-                RosterItemView rosterItemView = (RosterItemView) convertView;
-                rosterItemView.setNull();
-                if (item != null) {
-                    populateFromGroup(rosterItemView, (Group) item);
-                    setShowDivider(rosterItemView, true);
-                }
-                rosterItemView.repaint();
-            } else if (itemViewType == ITEM_CONTACT) {
-                if (convertView == null) {
-                    convertView = new RosterItemView(SawimApplication.getInstance().getBaseContext());
-                }
-                RosterItemView rosterItemView = (RosterItemView) convertView;
-                rosterItemView.setNull();
-                if (item != null) {
-                    Contact contact = (Contact) item;
-                    populateFromContact(rosterItemView, RosterHelper.getInstance(), contact.getProtocol(), contact);
-                    setShowDivider(rosterItemView, true);
-                }
-                rosterItemView.repaint();
-            }
-        }
-        return convertView;
+    public void setOnItemClickListener(View.OnClickListener itemClickListener) {
+        this.itemClickListener = itemClickListener;
     }
 
     @Override
     public void onClick(View v) {
         RosterHelper.getInstance().showProtocolMenu((BaseActivity) v.getContext(), ((ProtocolBranch) v.getTag()).getProtocol());
+    }
+
+    @Override
+    public boolean onLongClick(View v) {
+        return false;
+    }
+
+    static class ViewHolder extends RecyclerView.ViewHolder {
+
+        public ViewHolder(View itemView) {
+            super(itemView);
+        }
     }
 }

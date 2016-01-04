@@ -35,8 +35,8 @@ public final class MessData {
         this.nick = nick;
         this.time = time;
         this.rowData = flags;
-        boolean today = (SawimApplication.getCurrentGmtTime() / 1000 - 24 * 60 * 60 < time);
-        strTime = ru.sawim.comm.Util.getLocalDateString(time, today);
+        //boolean today = (SawimApplication.getCurrentGmtTime() / 1000 - 24 * 60 * 60 < time);
+        strTime = ru.sawim.comm.Util.getLocalDateString(time, true);
 
         CharSequence parsedText = parsedText(currentContact, text, true);
         layout = MessageItemView.buildLayout(parsedText, isHighLight ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT);
@@ -47,8 +47,8 @@ public final class MessData {
         this.nick = nick;
         this.time = time;
         this.rowData = flags;
-        boolean today = (SawimApplication.getCurrentGmtTime() / 1000 - 24 * 60 * 60 < time);
-        strTime = ru.sawim.comm.Util.getLocalDateString(time, today);
+        //boolean today = (SawimApplication.getCurrentGmtTime() / 1000 - 24 * 60 * 60 < time);
+        strTime = ru.sawim.comm.Util.getLocalDateString(time, true);
 
         CharSequence parsedText = parsedText(currentContact, text, false);
         layout = MessageItemView.buildLayout(parsedText, isHighLight ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT);

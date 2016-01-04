@@ -60,7 +60,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        if (newVersion <= 9) {
+        if (newVersion <= 10) {
             try {
                 db.execSQL("DROP TABLE IF EXISTS " + RosterStorage.subContactsTable);
                 db.execSQL("DROP TABLE IF EXISTS " + RosterStorage.storeName);

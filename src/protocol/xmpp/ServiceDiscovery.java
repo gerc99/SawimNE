@@ -158,7 +158,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
                 if (jid.contains("@")) {
                     Contact c = xmpp.createTempContact(jid, true);
                     xmpp.addContact(c);
-                    xmpp.getConnection().sendPresence((XmppServiceContact) c);
+                    Presences.sendPresence(xmpp.getConnection(), (XmppServiceContact) c);
                     Toast.makeText(activity, R.string.added, Toast.LENGTH_SHORT).show();
                 } else if (Jid.isKnownGate(jid)) {
                     xmpp.getConnection().register(jid).show(activity);

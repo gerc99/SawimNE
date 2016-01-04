@@ -19,19 +19,19 @@ public class MessageArchiveManagement {
 
     private static final long MILLISECONDS_IN_DAY = 24 * 60 * 60 * 1000;
     public static final long MAX_CATCHUP = MILLISECONDS_IN_DAY * 7;
-    public static final long MAX_MESSAGES = 10;
+    public static final long MAX_MESSAGES = 20;
 
     private final HashSet<Query> queries = new HashSet<>();
 
     private String getQueryMessageArchiveManagement(Contact contact, Query query) {
-        XmlNode xmlNode = new XmlNode(XmppConnection.S_IQ);
-        xmlNode.putAttribute(XmppConnection.S_TYPE, XmppConnection.S_SET);
+        XmlNode xmlNode = new XmlNode(XmlConstants.S_IQ);
+        xmlNode.putAttribute(XmlConstants.S_TYPE, XmlConstants.S_SET);
         if (contact != null && contact.isConference()) {
-            xmlNode.putAttribute(XmppConnection.S_TO, Util.xmlEscape(contact.getUserId()));
+            xmlNode.putAttribute(XmlConstants.S_TO, Util.xmlEscape(contact.getUserId()));
         }
         xmlNode.putAttribute(XmlNode.S_ID, XmppConnection.generateId());
 
-        XmlNode queryNode = new XmlNode(XmppConnection.S_QUERY);
+        XmlNode queryNode = new XmlNode(XmlConstants.S_QUERY);
         queryNode.putAttribute(XmlNode.S_XMLNS, "urn:xmpp:mam:0");
         queryNode.putAttribute("queryid", query.queryId);
 

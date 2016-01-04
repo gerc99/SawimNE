@@ -44,7 +44,7 @@
                             android:defaultValue="false"/>
         <CheckBoxPreference android:title="@string/use_history"
                             android:key="@string/pref_history"
-                            android:defaultValue="false"/>
+                            android:defaultValue="true"/>
 
     <PreferenceCategory android:title="@string/options_signaling"/>
         <RingtonePreference android:key="@string/pref_mess_ringtone"

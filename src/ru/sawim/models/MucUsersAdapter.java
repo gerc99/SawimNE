@@ -2,11 +2,13 @@ package ru.sawim.models;
 
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import protocol.Contact;
+import protocol.xmpp.Muc;
 import protocol.xmpp.Xmpp;
 import protocol.xmpp.XmppContact;
 import protocol.xmpp.XmppServiceContact;
@@ -18,6 +20,7 @@ import ru.sawim.icons.ImageCache;
 import ru.sawim.io.FileSystem;
 import ru.sawim.roster.Layer;
 import ru.sawim.roster.TreeNode;
+import ru.sawim.widget.chat.MessageItemView;
 import ru.sawim.widget.roster.RosterItemView;
 
 import java.io.File;
@@ -32,11 +35,10 @@ import java.util.List;
  * Time: 20:26
  * To change this template use File | Settings | File Templates.
  */
-public class MucUsersAdapter extends BaseAdapter {
+public class MucUsersAdapter extends RecyclerView.Adapter<MucUsersAdapter.ViewHolder> {
 
     private static final int ITEM_GROUP = 0;
     private static final int ITEM_CONTACT = 1;
-    private static final int ITEM_TYPECOUNT = 2;
     private XmppServiceContact conference;
     private List<TreeNode> items = new ArrayList<>();
     private Xmpp protocol;
@@ -51,6 +53,7 @@ public class MucUsersAdapter extends BaseAdapter {
         protocol = xmpp;
         conference = conf;
         update();
+        //setHasStableIds(true);
     }
 
     public void update() {
@@ -71,13 +74,27 @@ public class MucUsersAdapter extends BaseAdapter {
     }
 
     @Override
-    public boolean hasStableIds() {
-        return true;
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        RosterItemView convertView = new RosterItemView(parent.getContext());
+        return new ViewHolder(convertView);
     }
 
     @Override
-    public int getViewTypeCount() {
-        return ITEM_TYPECOUNT;
+    public void onBindViewHolder(ViewHolder holder, int position) {
+        TreeNode treeNode = items.get(position);
+        int itemViewType = getItemViewType(position);
+
+        RosterItemView rosterItemView = (RosterItemView) holder.itemView;
+        rosterItemView.setNull();
+        if (treeNode == null) return;
+        if (itemViewType == ITEM_GROUP) {
+            rosterItemView.addLayer(treeNode.getText());
+            rosterItemView.itemNameFont = Typeface.DEFAULT_BOLD;
+        }
+        if (itemViewType == ITEM_CONTACT)
+            populateFrom(rosterItemView, protocol, (XmppContact.SubContact) treeNode);
+        setShowDivider(rosterItemView, getItemViewType(position + 1) == ITEM_CONTACT);
+        rosterItemView.repaint();
     }
 
     @Override
@@ -90,19 +107,12 @@ public class MucUsersAdapter extends BaseAdapter {
         return -1;
     }
 
-    @Override
     public boolean isEnabled(int position) {
         TreeNode treeNode = items.get(position);
         if (treeNode.getType() == TreeNode.LAYER) return false;
-        return super.isEnabled(position);
+        return true;
     }
 
-    @Override
-    public int getCount() {
-        return items.size();
-    }
-
-    @Override
     public TreeNode getItem(int position) {
         if ((items.size() > position) && (position >= 0))
             return items.get(position);
@@ -112,6 +122,11 @@ public class MucUsersAdapter extends BaseAdapter {
     @Override
     public long getItemId(int i) {
         return i;
+    }
+
+    @Override
+    public int getItemCount() {
+        return items.size();
     }
 
     public final int getRole(String nick) {
@@ -176,7 +191,7 @@ public class MucUsersAdapter extends BaseAdapter {
     }
 
     public void setMucRole(String nick, String role) {
-        protocol.getConnection().setMucRole(conference.getUserId(), nick, role);
+        Muc.setMucRole(protocol.getConnection(), conference.getUserId(), nick, role);
     }
 
     public void setMucAffiliation(String nick, String affiliation) {
@@ -184,12 +199,12 @@ public class MucUsersAdapter extends BaseAdapter {
         if ((null == c) || (null == c.realJid)) {
             return;
         }
-        protocol.getConnection().setMucAffiliation(conference.getUserId(),
+        Muc.setMucAffiliation(protocol.getConnection(), conference.getUserId(),
                 c.realJid, affiliation);
     }
 
     public void setMucRoleR(String nick, String role, String setReason) {
-        protocol.getConnection().setMucRoleR(conference.getUserId(), nick, role, setReason);
+        Muc.setMucRoleR(protocol.getConnection(), conference.getUserId(), nick, role, setReason);
     }
 
     public void setMucAffiliationR(String nick, String affiliation, String setReason) {
@@ -197,33 +212,12 @@ public class MucUsersAdapter extends BaseAdapter {
         if ((null == c) || (null == c.realJid)) {
             return;
         }
-        protocol.getConnection().setMucAffiliationR(conference.getUserId(),
+        Muc.setMucAffiliationR(protocol.getConnection(), conference.getUserId(),
                 c.realJid, affiliation, setReason);
     }
 
     void setShowDivider(RosterItemView rosterItemView, boolean value) {
         rosterItemView.isShowDivider = value;
-    }
-
-    @Override
-    public View getView(int i, View convertView, ViewGroup viewGroup) {
-        TreeNode treeNode = items.get(i);
-        int itemViewType = getItemViewType(i);
-        if (convertView == null) {
-            convertView = new RosterItemView(viewGroup.getContext());
-        }
-        RosterItemView rosterItemView = (RosterItemView) convertView;
-        rosterItemView.setNull();
-        if (treeNode == null) return rosterItemView;
-        if (itemViewType == ITEM_GROUP) {
-            rosterItemView.addLayer(treeNode.getText());
-            rosterItemView.itemNameFont = Typeface.DEFAULT_BOLD;
-        }
-        if (itemViewType == ITEM_CONTACT)
-            populateFrom(rosterItemView, protocol, (XmppContact.SubContact) treeNode);
-        setShowDivider(rosterItemView, getItemViewType(i + 1) == ITEM_CONTACT);
-        ((RosterItemView) convertView).repaint();
-        return rosterItemView;
     }
 
     void populateFrom(final RosterItemView rosterItemView, Xmpp protocol, XmppContact.SubContact c) {
@@ -258,8 +252,15 @@ public class MucUsersAdapter extends BaseAdapter {
         }
         Icon ic = protocol.clientInfo.getIcon(c.client);
         if (ic != null && !Options.getBoolean(JLocale.getString(R.string.pref_hide_icons_clients))) {
-            rosterItemView.itemFifthImage = ic.getImage().getBitmap();
+            rosterItemView.itemFifthImage = ic.getImage();
         }
         rosterItemView.itemSixthImage = SawimResources.affiliationIcons.iconAt(XmppServiceContact.getAffiliationName(c.priorityA)).getImage().getBitmap();
+    }
+
+    static class ViewHolder extends RecyclerView.ViewHolder {
+
+        public ViewHolder(View itemView) {
+            super(itemView);
+        }
     }
 }

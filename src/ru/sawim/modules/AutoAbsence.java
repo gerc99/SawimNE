@@ -62,11 +62,6 @@ public final class AutoAbsence {
                 pr.xstatusTitle = p.getProfile().xstatusTitle;
                 pr.xstatusDescription = p.getProfile().xstatusDescription;
 
-                if (protos[i] instanceof protocol.mrim.Mrim) {
-                    p.getProfile().xstatusIndex = XStatusInfo.XSTATUS_NONE;
-                    p.getProfile().xstatusTitle = "";
-                    p.getProfile().xstatusDescription = "";
-                }
                 isChangeStatus = true;
                 p.setOnlineStatus(StatusInfo.STATUS_AWAY, pr.statusMessage, false);
                 isChangeStatus = false;
@@ -86,12 +81,6 @@ public final class AutoAbsence {
             if (null != protos[i]) {
                 Profile pr = profiles[i];
 
-                if (protos[i] instanceof protocol.mrim.Mrim) {
-                    Profile p = protos[i].getProfile();
-                    p.xstatusIndex = pr.xstatusIndex;
-                    p.xstatusTitle = pr.xstatusTitle;
-                    p.xstatusDescription = pr.xstatusDescription;
-                }
                 isChangeStatus = true;
                 protos[i].setOnlineStatus(pr.statusIndex, pr.statusMessage, false);
                 isChangeStatus = false;

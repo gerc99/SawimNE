@@ -2,6 +2,8 @@ package ru.sawim.widget.roster;
 
 import android.content.Context;
 import android.graphics.*;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.text.TextPaint;
 import android.text.TextUtils;
@@ -33,10 +35,10 @@ public class RosterItemView extends View {
     public int avatarBorderColor = -1;
 
     public Bitmap itemFirstImage = null;
-    public Bitmap itemSecondImage = null;
+    public Drawable itemSecondImage = null;
     public Bitmap itemThirdImage = null;
     public Bitmap itemFourthImage = null;
-    public Bitmap itemFifthImage = null;
+    public Drawable itemFifthImage = null;
     public Bitmap itemSixthImage = null;
 
     private static TextPaint textPaint;
@@ -156,8 +158,8 @@ public class RosterItemView extends View {
         } else
             secondImageX = firstImageX;
         if (itemSecondImage != null) {
-            thirdImageX = secondImageX + itemSecondImage.getWidth() + leftPadding;
-            secondImageY = y - (itemSecondImage.getHeight() / 2);
+            thirdImageX = secondImageX + itemSecondImage.getIntrinsicWidth() + leftPadding;
+            secondImageY = y - (itemSecondImage.getIntrinsicHeight() / 2);
             textX = thirdImageX;
         } else
             thirdImageX = secondImageX;
@@ -174,8 +176,8 @@ public class RosterItemView extends View {
 
         fifthImageX = viewWidth;
         if (itemFifthImage != null) {
-            fifthImageX = viewWidth - itemFifthImage.getWidth() - rightPadding;
-            fifthImageY = y - (itemFifthImage.getHeight() / 2);
+            fifthImageX = viewWidth - itemFifthImage.getIntrinsicWidth() - rightPadding;
+            fifthImageY = y - (itemFifthImage.getIntrinsicHeight() / 2);
         }
         sixthImageX = fifthImageX;
         if (itemSixthImage != null) {
@@ -219,8 +221,11 @@ public class RosterItemView extends View {
             }
             canvas.drawBitmap(bitmap, firstImageX, firstImageY, null);
         }
-        if (itemSecondImage != null)
-            canvas.drawBitmap(itemSecondImage, secondImageX, secondImageY, null);
+        if (itemSecondImage != null) {
+            itemSecondImage.setBounds(secondImageX, secondImageY,
+                    secondImageX + itemSecondImage.getIntrinsicWidth(), secondImageY + itemSecondImage.getIntrinsicHeight());
+            itemSecondImage.draw(canvas);
+        }
         if (itemThirdImage != null)
             canvas.drawBitmap(itemThirdImage, thirdImageX, thirdImageY, null);
         if (itemFourthImage != null)
@@ -237,8 +242,11 @@ public class RosterItemView extends View {
             textPaint.setTypeface(Typeface.DEFAULT);
             canvas.drawText(TextUtils.ellipsize(itemDesc, textPaint, fifthImageX - textX, TextUtils.TruncateAt.END).toString(), textX, lineTwoY, textPaint);
         }
-        if (itemFifthImage != null)
-            canvas.drawBitmap(itemFifthImage, fifthImageX, fifthImageY, null);
+        if (itemFifthImage != null) {
+            itemFifthImage.setBounds(fifthImageX, fifthImageY,
+                    fifthImageX + itemFifthImage.getIntrinsicWidth(), fifthImageY + itemFifthImage.getIntrinsicHeight());
+            itemFifthImage.draw(canvas);
+        }
         if (itemSixthImage != null)
             canvas.drawBitmap(itemSixthImage, sixthImageX, sixthImageY, null);
 

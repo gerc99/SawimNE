@@ -3,8 +3,8 @@ package ru.sawim.widget.chat;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextPaint;
-import android.view.View;
 import android.widget.LinearLayout;
 
 import ru.sawim.R;
@@ -30,7 +30,7 @@ public class ChatListsView extends IcsLinearLayout {
 
     private boolean isShowDividerForUnreadMessage = false;
 
-    public ChatListsView(Context context, boolean isTablet, MyListView chatListView, MyListView nickList) {
+    public ChatListsView(Context context, boolean isTablet, RecyclerView chatListView, RecyclerView nickList) {
         super(context);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
         setOrientation(HORIZONTAL);

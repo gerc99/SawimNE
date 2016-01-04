@@ -43,7 +43,7 @@ public class ChatBarView extends IcsLinearLayout {
 
         itemView = new SimpleItemView(context);
         int padding = ru.sawim.widget.Util.dipToPixels(context, 3);
-        itemView.setPadding(padding, padding, padding, padding);
+        itemView.setPadding(padding * 2, padding, padding, padding);
         addViewInLayout(itemView, ITEM_VIEW_INDEX, labelLayoutParams);
 
         if (!SawimApplication.isManyPane()) {

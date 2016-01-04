@@ -4,6 +4,8 @@ import android.support.v4.app.Fragment;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import ru.sawim.SawimApplication;
+
 /**
  * Created with IntelliJ IDEA.
  * User: Gerc
@@ -19,6 +21,11 @@ public abstract class SawimFragment extends Fragment {
     }
 
     public void onOptionsItemSelected_(MenuItem item) {
+    }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        SawimApplication.getInstance().refWatcher.watch(this);
     }
 }

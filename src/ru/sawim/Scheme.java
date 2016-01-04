@@ -35,7 +35,11 @@ public class Scheme {
             R.attr.link,
             R.attr.link_highlight,
             R.attr.divider,
-            R.attr.unread_message_divider
+            R.attr.unread_message_divider,
+            R.attr.bar_unread_message,
+            R.attr.bar_personal_unread_message,
+            R.attr.unread_message,
+            R.attr.personal_unread_message
     };
 
     private static String[] themeNames = new String[] {"Light", "Black"};

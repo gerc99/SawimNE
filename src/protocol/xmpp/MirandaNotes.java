@@ -22,6 +22,7 @@ import java.util.Vector;
 
 
 public final class MirandaNotes {
+
     private static final int COMMAND_ADD = 0;
     private static final int COMMAND_EDIT = 1;
     private static final int COMMAND_DEL = 2;
@@ -77,7 +78,7 @@ public final class MirandaNotes {
 
                     case COMMAND_DEL:
                         removeNote(listItem);
-                        xmpp.getConnection().saveMirandaNotes(getNotesStorage());
+                        saveMirandaNotes(getNotesStorage());
                         refresh();
                         break;
 
@@ -117,6 +118,37 @@ public final class MirandaNotes {
         });
     }
 
+    public static void loadMirandaNotes(Xmpp xmpp, XmlNode storage) {
+        xmpp.getMirandaNotes().clear();
+        while (0 < storage.childrenCount()) {
+            XmlNode item = storage.popChildNode();
+            String tags = item.getAttribute("tags");
+            String title = item.getFirstNodeValue("title");
+            String text = item.getFirstNodeValue("text");
+            if (title == null) title = "";
+            if (tags == null) tags = "";
+            if (text == null) text = "";
+            xmpp.getMirandaNotes().addNote(title, tags, text);
+        }
+    }
+
+    void saveMirandaNotes(String storage) {
+        StringBuilder xml = new StringBuilder();
+        xml.append("<iq type='set'><query xmlns='jabber:iq:private'>");
+        xml.append("<storage xmlns='http://miranda-im.org/storage#notes'>");
+        xml.append(storage);
+        xml.append("</storage></query></iq>");
+        xmpp.getConnection().putPacketIntoQueue(xml.toString());
+    }
+
+    public void requestMirandaNotes() {
+        String xml = "<iq type='get'>"
+                + "<query xmlns='jabber:iq:private'>"
+                + "<storage xmlns='http://miranda-im.org/storage#notes' />"
+                + "</query></iq>";
+        xmpp.getConnection().putPacketIntoQueue(xml);
+    }
+
     public void clear() {
         model.clear();
     }
@@ -128,7 +160,7 @@ public final class MirandaNotes {
         wait.addDescription(JLocale.getString(R.string.wait),
                 R.attr.text, Scheme.FONT_STYLE_PLAIN);
         model.addPar(wait);
-        xmpp.getConnection().requestMirandaNotes();
+        requestMirandaNotes();
         screen.show(activity);
         screen.updateModel();
     }
@@ -235,7 +267,7 @@ public final class MirandaNotes {
 
                 refresh();
                 selectNote(note);
-                xmpp.getConnection().saveMirandaNotes(getNotesStorage());
+                saveMirandaNotes(getNotesStorage());
                 form.back();
             } else {
                 form.back();

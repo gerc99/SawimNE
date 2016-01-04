@@ -10,8 +10,6 @@ import ru.sawim.listener.OnAccountsLoaded;
 import ru.sawim.listener.OnUpdateChat;
 import ru.sawim.listener.OnUpdateRoster;
 import protocol.*;
-import protocol.icq.Icq;
-import protocol.mrim.Mrim;
 import protocol.xmpp.Xmpp;
 import ru.sawim.Options;
 import ru.sawim.R;
@@ -20,7 +18,6 @@ import ru.sawim.activities.BaseActivity;
 import ru.sawim.comm.JLocale;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.forms.ManageContactListForm;
-import ru.sawim.forms.SmsForm;
 import ru.sawim.modules.FileTransfer;
 import ru.sawim.view.StatusesView;
 import ru.sawim.view.XStatusesView;
@@ -54,18 +51,9 @@ public final class RosterHelper {
         return instance;
     }
 
-    public byte getProtocolType(Profile account) {
-        for (int i = 0; i < Profile.protocolTypes.length; ++i) {
-            if (account.protocolType == Profile.protocolTypes[i]) {
-                return account.protocolType;
-            }
-        }
-        return Profile.protocolTypes[0];
-    }
-
     private boolean is(Protocol protocol, Profile profile) {
         Profile exist = protocol.getProfile();
-        return exist == profile || (exist.protocolType == profile.protocolType) && exist.userId.equals(profile.userId);
+        return exist == profile || exist.userId.equals(profile.userId);
     }
 
     private void addProtocols(Vector accounts) {
@@ -148,42 +136,8 @@ public final class RosterHelper {
         });
     }
 
-    private byte getRealType(byte type) {
-        switch (type) {
-            case Profile.PROTOCOL_GTALK:
-            case Profile.PROTOCOL_FACEBOOK:
-            case Profile.PROTOCOL_LJ:
-            case Profile.PROTOCOL_YANDEX:
-            case Profile.PROTOCOL_QIP:
-            case Profile.PROTOCOL_ODNOKLASSNIKI:
-                return Profile.PROTOCOL_JABBER;
-        }
-        return type;
-    }
-
     private void addProtocol(Profile account, boolean load) {
-        Protocol protocol = null;
-        byte type = getProtocolType(account);
-        switch (getRealType(type)) {
-            case Profile.PROTOCOL_ICQ:
-                protocol = new Icq();
-                break;
-
-            case Profile.PROTOCOL_MRIM:
-                protocol = new Mrim();
-                break;
-
-            case Profile.PROTOCOL_JABBER:
-                protocol = new Xmpp();
-                break;
-
-            case Profile.PROTOCOL_VK_API:
-                protocol = new protocol.vk.Vk();
-                break;
-        }
-        if (null == protocol) {
-            return;
-        }
+        Protocol protocol = new Xmpp();
         protocol.setProfile(account);
         protocol.init();
         if (load) {
@@ -516,12 +470,10 @@ public final class RosterHelper {
     public static final int MENU_STATUS = 1;
     public static final int MENU_XSTATUS = 2;
     public static final int MENU_PRIVATE_STATUS = 3;
-    public static final int MENU_SEND_SMS = 5;
     public static final int MENU_DISCO = 16;
     public static final int MENU_NOTES = 17;
     public static final int MENU_GROUPS = 18;
     public static final int MENU_MYSELF = 19;
-    public static final int MENU_MICROBLOG = 20;
 
     public MyMenu getMenu(final Protocol p) {
         final MyMenu menu = new MyMenu();
@@ -529,14 +481,7 @@ public final class RosterHelper {
         menu.add(R.string.status, MENU_STATUS);
         if (p.getXStatusInfo() != null)
             menu.add(R.string.xstatus, MENU_XSTATUS);
-        if ((p instanceof Icq) || (p instanceof Mrim))
-            menu.add(R.string.private_status, MENU_PRIVATE_STATUS);
-        for (int i = 0; i < count; ++i) {
-            Protocol pr = RosterHelper.getInstance().getProtocol(i);
-            if (pr instanceof Mrim && pr.isConnected()) {
-                menu.add(R.string.send_sms, MENU_SEND_SMS);
-            }
-        }
+
         if (p.isConnected()) {
             if (p instanceof Xmpp) {
                 if (((Xmpp) p).hasS2S()) {
@@ -544,17 +489,12 @@ public final class RosterHelper {
                 }
             }
             menu.add(R.string.manage_contact_list, MENU_GROUPS);
-            if (p instanceof Icq) {
-                menu.add(R.string.myself, MENU_MYSELF);
-            } else {
+
                 if (p instanceof Xmpp) {
                     menu.add(R.string.notes, MENU_NOTES);
                 }
                 if (p.hasVCardEditor())
                     menu.add(R.string.myself, MENU_MYSELF);
-                if (p instanceof Mrim)
-                    menu.add(R.string.microblog, MENU_MICROBLOG);
-            }
         }
         return menu;
     }
@@ -589,12 +529,6 @@ public final class RosterHelper {
             case RosterHelper.MENU_XSTATUS:
                 new XStatusesView(p).show(activity.getSupportFragmentManager(), "change-xstatus");
                 return true;
-            case RosterHelper.MENU_PRIVATE_STATUS:
-                new StatusesView().init(p, StatusesView.ADAPTER_PRIVATESTATUS).show(activity.getSupportFragmentManager(), "change-private-status");
-                return true;
-            case RosterHelper.MENU_SEND_SMS:
-                new SmsForm(null, null).show(activity);
-                return true;
             case RosterHelper.MENU_DISCO:
                 ((Xmpp) p).getServiceDiscovery().showIt(activity);
                 return true;
@@ -606,9 +540,6 @@ public final class RosterHelper {
                 return true;
             case RosterHelper.MENU_MYSELF:
                 p.showUserInfo(activity, p.createTempContact(p.getUserId(), p.getNick(), false));
-                return true;
-            case RosterHelper.MENU_MICROBLOG:
-                ((Mrim) p).getMicroBlog().activate(activity);
                 return true;
         }
         return false;

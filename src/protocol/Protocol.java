@@ -1,5 +1,7 @@
 package protocol;
 
+import android.util.Log;
+
 import protocol.xmpp.XmppContact;
 import ru.sawim.*;
 import ru.sawim.activities.BaseActivity;
@@ -32,7 +34,7 @@ abstract public class Protocol {
     public ClientInfo clientInfo;
 
     private RosterStorage storage;
-    private Roster roster = new Roster();
+    private Roster roster;
     protected StatusInfo info;
     protected XStatusInfo xstatusInfo;
     private Profile profile;
@@ -73,13 +75,6 @@ abstract public class Protocol {
     public final void setProfile(Profile account) {
         profile = account;
         String rawUin = StringConvertor.notNull(account.userId);
-        if (!StringConvertor.isEmpty(rawUin)) {
-            byte type = account.protocolType;
-            String domain = getDefaultDomain(type);
-            if ((null != domain) && (-1 == rawUin.indexOf('@'))) {
-                rawUin += domain;
-            }
-        }
         userid = StringConvertor.isEmpty(rawUin) ? "" : processUin(rawUin);
         if (!StringConvertor.isEmpty(account.password)) {
             setPassword(null);
@@ -88,7 +83,7 @@ abstract public class Protocol {
         String rms = "roster-" + getUserId();
         rmsName = (32 < rms.length()) ? rms.substring(0, 32) : rms;
 
-        storage = new RosterStorage(rmsName);
+        storage = new RosterStorage();
     }
 
     public RosterStorage getStorage() {
@@ -101,24 +96,6 @@ abstract public class Protocol {
 
     public final void setPassword(String pass) {
         password = pass;
-    }
-
-    private String getDefaultDomain(byte type) {
-        switch (type) {
-            case Profile.PROTOCOL_GTALK:
-                return "@gmail.com";
-            case Profile.PROTOCOL_FACEBOOK:
-                return "@chat.facebook.com";
-            case Profile.PROTOCOL_LJ:
-                return "@livejournal.com";
-            case Profile.PROTOCOL_YANDEX:
-                return "@ya.ru";
-            case Profile.PROTOCOL_QIP:
-                return "@qip.ru";
-            case Profile.PROTOCOL_ODNOKLASSNIKI:
-                return "@odnoklassniki.ru";
-        }
-        return null;
     }
 
     protected String processUin(String uin) {
@@ -161,14 +138,18 @@ abstract public class Protocol {
     public final void setRoster(Roster roster) {
         this.roster = roster;
         ChatHistory.instance.restoreContactsWithChat(this);
-        Enumeration<Group> e = roster.getGroupItems().elements();
+        /*Enumeration<Group> e = roster.getGroupItems().elements();
         while (e.hasMoreElements()) {
             Group group = e.nextElement();
             RosterHelper.getInstance().updateGroup(this, group);
         }
-        RosterHelper.getInstance().updateGroup(this, notInListGroup);
+        RosterHelper.getInstance().updateGroup(this, notInListGroup);*/
         if (RosterHelper.getInstance().getProtocolCount() == 0) return;
         RosterHelper.getInstance().updateRoster();
+    }
+
+    public final Roster getRoster() {
+        return roster;
     }
 
     public final void setContactListAddition(Group group) {

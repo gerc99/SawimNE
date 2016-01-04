@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary">#3F51B5</color>
-    <color name="primary_dark">#303F9F</color>
-    <color name="primary_light">#C5CAE9</color>
-    <color name="accent">#536DFE</color>
-    <color name="primary_text">#FFFFFF</color>
-    <color name="secondary_text">#ffe6e6e6</color>
+    <color name="primary">#607D8B</color>
+    <color name="primary_dark">#455A64</color>
+    <color name="primary_light">#CFD8DC</color>
+    <color name="accent">#607D8B</color>
+    <color name="primary_text">#f7f7f7</color>
+    <color name="secondary_text">#e6e6e6</color>
+    <color name="icons">#FFFFFF</color>
     <color name="list_divider">#B6B6B6</color>
+
+    <color name="background">#3A3A3A</color>
 
     <color name="text">#ffe6e6e6</color>
     <color name="item_selected">#ffe6e6e6</color>
@@ -24,6 +27,10 @@
     <color name="link">#ff1b77d2</color>
     <color name="link_highlight">#ffe6e6e6</color>
     <color name="unread_message_divider">#ffe6e6e6</color>
+    <color name="bar_unread_message">#02bcd4</color>
+    <color name="bar_personal_unread_message">#f44437</color>
+    <color name="unread_message">#02bcd4</color>
+    <color name="personal_unread_message">#f44437</color>
 
 
     <color name="light_primary">#2196f3</color>
@@ -50,6 +57,10 @@
     <color name="light_link">#ff1b77d2</color>
     <color name="light_link_highlight">#0c41d2</color>
     <color name="light_unread_message_divider">#B6B6B6</color>
+    <color name="light_bar_unread_message">#4eb6ac</color>
+    <color name="light_bar_personal_unread_message">#e57474</color>
+    <color name="light_unread_message">#4eb6ac</color>
+    <color name="light_personal_unread_message">#e57474</color>
 
     <color name="tabs_scroll">#ff568c30</color>
     <color name="light_tabs_scroll">#ff568c30</color>
@@ -58,6 +69,8 @@
     <color name="status_online">#ff67bb6b</color>
     <color name="status_away">#ff1b77d2</color>
     <color name="status_dnd">#fff44437</color>
+
+    <color name="default_header_color">#445566</color>
 
     <array name="avatar_colors">
         <item>#FFe91e63</item>

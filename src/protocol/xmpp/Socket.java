@@ -138,8 +138,8 @@ final class Socket implements Runnable {
         return secured;
     }
 
-    private Object readObject() throws SawimException {
-        Object readObject = null;
+    private XmlNode readObject() throws SawimException {
+        XmlNode readObject = null;
         while (connected && null == readObject) {
             readObject = XmlNode.parse(this);
             //if (null == readObject) sleep(100);
@@ -164,10 +164,10 @@ final class Socket implements Runnable {
     }
 
     public XmlNode readNode(boolean wait) throws SawimException {
-        Object readObject = null;
         if (wait) {
-            readObject = readObject();
+            return readObject();
         } else {
+            Object readObject = null;
             if (0 < read.size()) {
                 try {
                     readObject = read.take();
@@ -175,9 +175,9 @@ final class Socket implements Runnable {
                     e.printStackTrace();
                 }
             }
+            if (readObject instanceof SawimException) throw (SawimException) readObject;
+            return (XmlNode) readObject;
         }
-        if (readObject instanceof SawimException) throw (SawimException) readObject;
-        return (XmlNode) readObject;
     }
 
     public void start() {

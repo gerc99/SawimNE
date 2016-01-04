@@ -103,8 +103,8 @@
 
     <string name="acc_add">Add account</string>
     <string name="acc_edit">Edit account</string>
-    <string name="acc_login">Login:</string>
-    <string name="acc_pass">Password:</string>
+    <string name="acc_login">Login</string>
+    <string name="acc_pass">Password</string>
     <string name="acc_nick">Nick:</string>
     <string name="acc_sel_protocol">Select protocol:</string>
     <string name="acc_delete_confirm">Do you really want to delete %s?</string>

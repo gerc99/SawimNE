@@ -4,18 +4,18 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.*;
 import android.widget.AdapterView;
-import android.widget.ListView;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
-import ru.sawim.Scheme;
 import ru.sawim.activities.BaseActivity;
 import ru.sawim.activities.SawimActivity;
 import ru.sawim.models.VirtualListAdapter;
 import ru.sawim.models.list.VirtualList;
 import ru.sawim.models.list.VirtualListItem;
-import ru.sawim.widget.MyListView;
+import ru.sawim.widget.recyclerview.decoration.RecyclerItemClickListener;
 
 /**
  * Created with IntelliJ IDEA.
@@ -28,7 +28,7 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
 
     public static final String TAG = VirtualListView.class.getSimpleName();
     private VirtualList list = VirtualList.getInstance();
-    private MyListView lv;
+    private RecyclerView lv;
     private AdapterView.AdapterContextMenuInfo contextMenuInfo;
 
     @Override
@@ -58,11 +58,11 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
         Activity currentActivity = getActivity();
         currentActivity.setTitle(list.getCaption());
         final VirtualListAdapter adapter = new VirtualListAdapter();
-        lv = (MyListView) currentActivity.findViewById(R.id.list_view);
+        lv = (RecyclerView) currentActivity.findViewById(R.id.list_view);
         lv.setAdapter(adapter);
-        lv.setOnItemClickListener(new ListView.OnItemClickListener() {
+        lv.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), new RecyclerItemClickListener.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+            public void onItemClick(View childView, int position) {
                 VirtualListItem item = adapter.getItem(position);
                 if (item.getGroupListListener() != null) {
                     item.getGroupListListener().select();
@@ -71,7 +71,12 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
                 if (list.getClickListListener() != null)
                     list.getClickListListener().itemSelected((BaseActivity) getActivity(), position);
             }
-        });
+
+            @Override
+            public void onItemLongPress(View childView, int position) {
+
+            }
+        }));
         currentActivity.registerForContextMenu(lv);
         lv.setOnCreateContextMenuListener(this);
         update();
@@ -130,7 +135,6 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
             @Override
             public void run() {
                 getVirtualListAdapter().refreshList(list.getModel().elements);
-                getVirtualListAdapter().notifyDataSetInvalidated();
             }
         });
     }
@@ -167,7 +171,7 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
 
     @Override
     public int getCurrItem() {
-        return lv.getFirstVisiblePosition();
+        return ((LinearLayoutManager) lv.getLayoutManager()).findFirstVisibleItemPosition();
     }
 
     @Override
@@ -177,7 +181,7 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
             public void run() {
                 if (isSelected)
                     getVirtualListAdapter().setSelectedItem(i);
-                lv.setSelection(i);
+                lv.getLayoutManager().scrollToPosition(i);
             }
         });
     }

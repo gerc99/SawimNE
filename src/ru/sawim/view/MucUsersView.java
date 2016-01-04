@@ -2,10 +2,9 @@ package ru.sawim.view;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.support.v7.widget.RecyclerView;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
 import protocol.ContactMenu;
 import protocol.Protocol;
 import protocol.xmpp.*;
@@ -13,6 +12,7 @@ import ru.sawim.R;
 import ru.sawim.activities.BaseActivity;
 import ru.sawim.models.MucUsersAdapter;
 import ru.sawim.view.menu.MyMenu;
+import ru.sawim.widget.recyclerview.decoration.RecyclerItemClickListener;
 
 /**
  * Created with IntelliJ IDEA.
@@ -28,12 +28,12 @@ public class MucUsersView {
     private boolean isLongClick = false;
 
     public void show(final Protocol protocol, final XmppServiceContact xmppServiceContact,
-                     final ChatView chatView, ListView nickList) {
+                     final ChatView chatView, RecyclerView nickList) {
         final BaseActivity activity = (BaseActivity) chatView.getActivity();
         final MucUsersAdapter usersAdapter = new MucUsersAdapter();
         usersAdapter.init((Xmpp) protocol, xmppServiceContact);
         nickList.setAdapter(usersAdapter);
-        nickList.setFastScrollEnabled(true);
+        //nickList.setFastScrollEnabled(true);
         nickList.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -44,9 +44,9 @@ public class MucUsersView {
                 return false;
             }
         });
-        nickList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        nickList.addOnItemTouchListener(new RecyclerItemClickListener(activity, new RecyclerItemClickListener.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+            public void onItemClick(View childView, int position) {
                 if (isLongClick) return;
                 final Object o = usersAdapter.getItem(position);
                 chatView.hasBack();
@@ -56,13 +56,12 @@ public class MucUsersView {
                     chatView.showKeyboard();
                 }
             }
-        });
-        nickList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+
             @Override
-            public boolean onItemLongClick(AdapterView<?> adapterView, View view, final int position, long l) {
+            public void onItemLongPress(View childView, int position) {
                 isLongClick = true;
                 final Object o = usersAdapter.getItem(position);
-                if (o instanceof String) return false;
+                if (o instanceof String) return;
                 final String nick = usersAdapter.getCurrentSubContact(o);
                 final MyMenu menu = new MyMenu();
                 final MyMenu roleConfigMenu = getRoleConfigMenu(usersAdapter, xmppServiceContact, nick);
@@ -115,9 +114,8 @@ public class MucUsersView {
                     }
                 });
                 builder.create().show();
-                return false;
             }
-        });
+        }));
     }
 
     private MyMenu getRoleConfigMenu(MucUsersAdapter usersAdapter, XmppServiceContact xmppServiceContact, final String nick) {

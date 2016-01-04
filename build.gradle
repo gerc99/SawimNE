@@ -24,6 +24,12 @@ dependencies {
     compile 'com.android.support:appcompat-v7:22.+'
     compile 'com.github.anrwatchdog:anrwatchdog:1.1.+'
     compile 'com.android.support:design:22.2.1'
+    compile 'com.android.support:recyclerview-v7:23.+'
+
+    compile 'com.android.support:design:22.2.1'
+
+    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.3.1'
+    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.3.1'
 }
 
 android {
@@ -83,7 +89,7 @@ android {
 
         buildTypes {
             release {
-                minifyEnabled true
+                minifyEnabled false
                 proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-android.txt'
                 signingConfig signingConfigs.sawim
             }

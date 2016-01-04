@@ -61,9 +61,8 @@ public class AccountsListView extends Fragment {
         menu.add(Menu.FIRST, R.id.put_down, 0, R.string.put_down);
         menu.add(Menu.FIRST, R.id.menu_delete, 0, R.string.delete);
         Profile account = accountsListAdapter.getItem(info.position);
-        if (account.protocolType == Profile.PROTOCOL_JABBER) {
-            menu.add(Menu.FIRST, R.id.change_password, 0, R.string.change_password);
-        }
+
+        menu.add(Menu.FIRST, R.id.change_password, 0, R.string.change_password);
     }
 
     @Override
@@ -72,23 +71,11 @@ public class AccountsListView extends Fragment {
         final int accountID = info.position;
         Profile account = accountsListAdapter.getItem(accountID);
         final String itemName = account.userId;
-        final int protocolType = account.protocolType;
         int num = info.position;
 
         switch (item.getItemId()) {
             case R.id.menu_edit:
-                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                LoginView loginView = new LoginView();
-                loginView.init(protocolType, accountID, true, new LoginView.OnAddListener() {
-                    @Override
-                    public void onAdd() {
-                        Util.hideKeyboard(getActivity());
-                        update();
-                    }
-                });
-                transaction.replace(R.id.fragment_container, loginView, loginView.TAG);
-                transaction.addToBackStack(null);
-                transaction.commitAllowingStateLoss();
+
                 return true;
 
             case R.id.lift_up:
@@ -232,27 +219,6 @@ public class AccountsListView extends Fragment {
     }
 
     public void addAccount() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setCancelable(true);
-        builder.setTitle(R.string.acc_sel_protocol);
-        builder.setItems(Profile.protocolNames, new DialogInterface.OnClickListener() {
 
-            @Override
-            public void onClick(DialogInterface dialog, int item) {
-                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                LoginView loginView = new LoginView();
-                loginView.init(Profile.protocolTypes[item], -1, false, new LoginView.OnAddListener() {
-                    @Override
-                    public void onAdd() {
-                        Util.hideKeyboard(getActivity());
-                        getActivity().finish();
-                    }
-                });
-                transaction.replace(R.id.fragment_container, loginView, loginView.TAG);
-                transaction.addToBackStack(null);
-                transaction.commitAllowingStateLoss();
-            }
-        });
-        builder.create().show();
     }
 }

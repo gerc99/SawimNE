@@ -23,4 +23,7 @@
 
     <integer name="preference_fragment_scrollbarStyle">0x02000000</integer>
     <!-- outsideOverlay -->
+
+    <dimen name="default_divider_height">1dp</dimen>
+    <dimen name="default_divider_padding">4dp</dimen>
 </resources>

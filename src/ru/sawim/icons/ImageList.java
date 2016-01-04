@@ -54,12 +54,6 @@ public class ImageList {
             tmpIcons.addElement(new Icon((BitmapDrawable) SawimApplication.getInstance().getResources().
                     getDrawable(R.drawable.dnd)));
             icons.add(tmpIcons);
-        } else if (resName.equals("/vk-status.png")) {
-            tmpIcons.addElement(new Icon((BitmapDrawable) SawimApplication.getInstance().getResources().
-                    getDrawable(R.drawable.vk_online)));
-            tmpIcons.addElement(new Icon((BitmapDrawable) SawimApplication.getInstance().getResources().
-                    getDrawable(R.drawable.vk_offline)));
-            icons.add(tmpIcons);
         } else {
             try {
                 icons.load(resName, -1, -1);

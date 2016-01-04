@@ -1,5 +1,6 @@
 package protocol.xmpp;
 
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import protocol.*;
@@ -136,7 +137,7 @@ public class XmppContact extends Contact {
             fullJid = Jid.SawimJidToRealJid(getUserId() + '/' + getMyName());
         }
 
-        xml = xml.replace("${sawim.caps}", xmppConnection.getCaps());
+        xml = xml.replace("${sawim.caps}", ServerFeatures.getCaps());
         xml = xml.replace("${c.jid}", Util.xmlEscape(jid));
         xml = xml.replace("${c.fulljid}", Util.xmlEscape(fullJid));
         xml = xml.replace("${param.full}", Util.xmlEscape(param));
@@ -209,7 +210,7 @@ public class XmppContact extends Contact {
         c = new SubContact();
         c.resource = resource;
         c.status = StatusInfo.STATUS_OFFLINE;
-        c.avatarHash = xmpp.getStorage().getAvatarHash(getUserId() + "/" + resource);
+        c.avatarHash = xmpp.getStorage().getSubContactAvatarHash(getUserId(), resource);
         subcontacts.put(resource, c);
         return c;
     }

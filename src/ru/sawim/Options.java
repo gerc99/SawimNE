@@ -225,7 +225,7 @@ public class Options {
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             DataOutputStream dos = new DataOutputStream(baos);
-            dos.writeByte(account.protocolType);
+            dos.writeByte(0);
             dos.writeUTF(StringConvertor.notNull(account.userId));
             dos.writeUTF(StringConvertor.notNull(account.password));
             dos.writeUTF(StringConvertor.notNull(account.nick));
@@ -251,7 +251,7 @@ public class Options {
             ByteArrayInputStream bais = new ByteArrayInputStream(buf);
             DataInputStream dis = new DataInputStream(bais);
 
-            p.protocolType = dis.readByte();
+            dis.readByte();
             p.userId = dis.readUTF();
             p.password = dis.readUTF();
             p.nick = dis.readUTF();

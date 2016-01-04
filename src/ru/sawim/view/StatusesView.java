@@ -18,7 +18,6 @@ import ru.sawim.widget.Util;
 
 public class StatusesView extends DialogFragment {
     public static final int ADAPTER_STATUS = 0;
-    public static final int ADAPTER_PRIVATESTATUS = 1;
     private int type;
     private Protocol protocol;
 

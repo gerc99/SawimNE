@@ -1,9 +1,11 @@
 package ru.sawim.models;
 
 import android.graphics.Typeface;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
+import android.widget.TextView;
+
 import protocol.Contact;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
@@ -12,11 +14,13 @@ import ru.sawim.Scheme;
 import ru.sawim.chat.MessData;
 import ru.sawim.chat.message.Message;
 import ru.sawim.roster.RosterHelper;
-import ru.sawim.text.TextLinkClick;
+import ru.sawim.text.OnTextLinkClick;
 import ru.sawim.widget.Util;
 import ru.sawim.widget.chat.MessageItemView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -26,16 +30,22 @@ import java.util.List;
  * Time: 21:33
  * To change this template use File | Settings | File Templates.
  */
-public class MessagesAdapter extends BaseAdapter {
+public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHolder>
+        implements View.OnLongClickListener, View.OnClickListener {
 
     private List<MessData> items;
 
     private String query;
     private boolean isMultiQuoteMode;
     private int position;
+    private OnLoadItemsListener loadItemsListener;
+    private OnItemClickListener itemClickListener;
+    private OnTextLinkClick textLinkClick;
 
     public MessagesAdapter() {
         items = new ArrayList<>();
+        textLinkClick = new OnTextLinkClick();
+        //setHasStableIds(true);
     }
 
     public List<MessData> getItems() {
@@ -59,30 +69,25 @@ public class MessagesAdapter extends BaseAdapter {
     }
 
     @Override
-    public int getCount() {
-        return items.size();
+    public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+        MessageItemView item = new MessageItemView(viewGroup.getContext());
+        return new ViewHolder(item);
     }
 
     @Override
-    public MessData getItem(int i) {
-        if (items.size() == 0 || (items.size() <= i)) return null;
-        return items.get(i);
-    }
-
-    @Override
-    public long getItemId(int i) {
-        return i;
-    }
-
-    @Override
-    public View getView(int index, View convView, ViewGroup viewGroup) {
-        MessData mData = getItem(index);
-        MessageItemView item = (MessageItemView) convView;
-        if (item == null) {
-            item = new MessageItemView(viewGroup.getContext());
-            Contact contact = RosterHelper.getInstance().getCurrentContact();
-            item.setOnTextLinkClickListener(new TextLinkClick(contact.getProtocol().getUserId(), contact.getUserId()));
+    public void onBindViewHolder(ViewHolder viewHolder, int index) {
+        if (loadItemsListener != null) {
+            loadItemsListener.onLoadItems(index);
         }
+        MessageItemView item = (MessageItemView) viewHolder.itemView;
+        item.setTag(index);
+        Contact contact = RosterHelper.getInstance().getCurrentContact();
+        textLinkClick.setContact(contact.getProtocol().getUserId(), contact.getUserId());
+        item.setOnTextLinkClickListener(textLinkClick);
+        item.setOnClickListener(this);
+        item.setOnLongClickListener(this);
+
+        MessData mData = getItem(index);
         String nick = mData.getNick();
         boolean incoming = mData.isIncoming();
 
@@ -130,6 +135,110 @@ public class MessagesAdapter extends BaseAdapter {
         }
         item.setShowDivider(position == index);
         item.repaint();
-        return item;
+    }
+
+    @Override
+    public void onViewRecycled(ViewHolder holder) {
+        MessageItemView item = (MessageItemView) holder.itemView;
+        item.setOnTextLinkClickListener(null);
+        item.setOnClickListener(null);
+        item.setOnLongClickListener(null);
+        super.onViewRecycled(holder);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return super.getItemId(position);
+    }
+
+    @Override
+    public int getItemCount() {
+        return items.size();
+    }
+
+    public MessData getItem(int i) {
+        if (items.size() == 0 || (items.size() <= i)) return null;
+        return items.get(i);
+    }
+
+    /*@Override
+    public long getHeaderId(int position) {
+        MessData next;
+        if (position > 1) {
+            next = getItem(position - 1);
+            if (next != null) {
+                MessData current = getItem(position);
+                if (current != null) {
+                    if (!ru.sawim.comm.Util.compareDate(next.getTime(), current.getTime())) {
+                        return current.getTime() / 1000 - 24 * 60 * 60;
+                    }
+                }
+            }
+        } else {
+            return getItem(0).getTime() / 1000 - 24 * 60 * 60;
+        }
+        return -1;
+    }*/
+
+    private static final SimpleDateFormat chatDate = new SimpleDateFormat("d MMMM");
+    private static final SimpleDateFormat chatFullDate = new SimpleDateFormat("d, MMMM yyyy");
+    public String formatDate(long date) {
+        Calendar rightNow = Calendar.getInstance();
+        int year = rightNow.get(Calendar.YEAR);
+
+        rightNow.setTimeInMillis(date);
+        int dateYear = rightNow.get(Calendar.YEAR);
+
+        if (year == dateYear) {
+            return chatDate.format(date);
+        }
+        return chatFullDate.format(date);
+    }
+
+    public void setOnLoadItemsListener(OnLoadItemsListener loadItemsListener) {
+        this.loadItemsListener = loadItemsListener;
+    }
+
+    public void setOnItemClickListener(OnItemClickListener itemClickListener) {
+        this.itemClickListener = itemClickListener;
+    }
+
+    @Override
+    public boolean onLongClick(View v) {
+        if (itemClickListener != null)
+            itemClickListener.onItemLongClick(v, (Integer) v.getTag());
+        return false;
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (itemClickListener != null)
+            itemClickListener.onItemClick(v, (Integer) v.getTag());
+    }
+
+    public interface OnLoadItemsListener {
+        void onLoadItems(int i);
+    }
+
+    static class ViewHolder extends RecyclerView.ViewHolder {
+
+        public ViewHolder(View itemView) {
+            super(itemView);
+        }
+    }
+
+    static class HeaderHolder extends RecyclerView.ViewHolder {
+        public TextView header;
+
+        public HeaderHolder(View itemView) {
+            super(itemView);
+
+            header = (TextView) itemView;
+        }
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(View v, int position);
+        void onItemLongClick(View v, int position);
     }
 }

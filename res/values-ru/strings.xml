@@ -104,8 +104,8 @@
 
     <string name="acc_add">Добавить</string>
     <string name="acc_edit">Редактировать</string>
-    <string name="acc_login">Логин:</string>
-    <string name="acc_pass">Пароль:</string>
+    <string name="acc_login">Логин</string>
+    <string name="acc_pass">Пароль</string>
     <string name="acc_nick">Ник:</string>
     <string name="acc_sel_protocol">Выберите протокол:</string>
     <string name="acc_delete_confirm">Вы действительно хотите удалить аккаунт %s?</string>

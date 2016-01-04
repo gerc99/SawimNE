@@ -2,7 +2,10 @@ package ru.sawim.modules.history;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.util.Log;
+
 import protocol.Contact;
+import protocol.Protocol;
 import ru.sawim.Options;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
@@ -204,6 +207,33 @@ public class HistoryStorage {
     private static boolean hasMessage(MessData mess, MessData messFromDataBase) {
         return mess.getNick().equals(messFromDataBase.getNick())
                 && mess.getText().toString().equals(messFromDataBase.getText().toString());
+    }
+
+    public static List<Contact> getActiveContacts() {
+        List<Contact> list = new ArrayList<>();
+        Cursor cursor = null;
+        try {
+            cursor = SawimApplication.getDatabaseHelper().getReadableDatabase().query(DatabaseHelper.TABLE_CHAT_HISTORY, null,
+                        null,
+                        null, DatabaseHelper.CONTACT_ID, null, null, null);
+            if (cursor.moveToLast()) {
+                do {
+                    String protocolId = cursor.getString(cursor.getColumnIndex(DatabaseHelper.ACCOUNT_ID));
+                    String uniqueUserId = cursor.getString(cursor.getColumnIndex(DatabaseHelper.CONTACT_ID));
+
+                    Cursor cursor2 = SawimApplication.getDatabaseHelper().getReadableDatabase().query(RosterStorage.storeName, null, WHERE_ACC_CONTACT_ID,
+                            new String[]{protocolId, uniqueUserId}, null, null, null);
+                    if (cursor2.moveToFirst()) {
+                        list.add(new RosterStorage().getContact(RosterHelper.getInstance().getProtocol(protocolId), cursor2));
+                    }
+                } while (cursor.moveToPrevious());
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return list;
     }
 
     public List<MessData> addNextListMessages(final Chat chat, int limit, long timestamp) {

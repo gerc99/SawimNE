@@ -8,8 +8,6 @@ import android.widget.Toast;
 import protocol.Contact;
 import protocol.Protocol;
 import protocol.StatusInfo;
-import protocol.icq.Icq;
-import protocol.mrim.Mrim;
 import protocol.net.TcpSocket;
 import protocol.xmpp.Xmpp;
 import ru.sawim.Clipboard;
@@ -129,8 +127,6 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
         if ((null != uin) && !avatarIsLoaded) {
             avatarIsLoaded = true;
             boolean hasAvatarItem = false;
-            hasAvatarItem |= (protocol instanceof Mrim);
-            hasAvatarItem |= (protocol instanceof Icq);
             if (hasAvatarItem) {
                 protocol.getAvatar(this);
             }
@@ -309,7 +305,6 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
 
     public boolean isEditable() {
         if (!isEditable) {
-            isEditable |= (protocol instanceof Icq);
             isEditable |= (protocol instanceof Xmpp);
             isEditable = isEditable && protocol.getUserId().equals(uin)
                     && protocol.isConnected();
@@ -318,23 +313,6 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
     }
 
     private Icon getStatusAsIcon() {
-        if (protocol instanceof Icq) {
-            byte statusIndex = StatusInfo.STATUS_NA;
-            switch (Util.strToIntDef(status, -1)) {
-                case 0:
-                    statusIndex = StatusInfo.STATUS_OFFLINE;
-                    break;
-                case 1:
-                    statusIndex = StatusInfo.STATUS_ONLINE;
-                    break;
-                case 2:
-                    statusIndex = StatusInfo.STATUS_INVISIBLE;
-                    break;
-                default:
-                    return null;
-            }
-            return protocol.getStatusInfo().getIcon(statusIndex);
-        }
         return null;
     }
 

@@ -122,130 +122,21 @@ public class Util {
         }
     }
 
-    public void writeProfileAsciizTLV(int type, String value) {
-        value = StringConvertor.notNull(value);
-
-        byte[] raw = StringConvertor.stringToByteArray1251(value);
-        writeWordLE(type);
-        writeWordLE(raw.length + 3);
-        writeWordLE(raw.length + 1);
-        writeByteArray(raw);
-        writeByte(0);
-    }
-
-    public void writeTlvECombo(int type, String value, int code) {
-        value = StringConvertor.notNull(value);
-        writeWordLE(type);
-        byte[] raw = StringConvertor.stringToByteArray(value);
-        writeWordLE(raw.length + 4);
-        writeWordLE(raw.length + 1);
-        try {
-            stream.write(raw, 0, raw.length);
-            stream.write(0);
-            stream.write(code);
-        } catch (Exception ignored) {
-        }
-    }
-
-    public void writeTLV(int type, byte[] data) {
-        writeWordBE(type);
-        int length = (null == data) ? 0 : data.length;
-        writeWordBE(length);
-        if (length > 0) {
-            try {
-                stream.write(data, 0, data.length);
-            } catch (Exception ignored) {
-            }
-        }
-    }
-
-    public void writeTLVWord(int type, int wordValue) {
-        writeWordBE(type);
-        writeWordBE(2);
-        writeWordBE(wordValue);
-    }
-
-    public void writeTLVDWord(int type, long wordValue) {
-        writeWordBE(type);
-        writeWordBE(4);
-        writeDWordBE(wordValue);
-    }
-
-    public void writeTLVByte(int type, int wordValue) {
-        writeWordBE(type);
-        writeWordBE(1);
-        writeByte(wordValue);
-    }
-
-
     private static final byte[] PASSENC_KEY = {(byte) 0xF3, (byte) 0x26, (byte) 0x81, (byte) 0xC4,
             (byte) 0x39, (byte) 0x86, (byte) 0xDB, (byte) 0x92,
             (byte) 0x71, (byte) 0xA3, (byte) 0xB9, (byte) 0xE6,
             (byte) 0x53, (byte) 0x7A, (byte) 0x95, (byte) 0x7C};
 
 
-    public static int getByte(byte[] buf, int off) {
-        return ((int) buf[off]) & 0x000000FF;
-    }
-
-    public static void putByte(byte[] buf, int off, int val) {
-        buf[off] = (byte) (val & 0x000000FF);
-    }
-
-    public static int getWordLE(byte[] buf, int off) {
-        int val = (((int) buf[off])) & 0x000000FF;
-        return val | (((int) buf[++off]) << 8) & 0x0000FF00;
-    }
-
     public static int getWordBE(byte[] buf, int off) {
         int val = (((int) buf[off]) << 8) & 0x0000FF00;
         return val | (((int) buf[++off])) & 0x000000FF;
-    }
-
-    public static void putWordLE(byte[] buf, int off, int val) {
-        buf[off] = (byte) ((val) & 0x000000FF);
-        buf[++off] = (byte) ((val >> 8) & 0x000000FF);
     }
 
     public static void putWordBE(byte[] buf, int off, int val) {
         buf[off] = (byte) ((val >> 8) & 0x000000FF);
         buf[++off] = (byte) ((val) & 0x000000FF);
     }
-
-    public static long getDWordLE(byte[] buf, int off) {
-        long val;
-
-        val = (((long) buf[off])) & 0x000000FF;
-        val |= (((long) buf[++off]) << 8) & 0x0000FF00;
-        val |= (((long) buf[++off]) << 16) & 0x00FF0000;
-        val |= (((long) buf[++off]) << 24) & 0xFF000000;
-        return val;
-    }
-
-    public static long getDWordBE(byte[] buf, int off) {
-        long val;
-        val = (((long) buf[off]) << 24) & 0xFF000000;
-        val |= (((long) buf[++off]) << 16) & 0x00FF0000;
-        val |= (((long) buf[++off]) << 8) & 0x0000FF00;
-        val |= (((long) buf[++off])) & 0x000000FF;
-        return val;
-    }
-
-    public static void putDWordLE(byte[] buf, int off, long val) {
-
-        buf[off] = (byte) ((val) & 0x00000000000000FF);
-        buf[++off] = (byte) ((val >> 8) & 0x00000000000000FF);
-        buf[++off] = (byte) ((val >> 16) & 0x00000000000000FF);
-        buf[++off] = (byte) ((val >> 24) & 0x00000000000000FF);
-    }
-
-    public static void putDWordBE(byte[] buf, int off, long val) {
-        buf[off] = (byte) ((val >> 24) & 0x00000000000000FF);
-        buf[++off] = (byte) ((val >> 16) & 0x00000000000000FF);
-        buf[++off] = (byte) ((val >> 8) & 0x00000000000000FF);
-        buf[++off] = (byte) ((val) & 0x00000000000000FF);
-    }
-
 
     public static byte[] decipherPassword(byte[] buf) {
         byte[] ret = new byte[buf.length];
@@ -285,8 +176,7 @@ public class Util {
         }
     }
 
-    private static final int SHORT_DATE_FLAGS = DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE
-            | DateUtils.FORMAT_NO_YEAR | DateUtils.FORMAT_ABBREV_ALL;
+    private static final int SHORT_DATE_FLAGS = DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_ABBREV_ALL;
     private static final int FULL_DATE_FLAGS = DateUtils.FORMAT_SHOW_TIME
             | DateUtils.FORMAT_ABBREV_ALL | DateUtils.FORMAT_SHOW_DATE;
     public static String getLocalDateString(long gmtDate, boolean onlyTime) {
@@ -314,6 +204,27 @@ public class Util {
         } catch (Exception ignored) {
             return 0;
         }
+    }
+
+    private static ThreadLocal<Calendar> CALENDAR = new ThreadLocal<Calendar>() {
+        @Override
+        protected Calendar initialValue() {
+            return Calendar.getInstance();
+        }
+    };
+
+    public static boolean compareDate(long oneDate, long twoDate) {
+        Calendar calendar = CALENDAR.get();
+        calendar.setTimeInMillis(oneDate);
+        int y1 = calendar.get(Calendar.YEAR);
+        int m1 = calendar.get(Calendar.MONTH);
+        int d1 = calendar.get(Calendar.DATE);
+        calendar.setTimeInMillis(twoDate);
+        int y2 = calendar.get(Calendar.YEAR);
+        int m2 = calendar.get(Calendar.MONTH);
+        int d2 = calendar.get(Calendar.DATE);
+
+        return y1 == y2 && m1 == m2 && d1 == d2;
     }
 
     public static String longitudeToString(long seconds) {

@@ -5,9 +5,9 @@ import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.AdapterView;
 import protocol.Contact;
 import ru.sawim.R;
 import ru.sawim.chat.Chat;
@@ -15,8 +15,8 @@ import ru.sawim.chat.ChatHistory;
 import ru.sawim.models.RosterAdapter;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.roster.TreeNode;
-import ru.sawim.widget.MyListView;
 import ru.sawim.widget.Util;
+import ru.sawim.widget.recyclerview.decoration.RecyclerItemClickListener;
 
 /**
  * Created by gerc on 04.03.2015.
@@ -33,15 +33,15 @@ public class ChatsDialogFragment extends DialogFragment {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
         dialogBuilder.setView(dialogView);
         dialogBuilder.setInverseBackgroundForced(Util.isNeedToInverseDialogBackground());
-        MyListView lv = (MyListView) dialogView.findViewById(R.id.listView);
+        RecyclerView lv = (RecyclerView) dialogView.findViewById(R.id.listView);
         chatsSpinnerAdapter = new RosterAdapter();
         chatsSpinnerAdapter.setType(RosterHelper.ACTIVE_CONTACTS);
         lv.setAdapter(chatsSpinnerAdapter);
-        lv.setFastScrollEnabled(true);
-        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        //lv.setFastScrollEnabled(true);
+        lv.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), new RecyclerItemClickListener.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                TreeNode treeNode = ((RosterAdapter) parent.getAdapter()).getItem(position);
+            public void onItemClick(View childView, int position) {
+                TreeNode treeNode = chatsSpinnerAdapter.getItem(position);
                 if (treeNode.getType() == TreeNode.CONTACT) {
                     if (forceGoToChatListener != null) {
                         forceGoToChatListener.onForceGoToChat(ChatHistory.instance.getChat((Contact) treeNode));
@@ -49,7 +49,12 @@ public class ChatsDialogFragment extends DialogFragment {
                     dismiss();
                 }
             }
-        });
+
+            @Override
+            public void onItemLongPress(View childView, int position) {
+
+            }
+        }));
         chatsSpinnerAdapter.refreshList();
         Dialog dialog = dialogBuilder.create();
         dialog.setCanceledOnTouchOutside(true);

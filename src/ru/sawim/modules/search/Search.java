@@ -6,8 +6,6 @@ import android.view.MenuItem;
 import protocol.Contact;
 import protocol.Group;
 import protocol.Protocol;
-import protocol.icq.Icq;
-import protocol.mrim.Mrim;
 import protocol.xmpp.Xmpp;
 import ru.sawim.R;
 import ru.sawim.activities.BaseActivity;
@@ -57,7 +55,6 @@ public final class Search implements FormListener, ControlStateListener {
 
     private ArrayList<UserInfo> results = new ArrayList<>();
     private Protocol protocol;
-    private boolean icqFields;
     private byte type;
     private String[] searchParams = new String[Search.LAST_INDEX];
     private String xmppGate = null;
@@ -77,7 +74,6 @@ public final class Search implements FormListener, ControlStateListener {
 
     public Search(Protocol protocol) {
         this.protocol = protocol;
-        icqFields = (protocol instanceof Icq);
         preferredNick = null;
     }
 
@@ -209,10 +205,6 @@ public final class Search implements FormListener, ControlStateListener {
             }
             boolean requestAuth = !isConference;
 
-            if (protocol instanceof Mrim) {
-                requestAuth = false;
-            }
-
             if (requestAuth) {
                 searchForm.addCheckBox(REQ_AUTH, R.string.requauth, true);
             }
@@ -229,9 +221,6 @@ public final class Search implements FormListener, ControlStateListener {
         int[] genderItems = {R.string.female_male, R.string.female, R.string.male};
         searchForm.addSelector(Search.GENDER, R.string.gender, genderItems, 0);
 
-        if (icqFields) {
-            searchForm.addTextField(Search.EMAIL, R.string.email, "");
-        }
         searchForm.addSelector(Search.AGE, R.string.age, ageList, 0);
         searchForm.invalidate(true);
     }
@@ -342,10 +331,6 @@ public final class Search implements FormListener, ControlStateListener {
                 setSearchParam(Search.GENDER, Integer.toString(searchForm.getSelectorValue(Search.GENDER)));
                 setSearchParam(Search.ONLY_ONLINE, searchForm.getCheckBoxValue(Search.ONLY_ONLINE) ? "1" : "0");
                 setSearchParam(Search.AGE, ages[searchForm.getSelectorValue(Search.AGE)]);
-
-                if (icqFields) {
-                    setSearchParam(Search.EMAIL, searchForm.getTextFieldValue(Search.EMAIL));
-                }
 
                 showResults(activity);
 

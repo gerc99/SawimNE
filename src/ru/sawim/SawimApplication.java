@@ -14,9 +14,14 @@ import android.os.Looper;
 import android.os.Message;
 
 import com.github.anrwatchdog.ANRWatchDog;
+import com.squareup.leakcanary.LeakCanary;
+import com.squareup.leakcanary.RefWatcher;
+
 import de.duenndns.ssl.MemorizingTrustManager;
+import protocol.Contact;
 import protocol.Protocol;
 import protocol.xmpp.Xmpp;
+import ru.sawim.chat.ChatHistory;
 import ru.sawim.comm.JLocale;
 import ru.sawim.io.*;
 import ru.sawim.modules.Answerer;
@@ -53,7 +58,7 @@ public class SawimApplication extends Application {
     public static final String LOG_TAG = SawimApplication.class.getSimpleName();
 
     public static final String DATABASE_NAME = "sawim.db";
-    public static final int DATABASE_VERSION = 9;
+    public static final int DATABASE_VERSION = 10;
 
     public static String NAME;
     public static String VERSION;
@@ -84,6 +89,8 @@ public class SawimApplication extends Application {
 
     public static SSLContext sc;
 
+    public RefWatcher refWatcher;
+
     public static SawimApplication getInstance() {
         return instance;
     }
@@ -100,6 +107,7 @@ public class SawimApplication extends Application {
         Thread.setDefaultUncaughtExceptionHandler(ExceptionHandler.inContext(getContext()));
         super.onCreate();
         //new ANRWatchDog().start();
+        refWatcher = LeakCanary.install(this);
         databaseHelper = new DatabaseHelper(getApplicationContext());
         uiHandler = new Handler(Looper.getMainLooper());
         backgroundExecutor = Executors
@@ -124,35 +132,42 @@ public class SawimApplication extends Application {
         updateOptions();
         Updater.startUIUpdater();
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    gc();
-                    Emotions.instance.load();
-                    Answerer.getInstance().load();
-                    gc();
-                    sc = SSLContext.getInstance("TLS");
-                    MemorizingTrustManager mtm = new MemorizingTrustManager(SawimApplication.this);
-                    sc.init(null, new X509TrustManager[] {mtm}, new SecureRandom());
-                    Options.loadAccounts();
-                    RosterHelper.getInstance().initAccounts();
-                    RosterHelper.getInstance().loadAccounts();
-                } catch (Exception e) {
-                    DebugLog.panic("init", e);
-                }
-                DebugLog.startTests();
-                TextFormatter.init();
+        try {
+            gc();
+            Emotions.instance.load();
+            Answerer.getInstance().load();
+            gc();
+            sc = SSLContext.getInstance("TLS");
+            MemorizingTrustManager mtm = new MemorizingTrustManager(SawimApplication.this);
+            sc.init(null, new X509TrustManager[] {mtm}, new SecureRandom());
+            Options.loadAccounts();
+            RosterHelper.getInstance().initAccounts();
+            RosterHelper.getInstance().loadAccounts();
+            loadChats();
+        } catch (Exception e) {
+            DebugLog.panic("init", e);
+        }
+        DebugLog.startTests();
+        TextFormatter.init();
 
-                StorageConvertor.historyConvert();
-                int count = RosterHelper.getInstance().getProtocolCount();
-                for (int i = 0; i < count; ++i) {
-                    Protocol p = RosterHelper.getInstance().getProtocol(i);
-                    p.getStorage().loadUnreadMessages();
-                }
+        StorageConvertor.historyConvert();
+        int count = RosterHelper.getInstance().getProtocolCount();
+        for (int i = 0; i < count; ++i) {
+            Protocol p = RosterHelper.getInstance().getProtocol(i);
+            p.getStorage().loadUnreadMessages();
+        }
 
+    }
+
+    private void loadChats() {
+        int count = RosterHelper.getInstance().getProtocolCount();
+        for (int i = 0; i < count; ++i) {
+            Protocol p = RosterHelper.getInstance().getProtocol(i);
+            List<Contact> contacts = HistoryStorage.getActiveContacts();
+            for (Contact contact : contacts) {
+                ChatHistory.instance.registerChat(p.getChat(contact));
             }
-        },"load").start();
+        }
     }
 
     public Handler getUiHandler() {
@@ -233,7 +248,9 @@ public class SawimApplication extends Application {
                 && enableHistory != Options.getBoolean(JLocale.getString(R.string.pref_history))) {
             for (Protocol p : RosterHelper.getInstance().getProtocols()) {
                 if (p instanceof Xmpp) {
-                    ((Xmpp) p).getConnection().enableMessageArchiveManager();
+                    if (((Xmpp) p).getConnection() != null) {
+                        ((Xmpp) p).getConnection().enableMessageArchiveManager();
+                    }
                 }
             }
         }

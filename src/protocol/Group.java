@@ -12,7 +12,7 @@ public class Group extends TreeBranch {
     private final List<Contact> contacts = new CopyOnWriteArrayList<>();
     private byte mode;
     private String caption = null;
-    private int groupId;
+    private int groupId = NOT_IN_GROUP;
 
     public static final int NOT_IN_GROUP = -1;
 
@@ -99,5 +99,10 @@ public class Group extends TreeBranch {
     @Override
     public byte getType() {
         return GROUP;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + " " + name + " groupId:" + groupId;
     }
 }

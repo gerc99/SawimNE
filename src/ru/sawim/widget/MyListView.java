@@ -2,10 +2,17 @@ package ru.sawim.widget;
 
 import android.content.Context;
 import android.os.SystemClock;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.view.ContextMenu;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ListView;
+
+import ru.sawim.R;
 
 /**
  * Created with IntelliJ IDEA.
@@ -14,9 +21,10 @@ import android.widget.ListView;
  * Time: 14:54
  * To change this template use File | Settings | File Templates.
  */
-public class MyListView extends ListView {
+public class MyListView extends RecyclerView {
 
-    private int height = -1;
+    private RecyclerContextMenuInfo mContextMenuInfo;
+    private int height;
 
     public MyListView(Context context) {
         super(context);
@@ -34,15 +42,59 @@ public class MyListView extends ListView {
     }
 
     private void init() {
-        setCacheColorHint(0x00000000);
-        setFastScrollEnabled(true);
-        setScrollingCacheEnabled(false);
-        setAnimationCacheEnabled(false);
-        setDivider(null);
-        setDividerHeight(0);
+        setScrollbarFadingEnabled(true);
+        setVerticalScrollBarEnabled(true);
+        setHasFixedSize(true);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+        linearLayoutManager.setSmoothScrollbarEnabled(true);
+        linearLayoutManager.setStackFromEnd(false);
+        setLayoutManager(linearLayoutManager);
+        DefaultItemAnimator itemAnimator = new DefaultItemAnimator();
+        itemAnimator.setSupportsChangeAnimations(false);
+        itemAnimator.setMoveDuration(200);
+        itemAnimator.setAddDuration(250);
+        itemAnimator.setRemoveDuration(200);
+        setItemAnimator(itemAnimator);
     }
 
     @Override
+    protected ContextMenu.ContextMenuInfo getContextMenuInfo() {
+        return mContextMenuInfo;
+    }
+
+    @Override
+    public boolean showContextMenuForChild(View originalView) {
+        final int longPressPosition = getChildAdapterPosition(originalView);
+        if (longPressPosition >= 0) {
+            final long longPressId = getAdapter().getItemId(longPressPosition);
+            mContextMenuInfo = new RecyclerContextMenuInfo(longPressPosition, longPressId);
+            return super.showContextMenuForChild(originalView);
+        }
+        return false;
+    }
+
+    public static class RecyclerContextMenuInfo implements ContextMenu.ContextMenuInfo {
+
+        public RecyclerContextMenuInfo(int position, long id) {
+            this.position = position;
+            this.id = id;
+        }
+
+        final public int position;
+        final public long id;
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int l, int t, int r, int b) {
+        super.onLayout(changed, l, t, r, b);
+        int delta = (b - t) - height;
+        height = b - t;
+        if (delta < 0) {
+            scrollBy(0, -delta);
+        }
+    }
+
+    /*@Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         View v = getChildAt(getChildCount() - 1);
         if (v != null && height > 0 && changed && ((bottom - top) < height)) {
@@ -68,7 +120,7 @@ public class MyListView extends ListView {
             }
         }
         height = (bottom - top);
-    }
+    }*/
 
     /**
      * Check if this view can be scrolled vertically in a certain direction.
@@ -76,6 +128,7 @@ public class MyListView extends ListView {
      * @param direction Negative to check scrolling up, positive to check scrolling down.
      * @return true if this view can be scrolled in the specified direction, false otherwise.
      */
+    @Override
     public boolean canScrollVertically(int direction) {
         final int offset = computeVerticalScrollOffset();
         final int range = computeVerticalScrollRange() - computeVerticalScrollExtent();
@@ -87,10 +140,16 @@ public class MyListView extends ListView {
         }
     }
 
+    @Override
     public void stopScroll() {
-        onTouchEvent(
-                MotionEvent.obtain(SystemClock.uptimeMillis(),
-                        SystemClock.uptimeMillis(), MotionEvent.ACTION_CANCEL,
-                        0, 0, 0));
+        try {
+            super.stopScroll();
+        } catch (NullPointerException exception) {
+            /**
+             *  The mLayout has been disposed of before the
+             *  RecyclerView and this stops the application
+             *  from crashing.
+             */
+        }
     }
 }

@@ -90,8 +90,8 @@
     <string name="contact_has_been_removed">El contacto se ha eliminado</string>
     <string name="acc_add">Añadir cuenta</string>
     <string name="acc_edit">Editar cuenta</string>
-    <string name="acc_login">Usuario:</string>
-    <string name="acc_pass">Contraseña:</string>
+    <string name="acc_login">Usuario</string>
+    <string name="acc_pass">Contraseña</string>
     <string name="acc_nick">Apodo:</string>
     <string name="acc_sel_protocol">Seleccionar protocolo:</string>
     <string name="acc_delete_confirm">Estás seguro que deseas eliminar a %s?</string>

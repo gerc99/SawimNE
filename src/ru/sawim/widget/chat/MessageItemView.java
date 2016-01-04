@@ -3,7 +3,9 @@ package ru.sawim.widget.chat;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.text.*;
@@ -33,16 +35,16 @@ public class MessageItemView extends View {
     private static final TextPaint textPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
     static Paint highlightPaint;
 
-    public static final int PADDING_LEFT = Util.dipToPixels(SawimApplication.getContext(), 18);
-    public static final int PADDING_TOP = Util.dipToPixels(SawimApplication.getContext(), 7);
+    public static final int PADDING_LEFT = Util.dipToPixels(SawimApplication.getContext(), 9);
+    public static final int PADDING_TOP = Util.dipToPixels(SawimApplication.getContext(), 10);
     public static final int PADDING_RIGHT = Util.dipToPixels(SawimApplication.getContext(), 20);
-    public static final int PADDING_BOTTOM = Util.dipToPixels(SawimApplication.getContext(), 9);
+    public static final int PADDING_BOTTOM = Util.dipToPixels(SawimApplication.getContext(), 10);
 
     public static final int BACKGROUND_NONE = 0;
     public static final int BACKGROUND_INCOMING = 1;
     public static final int BACKGROUND_OUTCOMING = 2;
 
-    //private int backgroundIndex = BACKGROUND_NONE;
+    private int backgroundIndex = BACKGROUND_NONE;
     private String msgTimeText;
     private String nickText;
     private int nickColor;
@@ -72,9 +74,9 @@ public class MessageItemView extends View {
         if (highlightPaint == null) {
             highlightPaint = new Paint();
             highlightPaint.setStyle(Paint.Style.FILL);
-            highlightPaint.setColor(0xff79919d);
             highlightPaint.setAntiAlias(true);
         }
+        highlightPaint.setColor(Scheme.isBlack() ? 0xFF4C4C4C : Color.WHITE);
     }
 
     public void setTextSize(int size) {
@@ -150,7 +152,7 @@ public class MessageItemView extends View {
     }
 
     public void setBackgroundIndex(int index) {
-        //this.backgroundIndex = index;
+        this.backgroundIndex = index;
     }
 
     public void setNick(int nickColor, int nickSize, Typeface nickTypeface, String nickText) {
@@ -204,22 +206,22 @@ public class MessageItemView extends View {
             textPaint.setColor(Scheme.getColor(R.attr.text));
             canvas.drawLine(getPaddingLeft(), getScrollY() - 2, stopX, getScrollY() - 2, textPaint);
         }
-        /*if (backgroundIndex == BACKGROUND_INCOMING) {
+        if (backgroundIndex == BACKGROUND_INCOMING) {
             //setDrawableBounds(SawimResources.backgroundDrawableIn, 0, getPaddingTop() / 2, width - getPaddingRight() / 2, getHeight() - getPaddingBottom() / 2);
             //SawimResources.backgroundDrawableIn.draw(canvas);
-            canvas.drawRoundRect(new RectF(0, titleHeight, width - getPaddingRight() / 2, getHeight() - getPaddingBottom() / 2), 5, 5, highlightPaint);
+            canvas.drawRoundRect(new RectF(getPaddingLeft(), getPaddingTop(), width - getPaddingRight() / 2, getHeight() - getPaddingBottom() / 2), 7, 7, highlightPaint);
         } else if (backgroundIndex == BACKGROUND_OUTCOMING) {
             //setDrawableBounds(SawimResources.backgroundDrawableOut, getPaddingLeft() / 2, getPaddingTop() / 2, width - getPaddingRight() / 2, getHeight() - getPaddingBottom() / 2);
             //SawimResources.backgroundDrawableOut.draw(canvas);
-            canvas.drawRoundRect(new RectF(getPaddingLeft() / 2, titleHeight, width - getPaddingRight() / 2, getHeight() - getPaddingBottom() / 2), 5, 5, highlightPaint);
-        }*/
+            canvas.drawRoundRect(new RectF((float) (getPaddingLeft() * 1.5), getPaddingTop(), width - getPaddingRight() / 2, getHeight() - getPaddingBottom() / 2), 7, 7, highlightPaint);
+        }
 
         if (nickText != null) {
             textPaint.setColor(nickColor);
             textPaint.setTextAlign(Paint.Align.LEFT);
             setTextSize(nickSize);
             textPaint.setTypeface(nickTypeface);
-            canvas.drawText(nickText, getPaddingLeft(), textY, textPaint);
+            canvas.drawText(nickText, getPaddingLeft() * 2, textY + getPaddingTop() / 2, textPaint);
         }
 
         if (msgTimeText != null) {
@@ -240,7 +242,7 @@ public class MessageItemView extends View {
             messageTextPaint.setTextAlign(Paint.Align.LEFT);
             messageTextPaint.setTextSize(msgTextSize * getResources().getDisplayMetrics().scaledDensity);
             messageTextPaint.setTypeface(msgTextTypeface);
-            canvas.translate(getPaddingLeft(), titleHeight);
+            canvas.translate(getPaddingLeft() * 2, titleHeight + getPaddingTop() / 2);
             layout.draw(canvas);
             canvas.restore();
         }
