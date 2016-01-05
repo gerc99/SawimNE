@@ -209,11 +209,11 @@ public class MessageItemView extends View {
         if (backgroundIndex == BACKGROUND_INCOMING) {
             //setDrawableBounds(SawimResources.backgroundDrawableIn, 0, getPaddingTop() / 2, width - getPaddingRight() / 2, getHeight() - getPaddingBottom() / 2);
             //SawimResources.backgroundDrawableIn.draw(canvas);
-            canvas.drawRoundRect(new RectF(getPaddingLeft(), getPaddingTop(), width - getPaddingRight() / 2, getHeight() - getPaddingBottom() / 2), 7, 7, highlightPaint);
+            canvas.drawRoundRect(new RectF(getPaddingLeft(), getPaddingTop(), width - getPaddingRight() / 2, getHeight()), 7, 7, highlightPaint);
         } else if (backgroundIndex == BACKGROUND_OUTCOMING) {
             //setDrawableBounds(SawimResources.backgroundDrawableOut, getPaddingLeft() / 2, getPaddingTop() / 2, width - getPaddingRight() / 2, getHeight() - getPaddingBottom() / 2);
             //SawimResources.backgroundDrawableOut.draw(canvas);
-            canvas.drawRoundRect(new RectF((float) (getPaddingLeft() * 1.5), getPaddingTop(), width - getPaddingRight() / 2, getHeight() - getPaddingBottom() / 2), 7, 7, highlightPaint);
+            canvas.drawRoundRect(new RectF((float) (getPaddingLeft() * 1.5), getPaddingTop(), width - getPaddingRight() / 2, getHeight()), 7, 7, highlightPaint);
         }
 
         if (nickText != null) {
