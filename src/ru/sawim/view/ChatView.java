@@ -1208,7 +1208,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                                 if (isScrollEnd) {
                                     RecyclerView chatListView = chatViewLayout.getChatListsView().getChatListView();
                                     LinearLayoutManager linearLayoutManager = ((LinearLayoutManager) chatListView.getLayoutManager());
-                                    linearLayoutManager.scrollToPositionWithOffset(getMessagesAdapter().getItemCount(), -chat.offset);
+                                    linearLayoutManager.scrollToPositionWithOffset(getMessagesAdapter().getItemCount() - 1, -chat.offset);
                                 }
                             }
                         }
