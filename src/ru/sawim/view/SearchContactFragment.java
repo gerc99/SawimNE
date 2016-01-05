@@ -2,28 +2,32 @@ package ru.sawim.view;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 
 import protocol.Contact;
 import protocol.Group;
 import protocol.Protocol;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
+import ru.sawim.Scheme;
 import ru.sawim.activities.BaseActivity;
+import ru.sawim.activities.SawimActivity;
+import ru.sawim.listener.OnUpdateRoster;
 import ru.sawim.models.RosterAdapter;
 import ru.sawim.roster.ProtocolBranch;
 import ru.sawim.roster.RosterHelper;
@@ -34,11 +38,18 @@ import ru.sawim.widget.roster.RosterViewRoot;
 /**
  * Created by gerc on 31.12.2015.
  */
-public class SearchContactFragment extends SawimFragment implements SearchView.OnQueryTextListener, MenuItemCompat.OnActionExpandListener, View.OnClickListener {
+public class SearchContactFragment extends SawimFragment
+        implements SearchView.OnQueryTextListener, OnUpdateRoster, Handler.Callback,
+        MenuItemCompat.OnActionExpandListener, View.OnClickListener {
 
     public static final String TAG = SearchContactFragment.class.getSimpleName();
 
+    private static final int UPDATE_PROGRESS_BAR = 0;
+    private static final int UPDATE_ROSTER = 1;
+    private static final int PUT_INTO_QUEUE = 2;
+
     RosterViewRoot rosterViewLayout;
+    Handler handler;
 
     public SearchContactFragment() {
     }
@@ -46,6 +57,8 @@ public class SearchContactFragment extends SawimFragment implements SearchView.O
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+
+        handler = new Handler(this);
 
         MyListView listView = (MyListView) LayoutInflater.from(getContext()).inflate(R.layout.recycler_view, null);
         RosterAdapter rosterAdapter = new RosterAdapter();
@@ -56,7 +69,17 @@ public class SearchContactFragment extends SawimFragment implements SearchView.O
         FrameLayout.LayoutParams listViewLP = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT);
         listViewLP.gravity = Gravity.BOTTOM;
         listView.setLayoutParams(listViewLP);
-        rosterViewLayout = new RosterViewRoot(getActivity(), listView);
+
+        ProgressBar progressBar = new ProgressBar(getActivity(), null, android.R.attr.progressBarStyleHorizontal);
+        progressBar.setMax(100);
+        progressBar.getProgressDrawable().setBounds(progressBar.getProgressDrawable().getBounds());
+        FrameLayout.LayoutParams progressBarLP = new FrameLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        progressBarLP.setMargins(30, 0, 30, 1);
+        progressBarLP.gravity = Gravity.TOP;
+        progressBar.setLayoutParams(progressBarLP);
+        progressBar.setVisibility(View.GONE);
+
+        rosterViewLayout = new RosterViewRoot(getActivity(), progressBar, listView);
     }
 
     @Override
@@ -79,19 +102,99 @@ public class SearchContactFragment extends SawimFragment implements SearchView.O
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        update();
-    }
-
-    @Override
     public void onDetach() {
         super.onDetach();
+        RosterHelper.getInstance().setOnAccountsLoaded(null);
+        getRosterAdapter().setOnItemClickListener(null);
+        handler = null;
         rosterViewLayout = null;
     }
 
+    @Override
+    public boolean handleMessage(Message msg) {
+        switch (msg.what) {
+            case UPDATE_PROGRESS_BAR:
+                updateProgressBarSync();
+                break;
+            case UPDATE_ROSTER:
+                updateRosterSync();
+                break;
+            case PUT_INTO_QUEUE:
+                if (getRosterAdapter() != null) {
+                    getRosterAdapter().putIntoQueue((Group) msg.obj);
+                }
+                break;
+        }
+        return false;
+    }
+
+    private int oldProgressBarPercent;
+    private void updateProgressBarSync() {
+        final Protocol p = RosterHelper.getInstance().getProtocol(0);
+        if (RosterHelper.getInstance().getProtocolCount() == 1 && p != null) {
+            byte percent = p.getConnectingProgress();
+            if (oldProgressBarPercent != percent) {
+                oldProgressBarPercent = percent;
+                BaseActivity activity = (BaseActivity) getActivity();
+                if (100 != percent) {
+                    rosterViewLayout.getProgressBar().setVisibility(ProgressBar.VISIBLE);
+                    rosterViewLayout.getProgressBar().setProgress(percent);
+                } else {
+                    rosterViewLayout.getProgressBar().setVisibility(ProgressBar.GONE);
+                }
+                if (100 == percent || 0 == percent) {
+                    activity.supportInvalidateOptionsMenu();
+                }
+            }
+        }
+    }
+
+    private void updateRosterSync() {
+        RosterHelper.getInstance().updateOptions();
+        if (getRosterAdapter() != null) {
+            getRosterAdapter().refreshList();
+        }
+    }
+
+    @Override
+    public void updateProgressBar() {
+        if (handler == null) return;
+        handler.sendEmptyMessage(UPDATE_PROGRESS_BAR);
+    }
+
+    @Override
+    public void updateRoster() {
+        if (handler == null) return;
+        handler.sendEmptyMessage(UPDATE_ROSTER);
+    }
+
+    @Override
+    public void putIntoQueue(final Group g) {
+        if (handler == null) return;
+        handler.sendMessage(Message.obtain(handler, PUT_INTO_QUEUE, g));
+    }
+
     public void update() {
-        getRosterAdapter().refreshList();
+        updateRosterSync();
+        updateProgressBarSync();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        RosterHelper.getInstance().setOnUpdateRoster(null);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getRosterAdapter().setType(RosterHelper.ALL_CONTACTS);
+        RosterHelper.getInstance().setOnUpdateRoster(this);
+        update();
+        getActivity().supportInvalidateOptionsMenu();
+        if (Scheme.isChangeTheme(Scheme.getSavedTheme())) {
+            ((SawimActivity) getActivity()).recreateActivity();
+        }
     }
 
     @Override
