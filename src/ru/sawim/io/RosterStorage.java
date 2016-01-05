@@ -163,12 +163,18 @@ public class RosterStorage {
                     String statusText = cursor.getString(cursor.getColumnIndex(DatabaseHelper.STATUS_TEXT));
                     int subcontactPriority = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.SUB_CONTACT_PRIORITY));
                     int subcontactPriorityA = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.SUB_CONTACT_PRIORITY_A));
+                    String avatarHash = cursor.getString(cursor.getColumnIndex(DatabaseHelper.AVATAR_HASH));
                     if (subcontactRes != null) {
-                        XmppServiceContact.SubContact subContact = serviceContact.getSubContact((Xmpp) protocol, subcontactRes);
-                        subContact.status = (byte) subcontactStatus;
-                        subContact.statusText = statusText;
-                        subContact.priority = (byte) subcontactPriority;
-                        subContact.priorityA = (byte) subcontactPriorityA;
+                        XmppServiceContact.SubContact subContact = serviceContact.subcontacts.get(subcontactRes);;
+                        if (subContact == null) {
+                            subContact = new XmppContact.SubContact();
+                            subContact.status = (byte) subcontactStatus;
+                            subContact.statusText = statusText;
+                            subContact.priority = (byte) subcontactPriority;
+                            subContact.priorityA = (byte) subcontactPriorityA;
+                            subContact.avatarHash = avatarHash;
+                            serviceContact.subcontacts.put(subcontactRes, subContact);
+                        }
                     }
                 } while (cursor.moveToNext());
             }
@@ -419,7 +425,7 @@ public class RosterStorage {
         Cursor cursor = null;
         try {
             String where = WHERE_CONTACT_ID + " and "
-                        + DatabaseHelper.SUB_CONTACT_RESOURCE + "= ?";
+                    + DatabaseHelper.SUB_CONTACT_RESOURCE + "= ?";
             String[] selectionArgs = new String[]{uniqueUserId, resource};
             cursor = SawimApplication.getDatabaseHelper().getReadableDatabase().query(subContactsTable, null,
                     where, selectionArgs, null, null, null);
@@ -478,35 +484,40 @@ public class RosterStorage {
     }
 
     public synchronized void loadUnreadMessages() {
-        Cursor cursor = null;
-        try {
-            cursor = SawimApplication.getDatabaseHelper().getWritableDatabase().query(storeName, null, null, null, null, null, null);
-            if (cursor.moveToFirst()) {
-                do {
-                    String account = cursor.getString(cursor.getColumnIndex(DatabaseHelper.ACCOUNT_ID));
-                    String userId = cursor.getString(cursor.getColumnIndex(DatabaseHelper.CONTACT_ID));
-                    short unreadMessageCount = cursor.getShort(cursor.getColumnIndex(DatabaseHelper.UNREAD_MESSAGES_COUNT));
-                    boolean isConference = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.IS_CONFERENCE)) == 1;
-                    if (unreadMessageCount == 0) {
-                        continue;
+        SqlAsyncTask.execute(new SqlAsyncTask.OnTaskListener() {
+            @Override
+            public void run() {
+                Cursor cursor = null;
+                try {
+                    cursor = SawimApplication.getDatabaseHelper().getReadableDatabase().query(storeName, null, null, null, null, null, null);
+                    if (cursor.moveToFirst()) {
+                        do {
+                            String account = cursor.getString(cursor.getColumnIndex(DatabaseHelper.ACCOUNT_ID));
+                            String userId = cursor.getString(cursor.getColumnIndex(DatabaseHelper.CONTACT_ID));
+                            short unreadMessageCount = cursor.getShort(cursor.getColumnIndex(DatabaseHelper.UNREAD_MESSAGES_COUNT));
+                            boolean isConference = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.IS_CONFERENCE)) == 1;
+                            if (unreadMessageCount == 0) {
+                                continue;
+                            }
+                            Protocol protocol = RosterHelper.getInstance().getProtocol(account);
+                            if (protocol != null) {
+                                Contact contact = protocol.getItemByUID(userId);
+                                if (contact == null) {
+                                    contact = protocol.createContact(userId, userId, isConference);
+                                }
+                                Chat chat = protocol.getChat(contact);
+                                chat.setOtherMessageCounter(unreadMessageCount);
+                            }
+                        } while (cursor.moveToNext());
                     }
-                    Protocol protocol = RosterHelper.getInstance().getProtocol(account);
-                    if (protocol != null) {
-                        Contact contact = protocol.getItemByUID(userId);
-                        if (contact == null) {
-                            contact = protocol.createContact(userId, userId, isConference);
-                        }
-                        Chat chat = protocol.getChat(contact);
-                        chat.setOtherMessageCounter(unreadMessageCount);
+                } catch (Exception e) {
+                    DebugLog.panic(e);
+                } finally {
+                    if (cursor != null) {
+                        cursor.close();
                     }
-                } while (cursor.moveToNext());
+                }
             }
-        } catch (Exception e) {
-            DebugLog.panic(e);
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
+        });
     }
 }

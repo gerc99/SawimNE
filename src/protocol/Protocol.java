@@ -217,12 +217,7 @@ abstract public class Protocol {
     }
 
     public final void safeLoad() {
-        SawimApplication.getExecutor().execute(new Runnable() {
-            @Override
-            public void run() {
-                load();
-            }
-        });
+        load();
     }
 
     public final void load() {

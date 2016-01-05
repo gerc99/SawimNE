@@ -133,12 +133,12 @@ public abstract class ClientConnection implements Runnable {
             throw new SawimException(120, 9);
         }
         if (nextPingTime <= now) {
-            if (!Options.getBoolean(JLocale.getString(R.string.pref_wake_lock))){
-            if (usePong) {
-                pingForPong();
-            } else {
-                ping();
-            }
+            if (!Options.getBoolean(JLocale.getString(R.string.pref_wake_lock))) {
+                if (usePong) {
+                    pingForPong();
+                } else {
+                    ping();
+                }
             } else wakeup(nextPingTime);
             nextPingTime = now + keepAliveInterv;
         }

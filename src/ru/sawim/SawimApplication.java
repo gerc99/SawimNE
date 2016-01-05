@@ -106,7 +106,7 @@ public class SawimApplication extends Application {
         VERSION = getVersion();
         Thread.setDefaultUncaughtExceptionHandler(ExceptionHandler.inContext(getContext()));
         super.onCreate();
-        //new ANRWatchDog().start();
+        new ANRWatchDog().start();
         refWatcher = LeakCanary.install(this);
         databaseHelper = new DatabaseHelper(getApplicationContext());
         uiHandler = new Handler(Looper.getMainLooper());
@@ -125,38 +125,41 @@ public class SawimApplication extends Application {
         networkStateReceiver.updateNetworkState(this);
 
         instance.paused = false;
-
         HomeDirectory.init();
         Options.init();
         initOptions();
         updateOptions();
         Updater.startUIUpdater();
+        Scheme.init();
+        Options.loadAccounts();
+        getExecutor().execute(new Runnable() {
+            @Override
+            public void run() {
+                gc();
+                Emotions.instance.load();
+                Answerer.getInstance().load();
+                try {
+                    sc = SSLContext.getInstance("TLS");
+                    MemorizingTrustManager mtm = new MemorizingTrustManager(SawimApplication.this);
+                    sc.init(null, new X509TrustManager[]{mtm}, new SecureRandom());
+                } catch (Exception e) {
+                    DebugLog.panic("TLS init", e);
+                }
+                RosterHelper.getInstance().initAccounts();
+                RosterHelper.getInstance().loadAccounts();
+                loadChats();
+                DebugLog.startTests();
+                TextFormatter.init();
 
-        try {
-            gc();
-            Emotions.instance.load();
-            Answerer.getInstance().load();
-            gc();
-            sc = SSLContext.getInstance("TLS");
-            MemorizingTrustManager mtm = new MemorizingTrustManager(SawimApplication.this);
-            sc.init(null, new X509TrustManager[] {mtm}, new SecureRandom());
-            Options.loadAccounts();
-            RosterHelper.getInstance().initAccounts();
-            RosterHelper.getInstance().loadAccounts();
-            loadChats();
-        } catch (Exception e) {
-            DebugLog.panic("init", e);
-        }
-        DebugLog.startTests();
-        TextFormatter.init();
-
-        StorageConvertor.historyConvert();
-        int count = RosterHelper.getInstance().getProtocolCount();
-        for (int i = 0; i < count; ++i) {
-            Protocol p = RosterHelper.getInstance().getProtocol(i);
-            p.getStorage().loadUnreadMessages();
-        }
-
+                StorageConvertor.historyConvert();
+                int count = RosterHelper.getInstance().getProtocolCount();
+                for (int i = 0; i < count; ++i) {
+                    Protocol p = RosterHelper.getInstance().getProtocol(i);
+                    p.getStorage().loadUnreadMessages();
+                }
+                gc();
+            }
+        });
     }
 
     private void loadChats() {

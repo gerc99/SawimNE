@@ -177,7 +177,7 @@ public class HistoryStorage {
         Cursor cursor = null;
         try {
             cursor = SawimApplication.getDatabaseHelper().getReadableDatabase().query(DatabaseHelper.TABLE_CHAT_HISTORY, null, DatabaseHelper.CONTACT_ID + " = ?",
-                    new String[]{uniqueUserId}, null, null, DatabaseHelper.DATE + " DESC");
+                    new String[]{uniqueUserId}, null, null, DatabaseHelper.DATE + " DESC", String.valueOf(60));
             if (cursor.moveToLast()) {
                 do {
                     short rowData = cursor.getShort(cursor.getColumnIndex(DatabaseHelper.ROW_DATA));

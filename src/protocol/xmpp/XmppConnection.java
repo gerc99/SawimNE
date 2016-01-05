@@ -558,9 +558,8 @@ public final class XmppConnection extends ClientConnection {
                         RosterHelper.getInstance().updateGroup(xmpp, g);
                         String subscription = itemNode.getAttribute("subscription");
                         contact.setBooleanValue(Contact.CONTACT_NO_AUTH, isNoAutorized(subscription));
-                        getXmpp().getStorage().save(getXmpp(), contact, g);
+                     //   getXmpp().getStorage().save(getXmpp(), contact, g);
                     }
-                    getXmpp().getStorage().load(getProtocol());
                     enableMessageArchiveManager();
                     RosterHelper.getInstance().updateGroup(xmpp, xmpp.getNotInListGroup());
                     RosterHelper.getInstance().updateRoster();
