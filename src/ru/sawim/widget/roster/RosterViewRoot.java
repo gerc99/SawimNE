@@ -30,10 +30,10 @@ public class RosterViewRoot extends FrameLayout {
         addViewInLayout(fab, FAB_INDEX, fab.getLayoutParams(), true);
     }
 
-    public RosterViewRoot(Context context, View rosterView) {
+    public RosterViewRoot(Context context, ProgressBar progressBar, View rosterView) {
         super(context);
         setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-        addViewInLayout(new View(getContext()), PROGRESS_BAR_INDEX, new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT), true);
+        addViewInLayout(progressBar, PROGRESS_BAR_INDEX, progressBar.getLayoutParams(), true);
         addViewInLayout(rosterView, VIEW_PAGER_INDEX, rosterView.getLayoutParams(), true);
     }
 

@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -124,10 +125,10 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
+    public void onAttach(Context context) {
+        super.onAttach(context);
         handler = new Handler(this);
-
+        Activity activity = getActivity();
         MyImageButton chatsImage = new MyImageButton(activity);
         MyImageButton menuButton = new MyImageButton(activity);
         MyImageButton smileButton = new MyImageButton(activity);
@@ -327,6 +328,24 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
             getMessagesAdapter().setOnItemClickListener(null);
             chat = null;
         }
+        MyImageButton menuButton = chatViewLayout.getChatInputBarView().getMenuButton();
+        MyImageButton smileButton = chatViewLayout.getChatInputBarView().getSmileButton();
+        MyImageButton sendButton = chatViewLayout.getChatInputBarView().getSendButton();
+        FixedEditText messageEditor = chatViewLayout.getChatInputBarView().getMessageEditor();
+        menuButton.setOnClickListener(null);
+        smileButton.setOnClickListener(null);
+        sendButton.setOnClickListener(null);
+        sendButton.setOnLongClickListener(null);
+        messageEditor.removeTextChangedListener(textWatcher);
+        messageEditor.setOnClickListener(null);
+        messageEditor.setOnEditorActionListener(null);
+        messageEditor.setOnKeyListener(null);
+        MyListView chatListView = chatViewLayout.getChatListsView().getChatListView();
+        chatListView.clearOnScrollListeners();
+        unregisterForContextMenu(chatListView);
+        unregisterForContextMenu(nickList);
+        nickList.addOnItemTouchListener(null);
+        nickList.setOnTouchListener(null);
         handler = null;
         chatBarLayout = null;
         chatViewLayout = null;
@@ -334,6 +353,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
         drawerLayout = null;
         mucUsersView = null;
         chatsDialogFragment = null;
+        nickList = null;
     }
 
     public boolean hasBack() {
@@ -420,22 +440,23 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     }
 
     public void pause(Chat chat) {
-        if (chat == null) return;
-        RecyclerView chatListView = chatViewLayout.getChatListsView().getChatListView();
-        chat.savedMessage = getText().length() == 0 ? null : getText();
+        if (chat != null) {
+            RecyclerView chatListView = chatViewLayout.getChatListsView().getChatListView();
+            chat.savedMessage = getText().length() == 0 ? null : getText();
 
-        chat.currentPosition = getMessagesAdapter().getItemCount();
-        chat.firstVisiblePosition = ((LinearLayoutManager) chatListView.getLayoutManager()).findFirstCompletelyVisibleItemPosition();
-        if (isScrollEnd()) {
-            unreadMessageCount = 0;
-            chat.currentPosition = 0;
+            chat.currentPosition = getMessagesAdapter().getItemCount();
+            chat.firstVisiblePosition = ((LinearLayoutManager) chatListView.getLayoutManager()).findFirstCompletelyVisibleItemPosition();
+            if (isScrollEnd()) {
+                unreadMessageCount = 0;
+                chat.currentPosition = 0;
+            }
+            View item = chatListView.getChildAt(0);
+            chat.offset = (item == null) ? 0 : Math.abs(isScrollEnd() ? item.getTop() : item.getBottom());
+
+            chat.setVisibleChat(false);
+            chat.resetUnreadMessages();
         }
-        View item = chatListView.getChildAt(0);
-        chat.offset = (item == null) ? 0 : Math.abs(isScrollEnd() ? item.getTop() : item.getBottom());
-
-        chat.setVisibleChat(false);
         RosterHelper.getInstance().setOnUpdateChat(null);
-        chat.resetUnreadMessages();
     }
 
     public void resume(Chat chat) {
@@ -581,7 +602,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
         boolean isConference = chat.getContact() instanceof XmppServiceContact && chat.getContact().isConference();
         if (isConference) {
             mucUsersView = new MucUsersView();
-            mucUsersView.show(chat.getProtocol(), (XmppServiceContact) chat.getContact(), this, nickList);
+            mucUsersView.show(this, nickList);
         } else {
             mucUsersView = null;
             if (SawimApplication.isManyPane()) {
@@ -846,6 +867,12 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
             } else {
                 chatBarLayout.setVisibilityChatsImage(View.VISIBLE);
                 if (!SawimApplication.isManyPane()) {
+                    icMess = icMess.mutate();
+                    if (icMess == SawimResources.PERSONAL_MESSAGE_ICON) {
+                        icMess.setColorFilter(Scheme.getColor(R.attr.bar_personal_unread_message), PorterDuff.Mode.MULTIPLY);
+                    } else {
+                        icMess.setColorFilter(Scheme.getColor(R.attr.bar_unread_message), PorterDuff.Mode.MULTIPLY);
+                    }
                     chatBarLayout.getChatsImage().setImageDrawable(icMess);
                 }
             }

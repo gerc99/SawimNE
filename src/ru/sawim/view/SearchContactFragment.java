@@ -50,6 +50,8 @@ public class SearchContactFragment extends SawimFragment
 
     RosterViewRoot rosterViewLayout;
     Handler handler;
+    SearchView searchView;
+    MenuItem searchMenuItem;
 
     public SearchContactFragment() {
     }
@@ -104,8 +106,12 @@ public class SearchContactFragment extends SawimFragment
     @Override
     public void onDetach() {
         super.onDetach();
-        RosterHelper.getInstance().setOnAccountsLoaded(null);
         getRosterAdapter().setOnItemClickListener(null);
+        searchView.setOnQueryTextListener(null);
+        MenuItemCompat.setOnActionExpandListener(searchMenuItem, null);
+        unregisterForContextMenu(getListView());
+        getListView().setAdapter(null);
+        searchView = null;
         handler = null;
         rosterViewLayout = null;
     }
@@ -206,12 +212,12 @@ public class SearchContactFragment extends SawimFragment
     public void onPrepareOptionsMenu_(Menu menu) {
         getActivity().getMenuInflater().inflate(R.menu.menu_search_contact, menu);
 
-        final MenuItem item = menu.findItem(R.id.action_search);
-        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(item);
+        searchMenuItem = menu.findItem(R.id.action_search);
+        searchView = (SearchView) MenuItemCompat.getActionView(searchMenuItem);
         searchView.setOnQueryTextListener(this);
         searchView.setIconifiedByDefault(false);
 
-        MenuItemCompat.setOnActionExpandListener(item, this);
+        MenuItemCompat.setOnActionExpandListener(searchMenuItem, this);
     }
 
     @Override
@@ -240,6 +246,7 @@ public class SearchContactFragment extends SawimFragment
     }
 
     private void openChat(Protocol p, Contact c, String sharingText) {
+        getFragmentManager().popBackStack();
         c.activate((BaseActivity) getActivity(), p);
         if (SawimApplication.isManyPane()) {
             ChatView chatViewTablet = (ChatView) getActivity().getSupportFragmentManager()

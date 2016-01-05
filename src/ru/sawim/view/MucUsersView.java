@@ -21,101 +21,23 @@ import ru.sawim.widget.recyclerview.decoration.RecyclerItemClickListener;
  * Time: 21:55
  * To change this template use File | Settings | File Templates.
  */
-public class MucUsersView {
+public class MucUsersView implements RecyclerItemClickListener.OnItemClickListener, View.OnTouchListener {
 
+    private ChatView chatView;
     private TextBoxView banTextbox;
     private TextBoxView kikTextbox;
     private boolean isLongClick = false;
 
-    public void show(final Protocol protocol, final XmppServiceContact xmppServiceContact,
-                     final ChatView chatView, RecyclerView nickList) {
+    public void show(final ChatView chatView, RecyclerView nickList) {
+        this.chatView = chatView;
+        final Protocol protocol = chatView.getCurrentChat().getProtocol();
+        final XmppServiceContact xmppServiceContact = (XmppServiceContact) chatView.getCurrentChat().getContact();
         final BaseActivity activity = (BaseActivity) chatView.getActivity();
         final MucUsersAdapter usersAdapter = new MucUsersAdapter();
         usersAdapter.init((Xmpp) protocol, xmppServiceContact);
         nickList.setAdapter(usersAdapter);
-        //nickList.setFastScrollEnabled(true);
-        nickList.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                int action = event.getAction();
-                if (action == MotionEvent.ACTION_DOWN) {
-                    isLongClick = false;
-                }
-                return false;
-            }
-        });
-        nickList.addOnItemTouchListener(new RecyclerItemClickListener(activity, new RecyclerItemClickListener.OnItemClickListener() {
-            @Override
-            public void onItemClick(View childView, int position) {
-                if (isLongClick) return;
-                final Object o = usersAdapter.getItem(position);
-                chatView.hasBack();
-                if (o instanceof XmppContact.SubContact) {
-                    XmppContact.SubContact c = (XmppContact.SubContact) o;
-                    chatView.insert(c.resource + ", ");
-                    chatView.showKeyboard();
-                }
-            }
-
-            @Override
-            public void onItemLongPress(View childView, int position) {
-                isLongClick = true;
-                final Object o = usersAdapter.getItem(position);
-                if (o instanceof String) return;
-                final String nick = usersAdapter.getCurrentSubContact(o);
-                final MyMenu menu = new MyMenu();
-                final MyMenu roleConfigMenu = getRoleConfigMenu(usersAdapter, xmppServiceContact, nick);
-                menu.add(activity.getString(R.string.open_private), ContactMenu.COMMAND_PRIVATE);
-                menu.add(activity.getString(R.string.info), ContactMenu.COMMAND_INFO);
-                menu.add(activity.getString(R.string.user_statuses), ContactMenu.COMMAND_STATUS);
-                //menu.add(activity.getString(R.string.invite), ContactMenu.USER_INVITE);
-                menu.add(activity.getString(R.string.adhoc), ContactMenu.GATE_COMMANDS);
-                if (roleConfigMenu.getCount() > 0)
-                    menu.add(activity.getString(R.string.role_commands), ContactMenu.ROLE_COMMANDS);
-                final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-                builder.setCancelable(true);
-                builder.setTitle(xmppServiceContact.getName());
-                builder.setAdapter(menu, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        chatView.hasBack();
-                        XmppContact.SubContact subContact = xmppServiceContact.getExistSubContact(nick);
-                        switch (menu.getItem(which).idItem) {
-                            case ContactMenu.COMMAND_PRIVATE:
-                                String jid = Jid.realJidToSawimJid(xmppServiceContact.getUserId() + "/" + nick);
-                                XmppServiceContact c = (XmppServiceContact) protocol.getItemByUID(jid);
-                                if (null == c) {
-                                    c = (XmppServiceContact) protocol.createTempContact(jid, false);
-                                    protocol.addTempContact(c);
-                                }
-                                chatView.pause(chatView.getCurrentChat());
-                                chatView.openChat(protocol, c);
-                                chatView.resume(chatView.getCurrentChat());
-                                activity.supportInvalidateOptionsMenu();
-                                break;
-                            case ContactMenu.COMMAND_INFO:
-                                protocol.showUserInfo(activity, xmppServiceContact.getPrivateContact(nick));
-                                break;
-                            case ContactMenu.COMMAND_STATUS:
-                                protocol.showStatus(activity, xmppServiceContact.getPrivateContact(nick));
-                                break;
-                            case ContactMenu.USER_INVITE:
-                                ((Xmpp) protocol).showInviteForm(activity, xmppServiceContact.getUserId() + '/' + subContact.resource);
-                                break;
-                            case ContactMenu.GATE_COMMANDS:
-                                AdHoc adhoc = new AdHoc((Xmpp) protocol, xmppServiceContact);
-                                adhoc.setResource(subContact.resource);
-                                adhoc.show(activity);
-                                break;
-                            case ContactMenu.ROLE_COMMANDS:
-                                showRoleConfig(xmppServiceContact, roleConfigMenu, nick, chatView);
-                                break;
-                        }
-                    }
-                });
-                builder.create().show();
-            }
-        }));
+        nickList.setOnTouchListener(this);
+        nickList.addOnItemTouchListener(new RecyclerItemClickListener(activity, this));
     }
 
     private MyMenu getRoleConfigMenu(MucUsersAdapter usersAdapter, XmppServiceContact xmppServiceContact, final String nick) {
@@ -266,5 +188,91 @@ public class MucUsersView {
             usersAdapter.update();
             usersAdapter.notifyDataSetChanged();
         }
+    }
+
+    @Override
+    public void onItemClick(View childView, int position) {
+        if (isLongClick) return;
+        MucUsersAdapter usersAdapter = chatView.getMucUsersAdapter();
+        final Object o = usersAdapter.getItem(position);
+        chatView.hasBack();
+        if (o instanceof XmppContact.SubContact) {
+            XmppContact.SubContact c = (XmppContact.SubContact) o;
+            chatView.insert(c.resource + ", ");
+            chatView.showKeyboard();
+        }
+    }
+
+    @Override
+    public void onItemLongPress(View childView, int position) {
+        isLongClick = true;
+
+        final Protocol protocol = chatView.getCurrentChat().getProtocol();
+        final XmppServiceContact xmppServiceContact = (XmppServiceContact) chatView.getCurrentChat().getContact();
+        MucUsersAdapter usersAdapter = chatView.getMucUsersAdapter();
+        final BaseActivity activity = (BaseActivity) chatView.getActivity();
+        final Object o = usersAdapter.getItem(position);
+        if (o instanceof String) return;
+        final String nick = usersAdapter.getCurrentSubContact(o);
+        final MyMenu menu = new MyMenu();
+        final MyMenu roleConfigMenu = getRoleConfigMenu(usersAdapter, xmppServiceContact, nick);
+        menu.add(activity.getString(R.string.open_private), ContactMenu.COMMAND_PRIVATE);
+        menu.add(activity.getString(R.string.info), ContactMenu.COMMAND_INFO);
+        menu.add(activity.getString(R.string.user_statuses), ContactMenu.COMMAND_STATUS);
+        //menu.add(activity.getString(R.string.invite), ContactMenu.USER_INVITE);
+        menu.add(activity.getString(R.string.adhoc), ContactMenu.GATE_COMMANDS);
+        if (roleConfigMenu.getCount() > 0)
+            menu.add(activity.getString(R.string.role_commands), ContactMenu.ROLE_COMMANDS);
+        final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setCancelable(true);
+        builder.setTitle(xmppServiceContact.getName());
+        builder.setAdapter(menu, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                chatView.hasBack();
+                XmppContact.SubContact subContact = xmppServiceContact.getExistSubContact(nick);
+                switch (menu.getItem(which).idItem) {
+                    case ContactMenu.COMMAND_PRIVATE:
+                        String jid = Jid.realJidToSawimJid(xmppServiceContact.getUserId() + "/" + nick);
+                        XmppServiceContact c = (XmppServiceContact) protocol.getItemByUID(jid);
+                        if (null == c) {
+                            c = (XmppServiceContact) protocol.createTempContact(jid, false);
+                            protocol.addTempContact(c);
+                        }
+                        chatView.pause(chatView.getCurrentChat());
+                        chatView.openChat(protocol, c);
+                        chatView.resume(chatView.getCurrentChat());
+                        activity.supportInvalidateOptionsMenu();
+                        break;
+                    case ContactMenu.COMMAND_INFO:
+                        protocol.showUserInfo(activity, xmppServiceContact.getPrivateContact(nick));
+                        break;
+                    case ContactMenu.COMMAND_STATUS:
+                        protocol.showStatus(activity, xmppServiceContact.getPrivateContact(nick));
+                        break;
+                    case ContactMenu.USER_INVITE:
+                        ((Xmpp) protocol).showInviteForm(activity, xmppServiceContact.getUserId() + '/' + subContact.resource);
+                        break;
+                    case ContactMenu.GATE_COMMANDS:
+                        AdHoc adhoc = new AdHoc((Xmpp) protocol, xmppServiceContact);
+                        adhoc.setResource(subContact.resource);
+                        adhoc.show(activity);
+                        break;
+                    case ContactMenu.ROLE_COMMANDS:
+                        showRoleConfig(xmppServiceContact, roleConfigMenu, nick, chatView);
+                        break;
+                }
+            }
+        });
+        builder.create().show();
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        int action = event.getAction();
+        if (action == MotionEvent.ACTION_DOWN) {
+            isLongClick = false;
+        }
+        return false;
     }
 }

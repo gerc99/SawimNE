@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -11,18 +12,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.*;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Log;
 import android.view.*;
 import android.widget.*;
-
-import java.util.List;
 
 import ru.sawim.activities.SawimActivity;
 import ru.sawim.listener.OnAccountsLoaded;
@@ -36,10 +31,8 @@ import ru.sawim.activities.BaseActivity;
 import ru.sawim.chat.Chat;
 import ru.sawim.chat.ChatHistory;
 import ru.sawim.forms.ManageContactListForm;
-import ru.sawim.models.CustomPagerAdapter;
 import ru.sawim.models.RosterAdapter;
 import ru.sawim.modules.FileTransfer;
-import ru.sawim.modules.history.HistoryStorage;
 import ru.sawim.roster.ProtocolBranch;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.roster.TreeNode;
@@ -110,7 +103,7 @@ public class RosterView extends SawimFragment implements View.OnClickListener, O
         fab.setImageResource(R.drawable.ic_pencil_white_24dp);
         fab.setOnClickListener(this);
         FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
-        lp.gravity = Gravity.BOTTOM | Gravity.RIGHT;
+        lp.gravity = Gravity.BOTTOM | Gravity.END;
         lp.bottomMargin = Util.dipToPixels(SawimApplication.getContext(), 15);
         lp.rightMargin = Util.dipToPixels(SawimApplication.getContext(), 15);
         fab.setLayoutParams(lp);
@@ -134,6 +127,11 @@ public class RosterView extends SawimFragment implements View.OnClickListener, O
     public void onDetach() {
         super.onDetach();
         RosterHelper.getInstance().setOnAccountsLoaded(null);
+        unregisterForContextMenu(rosterViewLayout.getMyListView());
+        getRosterAdapter().setOnItemClickListener(null);
+        rosterViewLayout.getMyListView().setAdapter(null);
+        rosterViewLayout.getFab().setOnClickListener(null);
+        chatsImage.setOnClickListener(null);
         handler = null;
         rosterViewLayout = null;
         chatsImage = null;
@@ -215,10 +213,11 @@ public class RosterView extends SawimFragment implements View.OnClickListener, O
         if (icMess == null) {
             chatsImage.setVisibility(View.GONE);
         } else {
+            icMess = icMess.mutate();
             if (icMess == SawimResources.PERSONAL_MESSAGE_ICON) {
-                chatsImage.setColorFilter(Scheme.getColor(R.attr.bar_personal_unread_message));
+                icMess.setColorFilter(Scheme.getColor(R.attr.bar_personal_unread_message), PorterDuff.Mode.MULTIPLY);
             } else {
-                chatsImage.setColorFilter(Scheme.getColor(R.attr.bar_unread_message));
+                icMess.setColorFilter(Scheme.getColor(R.attr.bar_unread_message), PorterDuff.Mode.MULTIPLY);
             }
             chatsImage.setVisibility(View.VISIBLE);
             chatsImage.setImageDrawable(icMess);
@@ -237,9 +236,10 @@ public class RosterView extends SawimFragment implements View.OnClickListener, O
         Toolbar.LayoutParams barLinearLayoutLP = new Toolbar.LayoutParams(Toolbar.LayoutParams.MATCH_PARENT, Toolbar.LayoutParams.MATCH_PARENT);
         LinearLayout.LayoutParams rosterBarLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
         LinearLayout.LayoutParams chatsImageLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-        chatsImageLP.gravity = Gravity.RIGHT;
+        chatsImageLP.gravity = Gravity.END;
         chatsImageLP.weight = 4;
         rosterBarLP.weight = 1;
+        textViewBar.setLayoutParams(rosterBarLP);
         LinearLayout barLinearLayout = new LinearLayout(getActivity());
         if (SawimApplication.isManyPane()) {
             LinearLayout rosterBarLayout = new LinearLayout(getActivity());
@@ -269,9 +269,7 @@ public class RosterView extends SawimFragment implements View.OnClickListener, O
             actionBar.setCustomView(barLinearLayout);
         }
         barLinearLayout.setLayoutParams(barLinearLayoutLP);
-        textViewBar.setLayoutParams(rosterBarLP);
         chatsImage.setLayoutParams(chatsImageLP);
-
     }
 
     @Override
@@ -298,14 +296,14 @@ public class RosterView extends SawimFragment implements View.OnClickListener, O
         handler.post(new Runnable() {
             @Override
             public void run() {
-                initBar();
-                if (RosterHelper.getInstance().getProtocolCount() > 0) {
-                    RosterHelper.getInstance().setOnUpdateRoster(RosterView.this);
+                //initBar();
+                if (Options.getAccountCount() > 0) {
                     update();
 
                     if (getRosterAdapter().getItemCount() == 0) {
                         getFragmentManager().beginTransaction()
                                 .replace(R.id.fragment_container, new SearchContactFragment(), SearchContactFragment.TAG)
+                                .addToBackStack(null)
                                 .commit();
                     }
 
