@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 
 public final class TcpSocket {
@@ -83,6 +82,7 @@ public final class TcpSocket {
             return bRead;
 
         } catch (IOException e) {
+            e.printStackTrace();
             throw new SawimException(120, 1);
         }
     }

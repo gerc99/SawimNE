@@ -1,7 +1,5 @@
 package protocol;
 
-import android.util.Log;
-
 import protocol.xmpp.XmppContact;
 import ru.sawim.*;
 import ru.sawim.activities.BaseActivity;
@@ -41,13 +39,14 @@ abstract public class Protocol {
     private String password;
     private String userid = "";
     private byte privateStatus = 0;
-    private String rmsName = null;
     private boolean isReconnect;
     private int reconnect_attempts;
     private long lastStatusChangeTime;
     private byte progress = 100;
     private CopyOnWriteArrayList<String> autoGrand = new CopyOnWriteArrayList<>();
     private Group notInListGroup;
+
+    public String oldContactIdWithMessage;
 
     public abstract String getUserIdName();
 
@@ -79,10 +78,6 @@ abstract public class Protocol {
         if (!StringConvertor.isEmpty(account.password)) {
             setPassword(null);
         }
-
-        String rms = "roster-" + getUserId();
-        rmsName = (32 < rms.length()) ? rms.substring(0, 32) : rms;
-
         storage = new RosterStorage();
     }
 
@@ -413,8 +408,11 @@ abstract public class Protocol {
     }
 
     protected void setStatusesOffline() {
-        for (Contact c : roster.getContactItems().values()) {
-            c.setOfflineStatus();
+        if (roster == null) return;
+        if (roster.getContactItems() != null) {
+            for (Contact c : roster.getContactItems().values()) {
+                c.setOfflineStatus();
+            }
         }
         if (RosterHelper.getInstance().useGroups) {
             Enumeration<Group> e = roster.getGroupItems().elements();
@@ -694,13 +692,15 @@ abstract public class Protocol {
                 //playNotification(Notify.NOTIFY_MULTIMESSAGE);
             }
         }
+        if (oldContactIdWithMessage == null || !oldContactIdWithMessage.equals(contact.getUserId())) {
+            ChatHistory.instance.sort();
+            oldContactIdWithMessage = contact.getUserId();
+        }
         boolean isNewMessageIcon = chat.getOldMessageIcon() != chat.getNewMessageIcon();
         if (isNewMessageIcon) {
             chat.setOldMessageIcon(chat.getNewMessageIcon());
-            ChatHistory.instance.sort();
             if (!chat.isVisibleChat()) {
                 RosterHelper.getInstance().updateRoster(contact);
-
             }
         }
         if (!isWakeUp) {

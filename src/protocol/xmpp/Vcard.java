@@ -180,7 +180,7 @@ public class Vcard {
 
     public static void requestVCard(XmppConnection connection, String id, String newAvatarHash, String avatarHash) {
         if (!Options.getBoolean(JLocale.getString(R.string.pref_users_avatars))) return;
-        Log.e("requestVCard", newAvatarHash+" "+avatarHash);
+        //Log.e("requestVCard", newAvatarHash+" "+avatarHash);
         if (newAvatarHash == null) {
             if (avatarHash == null) {
                 getVCard(connection, id);

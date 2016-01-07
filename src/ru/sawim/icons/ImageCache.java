@@ -107,8 +107,11 @@ public class ImageCache {
             File file = getFile(pathCacheFolder, hash);
             if (file.exists()) {
                 return true;
+
             }
-            Bitmap bitmap = Avatars.getRoundedBitmap(Util.getAvatarBitmap(avatarBytes, AVATAR_SIZE));
+            Bitmap b = Util.getAvatarBitmap(avatarBytes, AVATAR_SIZE);
+            if (b == null) return false;
+            Bitmap bitmap = Avatars.getRoundedBitmap(b);
             return save(file, bitmap);
         }
         return false;

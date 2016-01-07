@@ -29,7 +29,7 @@ public class Presences {
             if (0 != time)
                 xNode += "<history since='" + time + "'/>";*/
             HistoryStorage historyStorage = connection.getXmpp().getChat(conf).getHistory();
-            long time = historyStorage.getMessageTime(true);
+            //long time = historyStorage.getMessageTime(true);
             /*if (0 != time)
                 xNode += "<history maxstanzas='"
                         + MESSAGE_COUNT_AFTER_CONNECT

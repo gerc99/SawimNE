@@ -758,7 +758,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     }
 
     private void loadStory(final boolean isScroll, final boolean isLoad) {
-        SawimApplication.getExecutor().execute(new Runnable() {
+        new Thread(new Runnable() {
             @Override
             public void run() {
                 if (isOldChat) {
@@ -801,7 +801,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                     }
                 }
             }
-        });
+        }).start();
     }
 
     private void loaded(final List<MessData> messDataList, final boolean hasUnreadMessages, final boolean isBottomScroll, final boolean isFirstOpenChat,
@@ -827,7 +827,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
         final boolean isBottomScroll = chat.currentPosition == 0;
         final int oldCount = getMessagesAdapter().getItemCount();
         getMessagesAdapter().setPosition(oldCount);
-        SawimApplication.getExecutor().execute(new Runnable() {
+        new Thread(new Runnable() {
             @Override
             public void run() {
                 final List<MessData> messDataList = chat.getHistory().addNextListMessages(chat, unreadMessageCount, 0);
@@ -850,7 +850,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                     }
                 }
             }
-        });
+        }).start();
     }
 
     private void updateChatIcon() {
@@ -900,7 +900,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                 searchPositionsCount = searchMessagesIds.size();
             }
             final int position = searchMessagesIds.get(searchPositionsCount - 1);
-            SawimApplication.getExecutor().execute(new Runnable() {
+            new Thread(new Runnable() {
                 @Override
                 public void run() {
                     List<MessData> messDataList = null;
@@ -1188,7 +1188,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
         hideKeyboard();
         final String text = getText();
         resetText();
-        SawimApplication.getExecutor().execute(new Runnable() {
+        new Thread(new Runnable() {
             @Override
             public void run() {
                 if (chat != null) {
@@ -1215,7 +1215,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                     });
                 }
             }
-        });
+        }).start();
     }
 
     public static void showAuthorizationDialog(final BaseActivity activity, final Chat newChat) {

@@ -10,7 +10,6 @@
 package protocol.xmpp;
 
 import protocol.net.TcpSocket;
-import ru.sawim.SawimApplication;
 import ru.sawim.SawimException;
 import ru.sawim.modules.DebugLog;
 import ru.sawim.modules.zlib.ZLibInputStream;
@@ -142,7 +141,7 @@ final class Socket implements Runnable {
         XmlNode readObject = null;
         while (connected && null == readObject) {
             readObject = XmlNode.parse(this);
-            //if (null == readObject) sleep(100);
+            if (null == readObject) sleep(100);
         }
         return readObject;
     }
@@ -181,6 +180,13 @@ final class Socket implements Runnable {
     }
 
     public void start() {
-        SawimApplication.getExecutor().execute(this);
+        new Thread(this).start();
+    }
+
+    public void sleep(long ms) {
+        try {
+            Thread.sleep(ms);
+        } catch (Exception ignored) {
+        }
     }
 }

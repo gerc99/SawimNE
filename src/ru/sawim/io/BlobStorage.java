@@ -20,13 +20,15 @@ public final class BlobStorage {
 
     private String name;
 
+    SqlAsyncTask thread = new SqlAsyncTask("BlobStorage");
+
     public static String[] getList() {
         Context context = SawimApplication.getInstance();
         return context.databaseList();
     }
 
-    public static void delete(final String tableName) {
-        SqlAsyncTask.execute(new SqlAsyncTask.OnTaskListener() {
+    public void delete(final String tableName) {
+        thread.execute(new SqlAsyncTask.OnTaskListener() {
             @Override
             public void run() {
                 try {
@@ -40,7 +42,7 @@ public final class BlobStorage {
 
     public BlobStorage(final String recordStoreName) {
         name = recordStoreName;
-        SqlAsyncTask.execute(new SqlAsyncTask.OnTaskListener() {
+        thread.execute(new SqlAsyncTask.OnTaskListener() {
             @Override
             public void run() {
                 String CREATE_BLOB_TABLE = "create table if not exists "
@@ -61,7 +63,7 @@ public final class BlobStorage {
     }
 
     public void addRecord(final byte data[]) {
-        SqlAsyncTask.execute(new SqlAsyncTask.OnTaskListener() {
+        thread.execute(new SqlAsyncTask.OnTaskListener() {
 
             @Override
             public void run() {
@@ -84,7 +86,7 @@ public final class BlobStorage {
     }
 
     public void setRecord(final int id, final byte data[]) {
-        SqlAsyncTask.execute(new SqlAsyncTask.OnTaskListener() {
+        thread.execute(new SqlAsyncTask.OnTaskListener() {
             @Override
             public void run() {
                 ContentValues values = new ContentValues();
@@ -95,7 +97,7 @@ public final class BlobStorage {
     }
 
     public void deleteRecord(final int id) {
-        SqlAsyncTask.execute(new SqlAsyncTask.OnTaskListener() {
+        thread.execute(new SqlAsyncTask.OnTaskListener() {
             @Override
             public void run() {
                 SawimApplication.getDatabaseHelper().getWritableDatabase().delete(name, WHERE_ID, new String[]{String.valueOf(id)});

@@ -156,6 +156,7 @@ abstract public class Contact implements TreeNode {
 
     public void activate(BaseActivity activity, Protocol p) {
         RosterHelper.getInstance().setCurrentContact(this);
+        p.oldContactIdWithMessage = null;
     }
 
     public static final byte CONTACT_NO_AUTH = 1 << 1;
@@ -213,12 +214,7 @@ abstract public class Contact implements TreeNode {
 
     public final void updateChatState(final Protocol protocol, final Chat chat) {
         if (null != chat) {
-            SawimApplication.getExecutor().execute(new Runnable() {
-                @Override
-                public void run() {
-                    protocol.getStorage().updateUnreadMessagesCount(protocol.getUserId(), getUserId(), chat.getAllUnreadMessageCount());
-                }
-            });
+            protocol.getStorage().updateUnreadMessagesCount(protocol.getUserId(), getUserId(), chat.getAllUnreadMessageCount());
         }
     }
 

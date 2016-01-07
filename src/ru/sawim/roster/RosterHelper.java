@@ -119,21 +119,16 @@ public final class RosterHelper {
     }
 
     public void loadAccounts() {
-        SawimApplication.getExecutor().execute(new Runnable() {
-            @Override
-            public void run() {
-                int count = getProtocolCount();
-                for (int i = 0; i < count; ++i) {
-                    Protocol protocol = getProtocol(i);
-                    protocol.load();
-                    autoConnect(i);
-                }
-                if (accountsLoaded != null) {
-                    accountsLoaded.onAccountsLoaded();
-                }
-                SawimApplication.actionQueue.put(SawimActivity.ACTION_ACC_LOADED, SawimActivity.ACTION_ACC_LOADED);
-            }
-        });
+        int count = getProtocolCount();
+        for (int i = 0; i < count; ++i) {
+            Protocol protocol = getProtocol(i);
+            protocol.load();
+            autoConnect(i);
+        }
+        if (accountsLoaded != null) {
+            accountsLoaded.onAccountsLoaded();
+        }
+        SawimApplication.actionQueue.put(SawimActivity.ACTION_ACC_LOADED, SawimActivity.ACTION_ACC_LOADED);
     }
 
     private void addProtocol(Profile account, boolean load) {

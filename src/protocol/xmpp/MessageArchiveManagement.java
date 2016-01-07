@@ -163,7 +163,7 @@ public class MessageArchiveManagement {
                 contact = connection.getProtocol().getItemByUID(query.getWith());
             }
             contact.firstServerMsgId = first;
-            RosterStorage.updateFirstServerMsgId(contact);
+            connection.getXmpp().getStorage().updateFirstServerMsgId(contact);
         }
         if (complete || relevant == null) {
             finalizeQuery(connection.getProtocol(), query);

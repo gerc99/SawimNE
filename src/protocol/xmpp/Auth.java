@@ -17,15 +17,15 @@ import ru.sawim.modules.crypto.MD5;
  */
 public class Auth {
 
-    public static boolean authorized_ = false;
+    public boolean authorized_ = false;
 
     /*static String rebindSessionId = "";
     static boolean rebindSupported = false;
     static boolean rebindEnabled = false;*/
 
-    private static SASL_ScramSha1 scramSHA1;
+    private SASL_ScramSha1 scramSHA1;
 
-    public static void parseAuth(XmppConnection connection, XmlNode x) throws SawimException {
+    public void parseAuth(XmppConnection connection, XmlNode x) throws SawimException {
         if ((null == x) || !x.is("stream:features")) {
             nonSaslLogin(connection);
         } else {
@@ -33,7 +33,7 @@ public class Auth {
         }
     }
 
-    public static void loginParse(XmppConnection connection, XmlNode x) throws SawimException {
+    public void loginParse(XmppConnection connection, XmlNode x) throws SawimException {
         if (x.is("stream:features")) {
             parseStreamFeatures(connection, x);
             return;
@@ -108,7 +108,7 @@ public class Auth {
         connection.parse(x);
     }
 
-    public static void parseStreamFeatures(XmppConnection connection, XmlNode x) throws SawimException {
+    public void parseStreamFeatures(XmppConnection connection, XmlNode x) throws SawimException {
         XmlNode x2;
         /*x2 = x.getFirstNode("rebind", "p1:rebind");
         if (x2 != null) {
@@ -198,7 +198,7 @@ public class Auth {
         }
     }
 
-    private static boolean isMechanism(XmlNode list, String myMechanism) {
+    private boolean isMechanism(XmlNode list, String myMechanism) {
         for (int i = 0; i < list.childrenCount(); ++i) {
             XmlNode mechanism = list.childAt(i);
             if (mechanism.is("mechanism") && myMechanism.equals(mechanism.value)) {
@@ -208,7 +208,7 @@ public class Auth {
         return false;
     }
 
-    private static void resourceBinding(XmppConnection connection) throws SawimException {
+    private void resourceBinding(XmppConnection connection) throws SawimException {
         DebugLog.systemPrintln("[INFO-JABBER] Send bind request");
         connection.sendRequest("<iq type='set' id='bind'>"
                 + "<bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'>"
@@ -217,7 +217,7 @@ public class Auth {
                 + "</iq>");
     }
 
-    /*private static void saveRebindSessionId(XmppConnection connection, XmlNode x) throws SawimException {
+    /*private void saveRebindSessionId(XmppConnection connection, XmlNode x) throws SawimException {
         if (x.is("stream:stream")) {
             Log.e("saveRebindSessionId", "" + rebindSupported);
             XmppSession.getInstance().load(connection);
@@ -230,7 +230,7 @@ public class Auth {
         }
     }*/
 
-    public static void nonSaslLogin(XmppConnection connection) throws SawimException {
+    public void nonSaslLogin(XmppConnection connection) throws SawimException {
         Xmpp protocol = connection.getXmpp();
         String user = Jid.getNick(protocol.getUserId());
         connection.sendRequest(
@@ -245,7 +245,7 @@ public class Auth {
         setAuthStatus(connection, XmlConstants.S_RESULT.equals(answer.getAttribute(XmlConstants.S_TYPE)));
     }
 
-    /*private static boolean tryRebind(XmppConnection connection) throws SawimException {
+    /*private boolean tryRebind(XmppConnection connection) throws SawimException {
         connection.setProgress(50);
         XmppSession.getInstance().load(connection);
         if (rebindSessionId != null) {
@@ -271,7 +271,7 @@ public class Auth {
         return false;
     }*/
 
-    public static void setAuthStatus(XmppConnection connection, boolean authorized) throws SawimException {
+    public void setAuthStatus(XmppConnection connection, boolean authorized) throws SawimException {
         if (!authorized_) {
             authorized_ = authorized;
             if (!authorized) {
@@ -281,13 +281,13 @@ public class Auth {
         }
     }
 
-    private static void openStreamXml(XmppConnection connection) throws SawimException {
+    private void openStreamXml(XmppConnection connection) throws SawimException {
         connection.write(connection.getOpenStreamXml(connection.domain_));
         connection.readXmlNode(true); // "stream:stream"
         parseAuth(connection, connection.readXmlNode(true));
     }
 
-    private static void setStreamCompression(XmppConnection connection) throws SawimException {
+    private void setStreamCompression(XmppConnection connection) throws SawimException {
         connection.setProgress(20);
         try {
             connection.socket.startCompression();
@@ -299,14 +299,14 @@ public class Auth {
         openStreamXml(connection);
     }
 
-    private static void setStreamTls(XmppConnection connection) throws SawimException {
+    private void setStreamTls(XmppConnection connection) throws SawimException {
         connection.setProgress(15);
         connection.socket.startTls(SawimApplication.sc, connection.domain_);
         DebugLog.println("tls turn on");
         openStreamXml(connection);
     }
 
-    public static void parseChallenge(XmppConnection connection, XmlNode x) throws SawimException {
+    public void parseChallenge(XmppConnection connection, XmlNode x) throws SawimException {
         DebugLog.systemPrintln("[INFO-JABBER] Received challenge");
 
         String resp = "<response xmlns='urn:ietf:params:xml:ns:xmpp-sasl'";
@@ -339,7 +339,7 @@ public class Auth {
         connection.sendRequest(resp);
     }
 
-    private static String responseMd5Digest(String user, String pass,
+    private String responseMd5Digest(String user, String pass,
                                      String realm, String digestUri, String nonce, String cnonce) {
         MD5 hUserRealmPass = new MD5();
         hUserRealmPass.init();

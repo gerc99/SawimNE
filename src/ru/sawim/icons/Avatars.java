@@ -8,6 +8,7 @@ import ru.sawim.SawimApplication;
 public class Avatars {
 
     public static Bitmap getRoundedBitmap(Bitmap bitmap) {
+        if (bitmap == null) return null;
         final int width = bitmap.getWidth();
         final int height = bitmap.getHeight();
         final Bitmap outputBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);

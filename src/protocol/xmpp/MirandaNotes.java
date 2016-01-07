@@ -119,7 +119,8 @@ public final class MirandaNotes {
     }
 
     public static void loadMirandaNotes(Xmpp xmpp, XmlNode storage) {
-        xmpp.getMirandaNotes().clear();
+        MirandaNotes mirandaNotes = xmpp.getMirandaNotes();
+        mirandaNotes.clear();
         while (0 < storage.childrenCount()) {
             XmlNode item = storage.popChildNode();
             String tags = item.getAttribute("tags");
@@ -128,7 +129,7 @@ public final class MirandaNotes {
             if (title == null) title = "";
             if (tags == null) tags = "";
             if (text == null) text = "";
-            xmpp.getMirandaNotes().addNote(title, tags, text);
+            mirandaNotes.addNote(title, tags, text);
         }
     }
 

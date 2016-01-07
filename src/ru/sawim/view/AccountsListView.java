@@ -75,7 +75,18 @@ public class AccountsListView extends Fragment {
 
         switch (item.getItemId()) {
             case R.id.menu_edit:
-
+                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                StartWindowView loginView = new StartWindowView();
+                loginView.init(accountID, new StartWindowView.OnAddListener() {
+                    @Override
+                    public void onAdd() {
+                        Util.hideKeyboard(getActivity());
+                        update();
+                    }
+                });
+                transaction.replace(R.id.fragment_container, loginView, StartWindowView.TAG);
+                transaction.addToBackStack(null);
+                transaction.commitAllowingStateLoss();
                 return true;
 
             case R.id.lift_up:
@@ -219,6 +230,17 @@ public class AccountsListView extends Fragment {
     }
 
     public void addAccount() {
-
+        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+        StartWindowView loginView = new StartWindowView();
+        loginView.init(-1, new StartWindowView.OnAddListener() {
+            @Override
+            public void onAdd() {
+                Util.hideKeyboard(getActivity());
+                getActivity().finish();
+            }
+        });
+        transaction.replace(R.id.fragment_container, loginView, StartWindowView.TAG);
+        transaction.addToBackStack(null);
+        transaction.commitAllowingStateLoss();
     }
 }

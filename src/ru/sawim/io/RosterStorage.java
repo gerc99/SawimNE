@@ -32,6 +32,9 @@ public class RosterStorage {
 
     public static final String storeName = "roster";
     public static final String subContactsTable = "subcontacts";
+
+    SqlAsyncTask thread = new SqlAsyncTask("RosterStorage");
+
     public RosterStorage() {
         final String CREATE_ROSTER_TABLE = "create table if not exists "
                 + storeName + " ("
@@ -62,7 +65,7 @@ public class RosterStorage {
                 + DatabaseHelper.SUB_CONTACT_PRIORITY + " int, "
                 + DatabaseHelper.SUB_CONTACT_PRIORITY_A + " int);";
 
-        SqlAsyncTask.execute(new SqlAsyncTask.OnTaskListener() {
+        thread.execute(new SqlAsyncTask.OnTaskListener() {
             @Override
             public void run() {
                 SawimApplication.getDatabaseHelper().getWritableDatabase().execSQL(CREATE_ROSTER_TABLE);
@@ -86,12 +89,6 @@ public class RosterStorage {
                     Contact contact = getContact(protocol, cursor);
                     roster.getContactItems().put(contact.getUserId(), contact);
                 } while (cursor.moveToNext());
-            }
-            Log.e("load", roster+" "+roster.getContactItems().size());
-            Enumeration<Group> e = protocol.getGroupItems().elements();
-            while (e.hasMoreElements()) {
-                Group group = e.nextElement();
-                Log.e("group", group+" "+group.getContacts().size());
             }
         } catch (Exception e) {
             DebugLog.panic(e);
@@ -192,7 +189,7 @@ public class RosterStorage {
             group = protocol.getNotInListGroup();
         }
         final Group finalGroup = group;
-        SqlAsyncTask.execute(new SqlAsyncTask.OnTaskListener() {
+        thread.execute(new SqlAsyncTask.OnTaskListener() {
             @Override
             public void run() {
                 Cursor cursor = null;
@@ -219,7 +216,7 @@ public class RosterStorage {
     }
 
     public void save(final XmppContact contact, final XmppServiceContact.SubContact subContact) {
-        SqlAsyncTask.execute(new SqlAsyncTask.OnTaskListener() {
+        thread.execute(new SqlAsyncTask.OnTaskListener() {
             @Override
             public void run() {
                 Cursor cursor = null;
@@ -249,7 +246,7 @@ public class RosterStorage {
     }
 
     public void delete(final Contact contact, final XmppServiceContact.SubContact subContact) {
-        SqlAsyncTask.execute(new SqlAsyncTask.OnTaskListener() {
+        thread.execute(new SqlAsyncTask.OnTaskListener() {
             @Override
             public void run() {
                 try {
@@ -267,7 +264,7 @@ public class RosterStorage {
     }
 
     public void deleteContact(final Protocol protocol, final Contact contact) {
-        SqlAsyncTask.execute(new SqlAsyncTask.OnTaskListener() {
+        thread.execute(new SqlAsyncTask.OnTaskListener() {
             @Override
             public void run() {
                 SQLiteDatabase sqLiteDatabase = SawimApplication.getDatabaseHelper().getWritableDatabase();
@@ -277,7 +274,7 @@ public class RosterStorage {
     }
 
     public void deleteGroup(final Protocol protocol, final Group group) {
-        SqlAsyncTask.execute(new SqlAsyncTask.OnTaskListener() {
+        thread.execute(new SqlAsyncTask.OnTaskListener() {
             @Override
             public void run() {
                 SQLiteDatabase sqLiteDatabase = SawimApplication.getDatabaseHelper().getWritableDatabase();
@@ -290,7 +287,7 @@ public class RosterStorage {
     }
 
     public void updateGroup(final Protocol protocol, final Group group) {
-        SqlAsyncTask.execute(new SqlAsyncTask.OnTaskListener() {
+        thread.execute(new SqlAsyncTask.OnTaskListener() {
             @Override
             public void run() {
                 SQLiteDatabase sqLiteDatabase = SawimApplication.getDatabaseHelper().getWritableDatabase();
@@ -305,7 +302,7 @@ public class RosterStorage {
     }
 
     public void addGroup(final Protocol protocol, final Group group) {
-        SqlAsyncTask.execute(new SqlAsyncTask.OnTaskListener() {
+        thread.execute(new SqlAsyncTask.OnTaskListener() {
             @Override
             public void run() {
                 SQLiteDatabase sqLiteDatabase = SawimApplication.getDatabaseHelper().getWritableDatabase();
@@ -317,7 +314,7 @@ public class RosterStorage {
     }
 
     public void setOfflineStatuses(final Protocol protocol) {
-        SqlAsyncTask.execute(new SqlAsyncTask.OnTaskListener() {
+        thread.execute(new SqlAsyncTask.OnTaskListener() {
             @Override
             public void run() {
                 SQLiteDatabase sqLiteDatabase = SawimApplication.getDatabaseHelper().getWritableDatabase();
@@ -372,8 +369,8 @@ public class RosterStorage {
         return values;
     }
 
-    public static void updateFirstServerMsgId(final Contact contact) {
-        SqlAsyncTask.execute(new SqlAsyncTask.OnTaskListener() {
+    public void updateFirstServerMsgId(final Contact contact) {
+        thread.execute(new SqlAsyncTask.OnTaskListener() {
             @Override
             public void run() {
                 try {
@@ -387,8 +384,8 @@ public class RosterStorage {
         });
     }
 
-    public static void updateAvatarHash(final String uniqueUserId, final String hash) {
-        SqlAsyncTask.execute(new SqlAsyncTask.OnTaskListener() {
+    public void updateAvatarHash(final String uniqueUserId, final String hash) {
+        thread.execute(new SqlAsyncTask.OnTaskListener() {
             @Override
             public void run() {
                 try {
@@ -402,8 +399,8 @@ public class RosterStorage {
         });
     }
 
-    public static void updateSubContactAvatarHash(final String uniqueUserId, final String resource, final String hash) {
-        SqlAsyncTask.execute(new SqlAsyncTask.OnTaskListener() {
+    public void updateSubContactAvatarHash(final String uniqueUserId, final String resource, final String hash) {
+        thread.execute(new SqlAsyncTask.OnTaskListener() {
             @Override
             public void run() {
                 try {
@@ -468,7 +465,7 @@ public class RosterStorage {
     }
 
     public void updateUnreadMessagesCount(final String protocolId, final String uniqueUserId, final int count) {
-        SqlAsyncTask.execute(new SqlAsyncTask.OnTaskListener() {
+        thread.execute(new SqlAsyncTask.OnTaskListener() {
             @Override
             public void run() {
                 try {
@@ -483,8 +480,8 @@ public class RosterStorage {
         });
     }
 
-    public synchronized void loadUnreadMessages() {
-        SqlAsyncTask.execute(new SqlAsyncTask.OnTaskListener() {
+    public void loadUnreadMessages() {
+        thread.execute(new SqlAsyncTask.OnTaskListener() {
             @Override
             public void run() {
                 Cursor cursor = null;

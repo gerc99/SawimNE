@@ -1,9 +1,8 @@
 package ru.sawim.activities;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.res.Configuration;
-import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import ru.sawim.ExternalApi;
@@ -41,6 +40,11 @@ public class BaseActivity extends ActionBarActivity {
                 configurationChanged.onConfigurationChanged();
             }
         }
+    }
+
+    public void recreateActivity() {
+        finish();
+        startActivity(new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION));
     }
 
     public static void setTheme(Activity a) {

@@ -67,6 +67,7 @@ public final class XmppConnection extends ClientConnection {
     private AdHoc adhoc;
     public MessageArchiveManagement messageArchiveManagement = new MessageArchiveManagement();
     private ServerFeatures serverFeatures = new ServerFeatures();
+    private Auth auth = new Auth();
 
     private XmppForm xmppForm;
 
@@ -291,9 +292,9 @@ public final class XmppConnection extends ClientConnection {
 
         readXmlNode(true);
         resolver.close();
-        Auth.parseAuth(this, readXmlNode(true));
-        while (!Auth.authorized_) {
-            Auth.loginParse(this, readXmlNode(true));
+        auth.parseAuth(this, readXmlNode(true));
+        while (!auth.authorized_) {
+            auth.loginParse(this, readXmlNode(true));
         }
 
         setProgress(30);
@@ -302,8 +303,13 @@ public final class XmppConnection extends ClientConnection {
             usePong();
             setProgress(100);
         } else {
-            requestDiscoServerItems();
-            requestServerFeatures(domain_);
+            //requestDiscoServerItems();
+            //requestServerFeatures(domain_);
+            try {
+                write(XmlConstants.GET_ROSTER_XML);
+            } catch (SawimException e) {
+                e.printStackTrace();
+            }
 			setProgress(50);
 			usePong();
 			setProgress(60);
@@ -351,7 +357,7 @@ public final class XmppConnection extends ClientConnection {
             Messages.parseMessage(this, x);
 
         } else if (x.is("stream:error")) {
-            Auth.setAuthStatus(this, false);
+            auth.setAuthStatus(this, false);
 
             XmlNode err = (null == x.childAt(0)) ? x : x.childAt(0);
             DebugLog.systemPrintln("[INFO-JABBER] Stream error!: " + err.name + "," + err.value);

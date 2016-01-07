@@ -72,7 +72,9 @@ public class RosterView extends SawimFragment implements View.OnClickListener, O
         super.onAttach(context);
         Activity activity = getActivity();
         handler = new Handler(this);
+
         chatsImage = new MyImageButton(activity);
+        chatsImage.setOnClickListener(this);
 
         textViewBar = new TextView(activity);
         textViewBar.setText(R.string.app_name);
@@ -232,7 +234,6 @@ public class RosterView extends SawimFragment implements View.OnClickListener, O
         actionBar.setDisplayHomeAsUpEnabled(false);
         actionBar.setHomeButtonEnabled(false);
         actionBar.setDisplayShowCustomEnabled(true);
-        chatsImage.setOnClickListener(this);
         Toolbar.LayoutParams barLinearLayoutLP = new Toolbar.LayoutParams(Toolbar.LayoutParams.MATCH_PARENT, Toolbar.LayoutParams.MATCH_PARENT);
         LinearLayout.LayoutParams rosterBarLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
         LinearLayout.LayoutParams chatsImageLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);

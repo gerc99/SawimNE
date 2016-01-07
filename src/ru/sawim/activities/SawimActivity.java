@@ -174,9 +174,9 @@ public class SawimActivity extends BaseActivity implements OnAccountsLoaded {
                     if (startWindowView != null)
                         fragmentManager.popBackStack();
                 }
-                RosterHelper.getInstance().setOnAccountsLoaded(null);
             }
         });
+        RosterHelper.getInstance().setOnAccountsLoaded(null);
     }
 
     @Override
@@ -191,6 +191,12 @@ public class SawimActivity extends BaseActivity implements OnAccountsLoaded {
     public void onPause() {
         super.onPause();
         SawimApplication.minimize();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
     }
 
     @Override
@@ -220,11 +226,6 @@ public class SawimActivity extends BaseActivity implements OnAccountsLoaded {
             recreateActivity();
         else
             super.onBackPressed();
-    }
-
-    public void recreateActivity() {
-        finish();
-        startActivity(new Intent(this, SawimActivity.class).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION));
     }
 
     public void closeActivity() {

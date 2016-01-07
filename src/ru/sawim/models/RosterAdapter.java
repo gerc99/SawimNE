@@ -288,8 +288,6 @@ public class RosterAdapter extends RecyclerView.Adapter<RosterAdapter.ViewHolder
         int contactCounter;
         int onlineContactCounter;
         boolean all = !hideOffline;
-        Log.e("load222", p.getRoster()+" "+p.getContactItems().size());
-        Log.e("load22", " " + p.getGroupItems().size());
         Enumeration<Group> e = p.getGroupItems().elements();
         while (e.hasMoreElements()) {
             Group group = e.nextElement();
@@ -299,7 +297,6 @@ public class RosterAdapter extends RecyclerView.Adapter<RosterAdapter.ViewHolder
             list.add(newGroup);
             List<Contact> contacts = group.getContacts();
             int contactsSize = contacts.size();
-            Log.e("load333", " " + contactsSize);
             for (Contact contact : contacts) {
                 if (all || contact.isVisibleInContactList()) {
                     if (newGroup.isExpanded()) {

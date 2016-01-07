@@ -1,10 +1,7 @@
 package ru.sawim.view;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,10 +32,18 @@ public class StartWindowView extends Fragment {
 
     public static final String TAG = "StartWindowView";
 
+    OnAddListener addListener;
+    int accountID;
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         SawimApplication.returnFromAcc = true;
+    }
+
+    public void init(int accountID, OnAddListener addListener) {
+        this.accountID = accountID;
+        this.addListener = addListener;
     }
 
     @Override
@@ -46,12 +51,12 @@ public class StartWindowView extends Fragment {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.start_window, container, false);
 
-        final boolean isEdit = !Options.getAccount(0).userId.isEmpty();
+        final boolean isEdit = accountID > -1;
         final EditText editLogin = (EditText) v.findViewById(R.id.edit_login);
         final EditText editPass = (EditText) v.findViewById(R.id.edit_password);
         final Button buttonOk = (Button) v.findViewById(R.id.ButtonOK);
         if (isEdit) {
-            final Profile account = Options.getAccount(0);
+            final Profile account = Options.getAccount(accountID);
             getActivity().setTitle(R.string.acc_edit);
             editLogin.setText(account.userId);
             editPass.setText(account.password);
@@ -90,7 +95,8 @@ public class StartWindowView extends Fragment {
                     SawimApplication.getInstance().setStatus(RosterHelper.getInstance().getProtocol(account), StatusInfo.STATUS_ONLINE, "");
                     getFragmentManager().popBackStack();
 
-
+                    if (addListener != null)
+                        addListener.onAdd();
                 }
             }
         });
@@ -119,11 +125,14 @@ public class StartWindowView extends Fragment {
     public void onResume() {
         super.onResume();
         ((BaseActivity) getActivity()).resetBar(JLocale.getString(R.string.app_name));
-        if (RosterHelper.getInstance().getProtocolCount() > 0) {
-            ((SawimActivity) getActivity()).recreateActivity();
-        } else {
-            if (SawimApplication.isManyPane())
-                getActivity().getSupportFragmentManager().popBackStack();
+        boolean isEdit = accountID > -1;
+        if (!isEdit) {
+            if (RosterHelper.getInstance().getProtocolCount() > 0) {
+                ((BaseActivity) getActivity()).recreateActivity();
+            } else {
+                if (SawimApplication.isManyPane())
+                    getActivity().getSupportFragmentManager().popBackStack();
+            }
         }
         getActivity().supportInvalidateOptionsMenu();
     }
@@ -139,5 +148,9 @@ public class StartWindowView extends Fragment {
         else
             getActivity().getSupportFragmentManager().popBackStack();
         Util.hideKeyboard(getActivity());
+    }
+
+    public interface OnAddListener {
+        void onAdd();
     }
 }

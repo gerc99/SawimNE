@@ -39,7 +39,7 @@ import ru.sawim.widget.roster.RosterViewRoot;
  * Created by gerc on 31.12.2015.
  */
 public class SearchContactFragment extends SawimFragment
-        implements SearchView.OnQueryTextListener, OnUpdateRoster, Handler.Callback,
+        implements OnUpdateRoster, Handler.Callback,
         MenuItemCompat.OnActionExpandListener, View.OnClickListener {
 
     public static final String TAG = SearchContactFragment.class.getSimpleName();
@@ -50,7 +50,6 @@ public class SearchContactFragment extends SawimFragment
 
     RosterViewRoot rosterViewLayout;
     Handler handler;
-    SearchView searchView;
     MenuItem searchMenuItem;
 
     public SearchContactFragment() {
@@ -107,11 +106,8 @@ public class SearchContactFragment extends SawimFragment
     public void onDetach() {
         super.onDetach();
         getRosterAdapter().setOnItemClickListener(null);
-        searchView.setOnQueryTextListener(null);
-        MenuItemCompat.setOnActionExpandListener(searchMenuItem, null);
         unregisterForContextMenu(getListView());
         getListView().setAdapter(null);
-        searchView = null;
         handler = null;
         rosterViewLayout = null;
     }
@@ -213,11 +209,40 @@ public class SearchContactFragment extends SawimFragment
         getActivity().getMenuInflater().inflate(R.menu.menu_search_contact, menu);
 
         searchMenuItem = menu.findItem(R.id.action_search);
-        searchView = (SearchView) MenuItemCompat.getActionView(searchMenuItem);
-        searchView.setOnQueryTextListener(this);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchMenuItem);
+        searchView.setOnQueryTextListener(new OnQueryTextListener(getRosterAdapter()));
         searchView.setIconifiedByDefault(false);
 
         MenuItemCompat.setOnActionExpandListener(searchMenuItem, this);
+    }
+
+    private static class OnQueryTextListener implements SearchView.OnQueryTextListener {
+
+        RosterAdapter adapter;
+
+        OnQueryTextListener(RosterAdapter adapter) {
+            this.adapter = adapter;
+        }
+
+        @Override
+        public boolean onQueryTextChange(String newText) {
+            String query = newText.toLowerCase();
+            adapter.filterData(query);
+            return true;
+        }
+
+        @Override
+        public boolean onQueryTextSubmit(String query) {
+            return false;
+        }
+    };
+
+    @Override
+    public void onDestroyOptionsMenu() {
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchMenuItem);
+        MenuItemCompat.setOnActionExpandListener(searchMenuItem, null);
+        searchView.setOnQueryTextListener(null);
+        searchMenuItem = null;
     }
 
     @Override
@@ -231,18 +256,6 @@ public class SearchContactFragment extends SawimFragment
     public boolean onMenuItemActionExpand(MenuItem item) {
         // Do something when expanded
         return true; // Return true to expand action view
-    }
-
-    @Override
-    public boolean onQueryTextChange(String newText) {
-        String query = newText.toLowerCase();
-        getRosterAdapter().filterData(query);
-        return true;
-    }
-
-    @Override
-    public boolean onQueryTextSubmit(String query) {
-        return false;
     }
 
     private void openChat(Protocol p, Contact c, String sharingText) {
