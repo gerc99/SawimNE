@@ -3,6 +3,6 @@ gen/*
 .idea/*
 build/*
 .gradle/*
+*.iml
 keystore.properties
-SawimNE.iml
 SawimNE.apk
