@@ -1,5 +1,6 @@
 package ru.sawim.widget.chat;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -21,6 +22,7 @@ import ru.sawim.widget.Util;
  * Time: 19:34
  * To change this template use File | Settings | File Templates.
  */
+@SuppressLint("NewApi")
 public class ChatListsView extends IcsLinearLayout {
 
     private static final int CHAT_LIST_VIEW_INDEX = 0;

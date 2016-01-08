@@ -1,6 +1,8 @@
 package ru.sawim.widget;
 
+import android.annotation.TargetApi;
 import android.content.Context;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.widget.LinearLayout;
 
@@ -16,6 +18,7 @@ public class SizeNotifierLinearLayout extends LinearLayout {
         super(context, attrs);
     }
 
+    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
     public SizeNotifierLinearLayout(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }

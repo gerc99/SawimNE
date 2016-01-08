@@ -1,5 +1,6 @@
 package ru.sawim;
 
+import android.annotation.TargetApi;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
@@ -141,6 +142,7 @@ public class ExternalApi {
         return file.substring(file.lastIndexOf('/') + 1);
     }
 
+    @TargetApi(Build.VERSION_CODES.KITKAT)
     public static String getPath(final Context context, final Uri uri) {
         final boolean isKitKat = Build.VERSION.SDK_INT >= 19;
         if (isKitKat && DocumentsContract.isDocumentUri(context, uri)) {

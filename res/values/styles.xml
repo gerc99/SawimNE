@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <style name="BaseTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="android:editTextStyle">@style/EditText</item>
 
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primary_dark</item>
         <item name="colorAccent">@color/accent</item>
-        <item name="android:navigationBarColor">@color/primary</item>
+        <item name="android:navigationBarColor" tools:targetApi="lollipop">@color/primary</item>
 
         <!-- Toolbar Theme / Apply white arrow -->
         <item name="colorControlNormal">@android:color/white</item>
@@ -43,7 +43,7 @@
         <item name="colorPrimary">@color/light_primary</item>
         <item name="colorPrimaryDark">@color/light_primary_dark</item>
         <item name="colorAccent">@color/light_accent</item>
-        <item name="android:navigationBarColor">@color/light_primary</item>
+        <item name="android:navigationBarColor" tools:targetApi="lollipop">@color/light_primary</item>
 
         <item name="android:textColorPrimary">@color/light_primary_text</item>
         <item name="android:textColorSecondary">@color/light_secondary_text</item>
@@ -75,7 +75,7 @@
         <item name="android:focusable">true</item>
         <item name="android:focusableInTouchMode">true</item>
         <item name="android:clickable">true</item>
-        <item name="android:textCursorDrawable">@null</item>
+        <item name="android:textCursorDrawable" tools:targetApi="honeycomb_mr1">@null</item>
     </style>
     <style name="Base.Widget.Design.TabLayout" parent="android:Widget">
         <item name="tabMaxWidth">@dimen/tab_max_width</item>

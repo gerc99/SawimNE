@@ -1,5 +1,6 @@
 package ru.sawim.widget.chat;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.Gravity;
 import android.widget.LinearLayout;
@@ -18,6 +19,7 @@ import ru.sawim.widget.Util;
  * Time: 19:35
  * To change this template use File | Settings | File Templates.
  */
+@SuppressLint("NewApi")
 public class ChatInputBarView extends IcsLinearLayout {
 
     private static final int MENU_BUTTON_INDEX = 0;
