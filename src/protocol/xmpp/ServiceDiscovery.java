@@ -20,7 +20,6 @@ import ru.sawim.view.TextBoxView;
 import java.util.Vector;
 
 public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
-
     private boolean isConferenceList = false;
     private int totalCount = 0;
 
@@ -45,7 +44,10 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
 
     public ServiceDiscovery() {
         serverBox = new TextBoxView();
+        serverBox.setCaption(R.string.service_discovery_server);
+
         searchBox = new TextBoxView();
+        searchBox.setCaption(R.string.service_discovery_search);
     }
 
     public void init(Xmpp protocol) {
