@@ -171,8 +171,8 @@ public final class ChatHistory {
     public BitmapDrawable getUnreadMessageIcon(List<Contact> contacts) {
         int icon = Message.ICON_NONE;
         Chat chat;
-        for (int i = contacts.size() - 1; 0 <= i; --i) {
-            chat = getChat(contacts.get(i));
+        for (Contact contact : contacts) {
+            chat = getChat(contact);
             if (chat != null) {
                 icon = getMoreImportant(icon, chat.getNewMessageIcon());
             }
