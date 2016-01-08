@@ -1,5 +1,6 @@
 package ru.sawim.view.preference;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.preference.Preference;
@@ -73,6 +74,7 @@ public class SeekBarPreference extends Preference implements SeekBar.OnSeekBarCh
     /**
      * Create progress bar and other view contents.
      */
+    @SuppressLint("MissingSuperCall")
     protected View onCreateView(ViewGroup p) {
 
         final Context ctx = getContext();
