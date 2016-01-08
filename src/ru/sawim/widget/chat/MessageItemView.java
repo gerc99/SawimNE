@@ -40,6 +40,8 @@ public class MessageItemView extends View {
     public static final int PADDING_RIGHT = Util.dipToPixels(SawimApplication.getContext(), 20);
     public static final int PADDING_BOTTOM = Util.dipToPixels(SawimApplication.getContext(), 10);
 
+    public static final int BACKGROUND_CORNER = Util.dipToPixels(SawimApplication.getContext(), 7);
+
     public static final int BACKGROUND_NONE = 0;
     public static final int BACKGROUND_INCOMING = 1;
     public static final int BACKGROUND_OUTCOMING = 2;
@@ -209,11 +211,11 @@ public class MessageItemView extends View {
         if (backgroundIndex == BACKGROUND_INCOMING) {
             //setDrawableBounds(SawimResources.backgroundDrawableIn, 0, getPaddingTop() / 2, width - getPaddingRight() / 2, getHeight() - getPaddingBottom() / 2);
             //SawimResources.backgroundDrawableIn.draw(canvas);
-            canvas.drawRoundRect(new RectF(getPaddingLeft(), getPaddingTop(), width - getPaddingRight() / 2, getHeight()), 7, 7, highlightPaint);
+            canvas.drawRoundRect(new RectF(getPaddingLeft(), getPaddingTop(), width - getPaddingRight() / 2, getHeight()), BACKGROUND_CORNER, BACKGROUND_CORNER, highlightPaint);
         } else if (backgroundIndex == BACKGROUND_OUTCOMING) {
             //setDrawableBounds(SawimResources.backgroundDrawableOut, getPaddingLeft() / 2, getPaddingTop() / 2, width - getPaddingRight() / 2, getHeight() - getPaddingBottom() / 2);
             //SawimResources.backgroundDrawableOut.draw(canvas);
-            canvas.drawRoundRect(new RectF((float) (getPaddingLeft() * 1.5), getPaddingTop(), width - getPaddingRight() / 2, getHeight()), 7, 7, highlightPaint);
+            canvas.drawRoundRect(new RectF((float) (getPaddingLeft() * 1.5), getPaddingTop(), width - getPaddingRight() / 2, getHeight()), BACKGROUND_CORNER, BACKGROUND_CORNER, highlightPaint);
         }
 
         if (nickText != null) {
