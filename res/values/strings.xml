@@ -259,6 +259,7 @@
     <string name="moderator">moder</string>
     <string name="member">member</string>
     <string name="none">none</string>
+    <string name="outcast">outcast</string>
     <string name="participant">participant</string>
     <string name="visitor">visitor</string>
     <string name="owners">Owners</string>
@@ -383,7 +384,7 @@
     <string name="use_simple_input">Send message by Enter key</string>
     <string name="vibration">Vibration</string>
     <string name="volume">Volume</string>
-    <string name="wait">Please wait ...</string>
+    <string name="wait">Please wait…</string>
     <string name="was_baned">was baned</string>
     <string name="was_kicked">was kicked</string>
     <string name="when_locked">When locked</string>
@@ -434,17 +435,17 @@
     <string name="error_100">Unknown error</string>
     <string name="error_110">Multiple logins</string>
     <string name="error_111">Bad password</string>
-    <string name="error_112">Non-existant UIN</string>
+    <string name="error_112">Non-existent UIN</string>
     <string name="error_113">Too many clients from same IP</string>
     <string name="error_114">Rate exceeded</string>
     <string name="error_116">Offline message could not be processed</string>
     <string name="error_118">No response from server</string>
-    <string name="error_120">An I/O error occured</string>
+    <string name="error_120">An I/O error occurred</string>
     <string name="error_121">Requested TCP connection cannot be made</string>
     <string name="error_122">Specified server host and/or port is invalid</string>
     <string name="error_123">Connection prohibited</string>
     <string name="error_124">Input stream is out of sync</string>
-    <string name="error_125">An I/O error occured</string>
+    <string name="error_125">An I/O error occurred</string>
     <string name="error_126">Requested TCP connection cannot be made</string>
     <string name="error_127">Specified server host and/or port is invalid</string>
     <string name="error_128">Connection has not been established</string>
