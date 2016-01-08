@@ -71,5 +71,9 @@ public final class SawimException extends Exception {
         return (errorCode < 110 || errorCode > 117)
                 && errorCode != 123 && errorCode != 127 && errorCode != 140;
     }
+
+    public int getErrorCode() {
+        return errorCode;
+    }
 }
 

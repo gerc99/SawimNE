@@ -10,6 +10,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.view.ContextMenu;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -21,6 +22,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
 import protocol.Contact;
+import protocol.ContactMenu;
 import protocol.Group;
 import protocol.Protocol;
 import protocol.StatusInfo;
@@ -29,6 +31,7 @@ import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
 import ru.sawim.activities.BaseActivity;
 import ru.sawim.activities.SawimActivity;
+import ru.sawim.forms.ManageContactListForm;
 import ru.sawim.listener.OnUpdateRoster;
 import ru.sawim.models.RosterAdapter;
 import ru.sawim.roster.ProtocolBranch;
@@ -99,6 +102,14 @@ public class SearchContactFragment extends SawimFragment
                              Bundle savedInstanceState) {
         if (rosterViewLayout.getParent() != null)
             ((ViewGroup) rosterViewLayout.getParent()).removeView(rosterViewLayout);
+
+        ActionBar actionBar = ((BaseActivity) getActivity()).getSupportActionBar();
+        actionBar.setDisplayShowTitleEnabled(false);
+        actionBar.setDisplayShowHomeEnabled(false);
+        actionBar.setDisplayUseLogoEnabled(false);
+        actionBar.setDisplayHomeAsUpEnabled(false);
+        actionBar.setHomeButtonEnabled(false);
+        actionBar.setDisplayShowCustomEnabled(true);
 
         return rosterViewLayout;
     }
@@ -298,6 +309,7 @@ public class SearchContactFragment extends SawimFragment
     @Override
     public void onClick(View v) {
         if (v == connectBtn) {
+            connectBtn.setVisibility(View.GONE);
             Protocol p = RosterHelper.getInstance().getProtocol(0);
             SawimApplication.getInstance().setStatus(p, (p.isConnected() || p.isConnecting())
                     ? StatusInfo.STATUS_OFFLINE : StatusInfo.STATUS_ONLINE, "");
@@ -333,6 +345,53 @@ public class SearchContactFragment extends SawimFragment
                 update();
             }
         }
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        MyListView.RecyclerContextMenuInfo contextMenuInfo = (MyListView.RecyclerContextMenuInfo) menuInfo;
+        TreeNode treeNode = getRosterAdapter().getItem(contextMenuInfo.position);
+        if (RosterHelper.getInstance().getCurrPage() == RosterHelper.ACTIVE_CONTACTS) {
+            if (treeNode.getType() == TreeNode.CONTACT) {
+                Contact contact = (Contact) treeNode;
+                new ContactMenu(contact.getProtocol(), contact).getContextMenu(menu);
+            }
+        } else {
+            if (treeNode.getType() == TreeNode.PROTOCOL) {
+                RosterHelper.getInstance().showProtocolMenu((BaseActivity) getActivity(), ((ProtocolBranch) treeNode).getProtocol());
+            } else if (treeNode.getType() == TreeNode.GROUP) {
+                Protocol p = RosterHelper.getInstance().getProtocol((Group) treeNode);
+                if (p.isConnected()) {
+                    new ManageContactListForm(p, (Group) treeNode).showMenu((BaseActivity) getActivity());
+                }
+            } else if (treeNode.getType() == TreeNode.CONTACT) {
+                new ContactMenu(((Contact) treeNode).getProtocol(), (Contact) treeNode).getContextMenu(menu);
+            }
+        }
+    }
+
+    @Override
+    public boolean onContextItemSelected(final android.view.MenuItem item) {
+        MyListView.RecyclerContextMenuInfo menuInfo = (MyListView.RecyclerContextMenuInfo) item.getMenuInfo();
+        TreeNode treeNode = getRosterAdapter().getItem(menuInfo.position);
+        if (treeNode == null) return false;
+        if (RosterHelper.getInstance().getCurrPage() == RosterHelper.ACTIVE_CONTACTS) {
+            if (treeNode.getType() == TreeNode.CONTACT) {
+                Contact contact = (Contact) treeNode;
+                contactMenuItemSelected(contact, item);
+            }
+        } else {
+            if (treeNode.getType() == TreeNode.CONTACT) {
+                contactMenuItemSelected((Contact) treeNode, item);
+                return true;
+            }
+        }
+        return super.onContextItemSelected(item);
+    }
+
+    private void contactMenuItemSelected(final Contact c, final android.view.MenuItem item) {
+        new ContactMenu(c.getProtocol(), c).doAction((BaseActivity) getActivity(), item.getItemId());
     }
 
     public RosterAdapter getRosterAdapter() {

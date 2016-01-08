@@ -37,6 +37,7 @@ public class SawimActivity extends BaseActivity implements OnAccountsLoaded {
     public static final String NOTIFY_REPLY = "ru.sawim.notify.reply";
     public static final String NOTIFY_CAPTCHA = "ru.sawim.notify.captcha";
     public static final String NOTIFY_UPLOAD = "ru.sawim.notify.upload";
+    public static final String ACTION_SHOW_LOGIN_WINDOW = "ru.sawim.show_login_window";
     public static final String ACTION_ACC_LOADED = "onAccountsLoaded";
 
     private boolean isOpenNewChat = false;
@@ -86,6 +87,13 @@ public class SawimActivity extends BaseActivity implements OnAccountsLoaded {
             if (rosterView != null)
                 rosterView.setMode(getIntent().getType().equals("text/plain") ? RosterView.MODE_SHARE_TEXT : RosterView.MODE_SHARE);
             return;
+        }
+        if (ACTION_SHOW_LOGIN_WINDOW.equals(getIntent().getAction())) {
+            StartWindowView newFragment = new StartWindowView();
+            FragmentManager fm = getSupportFragmentManager();
+            FragmentTransaction transaction = fm.beginTransaction();
+            transaction.replace(R.id.fragment_container, newFragment, StartWindowView.TAG);
+            transaction.commit();
         }
         if (NOTIFY.equals(getIntent().getAction())) {
             Chat current = ChatHistory.instance.chatAt(ChatHistory.instance.getPreferredItem());

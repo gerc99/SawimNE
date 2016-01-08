@@ -748,7 +748,6 @@ abstract public class Protocol {
 
     public final void processException(SawimException e) {
         DebugLog.println("process exception: " + e.getMessage());
-        RosterHelper.getInstance().activateWithMsg(getUserId() + "\n" + e.getMessage());
         if (!SawimApplication.getInstance().isNetworkAvailable()) {
             e = new SawimException(123, 0);
         }
@@ -777,7 +776,7 @@ abstract public class Protocol {
     }
 
     public final void showException(SawimException e) {
-        RosterHelper.getInstance().activateWithMsg(getUserId() + "\n" + e.getMessage());
+        RosterHelper.getInstance().activateWithMsg(this, e);
     }
 
     public final void dismiss() {

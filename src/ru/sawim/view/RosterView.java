@@ -113,6 +113,14 @@ public class RosterView extends SawimFragment implements View.OnClickListener, O
         rosterViewLayout = new RosterViewRoot(activity, progressBar, listView, fab);
 
         RosterHelper.getInstance().setOnAccountsLoaded(this);
+
+        rosterAdapter.refreshList();
+        if (getRosterAdapter().getItemCount() == 0) {
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, new SearchContactFragment(), SearchContactFragment.TAG)
+                    .addToBackStack(null)
+                    .commit();
+        }
     }
 
     @Override
@@ -284,12 +292,6 @@ public class RosterView extends SawimFragment implements View.OnClickListener, O
         getRosterAdapter().setType(RosterHelper.ACTIVE_CONTACTS);
         RosterHelper.getInstance().setOnUpdateRoster(RosterView.this);
         update();
-        if (getRosterAdapter().getItemCount() == 0) {
-            getFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, new SearchContactFragment(), SearchContactFragment.TAG)
-                    .addToBackStack(null)
-                    .commit();
-        }
         getActivity().supportInvalidateOptionsMenu();
         if (Scheme.isChangeTheme(Scheme.getSavedTheme())) {
             ((SawimActivity) getActivity()).recreateActivity();
@@ -304,19 +306,16 @@ public class RosterView extends SawimFragment implements View.OnClickListener, O
                 //initBar();
                 if (Options.getAccountCount() > 0) {
                     update();
-
-                    if (getRosterAdapter().getItemCount() == 0) {
-                        getFragmentManager().beginTransaction()
-                                .replace(R.id.fragment_container, new SearchContactFragment(), SearchContactFragment.TAG)
-                                .addToBackStack(null)
-                                .commit();
-                    }
-
                     getActivity().supportInvalidateOptionsMenu();
                     if (SawimApplication.returnFromAcc) {
                         SawimApplication.returnFromAcc = false;
-                        if (getRosterAdapter().getItemCount() == 0)
+                        if (getRosterAdapter().getItemCount() == 0) {
                             Toast.makeText(getActivity(), R.string.press_menu_for_connect, Toast.LENGTH_LONG).show();
+                            getFragmentManager().beginTransaction()
+                                    .replace(R.id.fragment_container, new SearchContactFragment(), SearchContactFragment.TAG)
+                                    .addToBackStack(null)
+                                    .commit();
+                        }
                     }
                 } else {
                     if (!SawimApplication.isManyPane()) {

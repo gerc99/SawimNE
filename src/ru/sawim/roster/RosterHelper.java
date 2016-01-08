@@ -4,6 +4,8 @@ import android.support.v7.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.widget.Toast;
+
+import ru.sawim.SawimException;
 import ru.sawim.activities.SawimActivity;
 import ru.sawim.comm.Util;
 import ru.sawim.listener.OnAccountsLoaded;
@@ -223,11 +225,17 @@ public final class RosterHelper {
         updateRoster();
     }
 
-    public void activateWithMsg(final String message) {
+    public void activateWithMsg(final Protocol protocol, final SawimException e) {
+        if (e.getErrorCode() == 111) {
+            Intent intent = new Intent(SawimApplication.getContext(), SawimActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.setAction(SawimActivity.ACTION_SHOW_LOGIN_WINDOW);
+            SawimApplication.getContext().startActivity(intent);
+        }
         SawimApplication.getInstance().getUiHandler().post(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(SawimApplication.getContext(), message, Toast.LENGTH_LONG).show();
+                Toast.makeText(SawimApplication.getContext(), protocol.getUserId() + "\n" + e.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
         updateRoster();
