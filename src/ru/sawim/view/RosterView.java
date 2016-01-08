@@ -113,8 +113,6 @@ public class RosterView extends SawimFragment implements View.OnClickListener, O
         rosterViewLayout = new RosterViewRoot(activity, progressBar, listView, fab);
 
         RosterHelper.getInstance().setOnAccountsLoaded(this);
-
-        onAccountsLoaded();
     }
 
     @Override
@@ -286,6 +284,12 @@ public class RosterView extends SawimFragment implements View.OnClickListener, O
         getRosterAdapter().setType(RosterHelper.ACTIVE_CONTACTS);
         RosterHelper.getInstance().setOnUpdateRoster(RosterView.this);
         update();
+        if (getRosterAdapter().getItemCount() == 0) {
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, new SearchContactFragment(), SearchContactFragment.TAG)
+                    .addToBackStack(null)
+                    .commit();
+        }
         getActivity().supportInvalidateOptionsMenu();
         if (Scheme.isChangeTheme(Scheme.getSavedTheme())) {
             ((SawimActivity) getActivity()).recreateActivity();

@@ -7,6 +7,7 @@ import android.os.Message;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
+import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.view.Gravity;
@@ -22,6 +23,7 @@ import android.widget.ProgressBar;
 import protocol.Contact;
 import protocol.Group;
 import protocol.Protocol;
+import protocol.StatusInfo;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
@@ -49,6 +51,7 @@ public class SearchContactFragment extends SawimFragment
     private static final int PUT_INTO_QUEUE = 2;
 
     RosterViewRoot rosterViewLayout;
+    AppCompatButton connectBtn;
     Handler handler;
     MenuItem searchMenuItem;
 
@@ -81,6 +84,14 @@ public class SearchContactFragment extends SawimFragment
         progressBar.setVisibility(View.GONE);
 
         rosterViewLayout = new RosterViewRoot(getActivity(), progressBar, listView);
+
+        connectBtn = new AppCompatButton(getActivity());
+        connectBtn.setText(R.string.connect);
+        FrameLayout.LayoutParams connectBtnLP = new FrameLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        connectBtnLP.gravity = Gravity.CENTER;
+        connectBtn.setLayoutParams(connectBtnLP);
+        rosterViewLayout.addView(connectBtn);
+        connectBtn.setOnClickListener(this);
     }
 
     @Override
@@ -155,6 +166,11 @@ public class SearchContactFragment extends SawimFragment
         RosterHelper.getInstance().updateOptions();
         if (getRosterAdapter() != null) {
             getRosterAdapter().refreshList();
+            if (getRosterAdapter().getItemCount() == 0) {
+                connectBtn.setVisibility(View.VISIBLE);
+            } else {
+                connectBtn.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -281,6 +297,12 @@ public class SearchContactFragment extends SawimFragment
 
     @Override
     public void onClick(View v) {
+        if (v == connectBtn) {
+            Protocol p = RosterHelper.getInstance().getProtocol(0);
+            SawimApplication.getInstance().setStatus(p, (p.isConnected() || p.isConnecting())
+                    ? StatusInfo.STATUS_OFFLINE : StatusInfo.STATUS_ONLINE, "");
+            return;
+        }
         int position = (int) v.getTag();
         TreeNode treeNode = getRosterAdapter().getItem(position);
         if (treeNode.getType() == TreeNode.CONTACT) {
