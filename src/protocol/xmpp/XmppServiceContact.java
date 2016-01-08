@@ -346,8 +346,8 @@ public class XmppServiceContact extends XmppContact {
                     }
                     if (AFFILIATION_ADMIN <= my.priorityA) {
                         contactMenu.add(Menu.NONE, ContactMenu.CONFERENCE_AFFILIATION_LIST, Menu.NONE, R.string.conf_aff_list);
-                        contactMenu.add(Menu.NONE, ContactMenu.COMMAND_TITLE, Menu.NONE, R.string.set_theme_conference);
                     }
+                    contactMenu.add(Menu.NONE, ContactMenu.COMMAND_TITLE, Menu.NONE, R.string.set_theme_conference);
                 }
             }
         }
