@@ -563,7 +563,7 @@ abstract public class Protocol {
     }
 
     private void cl_addGroup(Group group) {
-        if (roster.getGroupItems().contains(group)) {
+        if (roster.getGroupItems().containsKey(group.getGroupId())) {
             DebugLog.panic("Group '" + group.getName() + "' already added");
         }
         roster.getGroupItems().put(group.getGroupId(), group);

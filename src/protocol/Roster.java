@@ -51,7 +51,8 @@ public class Roster {
     }
 
     public boolean hasContact(Contact contact) {
-        return getContactItems().contains(contact);
+        if (contact == null) return false;
+        return getContactItems().containsKey(contact.getUserId());
     }
 
     public void setNull() {

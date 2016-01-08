@@ -191,22 +191,21 @@ public class HistoryStorage {
 
     public synchronized boolean hasLastMessage(Chat chat, Message message) {
         Contact contact = chat.getContact();
-        boolean hasMessage = false;
         Cursor cursor = null;
         try {
             cursor = SawimApplication.getDatabaseHelper().getReadableDatabase().query(DatabaseHelper.TABLE_CHAT_HISTORY, null, DatabaseHelper.CONTACT_ID + " = ?",
                     new String[]{uniqueUserId}, null, null, DatabaseHelper.DATE + " DESC", String.valueOf(60));
             if (cursor.moveToLast()) {
+                String msgText = message.getText();
+                String msgNick = contact.isConference() ? message.getName() : chat.getFrom(message);
                 do {
                     short rowData = cursor.getShort(cursor.getColumnIndex(DatabaseHelper.ROW_DATA));
-                    MessData mess = Chat.buildMessage(contact, message, contact.isConference() ? message.getName() : chat.getFrom(message),
-                            false, Chat.isHighlight(message.getProcessedText(), contact.getMyName()));
-                    MessData messFromDataBase = buildMessage(chat, cursor);
                     boolean isMessage = (rowData & MessData.PRESENCE) == 0
                             && (rowData & MessData.SERVICE) == 0 && (rowData & MessData.PROGRESS) == 0;
                     if (isMessage) {
-                        hasMessage = hasMessage(mess, messFromDataBase);
-                        if (hasMessage) {
+                        String msgTextH = cursor.getString(cursor.getColumnIndex(DatabaseHelper.MESSAGE));
+                        String msgNickH = cursor.getString(cursor.getColumnIndex(DatabaseHelper.AUTHOR));
+                        if (msgText.equals(msgTextH) && msgNick.equals(msgNickH)) {
                             return true;
                         }
                     }
@@ -219,12 +218,7 @@ public class HistoryStorage {
                 cursor.close();
             }
         }
-        return hasMessage;
-    }
-
-    private static boolean hasMessage(MessData mess, MessData messFromDataBase) {
-        return mess.getNick().equals(messFromDataBase.getNick())
-                && mess.getText().toString().equals(messFromDataBase.getText().toString());
+        return false;
     }
 
     public static List<Contact> getActiveContacts() {
@@ -240,7 +234,13 @@ public class HistoryStorage {
                     String uniqueUserId = cursor.getString(cursor.getColumnIndex(DatabaseHelper.CONTACT_ID));
                     Protocol protocol = RosterHelper.getInstance().getProtocol(protocolId);
                     if (protocol != null) {
-                        list.add(protocol.getItemByUID(uniqueUserId));
+                        Contact contact = protocol.getItemByUID(uniqueUserId);
+                        if (contact == null) {
+                            contact = protocol.createContact(uniqueUserId, uniqueUserId, false);
+                        }
+                        if (contact != null) {
+                            list.add(contact);
+                        }
                     }
                 } while (cursor.moveToPrevious());
             }
@@ -267,7 +267,10 @@ public class HistoryStorage {
             }
             if (cursor.moveToLast()) {
                 do {
-                    list.add(buildMessage(chat, cursor));
+                    MessData messData = buildMessage(chat, cursor);
+                    if (messData != null) {
+                        list.add(messData);
+                    }
                 } while (cursor.moveToPrevious());
             }
         } finally {
@@ -297,9 +300,9 @@ public class HistoryStorage {
         MessData messData;
         if (rowData == 0) {
             messData = Chat.buildMessage(contact, message, contact.isConference() ? from : chat.getFrom(message),
-                    false, isIncoming ? Chat.isHighlight(message.getProcessedText(), contact.getMyName()): false);
-        } else if ((rowData & MessData.ME) != 0 || (rowData & MessData.PRESENCE) != 0) {
-            messData = new MessData(contact, message.getNewDate(), text, from, rowData);
+                    false, isIncoming && Chat.isHighlight(message.getProcessedText(), contact.getMyName()));
+        } else if ((rowData & MessData.PRESENCE) != 0 || (rowData & MessData.ME) != 0) {
+            messData = new MessData(contact, message.getNewDate(), text, from, rowData, false, true);
         } else {
             messData = Chat.buildMessage(contact, message, contact.isConference() ? from : chat.getFrom(message),
                     rowData, Chat.isHighlight(message.getProcessedText(), contact.getMyName()));

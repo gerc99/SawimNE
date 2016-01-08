@@ -135,6 +135,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
         MyImageButton sendButton = new MyImageButton(activity);
         FixedEditText messageEditor = new FixedEditText(activity);
         chatBarLayout = new ChatBarView(activity, chatsImage);
+        chatBarLayout.setOnClickListener(this);
         RecyclerView chatListView = (RecyclerView) LayoutInflater.from(getContext()).inflate(R.layout.recycler_view, null);
         nickList = (RecyclerView) LayoutInflater.from(getContext()).inflate(R.layout.recycler_view, null);
         ChatListsView chatListsView = new ChatListsView(activity, SawimApplication.isManyPane(), chatListView, nickList);
@@ -328,6 +329,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
             getMessagesAdapter().setOnItemClickListener(null);
             chat = null;
         }
+        chatBarLayout.setOnClickListener(null);
         MyImageButton menuButton = chatViewLayout.getChatInputBarView().getMenuButton();
         MyImageButton smileButton = chatViewLayout.getChatInputBarView().getSmileButton();
         MyImageButton sendButton = chatViewLayout.getChatInputBarView().getSendButton();
@@ -538,7 +540,6 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     private void initLabel() {
         chatBarLayout.updateLabelIcon((BitmapDrawable) RosterAdapter.getImageChat(chat, false));
         chatBarLayout.updateTextView(chat.getContact().getName());
-        chatBarLayout.setOnClickListener(this);
     }
 
     private void initList() {
@@ -830,6 +831,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
         new Thread(new Runnable() {
             @Override
             public void run() {
+                if (chat == null) return;
                 final List<MessData> messDataList = chat.getHistory().addNextListMessages(chat, unreadMessageCount, 0);
                 if (!messDataList.isEmpty()) {
                     if (getActivity() != null) {
@@ -903,6 +905,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
             new Thread(new Runnable() {
                 @Override
                 public void run() {
+                    if (chat == null) return;
                     List<MessData> messDataList = null;
                     if (position > oldCount) {
                         messDataList = chat.getHistory().addNextListMessages(chat, position, oldCount);

@@ -30,7 +30,7 @@ public final class MessData {
     public static final short MARKED = 64;
     private String serverMsgId;
 
-    public MessData(Contact currentContact, long time, String text, String nick, short flags, boolean highLight) {
+    public MessData(Contact currentContact, long time, String text, String nick, short flags, boolean highLight, boolean isCustom) {
         isHighLight = highLight;
         this.nick = nick;
         this.time = time;
@@ -38,33 +38,30 @@ public final class MessData {
         //boolean today = (SawimApplication.getCurrentGmtTime() / 1000 - 24 * 60 * 60 < time);
         strTime = ru.sawim.comm.Util.getLocalDateString(time, true);
 
-        CharSequence parsedText = parsedText(currentContact, text, true);
+        CharSequence parsedText = parsedText(currentContact, text, isCustom);
         layout = MessageItemView.buildLayout(parsedText, isHighLight ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT);
     }
 
     public MessData(Contact currentContact, long time, String text, String nick, short flags) {
-        isHighLight = false;
-        this.nick = nick;
-        this.time = time;
-        this.rowData = flags;
-        //boolean today = (SawimApplication.getCurrentGmtTime() / 1000 - 24 * 60 * 60 < time);
-        strTime = ru.sawim.comm.Util.getLocalDateString(time, true);
-
-        CharSequence parsedText = parsedText(currentContact, text, false);
-        layout = MessageItemView.buildLayout(parsedText, isHighLight ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT);
+        this(currentContact, time, text, nick, flags, false, false);
     }
 
-    public CharSequence parsedText(Contact contact, CharSequence text, boolean isCustom) {
+    private CharSequence parsedText(Contact contact, CharSequence text, boolean isCustom) {
         SpannableStringBuilder builder = new SpannableStringBuilder();
         if (isCustom) {
             if (isMe()) {
-                builder.append("* ").append(nick).append(" ");
+                builder.append(formatCmdMe(nick));
+                builder.append(Chat.formatCmdMe(text.toString()));
             } else if (isPresence()) {
                 builder.append(strTime).append(" ").append(nick);
+                builder.append(text);
+            } else {
+                builder.append(text);
             }
+        } else {
+            builder.append(text);
         }
-        builder.append(text);
-        if (contact != null) {
+        if (contact != null && !contact.isConference()) {
             if (contact.getProtocol() != null) {
                 String userId = contact.getProtocol().getUniqueUserId(contact);
                 if (userId.startsWith(JuickMenu.JUICK) || userId.startsWith(JuickMenu.JUBO)) {
@@ -77,6 +74,12 @@ public final class MessData {
         TextFormatter.getInstance().getTextWithLinks(builder, -1);
         TextFormatter.getInstance().detectEmotions(builder);
         return builder;
+    }
+
+    public static String formatCmdMe(String nick) {
+        SpannableStringBuilder builder = new SpannableStringBuilder();
+        builder.append("* ").append(nick).append(" ");
+        return builder.toString();
     }
 
     public long getTime() {

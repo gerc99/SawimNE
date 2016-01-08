@@ -558,7 +558,7 @@ public final class XmppConnection extends ClientConnection {
                         Group g = xmpp.getOrCreateGroup(groupName);
                         contact.setGroup(g);
 
-                        if (!xmpp.getContactItems().contains(contact)) {
+                        if (!xmpp.inContactList(contact)) {
                             xmpp.getContactItems().put(contact.getUserId(), contact);
                         }
                         RosterHelper.getInstance().updateGroup(xmpp, g);
@@ -899,19 +899,6 @@ public final class XmppConnection extends ClientConnection {
             }
         }
         return errorText;
-    }
-
-    public static long parseTimestamp(String timestamp) {
-        timestamp = timestamp.replace("Z", "+0000");
-        SimpleDateFormat dateFormat;
-        timestamp = timestamp.substring(0, 19)+timestamp.substring(timestamp.length() - 5,timestamp.length());
-        dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.US);
-        try {
-            return dateFormat.parse(timestamp).getTime();
-        } catch (ParseException e) {
-            e.printStackTrace();
-            return System.currentTimeMillis();
-        }
     }
 
     public void updateConfPrivate(XmppServiceContact conf, String resource) {

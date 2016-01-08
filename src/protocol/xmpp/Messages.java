@@ -1,5 +1,9 @@
 package protocol.xmpp;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+
 import protocol.Contact;
 import protocol.XStatusInfo;
 import ru.sawim.R;
@@ -194,7 +198,7 @@ public class Messages {
         Message message = null;
         final String date = getDate(msg);
         final boolean isOnlineMessage = (null == date);
-        long time = isOnlineMessage ? SawimApplication.getCurrentGmtTime() : /*new Delay().getTime(date)*/XmppConnection.parseTimestamp(date);
+        long time = isOnlineMessage ? SawimApplication.getCurrentGmtTime() : /*new Delay().getTime(date)*/parseTimestamp(date);
         final XmppContact c = (XmppContact) connection.getXmpp().getItemByUID(from);
         if (msg.contains(XmlConstants.S_ERROR)) {
             final String errorText = connection.getError(msg.getFirstNode(XmlConstants.S_ERROR));
@@ -310,7 +314,7 @@ public class Messages {
             XmlNode forwardedXmlNode = mamXmlNode.getFirstNode("forwarded", "urn:xmpp:forward:0");
             final String date = getDate(forwardedXmlNode);
             final boolean isOnlineMessage = (null == date);
-            long time = isOnlineMessage ? SawimApplication.getCurrentGmtTime() : connection.parseTimestamp(date);
+            long time = isOnlineMessage ? SawimApplication.getCurrentGmtTime() : parseTimestamp(date);
             msg = forwardedXmlNode.getFirstNode("message");
 
             String text = msg.getFirstNodeValue(XmlConstants.S_BODY);
@@ -406,7 +410,7 @@ public class Messages {
         boolean isIncoming = receivedNode != null;
         final String date = getDate(msg);
         final boolean isOnlineMessage = (null == date);
-        long time = isOnlineMessage ? SawimApplication.getCurrentGmtTime() : XmppConnection.parseTimestamp(date);
+        long time = isOnlineMessage ? SawimApplication.getCurrentGmtTime() : parseTimestamp(date);
         XmppContact c = (XmppContact) connection.getXmpp().getItemByUID(fullJid);
         Message message = new PlainMessage(fullJid, isIncoming ? connection.getXmpp().getUserId() : fullJid, time, text, !isOnlineMessage, isIncoming);
         connection.getXmpp().addMessage(message, XmlConstants.S_HEADLINE.equals(type), c.isConference());
@@ -440,7 +444,7 @@ public class Messages {
         }
 
         String date = getDate(msg);
-        long time = (null == date) ? SawimApplication.getCurrentGmtTime() : XmppConnection.parseTimestamp(date);
+        long time = (null == date) ? SawimApplication.getCurrentGmtTime() : parseTimestamp(date);
         PlainMessage message = new PlainMessage(to, connection.getXmpp(), time, text, false);
         if (null != nick) {
             message.setName(('@' == nick.charAt(0)) ? nick.substring(1) : nick);
@@ -535,5 +539,17 @@ public class Messages {
 
     private static void setMessageSended(XmppConnection connection, String id, int state) {
         connection.markMessageSended(Util.strToIntDef(id, -1), state);
+    }
+
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.US);
+    public static long parseTimestamp(String timestamp) {
+        timestamp = timestamp.replace("Z", "+0000");
+        timestamp = timestamp.substring(0, 19) + timestamp.substring(timestamp.length() - 5, timestamp.length());
+        try {
+            return dateFormat.parse(timestamp).getTime();
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return System.currentTimeMillis();
+        }
     }
 }

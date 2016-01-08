@@ -80,7 +80,7 @@ public final class Chat {
 
     public void addFileProgress(String caption, String text) {
         messageCounter = inc(messageCounter);
-        addMessage(new MessData(contact, SawimApplication.getCurrentGmtTime(), text, caption, MessData.PROGRESS, false));
+        addMessage(new MessData(contact, SawimApplication.getCurrentGmtTime(), text, caption, MessData.PROGRESS));
         if (RosterHelper.getInstance().getUpdateChatListener() != null)
             RosterHelper.getInstance().getUpdateChatListener().updateMessages(contact);
     }
@@ -311,20 +311,24 @@ public final class Chat {
         if (StringConvertor.isEmpty(messageText)) {
             return null;
         }
-        boolean isMe = messageText.startsWith(PlainMessage.CMD_ME);
-        if (isMe) {
-            messageText = messageText.substring(4);
-            if (0 == messageText.length()) {
-                return null;
-            }
-        }
 
-        final MessData mData = new MessData(contact, message.getNewDate(), messageText, from, flags, isHighlight);
+        final MessData mData = new MessData(contact, message.getNewDate(), messageText, from, flags, isHighlight, false);
         mData.setServerMsgId(message.getServerMsgId());
         if (!incoming && !mData.isMe()) {
             message.setVisibleIcon(mData);
         }
         return mData;
+    }
+
+    public static String formatCmdMe(String messageText) {
+        boolean isMe = messageText.startsWith(PlainMessage.CMD_ME);
+        if (isMe) {
+            messageText = messageText.substring(PlainMessage.CMD_ME.length());
+            if (0 == messageText.length()) {
+                return null;
+            }
+        }
+        return messageText;
     }
 
     private void addMessage(Message message, String from, boolean isSystemNotice, boolean isHighlight) {
@@ -346,7 +350,7 @@ public final class Chat {
 
     public void addPresence(SystemNotice message) {
         String messageText = message.getProcessedText();
-        MessData mData = new MessData(contact, message.getNewDate(), messageText, message.getName(), MessData.PRESENCE, false);
+        MessData mData = new MessData(contact, message.getNewDate(), messageText, message.getName(), MessData.PRESENCE, false, true);
         addMessage(mData);
         if (!isVisibleChat()) {
             otherMessageCounter = inc(otherMessageCounter);

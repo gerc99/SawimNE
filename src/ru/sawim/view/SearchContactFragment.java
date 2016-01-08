@@ -314,7 +314,7 @@ public class SearchContactFragment extends SawimFragment
     }
 
     public RosterAdapter getRosterAdapter() {
-        if (rosterViewLayout.getMyListView() == null) return null;
+        if (rosterViewLayout == null || rosterViewLayout.getMyListView() == null) return null;
         return (RosterAdapter) getListView().getAdapter();
     }
 

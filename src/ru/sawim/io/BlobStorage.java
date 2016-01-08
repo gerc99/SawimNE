@@ -59,7 +59,7 @@ public final class BlobStorage {
     }
 
     public void close() {
-        SawimApplication.getDatabaseHelper().close();
+        //SawimApplication.getDatabaseHelper().close();
     }
 
     public void addRecord(final byte data[]) {
