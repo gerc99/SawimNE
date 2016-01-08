@@ -24,10 +24,11 @@ import java.util.List;
  * Time: 13:07
  * To change this template use File | Settings | File Templates.
  */
-public class VirtualListAdapter extends RecyclerView.Adapter<VirtualListAdapter.ViewHolder> {
+public class VirtualListAdapter extends RecyclerView.Adapter<VirtualListAdapter.ViewHolder> implements View.OnLongClickListener {
 
     private List<VirtualListItem> items = new ArrayList<>();
     private int selectedItem = -1;
+    private View.OnClickListener itemClickListener;
 
     public VirtualListAdapter() {
         //setHasStableIds(true);
@@ -43,7 +44,10 @@ public class VirtualListAdapter extends RecyclerView.Adapter<VirtualListAdapter.
         VirtualListItem element = getItem(position);
         LinearLayout activeItem = (LinearLayout) holder.itemView;
         if (element == null) return;
+        activeItem.setTag(position);
         activeItem.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
+        activeItem.setOnLongClickListener(this);
+        activeItem.setOnClickListener(itemClickListener);
 
         holder.labelView.setTextColor(Scheme.getColor(R.attr.text));
         holder.descView.setTextColor(Scheme.getColor(R.attr.text));
@@ -121,6 +125,15 @@ public class VirtualListAdapter extends RecyclerView.Adapter<VirtualListAdapter.
 
     public void setSelectedItem(int position) {
         selectedItem = position;
+    }
+
+    @Override
+    public boolean onLongClick(View v) {
+        return false;
+    }
+
+    public void setOnItemClickListener(View.OnClickListener itemClickListener) {
+        this.itemClickListener = itemClickListener;
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {

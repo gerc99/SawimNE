@@ -1,6 +1,7 @@
 package ru.sawim.view;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
@@ -15,6 +16,7 @@ import ru.sawim.activities.SawimActivity;
 import ru.sawim.models.VirtualListAdapter;
 import ru.sawim.models.list.VirtualList;
 import ru.sawim.models.list.VirtualListItem;
+import ru.sawim.widget.MyListView;
 import ru.sawim.widget.recyclerview.decoration.RecyclerItemClickListener;
 
 /**
@@ -29,11 +31,11 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
     public static final String TAG = VirtualListView.class.getSimpleName();
     private VirtualList list = VirtualList.getInstance();
     private RecyclerView lv;
-    private AdapterView.AdapterContextMenuInfo contextMenuInfo;
+    private MyListView.RecyclerContextMenuInfo contextMenuInfo;
 
     @Override
-    public void onAttach(Activity a) {
-        super.onAttach(a);
+    public void onAttach(Context context) {
+        super.onAttach(context);
         list.setVirtualListListener(this);
     }
 
@@ -43,13 +45,13 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
         if (getFragmentManager().getBackStackEntryCount() <= 1) {
             list.clearAll();
         }
+        unregisterForContextMenu(lv);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.virtual_list, container, false);
-        return v;
+        return inflater.inflate(R.layout.virtual_list, container, false);
     }
 
     @Override
@@ -60,9 +62,10 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
         final VirtualListAdapter adapter = new VirtualListAdapter();
         lv = (RecyclerView) currentActivity.findViewById(R.id.list_view);
         lv.setAdapter(adapter);
-        lv.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), new RecyclerItemClickListener.OnItemClickListener() {
+        adapter.setOnItemClickListener(new View.OnClickListener() {
             @Override
-            public void onItemClick(View childView, int position) {
+            public void onClick(View v) {
+                int position = (int) v.getTag();
                 VirtualListItem item = adapter.getItem(position);
                 if (item.getGroupListListener() != null) {
                     item.getGroupListListener().select();
@@ -71,14 +74,8 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
                 if (list.getClickListListener() != null)
                     list.getClickListListener().itemSelected((BaseActivity) getActivity(), position);
             }
-
-            @Override
-            public void onItemLongPress(View childView, int position) {
-
-            }
-        }));
-        currentActivity.registerForContextMenu(lv);
-        lv.setOnCreateContextMenuListener(this);
+        });
+        registerForContextMenu(lv);
         update();
         getActivity().supportInvalidateOptionsMenu();
     }
@@ -86,14 +83,14 @@ public class VirtualListView extends SawimFragment implements VirtualList.OnVirt
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        contextMenuInfo = (AdapterView.AdapterContextMenuInfo) menuInfo;
+        contextMenuInfo = (MyListView.RecyclerContextMenuInfo) menuInfo;
         if (list.getBuildContextMenu() != null)
             list.getBuildContextMenu().onCreateContextMenu(menu, contextMenuInfo.position);
     }
 
     @Override
     public boolean onContextItemSelected(android.view.MenuItem item) {
-        AdapterView.AdapterContextMenuInfo menuInfo = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        MyListView.RecyclerContextMenuInfo menuInfo = (MyListView.RecyclerContextMenuInfo) item.getMenuInfo();
         if (menuInfo == null)
             menuInfo = contextMenuInfo;
         if (list.getBuildContextMenu() != null)
