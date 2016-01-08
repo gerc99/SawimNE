@@ -301,7 +301,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
             rebuild();
             return;
         }
-        isConferenceList = (-1 == jid.indexOf('@'));
+        isConferenceList = (-1 != jid.indexOf('@'));
         if (serverJid.contains("@")) {
             shortView = true;
         }
