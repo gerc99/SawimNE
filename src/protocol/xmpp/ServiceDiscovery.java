@@ -17,10 +17,9 @@ import ru.sawim.models.list.VirtualListModel;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.view.TextBoxView;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
-
     private boolean isConferenceList = false;
     private int totalCount = 0;
 
@@ -29,7 +28,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
     private TextBoxView serverBox;
     private TextBoxView searchBox;
     private boolean shortView;
-    private Vector jids = new Vector();
+    private ArrayList<String> jids = new ArrayList<>();
     private boolean isMucUsers = false;
 
     private VirtualList screen;
@@ -45,7 +44,10 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
 
     public ServiceDiscovery() {
         serverBox = new TextBoxView();
+        serverBox.setCaption(R.string.service_discovery_server);
+
         searchBox = new TextBoxView();
+        searchBox.setCaption(R.string.service_discovery_search);
     }
 
     public void init(Xmpp protocol) {
@@ -57,7 +59,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
 
     private String getJid(int num) {
         if (num < jids.size()) {
-            String rawJid = (String) jids.elementAt(num);
+            String rawJid = jids.get(num);
             if (rawJid.endsWith("@")) {
                 return rawJid + serverJid;
             }
@@ -86,20 +88,20 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
             item.addDescription(serverJid, R.attr.text, Scheme.FONT_STYLE_BOLD);
             model.addPar(item);
             if (active) {
-                jids.addElement(serverJid);
+                jids.add(serverJid);
             }
         }
     }
 
     private void clear() {
         model.clear();
-        jids.removeAllElements();
+        jids.clear();
         addServer(false);
     }
 
     public void setTotalCount(int count) {
         model.clear();
-        jids.removeAllElements();
+        jids.clear();
         addServer(true);
         totalCount = count;
         shortView |= (totalCount > 400);
@@ -140,7 +142,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
         }
 
         model.addPar(item);
-        jids.addElement(shortJid);
+        jids.add(shortJid);
         if (0 == (jids.size() % 50)) {
             screen.updateModel();
         }
@@ -299,7 +301,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
             rebuild();
             return;
         }
-        isConferenceList = (-1 == jid.indexOf('@'));
+        isConferenceList = (-1 != jid.indexOf('@'));
         if (serverJid.contains("@")) {
             shortView = true;
         }
@@ -365,7 +367,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
             }
             int currentIndex = getJidIndex(screen.getCurrItem()) + 1;
             for (int i = currentIndex; i < jids.size(); ++i) {
-                String jid = (String) jids.elementAt(i);
+                String jid = jids.get(i);
                 if (jid.contains(text)) {
                     setCurrTextIndex(i);
                     break;
