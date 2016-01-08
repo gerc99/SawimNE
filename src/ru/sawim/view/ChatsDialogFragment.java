@@ -1,10 +1,12 @@
 package ru.sawim.view;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,7 +17,6 @@ import ru.sawim.chat.ChatHistory;
 import ru.sawim.models.RosterAdapter;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.roster.TreeNode;
-import ru.sawim.widget.Util;
 import ru.sawim.widget.recyclerview.decoration.RecyclerItemClickListener;
 
 /**
@@ -26,13 +27,13 @@ public class ChatsDialogFragment extends DialogFragment {
     RosterAdapter chatsSpinnerAdapter;
     OnForceGoToChatListener forceGoToChatListener;
 
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final Context context = getActivity();
         View dialogView = LayoutInflater.from(context).inflate(R.layout.chats_dialog, null);
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
         dialogBuilder.setView(dialogView);
-        dialogBuilder.setInverseBackgroundForced(Util.isNeedToInverseDialogBackground());
         RecyclerView lv = (RecyclerView) dialogView.findViewById(R.id.listView);
         chatsSpinnerAdapter = new RosterAdapter();
         chatsSpinnerAdapter.setType(RosterHelper.ACTIVE_CONTACTS);
@@ -56,7 +57,7 @@ public class ChatsDialogFragment extends DialogFragment {
             }
         }));
         chatsSpinnerAdapter.refreshList();
-        Dialog dialog = dialogBuilder.create();
+        AppCompatDialog dialog = dialogBuilder.create();
         dialog.setCanceledOnTouchOutside(true);
         return dialog;
     }

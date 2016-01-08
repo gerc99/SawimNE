@@ -1,17 +1,16 @@
 package ru.sawim.view;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.widget.EditText;
 import ru.sawim.R;
-import ru.sawim.widget.Util;
 
 /**
  * Created with IntelliJ IDEA.
@@ -39,7 +38,6 @@ public class TextBoxView extends DialogFragment {
             dialogBuilder.setTitle(caption);
         }
         dialogBuilder.setView(dialogView);
-        dialogBuilder.setInverseBackgroundForced(Util.isNeedToInverseDialogBackground());
         dialogBuilder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {

@@ -1,11 +1,11 @@
 package ru.sawim.widget;
 
 import android.content.Context;
+import android.support.v7.widget.AppCompatSpinner;
 import android.util.AttributeSet;
 import android.widget.AdapterView;
-import android.widget.Spinner;
 
-public class MySpinner extends Spinner {
+public class MySpinner extends AppCompatSpinner {
 
     AdapterView.OnItemSelectedListener listener;
 

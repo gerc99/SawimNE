@@ -187,16 +187,6 @@ public class Util {
         return px;
     }
 
-    public static boolean isNeedToInverseDialogBackground() {
-        // workaround for buggy GingerBread AlertDialog
-        return Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB && !Scheme.isBlack();
-    }
-
-    public static boolean isNeedToFixSpinnerAdapter() {
-        // workaround for buggy GingerBread Spinner
-        return Scheme.isBlack() && Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN;
-    }
-
     public static int copyAllBytes(InputStream in, OutputStream out, long length) throws IOException {
         int byteCount = 0;
         long contentLength = length;

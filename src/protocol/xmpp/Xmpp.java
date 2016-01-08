@@ -1,6 +1,6 @@
 package protocol.xmpp;
 
-import android.app.AlertDialog;
+import android.support.v7.app.AlertDialog;
 import android.content.DialogInterface;
 import android.provider.Settings;
 import android.widget.Toast;

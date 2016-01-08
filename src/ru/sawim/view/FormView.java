@@ -1,22 +1,25 @@
 package ru.sawim.view;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.AppCompatButton;
+import android.support.v7.widget.AppCompatCheckBox;
+import android.support.v7.widget.AppCompatEditText;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.*;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.SawimNotification;
-import ru.sawim.Scheme;
 import ru.sawim.activities.BaseActivity;
 import ru.sawim.models.form.Forms;
 import ru.sawim.widget.MySpinner;
@@ -32,7 +35,7 @@ import java.util.List;
  * Time: 21:30
  * To change this template use File | Settings | File Templates.
  */
-public class FormView extends DialogFragment implements Forms.OnUpdateForm, View.OnClickListener, DialogInterface.OnCancelListener, DialogInterface.OnDismissListener {
+public class FormView extends DialogFragment implements Forms.OnUpdateForm, DialogInterface.OnClickListener, DialogInterface.OnCancelListener, DialogInterface.OnDismissListener {
 
     public static final String TAG = FormView.class.getSimpleName();
     private TextView textView;
@@ -67,29 +70,33 @@ public class FormView extends DialogFragment implements Forms.OnUpdateForm, View
         return forms;
     }
 
+    @NonNull
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        getDialog().setTitle(getLastForms().getCaption());
-        getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-        getDialog().setCanceledOnTouchOutside(false);
-        View v = inflater.inflate(R.layout.form, container, false);
-        textView = (TextView) v.findViewById(R.id.textView);
-        progressBar = (ProgressBar) v.findViewById(R.id.progressBar);
-        scrollView = (ScrollView) v.findViewById(R.id.data_form_scroll);
-        listLayout = (LinearLayout) v.findViewById(R.id.data_form_linear);
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        final Context context = getActivity();
+
+        View dialogView = LayoutInflater.from(context).inflate(R.layout.form, null);
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
+        dialogBuilder.setTitle(getLastForms().getCaption());
+        dialogBuilder.setView(dialogView);
+
+        dialogBuilder.setPositiveButton(R.string.ok, this);
+        dialogBuilder.setNegativeButton(R.string.cancel, this);
+
+        textView = (TextView) dialogView.findViewById(R.id.textView);
+        progressBar = (ProgressBar) dialogView.findViewById(R.id.progressBar);
+        scrollView = (ScrollView) dialogView.findViewById(R.id.data_form_scroll);
+        listLayout = (LinearLayout) dialogView.findViewById(R.id.data_form_linear);
         padding = Util.dipToPixels(getActivity(), 6);
 
-        okButton = (Button) v.findViewById(R.id.data_form_ok);
-        Button cancelButton = (Button) v.findViewById(R.id.data_form_cancel);
-        if (Util.isNeedToInverseDialogBackground())
-            scrollView.setBackgroundResource(Util.getSystemBackground(getActivity()));
-        okButton.setOnClickListener(this);
-        cancelButton.setOnClickListener(this);
         getActivity().supportInvalidateOptionsMenu();
         buildList();
         updateForm(false);
-        return v;
+
+        AlertDialog alertDialog = dialogBuilder.create();
+        alertDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        alertDialog.setCanceledOnTouchOutside(false);
+        return alertDialog;
     }
 
     public static void show(final BaseActivity activity, final Forms f) {
@@ -161,10 +168,12 @@ public class FormView extends DialogFragment implements Forms.OnUpdateForm, View
     }
 
     @Override
-    public void onClick(View view) {
-        if (getLastForms().getFormListener() != null)
+    public void onClick(DialogInterface dialogInterface, int button) {
+        if (getLastForms().getFormListener() != null) {
+            boolean isOkButton = button == DialogInterface.BUTTON_POSITIVE;
             getLastForms().getFormListener()
-                    .formAction((BaseActivity) getActivity(), getLastForms(), view.equals(okButton));
+                          .formAction((BaseActivity)getActivity(), getLastForms(), isOkButton);
+        }
         Util.hideKeyboard(getActivity());
     }
 
@@ -173,14 +182,13 @@ public class FormView extends DialogFragment implements Forms.OnUpdateForm, View
         listLayout.removeAllViews();
         List<Forms.Control> controls = getLastForms().controls;
         int fontSize = SawimApplication.getFontSize();
-        for (int position = 0; position < controls.size(); ++position) {
-            final Forms.Control c = controls.get(position);
+        for (final Forms.Control c : controls) {
             switch (c.type) {
                 case Forms.CONTROL_TEXT:
                     drawText(context, c, listLayout);
                     break;
                 case Forms.CONTROL_INPUT:
-                    EditText editText = new EditText(context);
+                    EditText editText = new AppCompatEditText(context);
                     drawText(context, c, listLayout);
                     editText.setHint(R.string.enter_the);
                     editText.setText(c.text);
@@ -194,20 +202,20 @@ public class FormView extends DialogFragment implements Forms.OnUpdateForm, View
 
                         public void onTextChanged(CharSequence s, int start, int before, int count) {
                             c.text = s.toString();
-                            getLastForms().controlUpdated((BaseActivity) getActivity(), c);
+                            getLastForms().controlUpdated((BaseActivity)getActivity(), c);
                         }
                     });
                     listLayout.addView(editText);
                     break;
                 case Forms.CONTROL_CHECKBOX:
-                    CheckBox checkBox = new CheckBox(context);
+                    CheckBox checkBox = new AppCompatCheckBox(context);
                     checkBox.setText(c.description);
                     checkBox.setChecked(c.selected);
                     checkBox.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
                             c.selected = !c.selected;
-                            getLastForms().controlUpdated((BaseActivity) getActivity(), c);
+                            getLastForms().controlUpdated((BaseActivity)getActivity(), c);
                         }
                     });
                     listLayout.addView(checkBox);
@@ -215,7 +223,9 @@ public class FormView extends DialogFragment implements Forms.OnUpdateForm, View
                 case Forms.CONTROL_SELECT:
                     drawText(context, c, listLayout);
                     MySpinner spinner = new MySpinner(context);
-                    MySpinnerAdapter adapter = new MySpinnerAdapter(context, c.items);
+                    ArrayAdapter<String> adapter = new ArrayAdapter<>(context,
+                            android.R.layout.simple_spinner_item, c.items);
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                     spinner.setPadding(0, padding, 0, padding);
                     spinner.setAdapter(adapter);
                     spinner.setPrompt(c.description);
@@ -224,7 +234,7 @@ public class FormView extends DialogFragment implements Forms.OnUpdateForm, View
                         @Override
                         public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
                             c.current = position;
-                            getLastForms().controlUpdated((BaseActivity) getActivity(), c);
+                            getLastForms().controlUpdated((BaseActivity)getActivity(), c);
                         }
 
                         @Override
@@ -242,7 +252,7 @@ public class FormView extends DialogFragment implements Forms.OnUpdateForm, View
                         @Override
                         public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                             c.level = i;
-                            getLastForms().controlUpdated((BaseActivity) getActivity(), c);
+                            getLastForms().controlUpdated((BaseActivity)getActivity(), c);
                         }
 
                         @Override
@@ -269,7 +279,7 @@ public class FormView extends DialogFragment implements Forms.OnUpdateForm, View
                             c.level = i;
                             descView.setTextSize(c.level);
                             descView.setText(c.description + "(" + c.level + ")");
-                            getLastForms().controlUpdated((BaseActivity) getActivity(), c);
+                            getLastForms().controlUpdated((BaseActivity)getActivity(), c);
                         }
 
                         @Override
@@ -295,13 +305,13 @@ public class FormView extends DialogFragment implements Forms.OnUpdateForm, View
                     drawText(context, c, listLayout);
                     break;
                 case Forms.CONTROL_BUTTON:
-                    Button button = new Button(context);
+                    Button button = new AppCompatButton(context);
                     button.setText(getText(c));
                     button.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             Util.hideKeyboard(getActivity());
-                            getLastForms().controlUpdated((BaseActivity) getActivity(), c);
+                            getLastForms().controlUpdated((BaseActivity)getActivity(), c);
                         }
                     });
                     listLayout.addView(button);
@@ -333,82 +343,4 @@ public class FormView extends DialogFragment implements Forms.OnUpdateForm, View
         return s;
     }
 
-    static class MySpinnerAdapter extends BaseAdapter implements SpinnerAdapter {
-
-        private String[] items;
-        Context context;
-        LayoutInflater layoutInflater;
-
-        public MySpinnerAdapter(Context context, String[] items) {
-            this.context = context;
-            layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            this.items = items;
-        }
-
-        @Override
-        public int getCount() {
-            return items.length;
-        }
-
-        @Override
-        public String getItem(int i) {
-            return items[i];
-        }
-
-        @Override
-        public long getItemId(int i) {
-            return i;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup viewGroup) {
-            View v = convertView;
-            HeaderViewHolder headerViewHolder;
-            String string = getItem(position);
-            if (v == null) {
-                v = layoutInflater.inflate(R.layout.spinner_item, null);
-                headerViewHolder = new HeaderViewHolder();
-                headerViewHolder.header = (TextView) v.findViewById(R.id.header);
-                v.setTag(headerViewHolder);
-            } else {
-                headerViewHolder = (HeaderViewHolder) v.getTag();
-            }
-            if (string == null) return v;
-            if (Scheme.isBlack() && Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN)
-                headerViewHolder.header.setTextColor(0xff000000);
-            headerViewHolder.header.setTextSize(SawimApplication.getFontSize());
-            headerViewHolder.header.setText(string);
-            return v;
-        }
-
-        @Override
-        public View getDropDownView(int position, View convertView, ViewGroup parent) {
-            View v = convertView;
-            DropDownViewHolder dropDownViewHolder;
-            String string = getItem(position);
-            if (v == null) {
-                v = layoutInflater.inflate(R.layout.spinner_dropdown_item, null);
-                dropDownViewHolder = new DropDownViewHolder();
-                dropDownViewHolder.label = (TextView) v.findViewById(R.id.label);
-                v.setTag(dropDownViewHolder);
-            } else {
-                dropDownViewHolder = (DropDownViewHolder) v.getTag();
-            }
-            if (string == null) return v;
-            if (Util.isNeedToFixSpinnerAdapter()) {
-                dropDownViewHolder.label.setTextColor(0xff000000);
-            }
-            dropDownViewHolder.label.setTextSize(SawimApplication.getFontSize());
-            dropDownViewHolder.label.setText(string);
-            return v;
-        }
-
-        static class HeaderViewHolder {
-            TextView header;
-        }
-
-        static class DropDownViewHolder {
-            TextView label;
-        }
-    }
 }

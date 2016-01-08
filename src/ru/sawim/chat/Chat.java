@@ -324,7 +324,7 @@ public final class Chat {
         boolean isMe = messageText.startsWith(PlainMessage.CMD_ME);
         if (isMe) {
             messageText = messageText.substring(PlainMessage.CMD_ME.length());
-            if (0 == messageText.length()) {
+            if (messageText.isEmpty()) {
                 return null;
             }
         }

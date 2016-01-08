@@ -24,36 +24,15 @@
                 android:id="@+id/progressBar" android:layout_gravity="center_horizontal"
                 android:layout_centerVertical="true" android:layout_centerHorizontal="true" android:visibility="gone"/>
     </LinearLayout>
-    <ScrollView android:layout_weight="1"
-                android:id="@+id/data_form_scroll"
+    <ScrollView android:id="@+id/data_form_scroll"
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent" android:visibility="visible" android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp" android:layout_marginTop="5dp"
-                android:layout_above="@+id/data_form_button_bar">
+                android:layout_height="wrap_content" android:visibility="visible" android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp" android:layout_marginTop="5dp">
         <LinearLayout
                 android:id="@+id/data_form_linear"
                 android:orientation="vertical"
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent">
+                android:layout_height="wrap_content">
         </LinearLayout>
     </ScrollView>
-
-    <LinearLayout android:layout_weight="0"
-                  android:id="@+id/data_form_button_bar"
-                  android:orientation="horizontal"
-                  android:layout_width="fill_parent"
-                  android:layout_height="wrap_content"
-                  android:layout_alignParentTop="false" android:layout_alignParentLeft="false"
-                  android:layout_alignParentStart="false" android:layout_alignParentBottom="true">
-        <Button android:id="@+id/data_form_ok"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:layout_width="fill_parent"
-                android:text="@android:string/ok"/>
-        <Button android:id="@+id/data_form_cancel"
-                android:layout_weight="1"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:text="@android:string/cancel"/>
-    </LinearLayout>
 </RelativeLayout>

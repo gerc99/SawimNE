@@ -1,7 +1,7 @@
 package ru.sawim.view;
 
 import android.app.Activity;
-import android.app.AlertDialog;
+import android.support.v7.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -1228,7 +1228,6 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
                 final Protocol protocol = newChat.getProtocol();
                 final Contact contact = newChat.getContact();
                 AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity);
-                dialogBuilder.setInverseBackgroundForced(Util.isNeedToInverseDialogBackground());
                 dialogBuilder.setMessage(JLocale.getString(R.string.grant) + " " + contact.getName() + "?");
                 dialogBuilder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                     @Override

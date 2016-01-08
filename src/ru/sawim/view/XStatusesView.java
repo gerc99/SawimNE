@@ -1,6 +1,6 @@
 package ru.sawim.view;
 
-import android.app.AlertDialog;
+import android.support.v7.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -48,7 +48,6 @@ public class XStatusesView extends DialogFragment {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
         dialogBuilder.setView(dialogView);
         dialogBuilder.setTitle(R.string.ms_xstatus_menu);
-        dialogBuilder.setInverseBackgroundForced(Util.isNeedToInverseDialogBackground());
         statusesAdapter = new XStatusesAdapter(protocol);
         final ListView lv = (ListView) dialogView.findViewById(R.id.statuses_view);
         statusesAdapter.setSelectedItem(protocol.getProfile().xstatusIndex + 1);
@@ -68,7 +67,6 @@ public class XStatusesView extends DialogFragment {
                 AlertDialog.Builder dialogXStatusTextBuilder = new AlertDialog.Builder(getActivity());
                 dialogXStatusTextBuilder.setView(dialogXStatusText);
                 dialogXStatusTextBuilder.setTitle(protocol.getXStatusInfo().getName(position - 1));
-                dialogXStatusTextBuilder.setInverseBackgroundForced(Util.isNeedToInverseDialogBackground());
                 dialogXStatusTextBuilder.setPositiveButton(getString(R.string.save), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {

@@ -1,10 +1,10 @@
 package ru.sawim.view;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -14,7 +14,6 @@ import ru.sawim.Options;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.models.StatusesAdapter;
-import ru.sawim.widget.Util;
 
 public class StatusesView extends DialogFragment {
     public static final int ADAPTER_STATUS = 0;
@@ -35,7 +34,6 @@ public class StatusesView extends DialogFragment {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
         dialogBuilder.setTitle(R.string.ms_status_menu);
         dialogBuilder.setView(dialogView);
-        dialogBuilder.setInverseBackgroundForced(Util.isNeedToInverseDialogBackground());
         StatusesAdapter statusesAdapter = new StatusesAdapter(protocol, type);
         ListView lv = (ListView) dialogView.findViewById(R.id.statuses_view);
         if (type == ADAPTER_STATUS)

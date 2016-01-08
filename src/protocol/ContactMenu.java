@@ -1,6 +1,6 @@
 package protocol;
 
-import android.app.AlertDialog;
+import android.support.v7.app.AlertDialog;
 import android.content.DialogInterface;
 import android.view.ContextMenu;
 import android.widget.Toast;
