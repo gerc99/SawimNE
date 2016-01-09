@@ -190,18 +190,16 @@ public class HistoryStorage {
     }*/
 
     public synchronized boolean hasLastMessage(Chat chat, Message message) {
-        Contact contact = chat.getContact();
         Cursor cursor = null;
         try {
             cursor = SawimApplication.getDatabaseHelper().getReadableDatabase().query(DatabaseHelper.TABLE_CHAT_HISTORY, null, DatabaseHelper.CONTACT_ID + " = ?",
                     new String[]{uniqueUserId}, null, null, DatabaseHelper.DATE + " DESC", String.valueOf(60));
             if (cursor.moveToLast()) {
                 String msgText = message.getText();
-                String msgNick = contact.isConference() ? message.getName() : chat.getFrom(message);
+                String msgNick = chat.getFrom(message);
                 do {
                     short rowData = cursor.getShort(cursor.getColumnIndex(DatabaseHelper.ROW_DATA));
-                    boolean isMessage = (rowData & MessData.PRESENCE) == 0
-                            && (rowData & MessData.SERVICE) == 0 && (rowData & MessData.PROGRESS) == 0;
+                    boolean isMessage = (rowData & MessData.PRESENCE) == 0 && (rowData & MessData.PROGRESS) == 0;
                     if (isMessage) {
                         String msgTextH = cursor.getString(cursor.getColumnIndex(DatabaseHelper.MESSAGE));
                         String msgNickH = cursor.getString(cursor.getColumnIndex(DatabaseHelper.AUTHOR));
