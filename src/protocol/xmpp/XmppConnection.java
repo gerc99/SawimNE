@@ -1260,8 +1260,8 @@ public final class XmppConnection extends ClientConnection {
                     return;
                 }
                 if (serverFeatures.getServerDiscoItems().isEmpty()) {
-                    while (0 < iqQuery.childrenCount()) {
-                        String jid = iqQuery.popChildNode().getAttribute(XmlNode.S_JID);
+                    for (int i = 0; i < iqQuery.childrenCount(); ++i) {
+                        String jid = iqQuery.childAt(i).getAttribute(XmlNode.S_JID);
                         String discoId = generateId();
 
                         requestConferenceInfo(jid, discoId);
@@ -1272,8 +1272,8 @@ public final class XmppConnection extends ClientConnection {
                 if (null != disco) {
                     serviceDiscovery = null;
                     disco.setTotalCount(iqQuery.childrenCount());
-                    while (0 < iqQuery.childrenCount()) {
-                        XmlNode item = iqQuery.popChildNode();
+                    for (int i = 0; i < iqQuery.childrenCount(); ++i) {
+                        XmlNode item = iqQuery.childAt(i);
                         String name = item.getAttribute(XmlNode.S_NAME);
                         String jid = item.getAttribute(XmlNode.S_JID);
                         disco.addItem(name, jid);

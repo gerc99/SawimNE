@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.EditText;
 import ru.sawim.R;
+import ru.sawim.comm.JLocale;
 
 /**
  * Created with IntelliJ IDEA.
@@ -55,6 +56,10 @@ public class TextBoxView extends DialogFragment {
 
     public void setCaption(String caption) {
         this.caption = caption;
+    }
+
+    public void setCaption(int resId) {
+        this.caption = JLocale.getString(resId);
     }
 
     public void setString(String string) {
