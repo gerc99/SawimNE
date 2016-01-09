@@ -804,6 +804,9 @@ public final class XmppConnection extends ClientConnection {
                 continue;
             }
             String name = item.getAttribute(XmlNode.S_NAME);
+            if (null == name) {
+                name = Jid.getNick(jid);
+            }
             String nick = item.getFirstNodeValue(XmlConstants.S_NICK);
             boolean autojoin = isTrue(item.getAttribute("autojoin"));
             String password = item.getAttribute("password");
@@ -815,7 +818,7 @@ public final class XmppConnection extends ClientConnection {
             } else {
                 conference = new XmppServiceContact(jid, name, true, false);
             }
-            conference.setName(Jid.getNick(jid));
+            conference.setName(name);
             conference.setMyName(nick);
             conference.setTempFlag(false);
             conference.setBooleanValue(Contact.CONTACT_NO_AUTH, false);
