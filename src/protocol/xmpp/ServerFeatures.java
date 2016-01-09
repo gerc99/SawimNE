@@ -1,7 +1,8 @@
 package protocol.xmpp;
 
+import android.util.Log;
+
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import ru.sawim.SawimApplication;
@@ -14,8 +15,7 @@ import ru.sawim.modules.crypto.MD5;
  */
 public class ServerFeatures {
 
-    private HashMap<String, String> serverDiscoItems = new HashMap<>();
-    private String mucServer;
+    //private String mucServer;
     private boolean hasMessageArchiveManagement;
     private boolean hasCarbon;
     private boolean carbonsEnabled;
@@ -30,7 +30,7 @@ public class ServerFeatures {
             if (feature != null) {
                 switch (feature) {
                     case "http://jabber.org/protocol/muc":
-                        mucServer = serverDiscoItems.get(id);
+                        //mucServer = serverDiscoItems.get(id);
                         break;
                     case "urn:xmpp:mam:0":
                         hasMessageArchiveManagement = true;
@@ -47,13 +47,9 @@ public class ServerFeatures {
         return hasMessageArchiveManagement;
     }
 
-    public HashMap<String, String> getServerDiscoItems() {
-        return serverDiscoItems;
-    }
-
-    public String mucServer() {
-        return mucServer;
-    }
+    //public String mucServer() {
+    //    return mucServer;
+    //}
 
     public boolean hasCarbon() {
         return hasCarbon;

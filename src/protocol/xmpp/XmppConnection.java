@@ -303,8 +303,7 @@ public final class XmppConnection extends ClientConnection {
             usePong();
             setProgress(100);
         } else {
-            //requestDiscoServerItems();
-            //requestServerFeatures(domain_);
+            requestDiscoServerItems();
             try {
                 write(XmlConstants.GET_ROSTER_XML);
             } catch (SawimException e) {
@@ -1184,49 +1183,59 @@ public final class XmppConnection extends ClientConnection {
         });
     }
 
-    public void requestServerFeatures(final String jid) {
+    private void requestServerFeatures(final String jid) {
         requestIq(jid, "http://jabber.org/protocol/disco#info", generateId(), new OnIqReceived() {
             @Override
             public void onIqReceived(XmlNode iq) {
                 XmlNode iqQuery = iq.childAt(0);
                 String from = StringConvertor.notNull(iq.getAttribute(XmlConstants.S_FROM));
-                if (serverFeatures.getServerDiscoItems().get(iq.getId()) != null) {
-                    serverFeatures.parseServerFeatures(iqQuery, iq.getId());
-                }
-                try {
-                    write(XmlConstants.GET_ROSTER_XML);
-                } catch (SawimException e) {
-                    e.printStackTrace();
-                }
+                serverFeatures.parseServerFeatures(iqQuery, iq.getId());
                 enableCarbons();
-                String name = iqQuery.getFirstNodeAttribute("identity", XmlNode.S_NAME);
-                getXmpp().setConferenceInfo(from, name);
-            }
-        });
-    }
-
-    public void requestConferenceInfo(final String jid, final String id) {
-        requestIq(jid, "http://jabber.org/protocol/disco#info", id, new OnIqReceived() {
-            @Override
-            public void onIqReceived(XmlNode iq) {
-                XmlNode iqQuery = iq.childAt(0);
-                String from = StringConvertor.notNull(iq.getAttribute(XmlConstants.S_FROM));
-                if (serverFeatures.getServerDiscoItems().get(iq.getId()) != null) {
-                    serverFeatures.parseServerFeatures(iqQuery, iq.getId());
-                }
-                enableCarbons();
-                String name = iqQuery.getFirstNodeAttribute("identity", XmlNode.S_NAME);
-                getXmpp().setConferenceInfo(from, name);
             }
         });
     }
 
     public void requestConferenceInfo(String jid) {
-        requestConferenceInfo(jid, generateId());
+        requestIq(jid, "http://jabber.org/protocol/disco#info", new OnIqReceived() {
+            @Override
+            public void onIqReceived(XmlNode iq) {
+                XmlNode iqQuery = iq.childAt(0);
+                String from = StringConvertor.notNull(iq.getAttribute(XmlConstants.S_FROM));
+                String name = iqQuery.getFirstNodeAttribute("identity", XmlNode.S_NAME);
+                getXmpp().setConferenceInfo(from, name);
+            }
+        });
     }
 
-    public void requestDiscoServerItems() {
-        requestDiscoItems(domain_);
+    private void requestDiscoServerItems() {
+        requestIq(domain_, "http://jabber.org/protocol/disco#items", new OnIqReceived() {
+            @Override
+            public void onIqReceived(XmlNode iq) {
+                XmlNode iqQuery = iq.childAt(0);
+                String from = StringConvertor.notNull(iq.getAttribute(XmlConstants.S_FROM));
+                byte iqType = getIqType(iq);
+                String xmlns = iqQuery.getXmlns();
+                if (XmlConstants.IQ_TYPE_ERROR == iqType) {
+                    XmlNode errorNode = iq.getFirstNode(XmlConstants.S_ERROR);
+                    iq.removeNode(XmlConstants.S_ERROR);
+
+                    if (null == errorNode) {
+                        DebugLog.println("Error without description is stupid");
+                    } else {
+                        DebugLog.systemPrintln(
+                                "[INFO-JABBER] <IQ> error received: " +
+                                        "Code=" + errorNode.getAttribute(XmlConstants.S_CODE) + " " +
+                                        "Value=" + getError(errorNode));
+                    }
+                    return;
+                }
+                while (0 < iqQuery.childrenCount()) {
+                        String jid = iqQuery.popChildNode().getAttribute(XmlNode.S_JID);
+                        requestServerFeatures(jid);
+                    }
+                    requestServerFeatures(domain_);
+                }
+        });
     }
 
     public void requestDiscoItems(String server) {
@@ -1262,21 +1271,12 @@ public final class XmppConnection extends ClientConnection {
                     }
                     return;
                 }
-                if (serverFeatures.getServerDiscoItems().isEmpty()) {
-                    for (int i = 0; i < iqQuery.childrenCount(); ++i) {
-                        String jid = iqQuery.childAt(i).getAttribute(XmlNode.S_JID);
-                        String discoId = generateId();
-
-                        requestConferenceInfo(jid, discoId);
-                        serverFeatures.getServerDiscoItems().put(discoId, jid);
-                    }
-                }
                 ServiceDiscovery disco = serviceDiscovery;
                 if (null != disco) {
                     serviceDiscovery = null;
                     disco.setTotalCount(iqQuery.childrenCount());
-                    for (int i = 0; i < iqQuery.childrenCount(); ++i) {
-                        XmlNode item = iqQuery.childAt(i);
+                    while (0 < iqQuery.childrenCount()) {
+                        XmlNode item = iqQuery.popChildNode();
                         String name = item.getAttribute(XmlNode.S_NAME);
                         String jid = item.getAttribute(XmlNode.S_JID);
                         disco.addItem(name, jid);
