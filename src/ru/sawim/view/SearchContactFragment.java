@@ -104,12 +104,14 @@ public class SearchContactFragment extends SawimFragment
             ((ViewGroup) rosterViewLayout.getParent()).removeView(rosterViewLayout);
 
         ActionBar actionBar = ((BaseActivity) getActivity()).getSupportActionBar();
-        actionBar.setDisplayShowTitleEnabled(false);
-        actionBar.setDisplayShowHomeEnabled(false);
-        actionBar.setDisplayUseLogoEnabled(false);
-        actionBar.setDisplayHomeAsUpEnabled(false);
-        actionBar.setHomeButtonEnabled(false);
-        actionBar.setDisplayShowCustomEnabled(true);
+        if (actionBar != null) {
+            actionBar.setDisplayShowTitleEnabled(false);
+            actionBar.setDisplayUseLogoEnabled(false);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setDisplayShowHomeEnabled(true);
+            actionBar.setHomeButtonEnabled(true);
+            actionBar.setDisplayShowCustomEnabled(true);
+        }
 
         return rosterViewLayout;
     }
