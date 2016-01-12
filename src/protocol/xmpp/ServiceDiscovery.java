@@ -110,7 +110,10 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
 
     private String makeShortJid(String jid) {
         if (isConferenceList) {
-            return jid.substring(0, jid.indexOf('@') + 1);
+            int atIndex = jid.indexOf('@');
+            if (atIndex != -1) {
+                return jid.substring(0, atIndex + 1);
+            }
         }
         return jid;
     }
@@ -301,9 +304,10 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
             rebuild();
             return;
         }
-        isConferenceList = (-1 != jid.indexOf('@'));
         if (serverJid.contains("@")) {
             shortView = true;
+        } else {
+            isConferenceList = true;
         }
         VirtualListItem wait = model.createNewParser(false);
         wait.addDescription(JLocale.getString(R.string.wait),
