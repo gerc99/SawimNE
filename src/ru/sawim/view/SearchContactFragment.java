@@ -31,6 +31,7 @@ import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
 import ru.sawim.activities.BaseActivity;
 import ru.sawim.activities.SawimActivity;
+import ru.sawim.comm.JLocale;
 import ru.sawim.forms.ManageContactListForm;
 import ru.sawim.listener.OnUpdateRoster;
 import ru.sawim.models.RosterAdapter;
@@ -104,12 +105,14 @@ public class SearchContactFragment extends SawimFragment
             ((ViewGroup) rosterViewLayout.getParent()).removeView(rosterViewLayout);
 
         ActionBar actionBar = ((BaseActivity) getActivity()).getSupportActionBar();
-        actionBar.setDisplayShowTitleEnabled(false);
-        actionBar.setDisplayShowHomeEnabled(false);
-        actionBar.setDisplayUseLogoEnabled(false);
-        actionBar.setDisplayHomeAsUpEnabled(false);
-        actionBar.setHomeButtonEnabled(false);
-        actionBar.setDisplayShowCustomEnabled(true);
+        if (actionBar != null) {
+            actionBar.setDisplayShowTitleEnabled(false);
+            actionBar.setDisplayUseLogoEnabled(false);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setDisplayShowHomeEnabled(true);
+            actionBar.setHomeButtonEnabled(true);
+            actionBar.setDisplayShowCustomEnabled(true);
+        }
 
         return rosterViewLayout;
     }
@@ -238,6 +241,7 @@ public class SearchContactFragment extends SawimFragment
         searchMenuItem = menu.findItem(R.id.action_search);
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchMenuItem);
         searchView.setOnQueryTextListener(new OnQueryTextListener(getRosterAdapter()));
+        searchView.setQueryHint(JLocale.getString(R.string.search_user));
         searchView.setIconifiedByDefault(false);
 
         MenuItemCompat.setOnActionExpandListener(searchMenuItem, this);
