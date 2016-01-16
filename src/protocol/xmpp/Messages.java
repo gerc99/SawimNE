@@ -1,9 +1,5 @@
 package protocol.xmpp;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Locale;
-
 import protocol.Contact;
 import protocol.XStatusInfo;
 import ru.sawim.R;
@@ -16,6 +12,10 @@ import ru.sawim.comm.JLocale;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
 import ru.sawim.modules.history.HistoryStorage;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 /**
  * Created by gerc on 02.01.2016.
@@ -393,27 +393,35 @@ public class Messages {
             return false;
         }
         String fullJid;
-        if (receivedNode != null) {
+        boolean isIncoming = receivedNode != null;
+        if (isIncoming) {
             fullJid = msg.getAttribute(XmlConstants.S_FROM);
-            if (fullJid == null) {
-                return false;
-            } else {
-                //updateLastseen
-            }
         } else {
             fullJid = msg.getAttribute(XmlConstants.S_TO);
-            if (fullJid == null) {
-                return false;
-            }
         }
-        fullJid = Jid.getBareJid(fullJid);
-        boolean isIncoming = receivedNode != null;
+        if (fullJid == null) {
+            return false;
+        }
+
+        final Contact contact = connection.getXmpp().getItemByUID(Jid.getBareJid(fullJid));
+        boolean isConference = contact != null && contact.isConference();
+        if (!isConference) {
+            fullJid = Jid.getBareJid(fullJid);
+        }
+
         final String date = getDate(msg);
         final boolean isOnlineMessage = (null == date);
         long time = isOnlineMessage ? SawimApplication.getCurrentGmtTime() : parseTimestamp(date);
+
         XmppContact c = (XmppContact) connection.getXmpp().getItemByUID(fullJid);
+        if (null == c) {
+            if (isConference) {
+                prepareFirstPrivateMessage(connection, fullJid);
+            }
+        }
+
         Message message = new PlainMessage(fullJid, isIncoming ? connection.getXmpp().getUserId() : fullJid, time, text, !isOnlineMessage, isIncoming);
-        connection.getXmpp().addMessage(message, XmlConstants.S_HEADLINE.equals(type), c.isConference());
+        connection.getXmpp().addMessage(message, XmlConstants.S_HEADLINE.equals(type), isConference);
         return true;
     }
 
