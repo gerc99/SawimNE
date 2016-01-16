@@ -5,8 +5,8 @@ import android.text.Layout;
 import android.text.SpannableStringBuilder;
 import protocol.Contact;
 import ru.sawim.R;
-import ru.sawim.SawimApplication;
 import ru.sawim.chat.message.Message;
+import ru.sawim.chat.message.PlainMessage;
 import ru.sawim.text.TextFormatter;
 import ru.sawim.view.menu.JuickMenu;
 import ru.sawim.widget.chat.MessageItemView;
@@ -30,7 +30,7 @@ public final class MessData {
     public static final short MARKED = 64;
     private String serverMsgId;
 
-    public MessData(Contact currentContact, long time, String text, String nick, short flags, boolean highLight, boolean isCustom) {
+    public MessData(Contact currentContact, long time, String text, String nick, short flags, boolean highLight) {
         isHighLight = highLight;
         this.nick = nick;
         this.time = time;
@@ -38,26 +38,21 @@ public final class MessData {
         //boolean today = (SawimApplication.getCurrentGmtTime() / 1000 - 24 * 60 * 60 < time);
         strTime = ru.sawim.comm.Util.getLocalDateString(time, true);
 
-        CharSequence parsedText = parsedText(currentContact, text, isCustom);
+        CharSequence parsedText = parsedText(currentContact, text);
         layout = MessageItemView.buildLayout(parsedText, isHighLight ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT);
     }
 
     public MessData(Contact currentContact, long time, String text, String nick, short flags) {
-        this(currentContact, time, text, nick, flags, false, false);
+        this(currentContact, time, text, nick, flags, false);
     }
 
-    private CharSequence parsedText(Contact contact, CharSequence text, boolean isCustom) {
+    private CharSequence parsedText(Contact contact, CharSequence text) {
         SpannableStringBuilder builder = new SpannableStringBuilder();
-        if (isCustom) {
-            if (isMe()) {
-                builder.append(formatCmdMe(nick));
-                builder.append(Chat.formatCmdMe(text.toString()));
-            } else if (isPresence()) {
-                builder.append(strTime).append(" ").append(nick);
-                builder.append(text);
-            } else {
-                builder.append(text);
-            }
+        if (isMe()) {
+            builder.append(formatCmdMe(nick, text.toString()));
+         } else if (isPresence()) {
+            builder.append(strTime).append(" ").append(nick);
+            builder.append(text);
         } else {
             builder.append(text);
         }
@@ -76,10 +71,15 @@ public final class MessData {
         return builder;
     }
 
-    public static String formatCmdMe(String nick) {
-        SpannableStringBuilder builder = new SpannableStringBuilder();
-        builder.append("* ").append(nick).append(" ");
-        return builder.toString();
+    private String formatCmdMe(String nick, String messageText) {
+        boolean isMe = messageText.startsWith(PlainMessage.CMD_ME);
+        if (isMe) {
+            StringBuilder builder = new StringBuilder();
+            builder.append("* ").append(nick).append(" ")
+                   .append(messageText.substring(PlainMessage.CMD_ME.length()));
+            return builder.toString();
+        }
+        return messageText;
     }
 
     public long getTime() {

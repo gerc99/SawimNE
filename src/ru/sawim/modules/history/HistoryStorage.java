@@ -300,7 +300,7 @@ public class HistoryStorage {
             messData = Chat.buildMessage(contact, message, contact.isConference() ? from : chat.getFrom(message),
                     false, isIncoming && Chat.isHighlight(message.getProcessedText(), contact.getMyName()));
         } else if ((rowData & MessData.PRESENCE) != 0 || (rowData & MessData.ME) != 0) {
-            messData = new MessData(contact, message.getNewDate(), text, from, rowData, false, true);
+            messData = new MessData(contact, message.getNewDate(), text, from, rowData, false);
         } else {
             messData = Chat.buildMessage(contact, message, contact.isConference() ? from : chat.getFrom(message),
                     rowData, Chat.isHighlight(message.getProcessedText(), contact.getMyName()));
