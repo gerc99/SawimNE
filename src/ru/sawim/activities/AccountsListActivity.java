@@ -31,7 +31,7 @@ public class AccountsListActivity extends BaseActivity implements XmppRegistrati
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(true);
-        getSupportActionBar().setDisplayUseLogoEnabled(true);
+        getSupportActionBar().setDisplayUseLogoEnabled(false);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayShowCustomEnabled(false);
         getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
