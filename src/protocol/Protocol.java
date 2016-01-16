@@ -421,6 +421,7 @@ abstract public class Protocol {
                 group.updateGroupData();
             }
         }
+        getStorage().setOfflineStatuses(this);
     }
 
     public final Contact getItemByUID(String uid) {
@@ -881,9 +882,5 @@ abstract public class Protocol {
             ChatHistory.instance.registerChat(chat);
         }
         return chat;
-    }
-
-    public boolean isStreamManagementSupported() {
-        return false;
     }
 }

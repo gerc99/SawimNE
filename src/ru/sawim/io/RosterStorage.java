@@ -126,9 +126,7 @@ public class RosterStorage {
         }
         contact.firstServerMsgId = firstServerMsgId;
         contact.avatarHash = avatarHash;
-        if (protocol.isStreamManagementSupported()) {
-            contact.setStatus((byte) status, statusText);
-        }
+        contact.setStatus((byte) status, statusText);
         contact.setGroupId(groupId);
         contact.setBooleanValues(booleanValues);
         if (isConference) {

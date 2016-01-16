@@ -53,13 +53,14 @@ public final class XmlNode {
         return attribs.get(key);
     }
 
-    public void putAttribute(String key, String value) {
+    public XmlNode putAttribute(String key, String value) {
         if (S_JID.equals(key)) {
             key = S_JID;
         } else if (S_NAME.equals(key)) {
             key = S_NAME;
         }
         attribs.put(key, value);
+        return this;
     }
 
     public String getXmlns() {
@@ -78,6 +79,18 @@ public final class XmlNode {
 
     public String getId() {
         return getAttribute(S_ID);
+    }
+
+    public void setId(String id) {
+        putAttribute(S_ID, id);
+    }
+
+    public String getType() {
+        return getAttribute(XmlConstants.S_TYPE);
+    }
+
+    public void setType(String type) {
+        putAttribute(XmlConstants.S_TYPE, type);
     }
 
     public static XmlNode parse(Socket socket) throws SawimException {
@@ -587,11 +600,13 @@ public final class XmlNode {
         return content;
     }
 
-    public void addNode(XmlNode subNode) {
-        if (value == null) {
+    public XmlNode addNode(XmlNode subNode) {
+        /*if (value == null) {
             value = subNode.toString();
         } else {
             value += subNode.toString();
-        }
+        }*/
+        children.add(subNode);
+        return subNode;
     }
 }

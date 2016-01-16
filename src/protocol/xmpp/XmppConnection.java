@@ -1,10 +1,8 @@
 package protocol.xmpp;
 
 import android.support.v4.util.Pair;
-import android.util.Log;
 import protocol.*;
 import protocol.net.ClientConnection;
-import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.SawimException;
 import ru.sawim.chat.message.PlainMessage;
@@ -13,21 +11,16 @@ import ru.sawim.comm.Config;
 import ru.sawim.comm.JLocale;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
-import ru.sawim.icons.ImageCache;
-import ru.sawim.io.FileSystem;
 import ru.sawim.listener.OnMoreMessagesLoaded;
 import ru.sawim.modules.DebugLog;
-import ru.sawim.modules.crypto.MD5;
-import ru.sawim.modules.crypto.SHA1;
-import ru.sawim.modules.history.HistoryStorage;
 import ru.sawim.modules.search.UserInfo;
 import ru.sawim.roster.RosterHelper;
 
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -36,12 +29,6 @@ public final class XmppConnection extends ClientConnection {
     private static final String LOG_TAG = XmppConnection.class.getSimpleName();
     public static final boolean DEBUGLOG = true;
     private static final int MESSAGE_COUNT_AFTER_CONNECT = 20;
-
-/*	String smSessionId = "";
-    boolean smSupported = false;
-    boolean smEnabled = false;
-    long smPacketsIn;
-    long smPacketsOut;*/
 
     public Socket socket;
     private Xmpp protocol;
@@ -90,6 +77,7 @@ public final class XmppConnection extends ClientConnection {
     }
 
     public XmppConnection() {
+
     }
 
     public void setXmpp(Xmpp xmpp) {
@@ -97,6 +85,11 @@ public final class XmppConnection extends ClientConnection {
         resource = xmpp.getResource();
         fullJid_ = xmpp.getUserId() + '/' + resource;
         domain_ = Jid.getDomain(fullJid_);
+
+        XmppSession xmppSession = xmpp.getXmppSession();
+        if (!xmppSession.isEmpty() && !xmppSession.isSessionFor(fullJid_)) {
+            DebugLog.println("[SESSION] Oops");
+        }
     }
 
     public void setProgress(int percent) {
@@ -105,6 +98,10 @@ public final class XmppConnection extends ClientConnection {
 
     public Xmpp getXmpp() {
         return protocol;
+    }
+
+    public XmppSession getXmppSession() {
+        return protocol.getXmppSession();
     }
 
     private void write(byte[] data) throws SawimException {
@@ -182,8 +179,9 @@ public final class XmppConnection extends ClientConnection {
     }
 
     protected final void closeSocket() {
-        if (!isSessionManagementEnabled())
+        if (getXmppSession().isEmpty()) {
             loggedOut();
+        }
         if (socket != null) {
             socket.close();
             socket = null;
@@ -299,7 +297,7 @@ public final class XmppConnection extends ClientConnection {
 
         setProgress(30);
         socket.start();
-		if (isSessionManagementEnabled()) {
+		if (getXmppSession().isRestored()) {
             usePong();
             setProgress(100);
         } else {
@@ -360,29 +358,8 @@ public final class XmppConnection extends ClientConnection {
 
             XmlNode err = (null == x.childAt(0)) ? x : x.childAt(0);
             DebugLog.systemPrintln("[INFO-JABBER] Stream error!: " + err.name + "," + err.value);
-        /*} else if (x.is("r")) {
-            sendAck();
-        } else if (x.is("enabled")) {
-            setSessionManagementEnabled(true);
-            smSessionId = x.getAttribute("id");
-            XmppSession.getInstance().save(this);
-            DebugLog.systemPrintln("[INFO-JABBER] XmppSession management enabled with ID=" + smSessionId);
-        */}
+        }
     }
-
-    /*private void sendAck() {
-        putPacketIntoQueue("<a xmlns='urn:xmpp:sm:3' h='" + String.valueOf(smPacketsIn) + "'/>");
-    }*/
-
-    public boolean isSessionManagementEnabled() {
-        //return /*smEnabled || */Auth.rebindEnabled;
-        return false;
-    }
-
-    /*public void setSessionManagementEnabled(boolean flag) {
-        smEnabled = flag;
-        XmppSession.getInstance().enable(this);
-    }*/
 
     public static String generateId(String key) {
         return key + Util.uniqueValue();
@@ -587,9 +564,6 @@ public final class XmppConnection extends ClientConnection {
                     setProgress(90);
                     Muc.getBookmarks(this);
                     putPacketIntoQueue("<iq type='get' id='getnotes'><query xmlns='jabber:iq:private'><storage xmlns='storage:rosternotes'/></query></iq>");
-                    //if (smSupported && !isSessionManagementEnabled()) {
-                    //    putPacketIntoQueue("<enable xmlns='urn:xmpp:sm:3' resume='true' />");
-                    //}
 					setProgress(100);
 
                     if (serverFeatures.hasMessageArchiveManagement()) {
