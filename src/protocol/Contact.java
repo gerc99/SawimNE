@@ -4,7 +4,6 @@ import android.view.ContextMenu;
 import android.view.Menu;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
-import ru.sawim.Scheme;
 import ru.sawim.activities.BaseActivity;
 import ru.sawim.chat.Chat;
 import ru.sawim.chat.ChatHistory;
@@ -41,8 +40,10 @@ abstract public class Contact implements TreeNode {
             case StatusInfo.STATUS_OFFLINE:
                 return SawimApplication.getInstance().getResources().getColor(R.color.status_offline);
             case StatusInfo.STATUS_ONLINE:
+            case StatusInfo.STATUS_CHAT:
                 return SawimApplication.getInstance().getResources().getColor(R.color.status_online);
             case StatusInfo.STATUS_AWAY:
+            case StatusInfo.STATUS_NA:
                 return SawimApplication.getInstance().getResources().getColor(R.color.status_away);
             case StatusInfo.STATUS_DND:
                 return SawimApplication.getInstance().getResources().getColor(R.color.status_dnd);
