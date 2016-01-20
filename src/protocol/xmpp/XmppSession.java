@@ -56,6 +56,7 @@ final class XmppSession {
     void resetSessionData() {
         userId = "";
         sessionId = "";
+        isRestored = false;
 
         saveSessionData();
     }
