@@ -179,9 +179,6 @@ public final class XmppConnection extends ClientConnection {
     }
 
     protected final void closeSocket() {
-        if (getXmppSession().isEmpty()) {
-            loggedOut();
-        }
         if (socket != null) {
             socket.close();
             socket = null;
