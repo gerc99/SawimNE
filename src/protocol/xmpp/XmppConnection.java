@@ -430,17 +430,12 @@ public final class XmppConnection extends ClientConnection {
         if (XmlConstants.IQ_TYPE_RESULT != iqType) {
             return;
         }
-        if ("p1:rebind".equals(id)) {
-            //rebindEnabled = true;
-            //DebugLog.systemPrintln("[INFO-JABBER] p1 session management enabled with id = " + rebindSessionId);
-        } else {
-            if (id.startsWith(Vcard.S_VCARD)) {
-                Vcard.loadVCard(this, null, from);
-            }
-            if ((null != xmppForm) && xmppForm.getId().equals(id)) {
-                xmppForm.success();
-                xmppForm = null;
-            }
+        if (id.startsWith(Vcard.S_VCARD)) {
+            Vcard.loadVCard(this, null, from);
+        }
+        if ((null != xmppForm) && xmppForm.getId().equals(id)) {
+            xmppForm.success();
+            xmppForm = null;
         }
     }
 
