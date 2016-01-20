@@ -243,7 +243,6 @@ public class Auth {
             xmppSession.setAsRestored();
 
             setAuthStatus(connection, true);
-            connection.getXmpp().s_updateOnlineStatus();
 
             return true;
         } else {
