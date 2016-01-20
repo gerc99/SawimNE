@@ -1,5 +1,6 @@
 package protocol.xmpp;
 
+import protocol.StatusInfo;
 import ru.sawim.SawimApplication;
 import ru.sawim.SawimException;
 import ru.sawim.comm.StringConvertor;
@@ -269,9 +270,13 @@ public class Auth {
         XmlNode pushNode = rebindNode.addNode(XmlNode.addXmlns("push", "p1:push"));
         pushNode.addSubTag("keepalive").putAttribute("max", "120");
         pushNode.addSubTag("session").putAttribute("duration", "1440");
-        pushNode.addSubTag("body").putAttribute("send", "all")
-                                  .putAttribute(XmlConstants.S_GROUPCHAT, "true")
-                                  .putAttribute(XmlConstants.S_FROM, "name");
+        pushNode.addSubTag(XmlConstants.S_BODY)
+                .putAttribute("send", "all")
+                .putAttribute(XmlConstants.S_GROUPCHAT, XmlConstants.S_TRUE)
+                .putAttribute(XmlConstants.S_FROM, "name");
+        pushNode.addSubTag(XmlConstants.S_STATUS).putAttribute(
+                XmlConstants.S_TYPE,
+                connection.getNativeStatus(StatusInfo.STATUS_AWAY));
         pushNode.setValue("offline", XmlConstants.S_TRUE);
 
         connection.putPacketIntoQueue(rebindNode.toString());
