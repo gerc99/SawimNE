@@ -163,7 +163,10 @@ public class Messages {
             }
         }
 
-        if (!isConference || !isGroupchat) {
+        final String date = getDate(msg);
+        final boolean isOnlineMessage = (null == date);
+
+        if (!(isConference && isGroupchat) && isOnlineMessage) {
             parseChatState(connection, msg, from);
         }
 
@@ -192,8 +195,6 @@ public class Messages {
         text = StringConvertor.trim(text);
 
         Message message = null;
-        final String date = getDate(msg);
-        final boolean isOnlineMessage = (null == date);
         long time = isOnlineMessage ? SawimApplication.getCurrentGmtTime() : /*new Delay().getTime(date)*/parseTimestamp(date);
         final XmppContact c = (XmppContact) connection.getXmpp().getItemByUID(from);
         if (msg.contains(XmlConstants.S_ERROR)) {
@@ -396,7 +397,10 @@ public class Messages {
             return false;
         }
 
-        if (isIncoming) {
+        final String date = getDate(carbonMsg);
+        final boolean isOnlineMessage = (null == date);
+
+        if (isIncoming && isOnlineMessage) {
             parseChatState(connection, msg, Jid.getBareJid(fullJid));
         }
 
@@ -411,8 +415,6 @@ public class Messages {
             fullJid = Jid.getBareJid(fullJid);
         }
 
-        final String date = getDate(carbonMsg);
-        final boolean isOnlineMessage = (null == date);
         long time = isOnlineMessage ? SawimApplication.getCurrentGmtTime() : parseTimestamp(date);
 
         XmppContact c = (XmppContact) connection.getXmpp().getItemByUID(fullJid);
