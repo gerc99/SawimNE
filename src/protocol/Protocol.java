@@ -593,7 +593,7 @@ abstract public class Protocol {
         }
         boolean inCL = inContactList(contact);
         if (inCL) {
-            roster.getContactItems().remove(contact);
+            roster.getContactItems().remove(contact.getUserId());
             ui_removeFromAnyGroup(contact);
         }
         if (contact.hasChat()) {

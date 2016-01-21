@@ -290,7 +290,7 @@ public final class Xmpp extends Protocol implements FormListener {
             if (unregister) {
                 getConnection().unregister(contact.getUserId());
             }
-            connection.removeContact(contact.getUserId());
+            connection.removeContact(contact);
             if (unregister) {
                 getConnection().removeGateContacts(contact.getUserId());
             }

@@ -1066,13 +1066,13 @@ public final class XmppConnection extends ClientConnection {
                 + "</query></iq>");
     }
 
-    public void removeContact(String jid) {
-        if (getXmpp().getItemByUID(jid).isConference()) {
+    public void removeContact(Contact contact) {
+        if (contact.isConference()) {
             Muc.saveConferences(this);
         }
         putPacketIntoQueue("<iq type='set' id='" + generateId()
                 + "'><query xmlns='jabber:iq:roster'>"
-                + "<item subscription='remove' jid='" + Util.xmlEscape(jid) + "'/>"
+                + "<item subscription='remove' jid='" + Util.xmlEscape(contact.getUserId()) + "'/>"
                 + "</query></iq>");
     }
 
