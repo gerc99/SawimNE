@@ -129,23 +129,25 @@ public class RosterStorage {
         contact.setStatus((byte) status, statusText);
         contact.setGroupId(groupId);
         contact.setBooleanValues(booleanValues);
+        if (contact instanceof XmppContact) {
+            XmppContact xmppContact = (XmppContact)contact;
+            loadSubContacts(xmppContact);
+        }
         if (isConference) {
             XmppServiceContact serviceContact = (XmppServiceContact) contact;
             serviceContact.setMyName(conferenceMyNick);
             serviceContact.setAutoJoin(conferenceIsAutoJoin);
             serviceContact.setConference(true);
-
-            loadSubContacts(protocol, serviceContact);
         }
         RosterHelper.getInstance().updateGroup(protocol, group);
         return contact;
     }
 
-    public void loadSubContacts(Protocol protocol, XmppServiceContact serviceContact) {
+    public void loadSubContacts(XmppContact xmppContact) {
         Cursor cursor = null;
         try {
             cursor = SawimApplication.getDatabaseHelper().getReadableDatabase().query(subContactsTable, null, WHERE_CONTACT_ID,
-                    new String[]{serviceContact.getUserId()}, null, null, null);
+                    new String[]{xmppContact.getUserId()}, null, null, null);
             if (cursor.moveToFirst()) {
                 do {
                     String subcontactRes = cursor.getString(cursor.getColumnIndex(DatabaseHelper.SUB_CONTACT_RESOURCE));
@@ -155,7 +157,7 @@ public class RosterStorage {
                     int subcontactPriorityA = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.SUB_CONTACT_PRIORITY_A));
                     String avatarHash = cursor.getString(cursor.getColumnIndex(DatabaseHelper.AVATAR_HASH));
                     if (subcontactRes != null) {
-                        XmppServiceContact.SubContact subContact = serviceContact.subcontacts.get(subcontactRes);
+                        XmppServiceContact.SubContact subContact = xmppContact.subcontacts.get(subcontactRes);
                         if (subContact == null) {
                             subContact = new XmppContact.SubContact();
                             subContact.resource = subcontactRes;
@@ -164,7 +166,7 @@ public class RosterStorage {
                             subContact.priority = (byte) subcontactPriority;
                             subContact.priorityA = (byte) subcontactPriorityA;
                             subContact.avatarHash = avatarHash;
-                            serviceContact.subcontacts.put(subcontactRes, subContact);
+                            xmppContact.subcontacts.put(subcontactRes, subContact);
                         }
                     }
                 } while (cursor.moveToNext());
