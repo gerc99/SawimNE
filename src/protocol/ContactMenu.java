@@ -15,6 +15,7 @@ import ru.sawim.comm.Util;
 import ru.sawim.forms.ManageContactListForm;
 import ru.sawim.modules.FileTransfer;
 import ru.sawim.modules.history.HistoryStorage;
+import ru.sawim.roster.RosterHelper;
 import ru.sawim.view.TextBoxView;
 import ru.sawim.view.menu.MyMenu;
 
@@ -164,6 +165,8 @@ public class ContactMenu implements TextBoxView.TextBoxListener {
                     @Override
                     public void run() {
                         protocol.getChat(contact).getHistory().removeHistory();
+                        ChatHistory.instance.unregisterChat(protocol.getChat(contact));
+                        RosterHelper.getInstance().updateRoster();
                     }
                 });
                 Toast.makeText(activity, activity.getString(R.string.messages_are_deleted), Toast.LENGTH_LONG).show();
