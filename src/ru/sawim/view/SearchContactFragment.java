@@ -162,6 +162,7 @@ public class SearchContactFragment extends SawimFragment
             byte percent = p.getConnectingProgress();
             if (oldProgressBarPercent != percent) {
                 oldProgressBarPercent = percent;
+                connectBtn.setVisibility(View.GONE);
                 BaseActivity activity = (BaseActivity) getActivity();
                 if (100 != percent) {
                     rosterViewLayout.getProgressBar().setVisibility(ProgressBar.VISIBLE);
@@ -315,8 +316,13 @@ public class SearchContactFragment extends SawimFragment
         if (v == connectBtn) {
             connectBtn.setVisibility(View.GONE);
             Protocol p = RosterHelper.getInstance().getProtocol(0);
-            SawimApplication.getInstance().setStatus(p, (p.isConnected() || p.isConnecting())
-                    ? StatusInfo.STATUS_OFFLINE : StatusInfo.STATUS_ONLINE, "");
+            if (p == null) {
+                getFragmentManager().beginTransaction().addToBackStack(null)
+                        .replace(R.id.fragment_container, new StartWindowView(), StartWindowView.TAG).commit();
+            } else {
+                SawimApplication.getInstance().setStatus(p, (p.isConnected() || p.isConnecting())
+                        ? StatusInfo.STATUS_OFFLINE : StatusInfo.STATUS_ONLINE, "");
+            }
             return;
         }
         int position = (int) v.getTag();

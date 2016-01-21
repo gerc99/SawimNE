@@ -22,17 +22,21 @@ public final class BlobStorage {
 
     SqlAsyncTask thread = new SqlAsyncTask("BlobStorage");
 
+    public BlobStorage(final String recordStoreName) {
+        name = recordStoreName;
+    }
+
     public static String[] getList() {
         Context context = SawimApplication.getInstance();
         return context.databaseList();
     }
 
-    public void delete(final String tableName) {
+    public void delete() {
         thread.execute(new SqlAsyncTask.OnTaskListener() {
             @Override
             public void run() {
                 try {
-                    SawimApplication.getDatabaseHelper().getWritableDatabase().execSQL("DROP TABLE IF EXISTS " + tableName);
+                    SawimApplication.getDatabaseHelper().getWritableDatabase().execSQL("DROP TABLE IF EXISTS " + name);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -40,21 +44,17 @@ public final class BlobStorage {
         });
     }
 
-    public BlobStorage(final String recordStoreName) {
-        name = recordStoreName;
+    public void open() {
         thread.execute(new SqlAsyncTask.OnTaskListener() {
             @Override
             public void run() {
                 String CREATE_BLOB_TABLE = "create table if not exists "
-                        + recordStoreName + " ("
+                        + name + " ("
                         + DatabaseHelper.ROW_AUTO_ID + " integer primary key autoincrement, "
                         + DatabaseHelper.ROW_DATA + " blob);";
                 SawimApplication.getDatabaseHelper().getWritableDatabase().execSQL(CREATE_BLOB_TABLE);
             }
         });
-    }
-
-    public void open() {
         StorageConvertor.convertStorage(name, this);
     }
 
@@ -137,7 +137,8 @@ public final class BlobStorage {
                 baos.reset();
             }
             baos.close();
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -151,7 +152,8 @@ public final class BlobStorage {
                 strings.addElement(dis.readUTF());
                 bais.close();
             }
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return strings;
     }
@@ -178,7 +180,8 @@ public final class BlobStorage {
                 titles[i] = StringConvertor.notNull(dis.readUTF());
                 descs[i] = StringConvertor.notNull(dis.readUTF());
             }
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

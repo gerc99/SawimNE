@@ -87,6 +87,7 @@ public class Scheme {
     }
 
     public static int getColor(int color) {
+        if (themeColorsMap.isEmpty()) return 0xff000000;
         return 0xff000000 | themeColorsMap.get(color);
     }
 

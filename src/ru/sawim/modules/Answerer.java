@@ -156,7 +156,7 @@ public final class Answerer implements FormListener {
 
     private void save() {
         BlobStorage storage = new BlobStorage(STORAGE_NAME);
-        storage.delete(STORAGE_NAME);
+        storage.delete();
         try {
             if (0 == dictionary.size()) {
                 return;

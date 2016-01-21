@@ -3,17 +3,12 @@ package ru.sawim.io;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
-
-import java.util.Enumeration;
 
 import protocol.Contact;
 import protocol.Group;
-import protocol.Profile;
 import protocol.Protocol;
 import protocol.Roster;
 import protocol.StatusInfo;
-import protocol.xmpp.Xmpp;
 import protocol.xmpp.XmppContact;
 import protocol.xmpp.XmppServiceContact;
 import ru.sawim.SawimApplication;
@@ -162,9 +157,10 @@ public class RosterStorage {
                     int subcontactPriorityA = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.SUB_CONTACT_PRIORITY_A));
                     String avatarHash = cursor.getString(cursor.getColumnIndex(DatabaseHelper.AVATAR_HASH));
                     if (subcontactRes != null) {
-                        XmppServiceContact.SubContact subContact = serviceContact.subcontacts.get(subcontactRes);;
+                        XmppServiceContact.SubContact subContact = serviceContact.subcontacts.get(subcontactRes);
                         if (subContact == null) {
                             subContact = new XmppContact.SubContact();
+                            subContact.resource = subcontactRes;
                             subContact.status = (byte) subcontactStatus;
                             subContact.statusText = statusText;
                             subContact.priority = (byte) subcontactPriority;
@@ -188,6 +184,7 @@ public class RosterStorage {
         if (group == null) {
             group = protocol.getNotInListGroup();
         }
+        //Log.e("save", contact.getUserId()+" "+protocol.getStatusInfo().getName(contact.getStatusIndex()));
         final Group finalGroup = group;
         thread.execute(new SqlAsyncTask.OnTaskListener() {
             @Override
@@ -307,6 +304,7 @@ public class RosterStorage {
             public void run() {
                 SQLiteDatabase sqLiteDatabase = SawimApplication.getDatabaseHelper().getWritableDatabase();
                 for (Contact contact : group.getContacts()) {
+                    //Log.e("addGroup", contact.getUserId()+" "+protocol.getStatusInfo().getName(contact.getStatusIndex()));
                     sqLiteDatabase.insert(storeName, null, getRosterValues(protocol, group, contact));
                 }
             }
