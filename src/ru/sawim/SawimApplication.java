@@ -171,6 +171,7 @@ public class SawimApplication extends Application {
                 ChatHistory.instance.registerChat(p.getChat(contact));
             }
         }
+        RosterHelper.getInstance().updateRoster();
     }
 
     public Handler getUiHandler() {

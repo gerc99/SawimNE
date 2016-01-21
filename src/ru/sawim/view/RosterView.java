@@ -115,12 +115,6 @@ public class RosterView extends SawimFragment implements View.OnClickListener, O
         RosterHelper.getInstance().setOnAccountsLoaded(this);
 
         rosterAdapter.refreshList();
-        if (getRosterAdapter().getItemCount() == 0) {
-            getFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, new SearchContactFragment(), SearchContactFragment.TAG)
-                    .addToBackStack(null)
-                    .commit();
-        }
     }
 
     @Override
