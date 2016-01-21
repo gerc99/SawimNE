@@ -5,12 +5,8 @@ import protocol.XStatusInfo;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.chat.Chat;
-import ru.sawim.chat.message.Message;
-import ru.sawim.chat.message.PlainMessage;
-import ru.sawim.chat.message.SystemNotice;
-import ru.sawim.comm.JLocale;
-import ru.sawim.comm.StringConvertor;
-import ru.sawim.comm.Util;
+import ru.sawim.chat.message.*;
+import ru.sawim.comm.*;
 import ru.sawim.modules.history.HistoryStorage;
 
 import java.text.ParseException;
@@ -388,10 +384,7 @@ public class Messages {
                 && "chat".equals(type)) {
             return false;
         }
-        String text = msg.getFirstNodeValue(XmlConstants.S_BODY);
-        if (text == null) {
-            return false;
-        }
+
         String fullJid;
         boolean isIncoming = receivedNode != null;
         if (isIncoming) {
@@ -400,6 +393,13 @@ public class Messages {
             fullJid = msg.getAttribute(XmlConstants.S_TO);
         }
         if (fullJid == null) {
+            return false;
+        }
+
+        parseChatState(connection, msg, Jid.getBareJid(fullJid));
+
+        String text = msg.getFirstNodeValue(XmlConstants.S_BODY);
+        if (text == null) {
             return false;
         }
 
@@ -479,9 +479,9 @@ public class Messages {
 
     private static void parseChatState(XmppConnection connection, XmlNode message, String from) {
         if (message.contains(XmlConstants.S_ACTIVE)
-                || message.contains("gone")
+                || message.contains(XmlConstants.S_GONE)
                 || message.contains(XmlConstants.S_PAUSED)
-                || message.contains("inactive")) {
+                || message.contains(XmlConstants.S_INACTIVE)) {
             connection.getXmpp().beginTyping(from, false);
         } else if (message.contains(XmlConstants.S_COMPOSING)) {
             connection.getXmpp().beginTyping(from, true);
