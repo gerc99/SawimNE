@@ -472,7 +472,7 @@ abstract public class Protocol {
             disconnect(true);
         }
         setOnlineStatus(statusIndex, msg, save);
-        if ((!connected && connecting) || (connected && connecting)) {
+        if (!connected && connecting) {
             connect();
         }
     }
