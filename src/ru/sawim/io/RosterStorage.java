@@ -319,15 +319,11 @@ public class RosterStorage {
                 for (Contact contact : protocol.getContactItems().values()) {
                     ContentValues values = new ContentValues();
                     values.put(DatabaseHelper.STATUS, StatusInfo.STATUS_OFFLINE);
-                    if (contact.isConference()) {
-                        XmppServiceContact serviceContact = (XmppServiceContact) contact;
-                        for (XmppContact.SubContact subContact : serviceContact.subcontacts.values()) {
-                            ContentValues values2 = new ContentValues();
-                            values2.put(DatabaseHelper.SUB_CONTACT_STATUS, StatusInfo.STATUS_OFFLINE);
-                            sqLiteDatabase.update(subContactsTable, values2,
-                                    DatabaseHelper.SUB_CONTACT_RESOURCE + "= ?",
-                                    new String[]{subContact.resource});
-                        }
+                    if (contact instanceof XmppContact) {
+                        sqLiteDatabase.delete(
+                                subContactsTable,
+                                WHERE_CONTACT_ID,
+                                new String[]{contact.getUserId()});
                     }
                     sqLiteDatabase.update(storeName, values, WHERE_ACC_CONTACT_ID, new String[]{protocol.getUserId(), contact.getUserId()});
                 }
