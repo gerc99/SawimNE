@@ -396,7 +396,9 @@ public class Messages {
             return false;
         }
 
-        parseChatState(connection, msg, Jid.getBareJid(fullJid));
+        if (isIncoming) {
+            parseChatState(connection, msg, Jid.getBareJid(fullJid));
+        }
 
         String text = msg.getFirstNodeValue(XmlConstants.S_BODY);
         if (text == null) {
