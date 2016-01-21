@@ -90,7 +90,7 @@ public class MessageItemView extends View {
     }
 
     public static Layout buildLayout(CharSequence parsedText, Typeface msgTextTypeface) {
-        return makeLayout(parsedText, msgTextTypeface, SawimApplication.getContext().getResources().getDisplayMetrics().widthPixels - (PADDING_LEFT + PADDING_RIGHT));
+        return makeLayout(parsedText, msgTextTypeface, SawimApplication.getContext().getResources().getDisplayMetrics().widthPixels - (PADDING_LEFT * 2 + PADDING_RIGHT));
     }
 
     public static Layout makeLayout(CharSequence parsedText, Typeface msgTextTypeface, int width) {
@@ -113,7 +113,7 @@ public class MessageItemView extends View {
         boolean isAddTitleView = nickText != null;
         int width = MeasureSpec.getSize(widthMeasureSpec);
         int height = isAddTitleView ? measureHeight(heightMeasureSpec) : getPaddingTop() + getPaddingBottom();
-        int layoutWidth = width - getPaddingRight() - getPaddingLeft();
+        int layoutWidth = width - getPaddingRight() - getPaddingLeft() * 2;
         if (layout.getWidth() != layoutWidth) {
             layout = makeLayout(layout.getText(), msgTextTypeface, layoutWidth);
         }
