@@ -226,8 +226,6 @@ public class Auth {
     }
 
     private boolean rebindSession(XmppConnection connection) throws SawimException {
-        connection.setProgress(50);
-
         XmppSession xmppSession = connection.getXmppSession();
         DebugLog.systemPrintln("[SESSION] Try to rebind " + xmppSession.getSessionId());
 
