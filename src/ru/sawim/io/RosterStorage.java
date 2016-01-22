@@ -24,6 +24,8 @@ public class RosterStorage {
     private static final String WHERE_ACC_CONTACT_ID = DatabaseHelper.ACCOUNT_ID + " = ? AND " + DatabaseHelper.CONTACT_ID + " = ?";
     private static final String WHERE_ACCOUNT_ID = DatabaseHelper.ACCOUNT_ID + " = ?";
     private static final String WHERE_CONTACT_ID = DatabaseHelper.CONTACT_ID + " = ?";
+    private static final String WHERE_SUBCONTACT_RESOURCE = DatabaseHelper.CONTACT_ID + " = ? AND " +
+                                                            DatabaseHelper.SUB_CONTACT_RESOURCE + " = ?";
 
     public static final String storeName = "roster";
     public static final String subContactsTable = "subcontacts";
@@ -219,14 +221,12 @@ public class RosterStorage {
                 Cursor cursor = null;
                 try {
                     SQLiteDatabase sqLiteDatabase = SawimApplication.getDatabaseHelper().getWritableDatabase();
-                    cursor = sqLiteDatabase.query(subContactsTable,
-                            null,
-                            WHERE_CONTACT_ID + " AND " + DatabaseHelper.SUB_CONTACT_RESOURCE + " = ?",
-                            new String[]{contact.getUserId(), subContact.resource}, null, null, null);
-
+                    cursor = sqLiteDatabase.query(subContactsTable, null, WHERE_SUBCONTACT_RESOURCE,
+                                                  new String[] {contact.getUserId(), subContact.resource}, null, null,
+                                                  null);
                     if (cursor != null && cursor.getCount() > 0) {
                         sqLiteDatabase.update(subContactsTable, getSubContactsValues(contact, subContact),
-                                WHERE_CONTACT_ID + " AND " + DatabaseHelper.SUB_CONTACT_RESOURCE + " = ?",
+                                WHERE_SUBCONTACT_RESOURCE,
                                 new String[]{contact.getUserId(), subContact.resource});
                     } else {
                         sqLiteDatabase.insert(subContactsTable, null, getSubContactsValues(contact, subContact));
@@ -243,16 +243,17 @@ public class RosterStorage {
     }
 
     public void delete(final Contact contact, final XmppServiceContact.SubContact subContact) {
+        if (subContact == null) {
+            return;
+        }
+
         thread.execute(new SqlAsyncTask.OnTaskListener() {
             @Override
             public void run() {
                 try {
                     SQLiteDatabase sqLiteDatabase = SawimApplication.getDatabaseHelper().getWritableDatabase();
-                    if (contact.isConference() && subContact != null) {
-                        sqLiteDatabase.delete(subContactsTable, WHERE_CONTACT_ID + " and "
-                                        + DatabaseHelper.SUB_CONTACT_RESOURCE + "= ?",
-                                new String[]{contact.getUserId(), subContact.resource});
-                    }
+                    sqLiteDatabase.delete(subContactsTable, WHERE_SUBCONTACT_RESOURCE,
+                                          new String[] {contact.getUserId(), subContact.resource});
                 } catch (Exception e) {
                     DebugLog.panic(e);
                 }
