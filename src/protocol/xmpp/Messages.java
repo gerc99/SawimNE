@@ -365,10 +365,10 @@ public class Messages {
         return false;
     }
 
-    private static boolean parseCarbonMessage(XmppConnection connection, XmlNode msg) {
+    private static boolean parseCarbonMessage(XmppConnection connection, XmlNode carbonMsg) {
         XmlNode forwarded;
-        XmlNode receivedNode = msg.getFirstNode("received", "urn:xmpp:carbons:2");
-        XmlNode sentNode = msg.getFirstNode("sent", "urn:xmpp:carbons:2");
+        XmlNode receivedNode = carbonMsg.getFirstNode("received", "urn:xmpp:carbons:2");
+        XmlNode sentNode = carbonMsg.getFirstNode("sent", "urn:xmpp:carbons:2");
         if (receivedNode != null) {
             forwarded = receivedNode.getFirstNode("forwarded", "urn:xmpp:forward:0");
         } else if (sentNode != null) {
@@ -379,7 +379,7 @@ public class Messages {
         if (forwarded == null) {
             return false;
         }
-        msg = forwarded.getFirstNode("message");
+        XmlNode msg = forwarded.getFirstNode("message");
         if (msg == null) {
             return false;
         }
@@ -409,7 +409,7 @@ public class Messages {
             fullJid = Jid.getBareJid(fullJid);
         }
 
-        final String date = getDate(msg);
+        final String date = getDate(carbonMsg);
         final boolean isOnlineMessage = (null == date);
         long time = isOnlineMessage ? SawimApplication.getCurrentGmtTime() : parseTimestamp(date);
 
