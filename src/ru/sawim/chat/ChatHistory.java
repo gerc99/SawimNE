@@ -37,6 +37,19 @@ public final class ChatHistory {
         });
     }
 
+    public void loadChats() {
+        int count = RosterHelper.getInstance().getProtocolCount();
+        for (int i = 0; i < count; ++i) {
+            Protocol p = RosterHelper.getInstance().getProtocol(i);
+            p.getStorage().loadUnreadMessages();
+            List<Contact> contacts = HistoryStorage.getActiveContacts();
+            for (Contact contact : contacts) {
+                ChatHistory.instance.registerChat(p.getChat(contact));
+            }
+        }
+        RosterHelper.getInstance().updateRoster();
+    }
+
     public void addLayerToListOfChats(Protocol p, List<TreeNode> items, int id) {
         boolean hasLayer = false;
         items.add(new Layer(p.getUserId(), id));

@@ -765,15 +765,19 @@ abstract public class Protocol {
                     Thread.sleep(sleep * 1000);
                 } catch (Exception ignored) {
                 }
-                if (isConnected() || isConnecting()) {
-                    disconnect(false);
-                    startConnection();
-                }
+                reconnect();
                 return;
             }
         }
         disconnect(false);
         showException(e);
+    }
+
+    public void reconnect() {
+        if (isConnected() || isConnecting()) {
+            disconnect(false);
+            startConnection();
+        }
     }
 
     public final void showException(SawimException e) {

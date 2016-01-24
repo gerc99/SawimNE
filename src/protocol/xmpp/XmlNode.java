@@ -492,13 +492,19 @@ public final class XmlNode {
         return true;
     }
 
-    public void setValue(String subtag, String value) {
+    public XmlNode setValue(String subtag, String value) {
         XmlNode content = getFirstNode(subtag);
         if (null == content) {
             content = new XmlNode(subtag);
             children.add(content);
         }
         content.value = value;
+        return this;
+    }
+
+    public XmlNode setValue(String value) {
+        this.value = value;
+        return this;
     }
 
     public void setValue(String tag, String[] subtags, String subtag, String value) {
@@ -601,11 +607,6 @@ public final class XmlNode {
     }
 
     public XmlNode addNode(XmlNode subNode) {
-        /*if (value == null) {
-            value = subNode.toString();
-        } else {
-            value += subNode.toString();
-        }*/
         children.add(subNode);
         return subNode;
     }

@@ -1,10 +1,13 @@
 package protocol.xmpp;
 
+import android.preference.PreferenceManager;
+
 import protocol.StatusInfo;
 import ru.sawim.SawimApplication;
 import ru.sawim.SawimException;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
+import ru.sawim.gcm.Preferences;
 import ru.sawim.modules.DebugLog;
 import ru.sawim.modules.crypto.MD5;
 
@@ -15,10 +18,9 @@ import java.security.NoSuchAlgorithmException;
  * Created by gerc on 02.01.2016.
  */
 public class Auth {
+
     public boolean authorized_ = false;
-
     private boolean rebindSupported = false;
-
     private SASL_ScramSha1 scramSHA1;
 
     public void parseAuth(XmppConnection connection, XmlNode x) throws SawimException {
@@ -33,19 +35,6 @@ public class Auth {
         if (x.is("stream:features")) {
             parseStreamFeatures(connection, x);
             return;
-        /*} else if (x.is("resumed")) {
-            XmppSession.getInstance().save(this);
-            setAuthStatus(true);
-            DebugLog.systemPrintln("[INFO-JABBER] Resumed session ID=" + smSessionId);
-        } else if (x.is("failed")) {
-            // expired session
-            DebugLog.systemPrintln("[INFO-JABBER] Failed to resume session ID=" + smSessionId);
-            setSessionManagementEnabled(false);
-            smSessionId = "";
-            smPacketsIn = 0;
-            smPacketsOut = 0;
-            XmppSession.getInstance().save(this);
-            resourceBinding();*/
         } else if (x.is("compressed")) {
             setStreamCompression(connection);
             return;
@@ -276,6 +265,14 @@ public class Auth {
                 connection.getNativeStatus(StatusInfo.STATUS_AWAY));
         pushNode.setValue("offline", XmlConstants.S_TRUE);
 
+        String token = PreferenceManager.getDefaultSharedPreferences(SawimApplication.getContext()).getString(Preferences.TOKEN, "");
+        if (!token.isEmpty()) {
+            XmlNode notification = new XmlNode("notification");
+            notification.setValue(XmlConstants.S_TYPE, "gcm");
+            notification.setValue(XmlNode.S_ID, token);
+            pushNode.addNode(notification);
+            pushNode.setValue("appid", "ru.sawim");
+        }
         connection.putPacketIntoQueue(rebindNode.toString());
     }
 

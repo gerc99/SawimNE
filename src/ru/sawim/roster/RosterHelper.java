@@ -125,7 +125,6 @@ public final class RosterHelper {
         for (int i = 0; i < count; ++i) {
             Protocol protocol = getProtocol(i);
             protocol.load();
-            autoConnect(i);
         }
         if (accountsLoaded != null) {
             accountsLoaded.onAccountsLoaded();
@@ -261,6 +260,7 @@ public final class RosterHelper {
     public void autoConnect(int i) {
         Profile profile = Options.getAccount(i);
         Protocol protocol = getProtocol(profile);
+        if (protocol != null && (protocol.isConnected() || protocol.isConnecting())) return;
         if (checkPassword(protocol)) {
             if (profile.isConnected()) {
                 protocol.connect();

@@ -294,6 +294,7 @@ public class RosterView extends SawimFragment implements View.OnClickListener, O
 
     @Override
     public void onAccountsLoaded() {
+        RosterHelper.getInstance().autoConnect();
         handler.post(new Runnable() {
             @Override
             public void run() {

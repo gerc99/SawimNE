@@ -284,12 +284,8 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
                     if (read > 0) {
                         recived += read;
                         out.write(buffer, 0, read);
-                        try {
-                            Thread.sleep(500);
-                        } catch (Exception ignored) {
-                        }
                         int percent = 100 * recived / fileSize - 1;
-                        if (percent != -1)
+                        if (percent % 5 == 0)
                             setProgress(percent);
                         if (fileSize != 0) {
                             if (isCanceled()) {

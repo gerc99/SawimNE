@@ -77,7 +77,6 @@ public final class XmppConnection extends ClientConnection {
     }
 
     public XmppConnection() {
-
     }
 
     public void setXmpp(Xmpp xmpp) {
@@ -123,16 +122,10 @@ public final class XmppConnection extends ClientConnection {
     }
 
     protected final void ping() throws SawimException {
-        //if (isSessionManagementEnabled()) {
-        //    XmppSession.getInstance().save(this);
-        //}
         write(pingPacket);
     }
 
     protected final void pingForPong() throws SawimException {
-        //if (isSessionManagementEnabled()) {
-        //    XmppSession.getInstance().save(this);
-        //}
         write(forPongPacket);
     }
 
@@ -332,22 +325,12 @@ public final class XmppConnection extends ClientConnection {
 
     public void parse(XmlNode x) throws SawimException {
         if (x.is("iq")) {
-            //if (isSessionManagementEnabled()) {
-            //    smPacketsIn++;
-            //}
             parseIq(x);
 
         } else if (x.is("presence")) {
-            //if (isSessionManagementEnabled()) {
-            //    smPacketsIn++;
-            //}
             Presences.parsePresence(this, x);
 
         } else if (x.is("message")) {
-            //if (isSessionManagementEnabled()) {
-            //    smPacketsIn++;
-            //    XmppSession.getInstance().save(this);
-            //}
             Messages.parseMessage(this, x);
 
         } else if (x.is("stream:error")) {

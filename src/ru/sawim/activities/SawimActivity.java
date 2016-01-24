@@ -4,13 +4,17 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import protocol.Contact;
@@ -20,6 +24,8 @@ import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.chat.Chat;
 import ru.sawim.chat.ChatHistory;
+import ru.sawim.gcm.Preferences;
+import ru.sawim.gcm.RegistrationIntentService;
 import ru.sawim.listener.OnAccountsLoaded;
 import ru.sawim.modules.DebugLog;
 import ru.sawim.roster.RosterHelper;
@@ -27,18 +33,17 @@ import ru.sawim.view.*;
 import ru.sawim.view.menu.MyMenu;
 import ru.sawim.view.menu.MyMenuItem;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class SawimActivity extends BaseActivity implements OnAccountsLoaded {
 
     public static final String LOG_TAG = SawimActivity.class.getSimpleName();
+
     public static final String NOTIFY = "ru.sawim.notify";
     public static final String NOTIFY_REPLY = "ru.sawim.notify.reply";
     public static final String NOTIFY_CAPTCHA = "ru.sawim.notify.captcha";
     public static final String NOTIFY_UPLOAD = "ru.sawim.notify.upload";
     public static final String ACTION_SHOW_LOGIN_WINDOW = "ru.sawim.show_login_window";
     public static final String ACTION_ACC_LOADED = "onAccountsLoaded";
+    public static final String EXTRA_MESSAGE_FROM_ID = "ru.sawim.notify.message_from_id";
 
     private boolean isOpenNewChat = false;
 
@@ -65,6 +70,13 @@ public class SawimActivity extends BaseActivity implements OnAccountsLoaded {
             SawimApplication.actionQueue.remove(ACTION_ACC_LOADED);
         }
         RosterHelper.getInstance().setOnAccountsLoaded(this);
+
+        if (PreferenceManager.getDefaultSharedPreferences(this).getString(Preferences.TOKEN, "").isEmpty()) {
+            if (SawimApplication.checkPlayServices()) {
+                Intent intent = new Intent(this, RegistrationIntentService.class);
+                startService(intent);
+            }
+        }
     }
 
     @Override
@@ -95,13 +107,14 @@ public class SawimActivity extends BaseActivity implements OnAccountsLoaded {
             transaction.replace(R.id.fragment_container, newFragment, StartWindowView.TAG);
             transaction.commit();
         }
+        String userId = getIntent().getStringExtra(EXTRA_MESSAGE_FROM_ID);
         if (NOTIFY.equals(getIntent().getAction())) {
-            Chat current = ChatHistory.instance.chatAt(ChatHistory.instance.getPreferredItem());
+            Chat current = ChatHistory.instance.getChat(userId);
             if (current != null)
                 isOpenNewChat = openChat(current.getProtocol(), current.getContact());
         }
         if (NOTIFY_REPLY.equals(getIntent().getAction())) {
-            Chat current = ChatHistory.instance.chatAt(ChatHistory.instance.getPreferredItem());
+            Chat current = ChatHistory.instance.getChat(userId);
             if (current != null)
                 isOpenNewChat = openChat(current.getProtocol(), current.getContact());
         }
@@ -158,6 +171,7 @@ public class SawimActivity extends BaseActivity implements OnAccountsLoaded {
 
     @Override
     public void onAccountsLoaded() {
+        RosterHelper.getInstance().autoConnect();
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -199,12 +213,6 @@ public class SawimActivity extends BaseActivity implements OnAccountsLoaded {
     public void onPause() {
         super.onPause();
         SawimApplication.minimize();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
     }
 
     @Override
@@ -293,7 +301,9 @@ public class SawimActivity extends BaseActivity implements OnAccountsLoaded {
                 }
             }
             menu.add(Menu.NONE, MENU_OPTIONS, Menu.NONE, R.string.options);
-            menu.add(Menu.NONE, MENU_QUIT, Menu.NONE, R.string.quit);
+            if (!SawimApplication.checkPlayServices()) {
+                menu.add(Menu.NONE, MENU_QUIT, Menu.NONE, R.string.quit);
+            }
         } else if (searchContactFragment != null && searchContactFragment.isAdded()) {
             searchContactFragment.onPrepareOptionsMenu_(menu);
         }

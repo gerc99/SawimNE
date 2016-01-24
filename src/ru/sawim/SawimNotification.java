@@ -25,11 +25,12 @@ public class SawimNotification {
     private static final int VIBRA_LOCKED_ONLY = 2;
 
     public static final int NOTIFY_ID = 1;
-    public static final int ALARM_NOTIFY_ID = 2;
+    public static final int PUSH_NOTIFY_ID = 2;
+    public static final int ALARM_NOTIFY_ID = 3;
     private static final List<String> idsMap = new ArrayList<String>();
-    private static final HashMap<Integer, NotificationCompat.Builder> notifiBuildersMap = new HashMap<Integer, NotificationCompat.Builder>();
+    private static final HashMap<Integer, NotificationCompat.Builder> notifiBuildersMap = new HashMap<>();
+
     public static Notification get(Context context, boolean silent) {
-        int unread = ChatHistory.instance.getPersonalUnreadMessageCount(false);
         int allUnread = ChatHistory.instance.getPersonalUnreadMessageCount(true);
         CharSequence stateMsg = "";
         final int icon;
@@ -47,10 +48,19 @@ public class SawimNotification {
             }
         }
 
+        Chat current = ChatHistory.instance.chatAt(ChatHistory.instance.getPreferredItem());
+        return getNotification(context, silent, icon, stateMsg, current);
+    }
+
+    private static Notification getNotification(Context context, boolean silent, final int icon, CharSequence stateMsg, Chat current) {
+        int unread = ChatHistory.instance.getPersonalUnreadMessageCount(false);
         NotificationCompat.Builder notification = new NotificationCompat.Builder(context);
         Intent notificationIntent = new Intent(context, SawimActivity.class);
-        notificationIntent.setAction(SawimActivity.NOTIFY);
         notificationIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        notificationIntent.setAction(SawimActivity.NOTIFY);
+        if (current != null) {
+            notificationIntent.putExtra(SawimActivity.EXTRA_MESSAGE_FROM_ID, current.getContact().getUserId());
+        }
         PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         if (0 < unread) {
             notification.setLights(0xff00ff00, 1000, 3000);
@@ -70,7 +80,6 @@ public class SawimNotification {
             notification.setNumber(unread);
             stateMsg = String.format(context.getText(R.string.unread_messages).toString(), unread);
         }
-        Chat current = ChatHistory.instance.chatAt(ChatHistory.instance.getPreferredItem());
         String nick = null;
         String senderName = null;
         if (current != null && current.lastMessage != null && current.getAllUnreadMessageCount() > 0) {
@@ -87,6 +96,44 @@ public class SawimNotification {
         return notification.build();
     }
 
+    public static void notification(Context context, boolean silent) {
+        ((NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE))
+                .notify(NOTIFY_ID, getNotification(context, silent, R.drawable.ic_tray_msg, "",
+                        ChatHistory.instance.chatAt(ChatHistory.instance.getPreferredItem())));
+    }
+
+    public static void pushNotification(Context context, String jid, String message, int unread) {
+        NotificationCompat.Builder notification = new NotificationCompat.Builder(context);
+        Intent notificationIntent = new Intent(context, SawimActivity.class);
+        notificationIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        notificationIntent.setAction(SawimActivity.NOTIFY);
+        notificationIntent.putExtra(SawimActivity.EXTRA_MESSAGE_FROM_ID, jid);
+        PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        if (0 < unread) {
+            notification.setLights(0xff00ff00, 1000, 3000);
+            /*if (silent) {
+                if (Options.getBoolean(JLocale.getString(R.string.pref_vibration))) {
+                    int dat = 70;
+                    long[] pattern = {0,3 * dat, dat, dat};
+                    notification.setVibrate(pattern);
+                }
+                String ringtone = Options.getString(JLocale.getString(R.string.pref_mess_ringtone), null);
+                if (ringtone != null) {
+                    notification.setSound(Uri.parse(ringtone));
+                }
+            }*/
+        }
+        notification.setNumber(unread);
+        notification.setAutoCancel(true).setWhen(0)
+                .setContentIntent(contentIntent)
+                .setContentText(message)
+                .setSmallIcon(R.drawable.ic_tray_msg)
+                .setContentTitle(context.getString(R.string.app_name));
+
+        ((NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE))
+                .notify(PUSH_NOTIFY_ID, notification.build());
+    }
+
     public static void alarm(String nick) {
         Context context = SawimApplication.getContext();
         NotificationCompat.Builder notification = new NotificationCompat.Builder(context);
@@ -95,7 +142,7 @@ public class SawimNotification {
         notificationIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         notification.setLights(0xff00ff00, 1000, 3000);
-            if (Options.getBoolean(JLocale.getString(R.string.pref_vibration))) {
+        if (Options.getBoolean(JLocale.getString(R.string.pref_vibration))) {
                     int dat = 70;
                     long[] pattern = {0,3 * dat, dat, dat};
                     notification.setVibrate(pattern);
@@ -181,46 +228,6 @@ public class SawimNotification {
         ((NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE))
                 .notify(id, builder.build());
     }
-
-    /*public static void sendNotify(Context context, final String title, final String text) {
-        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        long when = 0;
-        int icon = R.drawable.ic_tray_msg;
-        long[] vibraPattern = {0, 500, 250, 500};
-        int unread = ChatHistory.instance.getPersonalAndSysnoticeAndAuthUnreadMessageCount(false);
-        int allUnread = ChatHistory.instance.getPersonalAndSysnoticeAndAuthUnreadMessageCount(true);
-        if (0 < allUnread) {
-            NotificationCompat.Builder notification = new NotificationCompat.Builder(context);
-            CharSequence contentTitle = context.getText(R.string.notify_title);
-            CharSequence contentText = null;
-            Intent notificationIntent = new Intent(context, SawimActivity.class);
-            notificationIntent.setAction(SawimActivity.NOTIFY);
-            PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-            //Intent replyIntent = new Intent(context, SawimActivity.class);
-            //replyIntent.setAction(SawimActivity.NOTIFY_REPLY);
-            notificationIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            //replyIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            //PendingIntent piReply = PendingIntent.getActivity(context, 0, replyIntent, PendingIntent.FLAG_ONE_SHOT);
-            //notification.setVibrate(vibraPattern);
-            if (0 < unread) {
-                notification.setLights(0xff00ff00, 300, 1000);
-                //notification.number = unread;
-                contentText = String.format((String) context.getText(R.string.unread_messages), unread);
-            }
-            contentText = ChatHistory.instance.getLastMessage(contentText.toString());
-            notification.setWhen(when);
-            notification.setDefaults(android.app.Notification.DEFAULT_ALL);
-            notification.setContentIntent(contentIntent);
-            notification.setContentTitle(contentTitle);
-            notification.setContentText(contentText);
-            notification.setSmallIcon(icon);
-            //NotificationCompat.InboxStyle style = new NotificationCompat.InboxStyle();
-            //style.addLine(text).setBigContentTitle(title).setSummaryText(contentText);
-            //notification.addAction(android.R.drawable.sym_action_chat, context.getText(R.string.reply), piReply);
-            //notification.setStyle(style);
-            notificationManager.notify(NOTIFY_ID, notification.build());
-        }
-    }*/
 
     public static void clear(int id) {
         String idStr = String.valueOf(id);

@@ -3,17 +3,24 @@ package ru.sawim;
 import android.app.ActivityManager;
 import android.app.Application;
 import android.app.NotificationManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.preference.PreferenceManager;
+import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 
 import com.github.anrwatchdog.ANRWatchDog;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
 
@@ -23,6 +30,7 @@ import protocol.Protocol;
 import protocol.xmpp.Xmpp;
 import ru.sawim.chat.ChatHistory;
 import ru.sawim.comm.JLocale;
+import ru.sawim.gcm.Preferences;
 import ru.sawim.io.*;
 import ru.sawim.modules.Answerer;
 import ru.sawim.modules.AutoAbsence;
@@ -86,10 +94,9 @@ public class SawimApplication extends Application {
 
     private Handler uiHandler;
     private ExecutorService backgroundExecutor;
-
     public static SSLContext sc;
-
     public RefWatcher refWatcher;
+    private BroadcastReceiver registrationBroadcastReceiver;
 
     public static SawimApplication getInstance() {
         return instance;
@@ -146,32 +153,33 @@ public class SawimApplication extends Application {
                     DebugLog.panic("TLS init", e);
                 }
                 RosterHelper.getInstance().initAccounts();
-                RosterHelper.getInstance().loadAccounts();
-                loadChats();
                 DebugLog.startTests();
                 TextFormatter.init();
 
+                RosterHelper.getInstance().loadAccounts();
+                ChatHistory.instance.loadChats();
+
                 StorageConvertor.historyConvert();
-                int count = RosterHelper.getInstance().getProtocolCount();
-                for (int i = 0; i < count; ++i) {
-                    Protocol p = RosterHelper.getInstance().getProtocol(i);
-                    p.getStorage().loadUnreadMessages();
-                }
                 gc();
             }
         });
-    }
 
-    private void loadChats() {
-        int count = RosterHelper.getInstance().getProtocolCount();
-        for (int i = 0; i < count; ++i) {
-            Protocol p = RosterHelper.getInstance().getProtocol(i);
-            List<Contact> contacts = HistoryStorage.getActiveContacts();
-            for (Contact contact : contacts) {
-                ChatHistory.instance.registerChat(p.getChat(contact));
+        registrationBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                SharedPreferences sharedPreferences =
+                        PreferenceManager.getDefaultSharedPreferences(context);
+                boolean sentToken = sharedPreferences
+                        .getBoolean(Preferences.SENT_TOKEN_TO_SERVER, false);
+                Protocol protocol = RosterHelper.getInstance().getProtocol(0);
+                Log.e("registrationBroadcastReceiver", sharedPreferences.getString(Preferences.TOKEN, ""));
+                if (protocol != null) {
+                    protocol.reconnect();
+                }
             }
-        }
-        RosterHelper.getInstance().updateRoster();
+        };
+        LocalBroadcastManager.getInstance(this).registerReceiver(registrationBroadcastReceiver,
+                new IntentFilter(Preferences.REGISTRATION_COMPLETE));
     }
 
     public Handler getUiHandler() {
@@ -334,5 +342,20 @@ public class SawimApplication extends Application {
 
     public static DatabaseHelper getDatabaseHelper() {
         return instance.databaseHelper;
+    }
+
+    /**
+     * Check the device to make sure it has the Google Play Services APK. If
+     * it doesn't, display a dialog that allows users to download the APK from
+     * the Google Play Store or enable it in the device's system settings.
+     */
+    public static boolean checkPlayServices() {
+        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+        int resultCode = apiAvailability.isGooglePlayServicesAvailable(getContext());
+        if (resultCode != ConnectionResult.SUCCESS) {
+            Log.i(LOG_TAG, "This device is not supported.");
+            return false;
+        }
+        return true;
     }
 }
