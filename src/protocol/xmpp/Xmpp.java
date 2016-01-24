@@ -16,6 +16,7 @@ import ru.sawim.icons.ImageList;
 import ru.sawim.listener.OnMoreMessagesLoaded;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
+import ru.sawim.modules.DebugLog;
 import ru.sawim.modules.FileTransfer;
 import ru.sawim.modules.search.Search;
 import ru.sawim.modules.search.UserInfo;
@@ -40,7 +41,21 @@ public final class Xmpp extends Protocol implements FormListener {
     public static final XmppXStatus xStatus = new XmppXStatus();
     private final ArrayList<String> bots = new ArrayList<String>();
 
+    private XmppSession xmppSession;
+
     public Xmpp() {
+        xmppSession = new XmppSession();
+        if (xmppSession.isEmpty()) {
+            DebugLog.systemPrintln("[SESSION] Session not found");
+        } else {
+            DebugLog.systemPrintln(
+                    String.format("[SESSION] Load session with id=%s and user=%s",
+                            xmppSession.getSessionId(), xmppSession.getUserId()));
+        }
+    }
+
+    XmppSession getXmppSession() {
+        return xmppSession;
     }
 
     protected void initStatusInfo() {
@@ -146,7 +161,7 @@ public final class Xmpp extends Protocol implements FormListener {
     protected final void userCloseConnection() {
         //rejoinList.removeAllElements();
         if (null != connection) {
-            XmppSession.getInstance().clear(connection);
+            connection.getXmppSession().resetSessionData();
             connection.loggedOut();
         }
     }
@@ -160,13 +175,13 @@ public final class Xmpp extends Protocol implements FormListener {
     }
 
     protected void setStatusesOffline() {
-        if (!isStreamManagementSupported()) {
-            super.setStatusesOffline();
+        if (!xmppSession.isEmpty()) {
+            DebugLog.systemPrintln("[SESSION] Keeping, don't drop statuses");
+            return;
         }
-    }
+        DebugLog.systemPrintln("[SESSION] Not keeping, drop statuses");
 
-    public boolean isStreamManagementSupported() {
-        return XmppSession.getInstance().isStreamManagementSupported(getUserId());
+        super.setStatusesOffline();
     }
 
     public final void ui_changeContactStatus(Contact contact) {
@@ -253,7 +268,6 @@ public final class Xmpp extends Protocol implements FormListener {
 
     protected void s_updateOnlineStatus() {
         connection.setStatus(getProfile().statusIndex, "", PRIORITY);
-        if (isStreamManagementSupported()) return;
         if (isReconnect()) {
             for (int i = 0; i < rejoinList.size(); ++i) {
                 String jid = rejoinList.get(i);

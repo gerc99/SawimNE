@@ -24,6 +24,8 @@ public class RosterStorage {
     private static final String WHERE_ACC_CONTACT_ID = DatabaseHelper.ACCOUNT_ID + " = ? AND " + DatabaseHelper.CONTACT_ID + " = ?";
     private static final String WHERE_ACCOUNT_ID = DatabaseHelper.ACCOUNT_ID + " = ?";
     private static final String WHERE_CONTACT_ID = DatabaseHelper.CONTACT_ID + " = ?";
+    private static final String WHERE_SUBCONTACT_RESOURCE = DatabaseHelper.CONTACT_ID + " = ? AND " +
+                                                            DatabaseHelper.SUB_CONTACT_RESOURCE + " = ?";
 
     public static final String storeName = "roster";
     public static final String subContactsTable = "subcontacts";
@@ -126,28 +128,28 @@ public class RosterStorage {
         }
         contact.firstServerMsgId = firstServerMsgId;
         contact.avatarHash = avatarHash;
-        if (protocol.isStreamManagementSupported()) {
-            contact.setStatus((byte) status, statusText);
-        }
+        contact.setStatus((byte) status, statusText);
         contact.setGroupId(groupId);
         contact.setBooleanValues(booleanValues);
+        if (contact instanceof XmppContact) {
+            XmppContact xmppContact = (XmppContact)contact;
+            loadSubContacts(xmppContact);
+        }
         if (isConference) {
             XmppServiceContact serviceContact = (XmppServiceContact) contact;
             serviceContact.setMyName(conferenceMyNick);
             serviceContact.setAutoJoin(conferenceIsAutoJoin);
             serviceContact.setConference(true);
-
-            loadSubContacts(protocol, serviceContact);
         }
         RosterHelper.getInstance().updateGroup(protocol, group);
         return contact;
     }
 
-    public void loadSubContacts(Protocol protocol, XmppServiceContact serviceContact) {
+    public void loadSubContacts(XmppContact xmppContact) {
         Cursor cursor = null;
         try {
             cursor = SawimApplication.getDatabaseHelper().getReadableDatabase().query(subContactsTable, null, WHERE_CONTACT_ID,
-                    new String[]{serviceContact.getUserId()}, null, null, null);
+                    new String[]{xmppContact.getUserId()}, null, null, null);
             if (cursor.moveToFirst()) {
                 do {
                     String subcontactRes = cursor.getString(cursor.getColumnIndex(DatabaseHelper.SUB_CONTACT_RESOURCE));
@@ -157,7 +159,7 @@ public class RosterStorage {
                     int subcontactPriorityA = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.SUB_CONTACT_PRIORITY_A));
                     String avatarHash = cursor.getString(cursor.getColumnIndex(DatabaseHelper.AVATAR_HASH));
                     if (subcontactRes != null) {
-                        XmppServiceContact.SubContact subContact = serviceContact.subcontacts.get(subcontactRes);
+                        XmppServiceContact.SubContact subContact = xmppContact.subcontacts.get(subcontactRes);
                         if (subContact == null) {
                             subContact = new XmppContact.SubContact();
                             subContact.resource = subcontactRes;
@@ -166,7 +168,7 @@ public class RosterStorage {
                             subContact.priority = (byte) subcontactPriority;
                             subContact.priorityA = (byte) subcontactPriorityA;
                             subContact.avatarHash = avatarHash;
-                            serviceContact.subcontacts.put(subcontactRes, subContact);
+                            xmppContact.subcontacts.put(subcontactRes, subContact);
                         }
                     }
                 } while (cursor.moveToNext());
@@ -219,14 +221,12 @@ public class RosterStorage {
                 Cursor cursor = null;
                 try {
                     SQLiteDatabase sqLiteDatabase = SawimApplication.getDatabaseHelper().getWritableDatabase();
-                    cursor = sqLiteDatabase.query(subContactsTable,
-                            null,
-                            WHERE_CONTACT_ID + " AND " + DatabaseHelper.SUB_CONTACT_RESOURCE + " = ?",
-                            new String[]{contact.getUserId(), subContact.resource}, null, null, null);
-
+                    cursor = sqLiteDatabase.query(subContactsTable, null, WHERE_SUBCONTACT_RESOURCE,
+                                                  new String[] {contact.getUserId(), subContact.resource}, null, null,
+                                                  null);
                     if (cursor != null && cursor.getCount() > 0) {
                         sqLiteDatabase.update(subContactsTable, getSubContactsValues(contact, subContact),
-                                WHERE_CONTACT_ID + " AND " + DatabaseHelper.SUB_CONTACT_RESOURCE + " = ?",
+                                WHERE_SUBCONTACT_RESOURCE,
                                 new String[]{contact.getUserId(), subContact.resource});
                     } else {
                         sqLiteDatabase.insert(subContactsTable, null, getSubContactsValues(contact, subContact));
@@ -243,16 +243,17 @@ public class RosterStorage {
     }
 
     public void delete(final Contact contact, final XmppServiceContact.SubContact subContact) {
+        if (subContact == null) {
+            return;
+        }
+
         thread.execute(new SqlAsyncTask.OnTaskListener() {
             @Override
             public void run() {
                 try {
                     SQLiteDatabase sqLiteDatabase = SawimApplication.getDatabaseHelper().getWritableDatabase();
-                    if (contact.isConference() && subContact != null) {
-                        sqLiteDatabase.delete(subContactsTable, WHERE_CONTACT_ID + " and "
-                                        + DatabaseHelper.SUB_CONTACT_RESOURCE + "= ?",
-                                new String[]{contact.getUserId(), subContact.resource});
-                    }
+                    sqLiteDatabase.delete(subContactsTable, WHERE_SUBCONTACT_RESOURCE,
+                                          new String[] {contact.getUserId(), subContact.resource});
                 } catch (Exception e) {
                     DebugLog.panic(e);
                 }
@@ -319,15 +320,11 @@ public class RosterStorage {
                 for (Contact contact : protocol.getContactItems().values()) {
                     ContentValues values = new ContentValues();
                     values.put(DatabaseHelper.STATUS, StatusInfo.STATUS_OFFLINE);
-                    if (contact.isConference()) {
-                        XmppServiceContact serviceContact = (XmppServiceContact) contact;
-                        for (XmppContact.SubContact subContact : serviceContact.subcontacts.values()) {
-                            ContentValues values2 = new ContentValues();
-                            values2.put(DatabaseHelper.SUB_CONTACT_STATUS, StatusInfo.STATUS_OFFLINE);
-                            sqLiteDatabase.update(subContactsTable, values2,
-                                    DatabaseHelper.SUB_CONTACT_RESOURCE + "= ?",
-                                    new String[]{subContact.resource});
-                        }
+                    if (contact instanceof XmppContact) {
+                        sqLiteDatabase.delete(
+                                subContactsTable,
+                                WHERE_CONTACT_ID,
+                                new String[]{contact.getUserId()});
                     }
                     sqLiteDatabase.update(storeName, values, WHERE_ACC_CONTACT_ID, new String[]{protocol.getUserId(), contact.getUserId()});
                 }
