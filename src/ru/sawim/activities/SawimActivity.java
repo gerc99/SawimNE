@@ -22,6 +22,7 @@ import protocol.Protocol;
 import ru.sawim.Options;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
+import ru.sawim.SawimNotification;
 import ru.sawim.chat.Chat;
 import ru.sawim.chat.ChatHistory;
 import ru.sawim.gcm.Preferences;
@@ -77,6 +78,7 @@ public class SawimActivity extends BaseActivity implements OnAccountsLoaded {
                 startService(intent);
             }
         }
+        SawimNotification.clearPushNotifications();
     }
 
     @Override

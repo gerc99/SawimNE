@@ -229,6 +229,10 @@ public class SawimNotification {
                 .notify(id, builder.build());
     }
 
+    public static void clearPushNotifications() {
+        ((NotificationManager) SawimApplication.getContext().getSystemService(Context.NOTIFICATION_SERVICE)).cancel(PUSH_NOTIFY_ID);
+    }
+
     public static void clear(int id) {
         String idStr = String.valueOf(id);
         if (idsMap.isEmpty()) return;
