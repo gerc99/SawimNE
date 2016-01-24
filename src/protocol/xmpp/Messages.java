@@ -5,12 +5,8 @@ import protocol.XStatusInfo;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.chat.Chat;
-import ru.sawim.chat.message.Message;
-import ru.sawim.chat.message.PlainMessage;
-import ru.sawim.chat.message.SystemNotice;
-import ru.sawim.comm.JLocale;
-import ru.sawim.comm.StringConvertor;
-import ru.sawim.comm.Util;
+import ru.sawim.chat.message.*;
+import ru.sawim.comm.*;
 import ru.sawim.modules.history.HistoryStorage;
 
 import java.text.ParseException;
@@ -167,7 +163,10 @@ public class Messages {
             }
         }
 
-        if (!isConference || !isGroupchat) {
+        final String date = getDate(msg);
+        final boolean isOnlineMessage = (null == date);
+
+        if (!(isConference && isGroupchat) && isOnlineMessage) {
             parseChatState(connection, msg, from);
         }
 
@@ -196,8 +195,6 @@ public class Messages {
         text = StringConvertor.trim(text);
 
         Message message = null;
-        final String date = getDate(msg);
-        final boolean isOnlineMessage = (null == date);
         long time = isOnlineMessage ? SawimApplication.getCurrentGmtTime() : /*new Delay().getTime(date)*/parseTimestamp(date);
         final XmppContact c = (XmppContact) connection.getXmpp().getItemByUID(from);
         if (msg.contains(XmlConstants.S_ERROR)) {
@@ -388,10 +385,7 @@ public class Messages {
                 && "chat".equals(type)) {
             return false;
         }
-        String text = msg.getFirstNodeValue(XmlConstants.S_BODY);
-        if (text == null) {
-            return false;
-        }
+
         String fullJid;
         boolean isIncoming = receivedNode != null;
         if (isIncoming) {
@@ -403,14 +397,24 @@ public class Messages {
             return false;
         }
 
+        final String date = getDate(carbonMsg);
+        final boolean isOnlineMessage = (null == date);
+
+        if (isIncoming && isOnlineMessage) {
+            parseChatState(connection, msg, Jid.getBareJid(fullJid));
+        }
+
+        String text = msg.getFirstNodeValue(XmlConstants.S_BODY);
+        if (text == null) {
+            return false;
+        }
+
         final Contact contact = connection.getXmpp().getItemByUID(Jid.getBareJid(fullJid));
         boolean isConference = contact != null && contact.isConference();
         if (!isConference) {
             fullJid = Jid.getBareJid(fullJid);
         }
 
-        final String date = getDate(carbonMsg);
-        final boolean isOnlineMessage = (null == date);
         long time = isOnlineMessage ? SawimApplication.getCurrentGmtTime() : parseTimestamp(date);
 
         XmppContact c = (XmppContact) connection.getXmpp().getItemByUID(fullJid);
@@ -479,9 +483,9 @@ public class Messages {
 
     private static void parseChatState(XmppConnection connection, XmlNode message, String from) {
         if (message.contains(XmlConstants.S_ACTIVE)
-                || message.contains("gone")
+                || message.contains(XmlConstants.S_GONE)
                 || message.contains(XmlConstants.S_PAUSED)
-                || message.contains("inactive")) {
+                || message.contains(XmlConstants.S_INACTIVE)) {
             connection.getXmpp().beginTyping(from, false);
         } else if (message.contains(XmlConstants.S_COMPOSING)) {
             connection.getXmpp().beginTyping(from, true);

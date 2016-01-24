@@ -51,6 +51,8 @@ public class XmlConstants {
     public static final String S_COMPOSING = "composing";
     public static final String S_ACTIVE = "active";
     public static final String S_PAUSED = "paused";
+    public static final String S_INACTIVE = "inactive";
+    public static final String S_GONE = "gone";
     public static final String S_CHAT = "chat";
     public static final String S_GROUPCHAT = "groupchat";
     public static final String S_HEADLINE = "headline";
