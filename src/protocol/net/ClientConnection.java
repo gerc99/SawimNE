@@ -31,7 +31,7 @@ public abstract class ClientConnection implements Runnable {
     private long pongTime;
     private long lastConnect = 0;
 
-    private static final int PING_INTERVAL = 300;
+    private static final int PING_INTERVAL = 120;
     private static final int PONG_TIMEOUT = 4 * 60;
     private BroadcastReceiver receiver;
     private AlarmManager alarm;
@@ -59,7 +59,7 @@ public abstract class ClientConnection implements Runnable {
     }
 
     public final void start() {
-        new Thread(this).start();
+        new Thread(this, "ClientConnection").start();
     }
 
     public final void run() {
@@ -67,7 +67,7 @@ public abstract class ClientConnection implements Runnable {
         registerAlarm();
         SawimException exception = null;
         try {
-            getProtocol().setConnectingProgress(0);
+            getProtocol().setConnectingProgress(1);
             connect();
             lastConnect = System.currentTimeMillis();
             while (isConnected()) {

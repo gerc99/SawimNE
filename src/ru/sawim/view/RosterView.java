@@ -16,6 +16,7 @@ import android.support.v4.app.*;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.*;
 import android.widget.*;
 
@@ -294,6 +295,7 @@ public class RosterView extends SawimFragment implements View.OnClickListener, O
 
     @Override
     public void onAccountsLoaded() {
+        Log.e(TAG, "onAccountsLoaded");
         RosterHelper.getInstance().autoConnect();
         handler.post(new Runnable() {
             @Override

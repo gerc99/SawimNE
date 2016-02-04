@@ -260,7 +260,7 @@ public final class XmppConnection extends ClientConnection {
 
     protected final void connect() throws SawimException {
         connect = true;
-        setProgress(0);
+        setProgress(1);
         packetCallbacks.clear();
         serverFeatures.initFeatures();
         protocol.net.SrvResolver resolver = new protocol.net.SrvResolver();

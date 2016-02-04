@@ -172,7 +172,6 @@ public class SawimApplication extends Application {
                 boolean sentToken = sharedPreferences
                         .getBoolean(Preferences.SENT_TOKEN_TO_SERVER, false);
                 Protocol protocol = RosterHelper.getInstance().getProtocol(0);
-                Log.e("registrationBroadcastReceiver", sharedPreferences.getString(Preferences.TOKEN, ""));
                 if (protocol != null) {
                     protocol.reconnect();
                 }
@@ -210,7 +209,9 @@ public class SawimApplication extends Application {
         if (isRunService()) {
             stopService(new Intent(this, SawimService.class));
         }
-        ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).cancelAll();
+        if (!checkPlayServices()) {
+            ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).cancelAll();
+        }
     }
 
     public void updateConnectionState() {

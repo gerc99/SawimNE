@@ -3,6 +3,7 @@ package ru.sawim.roster;
 import android.support.v7.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.util.Log;
 import android.widget.Toast;
 
 import ru.sawim.SawimException;
@@ -260,6 +261,7 @@ public final class RosterHelper {
     public void autoConnect(int i) {
         Profile profile = Options.getAccount(i);
         Protocol protocol = getProtocol(profile);
+        Log.e("autoConnect", protocol.isConnected() + " " + protocol.isConnecting() + " " + protocol.getConnectingProgress() + " " + profile.isConnected());
         if (protocol != null && (protocol.isConnected() || protocol.isConnecting())) return;
         if (checkPassword(protocol)) {
             if (profile.isConnected()) {

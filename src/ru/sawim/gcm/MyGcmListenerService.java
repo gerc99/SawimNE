@@ -40,12 +40,7 @@ public class MyGcmListenerService extends GcmListenerService {
             e.printStackTrace();
         }
         String fromJid = data.getString("from_jid");
-        try {
-            String message = URLDecoder.decode(msg, "UTF-8");
-            Log.d(TAG, message);
-            SawimNotification.pushNotification(this, fromJid, message, badge);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+        Log.d(TAG, msg);
+        SawimNotification.pushNotification(this, fromJid, msg, badge);
     }
 }

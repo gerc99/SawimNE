@@ -1,5 +1,7 @@
 package protocol;
 
+import android.util.Log;
+
 import protocol.xmpp.XmppContact;
 import ru.sawim.*;
 import ru.sawim.activities.BaseActivity;
@@ -154,7 +156,7 @@ abstract public class Protocol {
     }
 
     public final boolean isConnecting() {
-        return 100 != progress;
+        return 100 != progress && progress != 0;
     }
 
     public final byte getConnectingProgress() {
@@ -321,7 +323,7 @@ abstract public class Protocol {
     }
 
     public void disconnect(boolean user) {
-        setConnectingProgress(-1);
+        setConnectingProgress(0);
         if (user) {
             userCloseConnection();
         }
@@ -469,6 +471,7 @@ abstract public class Protocol {
     public void setStatus(int statusIndex, String msg, boolean save) {
         boolean connected = StatusInfo.STATUS_OFFLINE != profile.statusIndex;
         boolean connecting = StatusInfo.STATUS_OFFLINE != statusIndex;
+        Log.e("MENU_CONNECT", isConnected() + " " + isConnecting() + " " + getConnectingProgress() + " " + connected + " " + connecting);
         if (connected && !connecting) {
             disconnect(true);
         }

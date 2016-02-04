@@ -5,6 +5,8 @@ import android.os.Handler;
 import android.os.Looper;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 /**
  * Created by gerc on 23.08.2015.
@@ -13,11 +15,12 @@ public class SqlAsyncTask extends Thread {
 
     private volatile Handler handler = null;
     private CountDownLatch syncLatch = new CountDownLatch(1);
+    private Executor executor = Executors.newSingleThreadExecutor();
 
     public SqlAsyncTask(String threadName) {
         setName(threadName);
         setPriority(MAX_PRIORITY);
-        start();
+        //start();
     }
 
     public void cancelRunnable(Runnable runnable) {
@@ -34,7 +37,8 @@ public class SqlAsyncTask extends Thread {
     }
 
     public void postRunnable(Runnable runnable, long delay) {
-        try {
+        executor.execute(runnable);
+        /*try {
             syncLatch.await();
             if (delay <= 0) {
                 handler.post(runnable);
@@ -43,7 +47,7 @@ public class SqlAsyncTask extends Thread {
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
     public void cleanupQueue() {

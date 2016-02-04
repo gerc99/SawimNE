@@ -180,7 +180,7 @@ public class Messages {
                 setMessageSended(connection, id, PlainMessage.NOTIFY_FROM_CLIENT);
                 return;
             }
-            if (!connection.getXmpp().getItemByUID(Jid.getBareJid(from)).isConference() && !isError) {
+            if (!isConference && !isError) {
                 parseMessageEvent(connection, msg.getXNode("jabber:x:event"), from);
                 parseEvent(connection, msg.getFirstNode("event"), fullJid);
             }
@@ -288,9 +288,12 @@ public class Messages {
                 c.setActiveResource(fromRes);
             }
         }
-        if (subject == null && isConference && !isOnlineMessage) {
-            if (HistoryStorage.getHistory(connection.getXmpp().getUserId(), c.getUserId()).hasLastMessage(connection.getXmpp().getChat(c), message)) {
-                return;
+        String xmlns = msg.getXmlns();
+        if (xmlns == null || !xmlns.equals("p1:pushed")) {
+            if (subject == null && isConference && !isOnlineMessage) {
+                if (HistoryStorage.getHistory(connection.getXmpp().getUserId(), c.getUserId()).hasLastMessage(connection.getXmpp().getChat(c), message)) {
+                    return;
+                }
             }
         }
         if (message != null) {

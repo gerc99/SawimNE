@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
+
 import ru.sawim.activities.SawimActivity;
 import ru.sawim.chat.Chat;
 import ru.sawim.chat.ChatHistory;
@@ -25,8 +26,7 @@ public class SawimNotification {
     private static final int VIBRA_LOCKED_ONLY = 2;
 
     public static final int NOTIFY_ID = 1;
-    public static final int PUSH_NOTIFY_ID = 2;
-    public static final int ALARM_NOTIFY_ID = 3;
+    public static final int ALARM_NOTIFY_ID = 2;
     private static final List<String> idsMap = new ArrayList<String>();
     private static final HashMap<Integer, NotificationCompat.Builder> notifiBuildersMap = new HashMap<>();
 
@@ -97,6 +97,9 @@ public class SawimNotification {
     }
 
     public static void notification(Context context, boolean silent) {
+        if (!idsMap.contains(String.valueOf(NOTIFY_ID))) {
+            idsMap.add(String.valueOf(NOTIFY_ID));
+        }
         ((NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE))
                 .notify(NOTIFY_ID, getNotification(context, silent, R.drawable.ic_tray_msg, "",
                         ChatHistory.instance.chatAt(ChatHistory.instance.getPreferredItem())));
@@ -130,8 +133,11 @@ public class SawimNotification {
                 .setSmallIcon(R.drawable.ic_tray_msg)
                 .setContentTitle(context.getString(R.string.app_name));
 
+        if (!idsMap.contains(String.valueOf(NOTIFY_ID))) {
+            idsMap.add(String.valueOf(NOTIFY_ID));
+        }
         ((NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE))
-                .notify(PUSH_NOTIFY_ID, notification.build());
+                .notify(NOTIFY_ID, notification.build());
     }
 
     public static void alarm(String nick) {
@@ -148,7 +154,7 @@ public class SawimNotification {
                     notification.setVibrate(pattern);
                 }
                 String ringtone = Options.getString(JLocale.getString(R.string.pref_mess_ringtone), null);
-                if (ringtone != null) {
+        if (ringtone != null) {
                     notification.setSound(Uri.parse(ringtone));
                 }
         notification.setAutoCancel(true).setWhen(0)
@@ -227,10 +233,6 @@ public class SawimNotification {
         }
         ((NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE))
                 .notify(id, builder.build());
-    }
-
-    public static void clearPushNotifications() {
-        ((NotificationManager) SawimApplication.getContext().getSystemService(Context.NOTIFICATION_SERVICE)).cancel(PUSH_NOTIFY_ID);
     }
 
     public static void clear(int id) {

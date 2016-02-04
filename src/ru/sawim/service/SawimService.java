@@ -59,6 +59,7 @@ public class SawimService extends Service {
                         break;
                     case UPDATE_APP_ICON:
                         if (SawimApplication.checkPlayServices()) {
+                            SawimNotification.clear(SawimNotification.NOTIFY_ID);
                         } else {
                             SawimService.this.startForeground(R.string.app_name, SawimNotification.get(SawimService.this, false));
                         }

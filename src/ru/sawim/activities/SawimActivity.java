@@ -78,7 +78,6 @@ public class SawimActivity extends BaseActivity implements OnAccountsLoaded {
                 startService(intent);
             }
         }
-        SawimNotification.clearPushNotifications();
     }
 
     @Override
@@ -173,6 +172,7 @@ public class SawimActivity extends BaseActivity implements OnAccountsLoaded {
 
     @Override
     public void onAccountsLoaded() {
+        Log.e(LOG_TAG, "onAccountsLoaded");
         RosterHelper.getInstance().autoConnect();
         runOnUiThread(new Runnable() {
             @Override
@@ -209,12 +209,24 @@ public class SawimActivity extends BaseActivity implements OnAccountsLoaded {
         SawimApplication.maximize();
         handleIntent();
         if (!isOpenNewChat && SawimApplication.isManyPane()) openChat(null, null);
+        if (SawimApplication.checkPlayServices()) {
+            RosterHelper.getInstance().autoConnect();
+        }
     }
 
     @Override
     public void onPause() {
         super.onPause();
         SawimApplication.minimize();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (SawimApplication.checkPlayServices()) {
+            SawimApplication.getInstance().quit(false);
+            SawimApplication.getInstance().stopService();
+        }
     }
 
     @Override
