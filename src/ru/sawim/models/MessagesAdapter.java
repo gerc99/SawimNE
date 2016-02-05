@@ -91,6 +91,9 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
         String nick = mData.getNick();
         boolean incoming = mData.isIncoming();
 
+        if (SawimApplication.showPicturesInChat) {
+            item.setLinks(mData.getUrlLinks());
+        }
         item.setLinkTextColor(Scheme.getColor(R.attr.link));
         item.setTypeface(mData.isHighLight() ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT);
         item.setBackgroundColor(0);

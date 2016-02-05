@@ -25,7 +25,6 @@ import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
 
 import de.duenndns.ssl.MemorizingTrustManager;
-import protocol.Contact;
 import protocol.Protocol;
 import protocol.xmpp.Xmpp;
 import ru.sawim.chat.ChatHistory;
@@ -82,6 +81,7 @@ public class SawimApplication extends Application {
     public static boolean enableHistory;
     public static int sortType;
     public static boolean hideIconsClient;
+    public static boolean showPicturesInChat;
     public static int autoAbsenceTime;
     public static boolean checkPlayServices;
 
@@ -257,6 +257,7 @@ public class SawimApplication extends Application {
         fontSize = Options.getInt(JLocale.getString(R.string.pref_font_scheme));
         showStatusLine = Options.getBoolean(JLocale.getString(R.string.pref_show_status_line));
         hideIconsClient = Options.getBoolean(JLocale.getString(R.string.pref_hide_icons_clients));
+        showPicturesInChat = Options.getBoolean(JLocale.getString(R.string.pref_show_pictures_in_chat));
         sortType = Options.getInt(R.array.sort_by_array, JLocale.getString(R.string.pref_cl_sort_by));
         autoAbsenceTime = Options.getInt(R.array.absence_array, JLocale.getString(R.string.pref_aa_time)) * 5 * 60;
         if (Options.getBoolean(JLocale.getString(R.string.pref_history))

@@ -26,6 +26,7 @@ dependencies {
     compile 'com.android.support:design:22.2.1'
     compile 'com.android.support:recyclerview-v7:23.+'
     compile 'com.android.support:design:22.2.1'
+    compile 'com.github.bumptech.glide:glide:3.7.0'
 
     compile 'com.google.android.gms:play-services-gcm:7.8.+'
 

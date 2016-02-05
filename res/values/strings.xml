@@ -547,4 +547,5 @@
     <string name="passwords_mismatch">Your current password does not match the entered one</string>
     <string name="passwords_changed">The password has changed</string>
     <string name="non_empty">Please, enter a non-empty value</string>
+    <string name="show_pictures_in_chat">Show images in the chat</string>
 </resources>

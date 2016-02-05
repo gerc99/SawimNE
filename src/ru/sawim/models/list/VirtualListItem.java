@@ -76,7 +76,7 @@ public class VirtualListItem {
     public CharSequence getDescStr() {
         if (descStr == null) return null;
         SpannableStringBuilder builder = new SpannableStringBuilder(descStr);
-        TextFormatter.getInstance().getTextWithLinks(builder, -1);
+        TextFormatter.getInstance().getLinks(builder);
         TextFormatter.getInstance().detectEmotions(builder);
         return builder;
     }

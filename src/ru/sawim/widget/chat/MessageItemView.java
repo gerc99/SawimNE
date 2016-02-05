@@ -11,9 +11,16 @@ import android.graphics.drawable.Drawable;
 import android.text.*;
 import android.text.style.BackgroundColorSpan;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
+
+import java.util.List;
 
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
@@ -59,6 +66,7 @@ public class MessageItemView extends View {
     private int msgTimeSize;
     private int msgTextSize;
     private Bitmap checkImage;
+    private Bitmap image;
 
     private int textY;
 
@@ -90,7 +98,11 @@ public class MessageItemView extends View {
     }
 
     public static Layout buildLayout(CharSequence parsedText, Typeface msgTextTypeface) {
-        return makeLayout(parsedText, msgTextTypeface, SawimApplication.getContext().getResources().getDisplayMetrics().widthPixels - (PADDING_LEFT * 2 + PADDING_RIGHT));
+        return makeLayout(parsedText, msgTextTypeface, getMessageWidth());
+    }
+
+    public static int getMessageWidth() {
+        return SawimApplication.getContext().getResources().getDisplayMetrics().widthPixels - (PADDING_LEFT * 2 + PADDING_RIGHT);
     }
 
     public static Layout makeLayout(CharSequence parsedText, Typeface msgTextTypeface, int width) {
@@ -120,6 +132,9 @@ public class MessageItemView extends View {
         titleHeight = isAddTitleView ? height - getPaddingTop() : getPaddingTop();
         if (layout != null)
             height += layout.getLineTop(layout.getLineCount());
+        if (image != null) {
+            height += image.getHeight();
+        }
         setMeasuredDimension(width, height);
     }
 
@@ -177,6 +192,20 @@ public class MessageItemView extends View {
 
     public void setTextColor(int color) {
         msgTextColor = color;
+    }
+
+    public void setLinks(List<String> links) {
+        image = null;
+        if (links == null || links.isEmpty()) return;
+        Glide.with(getContext()).load(links.get(0))
+                .asBitmap().override(getMessageWidth(), getMessageWidth()).fitCenter()
+                .into(new SimpleTarget<Bitmap>() {
+            @Override
+            public void onResourceReady(Bitmap resource, GlideAnimation glideAnimation) {
+                image = resource;
+                repaint();
+            }
+        });
     }
 
     public void setLinkTextColor(int color) {
@@ -238,13 +267,21 @@ public class MessageItemView extends View {
             canvas.drawBitmap(checkImage,
                     stopX - checkImage.getWidth(), getPaddingTop() + checkImage.getHeight() / 2, null);
         }
+
+        if (image != null) {
+            canvas.drawBitmap(image, getWidth() / 2 - image.getWidth() / 2, titleHeight + getPaddingTop() / 2, null);
+        }
         if (layout != null) {
             canvas.save();
             messageTextPaint.setColor(msgTextColor);
             messageTextPaint.setTextAlign(Paint.Align.LEFT);
             messageTextPaint.setTextSize(msgTextSize * getResources().getDisplayMetrics().scaledDensity);
             messageTextPaint.setTypeface(msgTextTypeface);
-            canvas.translate(getPaddingLeft() * 2, titleHeight + getPaddingTop() / 2);
+            int y = titleHeight + getPaddingTop() / 2;
+            if (image != null) {
+                y += image.getHeight();
+            }
+            canvas.translate(getPaddingLeft() * 2, y);
             layout.draw(canvas);
             canvas.restore();
         }

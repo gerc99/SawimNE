@@ -5,6 +5,8 @@ import android.text.style.ImageSpan;
 import ru.sawim.modules.Emotions;
 import ru.sawim.view.menu.JuickMenu;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -95,7 +97,7 @@ public class TextFormatter {
         return false;
     }
 
-    public void getTextWithLinks(final SpannableStringBuilder ssb, final int mode) {
+    public void addLinksForBots(final SpannableStringBuilder ssb, final int mode) {
         switch (mode) {
             case JuickMenu.MODE_JUICK:
                 addLinks(ssb, juickPattern);
@@ -105,10 +107,21 @@ public class TextFormatter {
                 addLinks(ssb, pstoPattern);
                 addLinks(ssb, nickPattern);
                 break;
-            default:
-                addLinks(ssb, urlPattern);
-                break;
         }
+    }
+
+    public List<String> getLinks(final SpannableStringBuilder ssb) {
+        List<String> links = new ArrayList<>();
+        Matcher m = urlPattern.matcher(ssb);
+        while (m.find()) {
+            int start = m.start();
+            int end = m.end();
+            String textSpan = ssb.subSequence(start, end).toString();
+            InternalURLSpan span = new InternalURLSpan(textSpan);
+            ssb.setSpan(span, start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            links.add(textSpan);
+        }
+        return links;
     }
 
     private void addLinks(Spannable s, Pattern pattern) {

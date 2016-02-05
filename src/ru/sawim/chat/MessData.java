@@ -3,6 +3,8 @@ package ru.sawim.chat;
 import android.graphics.Typeface;
 import android.text.Layout;
 import android.text.SpannableStringBuilder;
+import java.util.List;
+
 import protocol.Contact;
 import ru.sawim.R;
 import ru.sawim.chat.message.Message;
@@ -13,22 +15,23 @@ import ru.sawim.widget.chat.MessageItemView;
 
 public final class MessData {
 
-    private long time;
-    private String nick;
-    private String strTime;
-    private int iconIndex = Message.ICON_NONE;
-    private short rowData;
-    private boolean isHighLight;
-
-    public Layout layout;
-
     public static final short INCOMING = 2;
     public static final short ME = 4;
     public static final short PROGRESS = 8;
     public static final short SERVICE = 16;
     public static final short PRESENCE = 32;
     public static final short MARKED = 64;
+
+    private long time;
+    private String nick;
+    private String strTime;
+    private int iconIndex = Message.ICON_NONE;
+    private short rowData;
+    private boolean isHighLight;
     private String serverMsgId;
+    private List<String> urlLinks;
+
+    public Layout layout;
 
     public MessData(Contact currentContact, long time, String text, String nick, short flags, boolean highLight) {
         isHighLight = highLight;
@@ -60,13 +63,13 @@ public final class MessData {
             if (contact.getProtocol() != null) {
                 String userId = contact.getProtocol().getUniqueUserId(contact);
                 if (userId.startsWith(JuickMenu.JUICK) || userId.startsWith(JuickMenu.JUBO)) {
-                    TextFormatter.getInstance().getTextWithLinks(builder, JuickMenu.MODE_JUICK);
+                    TextFormatter.getInstance().addLinksForBots(builder, JuickMenu.MODE_JUICK);
                 } else if (userId.startsWith(JuickMenu.PSTO) || userId.startsWith(JuickMenu.POINT)) {
-                    TextFormatter.getInstance().getTextWithLinks(builder, JuickMenu.MODE_PSTO);
+                    TextFormatter.getInstance().addLinksForBots(builder, JuickMenu.MODE_PSTO);
                 }
             }
         }
-        TextFormatter.getInstance().getTextWithLinks(builder, -1);
+        urlLinks = TextFormatter.getInstance().getLinks(builder);
         TextFormatter.getInstance().detectEmotions(builder);
         return builder;
     }
@@ -159,5 +162,9 @@ public final class MessData {
 
     public void setServerMsgId(String serverMsgId) {
         this.serverMsgId = serverMsgId;
+    }
+
+    public List<String> getUrlLinks() {
+        return urlLinks;
     }
 }

@@ -251,7 +251,7 @@ public class MucUsersAdapter extends RecyclerView.Adapter<MucUsersAdapter.ViewHo
             rosterItemView.itemDesc = statusMessage;
         }
         Icon ic = protocol.clientInfo.getIcon(c.client);
-        if (ic != null && !Options.getBoolean(JLocale.getString(R.string.pref_hide_icons_clients))) {
+        if (ic != null && !SawimApplication.hideIconsClient) {
             rosterItemView.itemFifthImage = ic.getImage();
         }
         rosterItemView.itemSixthImage = SawimResources.affiliationIcons.iconAt(XmppServiceContact.getAffiliationName(c.priorityA)).getImage().getBitmap();

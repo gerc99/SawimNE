@@ -23,6 +23,7 @@
     <string name="pref_answerer">pref_answerer</string>
     <string name="pref_options_pro">pref_options_pro</string>
     <string name="pref_hide_icons_clients">pref_hide_icons_clients</string>
+    <string name="pref_show_pictures_in_chat">pref_show_pictures_in_chat</string>
     <string name="pref_aa_time">pref_aa_time</string>
     <string name="pref_about_program">pref_about_program</string>
 
