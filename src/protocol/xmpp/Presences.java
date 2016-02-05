@@ -101,7 +101,6 @@ public class Presences {
                 return;
             }
             c.setOfflineStatus();
-            c.setBooleanValue(Contact.CONTACT_NO_AUTH, true);
             return;
         }
 
