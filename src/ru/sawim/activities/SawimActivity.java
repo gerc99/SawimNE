@@ -73,7 +73,7 @@ public class SawimActivity extends BaseActivity implements OnAccountsLoaded {
         RosterHelper.getInstance().setOnAccountsLoaded(this);
 
         if (PreferenceManager.getDefaultSharedPreferences(this).getString(Preferences.TOKEN, "").isEmpty()) {
-            if (SawimApplication.checkPlayServices()) {
+            if (SawimApplication.checkPlayServices) {
                 Intent intent = new Intent(this, RegistrationIntentService.class);
                 startService(intent);
             }
@@ -209,7 +209,7 @@ public class SawimActivity extends BaseActivity implements OnAccountsLoaded {
         SawimApplication.maximize();
         handleIntent();
         if (!isOpenNewChat && SawimApplication.isManyPane()) openChat(null, null);
-        if (SawimApplication.checkPlayServices()) {
+        if (SawimApplication.checkPlayServices) {
             RosterHelper.getInstance().autoConnect();
         }
     }
@@ -223,7 +223,7 @@ public class SawimActivity extends BaseActivity implements OnAccountsLoaded {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (SawimApplication.checkPlayServices()) {
+        if (SawimApplication.checkPlayServices) {
             SawimApplication.getInstance().quit(false);
             SawimApplication.getInstance().stopService();
         }
@@ -315,7 +315,7 @@ public class SawimActivity extends BaseActivity implements OnAccountsLoaded {
                 }
             }
             menu.add(Menu.NONE, MENU_OPTIONS, Menu.NONE, R.string.options);
-            if (!SawimApplication.checkPlayServices()) {
+            if (!SawimApplication.checkPlayServices) {
                 menu.add(Menu.NONE, MENU_QUIT, Menu.NONE, R.string.quit);
             }
         } else if (searchContactFragment != null && searchContactFragment.isAdded()) {

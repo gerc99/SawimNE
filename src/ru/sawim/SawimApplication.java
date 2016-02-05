@@ -83,6 +83,7 @@ public class SawimApplication extends Application {
     public static int sortType;
     public static boolean hideIconsClient;
     public static int autoAbsenceTime;
+    public static boolean checkPlayServices;
 
     private static SawimApplication instance;
     private final SawimServiceConnection serviceConnection = new SawimServiceConnection();
@@ -114,6 +115,7 @@ public class SawimApplication extends Application {
         Thread.setDefaultUncaughtExceptionHandler(ExceptionHandler.inContext(getContext()));
         super.onCreate();
         new ANRWatchDog().start();
+        checkPlayServices = checkPlayServices();
         refWatcher = LeakCanary.install(this);
         databaseHelper = new DatabaseHelper(getApplicationContext());
         uiHandler = new Handler(Looper.getMainLooper());
@@ -209,7 +211,7 @@ public class SawimApplication extends Application {
         if (isRunService()) {
             stopService(new Intent(this, SawimService.class));
         }
-        if (!checkPlayServices()) {
+        if (!checkPlayServices) {
             ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).cancelAll();
         }
     }
@@ -350,7 +352,7 @@ public class SawimApplication extends Application {
      * it doesn't, display a dialog that allows users to download the APK from
      * the Google Play Store or enable it in the device's system settings.
      */
-    public static boolean checkPlayServices() {
+    private static boolean checkPlayServices() {
         GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
         int resultCode = apiAvailability.isGooglePlayServicesAvailable(getContext());
         if (resultCode != ConnectionResult.SUCCESS) {

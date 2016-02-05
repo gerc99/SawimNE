@@ -25,7 +25,7 @@ public class SawimService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        if (!SawimApplication.checkPlayServices()) {
+        if (!SawimApplication.checkPlayServices) {
             startForeground(R.string.app_name, SawimNotification.get(SawimService.this, false));
         }
         Log.i(LOG_TAG, "onStart();");
@@ -34,7 +34,7 @@ public class SawimService extends Service {
     @Override
     public void onDestroy() {
         Log.i(LOG_TAG, "onDestroy();");
-        if (!SawimApplication.checkPlayServices()) {
+        if (!SawimApplication.checkPlayServices) {
             stopForeground(true);
         }
     }
@@ -58,7 +58,7 @@ public class SawimService extends Service {
                         //updateLock();
                         break;
                     case UPDATE_APP_ICON:
-                        if (SawimApplication.checkPlayServices()) {
+                        if (SawimApplication.checkPlayServices) {
                             SawimNotification.clear(SawimNotification.NOTIFY_ID);
                         } else {
                             SawimService.this.startForeground(R.string.app_name, SawimNotification.get(SawimService.this, false));
@@ -66,7 +66,7 @@ public class SawimService extends Service {
                         break;
                     case SEND_NOTIFY:
                         //SawimNotification.sendNotify(SawimService.this, (String)((Object[])msg.obj)[0], (String)((Object[])msg.obj)[1]);
-                        if (SawimApplication.checkPlayServices()) {
+                        if (SawimApplication.checkPlayServices) {
                             SawimNotification.notification(SawimService.this, (boolean) msg.obj);
                         } else {
                             SawimService.this.startForeground(R.string.app_name, SawimNotification.get(SawimService.this, (boolean) msg.obj));
