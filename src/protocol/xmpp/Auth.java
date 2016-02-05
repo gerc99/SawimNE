@@ -3,6 +3,7 @@ package protocol.xmpp;
 import android.preference.PreferenceManager;
 
 import protocol.StatusInfo;
+import protocol.net.ClientConnection;
 import ru.sawim.SawimApplication;
 import ru.sawim.SawimException;
 import ru.sawim.comm.StringConvertor;
@@ -254,7 +255,7 @@ public class Auth {
         rebindNode.setId(XmppConnection.generateId());
         rebindNode.setType(XmlConstants.S_SET);
         XmlNode pushNode = rebindNode.addNode(XmlNode.addXmlns("push", "p1:push"));
-        pushNode.addSubTag("keepalive").putAttribute("max", "120");
+        pushNode.addSubTag("keepalive").putAttribute("max", String.valueOf(ClientConnection.PING_INTERVAL));
         pushNode.addSubTag("session").putAttribute("duration", "1440");
         pushNode.addSubTag(XmlConstants.S_BODY)
                 .putAttribute("send", "all")

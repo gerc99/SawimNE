@@ -31,7 +31,7 @@ public abstract class ClientConnection implements Runnable {
     private long pongTime;
     private long lastConnect = 0;
 
-    private static final int PING_INTERVAL = 120;
+    public static final int PING_INTERVAL = 300;
     private static final int PONG_TIMEOUT = 4 * 60;
     private BroadcastReceiver receiver;
     private AlarmManager alarm;
@@ -69,6 +69,7 @@ public abstract class ClientConnection implements Runnable {
         try {
             getProtocol().setConnectingProgress(1);
             connect();
+            pingForPong();
             lastConnect = System.currentTimeMillis();
             while (isConnected()) {
                 boolean doing = processPacket();
