@@ -195,8 +195,8 @@ public class HistoryStorage {
             cursor = SawimApplication.getDatabaseHelper().getReadableDatabase().query(DatabaseHelper.TABLE_CHAT_HISTORY, null, DatabaseHelper.CONTACT_ID + " = ?",
                     new String[]{uniqueUserId}, null, null, DatabaseHelper.DATE + " DESC", String.valueOf(60));
             if (cursor.moveToLast()) {
-                String msgText = message.getText();
                 String msgNick = chat.getFrom(message);
+                String msgText = MessData.formatCmdMe(msgNick, message.getText());
                 do {
                     short rowData = cursor.getShort(cursor.getColumnIndex(DatabaseHelper.ROW_DATA));
                     boolean isMessage = (rowData & MessData.PRESENCE) == 0 && (rowData & MessData.PROGRESS) == 0;

@@ -74,7 +74,7 @@ public final class MessData {
         return builder;
     }
 
-    private String formatCmdMe(String nick, String messageText) {
+    public static String formatCmdMe(String nick, String messageText) {
         boolean isMe = messageText.startsWith(PlainMessage.CMD_ME);
         if (isMe) {
             StringBuilder builder = new StringBuilder();
