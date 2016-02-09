@@ -196,16 +196,21 @@ public class MessageItemView extends View {
 
     public void setLinks(List<String> links) {
         image = null;
-        if (links == null || links.isEmpty()) return;
-        Glide.with(getContext()).load(links.get(0))
-                .asBitmap().override(getMessageWidth(), getMessageWidth()).fitCenter()
-                .into(new SimpleTarget<Bitmap>() {
-            @Override
-            public void onResourceReady(Bitmap resource, GlideAnimation glideAnimation) {
-                image = resource;
-                repaint();
-            }
-        });
+
+        String imageLink = getFirstImageLink(links);
+        if (imageLink == null) {
+            return;
+        }
+
+        Glide.with(getContext()).load(imageLink).asBitmap()
+             .override(getMessageWidth(), getMessageWidth()).fitCenter()
+             .into(new SimpleTarget<Bitmap>() {
+                 @Override
+                 public void onResourceReady(Bitmap resource, GlideAnimation glideAnimation) {
+                     image = resource;
+                     repaint();
+                 }
+             });
     }
 
     public void setLinkTextColor(int color) {
@@ -379,6 +384,18 @@ public class MessageItemView extends View {
             link = urlSpans[1].clickedSpan;
         }
         return link;
+    }
+
+    private String getFirstImageLink(List<String> links) {
+        if (links == null || links.isEmpty()) {
+            return null;
+        }
+        for (String link : links) {
+            if (ru.sawim.comm.Util.isImageFile(link)) {
+                return link;
+            }
+        }
+        return links.get(0);
     }
 
     public void setOnTextLinkClickListener(TextLinkClickListener listener) {
