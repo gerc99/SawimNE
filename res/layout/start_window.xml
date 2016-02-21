@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout
     android:orientation="vertical"
     android:layout_width="match_parent"
@@ -8,53 +7,78 @@
     android:gravity="center"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center">
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageView"
+        android:layout_gravity="center_horizontal"
+        android:src="@drawable/ic_launcher" />
 
-                <android.support.design.widget.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:hintTextAppearance="@style/TextAppearance.App.TextInputLayout"
-                    android:id="@+id/login_ti"
-                    android:paddingTop="5dp"
-                    android:paddingBottom="5dp">
-                        <EditText android:id="@+id/edit_login"
-                            android:layout_height="wrap_content"
-                            android:layout_width="fill_parent"
-                            android:hint="@string/acc_login"
-                            android:singleLine="true" android:padding="10dp"/>
-                </android.support.design.widget.TextInputLayout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sawim"
+        android:id="@+id/textView2"
+        android:textSize="20sp" />
 
-                <android.support.design.widget.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:hintTextAppearance="@style/TextAppearance.App.TextInputLayout"
-                    android:id="@+id/pass_ti"
-                    android:paddingTop="5dp"
-                    android:layout_below="@+id/login_ti"
-                    android:paddingBottom="5dp">
-                        <EditText android:id="@+id/edit_password"
-                            android:layout_height="wrap_content"
-                            android:layout_width="fill_parent"
-                            android:singleLine="true"
-                            android:hint="@string/acc_pass"
-                            android:inputType="textPassword" android:padding="10dp"/>
-                </android.support.design.widget.TextInputLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center">
 
-                <Button android:id="@+id/ButtonOK"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/acc_add"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_centerHorizontal="true"
-                    android:layout_below="@+id/pass_ti" />
-        </RelativeLayout>
-    <Button
+        <android.support.design.widget.TextInputLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/registration_jid"
-            android:id="@+id/reg_jid" android:layout_gravity="center_horizontal"
-            android:textSize="20dp" android:layout_margin="10dp"/>
+            app:hintTextAppearance="@style/TextAppearance.App.TextInputLayout"
+            android:id="@+id/login_ti"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:layout_centerHorizontal="true"
+            android:minWidth="300dp">
+            <EditText android:id="@+id/edit_login"
+                android:layout_height="wrap_content"
+                android:layout_width="fill_parent"
+                android:hint="@string/acc_login"
+                android:singleLine="true" android:padding="10dp"/>
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:hintTextAppearance="@style/TextAppearance.App.TextInputLayout"
+            android:id="@+id/pass_ti"
+            android:paddingTop="5dp"
+            android:layout_below="@+id/login_ti"
+            android:paddingBottom="5dp"
+            android:layout_centerHorizontal="true">
+            <EditText android:id="@+id/edit_password"
+                android:layout_height="wrap_content"
+                android:layout_width="fill_parent"
+                android:singleLine="true"
+                android:hint="@string/acc_pass"
+                android:inputType="textPassword" android:padding="10dp"
+                android:minWidth="300dp" />
+        </android.support.design.widget.TextInputLayout>
+
+        <Button android:id="@+id/ButtonOK"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/acc_add"
+            android:layout_gravity="center_horizontal"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/pass_ti" />
+    </RelativeLayout>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/registration_jid"
+        android:id="@+id/reg_jid" android:layout_gravity="center_horizontal"
+        android:layout_margin="10dp"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/change_password"
+        android:id="@+id/change_password_btn" android:layout_gravity="center_horizontal"
+        android:layout_margin="10dp"/>
 </LinearLayout>

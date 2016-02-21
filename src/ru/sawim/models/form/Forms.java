@@ -73,6 +73,7 @@ public class Forms {
 
     public void setWarningString(String warningString) {
         this.warningString = warningString;
+        invalidate(true);
     }
 
     public String getWaitingString() {

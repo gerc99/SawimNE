@@ -69,7 +69,7 @@ public final class SawimException extends Exception {
 
     public boolean isReconnectable() {
         return (errorCode < 110 || errorCode > 117)
-                && errorCode != 123 && errorCode != 127 && errorCode != 140;
+                && errorCode != 123 && errorCode != 127 && errorCode != 140 && errorCode != 111;
     }
 
     public int getErrorCode() {

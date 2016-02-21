@@ -35,14 +35,13 @@ import java.util.List;
  * Time: 21:30
  * To change this template use File | Settings | File Templates.
  */
-public class FormView extends DialogFragment implements Forms.OnUpdateForm, DialogInterface.OnClickListener, DialogInterface.OnCancelListener, DialogInterface.OnDismissListener {
+public class FormView extends DialogFragment implements Forms.OnUpdateForm, DialogInterface.OnCancelListener, DialogInterface.OnDismissListener {
 
     public static final String TAG = FormView.class.getSimpleName();
     private TextView textView;
     private ProgressBar progressBar;
     private ScrollView scrollView;
     private LinearLayout listLayout;
-    private Button okButton;
     private int padding;
     private Forms forms;
     private static HashMap<String, Forms> formsMap = new HashMap<String, Forms>();
@@ -76,12 +75,12 @@ public class FormView extends DialogFragment implements Forms.OnUpdateForm, Dial
         final Context context = getActivity();
 
         View dialogView = LayoutInflater.from(context).inflate(R.layout.form, null);
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
+        final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
         dialogBuilder.setTitle(getLastForms().getCaption());
         dialogBuilder.setView(dialogView);
 
-        dialogBuilder.setPositiveButton(R.string.ok, this);
-        dialogBuilder.setNegativeButton(R.string.cancel, this);
+        dialogBuilder.setPositiveButton(R.string.ok, null);
+        dialogBuilder.setNegativeButton(R.string.cancel, null);
 
         textView = (TextView) dialogView.findViewById(R.id.textView);
         progressBar = (ProgressBar) dialogView.findViewById(R.id.progressBar);
@@ -93,9 +92,40 @@ public class FormView extends DialogFragment implements Forms.OnUpdateForm, Dial
         buildList();
         updateForm(false);
 
-        AlertDialog alertDialog = dialogBuilder.create();
+        final AlertDialog alertDialog = dialogBuilder.create();
         alertDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         alertDialog.setCanceledOnTouchOutside(false);
+
+        alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+
+            @Override
+            public void onShow(DialogInterface dialog) {
+                Button buttonPositive = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+                buttonPositive.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View view) {
+                        if (getLastForms().getFormListener() != null) {
+                            getLastForms().getFormListener()
+                                    .formAction((BaseActivity) getActivity(), getLastForms(), true);
+                        }
+                        Util.hideKeyboard(getActivity());
+                    }
+                });
+                Button buttonNegative = alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+                buttonNegative.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View view) {
+                        if (getLastForms().getFormListener() != null) {
+                            getLastForms().getFormListener()
+                                    .formAction((BaseActivity) getActivity(), getLastForms(), false);
+                        }
+                        Util.hideKeyboard(getActivity());
+                    }
+                });
+            }
+        });
         return alertDialog;
     }
 
@@ -165,16 +195,6 @@ public class FormView extends DialogFragment implements Forms.OnUpdateForm, Dial
                 dismiss();
             }
         });
-    }
-
-    @Override
-    public void onClick(DialogInterface dialogInterface, int button) {
-        if (getLastForms().getFormListener() != null) {
-            boolean isOkButton = button == DialogInterface.BUTTON_POSITIVE;
-            getLastForms().getFormListener()
-                          .formAction((BaseActivity)getActivity(), getLastForms(), isOkButton);
-        }
-        Util.hideKeyboard(getActivity());
     }
 
     private void buildList() {

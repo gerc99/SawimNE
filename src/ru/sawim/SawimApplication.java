@@ -89,7 +89,6 @@ public class SawimApplication extends Application {
     private final SawimServiceConnection serviceConnection = new SawimServiceConnection();
     private final NetworkStateReceiver networkStateReceiver = new NetworkStateReceiver();
     public boolean isBindService = false;
-    public static final HashMap<String, String> actionQueue = new HashMap<>();
 
     private DatabaseHelper databaseHelper;
 

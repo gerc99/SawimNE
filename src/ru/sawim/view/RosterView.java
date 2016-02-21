@@ -50,7 +50,7 @@ import ru.sawim.widget.roster.RosterViewRoot;
  * Time: 19:58
  * To change this template use File | Settings | File Templates.
  */
-public class RosterView extends SawimFragment implements View.OnClickListener, OnUpdateRoster, Handler.Callback, OnAccountsLoaded {
+public class RosterView extends SawimFragment implements View.OnClickListener, OnUpdateRoster, Handler.Callback {
 
     public static final String TAG = RosterView.class.getSimpleName();
 
@@ -112,8 +112,6 @@ public class RosterView extends SawimFragment implements View.OnClickListener, O
         fab.setLayoutParams(lp);
 
         rosterViewLayout = new RosterViewRoot(activity, progressBar, listView, fab);
-
-        RosterHelper.getInstance().setOnAccountsLoaded(this);
 
         rosterAdapter.refreshList();
     }
@@ -291,46 +289,34 @@ public class RosterView extends SawimFragment implements View.OnClickListener, O
         if (Scheme.isChangeTheme(Scheme.getSavedTheme())) {
             ((SawimActivity) getActivity()).recreateActivity();
         }
-    }
-
-    @Override
-    public void onAccountsLoaded() {
-        Log.e(TAG, "onAccountsLoaded");
-        RosterHelper.getInstance().autoConnect();
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                //initBar();
-                if (Options.getAccountCount() > 0) {
-                    update();
-                    getActivity().supportInvalidateOptionsMenu();
-                    if (SawimApplication.returnFromAcc) {
-                        SawimApplication.returnFromAcc = false;
-                        if (getRosterAdapter().getItemCount() == 0) {
-                            Toast.makeText(getActivity(), R.string.press_menu_for_connect, Toast.LENGTH_LONG).show();
-                            getFragmentManager().beginTransaction()
-                                    .replace(R.id.fragment_container, new SearchContactFragment(), SearchContactFragment.TAG)
-                                    .addToBackStack(null)
-                                    .commit();
-                        }
-                    }
-                } else {
-                    if (!SawimApplication.isManyPane()) {
-                        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                        FragmentTransaction transaction = fragmentManager.beginTransaction();
-                        StartWindowView newFragment = new StartWindowView();
-                        transaction.replace(R.id.fragment_container, newFragment, StartWindowView.TAG);
-                        transaction.addToBackStack(null);
-                        transaction.commit();
-                        getActivity().supportInvalidateOptionsMenu();
-                    }
+        if (Options.getAccountCount() > 0) {
+            update();
+            getActivity().supportInvalidateOptionsMenu();
+            if (SawimApplication.returnFromAcc) {
+                SawimApplication.returnFromAcc = false;
+                //Toast.makeText(getActivity(), R.string.press_menu_for_connect, Toast.LENGTH_LONG).show();
+                if (getRosterAdapter().getItemCount() == 0) {
+                    getFragmentManager().beginTransaction()
+                            .replace(R.id.fragment_container, new SearchContactFragment(), SearchContactFragment.TAG)
+                            .addToBackStack(null)
+                            .commit();
                 }
             }
-        });
+        } else {
+            if (!SawimApplication.returnFromAcc && !SawimApplication.isManyPane()) {
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                FragmentTransaction transaction = fragmentManager.beginTransaction();
+                StartWindowView newFragment = new StartWindowView();
+                transaction.replace(R.id.fragment_container, newFragment, StartWindowView.TAG);
+                transaction.addToBackStack(null);
+                transaction.commit();
+                getActivity().supportInvalidateOptionsMenu();
+            }
+        }
     }
 
     public RosterAdapter getRosterAdapter() {
-        if (rosterViewLayout.getMyListView() == null) return null;
+        if (rosterViewLayout == null || rosterViewLayout.getMyListView() == null) return null;
         return (RosterAdapter) getListView().getAdapter();
     }
 

@@ -65,7 +65,9 @@ public class XmppRegistration implements Runnable, FormListener {
             String[] xmppHost = Util.explode(getServer(domain), ':');
             XmlNode xform = connection.newAccountConnect(domain, xmppHost[0], Integer.parseInt(xmppHost[1]));
             id = "reg1";
-            form.loadFromXml(xform.childAt(0), xform);
+            if (xform != null) {
+                form.loadFromXml(xform.childAt(0), xform);
+            }
             while (null == xml) {
                 try {
                     Thread.sleep(1000);

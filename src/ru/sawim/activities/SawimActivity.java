@@ -1,10 +1,6 @@
 package ru.sawim.activities;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,11 +8,12 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
+
 import protocol.Contact;
 import protocol.Protocol;
 import ru.sawim.Options;
@@ -43,7 +40,6 @@ public class SawimActivity extends BaseActivity implements OnAccountsLoaded {
     public static final String NOTIFY_CAPTCHA = "ru.sawim.notify.captcha";
     public static final String NOTIFY_UPLOAD = "ru.sawim.notify.upload";
     public static final String ACTION_SHOW_LOGIN_WINDOW = "ru.sawim.show_login_window";
-    public static final String ACTION_ACC_LOADED = "onAccountsLoaded";
     public static final String EXTRA_MESSAGE_FROM_ID = "ru.sawim.notify.message_from_id";
 
     private boolean isOpenNewChat = false;
@@ -65,12 +61,6 @@ public class SawimActivity extends BaseActivity implements OnAccountsLoaded {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.fragment_container, rosterView, RosterView.TAG).commit();
         }
-
-        if (SawimApplication.actionQueue.get(ACTION_ACC_LOADED) != null) {
-            onAccountsLoaded();
-            SawimApplication.actionQueue.remove(ACTION_ACC_LOADED);
-        }
-        RosterHelper.getInstance().setOnAccountsLoaded(this);
 
         if (PreferenceManager.getDefaultSharedPreferences(this).getString(Preferences.TOKEN, "").isEmpty()) {
             if (SawimApplication.checkPlayServices) {
@@ -177,26 +167,29 @@ public class SawimActivity extends BaseActivity implements OnAccountsLoaded {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                FragmentManager fragmentManager = getSupportFragmentManager();
-                StartWindowView startWindowView = (StartWindowView) fragmentManager.findFragmentByTag(StartWindowView.TAG);
+                StartWindowView startWindowView = (StartWindowView) getSupportFragmentManager().findFragmentByTag(StartWindowView.TAG);
                 if (RosterHelper.getInstance().getProtocolCount() == 0) {
                     if (Options.getAccountCount() == 0) {
                         if (SawimApplication.isManyPane()) {
                             setContentView(R.layout.main);
-                            if (startWindowView == null) {
-                                StartWindowView newFragment = new StartWindowView();
-                                FragmentTransaction transaction = fragmentManager.beginTransaction();
-                                transaction.replace(R.id.fragment_container, newFragment, StartWindowView.TAG);
-                                transaction.commit();
-                                supportInvalidateOptionsMenu();
+                        }
+                        if (startWindowView == null) {
+                            StartWindowView newFragment = new StartWindowView();
+                            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                            transaction.replace(R.id.fragment_container, newFragment, StartWindowView.TAG);
+                            if (!SawimApplication.isManyPane()) {
+                                transaction.addToBackStack(null);
                             }
+                            transaction.commit();
+                            supportInvalidateOptionsMenu();
                         }
                     } else {
                         startActivity(new Intent(getBaseContext(), AccountsListActivity.class));
                     }
                 } else {
+                    Toast.makeText(SawimApplication.getContext(), R.string.press_menu_for_connect, Toast.LENGTH_LONG).show();
                     if (startWindowView != null)
-                        fragmentManager.popBackStack();
+                        getSupportFragmentManager().popBackStack();
                 }
             }
         });
@@ -208,6 +201,11 @@ public class SawimActivity extends BaseActivity implements OnAccountsLoaded {
         super.onResume();
         SawimApplication.maximize();
         handleIntent();
+        if (RosterHelper.getInstance().isAccountsLoaded) {
+            onAccountsLoaded();
+        } else {
+            RosterHelper.getInstance().setOnAccountsLoaded(this);
+        }
         if (!isOpenNewChat && SawimApplication.isManyPane()) openChat(null, null);
         if (SawimApplication.checkPlayServices) {
             RosterHelper.getInstance().autoConnect();
@@ -218,6 +216,7 @@ public class SawimActivity extends BaseActivity implements OnAccountsLoaded {
     public void onPause() {
         super.onPause();
         SawimApplication.minimize();
+        RosterHelper.getInstance().setOnAccountsLoaded(null);
     }
 
     @Override

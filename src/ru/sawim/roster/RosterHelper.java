@@ -7,6 +7,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import ru.sawim.SawimException;
+import ru.sawim.activities.AccountsListActivity;
 import ru.sawim.activities.SawimActivity;
 import ru.sawim.comm.Util;
 import ru.sawim.listener.OnAccountsLoaded;
@@ -121,16 +122,17 @@ public final class RosterHelper {
         }
     }
 
+    public boolean isAccountsLoaded;
     public void loadAccounts() {
         int count = getProtocolCount();
         for (int i = 0; i < count; ++i) {
             Protocol protocol = getProtocol(i);
             protocol.load();
         }
+        isAccountsLoaded = true;
         if (accountsLoaded != null) {
             accountsLoaded.onAccountsLoaded();
         }
-        SawimApplication.actionQueue.put(SawimActivity.ACTION_ACC_LOADED, SawimActivity.ACTION_ACC_LOADED);
     }
 
     private void addProtocol(Profile account, boolean load) {
@@ -227,10 +229,7 @@ public final class RosterHelper {
 
     public void activateWithMsg(final Protocol protocol, final SawimException e) {
         if (e.getErrorCode() == 111) {
-            Intent intent = new Intent(SawimApplication.getContext(), SawimActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            intent.setAction(SawimActivity.ACTION_SHOW_LOGIN_WINDOW);
-            SawimApplication.getContext().startActivity(intent);
+            showLoginWindow();
         }
         SawimApplication.getInstance().getUiHandler().post(new Runnable() {
             @Override
@@ -239,6 +238,13 @@ public final class RosterHelper {
             }
         });
         updateRoster();
+    }
+
+    public void showLoginWindow() {
+        Intent intent = new Intent(SawimApplication.getContext(), AccountsListActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setAction(SawimActivity.ACTION_SHOW_LOGIN_WINDOW);
+        SawimApplication.getContext().startActivity(intent);
     }
 
     public boolean checkPassword(Protocol protocol) {
@@ -263,11 +269,11 @@ public final class RosterHelper {
         Protocol protocol = getProtocol(profile);
         Log.e("autoConnect", protocol.isConnected() + " " + protocol.isConnecting() + " " + protocol.getConnectingProgress() + " " + profile.isConnected());
         if (protocol != null && (protocol.isConnected() || protocol.isConnecting())) return;
-        if (checkPassword(protocol)) {
+        //if (checkPassword(protocol)) {
             if (profile.isConnected()) {
                 protocol.connect();
             }
-        }
+        //}
     }
 
     public boolean isConnected() {
@@ -523,10 +529,10 @@ public final class RosterHelper {
     public boolean protocolMenuItemSelected(BaseActivity activity, Protocol p, int idItem) {
         switch (idItem) {
             case RosterHelper.MENU_CONNECT:
-                if (checkPassword(p)) {
+                //if (checkPassword(p)) {
                     SawimApplication.getInstance().setStatus(p, (p.isConnected() || p.isConnecting())
                             ? StatusInfo.STATUS_OFFLINE : StatusInfo.STATUS_ONLINE, "");
-                }
+                //}
                 return true;
             case RosterHelper.MENU_STATUS:
                 new StatusesView().init(p, StatusesView.ADAPTER_STATUS).show(activity.getSupportFragmentManager(), "change-status");

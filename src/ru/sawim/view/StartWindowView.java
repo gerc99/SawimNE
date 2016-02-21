@@ -1,15 +1,23 @@
 package ru.sawim.view;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 
 import protocol.Profile;
+import protocol.Protocol;
 import protocol.StatusInfo;
+import protocol.xmpp.Jid;
+import protocol.xmpp.Xmpp;
+import protocol.xmpp.XmppChangePassword;
 import protocol.xmpp.XmppRegistration;
 import ru.sawim.Options;
 import ru.sawim.R;
@@ -33,7 +41,7 @@ public class StartWindowView extends Fragment {
     public static final String TAG = "StartWindowView";
 
     OnAddListener addListener;
-    int accountID;
+    int accountID = -1;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -51,14 +59,96 @@ public class StartWindowView extends Fragment {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.start_window, container, false);
 
-        final boolean isEdit = accountID > -1;
+        final boolean isEdit = RosterHelper.getInstance().getProtocolCount() > 0;
+        final Button buttonChangePass = (Button) v.findViewById(R.id.change_password_btn);
+        buttonChangePass.setVisibility(isEdit ? View.VISIBLE : View.GONE);
+        buttonChangePass.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LinearLayout linear = new LinearLayout(getActivity());
+                final EditText curPassword = new EditText(getActivity());
+                final EditText newPassword = new EditText(getActivity());
+                final AlertDialog.Builder passwordAlert = new AlertDialog.Builder(getActivity());
+                final AlertDialog.Builder warning = new AlertDialog.Builder(getActivity());
+
+                curPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                newPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+
+                linear.setOrientation(LinearLayout.VERTICAL);
+                linear.addView(curPassword);
+                linear.addView(newPassword);
+
+                passwordAlert.setTitle(R.string.change_password);
+                passwordAlert.setView(linear);
+
+                curPassword.setHint(R.string.current_password);
+                newPassword.setHint(R.string.new_password);
+
+                warning.setTitle(R.string.warning);
+                warning.setCancelable(true);
+                warning.setNegativeButton(android.R.string.cancel, null);
+                Protocol p = RosterHelper.getInstance().getProtocol(accountID);
+
+                if (!p.isConnected()) {
+                    warning.setMessage(R.string.connect_first);
+                    warning.show();
+                    return;
+                }
+
+                passwordAlert.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        //Do nothing here because we override this button later to change the close behaviour.
+                        //However, we still need this because on older versions of Android unless we
+                        //pass a handler the button doesn't get instantiated
+                    }
+                });
+                passwordAlert.setNegativeButton(android.R.string.cancel, null);
+                final AlertDialog dialog = passwordAlert.create();
+                dialog.show();
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        Protocol p = RosterHelper.getInstance().getProtocol(accountID);
+                        String curPasswordStr = curPassword.getText().toString();
+                        String newPasswordStr = newPassword.getText().toString();
+                        String oldPassword = p.getPassword();
+
+                        if (!curPasswordStr.equals(oldPassword)) {
+                            curPassword.setError(getString(R.string.passwords_mismatch));
+                        }
+                        else if ( newPasswordStr.isEmpty() )  {
+                            newPassword.setError(getString(R.string.non_empty));
+                        }
+                        else {
+                            XmppChangePassword changer = new XmppChangePassword();
+                            String jid = p.getUserId();
+                            String domain = Jid.getDomain(jid);
+                            String username = Jid.getNick(jid);
+                            String xml = changer.getXml(domain, username, newPasswordStr);
+                            changer.sendXml(xml, (Xmpp) RosterHelper.getInstance().getProtocol(accountID));
+                            Profile account = Options.getAccount(accountID);
+                            account.password = newPasswordStr;
+                            Options.setAccount(accountID, account);
+                            dialog.dismiss(); // shall we do this?
+                            warning.setMessage(R.string.passwords_changed);
+                            warning.show();
+                        }
+                    }
+                });
+            }
+        });
         final EditText editLogin = (EditText) v.findViewById(R.id.edit_login);
         final EditText editPass = (EditText) v.findViewById(R.id.edit_password);
         final Button buttonOk = (Button) v.findViewById(R.id.ButtonOK);
         if (isEdit) {
             final Profile account = Options.getAccount(accountID);
             getActivity().setTitle(R.string.acc_edit);
-            editLogin.setText(account.userId);
+            editLogin.setText(account.userId.substring(0, account.userId.indexOf('@')));
             editPass.setText(account.password);
             buttonOk.setText(R.string.save);
         } else {
@@ -93,7 +183,7 @@ public class StartWindowView extends Fragment {
                         addAccount(Options.getAccountCount() + 1, account);
                     }
                     SawimApplication.getInstance().setStatus(RosterHelper.getInstance().getProtocol(account), StatusInfo.STATUS_ONLINE, "");
-                    getFragmentManager().popBackStack();
+                    back();
 
                     if (addListener != null)
                         addListener.onAdd();
@@ -125,15 +215,6 @@ public class StartWindowView extends Fragment {
     public void onResume() {
         super.onResume();
         ((BaseActivity) getActivity()).resetBar(JLocale.getString(R.string.app_name));
-        boolean isEdit = accountID > -1;
-        if (!isEdit) {
-            if (RosterHelper.getInstance().getProtocolCount() > 0) {
-                ((BaseActivity) getActivity()).recreateActivity();
-            } else {
-                if (SawimApplication.isManyPane())
-                    getActivity().getSupportFragmentManager().popBackStack();
-            }
-        }
         getActivity().supportInvalidateOptionsMenu();
     }
 
@@ -143,6 +224,10 @@ public class StartWindowView extends Fragment {
     }
 
     private void back() {
+        if (accountID != -1) {
+            getActivity().finish();
+            return;
+        }
         if (SawimApplication.isManyPane())
             ((SawimActivity) getActivity()).recreateActivity();
         else
