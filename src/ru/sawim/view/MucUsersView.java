@@ -9,7 +9,9 @@ import protocol.ContactMenu;
 import protocol.Protocol;
 import protocol.xmpp.*;
 import ru.sawim.R;
+import ru.sawim.SawimApplication;
 import ru.sawim.activities.BaseActivity;
+import ru.sawim.activities.SawimActivity;
 import ru.sawim.models.MucUsersAdapter;
 import ru.sawim.view.menu.MyMenu;
 import ru.sawim.widget.recyclerview.decoration.RecyclerItemClickListener;
@@ -23,13 +25,11 @@ import ru.sawim.widget.recyclerview.decoration.RecyclerItemClickListener;
  */
 public class MucUsersView implements RecyclerItemClickListener.OnItemClickListener, View.OnTouchListener {
 
-    private ChatView chatView;
     private TextBoxView banTextbox;
     private TextBoxView kikTextbox;
     private boolean isLongClick = false;
 
     public void show(final ChatView chatView, RecyclerView nickList) {
-        this.chatView = chatView;
         final Protocol protocol = chatView.getCurrentChat().getProtocol();
         final XmppServiceContact xmppServiceContact = (XmppServiceContact) chatView.getCurrentChat().getContact();
         final BaseActivity activity = (BaseActivity) chatView.getActivity();
@@ -193,6 +193,13 @@ public class MucUsersView implements RecyclerItemClickListener.OnItemClickListen
     @Override
     public void onItemClick(View childView, int position) {
         if (isLongClick) return;
+        SawimActivity activity = (SawimActivity) childView.getContext();
+        ChatView chatView;
+        if (SawimApplication.isManyPane()) {
+            chatView = (ChatView) activity.getSupportFragmentManager().findFragmentById(R.id.chat_fragment);
+        } else {
+            chatView = (ChatView) activity.getSupportFragmentManager().findFragmentByTag(ChatView.TAG);
+        }
         MucUsersAdapter usersAdapter = chatView.getMucUsersAdapter();
         final Object o = usersAdapter.getItem(position);
         chatView.hasBack();
@@ -206,11 +213,16 @@ public class MucUsersView implements RecyclerItemClickListener.OnItemClickListen
     @Override
     public void onItemLongPress(View childView, int position) {
         isLongClick = true;
-
+        final SawimActivity activity = (SawimActivity) childView.getContext();
+        final ChatView chatView;
+        if (SawimApplication.isManyPane()) {
+            chatView = (ChatView) activity.getSupportFragmentManager().findFragmentById(R.id.chat_fragment);
+        } else {
+            chatView = (ChatView) activity.getSupportFragmentManager().findFragmentByTag(ChatView.TAG);
+        }
         final Protocol protocol = chatView.getCurrentChat().getProtocol();
         final XmppServiceContact xmppServiceContact = (XmppServiceContact) chatView.getCurrentChat().getContact();
         MucUsersAdapter usersAdapter = chatView.getMucUsersAdapter();
-        final BaseActivity activity = (BaseActivity) chatView.getActivity();
         final Object o = usersAdapter.getItem(position);
         if (o instanceof String) return;
         final String nick = usersAdapter.getCurrentSubContact(o);
