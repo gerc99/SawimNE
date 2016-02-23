@@ -28,7 +28,7 @@ public class CustomPagerAdapter extends PagerAdapter {
     @Override
     public CharSequence getPageTitle(int position) {
         String title = "";
-        if (pagesList.size() > 0)
+        if (!pagesList.isEmpty())
             title = (String) pagesList.get(position).getTag();
         return title;
     }

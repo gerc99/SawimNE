@@ -58,7 +58,7 @@ public final class Answerer implements FormListener {
         list.setOnBuildContextMenu(new VirtualList.OnBuildContextMenu() {
             @Override
             public void onCreateContextMenu(ContextMenu menu, int listItem) {
-                if (dictionary.size() > 0) {
+                if (!dictionary.isEmpty()) {
                     menu.add(Menu.FIRST, MENU_EDIT, 2, JLocale.getString(R.string.edit));
                     menu.add(Menu.FIRST, MENU_DELETE, 2, JLocale.getString(R.string.delete));
                 }
@@ -147,7 +147,7 @@ public final class Answerer implements FormListener {
         }
         storage.close();
         DebugLog.println("answerer load: " + dictionary.size() + " items");
-        if (0 == dictionary.size()) {
+        if (dictionary.isEmpty()) {
             dictionary.addElement("Hello=Hi. :-)");
             dictionary.addElement("Hi=H1 :-).");
             save();
@@ -158,7 +158,7 @@ public final class Answerer implements FormListener {
         BlobStorage storage = new BlobStorage(STORAGE_NAME);
         storage.delete();
         try {
-            if (0 == dictionary.size()) {
+            if (dictionary.isEmpty()) {
                 return;
             }
             storage.open();

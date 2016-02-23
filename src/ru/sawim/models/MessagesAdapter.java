@@ -160,7 +160,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
     }
 
     public MessData getItem(int i) {
-        if (items.size() == 0 || (items.size() <= i)) return null;
+        if (items.isEmpty() || (items.size() <= i)) return null;
         return items.get(i);
     }
 

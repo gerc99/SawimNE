@@ -167,7 +167,7 @@ final class Socket implements Runnable {
             return readObject();
         } else {
             Object readObject = null;
-            if (0 < read.size()) {
+            if (!read.isEmpty()) {
                 try {
                     readObject = read.take();
                 } catch (InterruptedException e) {
