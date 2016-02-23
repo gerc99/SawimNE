@@ -64,7 +64,7 @@ public class ImageCache {
                                     } catch (FileNotFoundException e) {
                                         e.printStackTrace();
                                     }
-                                    byte fileContent[] = new byte[(int) file.length()];
+                                    byte[] fileContent = new byte[(int) file.length()];
                                     try {
                                         if (inputStream != null) {
                                             inputStream.read(fileContent);

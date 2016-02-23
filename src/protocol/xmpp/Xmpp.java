@@ -746,7 +746,7 @@ public final class Xmpp extends Protocol implements FormListener {
     private static final int REASON_INVITE = 9;
 
     public String onlineConference(ConcurrentHashMap<String, Contact> contacts) {
-        String list[] = new String[contacts.size()];
+        String[] list = new String[contacts.size()];
         String items = "";
         for (int i = 1; i < contacts.values().size(); ++i) {
             XmppContact c = (XmppContact) contacts.values().iterator().next();

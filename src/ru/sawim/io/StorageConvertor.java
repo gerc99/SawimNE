@@ -130,7 +130,7 @@ public final class StorageConvertor {
     private static byte[] readFile(String recordFileName) {
         Context context = SawimApplication.getContext();
         DataInputStream dis = null;
-        byte data[] = new byte[0];
+        byte[] data = new byte[0];
         try {
             dis = new DataInputStream(context.openFileInput(recordFileName));
             dis.readInt(); // Record ID
