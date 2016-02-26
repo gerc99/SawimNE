@@ -12,7 +12,7 @@
     <color name="background">#3A3A3A</color>
 
     <color name="text">#ffe6e6e6</color>
-    <color name="item_selected">#ffe6e6e6</color>
+    <color name="item_selected">#607D8B</color>
     <color name="param_value">#ffe6e6e6</color>
     <color name="chat_in_msg_text">#ffe6e6e6</color>
     <color name="chat_out_msg_text">#ffe6e6e6</color>
