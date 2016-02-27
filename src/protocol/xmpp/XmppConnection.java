@@ -1,6 +1,8 @@
 package protocol.xmpp;
 
 import android.support.v4.util.Pair;
+import android.util.Log;
+
 import protocol.*;
 import protocol.net.ClientConnection;
 import ru.sawim.SawimApplication;
@@ -179,6 +181,14 @@ public final class XmppConnection extends ClientConnection {
     }
 
     protected final void loggedOut() {
+        if (!getXmppSession().isEmpty()) {
+            try {
+                write("<iq type='set' id='123'><disable xmlns='p1:push'/></iq>");
+                //Log.e("loggedOut", readXmlNode(true).toString());
+            } catch (SawimException e) {
+                e.printStackTrace();
+            }
+        }
         try {
             write("<presence type='unavailable'><status>Logged out</status></presence>");
             write("</stream:stream>");

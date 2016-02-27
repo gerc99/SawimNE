@@ -76,7 +76,12 @@ public class SawimService extends Service {
                         final Protocol protocol = (Protocol) ((Object[]) msg.obj)[0];
                         final int statusIndex = (int) ((Object[]) msg.obj)[1];
                         final String statusMsg = (String) ((Object[]) msg.obj)[2];
-                        protocol.setStatus(statusIndex, statusMsg, true);
+                        SawimApplication.getExecutor().execute(new Runnable() {
+                            @Override
+                            public void run() {
+                                protocol.setStatus(statusIndex, statusMsg, true);
+                            }
+                        });
                         break;
                 }
             } catch (Exception e) {

@@ -42,7 +42,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * Time: 17:03
  * To change this template use File | Settings | File Templates.
  */
-public class RosterAdapter extends RecyclerView.Adapter<RosterAdapter.ViewHolder> implements View.OnClickListener, View.OnLongClickListener {
+public class RosterAdapter extends RecyclerView.Adapter<RosterAdapter.ViewHolder> implements View.OnClickListener {
 
     private static final int ITEM_PROTOCOL = 0;
     private static final int ITEM_GROUP = 1;
@@ -139,7 +139,6 @@ public class RosterAdapter extends RecyclerView.Adapter<RosterAdapter.ViewHolder
         View convertView = holder.itemView;
         convertView.setTag(position);
         convertView.setOnClickListener(itemClickListener);
-        convertView.setOnLongClickListener(this);
         if (type == RosterHelper.ACTIVE_CONTACTS) {
             RosterItemView rosterItemView = (RosterItemView) holder.itemView;
             rosterItemView.setNull();
@@ -193,7 +192,6 @@ public class RosterAdapter extends RecyclerView.Adapter<RosterAdapter.ViewHolder
     public void onViewRecycled(ViewHolder holder) {
         View convertView = holder.itemView;
         convertView.setOnClickListener(null);
-        convertView.setOnLongClickListener(null);
         super.onViewRecycled(holder);
     }
 
@@ -522,15 +520,11 @@ public class RosterAdapter extends RecyclerView.Adapter<RosterAdapter.ViewHolder
         RosterHelper.getInstance().showProtocolMenu((BaseActivity) v.getContext(), ((ProtocolBranch) v.getTag()).getProtocol());
     }
 
-    @Override
-    public boolean onLongClick(View v) {
-        return false;
-    }
-
     static class ViewHolder extends RecyclerView.ViewHolder {
 
         public ViewHolder(View itemView) {
             super(itemView);
+            itemView.setLongClickable(true);
         }
     }
 }

@@ -31,7 +31,7 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHolder>
-        implements View.OnLongClickListener, View.OnClickListener {
+        implements View.OnClickListener {
 
     private List<MessData> items;
 
@@ -85,7 +85,6 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
         textLinkClick.setContact(contact.getProtocol().getUserId(), contact.getUserId());
         item.setOnTextLinkClickListener(textLinkClick);
         item.setOnClickListener(this);
-        item.setOnLongClickListener(this);
 
         MessData mData = getItem(index);
         String nick = mData.getNick();
@@ -145,7 +144,6 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
         MessageItemView item = (MessageItemView) holder.itemView;
         item.setOnTextLinkClickListener(null);
         item.setOnClickListener(null);
-        item.setOnLongClickListener(null);
         super.onViewRecycled(holder);
     }
 
@@ -207,13 +205,6 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
     }
 
     @Override
-    public boolean onLongClick(View v) {
-        if (itemClickListener != null)
-            itemClickListener.onItemLongClick(v, (Integer) v.getTag());
-        return false;
-    }
-
-    @Override
     public void onClick(View v) {
         if (itemClickListener != null)
             itemClickListener.onItemClick(v, (Integer) v.getTag());
@@ -227,6 +218,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
 
         public ViewHolder(View itemView) {
             super(itemView);
+            itemView.setLongClickable(true);
         }
     }
 
@@ -242,6 +234,5 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
 
     public interface OnItemClickListener {
         void onItemClick(View v, int position);
-        void onItemLongClick(View v, int position);
     }
 }

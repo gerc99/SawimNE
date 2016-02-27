@@ -74,8 +74,7 @@ public class SearchContactFragment extends SawimFragment
         listView.setAdapter(rosterAdapter);
         registerForContextMenu(listView);
         rosterAdapter.setOnItemClickListener(this);
-        FrameLayout.LayoutParams listViewLP = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT);
-        listViewLP.gravity = Gravity.BOTTOM;
+        FrameLayout.LayoutParams listViewLP = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
         listView.setLayoutParams(listViewLP);
 
         ProgressBar progressBar = new ProgressBar(getActivity(), null, android.R.attr.progressBarStyleHorizontal);

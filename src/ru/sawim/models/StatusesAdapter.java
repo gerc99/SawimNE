@@ -26,15 +26,13 @@ import ru.sawim.view.StatusesView;
  */
 public class StatusesAdapter extends BaseAdapter {
 
-    private Protocol protocol;
     StatusInfo statusInfo;
 
     private int type;
     private int selectedItem;
 
     public StatusesAdapter(Protocol p, int type) {
-        protocol = p;
-        statusInfo = protocol.getStatusInfo();
+        statusInfo = p.getStatusInfo();
         this.type = type;
     }
 

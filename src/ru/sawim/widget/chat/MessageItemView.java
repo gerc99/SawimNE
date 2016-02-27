@@ -196,6 +196,8 @@ public class MessageItemView extends View {
 
     public void setLinks(List<String> links) {
         image = null;
+        repaint();
+        invalidate();
 
         String imageLink = getFirstImageLink(links);
         if (imageLink == null) {
@@ -209,6 +211,7 @@ public class MessageItemView extends View {
                  public void onResourceReady(Bitmap resource, GlideAnimation glideAnimation) {
                      image = resource;
                      repaint();
+                     invalidate();
                  }
              });
     }

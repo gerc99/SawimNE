@@ -161,8 +161,8 @@ public final class Xmpp extends Protocol implements FormListener {
     protected final void userCloseConnection() {
         //rejoinList.removeAllElements();
         if (null != connection) {
-            connection.getXmppSession().resetSessionData();
             connection.loggedOut();
+            connection.getXmppSession().resetSessionData();
         }
     }
 

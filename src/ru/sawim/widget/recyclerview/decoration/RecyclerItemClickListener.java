@@ -79,6 +79,7 @@ public class RecyclerItemClickListener implements RecyclerView.OnItemTouchListen
         @Override
         public boolean onSingleTapUp(MotionEvent event) {
             if (childView != null) {
+                childView.setPressed(true);
                 listener.onItemClick(childView, childViewPosition);
                 childView.playSoundEffect(SoundEffectConstants.CLICK);
             }

@@ -187,7 +187,7 @@ public class SawimActivity extends BaseActivity implements OnAccountsLoaded {
                         startActivity(new Intent(getBaseContext(), AccountsListActivity.class));
                     }
                 } else {
-                    Toast.makeText(SawimApplication.getContext(), R.string.press_menu_for_connect, Toast.LENGTH_LONG).show();
+                    //Toast.makeText(SawimApplication.getContext(), R.string.press_menu_for_connect, Toast.LENGTH_LONG).show();
                     if (startWindowView != null)
                         getSupportFragmentManager().popBackStack();
                 }

@@ -24,7 +24,6 @@ import ru.sawim.R;
 public class MyListView extends RecyclerView {
 
     private RecyclerContextMenuInfo mContextMenuInfo;
-    private int height;
 
     public MyListView(Context context) {
         super(context);
@@ -83,44 +82,6 @@ public class MyListView extends RecyclerView {
         final public int position;
         final public long id;
     }
-
-    @Override
-    protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        super.onLayout(changed, l, t, r, b);
-        int delta = (b - t) - height;
-        height = b - t;
-        if (delta < 0) {
-            scrollBy(0, -delta);
-        }
-    }
-
-    /*@Override
-    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-        View v = getChildAt(getChildCount() - 1);
-        if (v != null && height > 0 && changed && ((bottom - top) < height)) {
-            int b = height - v.getTop();
-            final int scrollTo = getLastVisiblePosition();
-            super.onLayout(changed, left, top, right, bottom);
-            final int offset = (bottom - top) - b;
-            post(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        setSelectionFromTop(scrollTo, offset - getPaddingTop());
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-        } else {
-            try {
-                super.onLayout(changed, left, top, right, bottom);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        height = (bottom - top);
-    }*/
 
     /**
      * Check if this view can be scrolled vertically in a certain direction.

@@ -1391,11 +1391,6 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     }
 
     @Override
-    public void onItemLongClick(View v, int position) {
-
-    }
-
-    @Override
     public void onLoadItems(int i) {
         if (i == 5) {
             canLoadByScroll = false;

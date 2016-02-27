@@ -98,7 +98,7 @@ public class RosterView extends SawimFragment implements View.OnClickListener, O
         listView.setAdapter(rosterAdapter);
         registerForContextMenu(listView);
         rosterAdapter.setOnItemClickListener(this);
-        FrameLayout.LayoutParams listViewLP = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+        FrameLayout.LayoutParams listViewLP = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
         listView.setLayoutParams(listViewLP);
 
         FloatingActionButton fab = new FloatingActionButton(getActivity());
