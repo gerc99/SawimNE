@@ -87,6 +87,7 @@ public class MessageItemView extends View {
             highlightPaint.setAntiAlias(true);
         }
         highlightPaint.setColor(Scheme.isBlack() ? 0xFF4C4C4C : Color.WHITE);
+        setBackgroundResource(R.drawable.list_selector);
     }
 
     public void setTextSize(int size) {
@@ -238,7 +239,7 @@ public class MessageItemView extends View {
     }
 
     @Override
-    public void draw(Canvas canvas) {
+    public void onDraw(Canvas canvas) {
         int width = getWidth();
         int stopX = width - getPaddingRight();
         if (isShowDivider) {

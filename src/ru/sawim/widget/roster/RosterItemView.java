@@ -58,6 +58,7 @@ public class RosterItemView extends View {
         super(context);
         setPadding(PADDING_W, PADDING_H, PADDING_W, PADDING_H);
         initPaint();
+        setBackgroundResource(R.drawable.list_selector);
     }
 
     public static void initPaint() {
@@ -186,10 +187,6 @@ public class RosterItemView extends View {
         }
     }
 
-    @Override
-    public void buildDrawingCache(boolean autoScale) {
-    }
-
     private Bitmap getRoundedBitmap(Bitmap bitmap, int borderWidth, int borderColor) {
         int bitmapWidth = bitmap.getWidth();
         int bitmapHeight = bitmap.getHeight();
@@ -211,7 +208,7 @@ public class RosterItemView extends View {
     }
 
     @Override
-    public void draw(@NonNull Canvas canvas) {
+    public void onDraw(@NonNull Canvas canvas) {
         if (itemFirstImage != null) {
             Bitmap bitmap;
             if (avatarBorderColor == -1) {
