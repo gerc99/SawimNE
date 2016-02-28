@@ -61,6 +61,7 @@ import ru.sawim.widget.chat.ChatBarView;
 import ru.sawim.widget.chat.ChatInputBarView;
 import ru.sawim.widget.chat.ChatListsView;
 import ru.sawim.widget.chat.ChatViewRoot;
+import ru.sawim.widget.stickyheadersrecyclerview.StickyRecyclerHeadersDecoration;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -546,6 +547,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
         final MessagesAdapter adapter = new MessagesAdapter();
         final MyListView chatListView = chatViewLayout.getChatListsView().getChatListView();
         chatListView.setAdapter(adapter);
+        chatListView.addItemDecoration(new StickyRecyclerHeadersDecoration(adapter));
 
         setHasOptionsMenu(true);
         ((LinearLayoutManager) chatListView.getLayoutManager()).setStackFromEnd(true);

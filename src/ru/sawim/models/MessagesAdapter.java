@@ -2,6 +2,7 @@ package ru.sawim.models;
 
 import android.graphics.Typeface;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -17,11 +18,13 @@ import ru.sawim.roster.RosterHelper;
 import ru.sawim.text.OnTextLinkClick;
 import ru.sawim.widget.Util;
 import ru.sawim.widget.chat.MessageItemView;
+import ru.sawim.widget.stickyheadersrecyclerview.StickyRecyclerHeadersAdapter;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created with IntelliJ IDEA.
@@ -31,7 +34,7 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHolder>
-        implements View.OnClickListener {
+        implements StickyRecyclerHeadersAdapter<RecyclerView.ViewHolder>, View.OnClickListener {
 
     private List<MessData> items;
 
@@ -45,7 +48,12 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
     public MessagesAdapter() {
         items = new ArrayList<>();
         textLinkClick = new OnTextLinkClick();
-        //setHasStableIds(true);
+        setHasStableIds(true);
+    }
+
+    public long getItemId(int position) {
+        MessData messData = items.get(position);
+        return messData.getTime() + messData.getText().length();
     }
 
     public List<MessData> getItems() {
@@ -147,8 +155,23 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
     }
 
     @Override
-    public long getItemId(int position) {
-        return super.getItemId(position);
+    public long getHeaderId(int position) {
+        MessData current = getItem(position);
+        return TimeUnit.MILLISECONDS.toDays(current.getTime());
+    }
+
+    @Override
+    public RecyclerView.ViewHolder onCreateHeaderViewHolder(ViewGroup parent) {
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.chat_view_header, parent, false);
+        return new RecyclerView.ViewHolder(view) {
+        };
+    }
+
+    @Override
+    public void onBindHeaderViewHolder(RecyclerView.ViewHolder holder, int position) {
+        TextView textView = (TextView) holder.itemView;
+        textView.setText(formatDate(getItem(position).getTime()));
     }
 
     @Override
@@ -160,25 +183,6 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
         if (items.size() == 0 || (items.size() <= i)) return null;
         return items.get(i);
     }
-
-    /*@Override
-    public long getHeaderId(int position) {
-        MessData next;
-        if (position > 1) {
-            next = getItem(position - 1);
-            if (next != null) {
-                MessData current = getItem(position);
-                if (current != null) {
-                    if (!ru.sawim.comm.Util.compareDate(next.getTime(), current.getTime())) {
-                        return current.getTime() / 1000 - 24 * 60 * 60;
-                    }
-                }
-            }
-        } else {
-            return getItem(0).getTime() / 1000 - 24 * 60 * 60;
-        }
-        return -1;
-    }*/
 
     private static final SimpleDateFormat chatDate = new SimpleDateFormat("d MMMM");
     private static final SimpleDateFormat chatFullDate = new SimpleDateFormat("d, MMMM yyyy");
