@@ -95,7 +95,6 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
         }
         item.setLinkTextColor(Scheme.getColor(R.attr.link));
         item.setTypeface(mData.isHighLight() ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT);
-        item.setBackgroundColor(0);
         item.setLayout(mData.layout);
         if (mData.isMe() || mData.isPresence()) {
             item.setBackgroundIndex(MessageItemView.BACKGROUND_NONE);
@@ -218,7 +217,6 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
 
         public ViewHolder(View itemView) {
             super(itemView);
-            itemView.setLongClickable(true);
         }
     }
 

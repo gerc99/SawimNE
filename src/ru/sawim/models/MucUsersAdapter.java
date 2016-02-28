@@ -245,11 +245,11 @@ public class MucUsersAdapter extends RecyclerView.Adapter<MucUsersAdapter.ViewHo
         rosterItemView.itemNameColor = Scheme.getColor(R.attr.text);
         rosterItemView.itemNameFont = Typeface.DEFAULT;
         rosterItemView.itemName = c.resource;
-        if (SawimApplication.showStatusLine) {
-            String statusMessage = c.statusText == null ? protocol.getStatusInfo().getName(c.status) : c.statusText;
-            rosterItemView.itemDescColor = Scheme.getColor(R.attr.contact_status);
-            rosterItemView.itemDesc = statusMessage;
-        }
+
+        String statusMessage = c.statusText == null ? protocol.getStatusInfo().getName(c.status) : c.statusText;
+        rosterItemView.itemDescColor = Scheme.getColor(R.attr.contact_status);
+        rosterItemView.itemDesc = statusMessage;
+
         Icon ic = protocol.clientInfo.getIcon(c.client);
         if (ic != null && !SawimApplication.hideIconsClient) {
             rosterItemView.itemFifthImage = ic.getImage();

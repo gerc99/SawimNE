@@ -246,7 +246,10 @@ public class RosterAdapter extends RecyclerView.Adapter<RosterAdapter.ViewHolder
         items.clear();
         if (type == RosterHelper.ACTIVE_CONTACTS) {
             for (int i = 0; i < roster.getProtocolCount(); ++i) {
-                ChatHistory.instance.addLayerToListOfChats(roster.getProtocol(i), items, i);
+                Protocol p = roster.getProtocol(i);
+                ChatHistory.instance.addLayerToListOfChats(p, items, i);
+                if (p.oldContactIdWithMessage == null)
+                    ChatHistory.instance.sort();
             }
         } else {
             if (count > 1) {
@@ -282,10 +285,8 @@ public class RosterAdapter extends RecyclerView.Adapter<RosterAdapter.ViewHolder
     }
 
     public void rebuildFlatItemsWG(Protocol p, List<TreeNode> list) {
-        boolean hideOffline = RosterHelper.getInstance().getCurrPage() == RosterHelper.ONLINE_CONTACTS;
         int contactCounter;
         int onlineContactCounter;
-        boolean all = !hideOffline;
         Enumeration<Group> e = p.getGroupItems().elements();
         while (e.hasMoreElements()) {
             Group group = e.nextElement();
@@ -296,7 +297,7 @@ public class RosterAdapter extends RecyclerView.Adapter<RosterAdapter.ViewHolder
             List<Contact> contacts = group.getContacts();
             int contactsSize = contacts.size();
             for (Contact contact : contacts) {
-                if (all || contact.isVisibleInContactList()) {
+                if (contact.isVisibleInContactList()) {
                     if (newGroup.isExpanded()) {
                         list.add(contact);
                     }
@@ -305,7 +306,7 @@ public class RosterAdapter extends RecyclerView.Adapter<RosterAdapter.ViewHolder
                 if (contact.isOnline())
                     ++onlineContactCounter;
             }
-            if (hideOffline && (0 == contactCounter)) {
+            if (0 == contactCounter) {
                 list.remove(list.size() - 1);
             }
             group.updateGroupData(contactsSize, onlineContactCounter);
@@ -318,7 +319,7 @@ public class RosterAdapter extends RecyclerView.Adapter<RosterAdapter.ViewHolder
         onlineContactCounter = 0;
         int contactsSize = contacts.size();
         for (Contact contact : contacts) {
-            if (all || contact.isVisibleInContactList()) {
+            if (contact.isVisibleInContactList()) {
                 if (group.isExpanded()) {
                     list.add(contact);
                 }
@@ -335,11 +336,9 @@ public class RosterAdapter extends RecyclerView.Adapter<RosterAdapter.ViewHolder
     }
 
     public void rebuildFlatItemsWOG(Protocol p, List<TreeNode> list) {
-        boolean hideOffline = RosterHelper.getInstance().getCurrPage() == RosterHelper.ONLINE_CONTACTS;
-        boolean all = !hideOffline;
         ConcurrentHashMap<String, Contact> contacts = p.getContactItems();
         for (Contact contact : contacts.values()) {
-            if (all || contact.isVisibleInContactList()) {
+            if (contact.isVisibleInContactList()) {
                 list.add(contact);
             }
         }
@@ -421,11 +420,11 @@ public class RosterAdapter extends RecyclerView.Adapter<RosterAdapter.ViewHolder
         rosterItemView.itemNameFont = item.hasChat() ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT;
         rosterItemView.itemName = (item.subcontactsS() == 0) ?
                     item.getText() : item.getText() + " (" + item.subcontactsS() + ")";
-        if (SawimApplication.showStatusLine) {
-            String statusMessage = roster.getStatusMessage(p, item);
-            rosterItemView.itemDescColor = Scheme.getColor(R.attr.contact_status);
-            rosterItemView.itemDesc = statusMessage;
-        }
+
+        String statusMessage = roster.getStatusMessage(p, item);
+        rosterItemView.itemDescColor = Scheme.getColor(R.attr.contact_status);
+        rosterItemView.itemDesc = statusMessage;
+
         if (Options.getBoolean(JLocale.getString(R.string.pref_users_avatars))) {
             String hash = (item.avatarHash == null || item.avatarHash.isEmpty() ? String.valueOf(item.getName().charAt(0)) : item.avatarHash);
             Bitmap avatar = ImageCache.getInstance().get(avatarsFolder,
@@ -524,7 +523,6 @@ public class RosterAdapter extends RecyclerView.Adapter<RosterAdapter.ViewHolder
 
         public ViewHolder(View itemView) {
             super(itemView);
-            itemView.setLongClickable(true);
         }
     }
 }

@@ -105,6 +105,7 @@ public class SearchContactFragment extends SawimFragment
 
         ActionBar actionBar = ((BaseActivity) getActivity()).getSupportActionBar();
         if (actionBar != null) {
+            actionBar.setIcon(null);
             actionBar.setDisplayShowTitleEnabled(false);
             actionBar.setDisplayUseLogoEnabled(false);
             actionBar.setDisplayHomeAsUpEnabled(true);
@@ -329,30 +330,28 @@ public class SearchContactFragment extends SawimFragment
         if (treeNode.getType() == TreeNode.CONTACT) {
             openChat(((Contact) treeNode).getProtocol(), ((Contact) treeNode), null);
         }
-        if (RosterHelper.getInstance().getCurrPage() != RosterHelper.ACTIVE_CONTACTS) {
-            if (treeNode.getType() == TreeNode.PROTOCOL) {
-                ProtocolBranch group = (ProtocolBranch) treeNode;
-                RosterHelper roster = RosterHelper.getInstance();
-                final int count = roster.getProtocolCount();
-                int currProtocol = 0;
-                for (int i = 0; i < count; ++i) {
-                    Protocol p = roster.getProtocol(i);
-                    if (p == null) return;
-                    ProtocolBranch root = p.getProtocolBranch(i);
-                    if (root.getGroupId() != group.getGroupId()) {
-                        root.setExpandFlag(false);
-                    } else {
-                        currProtocol = i;
-                    }
+        if (treeNode.getType() == TreeNode.PROTOCOL) {
+            ProtocolBranch group = (ProtocolBranch) treeNode;
+            RosterHelper roster = RosterHelper.getInstance();
+            final int count = roster.getProtocolCount();
+            int currProtocol = 0;
+            for (int i = 0; i < count; ++i) {
+                Protocol p = roster.getProtocol(i);
+                if (p == null) return;
+                ProtocolBranch root = p.getProtocolBranch(i);
+                if (root.getGroupId() != group.getGroupId()) {
+                    root.setExpandFlag(false);
+                } else {
+                    currProtocol = i;
                 }
-                group.setExpandFlag(!group.isExpanded());
-                update();
-                getListView().smoothScrollToPosition(currProtocol);
-            } else if (treeNode.getType() == TreeNode.GROUP) {
-                Group group = RosterHelper.getInstance().getGroupWithContacts((Group) treeNode);
-                group.setExpandFlag(!group.isExpanded());
-                update();
             }
+            group.setExpandFlag(!group.isExpanded());
+            update();
+            getListView().smoothScrollToPosition(currProtocol);
+        } else if (treeNode.getType() == TreeNode.GROUP) {
+            Group group = RosterHelper.getInstance().getGroupWithContacts((Group) treeNode);
+            group.setExpandFlag(!group.isExpanded());
+            update();
         }
     }
 
@@ -361,22 +360,15 @@ public class SearchContactFragment extends SawimFragment
         super.onCreateContextMenu(menu, v, menuInfo);
         MyListView.RecyclerContextMenuInfo contextMenuInfo = (MyListView.RecyclerContextMenuInfo) menuInfo;
         TreeNode treeNode = getRosterAdapter().getItem(contextMenuInfo.position);
-        if (RosterHelper.getInstance().getCurrPage() == RosterHelper.ACTIVE_CONTACTS) {
-            if (treeNode.getType() == TreeNode.CONTACT) {
-                Contact contact = (Contact) treeNode;
-                new ContactMenu(contact.getProtocol(), contact).getContextMenu(menu);
+        if (treeNode.getType() == TreeNode.PROTOCOL) {
+            RosterHelper.getInstance().showProtocolMenu((BaseActivity) getActivity(), ((ProtocolBranch) treeNode).getProtocol());
+        } else if (treeNode.getType() == TreeNode.GROUP) {
+            Protocol p = RosterHelper.getInstance().getProtocol((Group) treeNode);
+            if (p.isConnected()) {
+                new ManageContactListForm(p, (Group) treeNode).showMenu((BaseActivity) getActivity());
             }
-        } else {
-            if (treeNode.getType() == TreeNode.PROTOCOL) {
-                RosterHelper.getInstance().showProtocolMenu((BaseActivity) getActivity(), ((ProtocolBranch) treeNode).getProtocol());
-            } else if (treeNode.getType() == TreeNode.GROUP) {
-                Protocol p = RosterHelper.getInstance().getProtocol((Group) treeNode);
-                if (p.isConnected()) {
-                    new ManageContactListForm(p, (Group) treeNode).showMenu((BaseActivity) getActivity());
-                }
-            } else if (treeNode.getType() == TreeNode.CONTACT) {
-                new ContactMenu(((Contact) treeNode).getProtocol(), (Contact) treeNode).getContextMenu(menu);
-            }
+        } else if (treeNode.getType() == TreeNode.CONTACT) {
+            new ContactMenu(((Contact) treeNode).getProtocol(), (Contact) treeNode).getContextMenu(menu);
         }
     }
 
@@ -385,16 +377,9 @@ public class SearchContactFragment extends SawimFragment
         MyListView.RecyclerContextMenuInfo menuInfo = (MyListView.RecyclerContextMenuInfo) item.getMenuInfo();
         TreeNode treeNode = getRosterAdapter().getItem(menuInfo.position);
         if (treeNode == null) return false;
-        if (RosterHelper.getInstance().getCurrPage() == RosterHelper.ACTIVE_CONTACTS) {
-            if (treeNode.getType() == TreeNode.CONTACT) {
-                Contact contact = (Contact) treeNode;
-                contactMenuItemSelected(contact, item);
-            }
-        } else {
-            if (treeNode.getType() == TreeNode.CONTACT) {
-                contactMenuItemSelected((Contact) treeNode, item);
-                return true;
-            }
+        if (treeNode.getType() == TreeNode.CONTACT) {
+            Contact contact = (Contact) treeNode;
+            contactMenuItemSelected(contact, item);
         }
         return super.onContextItemSelected(item);
     }

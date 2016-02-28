@@ -869,7 +869,6 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
             } else {
                 chatBarLayout.setVisibilityChatsImage(View.VISIBLE);
                 if (!SawimApplication.isManyPane()) {
-                    icMess = icMess.mutate();
                     if (icMess == SawimResources.PERSONAL_MESSAGE_ICON) {
                         icMess.setColorFilter(Scheme.getColor(R.attr.bar_personal_unread_message), PorterDuff.Mode.MULTIPLY);
                     } else {

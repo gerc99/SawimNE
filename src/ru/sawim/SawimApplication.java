@@ -77,7 +77,6 @@ public class SawimApplication extends Application {
     public static boolean returnFromAcc = false;
     private boolean paused = true;
     private static int fontSize;
-    public static boolean showStatusLine;
     public static boolean enableHistory;
     public static int sortType;
     public static boolean hideIconsClient;
@@ -254,7 +253,6 @@ public class SawimApplication extends Application {
     public static void updateOptions() {
         SawimResources.initIcons();
         fontSize = Options.getInt(JLocale.getString(R.string.pref_font_scheme));
-        showStatusLine = Options.getBoolean(JLocale.getString(R.string.pref_show_status_line));
         hideIconsClient = Options.getBoolean(JLocale.getString(R.string.pref_hide_icons_clients));
         showPicturesInChat = Options.getBoolean(JLocale.getString(R.string.pref_show_pictures_in_chat));
         sortType = Options.getInt(R.array.sort_by_array, JLocale.getString(R.string.pref_cl_sort_by));

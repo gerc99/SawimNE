@@ -213,7 +213,6 @@ public class RosterView extends SawimFragment implements View.OnClickListener, O
         if (icMess == null) {
             chatsImage.setVisibility(View.GONE);
         } else {
-            icMess = icMess.mutate();
             if (icMess == SawimResources.PERSONAL_MESSAGE_ICON) {
                 icMess.setColorFilter(Scheme.getColor(R.attr.bar_personal_unread_message), PorterDuff.Mode.MULTIPLY);
             } else {
@@ -367,22 +366,15 @@ public class RosterView extends SawimFragment implements View.OnClickListener, O
         super.onCreateContextMenu(menu, v, menuInfo);
         MyListView.RecyclerContextMenuInfo contextMenuInfo = (MyListView.RecyclerContextMenuInfo) menuInfo;
         TreeNode treeNode = getRosterAdapter().getItem(contextMenuInfo.position);
-        if (RosterHelper.getInstance().getCurrPage() == RosterHelper.ACTIVE_CONTACTS) {
-            if (treeNode.getType() == TreeNode.CONTACT) {
-                Contact contact = (Contact) treeNode;
-                new ContactMenu(contact.getProtocol(), contact).getContextMenu(menu);
+        if (treeNode.getType() == TreeNode.PROTOCOL) {
+            RosterHelper.getInstance().showProtocolMenu((BaseActivity) getActivity(), ((ProtocolBranch) treeNode).getProtocol());
+        } else if (treeNode.getType() == TreeNode.GROUP) {
+            Protocol p = RosterHelper.getInstance().getProtocol((Group) treeNode);
+            if (p.isConnected()) {
+                new ManageContactListForm(p, (Group) treeNode).showMenu((BaseActivity) getActivity());
             }
-        } else {
-            if (treeNode.getType() == TreeNode.PROTOCOL) {
-                RosterHelper.getInstance().showProtocolMenu((BaseActivity) getActivity(), ((ProtocolBranch) treeNode).getProtocol());
-            } else if (treeNode.getType() == TreeNode.GROUP) {
-                Protocol p = RosterHelper.getInstance().getProtocol((Group) treeNode);
-                if (p.isConnected()) {
-                    new ManageContactListForm(p, (Group) treeNode).showMenu((BaseActivity) getActivity());
-                }
-            } else if (treeNode.getType() == TreeNode.CONTACT) {
-                new ContactMenu(((Contact) treeNode).getProtocol(), (Contact) treeNode).getContextMenu(menu);
-            }
+        } else if (treeNode.getType() == TreeNode.CONTACT) {
+            new ContactMenu(((Contact) treeNode).getProtocol(), (Contact) treeNode).getContextMenu(menu);
         }
     }
 
@@ -391,16 +383,9 @@ public class RosterView extends SawimFragment implements View.OnClickListener, O
         MyListView.RecyclerContextMenuInfo menuInfo = (MyListView.RecyclerContextMenuInfo) item.getMenuInfo();
         TreeNode treeNode = getRosterAdapter().getItem(menuInfo.position);
         if (treeNode == null) return false;
-        if (RosterHelper.getInstance().getCurrPage() == RosterHelper.ACTIVE_CONTACTS) {
-            if (treeNode.getType() == TreeNode.CONTACT) {
-                Contact contact = (Contact) treeNode;
-                contactMenuItemSelected(contact, item);
-            }
-        } else {
-            if (treeNode.getType() == TreeNode.CONTACT) {
-                contactMenuItemSelected((Contact) treeNode, item);
-                return true;
-            }
+        if (treeNode.getType() == TreeNode.CONTACT) {
+            contactMenuItemSelected((Contact) treeNode, item);
+            return true;
         }
         return super.onContextItemSelected(item);
     }
@@ -444,52 +429,36 @@ public class RosterView extends SawimFragment implements View.OnClickListener, O
         int position = (int) v.getTag();
         TreeNode treeNode = getRosterAdapter().getItem(position);
         if (getMode() == MODE_SHARE || getMode() == MODE_SHARE_TEXT) {
-            if (RosterHelper.getInstance().getCurrPage() == RosterHelper.ACTIVE_CONTACTS) {
-                if (treeNode.getType() == TreeNode.CONTACT) {
-                    Contact contact = (Contact) treeNode;
-                    sharing(contact.getProtocol(), contact);
-                }
-            } else {
-                if (treeNode.getType() == TreeNode.CONTACT) {
-                    sharing(((Contact) treeNode).getProtocol(), (Contact) treeNode);
-                }
+            if (treeNode.getType() == TreeNode.CONTACT) {
+                sharing(((Contact) treeNode).getProtocol(), (Contact) treeNode);
             }
         } else {
-            if (RosterHelper.getInstance().getCurrPage() == RosterHelper.ACTIVE_CONTACTS) {
-                if (treeNode.getType() == TreeNode.CONTACT) {
-                    Contact contact = (Contact) treeNode;
-                    openChat(contact.getProtocol(), contact, null);
-                }
-            } else {
-                if (treeNode.getType() == TreeNode.CONTACT) {
-                    openChat(((Contact) treeNode).getProtocol(), ((Contact) treeNode), null);
-                }
+            if (treeNode.getType() == TreeNode.CONTACT) {
+                openChat(((Contact) treeNode).getProtocol(), ((Contact) treeNode), null);
             }
         }
-        if (RosterHelper.getInstance().getCurrPage() != RosterHelper.ACTIVE_CONTACTS) {
-            if (treeNode.getType() == TreeNode.PROTOCOL) {
-                ProtocolBranch group = (ProtocolBranch) treeNode;
-                RosterHelper roster = RosterHelper.getInstance();
-                final int count = roster.getProtocolCount();
-                int currProtocol = 0;
-                for (int i = 0; i < count; ++i) {
-                    Protocol p = roster.getProtocol(i);
-                    if (p == null) return;
-                    ProtocolBranch root = p.getProtocolBranch(i);
-                    if (root.getGroupId() != group.getGroupId()) {
-                        root.setExpandFlag(false);
-                    } else {
-                        currProtocol = i;
-                    }
+        if (treeNode.getType() == TreeNode.PROTOCOL) {
+            ProtocolBranch group = (ProtocolBranch) treeNode;
+            RosterHelper roster = RosterHelper.getInstance();
+            final int count = roster.getProtocolCount();
+            int currProtocol = 0;
+            for (int i = 0; i < count; ++i) {
+                Protocol p = roster.getProtocol(i);
+                if (p == null) return;
+                ProtocolBranch root = p.getProtocolBranch(i);
+                if (root.getGroupId() != group.getGroupId()) {
+                    root.setExpandFlag(false);
+                } else {
+                    currProtocol = i;
                 }
-                group.setExpandFlag(!group.isExpanded());
-                update();
-                getListView().smoothScrollToPosition(currProtocol);
-            } else if (treeNode.getType() == TreeNode.GROUP) {
-                Group group = RosterHelper.getInstance().getGroupWithContacts((Group) treeNode);
-                group.setExpandFlag(!group.isExpanded());
-                update();
             }
+            group.setExpandFlag(!group.isExpanded());
+            update();
+            getListView().smoothScrollToPosition(currProtocol);
+        } else if (treeNode.getType() == TreeNode.GROUP) {
+            Group group = RosterHelper.getInstance().getGroupWithContacts((Group) treeNode);
+            group.setExpandFlag(!group.isExpanded());
+            update();
         }
     }
 }

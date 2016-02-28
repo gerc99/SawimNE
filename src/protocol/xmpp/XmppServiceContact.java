@@ -108,10 +108,8 @@ public class XmppServiceContact extends XmppContact {
     }
 
     public boolean isVisibleInContactList() {
-        if (RosterHelper.getInstance().getCurrPage() != RosterHelper.ONLINE_CONTACTS
-        /*!Options.getBoolean(Options.OPTION_CL_HIDE_OFFLINE)*/)
-            return true;
-        return !(isConference() || isGate) || super.isVisibleInContactList();
+        return true;
+        //return !(isConference() || isGate) || super.isVisibleInContactList();
     }
 
     public String getMyName() {

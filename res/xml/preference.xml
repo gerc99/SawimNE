@@ -23,9 +23,6 @@
     <CheckBoxPreference android:title="@string/show_user_groups"
         android:key="@string/pref_user_groups"
         android:defaultValue="true"/>
-    <CheckBoxPreference android:title="@string/show_status_line"
-        android:key="@string/pref_show_status_line"
-        android:defaultValue="true"/>
     <CheckBoxPreference android:title="@string/contacts_with_msg_at_top"
         android:key="@string/pref_sort_up_with_msg"
         android:defaultValue="true"/>

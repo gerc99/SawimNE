@@ -365,17 +365,6 @@ public final class RosterHelper {
         updateRoster = l;
     }
 
-    public void setCurrPage(int curr) {
-        if (Options.getInt(Options.OPTION_CURRENT_PAGE) != curr) {
-            Options.setInt(Options.OPTION_CURRENT_PAGE, curr);
-            Options.safeSave();
-        }
-    }
-
-    public int getCurrPage() {
-        return Options.getInt(Options.OPTION_CURRENT_PAGE);
-    }
-
     public void removeAllProtocols() {
         count = 0;
         for (int i = 0; i < protocolList.length; ++i) {
@@ -399,7 +388,7 @@ public final class RosterHelper {
     }
 
     public void updateOptions() {
-        useGroups = Options.getBoolean(JLocale.getString(R.string.pref_user_groups)) && getCurrPage() != ACTIVE_CONTACTS;
+        useGroups = Options.getBoolean(JLocale.getString(R.string.pref_user_groups));
     }
 
     public static <T extends TreeNode> void sort(List<T> subnodes, final ConcurrentHashMap<Integer, Group> groups) {
@@ -458,8 +447,6 @@ public final class RosterHelper {
 
     public String getStatusMessage(Protocol protocol, Contact contact) {
         String message;
-        if (getCurrPage() == RosterHelper.ACTIVE_CONTACTS)
-            protocol = contact.getProtocol();
         if (protocol == null || contact == null) return "";
         if (XStatusInfo.XSTATUS_NONE != contact.getXStatusIndex()) {
             message = contact.getXStatusText();
