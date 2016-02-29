@@ -436,7 +436,13 @@ public class Messages {
         text = StringConvertor.notNull(text);
         String userNick = connection.getNickFromNode(msg);
         if (null == userNick) {
-            userNick = msg.getFirstNodeAttribute("juick", "uname");
+            XmlNode juick = msg.getFirstNode("juick", "http://juick.com/message");
+            if (juick != null) {
+                XmlNode user = juick.getFirstNode("user", "http://juick.com/user");
+                if (user != null) {
+                    userNick = user.getAttribute("uname");
+                }
+            }
         }
         if (StringConvertor.isEmpty(userNick)) {
             userNick = null;
