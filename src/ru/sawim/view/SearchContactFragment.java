@@ -8,7 +8,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.AppCompatButton;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.view.ContextMenu;
 import android.view.Gravity;
@@ -46,7 +45,7 @@ import ru.sawim.widget.roster.RosterViewRoot;
  */
 public class SearchContactFragment extends SawimFragment
         implements OnUpdateRoster, Handler.Callback,
-        MenuItemCompat.OnActionExpandListener, View.OnClickListener {
+        MenuItemCompat.OnActionExpandListener, View.OnClickListener, MyListView.OnItemClickListener {
 
     public static final String TAG = SearchContactFragment.class.getSimpleName();
 
@@ -73,7 +72,7 @@ public class SearchContactFragment extends SawimFragment
         rosterAdapter.setType(RosterHelper.ALL_CONTACTS);
         listView.setAdapter(rosterAdapter);
         registerForContextMenu(listView);
-        rosterAdapter.setOnItemClickListener(this);
+        listView.setOnItemClickListener(this);
         FrameLayout.LayoutParams listViewLP = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
         listView.setLayoutParams(listViewLP);
 
@@ -130,7 +129,7 @@ public class SearchContactFragment extends SawimFragment
     @Override
     public void onDetach() {
         super.onDetach();
-        getRosterAdapter().setOnItemClickListener(null);
+        getListView().setOnItemClickListener(null);
         unregisterForContextMenu(getListView());
         getListView().setAdapter(null);
         handler = null;
@@ -219,6 +218,13 @@ public class SearchContactFragment extends SawimFragment
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (SawimApplication.isManyPane())
+            ((SawimActivity) getActivity()).recreateActivity();
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         getRosterAdapter().setType(RosterHelper.ALL_CONTACTS);
@@ -248,6 +254,37 @@ public class SearchContactFragment extends SawimFragment
         MenuItemCompat.setOnActionExpandListener(searchMenuItem, this);
     }
 
+    @Override
+    public void onItemClick(View view, int position) {
+        TreeNode treeNode = getRosterAdapter().getItem(position);
+        if (treeNode.getType() == TreeNode.CONTACT) {
+            openChat(((Contact) treeNode).getProtocol(), ((Contact) treeNode), null);
+        }
+        if (treeNode.getType() == TreeNode.PROTOCOL) {
+            ProtocolBranch group = (ProtocolBranch) treeNode;
+            RosterHelper roster = RosterHelper.getInstance();
+            final int count = roster.getProtocolCount();
+            int currProtocol = 0;
+            for (int i = 0; i < count; ++i) {
+                Protocol p = roster.getProtocol(i);
+                if (p == null) return;
+                ProtocolBranch root = p.getProtocolBranch(i);
+                if (root.getGroupId() != group.getGroupId()) {
+                    root.setExpandFlag(false);
+                } else {
+                    currProtocol = i;
+                }
+            }
+            group.setExpandFlag(!group.isExpanded());
+            update();
+            getListView().smoothScrollToPosition(currProtocol);
+        } else if (treeNode.getType() == TreeNode.GROUP) {
+            Group group = RosterHelper.getInstance().getGroupWithContacts((Group) treeNode);
+            group.setExpandFlag(!group.isExpanded());
+            update();
+        }
+    }
+
     private static class OnQueryTextListener implements SearchView.OnQueryTextListener {
 
         RosterAdapter adapter;
@@ -271,10 +308,12 @@ public class SearchContactFragment extends SawimFragment
 
     @Override
     public void onDestroyOptionsMenu() {
-        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchMenuItem);
-        MenuItemCompat.setOnActionExpandListener(searchMenuItem, null);
-        searchView.setOnQueryTextListener(null);
-        searchMenuItem = null;
+        if (searchMenuItem != null) {
+            SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchMenuItem);
+            MenuItemCompat.setOnActionExpandListener(searchMenuItem, null);
+            searchView.setOnQueryTextListener(null);
+            searchMenuItem = null;
+        }
     }
 
     @Override
@@ -325,34 +364,6 @@ public class SearchContactFragment extends SawimFragment
             }
             return;
         }
-        int position = (int) v.getTag();
-        TreeNode treeNode = getRosterAdapter().getItem(position);
-        if (treeNode.getType() == TreeNode.CONTACT) {
-            openChat(((Contact) treeNode).getProtocol(), ((Contact) treeNode), null);
-        }
-        if (treeNode.getType() == TreeNode.PROTOCOL) {
-            ProtocolBranch group = (ProtocolBranch) treeNode;
-            RosterHelper roster = RosterHelper.getInstance();
-            final int count = roster.getProtocolCount();
-            int currProtocol = 0;
-            for (int i = 0; i < count; ++i) {
-                Protocol p = roster.getProtocol(i);
-                if (p == null) return;
-                ProtocolBranch root = p.getProtocolBranch(i);
-                if (root.getGroupId() != group.getGroupId()) {
-                    root.setExpandFlag(false);
-                } else {
-                    currProtocol = i;
-                }
-            }
-            group.setExpandFlag(!group.isExpanded());
-            update();
-            getListView().smoothScrollToPosition(currProtocol);
-        } else if (treeNode.getType() == TreeNode.GROUP) {
-            Group group = RosterHelper.getInstance().getGroupWithContacts((Group) treeNode);
-            group.setExpandFlag(!group.isExpanded());
-            update();
-        }
     }
 
     @Override
@@ -393,7 +404,7 @@ public class SearchContactFragment extends SawimFragment
         return (RosterAdapter) getListView().getAdapter();
     }
 
-    public RecyclerView getListView() {
+    public MyListView getListView() {
         return rosterViewLayout.getMyListView();
     }
 }

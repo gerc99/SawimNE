@@ -548,4 +548,5 @@
     <string name="passwords_changed">The password has changed</string>
     <string name="non_empty">Please, enter a non-empty value</string>
     <string name="show_pictures_in_chat">Show images in the chat</string>
+    <string name="find_conference">Find conference</string>
 </resources>

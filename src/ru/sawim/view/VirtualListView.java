@@ -8,7 +8,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.*;
-import android.widget.AdapterView;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.activities.BaseActivity;
@@ -17,7 +16,6 @@ import ru.sawim.models.VirtualListAdapter;
 import ru.sawim.models.list.VirtualList;
 import ru.sawim.models.list.VirtualListItem;
 import ru.sawim.widget.MyListView;
-import ru.sawim.widget.recyclerview.decoration.RecyclerItemClickListener;
 
 /**
  * Created with IntelliJ IDEA.

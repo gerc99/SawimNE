@@ -72,6 +72,7 @@ public class SawimApplication extends Application {
     public static final String PHONE = "Android/" + android.os.Build.MODEL
             + "/" + android.os.Build.VERSION.RELEASE;
     public static final String DEFAULT_SERVER = "jabber.ru";
+    public static final String DEFAULT_CONFERENCE_SERVER = "conference." + DEFAULT_SERVER;
     public static final int AVATAR_SIZE = 56;
 
     public static boolean returnFromAcc = false;

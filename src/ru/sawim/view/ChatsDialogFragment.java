@@ -17,7 +17,7 @@ import ru.sawim.chat.ChatHistory;
 import ru.sawim.models.RosterAdapter;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.roster.TreeNode;
-import ru.sawim.widget.recyclerview.decoration.RecyclerItemClickListener;
+import ru.sawim.widget.MyListView;
 
 /**
  * Created by gerc on 04.03.2015.
@@ -34,12 +34,12 @@ public class ChatsDialogFragment extends DialogFragment {
         View dialogView = LayoutInflater.from(context).inflate(R.layout.chats_dialog, null);
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
         dialogBuilder.setView(dialogView);
-        RecyclerView lv = (RecyclerView) dialogView.findViewById(R.id.listView);
+        MyListView lv = (MyListView) dialogView.findViewById(R.id.listView);
         chatsSpinnerAdapter = new RosterAdapter();
         chatsSpinnerAdapter.setType(RosterHelper.ACTIVE_CONTACTS);
         lv.setAdapter(chatsSpinnerAdapter);
         //lv.setFastScrollEnabled(true);
-        lv.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), new RecyclerItemClickListener.OnItemClickListener() {
+        lv.setOnItemClickListener(new MyListView.OnItemClickListener() {
             @Override
             public void onItemClick(View childView, int position) {
                 TreeNode treeNode = chatsSpinnerAdapter.getItem(position);
@@ -50,12 +50,7 @@ public class ChatsDialogFragment extends DialogFragment {
                     dismiss();
                 }
             }
-
-            @Override
-            public void onItemLongPress(View childView, int position) {
-
-            }
-        }));
+        });
         chatsSpinnerAdapter.refreshList();
         AppCompatDialog dialog = dialogBuilder.create();
         dialog.setCanceledOnTouchOutside(true);

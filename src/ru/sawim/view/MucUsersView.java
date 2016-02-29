@@ -2,7 +2,6 @@ package ru.sawim.view;
 
 import android.support.v7.app.AlertDialog;
 import android.content.DialogInterface;
-import android.support.v7.widget.RecyclerView;
 import android.view.MotionEvent;
 import android.view.View;
 import protocol.ContactMenu;
@@ -14,7 +13,7 @@ import ru.sawim.activities.BaseActivity;
 import ru.sawim.activities.SawimActivity;
 import ru.sawim.models.MucUsersAdapter;
 import ru.sawim.view.menu.MyMenu;
-import ru.sawim.widget.recyclerview.decoration.RecyclerItemClickListener;
+import ru.sawim.widget.MyListView;
 
 /**
  * Created with IntelliJ IDEA.
@@ -23,13 +22,13 @@ import ru.sawim.widget.recyclerview.decoration.RecyclerItemClickListener;
  * Time: 21:55
  * To change this template use File | Settings | File Templates.
  */
-public class MucUsersView implements RecyclerItemClickListener.OnItemClickListener, View.OnTouchListener {
+public class MucUsersView implements MyListView.OnItemClickListener, View.OnTouchListener, MyListView.OnItemLongClickListener {
 
     private TextBoxView banTextbox;
     private TextBoxView kikTextbox;
     private boolean isLongClick = false;
 
-    public void show(final ChatView chatView, RecyclerView nickList) {
+    public void show(final ChatView chatView, MyListView nickList) {
         final Protocol protocol = chatView.getCurrentChat().getProtocol();
         final XmppServiceContact xmppServiceContact = (XmppServiceContact) chatView.getCurrentChat().getContact();
         final BaseActivity activity = (BaseActivity) chatView.getActivity();
@@ -37,7 +36,8 @@ public class MucUsersView implements RecyclerItemClickListener.OnItemClickListen
         usersAdapter.init((Xmpp) protocol, xmppServiceContact);
         nickList.setAdapter(usersAdapter);
         nickList.setOnTouchListener(this);
-        nickList.addOnItemTouchListener(new RecyclerItemClickListener(activity, this));
+        nickList.setOnItemClickListener(this);
+        nickList.setOnItemLongClickListener(this);
     }
 
     private MyMenu getRoleConfigMenu(MucUsersAdapter usersAdapter, XmppServiceContact xmppServiceContact, final String nick) {
@@ -211,7 +211,7 @@ public class MucUsersView implements RecyclerItemClickListener.OnItemClickListen
     }
 
     @Override
-    public void onItemLongPress(View childView, int position) {
+    public boolean onItemLongPress(View childView, int position) {
         isLongClick = true;
         final SawimActivity activity = (SawimActivity) childView.getContext();
         final ChatView chatView;
@@ -224,7 +224,7 @@ public class MucUsersView implements RecyclerItemClickListener.OnItemClickListen
         final XmppServiceContact xmppServiceContact = (XmppServiceContact) chatView.getCurrentChat().getContact();
         MucUsersAdapter usersAdapter = chatView.getMucUsersAdapter();
         final Object o = usersAdapter.getItem(position);
-        if (o instanceof String) return;
+        if (o instanceof String) return false;
         final String nick = usersAdapter.getCurrentSubContact(o);
         final MyMenu menu = new MyMenu();
         final MyMenu roleConfigMenu = getRoleConfigMenu(usersAdapter, xmppServiceContact, nick);
@@ -277,6 +277,7 @@ public class MucUsersView implements RecyclerItemClickListener.OnItemClickListen
             }
         });
         builder.create().show();
+        return true;
     }
 
     @Override

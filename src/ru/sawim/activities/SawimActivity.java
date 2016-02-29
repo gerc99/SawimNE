@@ -294,6 +294,7 @@ public class SawimActivity extends BaseActivity implements OnAccountsLoaded {
         menu.clear();
         ChatView chatView = getChatView();
         RosterView rosterView = getRosterView();
+        SearchConferenceFragment searchConferenceFragment = (SearchConferenceFragment) getSupportFragmentManager().findFragmentByTag(SearchConferenceFragment.TAG);
         SearchContactFragment searchContactFragment = (SearchContactFragment) getSupportFragmentManager().findFragmentByTag(SearchContactFragment.TAG);
         StartWindowView startWindowView = (StartWindowView) getSupportFragmentManager().findFragmentByTag(StartWindowView.TAG);
         VirtualListView virtualListView = (VirtualListView) getSupportFragmentManager().findFragmentByTag(VirtualListView.TAG);
@@ -319,6 +320,8 @@ public class SawimActivity extends BaseActivity implements OnAccountsLoaded {
             }
         } else if (searchContactFragment != null && searchContactFragment.isAdded()) {
             searchContactFragment.onPrepareOptionsMenu_(menu);
+        } else if (searchConferenceFragment != null && searchConferenceFragment.isAdded()) {
+            searchConferenceFragment.onPrepareOptionsMenu_(menu);
         }
         return super.onPrepareOptionsMenu(menu);
     }

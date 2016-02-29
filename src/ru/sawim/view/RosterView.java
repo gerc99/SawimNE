@@ -50,7 +50,7 @@ import ru.sawim.widget.roster.RosterViewRoot;
  * Time: 19:58
  * To change this template use File | Settings | File Templates.
  */
-public class RosterView extends SawimFragment implements View.OnClickListener, OnUpdateRoster, Handler.Callback {
+public class RosterView extends SawimFragment implements View.OnClickListener, OnUpdateRoster, Handler.Callback, MyListView.OnItemClickListener {
 
     public static final String TAG = RosterView.class.getSimpleName();
 
@@ -97,9 +97,16 @@ public class RosterView extends SawimFragment implements View.OnClickListener, O
         RosterAdapter rosterAdapter = new RosterAdapter();
         listView.setAdapter(rosterAdapter);
         registerForContextMenu(listView);
-        rosterAdapter.setOnItemClickListener(this);
+        listView.setOnItemClickListener(this);
         FrameLayout.LayoutParams listViewLP = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
         listView.setLayoutParams(listViewLP);
+
+        View emptyView = LayoutInflater.from(getContext()).inflate(R.layout.roster_empty_view, null);
+        Button findConfButton = (Button) emptyView.findViewById(R.id.find_conference_button);
+        Button manageClButton = (Button) emptyView.findViewById(R.id.manage_contact_list_button);
+        findConfButton.setOnClickListener(this);
+        manageClButton.setOnClickListener(this);
+        listView.setEmptyView(emptyView);
 
         FloatingActionButton fab = new FloatingActionButton(getActivity());
         fab.setImageResource(R.drawable.ic_pencil_white_24dp);
@@ -111,6 +118,7 @@ public class RosterView extends SawimFragment implements View.OnClickListener, O
         fab.setLayoutParams(lp);
 
         rosterViewLayout = new RosterViewRoot(activity, progressBar, listView, fab);
+        rosterViewLayout.addView(emptyView);
 
         rosterAdapter.refreshList();
     }
@@ -127,9 +135,9 @@ public class RosterView extends SawimFragment implements View.OnClickListener, O
     public void onDetach() {
         super.onDetach();
         RosterHelper.getInstance().setOnAccountsLoaded(null);
-        unregisterForContextMenu(rosterViewLayout.getMyListView());
-        getRosterAdapter().setOnItemClickListener(null);
-        rosterViewLayout.getMyListView().setAdapter(null);
+        unregisterForContextMenu(getListView());
+        getListView().setOnItemClickListener(null);
+        getListView().setAdapter(null);
         rosterViewLayout.getFab().setOnClickListener(null);
         chatsImage.setOnClickListener(null);
         handler = null;
@@ -163,11 +171,15 @@ public class RosterView extends SawimFragment implements View.OnClickListener, O
             if (oldProgressBarPercent != percent) {
                 oldProgressBarPercent = percent;
                 BaseActivity activity = (BaseActivity) getActivity();
-                if (100 != percent) {
-                    rosterViewLayout.getProgressBar().setVisibility(ProgressBar.VISIBLE);
-                    rosterViewLayout.getProgressBar().setProgress(percent);
+                if (100 == percent) {
+                    if (getRosterAdapter().getItemCount() == 0) {
+                        getListView().getEmptyView().setVisibility(View.VISIBLE);
+                    }
+                    rosterViewLayout.getProgressBar().setVisibility(View.GONE);
                 } else {
-                    rosterViewLayout.getProgressBar().setVisibility(ProgressBar.GONE);
+                    getListView().getEmptyView().setVisibility(View.GONE);
+                    rosterViewLayout.getProgressBar().setVisibility(View.VISIBLE);
+                    rosterViewLayout.getProgressBar().setProgress(percent);
                 }
                 if (100 == percent || 0 == percent) {
                     activity.supportInvalidateOptionsMenu();
@@ -214,9 +226,9 @@ public class RosterView extends SawimFragment implements View.OnClickListener, O
             chatsImage.setVisibility(View.GONE);
         } else {
             if (icMess == SawimResources.PERSONAL_MESSAGE_ICON) {
-                icMess.setColorFilter(Scheme.getColor(R.attr.bar_personal_unread_message), PorterDuff.Mode.MULTIPLY);
+                //icMess.setColorFilter(Scheme.getColor(R.attr.bar_personal_unread_message), PorterDuff.Mode.MULTIPLY);
             } else {
-                icMess.setColorFilter(Scheme.getColor(R.attr.bar_unread_message), PorterDuff.Mode.MULTIPLY);
+                //icMess.setColorFilter(Scheme.getColor(R.attr.bar_unread_message), PorterDuff.Mode.MULTIPLY);
             }
             chatsImage.setVisibility(View.VISIBLE);
             chatsImage.setImageDrawable(icMess);
@@ -294,6 +306,8 @@ public class RosterView extends SawimFragment implements View.OnClickListener, O
                 SawimApplication.returnFromAcc = false;
                 //Toast.makeText(getActivity(), R.string.press_menu_for_connect, Toast.LENGTH_LONG).show();
                 if (getRosterAdapter().getItemCount() == 0) {
+                    if (SawimApplication.isManyPane())
+                        getActivity().setContentView(R.layout.main);
                     getFragmentManager().beginTransaction()
                             .replace(R.id.fragment_container, new SearchContactFragment(), SearchContactFragment.TAG)
                             .addToBackStack(null)
@@ -318,7 +332,7 @@ public class RosterView extends SawimFragment implements View.OnClickListener, O
         return (RosterAdapter) getListView().getAdapter();
     }
 
-    public RecyclerView getListView() {
+    public MyListView getListView() {
         return rosterViewLayout.getMyListView();
     }
 
@@ -409,6 +423,20 @@ public class RosterView extends SawimFragment implements View.OnClickListener, O
 
     @Override
     public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.find_conference_button:
+                if (SawimApplication.isManyPane())
+                    getActivity().setContentView(R.layout.main);
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_container, new SearchConferenceFragment(), SearchConferenceFragment.TAG)
+                        .addToBackStack(null)
+                        .commit();
+                return;
+
+            case R.id.manage_contact_list_button:
+                new ManageContactListForm(RosterHelper.getInstance().getProtocol(0)).showMenu((BaseActivity) getActivity());
+                return;
+        }
         if (chatsImage == v) {
             Chat current = ChatHistory.instance.chatAt(ChatHistory.instance.getPreferredItem());
             if (current == null) return;
@@ -419,14 +447,20 @@ public class RosterView extends SawimFragment implements View.OnClickListener, O
                 update();
             }
             return;
-        } else if (rosterViewLayout.getFab() == v) {
+        }
+        if (rosterViewLayout.getFab() == v) {
+            if (SawimApplication.isManyPane())
+                getActivity().setContentView(R.layout.main);
             getFragmentManager().beginTransaction()
                     .replace(R.id.fragment_container, new SearchContactFragment(), SearchContactFragment.TAG)
                     .addToBackStack(null)
                     .commit();
             return;
         }
-        int position = (int) v.getTag();
+
+    }
+    @Override
+    public void onItemClick(View view, int position) {
         TreeNode treeNode = getRosterAdapter().getItem(position);
         if (getMode() == MODE_SHARE || getMode() == MODE_SHARE_TEXT) {
             if (treeNode.getType() == TreeNode.CONTACT) {

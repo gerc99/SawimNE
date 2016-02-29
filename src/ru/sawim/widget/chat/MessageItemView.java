@@ -87,7 +87,7 @@ public class MessageItemView extends View {
             highlightPaint.setAntiAlias(true);
         }
         highlightPaint.setColor(Scheme.isBlack() ? 0xFF4C4C4C : Color.WHITE);
-        setBackgroundResource(R.drawable.list_selector);
+        Util.setSelectableItemBackground(this);
     }
 
     public void setTextSize(int size) {

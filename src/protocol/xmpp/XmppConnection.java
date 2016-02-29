@@ -1,5 +1,6 @@
 package protocol.xmpp;
 
+import android.provider.SyncStateContract;
 import android.support.v4.util.Pair;
 import android.util.Log;
 
@@ -845,7 +846,7 @@ public final class XmppConnection extends ClientConnection {
         }
     }
 
-    String getError(XmlNode errorNode) {
+    public String getError(XmlNode errorNode) {
         if (null == errorNode) {
             return XmlConstants.S_ERROR;
         }
@@ -1111,7 +1112,7 @@ public final class XmppConnection extends ClientConnection {
                 + "' id='" + Util.xmlEscape(generateId()) + "'>" + xmlns + "'/></iq>");
     }
 
-    private void requestIq(String jid, String xmlns, OnIqReceived iqReceivedListener) {
+    public void requestIq(String jid, String xmlns, OnIqReceived iqReceivedListener) {
         requestIq(jid, xmlns, generateId(), iqReceivedListener);
     }
 
@@ -1167,7 +1168,7 @@ public final class XmppConnection extends ClientConnection {
     }
 
     private void requestDiscoServerItems() {
-        requestIq(domain_, "http://jabber.org/protocol/disco#items", new OnIqReceived() {
+        requestIq(domain_, XmlConstants.DISCO_ITEMS, new OnIqReceived() {
             @Override
             public void onIqReceived(XmlNode iq) {
                 XmlNode iqQuery = iq.childAt(0);
@@ -1199,7 +1200,7 @@ public final class XmppConnection extends ClientConnection {
 
     public void requestDiscoItems(String server) {
         serviceDiscovery = getXmpp().getServiceDiscovery();
-        requestIq(server, "http://jabber.org/protocol/disco#items", new OnIqReceived() {
+        requestIq(server, XmlConstants.DISCO_ITEMS, new OnIqReceived() {
             @Override
             public void onIqReceived(XmlNode iq) {
                 XmlNode iqQuery = iq.childAt(0);
@@ -1366,7 +1367,7 @@ public final class XmppConnection extends ClientConnection {
         this.adhoc = adhoc;
         putPacketIntoQueue("<iq type='get' to='" + Util.xmlEscape(adhoc.getJid())
                 + "' id='" + Util.xmlEscape(generateId()) + "'><query xmlns='"
-                + "http://jabber.org/protocol/disco#items"
+                + XmlConstants.DISCO_ITEMS
                 + "' node='http://jabber.org/protocol/commands'/></iq>");
     }
 

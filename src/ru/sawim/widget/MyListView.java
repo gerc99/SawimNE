@@ -103,7 +103,7 @@ public class MyListView extends RecyclerView {
     }
 
     public interface OnItemLongClickListener {
-        boolean onItemClick(View view, int position);
+        boolean onItemLongPress(View view, int position);
     }
 
     public interface OnInterceptTouchListener {
@@ -155,7 +155,7 @@ public class MyListView extends RecyclerView {
                 public void onLongPress(MotionEvent event) {
                     if (currentChildView != null) {
                         if (onItemLongClickListener != null) {
-                            if (onItemLongClickListener.onItemClick(currentChildView, currentChildPosition)) {
+                            if (onItemLongClickListener.onItemLongPress(currentChildView, currentChildPosition)) {
                                 currentChildView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
                             }
                         } else {

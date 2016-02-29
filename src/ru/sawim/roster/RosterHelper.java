@@ -23,6 +23,7 @@ import ru.sawim.comm.JLocale;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.forms.ManageContactListForm;
 import ru.sawim.modules.FileTransfer;
+import ru.sawim.view.SearchConferenceFragment;
 import ru.sawim.view.StatusesView;
 import ru.sawim.view.XStatusesView;
 import ru.sawim.view.menu.MyMenu;
@@ -465,9 +466,9 @@ public final class RosterHelper {
     }
 
     public static final int MENU_CONNECT = 0;
-    public static final int MENU_STATUS = 1;
-    public static final int MENU_XSTATUS = 2;
-    public static final int MENU_PRIVATE_STATUS = 3;
+    public static final int MENU_FIND_CONF = 1;
+    public static final int MENU_STATUS = 2;
+    public static final int MENU_XSTATUS = 3;
     public static final int MENU_DISCO = 16;
     public static final int MENU_NOTES = 17;
     public static final int MENU_GROUPS = 18;
@@ -476,6 +477,7 @@ public final class RosterHelper {
     public MyMenu getMenu(final Protocol p) {
         final MyMenu menu = new MyMenu();
         menu.add(p.isConnected() || p.isConnecting() ? R.string.disconnect : R.string.connect, MENU_CONNECT);
+        menu.add(R.string.find_conference, MENU_FIND_CONF);
         menu.add(R.string.status, MENU_STATUS);
         if (p.getXStatusInfo() != null)
             menu.add(R.string.xstatus, MENU_XSTATUS);
@@ -520,6 +522,12 @@ public final class RosterHelper {
                     SawimApplication.getInstance().setStatus(p, (p.isConnected() || p.isConnecting())
                             ? StatusInfo.STATUS_OFFLINE : StatusInfo.STATUS_ONLINE, "");
                 //}
+                return true;
+            case MENU_FIND_CONF:
+                activity.getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_container, new SearchConferenceFragment(), SearchConferenceFragment.TAG)
+                        .addToBackStack(null)
+                        .commit();
                 return true;
             case RosterHelper.MENU_STATUS:
                 new StatusesView().init(p, StatusesView.ADAPTER_STATUS).show(activity.getSupportFragmentManager(), "change-status");

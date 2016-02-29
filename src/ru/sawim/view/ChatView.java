@@ -106,7 +106,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     private int searchPositionsCount;
     private List<Integer> searchMessagesIds;
 
-    private RecyclerView nickList;
+    private MyListView nickList;
     private ChatViewRoot chatViewLayout;
     private SmileysPopup smileysPopup;
     private MucUsersView mucUsersView;
@@ -137,8 +137,8 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
         FixedEditText messageEditor = new FixedEditText(activity);
         chatBarLayout = new ChatBarView(activity, chatsImage);
         chatBarLayout.setOnClickListener(this);
-        RecyclerView chatListView = (RecyclerView) LayoutInflater.from(getContext()).inflate(R.layout.recycler_view, null);
-        nickList = (RecyclerView) LayoutInflater.from(getContext()).inflate(R.layout.recycler_view, null);
+        MyListView chatListView = (MyListView) LayoutInflater.from(getContext()).inflate(R.layout.recycler_view, null);
+        nickList = (MyListView) LayoutInflater.from(getContext()).inflate(R.layout.recycler_view, null);
         ChatListsView chatListsView = new ChatListsView(activity, SawimApplication.isManyPane(), chatListView, nickList);
         ChatInputBarView chatInputBarView = new ChatInputBarView(activity, menuButton, smileButton, messageEditor, sendButton);
         chatViewLayout = new ChatViewRoot(activity, chatListsView, chatInputBarView);

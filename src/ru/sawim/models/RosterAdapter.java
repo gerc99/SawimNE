@@ -52,7 +52,6 @@ public class RosterAdapter extends RecyclerView.Adapter<RosterAdapter.ViewHolder
     private List<TreeNode> items = new ArrayList<>();
     private List<Group> updateQueue = new CopyOnWriteArrayList<>();
     private List<Contact> originalContactList = new ArrayList<>();
-    private View.OnClickListener itemClickListener;
 
     File avatarsFolder;
 
@@ -138,7 +137,6 @@ public class RosterAdapter extends RecyclerView.Adapter<RosterAdapter.ViewHolder
         int itemViewType = getItemViewType(position);
         View convertView = holder.itemView;
         convertView.setTag(position);
-        convertView.setOnClickListener(itemClickListener);
         if (type == RosterHelper.ACTIVE_CONTACTS) {
             RosterItemView rosterItemView = (RosterItemView) holder.itemView;
             rosterItemView.setNull();
@@ -297,12 +295,12 @@ public class RosterAdapter extends RecyclerView.Adapter<RosterAdapter.ViewHolder
             List<Contact> contacts = group.getContacts();
             int contactsSize = contacts.size();
             for (Contact contact : contacts) {
-                if (contact.isVisibleInContactList()) {
+                //if (contact.isVisibleInContactList()) {
                     if (newGroup.isExpanded()) {
                         list.add(contact);
                     }
                     contactCounter++;
-                }
+                //}
                 if (contact.isOnline())
                     ++onlineContactCounter;
             }
@@ -319,12 +317,12 @@ public class RosterAdapter extends RecyclerView.Adapter<RosterAdapter.ViewHolder
         onlineContactCounter = 0;
         int contactsSize = contacts.size();
         for (Contact contact : contacts) {
-            if (contact.isVisibleInContactList()) {
+            //if (contact.isVisibleInContactList()) {
                 if (group.isExpanded()) {
                     list.add(contact);
                 }
                 contactCounter++;
-            }
+            //}
             if (contact.isOnline())
                 ++onlineContactCounter;
         }
@@ -338,9 +336,9 @@ public class RosterAdapter extends RecyclerView.Adapter<RosterAdapter.ViewHolder
     public void rebuildFlatItemsWOG(Protocol p, List<TreeNode> list) {
         ConcurrentHashMap<String, Contact> contacts = p.getContactItems();
         for (Contact contact : contacts.values()) {
-            if (contact.isVisibleInContactList()) {
+            //if (contact.isVisibleInContactList()) {
                 list.add(contact);
-            }
+            //}
         }
         RosterHelper.sort(list, null);
     }
@@ -510,9 +508,6 @@ public class RosterAdapter extends RecyclerView.Adapter<RosterAdapter.ViewHolder
         rosterItemView.isShowDivider = value;
     }
 
-    public void setOnItemClickListener(View.OnClickListener itemClickListener) {
-        this.itemClickListener = itemClickListener;
-    }
 
     @Override
     public void onClick(View v) {

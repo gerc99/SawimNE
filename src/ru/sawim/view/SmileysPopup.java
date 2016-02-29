@@ -43,7 +43,7 @@ public class SmileysPopup {
 
     private void showView(BaseActivity activity, final SizeNotifierLinearLayout rootView) {
         GridView grid = new GridView(activity);
-        grid.setBackgroundResource(Util.getSystemBackground(activity));
+        Util.setSelectableItemBackground(grid);
         grid.setColumnWidth(Util.dipToPixels(activity, 60));
         grid.setNumColumns(-1);
 

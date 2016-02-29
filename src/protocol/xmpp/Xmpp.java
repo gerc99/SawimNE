@@ -202,7 +202,7 @@ public final class Xmpp extends Protocol implements FormListener {
         Group group = new Group(groupName);
         group.setGroupId(generateGroupId(groupName));
         int mode = Group.MODE_FULL_ACCESS;
-        if (JLocale.getString(Xmpp.CONFERENCE_GROUP).equals(groupName)) {
+        if (JLocale.getString(Xmpp.CONFERENCE_GROUP).equals(groupName) || "Conferences".equals(groupName)) {
             mode &= ~Group.MODE_EDITABLE;
             mode |= Group.MODE_TOP;
         } else if (JLocale.getString(Xmpp.GATE_GROUP).equals(groupName)) {

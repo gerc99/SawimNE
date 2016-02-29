@@ -63,4 +63,6 @@ public class XmlConstants {
     public static final byte IQ_TYPE_GET = 1;
     public static final byte IQ_TYPE_SET = 2;
     public static final byte IQ_TYPE_ERROR = 3;
+
+    public static final String DISCO_ITEMS = "http://jabber.org/protocol/disco#items";
 }

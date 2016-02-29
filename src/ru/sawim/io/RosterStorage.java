@@ -141,6 +141,7 @@ public class RosterStorage {
             serviceContact.setAutoJoin(conferenceIsAutoJoin);
             serviceContact.setConference(true);
         }
+        protocol.getContactItems().put(contact.getUserId(), contact);
         RosterHelper.getInstance().updateGroup(protocol, group);
         return contact;
     }

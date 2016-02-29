@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import ru.sawim.R;
+import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
 
 /**
@@ -185,6 +187,13 @@ public class Util {
         Resources r = context.getResources();
         int px = (int) (dipValue * r.getDisplayMetrics().density + 0.5f);
         return px;
+    }
+
+    public static void setSelectableItemBackground(View view) {
+        TypedArray typedArray = view.getContext().obtainStyledAttributes(new int[]{R.attr.selectableItemBackground});
+        int backgroundResource = typedArray.getResourceId(0, 0);
+        view.setBackgroundResource(backgroundResource);
+        typedArray.recycle();
     }
 
     public static int copyAllBytes(InputStream in, OutputStream out, long length) throws IOException {

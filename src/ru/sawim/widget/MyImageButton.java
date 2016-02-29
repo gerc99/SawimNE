@@ -27,7 +27,7 @@ public class MyImageButton extends ImageButton {
     }
 
     private void init() {
-        setBackgroundDrawable(null);
+        Util.setSelectableItemBackground(this);
         setMinimumWidth(Util.dipToPixels(getContext(), 45));
         setMinimumHeight(Util.dipToPixels(getContext(), 40));
     }
