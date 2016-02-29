@@ -84,4 +84,6 @@
         <item>#FF795548</item>
         <item>#FF607d8b</item>
     </array>
+
+    <drawable name="screen_background_light_transparent">#00ffffff</drawable>
 </resources>

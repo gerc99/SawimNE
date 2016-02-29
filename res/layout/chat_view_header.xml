@@ -1,7 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:gravity="center_horizontal"
-    android:textSize="18sp"
-    android:background="#a0efebe9" />
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/text"
+        android:gravity="center_horizontal"
+        android:textSize="14sp"
+        android:background="@drawable/chat_time_header_background"
+        android:layout_gravity="center_horizontal"
+        android:padding="5dp" />
+</LinearLayout>

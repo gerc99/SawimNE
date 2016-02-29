@@ -34,7 +34,7 @@ import java.util.concurrent.TimeUnit;
  * To change this template use File | Settings | File Templates.
  */
 public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHolder>
-        implements StickyRecyclerHeadersAdapter<RecyclerView.ViewHolder>, View.OnClickListener {
+        implements StickyRecyclerHeadersAdapter<MessagesAdapter.HeaderHolder>, View.OnClickListener {
 
     private List<MessData> items;
 
@@ -157,21 +157,22 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
     @Override
     public long getHeaderId(int position) {
         MessData current = getItem(position);
-        return TimeUnit.MILLISECONDS.toDays(current.getTime());
+        if (current != null) {
+            return TimeUnit.MILLISECONDS.toDays(current.getTime());
+        }
+        return -1;
     }
 
     @Override
-    public RecyclerView.ViewHolder onCreateHeaderViewHolder(ViewGroup parent) {
+    public HeaderHolder onCreateHeaderViewHolder(ViewGroup parent) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.chat_view_header, parent, false);
-        return new RecyclerView.ViewHolder(view) {
-        };
+        return new HeaderHolder(view);
     }
 
     @Override
-    public void onBindHeaderViewHolder(RecyclerView.ViewHolder holder, int position) {
-        TextView textView = (TextView) holder.itemView;
-        textView.setText(formatDate(getItem(position).getTime()));
+    public void onBindHeaderViewHolder(HeaderHolder holder, int position) {
+        holder.header.setText(formatDate(getItem(position).getTime()));
     }
 
     @Override
@@ -225,12 +226,12 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
     }
 
     static class HeaderHolder extends RecyclerView.ViewHolder {
-        public TextView header;
+        TextView header;
 
         public HeaderHolder(View itemView) {
             super(itemView);
 
-            header = (TextView) itemView;
+            header = (TextView) itemView.findViewById(R.id.text);
         }
     }
 
