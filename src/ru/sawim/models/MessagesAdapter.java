@@ -158,7 +158,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
     public long getHeaderId(int position) {
         MessData current = getItem(position);
         if (current != null) {
-            Calendar calendar =  Calendar.getInstance();
+            Calendar calendar = Calendar.getInstance();
             calendar.setTimeInMillis(current.getTime());
             return calendar.get(Calendar.DATE);
         }
@@ -174,7 +174,10 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
 
     @Override
     public void onBindHeaderViewHolder(HeaderHolder holder, int position) {
-        holder.header.setText(formatDate(getItem(position).getTime()));
+        MessData current = getItem(position);
+        if (current != null) {
+            holder.header.setText(formatDate(current.getTime()));
+        }
     }
 
     @Override
