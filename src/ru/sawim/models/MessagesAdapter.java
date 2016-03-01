@@ -158,7 +158,9 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
     public long getHeaderId(int position) {
         MessData current = getItem(position);
         if (current != null) {
-            return TimeUnit.MILLISECONDS.toDays(current.getTime());
+            Calendar calendar =  Calendar.getInstance();
+            calendar.setTimeInMillis(current.getTime());
+            return calendar.get(Calendar.DATE);
         }
         return -1;
     }
