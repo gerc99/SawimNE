@@ -110,7 +110,7 @@ public final class StringConvertor {
                 systemWin1251 = false;
             }
         }
-        byte buf[] = new byte[s.length()];
+        byte[] buf = new byte[s.length()];
         int size = s.length();
         for (int i = 0; i < size; ++i) {
             char ch = s.charAt(i);
@@ -157,7 +157,7 @@ public final class StringConvertor {
         return buf;
     }
 
-    public static String byteArray1251ToString(byte buf[], int pos, int len) {
+    public static String byteArray1251ToString(byte[] buf, int pos, int len) {
         if (systemWin1251) {
             try {
                 return new String(buf, pos, len, "Windows-1251");

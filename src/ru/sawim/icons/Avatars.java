@@ -128,7 +128,7 @@ public class Avatars {
     }
 
     public static int getColorForName(String character) {
-        int colors[] = SawimApplication.getContext().getResources().getIntArray(R.array.avatar_colors);
+        int[] colors = SawimApplication.getContext().getResources().getIntArray(R.array.avatar_colors);
         if (character.isEmpty()) {
             return colors[colors.length - 1];
         }

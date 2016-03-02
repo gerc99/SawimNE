@@ -77,7 +77,7 @@ public class Vcard {
                 connection.singleUserInfo = null;
                 return;
             }
-            String name[] = new String[3];
+            String[] name = new String[3];
             name[0] = vCard.getFirstNodeValue("N", "GIVEN");
             name[1] = vCard.getFirstNodeValue("N", "MIDDLE");
             name[2] = vCard.getFirstNodeValue("N", "FAMILY");

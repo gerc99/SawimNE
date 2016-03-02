@@ -8,11 +8,11 @@ public class MessageDigest {
     private java.security.MessageDigest digest;
 
     static byte[] calculate(MessageDigest digest, String input) {
-        byte data[] = StringConvertor.stringToByteArrayUtf8(input);
+        byte[] data = StringConvertor.stringToByteArrayUtf8(input);
         return calculate(digest, data);
     }
 
-    static byte[] calculate(MessageDigest digest, byte input[]) {
+    static byte[] calculate(MessageDigest digest, byte[] input) {
         digest.update(input);
         return digest.getDigestBits();
     }
@@ -34,7 +34,7 @@ public class MessageDigest {
         digest.update(input);
     }
 
-    public void update(byte input[]) {
+    public void update(byte[] input) {
         digest.update(input);
     }
 
@@ -47,7 +47,7 @@ public class MessageDigest {
     }
 
     public String getDigestHex() {
-        byte digestBits[] = digest.digest();
+        byte[] digestBits = digest.digest();
         StringBuilder out = new StringBuilder();
         for (byte digestBit : digestBits) {
             char c = (char) ((digestBit >> 4) & 0xf);

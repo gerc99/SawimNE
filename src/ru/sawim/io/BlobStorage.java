@@ -62,7 +62,7 @@ public final class BlobStorage {
         //SawimApplication.getDatabaseHelper().close();
     }
 
-    public void addRecord(final byte data[]) {
+    public void addRecord(final byte[] data) {
         thread.execute(new SqlAsyncTask.OnTaskListener() {
 
             @Override
@@ -85,7 +85,7 @@ public final class BlobStorage {
         return bytes;
     }
 
-    public void setRecord(final int id, final byte data[]) {
+    public void setRecord(final int id, final byte[] data) {
         thread.execute(new SqlAsyncTask.OnTaskListener() {
             @Override
             public void run() {
