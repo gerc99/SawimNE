@@ -166,10 +166,9 @@ public class SearchContactFragment extends SawimFragment
                 if (100 != percent) {
                     rosterViewLayout.getProgressBar().setVisibility(ProgressBar.VISIBLE);
                     rosterViewLayout.getProgressBar().setProgress(percent);
-                } else {
-                    rosterViewLayout.getProgressBar().setVisibility(ProgressBar.GONE);
                 }
                 if (100 == percent || 0 == percent) {
+                    rosterViewLayout.getProgressBar().setVisibility(ProgressBar.GONE);
                     activity.supportInvalidateOptionsMenu();
                 }
             }
