@@ -4,42 +4,29 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
+import android.os.*;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.*;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.*;
 import android.widget.*;
-
-import ru.sawim.activities.SawimActivity;
-import ru.sawim.listener.OnAccountsLoaded;
-import ru.sawim.listener.OnUpdateRoster;
-import protocol.Contact;
-import protocol.ContactMenu;
-import protocol.Group;
-import protocol.Protocol;
+import protocol.*;
 import ru.sawim.*;
 import ru.sawim.activities.BaseActivity;
+import ru.sawim.activities.SawimActivity;
 import ru.sawim.chat.Chat;
 import ru.sawim.chat.ChatHistory;
 import ru.sawim.forms.ManageContactListForm;
+import ru.sawim.listener.OnUpdateRoster;
 import ru.sawim.models.RosterAdapter;
 import ru.sawim.modules.FileTransfer;
-import ru.sawim.roster.ProtocolBranch;
-import ru.sawim.roster.RosterHelper;
-import ru.sawim.roster.TreeNode;
-import ru.sawim.widget.MyImageButton;
-import ru.sawim.widget.MyListView;
-import ru.sawim.widget.Util;
+import ru.sawim.roster.*;
+import ru.sawim.widget.*;
 import ru.sawim.widget.roster.RosterViewRoot;
 
 
@@ -175,13 +162,13 @@ public class RosterView extends SawimFragment implements View.OnClickListener, O
                     if (getRosterAdapter().getItemCount() == 0) {
                         getListView().getEmptyView().setVisibility(View.VISIBLE);
                     }
-                    rosterViewLayout.getProgressBar().setVisibility(View.GONE);
                 } else {
                     getListView().getEmptyView().setVisibility(View.GONE);
                     rosterViewLayout.getProgressBar().setVisibility(View.VISIBLE);
                     rosterViewLayout.getProgressBar().setProgress(percent);
                 }
                 if (100 == percent || 0 == percent) {
+                    rosterViewLayout.getProgressBar().setVisibility(View.GONE);
                     activity.supportInvalidateOptionsMenu();
                 }
             }
