@@ -26,7 +26,7 @@ public class AvatarCache {
     private static AvatarCache instance;
 
     private static final int AVATAR_SIZE = Util.dipToPixels(SawimApplication.getContext(), SawimApplication.AVATAR_SIZE);
-    private static final File avatarsFolder = FileSystem.openDir(FileSystem.AVATARS);
+    public static final File AVATARS_FOLDER = FileSystem.openDir(FileSystem.AVATARS);
 
     private Handler mainHandler = new Handler(Looper.getMainLooper());
 
@@ -57,7 +57,7 @@ public class AvatarCache {
                 public void run() {
                     Bitmap bitmap = bitmapLruCache.get(id);
                     if (bitmap == null) {
-                        File file = getFile(avatarsFolder, id, hash == null ? "" : hash);
+                        File file = getFile(id, hash == null ? "" : hash);
                         if (file.exists()) {
                             bitmap = Util.getAvatarBitmap(ru.sawim.comm.Util.fileToArrayBytes(file), AVATAR_SIZE);
                             post(bitmap, id, onImageLoadListener);
@@ -72,7 +72,7 @@ public class AvatarCache {
                                     @Override
                                     public void onLoaded(String avatarHash, byte[] avatarBytes) {
                                         if (id != null) {
-                                            File file = getFile(avatarsFolder, id, avatarHash);
+                                            File file = getFile(id, avatarHash);
                                             if (file.exists()) {
                                                 Bitmap bitmap = Util.getAvatarBitmap(ru.sawim.comm.Util.fileToArrayBytes(file), AVATAR_SIZE);
                                                 post(bitmap, id, onImageLoadListener);
@@ -132,13 +132,14 @@ public class AvatarCache {
         return false;
     }
 
-    public void remove(final File pathCacheFolder, String id, String hash) {
-        File file = getFile(pathCacheFolder, id, hash);
+    public void remove(String id, String hash) {
+        if (hash == null || id == null) return;
+        File file = getFile(id, hash);
         file.delete();
     }
 
-    public boolean hasFile(File pathCacheFolder, String hash) {
-        String[] files = pathCacheFolder.list();
+    public boolean hasFile(String hash) {
+        String[] files = AVATARS_FOLDER.list();
         if (files == null) return false;
         for (String file : files) {
             if (file.equals(hash)) {
@@ -148,8 +149,8 @@ public class AvatarCache {
         return false;
     }
 
-    private File getFile(File pathCacheFolder, String id, String hash) {
-        return new File(pathCacheFolder, id.replace('/', '_').concat("_").concat(hash.replace('/', '_').concat(".").concat(COMPRESS_FORMAT.name())));
+    private File getFile(String id, String hash) {
+        return new File(AVATARS_FOLDER, id.replace('/', '_').concat("_").concat(hash.replace('/', '_').concat(".").concat(COMPRESS_FORMAT.name())));
     }
 
     public interface OnImageLoadListener {

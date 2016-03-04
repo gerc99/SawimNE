@@ -7,6 +7,7 @@ import ru.sawim.chat.message.SystemNotice;
 import ru.sawim.comm.JLocale;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
+import ru.sawim.icons.AvatarCache;
 import ru.sawim.modules.history.HistoryStorage;
 import ru.sawim.roster.RosterHelper;
 
@@ -201,6 +202,11 @@ public class Presences {
                     connection.nativeStatus2StatusIndex(type), statusString, priority, priorityA, rangVoice);
             if (null != item) {
                 XmppContact.SubContact sc = conf.getExistSubContact(fromRes);
+                if (sc != null && newAvatarHash != null) {
+                    String id = conf.getUserId() + "/" + fromRes;
+                    AvatarCache.getInstance().remove(id, sc.avatarHash);
+                    connection.getXmpp().getStorage().updateAvatarHash(id, newAvatarHash);
+                }
                 String newNick = item.getAttribute(XmlNode.S_NICK);
                 String realJid = item.getAttribute(XmlNode.S_JID);
                 if (null != newNick) {
@@ -225,6 +231,7 @@ public class Presences {
                 if (303 == code) {
                     conf.addPresence(connection.getXmpp(), fromRes, ": " + JLocale.getString(R.string.change_nick) + " " + StringConvertor.notNull(newNick));
                 }
+
             } else {
                 conf.nickOffline(connection.getXmpp(), fromRes, code, StringConvertor.notNull(reasone), StringConvertor.notNull(statusString));
             }
@@ -235,6 +242,10 @@ public class Presences {
             if (RosterHelper.getInstance().getUpdateChatListener() != null)
                 RosterHelper.getInstance().getUpdateChatListener().updateMucList();
         } else {
+            if (newAvatarHash != null) {
+                AvatarCache.getInstance().remove(contact.getUserId(), contact.avatarHash);
+                connection.getXmpp().getStorage().updateAvatarHash(contact.getUserId(), newAvatarHash);
+            }
             if (!("unavailable").equals(type)) {
                 if ((XStatusInfo.XSTATUS_NONE == contact.getXStatusIndex())
                         || !Xmpp.xStatus.isPep(contact.getXStatusIndex())) {
