@@ -203,9 +203,11 @@ public class Presences {
             if (null != item) {
                 XmppContact.SubContact sc = conf.getExistSubContact(fromRes);
                 if (sc != null && newAvatarHash != null) {
-                    String id = conf.getUserId() + "/" + fromRes;
-                    AvatarCache.getInstance().remove(id, sc.avatarHash);
-                    connection.getXmpp().getStorage().updateAvatarHash(id, newAvatarHash);
+                    if (sc.avatarHash != null && !newAvatarHash.equals(sc.avatarHash)) {
+                        String id = conf.getUserId() + "/" + fromRes;
+                        AvatarCache.getInstance().remove(id, sc.avatarHash);
+                        connection.getXmpp().getStorage().updateAvatarHash(id, newAvatarHash);
+                    }
                 }
                 String newNick = item.getAttribute(XmlNode.S_NICK);
                 String realJid = item.getAttribute(XmlNode.S_JID);
@@ -243,8 +245,10 @@ public class Presences {
                 RosterHelper.getInstance().getUpdateChatListener().updateMucList();
         } else {
             if (newAvatarHash != null) {
-                AvatarCache.getInstance().remove(contact.getUserId(), contact.avatarHash);
-                connection.getXmpp().getStorage().updateAvatarHash(contact.getUserId(), newAvatarHash);
+                if (contact.avatarHash != null && !contact.avatarHash.equals(newAvatarHash)) {
+                    AvatarCache.getInstance().remove(contact.getUserId(), contact.avatarHash);
+                    connection.getXmpp().getStorage().updateAvatarHash(contact.getUserId(), newAvatarHash);
+                }
             }
             if (!("unavailable").equals(type)) {
                 if ((XStatusInfo.XSTATUS_NONE == contact.getXStatusIndex())

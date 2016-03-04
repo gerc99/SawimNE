@@ -4,7 +4,6 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Handler;
 import android.os.Looper;
-import android.text.TextUtils;
 
 import protocol.xmpp.Vcard;
 import protocol.xmpp.Xmpp;
@@ -57,37 +56,37 @@ public class AvatarCache {
                 public void run() {
                     Bitmap bitmap = bitmapLruCache.get(id);
                     if (bitmap == null) {
-                        File file = getFile(id, hash == null ? "" : hash);
-                        if (file.exists()) {
-                            bitmap = Util.getAvatarBitmap(ru.sawim.comm.Util.fileToArrayBytes(file), AVATAR_SIZE);
-                            post(bitmap, id, onImageLoadListener);
-                        } else {
-                            if (TextUtils.isEmpty(hash)) {
-                                String character = String.valueOf(nick.charAt(0));
-                                bitmap = Avatars.getRoundedBitmap(character, Avatars.getColorForName(character), Color.WHITE, AVATAR_SIZE);
-                                save(file, bitmap);
+                        if (hash != null) {
+                            File file = getFile(id, hash);
+                            if (file.exists()) {
+                                bitmap = Util.getAvatarBitmap(ru.sawim.comm.Util.fileToArrayBytes(file), AVATAR_SIZE);
                                 post(bitmap, id, onImageLoadListener);
-                            } else {
-                                Vcard.getVCard(((Xmpp) RosterHelper.getInstance().getProtocol(0)).getConnection(), id, new Vcard.OnAvatarLoadListener() {
-                                    @Override
-                                    public void onLoaded(String avatarHash, byte[] avatarBytes) {
-                                        if (id != null) {
-                                            File file = getFile(id, avatarHash);
-                                            if (file.exists()) {
-                                                Bitmap bitmap = Util.getAvatarBitmap(ru.sawim.comm.Util.fileToArrayBytes(file), AVATAR_SIZE);
-                                                post(bitmap, id, onImageLoadListener);
-                                                return;
-                                            }
-                                            Bitmap bitmap = Util.getAvatarBitmap(avatarBytes, AVATAR_SIZE);
-                                            if (bitmap == null) return;
-                                            bitmap = Avatars.getRoundedBitmap(bitmap);
-                                            save(file, bitmap);
-                                            post(bitmap, id, onImageLoadListener);
-                                        }
-                                    }
-                                });
+                                return;
                             }
+                        } else {
+                            String character = String.valueOf(nick.charAt(0));
+                            bitmap = Avatars.getRoundedBitmap(character, Avatars.getColorForName(character), Color.WHITE, AVATAR_SIZE);
+                            save(getFile(id, character), bitmap);
+                            post(bitmap, id, onImageLoadListener);
                         }
+                        Vcard.getVCard(((Xmpp) RosterHelper.getInstance().getProtocol(0)).getConnection(), id, new Vcard.OnAvatarLoadListener() {
+                            @Override
+                            public void onLoaded(String avatarHash, byte[] avatarBytes) {
+                                if (id != null) {
+                                    File file = getFile(id, avatarHash);
+                                    if (file.exists()) {
+                                        Bitmap bitmap = Util.getAvatarBitmap(ru.sawim.comm.Util.fileToArrayBytes(file), AVATAR_SIZE);
+                                        post(bitmap, id, onImageLoadListener);
+                                        return;
+                                    }
+                                    Bitmap bitmap = Util.getAvatarBitmap(avatarBytes, AVATAR_SIZE);
+                                    if (bitmap == null) return;
+                                    bitmap = Avatars.getRoundedBitmap(bitmap);
+                                    save(file, bitmap);
+                                    post(bitmap, id, onImageLoadListener);
+                                }
+                            }
+                        });
                     }
                 }
             });
