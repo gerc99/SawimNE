@@ -27,6 +27,7 @@ import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
 import ru.sawim.text.InternalURLSpan;
 import ru.sawim.text.TextLinkClickListener;
+import ru.sawim.widget.MyListView;
 import ru.sawim.widget.Util;
 
 /**
@@ -341,11 +342,11 @@ public class MessageItemView extends View {
             if (action == MotionEvent.ACTION_CANCEL || action == MotionEvent.ACTION_OUTSIDE) {
                 isSecondTap = true;
             }
-
             if (urlSpans.length != 0) {
                 Runnable longPressed = new Runnable() {
                     public void run() {
-                        if (textLinkClickListener != null && !isSecondTap) {
+                        getParent().requestDisallowInterceptTouchEvent(true);
+                        if (textLinkClickListener != null && !isSecondTap && !isLongTap) {
                             isLongTap = true;
                             textLinkClickListener.onTextLinkClick(MessageItemView.this, buildUrl(urlSpans), true);
                         }
