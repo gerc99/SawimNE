@@ -116,9 +116,9 @@ public class ExternalApi {
                 fileTransferListener = null;
                 return true;
             }
-            fragment = null;
         } catch (Throwable ignored) {
         }
+        fragment = null;
         return false;
     }
 

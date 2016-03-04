@@ -345,8 +345,8 @@ public class MessageItemView extends View {
             if (urlSpans.length != 0) {
                 Runnable longPressed = new Runnable() {
                     public void run() {
-                        getParent().requestDisallowInterceptTouchEvent(true);
                         if (textLinkClickListener != null && !isSecondTap && !isLongTap) {
+                            getParent().requestDisallowInterceptTouchEvent(true);
                             isLongTap = true;
                             textLinkClickListener.onTextLinkClick(MessageItemView.this, buildUrl(urlSpans), true);
                         }
