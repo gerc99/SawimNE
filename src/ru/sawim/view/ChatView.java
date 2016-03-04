@@ -106,6 +106,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     private int searchPositionsCount;
     private List<Integer> searchMessagesIds;
 
+    private StickyRecyclerHeadersDecoration stickyRecyclerHeadersDecoration;
     private MyListView nickList;
     private ChatViewRoot chatViewLayout;
     private SmileysPopup smileysPopup;
@@ -349,6 +350,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
         unregisterForContextMenu(nickList);
         nickList.addOnItemTouchListener(null);
         nickList.setOnTouchListener(null);
+        stickyRecyclerHeadersDecoration = null;
         handler = null;
         chatBarLayout = null;
         chatViewLayout = null;
@@ -544,10 +546,18 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
     }
 
     private void initList() {
-        final MessagesAdapter adapter = new MessagesAdapter();
         final MyListView chatListView = chatViewLayout.getChatListsView().getChatListView();
+        MessagesAdapter adapter = new MessagesAdapter();
         chatListView.setAdapter(adapter);
-        chatListView.addItemDecoration(new StickyRecyclerHeadersDecoration(adapter));
+        if (stickyRecyclerHeadersDecoration == null) {
+            stickyRecyclerHeadersDecoration = new StickyRecyclerHeadersDecoration(adapter);
+        } else {
+            chatListView.removeItemDecoration(stickyRecyclerHeadersDecoration);
+            stickyRecyclerHeadersDecoration = null;
+            stickyRecyclerHeadersDecoration = new StickyRecyclerHeadersDecoration(adapter);
+        }
+        chatListView.addItemDecoration(stickyRecyclerHeadersDecoration);
+
 
         setHasOptionsMenu(true);
         ((LinearLayoutManager) chatListView.getLayoutManager()).setStackFromEnd(true);
