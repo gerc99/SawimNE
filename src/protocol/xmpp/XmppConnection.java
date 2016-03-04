@@ -542,7 +542,7 @@ public final class XmppConnection extends ClientConnection {
                     }
                     setProgress(80);
                     getXmpp().s_updateOnlineStatus();
-                    Vcard.requestVCard(this, fullJid_, "-", "---");
+                    Vcard.requestVCard(this, fullJid_, "-", "---", null);
                     String xcode = Xmpp.xStatus.getCode(xmpp.getProfile().xstatusIndex);
                     if ((null != xcode) && !xcode.startsWith(XmppXStatus.XSTATUS_START)) {
                         XStatus.setXStatus(this);
@@ -786,7 +786,6 @@ public final class XmppConnection extends ClientConnection {
             conference.setGroup(group);
             contacts.put(conference.getUserId(), conference);
             getXmpp().getStorage().save(getXmpp(), conference, group);
-            Vcard.requestVCard(this, conference.getUserId(), null, conference.avatarHash);
         }
         xmpp.setContactListAddition(group);
         for (Contact contact : contacts.values()) {
@@ -1107,6 +1106,11 @@ public final class XmppConnection extends ClientConnection {
         putPacketIntoQueue(xmlNode.toString());
     }
 
+    public void request(XmlNode xmlNode, OnIqReceived iqReceivedListener) {
+        packetCallbacks.put(xmlNode.getId(), new Pair<>(xmlNode, iqReceivedListener));
+        putPacketIntoQueue(xmlNode.toString());
+    }
+
     private void requestSetIq(String xmlns) {
         putPacketIntoQueue("<iq type='set' from='" + Util.xmlEscape(fullJid_)
                 + "' id='" + Util.xmlEscape(generateId()) + "'>" + xmlns + "'/></iq>");
@@ -1285,7 +1289,7 @@ public final class XmppConnection extends ClientConnection {
 
     UserInfo getUserInfo(Contact contact) {
         singleUserInfo = new UserInfo(getXmpp(), contact.getUserId());
-        Vcard.getVCard(this, contact.getUserId());
+        Vcard.getVCard(this, contact.getUserId(), null);
         return singleUserInfo;
     }
 

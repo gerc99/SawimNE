@@ -195,25 +195,4 @@ public class Util {
         view.setBackgroundResource(backgroundResource);
         typedArray.recycle();
     }
-
-    public static int copyAllBytes(InputStream in, OutputStream out, long length) throws IOException {
-        int byteCount = 0;
-        long contentLength = length;
-        if (contentLength > Integer.MAX_VALUE) {
-            throw new IllegalArgumentException("HTTP entity too large to be buffered in memory");
-        }
-        int BUFFER_SIZE = 4096;
-        int bufferSize = (contentLength <= 0) ? BUFFER_SIZE : (int) contentLength;
-        final byte[] buffer = new byte[bufferSize];
-        while (true) {
-            int read = in.read(buffer);
-            if (read == -1) {
-                break;
-            }
-            out.write(buffer, 0, read);
-            byteCount += read;
-        }
-        in.close();
-        return byteCount;
-    }
 }

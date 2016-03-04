@@ -6,7 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
+
 import protocol.Contact;
 import protocol.xmpp.Muc;
 import protocol.xmpp.Xmpp;
@@ -16,14 +16,11 @@ import ru.sawim.*;
 import ru.sawim.comm.JLocale;
 import ru.sawim.comm.Util;
 import ru.sawim.icons.Icon;
-import ru.sawim.icons.ImageCache;
-import ru.sawim.io.FileSystem;
+import ru.sawim.icons.AvatarCache;
 import ru.sawim.roster.Layer;
 import ru.sawim.roster.TreeNode;
-import ru.sawim.widget.chat.MessageItemView;
 import ru.sawim.widget.roster.RosterItemView;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -42,12 +39,6 @@ public class MucUsersAdapter extends RecyclerView.Adapter<MucUsersAdapter.ViewHo
     private XmppServiceContact conference;
     private List<TreeNode> items = new ArrayList<>();
     private Xmpp protocol;
-
-    File avatarsFolder;
-
-    {
-        avatarsFolder = FileSystem.openDir(FileSystem.AVATARS);
-    }
 
     public void init(Xmpp xmpp, XmppServiceContact conf) {
         protocol = xmpp;
@@ -222,23 +213,14 @@ public class MucUsersAdapter extends RecyclerView.Adapter<MucUsersAdapter.ViewHo
 
     void populateFrom(final RosterItemView rosterItemView, Xmpp protocol, XmppContact.SubContact c) {
         if (Options.getBoolean(JLocale.getString(R.string.pref_users_avatars))) {
-            String hash = (c.avatarHash == null || c.avatarHash.isEmpty()) ?
-                    c.resource.isEmpty() ? "" : c.resource.substring(0, 1)
-                    : c.avatarHash;
-            Bitmap avatar = ImageCache.getInstance().get(avatarsFolder, SawimApplication.getExecutor(), hash, null,
-                    new ImageCache.OnImageLoadListener() {
-                        @Override
-                        public void onLoad() {
-                            rosterItemView.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    notifyDataSetChanged();
-                                }
-                            });
-                        }
-                    });
+            AvatarCache.getInstance().load(conference.getUserId() + "/" + c.resource, c.avatarHash, c.resource, new AvatarCache.OnImageLoadListener() {
+                @Override
+                public void onLoad(Bitmap avatar) {
+                    rosterItemView.itemFirstImage = avatar;
+                    rosterItemView.repaint();
+                }
+            });
             rosterItemView.avatarBorderColor = Contact.getStatusColor(c.status);
-            rosterItemView.itemFirstImage = avatar;
         }
 
     //    rosterItemView.itemSecondImage = protocol.getStatusInfo().getIcon(c.status).getImage().getBitmap();

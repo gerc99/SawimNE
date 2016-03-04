@@ -7,6 +7,10 @@ import ru.sawim.SawimApplication;
 import ru.sawim.roster.TreeNode;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -549,6 +553,32 @@ public class Util {
             }
         }
         return DEFAULT_ALPHABET_INDEX;
+    }
+
+    public static byte[] fileToArrayBytes(File file) {
+        if (file == null) return new byte[0];
+        FileInputStream inputStream = null;
+        try {
+            inputStream = new FileInputStream(file);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        byte fileContent[] = new byte[(int) file.length()];
+        try {
+            if (inputStream != null) {
+                inputStream.read(fileContent);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException ignore) {
+                }
+            }
+        }
+        return fileContent;
     }
 }
 

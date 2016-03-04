@@ -6,7 +6,6 @@ import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,15 +19,13 @@ import ru.sawim.chat.ChatHistory;
 import ru.sawim.chat.message.Message;
 import ru.sawim.comm.JLocale;
 import ru.sawim.icons.Icon;
-import ru.sawim.icons.ImageCache;
-import ru.sawim.io.FileSystem;
+import ru.sawim.icons.AvatarCache;
 import ru.sawim.roster.ProtocolBranch;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.roster.TreeNode;
 import ru.sawim.widget.MyImageButton;
 import ru.sawim.widget.roster.RosterItemView;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -52,12 +49,6 @@ public class RosterAdapter extends RecyclerView.Adapter<RosterAdapter.ViewHolder
     private List<TreeNode> items = new ArrayList<>();
     private List<Group> updateQueue = new CopyOnWriteArrayList<>();
     private List<Contact> originalContactList = new ArrayList<>();
-
-    File avatarsFolder;
-
-    {
-        avatarsFolder = FileSystem.openDir(FileSystem.AVATARS);
-    }
 
     public void setType(int type) {
         this.type = type;
@@ -424,20 +415,13 @@ public class RosterAdapter extends RecyclerView.Adapter<RosterAdapter.ViewHolder
         rosterItemView.itemDesc = statusMessage;
 
         if (Options.getBoolean(JLocale.getString(R.string.pref_users_avatars))) {
-            String hash = (item.avatarHash == null || item.avatarHash.isEmpty() ? String.valueOf(item.getName().charAt(0)) : item.avatarHash);
-            Bitmap avatar = ImageCache.getInstance().get(avatarsFolder,
-                    SawimApplication.getExecutor(), hash, null, new ImageCache.OnImageLoadListener() {
-                        @Override
-                        public void onLoad() {
-                            rosterItemView.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    notifyDataSetChanged();
-                                }
-                            });
-                        }
-                    });
-            rosterItemView.itemFirstImage = avatar;
+             AvatarCache.getInstance().load(item.getUserId(), item.avatarHash, item.getUserId(), new AvatarCache.OnImageLoadListener() {
+                @Override
+                public void onLoad(Bitmap avatar) {
+                    rosterItemView.itemFirstImage = avatar;
+                    rosterItemView.repaint();
+                }
+            });
             rosterItemView.avatarBorderColor = Contact.getStatusColor(item.getStatusIndex());
         }
         //Icon icStatus = item.getLeftIcon(p);

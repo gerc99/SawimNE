@@ -201,10 +201,6 @@ public class Presences {
                     connection.nativeStatus2StatusIndex(type), statusString, priority, priorityA, rangVoice);
             if (null != item) {
                 XmppContact.SubContact sc = conf.getExistSubContact(fromRes);
-                if (sc != null) {
-                    String id = conf.getUserId() + "/" + fromRes;
-                    Vcard.requestVCard(connection, id, newAvatarHash, sc.avatarHash);
-                }
                 String newNick = item.getAttribute(XmlNode.S_NICK);
                 String realJid = item.getAttribute(XmlNode.S_JID);
                 if (null != newNick) {
@@ -239,7 +235,6 @@ public class Presences {
             if (RosterHelper.getInstance().getUpdateChatListener() != null)
                 RosterHelper.getInstance().getUpdateChatListener().updateMucList();
         } else {
-            Vcard.requestVCard(connection, contact.getUserId(), newAvatarHash, contact.avatarHash);
             if (!("unavailable").equals(type)) {
                 if ((XStatusInfo.XSTATUS_NONE == contact.getXStatusIndex())
                         || !Xmpp.xStatus.isPep(contact.getXStatusIndex())) {
