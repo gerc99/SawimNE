@@ -45,6 +45,7 @@ public final class MirandaNotes {
             @Override
             public void onCreateOptionsMenu(Menu menu) {
                 MenuItem item = menu.add(Menu.NONE, COMMAND_ADD, Menu.NONE, R.string.add_to_list);
+                item.setIcon(R.drawable.ic_content_add);
                 MenuItemCompat.setShowAsAction(item, MenuItem.SHOW_AS_ACTION_IF_ROOM);
             }
 
