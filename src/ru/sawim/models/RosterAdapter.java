@@ -415,7 +415,7 @@ public class RosterAdapter extends RecyclerView.Adapter<RosterAdapter.ViewHolder
         rosterItemView.itemDesc = statusMessage;
 
         if (Options.getBoolean(JLocale.getString(R.string.pref_users_avatars))) {
-             AvatarCache.getInstance().load(item.getUserId(), item.avatarHash, item.getUserId(), new AvatarCache.OnImageLoadListener() {
+             AvatarCache.getInstance().load(item.getUserId(), item.avatarHash, item.getText(), new AvatarCache.OnImageLoadListener() {
                 @Override
                 public void onLoad(Bitmap avatar) {
                     rosterItemView.itemFirstImage = avatar;
