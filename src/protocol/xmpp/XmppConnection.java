@@ -1,29 +1,20 @@
 package protocol.xmpp;
 
-import android.provider.SyncStateContract;
 import android.support.v4.util.Pair;
-import android.util.Log;
-
 import protocol.*;
 import protocol.net.ClientConnection;
 import ru.sawim.SawimApplication;
 import ru.sawim.SawimException;
 import ru.sawim.chat.message.PlainMessage;
 import ru.sawim.chat.message.SystemNotice;
-import ru.sawim.comm.Config;
-import ru.sawim.comm.JLocale;
-import ru.sawim.comm.StringConvertor;
-import ru.sawim.comm.Util;
+import ru.sawim.comm.*;
 import ru.sawim.listener.OnMoreMessagesLoaded;
 import ru.sawim.modules.DebugLog;
 import ru.sawim.modules.search.UserInfo;
 import ru.sawim.roster.RosterHelper;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -625,9 +616,7 @@ public final class XmppConnection extends ClientConnection {
                     loadBookmarks(storage);
                 } else {
                     storage = iqQuery.getFirstNode("storage", "http://miranda-im.org/storage#notes");
-                    if (null != storage) {
-                        MirandaNotes.loadMirandaNotes(getXmpp(), storage);
-                    }
+                    MirandaNotes.loadMirandaNotes(getXmpp(), storage);
                 }
                 if (XmlConstants.IQ_TYPE_RESULT == iqType && ("getnotes").equals(id)) {
                     storage = iqQuery.getFirstNode("storage", "storage:rosternotes");

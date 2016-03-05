@@ -344,6 +344,7 @@
     <string name="new_group_name">New group name</string>
     <string name="nick">Nick</string>
     <string name="no_results">No results</string>
+    <string name="no_notes">You don\'t have any notes</string>
     <string name="no_groups_available">No groups available</string>
     <string name="ok">OK</string>
     <string name="onl_notification">Notice for upcoming contact</string>
