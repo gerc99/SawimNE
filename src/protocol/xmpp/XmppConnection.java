@@ -1,29 +1,20 @@
 package protocol.xmpp;
 
-import android.provider.SyncStateContract;
 import android.support.v4.util.Pair;
-import android.util.Log;
-
 import protocol.*;
 import protocol.net.ClientConnection;
 import ru.sawim.SawimApplication;
 import ru.sawim.SawimException;
 import ru.sawim.chat.message.PlainMessage;
 import ru.sawim.chat.message.SystemNotice;
-import ru.sawim.comm.Config;
-import ru.sawim.comm.JLocale;
-import ru.sawim.comm.StringConvertor;
-import ru.sawim.comm.Util;
+import ru.sawim.comm.*;
 import ru.sawim.listener.OnMoreMessagesLoaded;
 import ru.sawim.modules.DebugLog;
 import ru.sawim.modules.search.UserInfo;
 import ru.sawim.roster.RosterHelper;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -731,10 +722,6 @@ public final class XmppConnection extends ClientConnection {
                 }
             }
 
-        } else if (("command").equals(queryName)) {
-            if (null != adhoc) {
-                adhoc.loadCommandXml(iq, id);
-            }
         } else if (("alarm").equals(queryName)) {
             String jid = getXmpp().getItemByUID(Jid.getBareJid(from)).isConference() ? from : Jid.getBareJid(from);
             PlainMessage message = new PlainMessage(jid, getProtocol(),
@@ -1228,11 +1215,7 @@ public final class XmppConnection extends ClientConnection {
                         serviceDiscovery = null;
                         disco.setError(getError(errorNode));
                     }
-                    AdHoc commands = adhoc;
-                    if ((null != commands) && commands.getJid().equals(from)) {
-                        adhoc = null;
-                        commands.addItems(null);
-                    }
+
                     return;
                 }
                 ServiceDiscovery disco = serviceDiscovery;
@@ -1246,12 +1229,6 @@ public final class XmppConnection extends ClientConnection {
                         disco.addItem(name, jid);
                     }
                     disco.update();
-                    return;
-                }
-                AdHoc commands = adhoc;
-                if ((null != commands) && commands.getJid().equals(from)) {
-                    adhoc = null;
-                    commands.addItems(iqQuery);
                 }
             }
         });
@@ -1361,18 +1338,66 @@ public final class XmppConnection extends ClientConnection {
 
     void requestCommand(AdHoc adhoc, String node) {
         this.adhoc = adhoc;
-        putPacketIntoQueue("<iq to='" + Util.xmlEscape(adhoc.getJid())
-                + "' type='set' id='" + Util.xmlEscape(generateId()) + "'>"
-                + "<command xmlns='http://jabber.org/protocol/commands' "
-                + "node='" + Util.xmlEscape(node) + "'/></iq>");
+        XmlNode xmlNode = new XmlNode(XmlConstants.S_IQ);
+        xmlNode.putAttribute(XmlConstants.S_TO, Util.xmlEscape(adhoc.getJid()));
+        xmlNode.putAttribute(XmlNode.S_ID, generateId());
+        if (node != null) {
+            xmlNode.putAttribute(XmlConstants.S_TYPE, XmlConstants.S_SET);
+            XmlNode commandNode = xmlNode.addNode(XmlNode.addXmlns(
+                    "command",
+                    "http://jabber.org/protocol/commands"));
+            commandNode.putAttribute("node", Util.xmlEscape(node));
+            commandNode.putAttribute("action", "execute");
+        } else {
+            xmlNode.putAttribute(XmlConstants.S_TYPE, XmlConstants.S_GET);
+            XmlNode commandNode = xmlNode.addNode(XmlNode.addXmlns(
+                    XmlConstants.S_QUERY,
+                    XmlConstants.DISCO_ITEMS));
+            commandNode.putAttribute("node",
+                                     "http://jabber.org/protocol/commands");
+        }
+        request(xmlNode, new OnIqReceived() {
+            @Override
+            public void onIqReceived(XmlNode iq) {
+                String from = StringConvertor.notNull(iq.getAttribute(XmlConstants.S_FROM));
+                byte iqType = getIqType(iq);
+                if (XmlConstants.IQ_TYPE_ERROR == iqType) {
+                    XmlNode errorNode = iq.getFirstNode(XmlConstants.S_ERROR);
+                    iq.removeNode(XmlConstants.S_ERROR);
+                    if (null == errorNode) {
+                        DebugLog.println("Error without description is stupid");
+                    } else {
+                        DebugLog.systemPrintln(
+                                "[INFO-JABBER] <IQ> error received: " +
+                                "Code=" + errorNode.getAttribute(XmlConstants.S_CODE) + " " +
+                                "Value=" + getError(errorNode));
+                    }
+                    AdHoc commands = XmppConnection.this.adhoc;
+                    if ((null != commands) && commands.getJid().equals(from)) {
+                        XmppConnection.this.adhoc = null;
+                        commands.addItems(null);
+                    }
+                } else {
+                    XmlNode iqQuery = iq.childAt(0);
+                    String queryName = iqQuery.name;
+                    if ("command".equals(queryName)) {
+                        if (null != XmppConnection.this.adhoc) {
+                            XmppConnection.this.adhoc.loadCommandXml(iq, iq.getId());
+                        }
+                    } else {
+                        AdHoc commands = XmppConnection.this.adhoc;
+                        if ((null != commands) && commands.getJid().equals(from)) {
+                            XmppConnection.this.adhoc = null;
+                            commands.addItems(iqQuery);
+                        }
+                    }
+                }
+            }
+        });
     }
 
     void requestCommandList(AdHoc adhoc) {
-        this.adhoc = adhoc;
-        putPacketIntoQueue("<iq type='get' to='" + Util.xmlEscape(adhoc.getJid())
-                + "' id='" + Util.xmlEscape(generateId()) + "'><query xmlns='"
-                + XmlConstants.DISCO_ITEMS
-                + "' node='http://jabber.org/protocol/commands'/></iq>");
+        requestCommand(adhoc, null);
     }
 
 
