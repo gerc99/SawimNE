@@ -45,6 +45,7 @@ public final class MirandaNotes {
             @Override
             public void onCreateOptionsMenu(Menu menu) {
                 MenuItem item = menu.add(Menu.NONE, COMMAND_ADD, Menu.NONE, R.string.add_to_list);
+                item.setIcon(R.drawable.ic_content_add);
                 MenuItemCompat.setShowAsAction(item, MenuItem.SHOW_AS_ACTION_IF_ROOM);
             }
 
@@ -121,15 +122,23 @@ public final class MirandaNotes {
     public static void loadMirandaNotes(Xmpp xmpp, XmlNode storage) {
         MirandaNotes mirandaNotes = xmpp.getMirandaNotes();
         mirandaNotes.clear();
-        while (0 < storage.childrenCount()) {
-            XmlNode item = storage.popChildNode();
-            String tags = item.getAttribute("tags");
-            String title = item.getFirstNodeValue("title");
-            String text = item.getFirstNodeValue("text");
-            if (title == null) title = "";
-            if (tags == null) tags = "";
-            if (text == null) text = "";
-            mirandaNotes.addNote(title, tags, text);
+        if (storage != null && storage.childrenCount()  > 0) {
+            while (0 < storage.childrenCount()) {
+                XmlNode item = storage.popChildNode();
+                String tags = item.getAttribute("tags");
+                String title = item.getFirstNodeValue("title");
+                String text = item.getFirstNodeValue("text");
+                if (title == null) title = "";
+                if (tags == null) tags = "";
+                if (text == null) text = "";
+                mirandaNotes.addNote(title, tags, text);
+            }
+        } else {
+            VirtualListItem no_notes = mirandaNotes.model.createNewParser(false);
+            no_notes.addDescription(JLocale.getString(R.string.no_notes),
+                                R.attr.text, Scheme.FONT_STYLE_PLAIN);
+            mirandaNotes.model.addPar(no_notes);
+            mirandaNotes.screen.updateModel();
         }
     }
 

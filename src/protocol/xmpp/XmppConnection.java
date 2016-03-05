@@ -616,9 +616,7 @@ public final class XmppConnection extends ClientConnection {
                     loadBookmarks(storage);
                 } else {
                     storage = iqQuery.getFirstNode("storage", "http://miranda-im.org/storage#notes");
-                    if (null != storage) {
-                        MirandaNotes.loadMirandaNotes(getXmpp(), storage);
-                    }
+                    MirandaNotes.loadMirandaNotes(getXmpp(), storage);
                 }
                 if (XmlConstants.IQ_TYPE_RESULT == iqType && ("getnotes").equals(id)) {
                     storage = iqQuery.getFirstNode("storage", "storage:rosternotes");

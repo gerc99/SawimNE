@@ -549,4 +549,5 @@
     <string name="non_empty">Поле не может быть пустым</string>
     <string name="show_pictures_in_chat">Показывать картинки в чате</string>
     <string name="find_conference">Найти конференцию</string>
+    <string name="no_notes">У вас нет ни одной заметки</string>
 </resources>
