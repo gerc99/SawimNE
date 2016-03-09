@@ -4,11 +4,12 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.EditText;
 import ru.sawim.R;
 import ru.sawim.comm.JLocale;
@@ -26,10 +27,11 @@ public class TextBoxView extends DialogFragment {
     private String text;
     private TextBoxListener textBoxListener;
 
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final Context context = getActivity();
-        View dialogView = LayoutInflater.from(context).inflate(R.layout.text_box_view, null);
+        View dialogView = View.inflate(context, R.layout.text_box_view, null);
         editText = (EditText) dialogView.findViewById(R.id.editText);
         editText.setText(text);
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
@@ -51,7 +53,11 @@ public class TextBoxView extends DialogFragment {
                 textBoxListener.textboxAction(TextBoxView.this, false);
             }
         });
-        return dialogBuilder.create();
+
+        AlertDialog dialog = dialogBuilder.create();
+        dialog.getWindow().setSoftInputMode(
+                WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        return dialog;
     }
 
     public void setCaption(String caption) {
@@ -78,7 +84,7 @@ public class TextBoxView extends DialogFragment {
         dismiss();
     }
 
-    public static interface TextBoxListener {
+    public interface TextBoxListener {
         void textboxAction(TextBoxView box, boolean ok);
     }
 }
