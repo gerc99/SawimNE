@@ -1,5 +1,6 @@
 package ru.sawim.view;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.support.v7.app.AlertDialog;
 import android.app.Dialog;
@@ -498,6 +499,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
         chat.resetUnreadMessages();
     }
 
+    @SuppressLint("NewApi")
     public boolean isScrollEnd() {
         MyListView chatListView = chatViewLayout.getChatListsView().getChatListView();
         return chatListView != null && !chatListView.canScrollVertically(0);

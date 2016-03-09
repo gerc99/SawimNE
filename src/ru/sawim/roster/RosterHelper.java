@@ -533,7 +533,7 @@ public final class RosterHelper {
                 new StatusesView().init(p, StatusesView.ADAPTER_STATUS).show(activity.getSupportFragmentManager(), "change-status");
                 return true;
             case RosterHelper.MENU_XSTATUS:
-                new XStatusesView(p).show(activity.getSupportFragmentManager(), "change-xstatus");
+                new XStatusesView().init(p).show(activity.getSupportFragmentManager(), "change-xstatus");
                 return true;
             case RosterHelper.MENU_DISCO:
                 ((Xmpp) p).getServiceDiscovery().showIt(activity);

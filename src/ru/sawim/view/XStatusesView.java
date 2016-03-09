@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,11 +36,13 @@ public class XStatusesView extends DialogFragment {
     protected String[] xst_descs = new String[100];
     private Protocol protocol;
 
-    public XStatusesView(Protocol p) {
+    public XStatusesView init(Protocol p) {
         protocol = p;
         load();
+        return this;
     }
 
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final Context context = getActivity();

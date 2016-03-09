@@ -1,5 +1,6 @@
 package ru.sawim.widget.chat;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
@@ -22,6 +23,7 @@ import ru.sawim.widget.SimpleItemView;
  * Time: 19:33
  * To change this template use File | Settings | File Templates.
  */
+@SuppressLint("NewApi")
 public class ChatBarView extends IcsLinearLayout {
 
     private static final int ITEM_VIEW_INDEX = 0;

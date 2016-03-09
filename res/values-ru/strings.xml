@@ -297,7 +297,7 @@
     <string name="moderator">модератор</string>
     <string name="member">член</string>
     <string name="none">никто</string>
-    <string name="outcast">=забанен</string>
+    <string name="outcast">забанен</string>
     <string name="participant">участник</string>
     <string name="visitor">гость</string>
     <string name="owners">Владельцы</string>
@@ -306,7 +306,6 @@
     <string name="inban">Забаненные</string>
     <string name="tags">Теги</string>
     <string name="text">Текст</string>
-    <string name="ticker_system">Бегущая строка</string>
     <string name="birth_day">День рождения</string>
     <string name="cancel">Отмена</string>
     <string name="canceled">Отменено</string>
@@ -323,7 +322,6 @@
     <string name="copy_all_text">Копировать всё</string>
     <string name="commands_not_found">Команды отсутствуют</string>
     <string name="conferences_on_">Конференции на</string>
-    <string name="cp1251">Win1251 кодировка</string>
     <string name="currect_contact">Этого контакта</string>
     <string name="delete_all">Удалить всё</string>
     <string name="delete_chat">Очистить чат</string>
@@ -377,7 +375,6 @@
     <string name="max_message_count">Число сообщений в чате</string>
     <string name="message">Сообщение</string>
     <string name="message_notification">Уведомление о сообщениях</string>
-    <string name="minimize">Свернуть Sawim</string>
     <string name="my_server">Мой сервер</string>
     <string name="name">Имя</string>
     <string name="name_desc">Имя файла и описание</string>
@@ -422,7 +419,7 @@
     <string name="use_simple_input">Отправка сообщений по энтеру</string>
     <string name="vibration">Вибрация</string>
     <string name="volume">Громкость</string>
-    <string name="wait">Пожалуйста, ждите...</string>
+    <string name="wait">Пожалуйста, ждите…</string>
     <string name="when_locked">Если заблокирован</string>
     <string name="was_baned">забанен</string>
     <string name="was_kicked">выгнан</string>
