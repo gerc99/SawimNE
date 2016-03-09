@@ -1,32 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary">#607D8B</color>
-    <color name="primary_dark">#455A64</color>
+    <color name="primary">#212121</color>
+    <color name="primary_dark">#212121</color>
     <color name="primary_light">#CFD8DC</color>
-    <color name="accent">#607D8B</color>
+    <color name="accent">#80CBC4</color>
     <color name="primary_text">#f7f7f7</color>
     <color name="secondary_text">#e6e6e6</color>
     <color name="icons">#FFFFFF</color>
-    <color name="list_divider">#B6B6B6</color>
+    <color name="list_divider">#60FFFFFF</color>
 
     <color name="background">#3A3A3A</color>
 
-    <color name="text">#ffe6e6e6</color>
+    <color name="text">#FFFFFFFF</color>
     <color name="item_selected">#607D8B</color>
     <color name="param_value">#ffe6e6e6</color>
-    <color name="chat_in_msg_text">#ffe6e6e6</color>
-    <color name="chat_out_msg_text">#ffe6e6e6</color>
-    <color name="chat_highlight_msg">#ffe6e6e6</color>
-    <color name="contact_online">#ffe6e6e6</color>
-    <color name="contact_with_chat">#ffe6e6e6</color>
-    <color name="contact_offline">#ffe6e6e6</color>
-    <color name="contact_temp">#ffe6e6e6</color>
-    <color name="group">#ffe6e6e6</color>
-    <color name="contact_status">#ffe6e6e6</color>
+    <color name="chat_in_msg_text">#FFDCEDC8</color>
+    <color name="chat_out_msg_text">#FFFF8A80</color>
+    <color name="chat_highlight_msg">#FFFFF9C4</color>
+    <color name="contact_online">#FFFFFFFF</color>
+    <color name="contact_with_chat">#FFFFFFFF</color>
+    <color name="contact_offline">#FFFFFFFF</color>
+    <color name="contact_temp">#FFFFFFFF</color>
+    <color name="group">#FFFFFFFF</color>
+    <color name="contact_status">#82FFFFFF</color>
     <color name="protocol_background">#ff585858</color>
     <color name="link">#ff1b77d2</color>
-    <color name="link_highlight">#ffe6e6e6</color>
-    <color name="unread_message_divider">#ffe6e6e6</color>
+    <color name="link_highlight">#FFFFFFFF</color>
+    <color name="unread_message_divider">#60FFFFFF</color>
     <color name="bar_unread_message">#02bcd4</color>
     <color name="bar_personal_unread_message">#f44437</color>
     <color name="unread_message">#02bcd4</color>
@@ -39,9 +39,9 @@
     <color name="light_accent">#1976d2</color>
     <color name="light_primary_text">#212121</color>
     <color name="light_secondary_text">#727272</color>
-    <color name="light_list_divider">#B6B6B6</color>
+    <color name="light_list_divider">#60000000</color>
 
-    <color name="light_text">#212121</color>
+    <color name="light_text">#DD000000</color>
     <color name="light_item_selected">#727272</color>
     <color name="light_param_value">#727272</color>
     <color name="light_chat_in_msg_text">#e57373</color>
@@ -51,12 +51,12 @@
     <color name="light_contact_with_chat">#2196f3</color>
     <color name="light_contact_offline">#727272</color>
     <color name="light_contact_temp">#727272</color>
-    <color name="light_group">#212121</color>
-    <color name="light_contact_status">#727272</color>
+    <color name="light_group">#DD000000</color>
+    <color name="light_contact_status">#89000000</color>
     <color name="light_protocol_background">#727272</color>
     <color name="light_link">#ff1b77d2</color>
     <color name="light_link_highlight">#0c41d2</color>
-    <color name="light_unread_message_divider">#B6B6B6</color>
+    <color name="light_unread_message_divider">#60000000</color>
     <color name="light_bar_unread_message">#4eb6ac</color>
     <color name="light_bar_personal_unread_message">#e57474</color>
     <color name="light_unread_message">#4eb6ac</color>
