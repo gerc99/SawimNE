@@ -212,6 +212,15 @@ public class FormView extends DialogFragment implements Forms.OnUpdateForm, Dial
                     drawText(context, c, listLayout);
                     editText.setHint(R.string.enter_the);
                     editText.setText(c.text);
+                    editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                        @Override
+                        public void onFocusChange(View v, boolean hasFocus) {
+                            if (hasFocus) {
+                                getDialog().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+                                getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+                            }
+                        }
+                    });
                     editText.addTextChangedListener(new TextWatcher() {
 
                         public void afterTextChanged(Editable s) {
@@ -222,7 +231,7 @@ public class FormView extends DialogFragment implements Forms.OnUpdateForm, Dial
 
                         public void onTextChanged(CharSequence s, int start, int before, int count) {
                             c.text = s.toString();
-                            getLastForms().controlUpdated((BaseActivity)getActivity(), c);
+                            getLastForms().controlUpdated((BaseActivity) getActivity(), c);
                         }
                     });
                     listLayout.addView(editText);
