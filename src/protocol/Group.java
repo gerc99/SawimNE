@@ -5,6 +5,8 @@ import ru.sawim.roster.TreeBranch;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import protocol.Contact;
+
 
 public class Group extends TreeBranch {
 
@@ -68,7 +70,7 @@ public class Group extends TreeBranch {
     }
 
     public boolean isEmpty() {
-        return (0 == contacts.size());
+        return contacts.isEmpty();
     }
 
     public final List<Contact> getContacts() {

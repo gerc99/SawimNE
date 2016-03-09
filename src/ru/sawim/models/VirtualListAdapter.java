@@ -105,7 +105,7 @@ public class VirtualListAdapter extends RecyclerView.Adapter<VirtualListAdapter.
 
 
     public VirtualListItem getItem(int i) {
-        if (items.size() == 0) return null;
+        if (items.isEmpty()) return null;
         return items.get(i);
     }
 
