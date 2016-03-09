@@ -70,7 +70,9 @@ public class AvatarCache {
                                 return;
                             }
                         }
-                        Vcard.getVCard(((Xmpp) RosterHelper.getInstance().getProtocol(0)).getConnection(), id, new Vcard.OnAvatarLoadListener() {
+                        Xmpp xmpp = (Xmpp) RosterHelper.getInstance().getProtocol(0);
+                        if (xmpp == null || xmpp.getConnection() == null) return;
+                        Vcard.getVCard(xmpp.getConnection(), id, new Vcard.OnAvatarLoadListener() {
                             @Override
                             public void onLoaded(String avatarHash, byte[] avatarBytes) {
                                 if (id != null) {

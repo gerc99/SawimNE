@@ -7,18 +7,19 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.Typeface;
+import android.graphics.drawable.Animatable;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.SystemClock;
 import android.text.*;
 import android.text.style.BackgroundColorSpan;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.SimpleTarget;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import java.util.List;
 
@@ -67,7 +68,7 @@ public class MessageItemView extends View {
     private int msgTimeSize;
     private int msgTextSize;
     private Bitmap checkImage;
-    private Bitmap image;
+    private Drawable image;
 
     private int textY;
 
@@ -128,14 +129,14 @@ public class MessageItemView extends View {
         int width = MeasureSpec.getSize(widthMeasureSpec);
         int height = isAddTitleView ? measureHeight(heightMeasureSpec) : getPaddingTop() + getPaddingBottom();
         int layoutWidth = width - getPaddingRight() - getPaddingLeft() * 2;
-        if (layout.getWidth() != layoutWidth) {
+        if (layout != null && layout.getWidth() != layoutWidth) {
             layout = makeLayout(layout.getText(), msgTextTypeface, layoutWidth);
         }
         titleHeight = isAddTitleView ? height - getPaddingTop() : getPaddingTop();
         if (layout != null)
             height += layout.getLineTop(layout.getLineCount());
         if (image != null) {
-            height += image.getHeight();
+            height += image.getIntrinsicHeight();
         }
         setMeasuredDimension(width, height);
     }
@@ -206,16 +207,43 @@ public class MessageItemView extends View {
             return;
         }
 
-        Glide.with(getContext()).load(imageLink).asBitmap()
-             .override(getMessageWidth(), getMessageWidth()).fitCenter()
-             .into(new SimpleTarget<Bitmap>() {
-                 @Override
-                 public void onResourceReady(Bitmap resource, GlideAnimation glideAnimation) {
-                     image = resource;
-                     repaint();
-                     invalidate();
-                 }
-             });
+        Picasso.with(getContext()).load(imageLink).placeholder(R.drawable.progress_animation).into(new Target() {
+            @Override
+            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                image = new BitmapDrawable(getResources(), bitmap);
+                repaint();
+                invalidate();
+            }
+
+            @Override
+            public void onBitmapFailed(Drawable errorDrawable) {
+            }
+
+            @Override
+            public void onPrepareLoad(Drawable placeHolderDrawable) {
+                image = placeHolderDrawable;
+                placeHolderDrawable.setCallback(new Drawable.Callback() {
+
+                    @Override
+                    public void unscheduleDrawable(Drawable who, Runnable what) {
+                        removeCallbacks(what);
+                    }
+
+                    @Override
+                    public void scheduleDrawable(Drawable who, Runnable what, long when) {
+                        postDelayed(what, when - SystemClock.uptimeMillis());
+                    }
+
+                    @Override
+                    public void invalidateDrawable(Drawable who) {
+                        postInvalidate();
+                    }
+                });
+                ((Animatable)placeHolderDrawable).start();
+                repaint();
+                invalidate();
+            }
+        });
     }
 
     public void setLinkTextColor(int color) {
@@ -279,7 +307,9 @@ public class MessageItemView extends View {
         }
 
         if (image != null) {
-            canvas.drawBitmap(image, getWidth() / 2 - image.getWidth() / 2, titleHeight + getPaddingTop() / 2, null);
+            image.setBounds(getWidth() / 2 - image.getIntrinsicWidth() / 2, titleHeight + getPaddingTop() / 2,
+                    image.getIntrinsicWidth() + getWidth() / 2 - image.getIntrinsicWidth() / 2, image.getIntrinsicHeight() + titleHeight + getPaddingTop() / 2);
+            image.draw(canvas);
         }
         if (layout != null) {
             canvas.save();
@@ -289,7 +319,7 @@ public class MessageItemView extends View {
             messageTextPaint.setTypeface(msgTextTypeface);
             int y = titleHeight + getPaddingTop() / 2;
             if (image != null) {
-                y += image.getHeight();
+                y += image.getIntrinsicHeight();
             }
             canvas.translate(getPaddingLeft() * 2, y);
             layout.draw(canvas);
