@@ -29,10 +29,13 @@ import ru.sawim.roster.RosterHelper;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
+import static android.provider.Settings.System.DATE_FORMAT;
 import static ru.sawim.R.string.size;
 import static ru.sawim.modules.FileTransfer.TransferStatus.CANCEL;
 import static ru.sawim.modules.FileTransfer.TransferStatus.ERROR;
@@ -53,6 +56,10 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
     private static final int JIMM_NET_RU_UPLOAD_PORT = 2000;
     private static final int PROTOCOL_VERSION = 1;
     private static final String TRANSFER_CLIENT = "sawimne";
+
+    private static DateFormat fileDateFormat = new SimpleDateFormat(
+            "dd-MM-yyyy_HH-mm",
+            Locale.getDefault());
 
     enum TransferStatus {
         OK, CANCEL, ERROR
@@ -153,6 +160,10 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
     public void onFileSelect(BaseActivity activity, Uri fileUri) {
         try {
             InputStream in = activity.getContentResolver().openInputStream(fileUri);
+            if (in == null) {
+                handleException(new SawimException(191, 6));
+                return;
+            }
             setFileName(ExternalApi.getFileName(fileUri, activity));
             filePath = ExternalApi.getPath(activity, fileUri);
             int fileSize = in.available();
@@ -184,11 +195,10 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
         }
     }
 
-    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy_HH-mm");
     public void processPhoto(BaseActivity activity, final byte[] data) {
         setData(data);
-        DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
-        String timestamp = DATE_FORMAT.format(SawimApplication.getCurrentGmtTime());
+        fileDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        String timestamp = fileDateFormat.format(SawimApplication.getCurrentGmtTime());
         String photoName = "photo-"
                 + timestamp.replace('.', '-').replace(' ', '-')
                 + ".jpg";
@@ -336,13 +346,11 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
                 int read = fis.read(buffer);
                 socket.write(buffer, 0, read);
                 counter -= read;
-                if (fileSize != 0) {
-                    if (isCanceled()) {
-                        throw new SawimException(194, 1);
-                    }
-                    socket.flush();
-                    setProgress((100 - 2) * (fileSize - counter) / fileSize);
+                if (isCanceled()) {
+                    throw new SawimException(194, 1);
                 }
+                socket.flush();
+                setProgress((100 - 2) * (fileSize - counter) / fileSize);
             }
             socket.flush();
 
@@ -390,6 +398,9 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
 
     private String sendImageViaJabberRu() throws SawimException {
         Protocol protocol = RosterHelper.getInstance().getProtocol(0);
+        if (protocol == null) {
+            throw new SawimException(194, 3);
+        }
 
         RequestBody requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
