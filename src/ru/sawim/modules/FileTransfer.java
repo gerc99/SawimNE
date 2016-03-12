@@ -9,11 +9,13 @@ import okio.Buffer;
 import okio.BufferedSink;
 import okio.Okio;
 import okio.Source;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import protocol.Contact;
 import protocol.Protocol;
 import protocol.net.TcpSocket;
+import protocol.xmpp.Jid;
 import ru.sawim.*;
 import ru.sawim.activities.BaseActivity;
 import ru.sawim.chat.Chat;
@@ -29,17 +31,33 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
+import static ru.sawim.R.string.size;
 import static ru.sawim.modules.FileTransfer.TransferStatus.CANCEL;
 import static ru.sawim.modules.FileTransfer.TransferStatus.ERROR;
 
 public final class FileTransfer implements FileBrowserListener, PhotoListener, Runnable {
+    private static final int BUFFER_LEN = 4096;
+    private static final int CONNECTION_TIMEOUT = 10000;
+    private static final int WRITE_TIMEOUT = 10000;
+    private static final int READ_TIMEOUT = 30000;
+    private static final TimeUnit TIMEOUT_UNITS = TimeUnit.MILLISECONDS;
+
+    private static final String JABBER_RU_UPLOAD_URL = "https://www.jabber.ru/newimage/";
+
+    private static final String IMGUR_CLIENT_ID = "c90472da1a4d000";
+    private static final String IMGUR_UPLOAD_URL = "https://api.imgur.com/3/image";
+
+    private static final String JIMM_NET_RU_UPLOAD_URL= "files.jimm.net.ru";
+    private static final int JIMM_NET_RU_UPLOAD_PORT = 2000;
+    private static final int PROTOCOL_VERSION = 1;
+    private static final String TRANSFER_CLIENT = "sawimne";
+
     enum TransferStatus {
         OK, CANCEL, ERROR
     }
     private TransferStatus status = TransferStatus.OK;
-
-    private static final int BUFFER_LEN = 4096;
 
     private String filename;
     private String filePath;
@@ -63,10 +81,11 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
                 statusStr = JLocale.getString(R.string.error);
             }
             builder.setMessage(filePath == null ? "" : (JLocale.getString(R.string.path) + ": " + filePath + "\n")
-                    + JLocale.getString(R.string.size) + ": " + getFileSize() + "\n"
-                    + JLocale.getString(R.string.chat) + ": " + chat.getContact().getUserId() + "\n"
-                    + JLocale.getString(R.string.upload_time) + ": " + startTime + "\n"
-                    + JLocale.getString(R.string.status) + ": " + statusStr);
+                                                       + JLocale.getString(
+                    size) + ": " + getFileSize() + "\n"
+                                                       + JLocale.getString(R.string.chat) + ": " + chat.getContact().getUserId() + "\n"
+                                                       + JLocale.getString(R.string.upload_time) + ": " + startTime + "\n"
+                                                       + JLocale.getString(R.string.status) + ": " + statusStr);
             if (status == ERROR) {
                 builder.setNegativeButton(JLocale.getString(R.string.repeat),
                         new DialogInterface.OnClickListener() {
@@ -264,7 +283,12 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
     private void sendFile() throws IOException, SawimException {
         String imageUrl;
         if (Util.isImageFile(filename)) {
-            imageUrl = sendImageViaImgur();
+            // Jabber.ru upload requires auth data (jabber.ru/xmpp.ru account)
+            if (isJabberRuUploadAvailable()) {
+                imageUrl = sendImageViaJabberRu();
+            } else {
+                imageUrl = sendImageViaImgur();
+            }
         } else {
             imageUrl = sendViaJimmNetRu();
         }
@@ -277,10 +301,16 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
         chat.getProtocol().sendMessage(chat, message);
     }
 
-    private static final String JIMM_NET_RU_UPLOAD_URL= "files.jimm.net.ru";
-    private static final int JIMM_NET_RU_UPLOAD_PORT = 2000;
-    private static final int PROTOCOL_VERSION = 1;
-    private static final String TRANSFER_CLIENT = "sawimne";
+    private boolean isJabberRuUploadAvailable() {
+        Protocol protocol = RosterHelper.getInstance().getProtocol(0);
+        if (protocol == null) {
+            return false;
+        }
+
+        String userId = protocol.getUserId();
+        String domain = Jid.getDomain(userId);
+        return "jabber.ru".equals(domain) || "xmpp.ru".equals(domain);
+    }
 
     private String sendViaJimmNetRu() throws SawimException {
         int fileSize = getFileSize();
@@ -337,9 +367,6 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
         }
     }
 
-    private static final String IMGUR_CLIENT_ID = "c90472da1a4d000";
-    private static final String IMGUR_UPLOAD_URL = "https://api.imgur.com/3/image";
-
     private String sendImageViaImgur() throws IOException, SawimException {
         RequestBody requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
@@ -359,27 +386,63 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
         }
     }
 
+    private String sendImageViaJabberRu() throws SawimException {
+        Protocol protocol = RosterHelper.getInstance().getProtocol(0);
+
+        RequestBody requestBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("image", filename, getRequestBody())
+                .addFormDataPart("jid", protocol.getUserId())
+                .addFormDataPart("password", protocol.getPassword())
+                .build();
+        Request request = new Request.Builder()
+                .url(JABBER_RU_UPLOAD_URL)
+                .post(requestBody)
+                .build();
+        JSONObject response = getJSONResponse(request);
+        try {
+            JSONArray sizes = response.getJSONArray("sizes");
+            for (int i = 0 ; i < sizes.length(); ++i) {
+                JSONObject size = sizes.getJSONObject(i);
+                if ("o".equals(size.getString("type"))) {
+                    return size.getString("src");
+                }
+            }
+            DebugLog.println("send file: bad response 1 [jabber.ru]");
+            throw new SawimException(194, 3);
+        } catch (JSONException e) {
+            DebugLog.println("send file: bad response 2 [jabber.ru]");
+            throw new SawimException(194, 3);
+        }
+    }
+
     private JSONObject getJSONResponse(Request request) throws SawimException {
-        OkHttpClient client = new OkHttpClient();
+        OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(CONNECTION_TIMEOUT, TIMEOUT_UNITS)
+                .readTimeout(READ_TIMEOUT, TIMEOUT_UNITS)
+                .writeTimeout(WRITE_TIMEOUT, TIMEOUT_UNITS)
+                .build();
         Response response;
         try {
             response = client.newCall(request).execute();
         } catch (IOException e) {
-            DebugLog.panic("send file: cannot get response [imgur]", e);
-            throw new SawimException(194, 2);
-        }
-        if (!response.isSuccessful()) {
+            DebugLog.panic("send file: cannot get response", e);
             throw new SawimException(194, 2);
         }
 
         try {
             String jsonData = response.body().string();
+            DebugLog.println("send file: " + jsonData);
+            if (!response.isSuccessful()) {
+                DebugLog.println("send file: cannot get response [imgur]");
+                throw new SawimException(194, 2);
+            }
             return new JSONObject(jsonData);
         } catch (JSONException e) {
-            DebugLog.panic("send file: bad response 1 [imgur]", e);
+            DebugLog.panic("send file: bad response", e);
             throw new SawimException(194, 2);
         } catch (IOException e) {
-            DebugLog.panic("send file: cannot get response [imgur]", e);
+            DebugLog.panic("send file: cannot get response", e);
             throw new SawimException(194, 2);
         }
     }
