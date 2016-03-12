@@ -383,7 +383,7 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
         try {
             return response.getJSONObject("data").getString("link");
         } catch (JSONException e) {
-            DebugLog.panic("send file: bad response 2 [imgur]", e);
+            DebugLog.println("send file: bad response 2 [imgur]");
             throw new SawimException(194, 2);
         }
     }
