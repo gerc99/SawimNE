@@ -293,6 +293,8 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
             imageUrl = sendViaJimmNetRu();
         }
 
+        setProgress(100);
+
         String fileSize = StringConvertor.bytesToSizeString(
                 getFileSize(), false);
         String message = "File: " + filename + "\n" +
