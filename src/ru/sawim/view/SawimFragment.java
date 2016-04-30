@@ -26,6 +26,6 @@ public abstract class SawimFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        SawimApplication.getInstance().refWatcher.watch(this);
+        //SawimApplication.getInstance().refWatcher.watch(this);
     }
 }

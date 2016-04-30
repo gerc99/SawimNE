@@ -120,6 +120,7 @@ public class SearchConferenceFragment extends SawimFragment
 
     private void search(String server) {
         final XmppConnection connection = ((Xmpp) RosterHelper.getInstance().getProtocol(0)).getConnection();
+        if (connection == null) return;
         connection.requestIq(server, XmlConstants.DISCO_ITEMS, new OnIqReceived() {
             @Override
             public void onIqReceived(XmlNode iq) {

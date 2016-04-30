@@ -39,7 +39,7 @@
     <color name="light_accent">#1976d2</color>
     <color name="light_primary_text">#212121</color>
     <color name="light_secondary_text">#727272</color>
-    <color name="light_list_divider">#60000000</color>
+    <color name="light_list_divider">#9e9e9e</color>
 
     <color name="light_text">#DD000000</color>
     <color name="light_item_selected">#727272</color>
@@ -48,7 +48,7 @@
     <color name="light_chat_out_msg_text">#42a5f5</color>
     <color name="light_chat_highlight_msg">#1565c0</color>
     <color name="light_contact_online">#2196f3</color>
-    <color name="light_contact_with_chat">#2196f3</color>
+    <color name="light_contact_with_chat">#263238</color>
     <color name="light_contact_offline">#727272</color>
     <color name="light_contact_temp">#727272</color>
     <color name="light_group">#DD000000</color>

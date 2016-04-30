@@ -67,7 +67,7 @@ public class SearchContactFragment extends SawimFragment
 
         handler = new Handler(this);
 
-        MyListView listView = (MyListView) LayoutInflater.from(getContext()).inflate(R.layout.recycler_view, null);
+        MyListView listView = (MyListView) LayoutInflater.from(context).inflate(R.layout.recycler_view, null);
         RosterAdapter rosterAdapter = new RosterAdapter();
         rosterAdapter.setType(RosterHelper.ALL_CONTACTS);
         listView.setAdapter(rosterAdapter);

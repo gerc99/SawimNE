@@ -21,8 +21,6 @@ import android.util.Log;
 import com.github.anrwatchdog.ANRWatchDog;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.squareup.leakcanary.LeakCanary;
-import com.squareup.leakcanary.RefWatcher;
 
 import de.duenndns.ssl.MemorizingTrustManager;
 import protocol.Protocol;
@@ -95,7 +93,7 @@ public class SawimApplication extends Application {
     private Handler uiHandler;
     private ExecutorService backgroundExecutor;
     public static SSLContext sc;
-    public RefWatcher refWatcher;
+    //public RefWatcher refWatcher;
     private BroadcastReceiver registrationBroadcastReceiver;
 
     public static SawimApplication getInstance() {
@@ -115,7 +113,7 @@ public class SawimApplication extends Application {
         super.onCreate();
         new ANRWatchDog().start();
         checkPlayServices = checkPlayServices();
-        refWatcher = LeakCanary.install(this);
+    //    refWatcher = LeakCanary.install(this);
         databaseHelper = new DatabaseHelper(getApplicationContext());
         uiHandler = new Handler(Looper.getMainLooper());
         backgroundExecutor = Executors

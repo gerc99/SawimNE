@@ -139,8 +139,8 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
         FixedEditText messageEditor = new FixedEditText(activity);
         chatBarLayout = new ChatBarView(activity, chatsImage);
         chatBarLayout.setOnClickListener(this);
-        MyListView chatListView = (MyListView) LayoutInflater.from(getContext()).inflate(R.layout.recycler_view, null);
-        nickList = (MyListView) LayoutInflater.from(getContext()).inflate(R.layout.recycler_view, null);
+        MyListView chatListView = (MyListView) LayoutInflater.from(context).inflate(R.layout.recycler_view, null);
+        nickList = (MyListView) LayoutInflater.from(context).inflate(R.layout.recycler_view, null);
         ChatListsView chatListsView = new ChatListsView(activity, SawimApplication.isManyPane(), chatListView, nickList);
         ChatInputBarView chatInputBarView = new ChatInputBarView(activity, menuButton, smileButton, messageEditor, sendButton);
         chatViewLayout = new ChatViewRoot(activity, chatListsView, chatInputBarView);
@@ -882,6 +882,7 @@ public class ChatView extends SawimFragment implements OnUpdateChat, Handler.Cal
             } else {
                 chatBarLayout.setVisibilityChatsImage(View.VISIBLE);
                 if (!SawimApplication.isManyPane()) {
+                    icMess = icMess.getConstantState().newDrawable();
                     if (icMess == SawimResources.PERSONAL_MESSAGE_ICON) {
                         icMess.setColorFilter(Scheme.getColor(R.attr.bar_personal_unread_message), PorterDuff.Mode.MULTIPLY);
                     } else {

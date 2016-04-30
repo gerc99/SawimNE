@@ -207,7 +207,7 @@ public class MessageItemView extends View {
             return;
         }
 
-        Picasso.with(getContext()).load(imageLink).placeholder(R.drawable.progress_animation).into(new Target() {
+        Picasso.with(getContext()).load(imageLink).into(new Target() {
             @Override
             public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
                 image = new BitmapDrawable(getResources(), bitmap);
@@ -221,27 +221,6 @@ public class MessageItemView extends View {
 
             @Override
             public void onPrepareLoad(Drawable placeHolderDrawable) {
-                image = placeHolderDrawable;
-                placeHolderDrawable.setCallback(new Drawable.Callback() {
-
-                    @Override
-                    public void unscheduleDrawable(Drawable who, Runnable what) {
-                        removeCallbacks(what);
-                    }
-
-                    @Override
-                    public void scheduleDrawable(Drawable who, Runnable what, long when) {
-                        postDelayed(what, when - SystemClock.uptimeMillis());
-                    }
-
-                    @Override
-                    public void invalidateDrawable(Drawable who) {
-                        postInvalidate();
-                    }
-                });
-                ((Animatable)placeHolderDrawable).start();
-                repaint();
-                invalidate();
             }
         });
     }
@@ -258,13 +237,14 @@ public class MessageItemView extends View {
         msgTextSize = size;
     }
 
+    @Override
+    public boolean hasOverlappingRendering() {
+        return false;
+    }
+
     public void repaint() {
         requestLayout();
         //invalidate();
-    }
-
-    @Override
-    public void buildDrawingCache(boolean autoScale) {
     }
 
     @Override
@@ -334,11 +314,6 @@ public class MessageItemView extends View {
 
     private void setDrawableBounds(Drawable drawable, int x, int y, int w, int h) {
         drawable.setBounds(x, y, x + w, y + h);
-    }
-
-    @Override
-    public boolean hasFocusable() {
-        return false;
     }
 
     private int getLineForVertical(int vertical) {

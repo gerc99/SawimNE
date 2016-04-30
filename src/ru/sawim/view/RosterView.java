@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -80,7 +81,7 @@ public class RosterView extends SawimFragment implements View.OnClickListener, O
         progressBar.setLayoutParams(progressBarLP);
         progressBar.setVisibility(View.GONE);
 
-        MyListView listView = (MyListView) LayoutInflater.from(getContext()).inflate(R.layout.recycler_view, null);
+        MyListView listView = (MyListView) LayoutInflater.from(context).inflate(R.layout.recycler_view, null);
         RosterAdapter rosterAdapter = new RosterAdapter();
         listView.setAdapter(rosterAdapter);
         registerForContextMenu(listView);
@@ -88,7 +89,7 @@ public class RosterView extends SawimFragment implements View.OnClickListener, O
         FrameLayout.LayoutParams listViewLP = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
         listView.setLayoutParams(listViewLP);
 
-        View emptyView = LayoutInflater.from(getContext()).inflate(R.layout.roster_empty_view, null);
+        View emptyView = LayoutInflater.from(context).inflate(R.layout.roster_empty_view, null);
         Button findConfButton = (Button) emptyView.findViewById(R.id.find_conference_button);
         Button manageClButton = (Button) emptyView.findViewById(R.id.manage_contact_list_button);
         findConfButton.setOnClickListener(this);
@@ -212,10 +213,11 @@ public class RosterView extends SawimFragment implements View.OnClickListener, O
         if (icMess == null) {
             chatsImage.setVisibility(View.GONE);
         } else {
+            icMess = icMess.getConstantState().newDrawable();
             if (icMess == SawimResources.PERSONAL_MESSAGE_ICON) {
-                //icMess.setColorFilter(Scheme.getColor(R.attr.bar_personal_unread_message), PorterDuff.Mode.MULTIPLY);
+                icMess.setColorFilter(Scheme.getColor(R.attr.bar_personal_unread_message), PorterDuff.Mode.MULTIPLY);
             } else {
-                //icMess.setColorFilter(Scheme.getColor(R.attr.bar_unread_message), PorterDuff.Mode.MULTIPLY);
+                icMess.setColorFilter(Scheme.getColor(R.attr.bar_unread_message), PorterDuff.Mode.MULTIPLY);
             }
             chatsImage.setVisibility(View.VISIBLE);
             chatsImage.setImageDrawable(icMess);

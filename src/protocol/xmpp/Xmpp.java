@@ -354,7 +354,7 @@ public final class Xmpp extends Protocol implements FormListener {
     }
 
     public String getResource() {
-        return resource;
+        return resource + "_" + (System.currentTimeMillis() / 1000);
     }
 
     protected void s_setPrivateStatus() {

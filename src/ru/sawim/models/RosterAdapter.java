@@ -237,8 +237,7 @@ public class RosterAdapter extends RecyclerView.Adapter<RosterAdapter.ViewHolder
             for (int i = 0; i < roster.getProtocolCount(); ++i) {
                 Protocol p = roster.getProtocol(i);
                 ChatHistory.instance.addLayerToListOfChats(p, items, i);
-                if (p.oldContactIdWithMessage == null)
-                    ChatHistory.instance.sort();
+                ChatHistory.instance.sort();
             }
         } else {
             if (count > 1) {
@@ -368,7 +367,7 @@ public class RosterAdapter extends RecyclerView.Adapter<RosterAdapter.ViewHolder
 
         Drawable messIcon = ChatHistory.instance.getUnreadMessageIcon(o.getProtocol());
         if (messIcon != null) {
-            messIcon = messIcon.mutate();
+            messIcon = messIcon.getConstantState().newDrawable();
             if (messIcon == SawimResources.PERSONAL_MESSAGE_ICON) {
                 messIcon.setColorFilter(Scheme.getColor(R.attr.personal_unread_message), PorterDuff.Mode.MULTIPLY);
             } else {
@@ -392,7 +391,7 @@ public class RosterAdapter extends RecyclerView.Adapter<RosterAdapter.ViewHolder
 
         Drawable messIcon = ChatHistory.instance.getUnreadMessageIcon(g.getContacts());
         if (messIcon != null) {
-            messIcon = messIcon.mutate();
+            messIcon = messIcon.getConstantState().newDrawable();
             if (messIcon == SawimResources.PERSONAL_MESSAGE_ICON) {
                 messIcon.setColorFilter(Scheme.getColor(R.attr.personal_unread_message), PorterDuff.Mode.MULTIPLY);
             } else {
@@ -432,7 +431,7 @@ public class RosterAdapter extends RecyclerView.Adapter<RosterAdapter.ViewHolder
         } else {
             Drawable icMess = ChatHistory.instance.getUnreadMessageIcon(item);
             if (icMess != null) {
-                icMess = icMess.mutate();
+                icMess = icMess.getConstantState().newDrawable();
                 if (icMess == SawimResources.PERSONAL_MESSAGE_ICON) {
                     icMess.setColorFilter(Scheme.getColor(R.attr.personal_unread_message), PorterDuff.Mode.MULTIPLY);
                 } else {
@@ -477,7 +476,7 @@ public class RosterAdapter extends RecyclerView.Adapter<RosterAdapter.ViewHolder
             Icon icStatus = chat.getProtocol().getStatusInfo().getIcon(chat.getContact().getStatusIndex());
             Drawable icMess = Message.getIcon(chat.getNewMessageIcon());
             if (icMess != null) {
-                icMess = icMess.mutate();
+                icMess = icMess.getConstantState().newDrawable();
                 if (icMess == SawimResources.PERSONAL_MESSAGE_ICON) {
                     icMess.setColorFilter(Scheme.getColor(R.attr.personal_unread_message), PorterDuff.Mode.MULTIPLY);
                 } else {
