@@ -1,18 +1,24 @@
 package ru.sawim.modules;
 
-import android.support.v7.app.AlertDialog;
 import android.content.DialogInterface;
 import android.net.Uri;
-import android.os.Build;
-import android.util.Log;
+import android.support.v7.app.AlertDialog;
+import android.webkit.MimeTypeMap;
+import okhttp3.*;
+import okio.Buffer;
+import okio.BufferedSink;
+import okio.Okio;
+import okio.Source;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import protocol.Contact;
 import protocol.Protocol;
 import protocol.net.TcpSocket;
+import protocol.xmpp.Jid;
 import ru.sawim.*;
 import ru.sawim.activities.BaseActivity;
 import ru.sawim.chat.Chat;
-import ru.sawim.chat.message.PlainMessage;
 import ru.sawim.comm.JLocale;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
@@ -21,20 +27,44 @@ import ru.sawim.modules.photo.PhotoListener;
 import ru.sawim.roster.RosterHelper;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Locale;
+import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
+
+import static android.provider.Settings.System.DATE_FORMAT;
+import static ru.sawim.R.string.size;
+import static ru.sawim.modules.FileTransfer.TransferStatus.CANCEL;
+import static ru.sawim.modules.FileTransfer.TransferStatus.ERROR;
 
 public final class FileTransfer implements FileBrowserListener, PhotoListener, Runnable {
+    private static final int BUFFER_LEN = 4096;
+    private static final int CONNECTION_TIMEOUT = 10000;
+    private static final int WRITE_TIMEOUT = 10000;
+    private static final int READ_TIMEOUT = 30000;
+    private static final TimeUnit TIMEOUT_UNITS = TimeUnit.MILLISECONDS;
 
-    private static final String TAG = FileTransfer.class.getSimpleName();
+    private static final String JABBER_RU_UPLOAD_URL = "https://www.jabber.ru/newimage/";
 
-    private static final int CANCELED_STATUS = 0;
-    private static final int ERROR_STATUS = 1;
-    private int status = -1;
+    private static final String IMGUR_CLIENT_ID = "c90472da1a4d000";
+    private static final String IMGUR_UPLOAD_URL = "https://api.imgur.com/3/image";
+
+    private static final String JIMM_NET_RU_UPLOAD_URL= "files.jimm.net.ru";
+    private static final int JIMM_NET_RU_UPLOAD_PORT = 2000;
+    private static final int PROTOCOL_VERSION = 1;
+    private static final String TRANSFER_CLIENT = "sawimne";
+
+    private static DateFormat fileDateFormat = new SimpleDateFormat(
+            "dd-MM-yyyy_HH-mm",
+            Locale.getDefault());
+
+    enum TransferStatus {
+        OK, CANCEL, ERROR
+    }
+    private TransferStatus status = TransferStatus.OK;
 
     private String filename;
     private String filePath;
@@ -52,17 +82,18 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
             builder.setCancelable(true);
             builder.setTitle(R.string.sending_file);
             String statusStr = JLocale.getString(R.string.sending_file);
-            if (status == CANCELED_STATUS) {
+            if (status == CANCEL) {
                 statusStr = JLocale.getString(R.string.stopped);
-            } else if (status == ERROR_STATUS) {
+            } else if (status == ERROR) {
                 statusStr = JLocale.getString(R.string.error);
             }
             builder.setMessage(filePath == null ? "" : (JLocale.getString(R.string.path) + ": " + filePath + "\n")
-                    + JLocale.getString(R.string.size) + ": " + getFileSize() + "\n"
-                    + JLocale.getString(R.string.chat) + ": " + chat.getContact().getUserId() + "\n"
-                    + JLocale.getString(R.string.upload_time) + ": " + startTime + "\n"
-                    + JLocale.getString(R.string.status) + ": " + statusStr);
-            if (status == ERROR_STATUS) {
+                                                       + JLocale.getString(
+                    size) + ": " + getFileSize() + "\n"
+                                                       + JLocale.getString(R.string.chat) + ": " + chat.getContact().getUserId() + "\n"
+                                                       + JLocale.getString(R.string.upload_time) + ": " + startTime + "\n"
+                                                       + JLocale.getString(R.string.status) + ": " + statusStr);
+            if (status == ERROR) {
                 builder.setNegativeButton(JLocale.getString(R.string.repeat),
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog,
@@ -129,6 +160,10 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
     public void onFileSelect(BaseActivity activity, Uri fileUri) {
         try {
             InputStream in = activity.getContentResolver().openInputStream(fileUri);
+            if (in == null) {
+                handleException(new SawimException(191, 6));
+                return;
+            }
             setFileName(ExternalApi.getFileName(fileUri, activity));
             filePath = ExternalApi.getPath(activity, fileUri);
             int fileSize = in.available();
@@ -150,7 +185,7 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
 
     private void cancelUpload(){
         try {
-            status = CANCELED_STATUS;
+            status = ERROR;
             destroy();
 
             SawimNotification.clear(getId());
@@ -160,11 +195,10 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
         }
     }
 
-    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy_HH-mm");
     public void processPhoto(BaseActivity activity, final byte[] data) {
         setData(data);
-        DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
-        String timestamp = DATE_FORMAT.format(SawimApplication.getCurrentGmtTime());
+        fileDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        String timestamp = fileDateFormat.format(SawimApplication.getCurrentGmtTime());
         String photoName = "photo-"
                 + timestamp.replace('.', '-').replace(' ', '-')
                 + ".jpg";
@@ -185,12 +219,12 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
     }
 
     public void cancel() {
-        status = CANCELED_STATUS;
+        status = CANCEL;
         changeFileProgress(0, R.string.canceled);
     }
 
     public boolean isCanceled() {
-        return status == CANCELED_STATUS;
+        return status == CANCEL;
     }
 
     private void addProgress() {
@@ -226,7 +260,7 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
             destroy();
             return;
         }
-        status = ERROR_STATUS;
+        status = ERROR;
         changeFileProgress(-1, R.string.error);
         chat.addFileProgress(JLocale.getString(R.string.error), e.getLocalizedMessage());
     }
@@ -241,14 +275,13 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
 
     public void run() {
         try {
-            InputStream in = getFileIS();
-            int size = getFileSize();
-            sendFileThroughServer(in, size);
+            sendFile();
         } catch (SawimException e) {
+            e.printStackTrace();
             handleException(e);
-        } catch (Exception e) {
-            DebugLog.panic("FileTransfer.run", e);
-            handleException(new SawimException(194, 2));
+        } catch (IOException e) {
+            e.printStackTrace();
+            handleException(new SawimException(194, 0));
         }
         destroy();
     }
@@ -257,156 +290,216 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
         filename = name.replaceAll("[^a-zA-Z0-9.-]", "_");
     }
 
-    private String getTransferClient() {
-        return "sawimne";
-    }
-
-    private void sendFileThroughServer(InputStream fis, int fileSize) throws SawimException {
-        String url = null;
+    private void sendFile() throws IOException, SawimException {
+        String imageUrl;
         if (Util.isImageFile(filename)) {
-            final String UPLOAD_URL = "https://api.imgur.com/3/image";
-            HttpURLConnection conn = null;
-            InputStream responseIn = null;
-            try {
-                conn = (HttpURLConnection) new URL(UPLOAD_URL).openConnection();
-                conn.setDoOutput(true);
-                if (Build.VERSION.SDK_INT > 13) {
-                    conn.setRequestProperty("Connection", "close");
-                }
-
-                conn.setRequestProperty("Authorization", "Client-ID c90472da1a4d000"); // get on site
-
-                OutputStream out = conn.getOutputStream();
-                byte[] buffer = new byte[8192];
-                int recived = 0;
-                int read;
-                while ((read = fis.read(buffer)) != -1) {
-                    if (read > 0) {
-                        recived += read;
-                        out.write(buffer, 0, read);
-                        int percent = 100 * recived / fileSize - 1;
-                        if (percent % 5 == 0)
-                            setProgress(percent);
-                        if (fileSize != 0) {
-                            if (isCanceled()) {
-                                throw new SawimException(194, 1);
-                            }
-                            out.flush();
-                        }
-                    }
-                }
-                out.flush();
-                out.close();
-
-                conn.setReadTimeout(15000);
-
-                int responseCode = conn.getResponseCode();
-                switch (responseCode) {
-                    case HttpURLConnection.HTTP_OK: {
-                        responseIn = conn.getInputStream();
-                        StringBuilder sb = new StringBuilder();
-                        Scanner scanner = new Scanner(responseIn);
-                        while (scanner.hasNext()) {
-                            sb.append(scanner.next());
-                        }
-                        JSONObject root = new JSONObject(sb.toString());
-                        url = root.getJSONObject("data").getString("link");
-                        break;
-                    }
-                    case HttpURLConnection.HTTP_BAD_GATEWAY: {
-                        throw new SawimException(194, 0);
-                    }
-                    default: {
-                        Log.i(TAG, "responseCode=" + conn.getResponseCode());
-                        responseIn = conn.getErrorStream();
-                        StringBuilder sb = new StringBuilder();
-                        Scanner scanner = new Scanner(responseIn);
-                        while (scanner.hasNext()) {
-                            sb.append(scanner.next()).append('\n');
-                        }
-                        Log.i(TAG, "error response: " + sb.toString());
-                        url = sb.toString();
-                        break;
-                    }
-                }
-            } catch (java.net.SocketTimeoutException e) {
-                throw new SawimException(118, 0);
-            }
-            catch (Exception ex) {
-                throw new SawimException(194, 0);
-            } finally {
-                try {
-                    responseIn.close();
-                } catch (Exception ignore) {
-                }
-                try {
-                    conn.disconnect();
-                } catch (Exception ignore) {
-                }
+            // Jabber.ru upload requires auth data (jabber.ru/xmpp.ru account)
+            if (isJabberRuUploadAvailable()) {
+                imageUrl = sendImageViaJabberRu();
+            } else {
+                imageUrl = sendImageViaImgur();
             }
         } else {
-            TcpSocket socket = new TcpSocket();
-            try {
-                socket.connectTo("files.jimm.net.ru", 2000);
+            imageUrl = sendViaJimmNetRu();
+        }
 
-                final int version = 1;
-                Util header = new Util();
-                header.writeWordBE(version);
-                header.writeLenAndUtf8String(filename);
-                header.writeLenAndUtf8String("");//description
-                header.writeLenAndUtf8String(getTransferClient());
-                header.writeDWordBE(fileSize);
-                socket.write(header.toByteArray());
-                socket.flush();
+        setProgress(100);
 
-                byte[] buffer = new byte[4 * 1024];
-                int counter = fileSize;
-                while (counter > 0) {
-                    int read = fis.read(buffer);
-                    socket.write(buffer, 0, read);
-                    counter -= read;
-                    if (fileSize != 0) {
-                        if (isCanceled()) {
-                            throw new SawimException(194, 1);
-                        }
-                        socket.flush();
-                        setProgress((100 - 2) * (fileSize - counter) / fileSize);
-                    }
-                }
-                socket.flush();
+        String fileSize = StringConvertor.bytesToSizeString(
+                getFileSize(), false);
+        String message = "File: " + filename + "\n" +
+                         "Size: " + fileSize + "\n" +
+                         "Link: " + imageUrl;
+        chat.getProtocol().sendMessage(chat, message);
+    }
 
-                int length = socket.read();
-                if (-1 == length) {
-                    throw new SawimException(120, 13);
-                }
-                socket.read(buffer, 0, length);
-                url = StringConvertor.utf8beByteArrayToString(buffer, 0, length);
+    private boolean isJabberRuUploadAvailable() {
+        Protocol protocol = RosterHelper.getInstance().getProtocol(0);
+        if (protocol == null) {
+            return false;
+        }
 
+        String userId = protocol.getUserId();
+        String domain = Jid.getDomain(userId);
+        return "jabber.ru".equals(domain) || "xmpp.ru".equals(domain);
+    }
+
+    private String sendViaJimmNetRu() throws SawimException {
+        int fileSize = getFileSize();
+        TcpSocket socket = new TcpSocket();
+        InputStream fis = getFileIS();
+        try {
+            socket.connectTo(JIMM_NET_RU_UPLOAD_URL, JIMM_NET_RU_UPLOAD_PORT);
+
+            Util header = new Util();
+            header.writeWordBE(PROTOCOL_VERSION);
+            header.writeLenAndUtf8String(filename);
+            header.writeLenAndUtf8String(""); // Description
+            header.writeLenAndUtf8String(TRANSFER_CLIENT);
+            header.writeDWordBE(getFileSize());
+            socket.write(header.toByteArray());
+            socket.flush();
+
+            byte[] buffer = new byte[BUFFER_LEN];
+            int counter = fileSize;
+            while (counter > 0) {
+                int read = fis.read(buffer);
+                socket.write(buffer, 0, read);
+                counter -= read;
                 if (isCanceled()) {
                     throw new SawimException(194, 1);
                 }
-                socket.close();
-
-            } catch (SawimException e) {
-                DebugLog.panic("send file", e);
-                socket.close();
-                throw e;
-
-            } catch (Exception e) {
-                DebugLog.panic("send file", e);
-                socket.close();
-                throw new SawimException(194, 0);
+                socket.flush();
+                setProgress((100 - 2) * (fileSize - counter) / fileSize);
             }
-        }
-        TcpSocket.close(fis);
-        StringBuilder messText = new StringBuilder();
-        messText.append("File: ").append(filename).append("\n");
-        messText.append("Size: ")
-                .append(StringConvertor.bytesToSizeString(fileSize, false))
-                .append("\n");
-        messText.append("Link: ").append(url);
+            socket.flush();
 
-        chat.getProtocol().sendMessage(chat, messText.toString());
-        setProgress(100);
+            int length = socket.read();
+            if (-1 == length) {
+                throw new SawimException(120, 13);
+            }
+            socket.read(buffer, 0, length);
+
+            if (isCanceled()) {
+                throw new SawimException(194, 1);
+            }
+            socket.close();
+
+            return StringConvertor.utf8beByteArrayToString(buffer, 0, length);
+        } catch (SawimException e) {
+            DebugLog.panic("send file", e);
+            socket.close();
+            throw e;
+        } catch (Exception e) {
+            DebugLog.panic("send file", e);
+            socket.close();
+            throw new SawimException(194, 0);
+        }
+    }
+
+    private String sendImageViaImgur() throws IOException, SawimException {
+        RequestBody requestBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("image", filename, getRequestBody())
+                .build();
+        Request request = new Request.Builder()
+                .header("Authorization", "Client-ID " + IMGUR_CLIENT_ID)
+                .url(IMGUR_UPLOAD_URL)
+                .post(requestBody)
+                .build();
+        JSONObject response = getJSONResponse(request);
+        try {
+            return response.getJSONObject("data").getString("link");
+        } catch (JSONException e) {
+            DebugLog.println("send file: bad response 2 [imgur]");
+            throw new SawimException(194, 2);
+        }
+    }
+
+    private String sendImageViaJabberRu() throws SawimException {
+        Protocol protocol = RosterHelper.getInstance().getProtocol(0);
+        if (protocol == null) {
+            throw new SawimException(194, 3);
+        }
+
+        RequestBody requestBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("image", filename, getRequestBody())
+                .addFormDataPart("jid", protocol.getUserId())
+                .addFormDataPart("password", protocol.getPassword())
+                .build();
+        Request request = new Request.Builder()
+                .url(JABBER_RU_UPLOAD_URL)
+                .post(requestBody)
+                .build();
+        JSONObject response = getJSONResponse(request);
+        try {
+            JSONArray sizes = response.getJSONArray("sizes");
+            for (int i = 0 ; i < sizes.length(); ++i) {
+                JSONObject size = sizes.getJSONObject(i);
+                if ("o".equals(size.getString("type"))) {
+                    return size.getString("src");
+                }
+            }
+            DebugLog.println("send file: bad response 1 [jabber.ru]");
+            throw new SawimException(194, 3);
+        } catch (JSONException e) {
+            DebugLog.println("send file: bad response 2 [jabber.ru]");
+            throw new SawimException(194, 3);
+        }
+    }
+
+    private JSONObject getJSONResponse(Request request) throws SawimException {
+        OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(CONNECTION_TIMEOUT, TIMEOUT_UNITS)
+                .readTimeout(READ_TIMEOUT, TIMEOUT_UNITS)
+                .writeTimeout(WRITE_TIMEOUT, TIMEOUT_UNITS)
+                .build();
+        Response response;
+        try {
+            response = client.newCall(request).execute();
+        } catch (IOException e) {
+            DebugLog.panic("send file: cannot get response", e);
+            throw new SawimException(194, 2);
+        }
+
+        try {
+            String jsonData = response.body().string();
+            DebugLog.println("send file: " + jsonData);
+            if (!response.isSuccessful()) {
+                DebugLog.println("send file: cannot get response [imgur]");
+                throw new SawimException(194, 2);
+            }
+            return new JSONObject(jsonData);
+        } catch (JSONException e) {
+            DebugLog.panic("send file: bad response", e);
+            throw new SawimException(194, 2);
+        } catch (IOException e) {
+            DebugLog.panic("send file: cannot get response", e);
+            throw new SawimException(194, 2);
+        }
+    }
+
+    private RequestBody getRequestBody() {
+        return new RequestBody() {
+            @Override
+            public MediaType contentType() {
+                MediaType mediaType;
+                String extension = MimeTypeMap.getFileExtensionFromUrl(filename);
+                if (extension != null) {
+                    MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();
+                    String mime = mimeTypeMap.getMimeTypeFromExtension(extension);
+                    mediaType = MediaType.parse(mime);
+                } else {
+                    mediaType = MediaType.parse("application/octet-stream");
+                }
+                return mediaType;
+            }
+
+            @Override
+            public long contentLength() {
+                return fileBytes.length;
+            }
+
+            @Override
+            public void writeTo(BufferedSink sink) throws IOException {
+                Source source = Okio.source(getFileIS());
+                Buffer buf = new Buffer();
+
+                long bytesSent = 0;
+
+                for (long readCount;
+                     (readCount = source.read(buf, BUFFER_LEN)) != -1; ) {
+                    if (isCanceled()) {
+                        throw new IOException("User canceled file upload");
+                    }
+                    sink.write(buf, readCount);
+                    bytesSent += readCount;
+
+                    int progress = (int)(100 * bytesSent / contentLength() - 1);
+                    setProgress(progress);
+                }
+            }
+        };
     }
 }
