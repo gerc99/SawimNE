@@ -1,6 +1,5 @@
 package ru.sawim.models;
 
-import android.content.Context;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,9 +12,8 @@ import protocol.Protocol;
 import protocol.StatusInfo;
 import ru.sawim.R;
 import ru.sawim.Scheme;
-import ru.sawim.comm.JLocale;
 import ru.sawim.icons.Icon;
-import ru.sawim.view.StatusesView;
+import ru.sawim.ui.fragment.StatusesFragment;
 
 /**
  * Created with IntelliJ IDEA.
@@ -90,7 +88,7 @@ public class StatusesAdapter extends BaseAdapter {
         }
 
         void populateFrom(int item) {
-            if (type == StatusesView.ADAPTER_STATUS) {
+            if (type == StatusesFragment.ADAPTER_STATUS) {
                 Icon ic = statusInfo.getIcon((byte) item);
                 itemStatus.setTextColor(Scheme.getColor(R.attr.text));
                 itemStatus.setText(statusInfo.getName((byte) item));

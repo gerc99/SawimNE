@@ -5,7 +5,7 @@ import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import ru.sawim.*;
-import ru.sawim.activities.BaseActivity;
+import ru.sawim.ui.activity.BaseActivity;
 import ru.sawim.comm.JLocale;
 import ru.sawim.comm.Util;
 import ru.sawim.models.list.VirtualList;

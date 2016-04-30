@@ -6,7 +6,7 @@ import protocol.Contact;
 import protocol.Group;
 import protocol.Protocol;
 import ru.sawim.R;
-import ru.sawim.activities.BaseActivity;
+import ru.sawim.ui.activity.BaseActivity;
 import ru.sawim.comm.JLocale;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
@@ -14,8 +14,8 @@ import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
 import ru.sawim.modules.search.Search;
 import ru.sawim.roster.RosterHelper;
-import ru.sawim.view.TextBoxView;
-import ru.sawim.view.menu.MyMenu;
+import ru.sawim.ui.fragment.TextBoxDialogFragment;
+import ru.sawim.ui.fragment.menu.MyMenu;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Vector;
 
 
-public final class ManageContactListForm implements FormListener, TextBoxView.TextBoxListener {
+public final class ManageContactListForm implements FormListener, TextBoxDialogFragment.TextBoxListener {
     private static final int ADD_USER = 0;
     private static final int ADD_CONFERENCE = 1;
     private static final int SEARCH_USER = 2;
@@ -36,9 +36,9 @@ public final class ManageContactListForm implements FormListener, TextBoxView.Te
 
     private Protocol protocol;
     private Group group;
-    private TextBoxView groupName;
+    private TextBoxDialogFragment groupName;
     private Contact contact;
-    private TextBoxView renameContactTextbox;
+    private TextBoxDialogFragment renameContactTextbox;
     private int action;
 
     public ManageContactListForm(Protocol protocol) {
@@ -56,7 +56,7 @@ public final class ManageContactListForm implements FormListener, TextBoxView.Te
     }
 
     public void showContactRename(BaseActivity a) {
-        renameContactTextbox = new TextBoxView();
+        renameContactTextbox = new TextBoxDialogFragment();
         renameContactTextbox.setString(contact.getName());
         renameContactTextbox.setTextBoxListener(this);
         renameContactTextbox.show(a.getSupportFragmentManager(), "rename");
@@ -201,14 +201,14 @@ public final class ManageContactListForm implements FormListener, TextBoxView.Te
     }
 
     private void showTextBox(BaseActivity a, int caption, String text) {
-        groupName = new TextBoxView();
+        groupName = new TextBoxDialogFragment();
         groupName.setCaption(JLocale.getString(caption));
         groupName.setString(text);
         groupName.setTextBoxListener(this);
         groupName.show(a.getSupportFragmentManager(), "group_name");
     }
 
-    public void textboxAction(TextBoxView box, boolean ok) {
+    public void textboxAction(TextBoxDialogFragment box, boolean ok) {
         if (!ok) {
             return;
         }

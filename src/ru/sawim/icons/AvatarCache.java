@@ -12,7 +12,7 @@ import ru.sawim.SawimApplication;
 import ru.sawim.comm.LruCache;
 import ru.sawim.io.FileSystem;
 import ru.sawim.roster.RosterHelper;
-import ru.sawim.widget.Util;
+import ru.sawim.ui.widget.Util;
 
 import java.io.*;
 

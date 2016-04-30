@@ -1,6 +1,5 @@
 package protocol.xmpp;
 
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import protocol.*;
@@ -8,13 +7,10 @@ import ru.sawim.Options;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.comm.*;
-import ru.sawim.io.RosterStorage;
 import ru.sawim.roster.TreeNode;
-import ru.sawim.view.menu.MyMenu;
+import ru.sawim.ui.fragment.menu.MyMenu;
 
-import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 
 public class XmppContact extends Contact {

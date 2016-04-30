@@ -1,7 +1,7 @@
 package protocol.xmpp;
 
 import ru.sawim.R;
-import ru.sawim.activities.BaseActivity;
+import ru.sawim.ui.activity.BaseActivity;
 import ru.sawim.comm.JLocale;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;

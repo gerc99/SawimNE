@@ -12,13 +12,13 @@ import protocol.Protocol;
 import protocol.xmpp.Jid;
 import ru.sawim.Clipboard;
 import ru.sawim.R;
-import ru.sawim.activities.BaseActivity;
+import ru.sawim.ui.activity.BaseActivity;
 import ru.sawim.comm.Util;
 import ru.sawim.modules.DebugLog;
 import ru.sawim.roster.RosterHelper;
-import ru.sawim.view.PictureView;
-import ru.sawim.view.menu.JuickMenu;
-import ru.sawim.view.tasks.HtmlTask;
+import ru.sawim.ui.fragment.PictureFragment;
+import ru.sawim.ui.fragment.menu.JuickMenu;
+import ru.sawim.ui.fragment.tasks.HtmlTask;
 
 import java.util.ArrayList;
 
@@ -86,10 +86,10 @@ public class OnTextLinkClick implements TextLinkClickListener {
             if (clickedStringWithHttp.toLowerCase().startsWith(HtmlTask.PIK4U)
                     || (clickedStringWithHttp.toLowerCase().startsWith("https://db.tt/"))
                     || Util.isImageFile(clickedStringWithHttp)) {
-                PictureView pictureView = new PictureView();
-                pictureView.setLink(clickedStringWithHttp);
+                PictureFragment pictureFragment = new PictureFragment();
+                pictureFragment.setLink(clickedStringWithHttp);
                 FragmentTransaction transaction = (activity).getSupportFragmentManager().beginTransaction();
-                transaction.add(pictureView, PictureView.TAG);
+                transaction.add(pictureFragment, PictureFragment.TAG);
                 transaction.commitAllowingStateLoss();
             } else {
                 Uri uri = Uri.parse(clickedStringWithHttp);

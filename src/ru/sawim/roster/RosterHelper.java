@@ -7,8 +7,8 @@ import android.util.Log;
 import android.widget.Toast;
 
 import ru.sawim.SawimException;
-import ru.sawim.activities.AccountsListActivity;
-import ru.sawim.activities.SawimActivity;
+import ru.sawim.ui.activity.AccountsListActivity;
+import ru.sawim.ui.activity.SawimActivity;
 import ru.sawim.comm.Util;
 import ru.sawim.listener.OnAccountsLoaded;
 import ru.sawim.listener.OnUpdateChat;
@@ -18,15 +18,15 @@ import protocol.xmpp.Xmpp;
 import ru.sawim.Options;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
-import ru.sawim.activities.BaseActivity;
+import ru.sawim.ui.activity.BaseActivity;
 import ru.sawim.comm.JLocale;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.forms.ManageContactListForm;
 import ru.sawim.modules.FileTransfer;
-import ru.sawim.view.SearchConferenceFragment;
-import ru.sawim.view.StatusesView;
-import ru.sawim.view.XStatusesView;
-import ru.sawim.view.menu.MyMenu;
+import ru.sawim.ui.fragment.SearchConferenceFragment;
+import ru.sawim.ui.fragment.StatusesFragment;
+import ru.sawim.ui.fragment.XStatusesFragment;
+import ru.sawim.ui.fragment.menu.MyMenu;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -530,10 +530,10 @@ public final class RosterHelper {
                         .commit();
                 return true;
             case RosterHelper.MENU_STATUS:
-                new StatusesView().init(p, StatusesView.ADAPTER_STATUS).show(activity.getSupportFragmentManager(), "change-status");
+                new StatusesFragment().init(p, StatusesFragment.ADAPTER_STATUS).show(activity.getSupportFragmentManager(), "change-status");
                 return true;
             case RosterHelper.MENU_XSTATUS:
-                new XStatusesView().init(p).show(activity.getSupportFragmentManager(), "change-xstatus");
+                new XStatusesFragment().init(p).show(activity.getSupportFragmentManager(), "change-xstatus");
                 return true;
             case RosterHelper.MENU_DISCO:
                 ((Xmpp) p).getServiceDiscovery().showIt(activity);

@@ -5,7 +5,7 @@ import android.content.Context;
 import java.util.HashMap;
 
 import ru.sawim.comm.JLocale;
-import ru.sawim.widget.Util;
+import ru.sawim.ui.widget.Util;
 
 public class Scheme {
 

@@ -4,12 +4,12 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import ru.sawim.SawimApplication;
-import ru.sawim.activities.BaseActivity;
+import ru.sawim.ui.activity.BaseActivity;
 import ru.sawim.comm.JLocale;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
 import ru.sawim.modules.DebugLog;
-import ru.sawim.view.FormView;
+import ru.sawim.ui.fragment.FormFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -115,11 +115,11 @@ public class Forms {
     }
 
     public void show(BaseActivity activity) {
-        FormView.show(activity, this);
+        FormFragment.show(activity, this);
     }
 
     public void showCaptcha() {
-        FormView.showCaptcha(this);
+        FormFragment.showCaptcha(this);
     }
 
     public void invalidate(boolean isLoad) {

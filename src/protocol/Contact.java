@@ -4,7 +4,7 @@ import android.view.ContextMenu;
 import android.view.Menu;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
-import ru.sawim.activities.BaseActivity;
+import ru.sawim.ui.activity.BaseActivity;
 import ru.sawim.chat.Chat;
 import ru.sawim.chat.ChatHistory;
 import ru.sawim.comm.JLocale;
@@ -14,7 +14,7 @@ import ru.sawim.icons.ImageList;
 import ru.sawim.modules.history.HistoryStorage;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.roster.TreeNode;
-import ru.sawim.view.menu.MyMenu;
+import ru.sawim.ui.fragment.menu.MyMenu;
 
 abstract public class Contact implements TreeNode {
     public static final ImageList serverListsIcons = ImageList.createImageList("/serverlists.png");

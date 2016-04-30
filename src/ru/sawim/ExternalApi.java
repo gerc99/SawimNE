@@ -15,7 +15,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import protocol.net.TcpSocket;
-import ru.sawim.activities.BaseActivity;
+import ru.sawim.ui.activity.BaseActivity;
 import ru.sawim.io.FileBrowserListener;
 import ru.sawim.modules.DebugLog;
 import ru.sawim.modules.photo.CameraActivity;

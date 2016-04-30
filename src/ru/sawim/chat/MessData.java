@@ -10,8 +10,8 @@ import ru.sawim.R;
 import ru.sawim.chat.message.Message;
 import ru.sawim.chat.message.PlainMessage;
 import ru.sawim.text.TextFormatter;
-import ru.sawim.view.menu.JuickMenu;
-import ru.sawim.widget.chat.MessageItemView;
+import ru.sawim.ui.fragment.menu.JuickMenu;
+import ru.sawim.ui.widget.chat.MessageItemView;
 
 public final class MessData {
 

@@ -1,6 +1,6 @@
 package ru.sawim.listener;
 
-import ru.sawim.activities.BaseActivity;
+import ru.sawim.ui.activity.BaseActivity;
 
 import java.io.Serializable;
 

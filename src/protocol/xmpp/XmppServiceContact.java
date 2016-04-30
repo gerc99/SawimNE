@@ -10,13 +10,12 @@ import ru.sawim.Options;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.SawimResources;
-import ru.sawim.activities.BaseActivity;
+import ru.sawim.ui.activity.BaseActivity;
 import ru.sawim.chat.message.SystemNotice;
 import ru.sawim.comm.JLocale;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.icons.Icon;
-import ru.sawim.roster.RosterHelper;
-import ru.sawim.view.menu.MyMenu;
+import ru.sawim.ui.fragment.menu.MyMenu;
 
 import java.util.concurrent.ConcurrentHashMap;
 

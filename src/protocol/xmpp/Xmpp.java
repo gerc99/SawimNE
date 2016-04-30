@@ -7,7 +7,7 @@ import android.widget.Toast;
 import protocol.*;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
-import ru.sawim.activities.BaseActivity;
+import ru.sawim.ui.activity.BaseActivity;
 import ru.sawim.chat.message.PlainMessage;
 import ru.sawim.comm.JLocale;
 import ru.sawim.comm.StringConvertor;
@@ -21,8 +21,8 @@ import ru.sawim.modules.FileTransfer;
 import ru.sawim.modules.search.Search;
 import ru.sawim.modules.search.UserInfo;
 import ru.sawim.roster.RosterHelper;
-import ru.sawim.view.TextBoxView;
-import ru.sawim.view.menu.JuickMenu;
+import ru.sawim.ui.fragment.TextBoxDialogFragment;
+import ru.sawim.ui.fragment.menu.JuickMenu;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -508,11 +508,11 @@ public final class Xmpp extends Protocol implements FormListener {
                 }
                 break;
             case ContactMenu.COMMAND_TITLE:
-                TextBoxView textbox = new TextBoxView();
+                TextBoxDialogFragment textbox = new TextBoxDialogFragment();
                 textbox.setString(c.getStatusText());
-                textbox.setTextBoxListener(new TextBoxView.TextBoxListener() {
+                textbox.setTextBoxListener(new TextBoxDialogFragment.TextBoxListener() {
                     @Override
-                    public void textboxAction(final TextBoxView box, boolean ok) {
+                    public void textboxAction(final TextBoxDialogFragment box, boolean ok) {
                         SawimApplication.getExecutor().execute(new Runnable() {
                             @Override
                             public void run() {

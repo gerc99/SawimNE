@@ -2,7 +2,7 @@ package ru.sawim.forms;
 
 import protocol.Protocol;
 import ru.sawim.R;
-import ru.sawim.activities.BaseActivity;
+import ru.sawim.ui.activity.BaseActivity;
 import ru.sawim.models.form.FormListener;
 import ru.sawim.models.form.Forms;
 import ru.sawim.modules.search.UserInfo;

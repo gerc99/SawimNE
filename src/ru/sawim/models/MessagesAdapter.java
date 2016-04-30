@@ -16,15 +16,14 @@ import ru.sawim.chat.MessData;
 import ru.sawim.chat.message.Message;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.text.OnTextLinkClick;
-import ru.sawim.widget.Util;
-import ru.sawim.widget.chat.MessageItemView;
-import ru.sawim.widget.stickyheadersrecyclerview.StickyRecyclerHeadersAdapter;
+import ru.sawim.ui.widget.Util;
+import ru.sawim.ui.widget.chat.MessageItemView;
+import ru.sawim.ui.widget.stickyheadersrecyclerview.StickyRecyclerHeadersAdapter;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created with IntelliJ IDEA.

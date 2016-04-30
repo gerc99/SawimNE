@@ -12,7 +12,7 @@ import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
 import ru.sawim.models.list.VirtualListItem;
 import ru.sawim.text.OnTextLinkClick;
-import ru.sawim.widget.MyTextView;
+import ru.sawim.ui.widget.MyTextView;
 
 import java.util.ArrayList;
 import java.util.List;

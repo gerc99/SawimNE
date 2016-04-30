@@ -4,7 +4,7 @@ import android.util.Log;
 
 import protocol.xmpp.XmppContact;
 import ru.sawim.*;
-import ru.sawim.activities.BaseActivity;
+import ru.sawim.ui.activity.BaseActivity;
 import ru.sawim.chat.Chat;
 import ru.sawim.chat.ChatHistory;
 import ru.sawim.chat.message.Message;

@@ -4,7 +4,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import ru.sawim.R;
 import ru.sawim.Scheme;
-import ru.sawim.activities.BaseActivity;
+import ru.sawim.ui.activity.BaseActivity;
 import ru.sawim.comm.JLocale;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
@@ -14,15 +14,15 @@ import ru.sawim.models.list.VirtualList;
 import ru.sawim.models.list.VirtualListItem;
 import ru.sawim.models.list.VirtualListModel;
 import ru.sawim.roster.RosterHelper;
-import ru.sawim.view.TextBoxView;
+import ru.sawim.ui.fragment.TextBoxDialogFragment;
 
 import java.util.Vector;
 
-public final class AffiliationListConf implements FormListener, TextBoxView.TextBoxListener {
+public final class AffiliationListConf implements FormListener, TextBoxDialogFragment.TextBoxListener {
 
     private Xmpp xmpp;
     private String serverJid;
-    private TextBoxView searchBox;
+    private TextBoxDialogFragment searchBox;
     private Vector jids = new Vector();
     private Vector descriptions = new Vector();
     private Vector reasons = new Vector();
@@ -36,7 +36,7 @@ public final class AffiliationListConf implements FormListener, TextBoxView.Text
 
     public void init(Xmpp protocol) {
         xmpp = protocol;
-        searchBox = new TextBoxView();
+        searchBox = new TextBoxDialogFragment();
         screen.setCaption(JLocale.getString(R.string.conf_aff_list));
         screen.setModel(model);
         screen.setClickListListener(new VirtualList.OnClickListListener() {
@@ -187,7 +187,7 @@ public final class AffiliationListConf implements FormListener, TextBoxView.Text
         screen.setCurrentItemIndex(index, true);
     }
 
-    public void textboxAction(TextBoxView box, boolean ok) {
+    public void textboxAction(TextBoxDialogFragment box, boolean ok) {
         if (!ok) {
             return;
         }

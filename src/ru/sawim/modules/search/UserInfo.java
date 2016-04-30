@@ -7,14 +7,13 @@ import android.view.MenuItem;
 import android.widget.Toast;
 import protocol.Contact;
 import protocol.Protocol;
-import protocol.StatusInfo;
 import protocol.net.TcpSocket;
 import protocol.xmpp.Xmpp;
 import ru.sawim.Clipboard;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.SawimException;
-import ru.sawim.activities.BaseActivity;
+import ru.sawim.ui.activity.BaseActivity;
 import ru.sawim.comm.JLocale;
 import ru.sawim.comm.Util;
 import ru.sawim.forms.EditInfo;
@@ -26,7 +25,7 @@ import ru.sawim.models.list.VirtualListItem;
 import ru.sawim.models.list.VirtualListModel;
 import ru.sawim.modules.DebugLog;
 import ru.sawim.modules.photo.PhotoListener;
-import ru.sawim.view.VirtualListView;
+import ru.sawim.ui.fragment.VirtualListFragment;
 
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -177,7 +176,7 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
         profile.addParam(R.string.fax, workFax);
 
         profile.setHeader(R.string.avatar);
-        profile.addAvatar(null, ru.sawim.widget.Util.avatarBitmap(activity, avatar));
+        profile.addAvatar(null, ru.sawim.ui.widget.Util.avatarBitmap(activity, avatar));
     }
 
     private void addMenu() {
@@ -206,7 +205,7 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
 
                     case INFO_MENU_TAKE_AVATAR:
                         BaseActivity.getExternalApi().setFragment(activity
-                                .getSupportFragmentManager().findFragmentByTag(VirtualListView.TAG));
+                                .getSupportFragmentManager().findFragmentByTag(VirtualListFragment.TAG));
                         BaseActivity.getExternalApi().startCamera(UserInfo.this, 640, 480);
                         break;
 
@@ -218,7 +217,7 @@ public class UserInfo implements PhotoListener, FileBrowserListener {
 
                     case INFO_MENU_ADD_AVATAR:
                         BaseActivity.getExternalApi().setFragment(activity
-                                .getSupportFragmentManager().findFragmentByTag(VirtualListView.TAG));
+                                .getSupportFragmentManager().findFragmentByTag(VirtualListFragment.TAG));
                         if (BaseActivity.getExternalApi().pickFile(UserInfo.this)) {
                             return;
                         }

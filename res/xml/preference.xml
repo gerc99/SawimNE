@@ -13,7 +13,8 @@
         android:key="@string/pref_color_scheme"
         android:title="@string/color_scheme"
         android:defaultValue="Light Holo"/>
-    <ru.sawim.view.preference.SeekBarPreference android:title="@string/fonts"
+    <ru.sawim.ui.fragment.preference.SeekBarPreference
+        android:title="@string/fonts"
         android:key="@string/pref_font_scheme"
         android:defaultValue="18"/>
     <PreferenceCategory android:title="@string/contact_list"/>

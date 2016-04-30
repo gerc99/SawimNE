@@ -1,7 +1,6 @@
 package ru.sawim.text;
 
 import android.view.View;
-import ru.sawim.activities.BaseActivity;
 
 /**
  * Created by Gerc on 13.01.14.

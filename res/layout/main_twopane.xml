@@ -23,14 +23,14 @@
         android:layout_height="match_parent"
         android:layout_below="@+id/appbar">
 
-        <fragment android:name="ru.sawim.view.RosterView"
+        <fragment android:name="ru.sawim.ui.fragment.RosterFragment"
             android:id="@+id/roster_fragment"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="30"
             android:layout_below="@+id/appbar" />
 
-        <fragment android:name="ru.sawim.view.ChatView"
+        <fragment android:name="ru.sawim.ui.fragment.ChatFragment"
             android:id="@+id/chat_fragment"
             android:layout_width="0dp"
             android:layout_height="match_parent"

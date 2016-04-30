@@ -4,7 +4,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.Build;
-import ru.sawim.activities.SawimActivity;
+import ru.sawim.ui.activity.SawimActivity;
 
 import java.util.concurrent.atomic.AtomicReference;
 

@@ -9,7 +9,7 @@
 
 package ru.sawim.models.form;
 
-import ru.sawim.activities.BaseActivity;
+import ru.sawim.ui.activity.BaseActivity;
 
 /**
  * @author Vladimir Kryukov

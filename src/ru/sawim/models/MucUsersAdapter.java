@@ -19,7 +19,7 @@ import ru.sawim.icons.Icon;
 import ru.sawim.icons.AvatarCache;
 import ru.sawim.roster.Layer;
 import ru.sawim.roster.TreeNode;
-import ru.sawim.widget.roster.RosterItemView;
+import ru.sawim.ui.widget.roster.RosterItemView;
 
 import java.util.ArrayList;
 import java.util.Collection;

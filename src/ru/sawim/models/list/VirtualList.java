@@ -3,8 +3,8 @@ package ru.sawim.models.list;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
-import ru.sawim.activities.BaseActivity;
-import ru.sawim.view.VirtualListView;
+import ru.sawim.ui.activity.BaseActivity;
+import ru.sawim.ui.fragment.VirtualListFragment;
 
 public class VirtualList {
 
@@ -28,7 +28,7 @@ public class VirtualList {
     }
 
     public void show(BaseActivity activity) {
-        VirtualListView.show(activity);
+        VirtualListFragment.show(activity);
         updateModel();
     }
 

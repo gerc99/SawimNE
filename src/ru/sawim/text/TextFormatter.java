@@ -3,7 +3,7 @@ package ru.sawim.text;
 import android.text.*;
 import android.text.style.ImageSpan;
 import ru.sawim.modules.Emotions;
-import ru.sawim.view.menu.JuickMenu;
+import ru.sawim.ui.fragment.menu.JuickMenu;
 
 import java.util.ArrayList;
 import java.util.List;

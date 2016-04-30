@@ -7,7 +7,7 @@ import android.widget.Toast;
 import protocol.Contact;
 import ru.sawim.R;
 import ru.sawim.Scheme;
-import ru.sawim.activities.BaseActivity;
+import ru.sawim.ui.activity.BaseActivity;
 import ru.sawim.comm.Config;
 import ru.sawim.comm.JLocale;
 import ru.sawim.comm.StringConvertor;
@@ -15,18 +15,18 @@ import ru.sawim.models.list.VirtualList;
 import ru.sawim.models.list.VirtualListItem;
 import ru.sawim.models.list.VirtualListModel;
 import ru.sawim.roster.RosterHelper;
-import ru.sawim.view.TextBoxView;
+import ru.sawim.ui.fragment.TextBoxDialogFragment;
 
 import java.util.ArrayList;
 
-public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
+public final class ServiceDiscovery implements TextBoxDialogFragment.TextBoxListener {
     private boolean isConferenceList = false;
     private int totalCount = 0;
 
     private Xmpp xmpp;
     private String serverJid;
-    private TextBoxView serverBox;
-    private TextBoxView searchBox;
+    private TextBoxDialogFragment serverBox;
+    private TextBoxDialogFragment searchBox;
     private boolean shortView;
     private ArrayList<String> jids = new ArrayList<>();
     private boolean isMucUsers = false;
@@ -43,10 +43,10 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
     private static final int COMMAND_HOME = 6;
 
     public ServiceDiscovery() {
-        serverBox = new TextBoxView();
+        serverBox = new TextBoxDialogFragment();
         serverBox.setCaption(R.string.service_discovery_server);
 
-        searchBox = new TextBoxView();
+        searchBox = new TextBoxDialogFragment();
         searchBox.setCaption(R.string.service_discovery_search);
     }
 
@@ -356,7 +356,7 @@ public final class ServiceDiscovery implements TextBoxView.TextBoxListener {
         screen.setCurrentItemIndex(index, true);
     }
 
-    public void textboxAction(TextBoxView box, boolean ok) {
+    public void textboxAction(TextBoxDialogFragment box, boolean ok) {
         if (!ok) {
             return;
         }

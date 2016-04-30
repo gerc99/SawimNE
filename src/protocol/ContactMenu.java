@@ -7,7 +7,7 @@ import android.widget.Toast;
 import protocol.xmpp.Xmpp;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
-import ru.sawim.activities.BaseActivity;
+import ru.sawim.ui.activity.BaseActivity;
 import ru.sawim.chat.ChatHistory;
 import ru.sawim.chat.message.PlainMessage;
 import ru.sawim.comm.JLocale;
@@ -16,13 +16,13 @@ import ru.sawim.forms.ManageContactListForm;
 import ru.sawim.modules.FileTransfer;
 import ru.sawim.modules.history.HistoryStorage;
 import ru.sawim.roster.RosterHelper;
-import ru.sawim.view.TextBoxView;
-import ru.sawim.view.menu.MyMenu;
+import ru.sawim.ui.fragment.TextBoxDialogFragment;
+import ru.sawim.ui.fragment.menu.MyMenu;
 
 import java.util.Enumeration;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class ContactMenu implements TextBoxView.TextBoxListener {
+public class ContactMenu implements TextBoxDialogFragment.TextBoxListener {
 
     public static final int GATE_CONNECT = 0;
     public static final int GATE_DISCONNECT = 1;
@@ -96,7 +96,7 @@ public class ContactMenu implements TextBoxView.TextBoxListener {
 
     private Contact contact;
     private Protocol protocol;
-    private TextBoxView messageTextbox;
+    private TextBoxDialogFragment messageTextbox;
 
     public ContactMenu(Protocol p, Contact c) {
         contact = c;
@@ -110,7 +110,7 @@ public class ContactMenu implements TextBoxView.TextBoxListener {
     public void doAction(final BaseActivity activity, int cmd) {
         switch (cmd) {
             case USER_MENU_ANNOTATION: {
-                messageTextbox = new TextBoxView();
+                messageTextbox = new TextBoxDialogFragment();
                 messageTextbox.setTextBoxListener(this);
                 messageTextbox.setString(contact.annotations);
                 messageTextbox.show(activity.getSupportFragmentManager(), "message");
@@ -242,7 +242,7 @@ public class ContactMenu implements TextBoxView.TextBoxListener {
         }
     }
 
-    public void textboxAction(TextBoxView box, boolean ok) {
+    public void textboxAction(TextBoxDialogFragment box, boolean ok) {
         if ((box == messageTextbox)) {
             Contact find = null;
             Contact current = contact;

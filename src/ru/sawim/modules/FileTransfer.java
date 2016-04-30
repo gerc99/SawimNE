@@ -17,7 +17,7 @@ import protocol.Protocol;
 import protocol.net.TcpSocket;
 import protocol.xmpp.Jid;
 import ru.sawim.*;
-import ru.sawim.activities.BaseActivity;
+import ru.sawim.ui.activity.BaseActivity;
 import ru.sawim.chat.Chat;
 import ru.sawim.comm.JLocale;
 import ru.sawim.comm.StringConvertor;
@@ -35,7 +35,6 @@ import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
-import static android.provider.Settings.System.DATE_FORMAT;
 import static ru.sawim.R.string.size;
 import static ru.sawim.modules.FileTransfer.TransferStatus.CANCEL;
 import static ru.sawim.modules.FileTransfer.TransferStatus.ERROR;
