@@ -1,6 +1,5 @@
-package ru.sawim.models;
+package ru.sawim.ui.adapter;
 
-import android.content.Context;
 import android.graphics.drawable.AnimationDrawable;
 import android.view.View;
 import android.view.ViewGroup;

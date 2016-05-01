@@ -7,7 +7,7 @@
  * and open the template in the editor.
  */
 
-package ru.sawim.models.form;
+package ru.sawim.ui.adapter.form;
 
 import ru.sawim.ui.activity.BaseActivity;
 

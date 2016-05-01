@@ -12,9 +12,9 @@ import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.ui.activity.BaseActivity;
 import ru.sawim.ui.activity.SawimActivity;
-import ru.sawim.models.VirtualListAdapter;
-import ru.sawim.models.list.VirtualList;
-import ru.sawim.models.list.VirtualListItem;
+import ru.sawim.ui.adapter.VirtualListAdapter;
+import ru.sawim.ui.adapter.list.VirtualList;
+import ru.sawim.ui.adapter.list.VirtualListItem;
 import ru.sawim.ui.widget.MyListView;
 
 /**

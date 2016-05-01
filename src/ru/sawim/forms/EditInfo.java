@@ -3,8 +3,8 @@ package ru.sawim.forms;
 import protocol.Protocol;
 import ru.sawim.R;
 import ru.sawim.ui.activity.BaseActivity;
-import ru.sawim.models.form.FormListener;
-import ru.sawim.models.form.Forms;
+import ru.sawim.ui.adapter.form.FormListener;
+import ru.sawim.ui.adapter.form.Forms;
 import ru.sawim.modules.search.UserInfo;
 
 public class EditInfo implements FormListener {

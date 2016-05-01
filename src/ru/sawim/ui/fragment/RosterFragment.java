@@ -24,7 +24,7 @@ import ru.sawim.chat.Chat;
 import ru.sawim.chat.ChatHistory;
 import ru.sawim.forms.ManageContactListForm;
 import ru.sawim.listener.OnUpdateRoster;
-import ru.sawim.models.RosterAdapter;
+import ru.sawim.ui.adapter.RosterAdapter;
 import ru.sawim.modules.FileTransfer;
 import ru.sawim.roster.*;
 import ru.sawim.ui.widget.MyImageButton;
@@ -220,10 +220,11 @@ public class RosterFragment extends SawimFragment implements View.OnClickListene
         if (icMess == null) {
             chatsImage.setVisibility(View.GONE);
         } else {
-            icMess = icMess.getConstantState().newDrawable();
             if (icMess == SawimResources.PERSONAL_MESSAGE_ICON) {
+                icMess = icMess.getConstantState().newDrawable();
                 icMess.setColorFilter(Scheme.getColor(R.attr.bar_personal_unread_message), PorterDuff.Mode.MULTIPLY);
             } else {
+                icMess = icMess.getConstantState().newDrawable();
                 icMess.setColorFilter(Scheme.getColor(R.attr.bar_unread_message), PorterDuff.Mode.MULTIPLY);
             }
             chatsImage.setVisibility(View.VISIBLE);

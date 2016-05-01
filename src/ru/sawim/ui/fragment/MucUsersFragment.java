@@ -11,7 +11,7 @@ import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.ui.activity.BaseActivity;
 import ru.sawim.ui.activity.SawimActivity;
-import ru.sawim.models.MucUsersAdapter;
+import ru.sawim.ui.adapter.MucUsersAdapter;
 import ru.sawim.ui.fragment.menu.MyMenu;
 import ru.sawim.ui.widget.MyListView;
 

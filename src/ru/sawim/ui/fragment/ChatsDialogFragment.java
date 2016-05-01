@@ -13,7 +13,7 @@ import protocol.Contact;
 import ru.sawim.R;
 import ru.sawim.chat.Chat;
 import ru.sawim.chat.ChatHistory;
-import ru.sawim.models.RosterAdapter;
+import ru.sawim.ui.adapter.RosterAdapter;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.roster.TreeNode;
 import ru.sawim.ui.widget.MyListView;

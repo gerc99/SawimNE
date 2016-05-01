@@ -1,6 +1,5 @@
-package ru.sawim.models;
+package ru.sawim.ui.adapter;
 
-import android.content.Context;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;

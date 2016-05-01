@@ -10,8 +10,8 @@ import ru.sawim.ui.activity.BaseActivity;
 import ru.sawim.comm.JLocale;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
-import ru.sawim.models.form.FormListener;
-import ru.sawim.models.form.Forms;
+import ru.sawim.ui.adapter.form.FormListener;
+import ru.sawim.ui.adapter.form.Forms;
 
 
 public class XmppRegistration implements Runnable, FormListener {

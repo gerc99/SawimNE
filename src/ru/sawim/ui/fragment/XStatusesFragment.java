@@ -16,7 +16,7 @@ import protocol.Protocol;
 import ru.sawim.R;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.io.BlobStorage;
-import ru.sawim.models.XStatusesAdapter;
+import ru.sawim.ui.adapter.XStatusesAdapter;
 
 /**
  * Created with IntelliJ IDEA.

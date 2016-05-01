@@ -1,4 +1,4 @@
-package ru.sawim.models;
+package ru.sawim.ui.adapter;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;

@@ -33,7 +33,7 @@ import ru.sawim.ui.activity.SawimActivity;
 import ru.sawim.comm.JLocale;
 import ru.sawim.forms.ManageContactListForm;
 import ru.sawim.listener.OnUpdateRoster;
-import ru.sawim.models.RosterAdapter;
+import ru.sawim.ui.adapter.RosterAdapter;
 import ru.sawim.roster.ProtocolBranch;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.roster.TreeNode;

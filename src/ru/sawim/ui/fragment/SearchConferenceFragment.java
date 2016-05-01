@@ -31,7 +31,7 @@ import ru.sawim.ui.activity.BaseActivity;
 import ru.sawim.ui.activity.SawimActivity;
 import ru.sawim.comm.JLocale;
 import ru.sawim.comm.StringConvertor;
-import ru.sawim.models.SearchConferenceAdapter;
+import ru.sawim.ui.adapter.SearchConferenceAdapter;
 import ru.sawim.modules.DebugLog;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.ui.widget.MyListView;

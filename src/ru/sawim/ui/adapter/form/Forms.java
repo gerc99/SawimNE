@@ -1,4 +1,4 @@
-package ru.sawim.models.form;
+package ru.sawim.ui.adapter.form;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;

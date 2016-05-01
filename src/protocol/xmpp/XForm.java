@@ -6,8 +6,8 @@ import ru.sawim.comm.JLocale;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
 import ru.sawim.icons.ImageList;
-import ru.sawim.models.form.FormListener;
-import ru.sawim.models.form.Forms;
+import ru.sawim.ui.adapter.form.FormListener;
+import ru.sawim.ui.adapter.form.Forms;
 
 import java.util.Vector;
 

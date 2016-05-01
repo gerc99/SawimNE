@@ -1,4 +1,4 @@
-package ru.sawim.models.list;
+package ru.sawim.ui.adapter.list;
 
 import android.view.ContextMenu;
 import android.view.Menu;

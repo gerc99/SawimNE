@@ -1,4 +1,4 @@
-package ru.sawim.models;
+package ru.sawim.ui.adapter;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -10,7 +10,7 @@ import android.widget.TextView;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.Scheme;
-import ru.sawim.models.list.VirtualListItem;
+import ru.sawim.ui.adapter.list.VirtualListItem;
 import ru.sawim.text.OnTextLinkClick;
 import ru.sawim.ui.widget.MyTextView;
 

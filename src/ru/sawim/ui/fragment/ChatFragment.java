@@ -45,9 +45,9 @@ import ru.sawim.chat.ChatHistory;
 import ru.sawim.chat.MessData;
 import ru.sawim.chat.message.PlainMessage;
 import ru.sawim.comm.JLocale;
-import ru.sawim.models.MessagesAdapter;
-import ru.sawim.models.MucUsersAdapter;
-import ru.sawim.models.RosterAdapter;
+import ru.sawim.ui.adapter.MessagesAdapter;
+import ru.sawim.ui.adapter.MucUsersAdapter;
+import ru.sawim.ui.adapter.RosterAdapter;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.text.TextFormatter;
 import ru.sawim.ui.fragment.menu.JuickMenu;
@@ -882,10 +882,11 @@ public class ChatFragment extends SawimFragment implements OnUpdateChat, Handler
             } else {
                 chatBarLayout.setVisibilityChatsImage(View.VISIBLE);
                 if (!SawimApplication.isManyPane()) {
-                    icMess = icMess.getConstantState().newDrawable();
                     if (icMess == SawimResources.PERSONAL_MESSAGE_ICON) {
+                        icMess = icMess.getConstantState().newDrawable();
                         icMess.setColorFilter(Scheme.getColor(R.attr.bar_personal_unread_message), PorterDuff.Mode.MULTIPLY);
                     } else {
+                        icMess = icMess.getConstantState().newDrawable();
                         icMess.setColorFilter(Scheme.getColor(R.attr.bar_unread_message), PorterDuff.Mode.MULTIPLY);
                     }
                     chatBarLayout.getChatsImage().setImageDrawable(icMess);

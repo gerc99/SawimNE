@@ -1,4 +1,4 @@
-package ru.sawim.models;
+package ru.sawim.ui.adapter;
 
 import android.support.v4.view.PagerAdapter;
 import android.view.View;

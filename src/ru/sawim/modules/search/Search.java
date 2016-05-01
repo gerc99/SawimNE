@@ -12,11 +12,11 @@ import ru.sawim.ui.activity.BaseActivity;
 import ru.sawim.comm.JLocale;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
-import ru.sawim.models.form.ControlStateListener;
-import ru.sawim.models.form.FormListener;
-import ru.sawim.models.form.Forms;
-import ru.sawim.models.list.VirtualList;
-import ru.sawim.models.list.VirtualListModel;
+import ru.sawim.ui.adapter.form.ControlStateListener;
+import ru.sawim.ui.adapter.form.FormListener;
+import ru.sawim.ui.adapter.form.Forms;
+import ru.sawim.ui.adapter.list.VirtualList;
+import ru.sawim.ui.adapter.list.VirtualListModel;
 import ru.sawim.roster.RosterHelper;
 
 import java.util.ArrayList;

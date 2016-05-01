@@ -6,7 +6,7 @@ import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import ru.sawim.ui.activity.BaseActivity;
-import ru.sawim.models.SmilesAdapter;
+import ru.sawim.ui.adapter.SmilesAdapter;
 import ru.sawim.modules.Emotions;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.ui.widget.SizeNotifierLinearLayout;

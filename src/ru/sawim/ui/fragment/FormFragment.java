@@ -1,6 +1,5 @@
 package ru.sawim.ui.fragment;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -21,7 +20,7 @@ import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.SawimNotification;
 import ru.sawim.ui.activity.BaseActivity;
-import ru.sawim.models.form.Forms;
+import ru.sawim.ui.adapter.form.Forms;
 import ru.sawim.ui.widget.MySpinner;
 import ru.sawim.ui.widget.Util;
 

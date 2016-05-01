@@ -8,9 +8,9 @@ import ru.sawim.*;
 import ru.sawim.ui.activity.BaseActivity;
 import ru.sawim.comm.JLocale;
 import ru.sawim.comm.Util;
-import ru.sawim.models.list.VirtualList;
-import ru.sawim.models.list.VirtualListItem;
-import ru.sawim.models.list.VirtualListModel;
+import ru.sawim.ui.adapter.list.VirtualList;
+import ru.sawim.ui.adapter.list.VirtualListItem;
+import ru.sawim.ui.adapter.list.VirtualListModel;
 
 import java.util.List;
 import java.util.TimeZone;

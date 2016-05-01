@@ -11,9 +11,9 @@ import ru.sawim.ui.activity.BaseActivity;
 import ru.sawim.comm.Config;
 import ru.sawim.comm.JLocale;
 import ru.sawim.comm.StringConvertor;
-import ru.sawim.models.list.VirtualList;
-import ru.sawim.models.list.VirtualListItem;
-import ru.sawim.models.list.VirtualListModel;
+import ru.sawim.ui.adapter.list.VirtualList;
+import ru.sawim.ui.adapter.list.VirtualListItem;
+import ru.sawim.ui.adapter.list.VirtualListModel;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.ui.fragment.TextBoxDialogFragment;
 

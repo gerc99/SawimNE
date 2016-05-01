@@ -13,7 +13,7 @@ import protocol.Protocol;
 import ru.sawim.Options;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
-import ru.sawim.models.StatusesAdapter;
+import ru.sawim.ui.adapter.StatusesAdapter;
 
 public class StatusesFragment extends DialogFragment {
     public static final int ADAPTER_STATUS = 0;

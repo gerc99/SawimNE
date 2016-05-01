@@ -1,4 +1,4 @@
-package ru.sawim.models;
+package ru.sawim.ui.adapter;
 
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
