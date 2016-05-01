@@ -204,7 +204,8 @@ public class MessageItemView extends View {
             return;
         }
 
-        Picasso.with(getContext()).load(imageLink).resize(getMessageWidth(), getMessageWidth()).centerInside().into(new Target() {
+        Picasso.with(getContext()).load(imageLink).resize(getMessageWidth(), getMessageWidth())
+                .onlyScaleDown().centerInside().into(new Target() {
             @Override
             public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
                 image = new BitmapDrawable(getResources(), bitmap);
