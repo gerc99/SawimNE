@@ -329,7 +329,7 @@ public class FormFragment extends DialogFragment implements Forms.OnUpdateForm, 
                 case Forms.CONTROL_IMAGE:
                     final ImageView imageView = new ImageView(context);
                     imageView.setPadding(0, padding, 0, padding);
-                    imageView.setAdjustViewBounds(true);
+                    //imageView.setAdjustViewBounds(true);
                     imageView.setImageDrawable(c.image);
                     drawText(context, c, listLayout);
                     listLayout.addView(imageView);

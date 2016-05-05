@@ -147,41 +147,32 @@ public class ImageList {
 
     public static Bitmap scalingIconForDPI(Bitmap originBitmap) {
         if (originBitmap != null) {
-                switch (SawimApplication.getInstance().getResources().getDisplayMetrics().densityDpi) {
-                    case 120:
-                        if (originBitmap.getWidth() >= 6 && !SawimApplication.getContext().getResources().getBoolean(R.bool.is_tablet) && originBitmap.getHeight() == 16)
-                            originBitmap = Bitmap.createScaledBitmap(originBitmap, 6, 6, true);
-                        else if (originBitmap.getWidth() >= 8  && originBitmap.getHeight() == 16)
-                            originBitmap = Bitmap.createScaledBitmap(originBitmap, 8, 8, true);
-                        else originBitmap = Bitmap.createScaledBitmap(originBitmap, 16, 16, true);
-                        break;
-                    case 160:
-                        if (originBitmap.getWidth() > 8 && originBitmap.getHeight() == 16)
-                            originBitmap = Bitmap.createScaledBitmap(originBitmap, 8, 8, true);
-                        break;
-                    case 180:
-                        if (originBitmap.getWidth() >= 24 && !SawimApplication.getContext().getResources().getBoolean(R.bool.is_tablet))
-                            originBitmap = Bitmap.createScaledBitmap(originBitmap, 24, 24, true);
-                        break;
-                    default:
-                        return originBitmap;
-                }
-                originBitmap.setDensity(SawimApplication.getInstance().getResources().getDisplayMetrics().densityDpi);
+            int densityDpi = SawimApplication.getInstance().getResources().getDisplayMetrics().densityDpi;
+            if (densityDpi == 120) {
+                if (originBitmap.getWidth() >= 6 && !SawimApplication.getContext().getResources().getBoolean(R.bool.is_tablet) && originBitmap.getHeight() == 16)
+                    originBitmap = Bitmap.createScaledBitmap(originBitmap, 6, 6, true);
+                else if (originBitmap.getWidth() >= 8 && originBitmap.getHeight() == 16)
+                    originBitmap = Bitmap.createScaledBitmap(originBitmap, 8, 8, true);
+                else originBitmap = Bitmap.createScaledBitmap(originBitmap, 16, 16, true);
+            }
+            if (densityDpi == 160) {
+                if (originBitmap.getWidth() > 8 && originBitmap.getHeight() == 16)
+                    originBitmap = Bitmap.createScaledBitmap(originBitmap, 8, 8, true);
+            }
+            if (densityDpi == 180) {
+                if (originBitmap.getWidth() >= 24 && !SawimApplication.getContext().getResources().getBoolean(R.bool.is_tablet))
+                    originBitmap = Bitmap.createScaledBitmap(originBitmap, 24, 24, true);
+            }
+            if (densityDpi >= 200 && densityDpi < 350) {
+                originBitmap = Bitmap.createScaledBitmap(originBitmap, 32, 32, true);
+            }
+            if (densityDpi >= 400) {
+                originBitmap = Bitmap.createScaledBitmap(originBitmap, 48, 48, true);
+            }
+
+            originBitmap.setDensity(SawimApplication.getInstance().getResources().getDisplayMetrics().densityDpi);
         }
         return originBitmap;
-    }
-
-    public static Bitmap scalingCaptchaIconForDPI(Bitmap originBitmap) {
-        BitmapDrawable output = null;
-        int density = (int) SawimApplication.getInstance().getResources().getDisplayMetrics().density;
-        if (originBitmap != null) {
-            originBitmap = Bitmap.createScaledBitmap(originBitmap, originBitmap.getWidth() * density, originBitmap.getHeight() * density, true);
-            originBitmap = originBitmap.copy(Bitmap.Config.ARGB_4444, false);
-            originBitmap.setDensity(SawimApplication.getInstance().getResources().getDisplayMetrics().densityDpi);
-            output = new BitmapDrawable(SawimApplication.getInstance().getResources(), originBitmap);
-            output.setBounds(0, 0, output.getIntrinsicWidth() * density, output.getIntrinsicHeight() * density);
-        }
-        return output.getBitmap();
     }
 
     public Image loadImage(String resName) {

@@ -17,6 +17,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.LinearLayout;
 
 import ru.sawim.R;
+import ru.sawim.SawimApplication;
 
 /**
  * Created with IntelliJ IDEA.
@@ -107,6 +108,18 @@ public class Util {
             }
         }
         return inSampleSize;
+    }
+
+    public static Bitmap scalingCaptchaIconForDPI(byte[] imgBytes) {
+        int scaleFactor = 10;
+        Bitmap originBitmap = BitmapFactory.decodeByteArray(imgBytes, 0, imgBytes.length);
+        if (originBitmap != null) {
+            originBitmap = Bitmap.createScaledBitmap(originBitmap, SawimApplication.getContext().getResources().getDisplayMetrics().widthPixels - SawimApplication.getContext().getResources().getDisplayMetrics().widthPixels / (scaleFactor - scaleFactor / 2),
+                    SawimApplication.getContext().getResources().getDisplayMetrics().heightPixels / scaleFactor, true);
+            originBitmap = originBitmap.copy(Bitmap.Config.ARGB_4444, false);
+            originBitmap.setDensity(SawimApplication.getInstance().getResources().getDisplayMetrics().densityDpi);
+        }
+        return originBitmap;
     }
 
     public static CharSequence highlightText(String search, String originalText, int color) {

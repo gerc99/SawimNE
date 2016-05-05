@@ -1,11 +1,9 @@
 package protocol.xmpp;
 
-import android.graphics.Bitmap;
 import ru.sawim.R;
 import ru.sawim.comm.JLocale;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
-import ru.sawim.icons.ImageList;
 import ru.sawim.ui.adapter.form.FormListener;
 import ru.sawim.ui.adapter.form.Forms;
 
@@ -96,9 +94,7 @@ final class XForm {
                 String bs64img = baseXml.getFirstNodeValueRecursive("data");
                 if (null != bs64img) {
                     byte[] imgBytes = Util.base64decode(bs64img);
-                    bs64img = null;
-                    Bitmap bitmap = ImageList.getInstance().createImage(imgBytes, 0, imgBytes.length).getBitmap();
-                    form.addBitmap(ImageList.scalingCaptchaIconForDPI(bitmap));
+                    form.addBitmap(ru.sawim.ui.widget.Util.scalingCaptchaIconForDPI(imgBytes));
                 }
             }
             addField(item, item.getAttribute("type"));
