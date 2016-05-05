@@ -67,14 +67,10 @@ public class ChatInputBarView extends IcsLinearLayout {
         return (MyImageButton) getChildAt(SEND_BUTTON_INDEX);
     }
 
-    public void setImageButtons(MyImageButton menuButton, MyImageButton smileButton, MyImageButton sendButton, boolean isSearchMode) {
+    public void setImageButtons(MyImageButton menuButton, MyImageButton smileButton, MyImageButton sendButton) {
         menuButton.setImageDrawable(SawimResources.MENU_ICON);
         smileButton.setImageResource(Scheme.isBlack() ? R.drawable.ic_emoji_dark : R.drawable.ic_emoji_light);
-        if (isSearchMode) {
-            sendButton.setImageResource(android.R.drawable.ic_menu_search);
-        } else {
-            sendButton.setImageResource(Scheme.isBlack() ? R.drawable.ic_send_dark : R.drawable.ic_send_light);
-        }
+        sendButton.setImageResource(Scheme.isBlack() ? R.drawable.ic_send_dark : R.drawable.ic_send_light);
         setDividerDrawable(SawimResources.listDivider);
     }
 }
