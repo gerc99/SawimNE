@@ -40,7 +40,7 @@ public class XStatus {
     }
 
     public static String getQipXStatus(XmppConnection connection) {
-        byte x = connection.getXmpp().getProfile().xstatusIndex;
+        int x = connection.getXmpp().getProfile().xstatusIndex;
         if (XStatusInfo.XSTATUS_NONE == x) {
             return "";
         }

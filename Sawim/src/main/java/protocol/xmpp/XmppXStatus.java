@@ -159,7 +159,7 @@ public class XmppXStatus {
         return "-".equals(str) ? defval : str;
     }
 
-    public String getCode(byte xstatusIndex) {
+    public String getCode(int xstatusIndex) {
         if (0 == xstatusCaps.length) {
             return null;
         }
@@ -174,7 +174,7 @@ public class XmppXStatus {
                 isXStatus ? XSTATUS_TEXT_NONE : "");
     }
 
-    public String getIcqXStatus(byte xstatusIndex) {
+    public String getIcqXStatus(int xstatusIndex) {
         if (0 == xstatusCaps.length) {
             return null;
         }

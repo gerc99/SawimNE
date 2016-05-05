@@ -485,7 +485,7 @@ abstract public class Protocol {
     protected abstract void s_updateXStatus();
 
     public final void setXStatus(int xstatus, String title, String desc) {
-        profile.xstatusIndex = (byte) xstatus;
+        profile.xstatusIndex = xstatus;
         profile.xstatusTitle = title;
         profile.xstatusDescription = desc;
         Options.saveAccount(profile);
