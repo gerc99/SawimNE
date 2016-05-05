@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SimpleItemAnimator;
 import android.util.AttributeSet;
 import android.view.ContextMenu;
 import android.view.GestureDetector;
@@ -60,12 +61,12 @@ public class MyListView extends RecyclerView {
         linearLayoutManager.setSmoothScrollbarEnabled(true);
         linearLayoutManager.setStackFromEnd(false);
         setLayoutManager(linearLayoutManager);
-        DefaultItemAnimator itemAnimator = new DefaultItemAnimator();
+        /*DefaultItemAnimator itemAnimator = new DefaultItemAnimator();
         itemAnimator.setSupportsChangeAnimations(true);
         itemAnimator.setMoveDuration(200);
         itemAnimator.setAddDuration(250);
-        itemAnimator.setRemoveDuration(200);
-        setItemAnimator(itemAnimator);
+        itemAnimator.setRemoveDuration(200);*/
+        setItemAnimator(null);
 
         addOnScrollListener(new OnScrollListener() {
             @Override
