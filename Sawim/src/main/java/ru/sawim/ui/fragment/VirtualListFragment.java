@@ -125,10 +125,11 @@ public class VirtualListFragment extends SawimFragment implements VirtualList.On
 
     @Override
     public void update() {
-        if (list.getModel() == null || getActivity() == null) return;
+        if (getActivity() == null) return;
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                if (getActivity() == null || getVirtualListAdapter() == null) return;
                 getVirtualListAdapter().refreshList(list.getModel().elements);
             }
         });
