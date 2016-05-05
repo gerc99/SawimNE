@@ -350,15 +350,6 @@ public class ChatFragment extends SawimFragment implements OnUpdateChat, Handler
         unregisterForContextMenu(nickList);
         nickList.addOnItemTouchListener(null);
         nickList.setOnTouchListener(null);
-        stickyRecyclerHeadersDecoration = null;
-        handler = null;
-        chatBarLayout = null;
-        chatViewLayout = null;
-        smileysPopup = null;
-        drawerLayout = null;
-        mucUsersFragment = null;
-        chatsDialogFragment = null;
-        nickList = null;
     }
 
     public boolean hasBack() {
