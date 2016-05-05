@@ -4,9 +4,6 @@ import android.graphics.drawable.BitmapDrawable;
 import protocol.Contact;
 import protocol.Protocol;
 import ru.sawim.SawimResources;
-import ru.sawim.chat.MessData;
-import ru.sawim.modules.history.HistoryStorage;
-import ru.sawim.roster.RosterHelper;
 
 public abstract class Message {
     public static final int ICON_NONE = -1;
@@ -25,7 +22,6 @@ public abstract class Message {
     private String contactId;
     private String myId;
     private String senderName;
-    private MessData mData = null;
     private long newDate;
     private String serverMsgId;
 
@@ -50,21 +46,6 @@ public abstract class Message {
         this.myId = myId;
         this.contactId = contactId;
         this.isIncoming = isIncoming;
-    }
-
-    public final void setVisibleIcon(MessData mData) {
-        this.mData = mData;
-    }
-
-    public final void setSendingState(Protocol protocol, int state) {
-        if (mData != null) {
-            Contact contact = protocol.getItemByUID(contactId);
-            mData.setIconIndex(state);
-            HistoryStorage historyStorage = protocol.getChat(contact).getHistory();
-            historyStorage.updateText(mData);
-            if (RosterHelper.getInstance().getUpdateChatListener() != null)
-                RosterHelper.getInstance().getUpdateChatListener().updateMessages(contact);
-        }
     }
 
     public final void setName(String name) {

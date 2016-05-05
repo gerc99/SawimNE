@@ -12,6 +12,8 @@ public interface OnUpdateChat {
 
     void updateMessages(Contact contact);
 
+    void updateMessage(Contact contact, String id, int state);
+
     void updateChat();
 
     void updateMucList();

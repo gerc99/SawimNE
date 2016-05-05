@@ -22,6 +22,7 @@ public final class MessData {
     public static final short PRESENCE = 32;
     public static final short MARKED = 64;
 
+    private String id;
     private long time;
     private String nick;
     private String strTime;
@@ -47,6 +48,14 @@ public final class MessData {
 
     public MessData(Contact currentContact, long time, String text, String nick, short flags) {
         this(currentContact, time, text, nick, flags, false);
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     private CharSequence parsedText(Contact contact, CharSequence text) {

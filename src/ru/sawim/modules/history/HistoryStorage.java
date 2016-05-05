@@ -26,8 +26,11 @@ import java.util.List;
 public class HistoryStorage {
 
     private static final String WHERE_ACC_CONTACT_ID = DatabaseHelper.ACCOUNT_ID + " = ? AND " + DatabaseHelper.CONTACT_ID + " = ?";
-    private static final String WHERE_ACC_CONTACT_AUTHOR_MESSAGE_ID = DatabaseHelper.ACCOUNT_ID + " = ? AND " + DatabaseHelper.CONTACT_ID
+    private static final String WHERE_ACC_CONTACT_AUTHOR_ID = DatabaseHelper.ACCOUNT_ID + " = ? AND " + DatabaseHelper.CONTACT_ID
             + "= ? AND " + DatabaseHelper.AUTHOR + "= ? AND " + DatabaseHelper.MESSAGE + " = ?";
+    private static final String WHERE_ACC_ID_CONTACT_ID_AUTHOR_ID_MESSAGE_TEXT = DatabaseHelper.ACCOUNT_ID + " = ? AND " + DatabaseHelper.CONTACT_ID
+            + "= ? AND " + DatabaseHelper.AUTHOR + "= ? AND " + DatabaseHelper.MESSAGE + " = ?";
+    private static final String WHERE_ACC_ID_CONTACT_ID_AUTHOR_ID_MESSAGE_ID = WHERE_ACC_CONTACT_ID + " AND " + DatabaseHelper.ID + " = ?";
 
     private String protocolId;
     private String uniqueUserId;
@@ -44,10 +47,10 @@ public class HistoryStorage {
     }
 
     public void addText(MessData md) {
-        addText(md.getIconIndex(), md.isIncoming(), md.getNick(), md.getText().toString(), md.getTime(), md.getRowData(), md.getServerMsgId());
+        addText(md.getId(), md.getIconIndex(), md.isIncoming(), md.getNick(), md.getText().toString(), md.getTime(), md.getRowData(), md.getServerMsgId());
     }
 
-    public void addText(final int iconIndex, final boolean isIncoming,
+    public void addText(final String id, final int iconIndex, final boolean isIncoming,
                                      final String nick, final String text, final long time, final short rowData, String serverMsgId) {
         thread.execute(new SqlAsyncTask.OnTaskListener() {
             @Override
@@ -56,6 +59,7 @@ public class HistoryStorage {
                     ContentValues values = new ContentValues();
                     values.put(DatabaseHelper.ACCOUNT_ID, protocolId);
                     values.put(DatabaseHelper.CONTACT_ID, uniqueUserId);
+                    values.put(DatabaseHelper.ID, id);
                     values.put(DatabaseHelper.SENDING_STATE, iconIndex);
                     values.put(DatabaseHelper.INCOMING, isIncoming ? 0 : 1);
                     values.put(DatabaseHelper.AUTHOR, nick);
@@ -78,8 +82,24 @@ public class HistoryStorage {
                 try {
                     ContentValues values = new ContentValues();
                     values.put(DatabaseHelper.SENDING_STATE, md.getIconIndex());
-                    SawimApplication.getDatabaseHelper().getWritableDatabase().update(DatabaseHelper.TABLE_CHAT_HISTORY, values, WHERE_ACC_CONTACT_AUTHOR_MESSAGE_ID,
-                            new String[]{protocolId, uniqueUserId, md.getNick(), md.getText().toString()});
+                    SawimApplication.getDatabaseHelper().getWritableDatabase().update(DatabaseHelper.TABLE_CHAT_HISTORY, values, WHERE_ACC_ID_CONTACT_ID_AUTHOR_ID_MESSAGE_TEXT,
+                            new String[]{protocolId, uniqueUserId, md.getText().toString()});
+                } catch (Exception e) {
+                    DebugLog.panic(e);
+                }
+            }
+        });
+    }
+
+    public void updateState(final String messageId, final int state) {
+        thread.execute(new SqlAsyncTask.OnTaskListener() {
+            @Override
+            public void run() {
+                try {
+                    ContentValues values = new ContentValues();
+                    values.put(DatabaseHelper.SENDING_STATE, state);
+                    SawimApplication.getDatabaseHelper().getWritableDatabase().update(DatabaseHelper.TABLE_CHAT_HISTORY, values, WHERE_ACC_ID_CONTACT_ID_AUTHOR_ID_MESSAGE_ID,
+                            new String[]{protocolId, uniqueUserId, messageId});
                 } catch (Exception e) {
                     DebugLog.panic(e);
                 }
@@ -91,7 +111,7 @@ public class HistoryStorage {
         thread.execute(new SqlAsyncTask.OnTaskListener() {
             @Override
             public void run() {
-                SawimApplication.getDatabaseHelper().getWritableDatabase().delete(DatabaseHelper.TABLE_CHAT_HISTORY, WHERE_ACC_CONTACT_AUTHOR_MESSAGE_ID,
+                SawimApplication.getDatabaseHelper().getWritableDatabase().delete(DatabaseHelper.TABLE_CHAT_HISTORY, WHERE_ACC_ID_CONTACT_ID_AUTHOR_ID_MESSAGE_TEXT,
                         new String[]{protocolId, uniqueUserId, md.getNick(), md.getText().toString()});
             }
         });
@@ -103,8 +123,8 @@ public class HistoryStorage {
         Cursor cursor = null;
         try {
             cursor = SawimApplication.getDatabaseHelper().getReadableDatabase().query(DatabaseHelper.TABLE_CHAT_HISTORY, null, WHERE_ACC_CONTACT_ID, new String[]{protocolId, uniqueUserId}, null, null, null);
-            if (cursor.moveToFirst()) {
-                for (int i = 0; i < cursor.getCount(); i++) {
+            if (cursor.moveToLast()) {
+                for (int i = cursor.getCount() - 1; 0 <= i; --i) {
                     cursor.moveToPosition(i);
                     String messTxt = cursor.getString(cursor.getColumnIndex(DatabaseHelper.MESSAGE));
                     if (messTxt.toLowerCase().contains(search)) {
@@ -309,6 +329,55 @@ public class HistoryStorage {
             messData.setIconIndex((byte) sendingState);
         }
         return messData;
+    }
+
+    public static List<PlainMessage> getNotSendedMessages() {
+        List<PlainMessage> list = new ArrayList<>();
+        Cursor cursor = null;
+        try {
+            cursor = SawimApplication.getDatabaseHelper().getReadableDatabase().query(DatabaseHelper.TABLE_CHAT_HISTORY, null,
+                    DatabaseHelper.INCOMING + " = 1 AND " + DatabaseHelper.SENDING_STATE + " = -1", null, null, null, null, null);
+            if (cursor.moveToLast()) {
+                do {
+                    String protocolId = cursor.getString(cursor.getColumnIndex(DatabaseHelper.ACCOUNT_ID));
+                    String uniqueUserId = cursor.getString(cursor.getColumnIndex(DatabaseHelper.CONTACT_ID));
+                    String messId = cursor.getString(cursor.getColumnIndex(DatabaseHelper.ID));
+                    int sendingState = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.SENDING_STATE));
+                    boolean isIncoming = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.INCOMING)) == 0;
+                    String from = cursor.getString(cursor.getColumnIndex(DatabaseHelper.AUTHOR));
+                    String text = cursor.getString(cursor.getColumnIndex(DatabaseHelper.MESSAGE));
+                    long date = cursor.getLong(cursor.getColumnIndex(DatabaseHelper.DATE));
+                    short rowData = cursor.getShort(cursor.getColumnIndex(DatabaseHelper.ROW_DATA));
+                    //String serverMsgId = cursor.getString(cursor.getColumnIndex(DatabaseHelper.SERVER_MSG_ID));
+                    boolean isMessage = (rowData & MessData.PRESENCE) == 0
+                            && (rowData & MessData.SERVICE) == 0 && (rowData & MessData.PROGRESS) == 0;
+                    if (isMessage) {
+                        Protocol protocol = RosterHelper.getInstance().getProtocol(protocolId);
+                        PlainMessage message = new PlainMessage(protocol, uniqueUserId, date, text);
+                        message.setMessageId(messId);
+                        list.add(message);
+                    }
+                } while (cursor.moveToPrevious());
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return list;
+    }
+
+    public static boolean isMessageExist(String id) {
+        Cursor cursor = null;
+        try {
+            cursor = SawimApplication.getDatabaseHelper().getReadableDatabase().query(DatabaseHelper.TABLE_CHAT_HISTORY, null,
+                    DatabaseHelper.ID + " = " + id, null, null, null, null, null);
+            return cursor.moveToLast();
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
     }
 
     public void addMessageToHistory(Contact contact, Message message, String from, boolean isSystemNotice) {

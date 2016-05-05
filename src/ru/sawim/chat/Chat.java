@@ -314,8 +314,8 @@ public final class Chat {
 
         final MessData mData = new MessData(contact, message.getNewDate(), messageText, from, flags, isHighlight);
         mData.setServerMsgId(message.getServerMsgId());
-        if (!incoming && !mData.isMe()) {
-            message.setVisibleIcon(mData);
+        if (!incoming) {
+            mData.setId(String.valueOf(((PlainMessage) message).getMessageId()));
         }
         return mData;
     }

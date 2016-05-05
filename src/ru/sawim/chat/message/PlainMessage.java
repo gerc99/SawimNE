@@ -8,7 +8,7 @@ import ru.sawim.comm.JLocale;
 public class PlainMessage extends Message {
 
     private String text;
-    private int messageId;
+    private String messageId;
     private boolean offline;
     public static final String CMD_WAKEUP = "/wakeup";
     public static final String CMD_ME = "/me ";
@@ -55,11 +55,11 @@ public class PlainMessage extends Message {
         return messageText;
     }
 
-    public void setMessageId(int id) {
+    public void setMessageId(String id) {
         messageId = id;
     }
 
-    public int getMessageId() {
+    public String getMessageId() {
         return messageId;
     }
 }

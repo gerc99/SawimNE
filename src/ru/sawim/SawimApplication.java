@@ -63,7 +63,7 @@ public class SawimApplication extends Application {
     public static final String LOG_TAG = SawimApplication.class.getSimpleName();
 
     public static final String DATABASE_NAME = "sawim.db";
-    public static final int DATABASE_VERSION = 10;
+    public static final int DATABASE_VERSION = 13;
 
     public static String NAME;
     public static String VERSION;

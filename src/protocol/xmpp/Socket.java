@@ -65,7 +65,7 @@ final class Socket implements Runnable {
             int bRead = 0;
             try {
                 bRead = zIn.read(data);
-            } catch (IOException ignored) {
+            } catch (IOException | IllegalStateException ignored) {
             }
             if (-1 == bRead) {
                 throw new SawimException(120, 13);

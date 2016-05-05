@@ -8,6 +8,7 @@ import ru.sawim.chat.Chat;
 import ru.sawim.chat.message.*;
 import ru.sawim.comm.*;
 import ru.sawim.modules.history.HistoryStorage;
+import ru.sawim.roster.RosterHelper;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -63,15 +64,9 @@ public class Messages {
         if (connection.getXmpp().getItemByUID(Jid.getBareJid(to)).isConference() && (-1 == to.indexOf('/'))) {
             type = XmlConstants.S_GROUPCHAT;
         }
-        message.setMessageId(Util.uniqueValue());
-        boolean notify = true;
 
         sendMessage(connection, to, message.getText(), type, XmlConstants.S_CHAT.equals(type),
                 String.valueOf(message.getMessageId()));
-
-        if (notify) {
-            connection.addMessage(message);
-        }
     }
 
     public static void sendTypingNotify(XmppConnection connection, String to, boolean composing) {
@@ -177,11 +172,11 @@ public class Messages {
                 if (null == id) {
                     id = msg.getId();
                 }
-                setMessageSended(connection, id, PlainMessage.NOTIFY_FROM_CLIENT);
+                setMessageSended(connection, contact.getUserId(), id, PlainMessage.NOTIFY_FROM_CLIENT);
                 return;
             }
             if (!isConference && !isError) {
-                parseMessageEvent(connection, msg.getXNode("jabber:x:event"), from);
+                parseMessageEvent(connection, contact.getUserId(), msg.getXNode("jabber:x:event"), from);
                 parseEvent(connection, msg.getFirstNode("event"), fullJid);
             }
             return;
@@ -272,8 +267,8 @@ public class Messages {
                 final XmppServiceContact conf = (XmppServiceContact) c;
                 if (isGroupchat && (null != fromRes)) {
                     if (isOnlineMessage && fromRes.equals(conf.getMyName())) {
-                        if (isMessageExist(connection, msg.getId())) {
-                            setMessageSended(connection, msg.getId(),
+                        if (HistoryStorage.isMessageExist(msg.getId())) {
+                            setMessageSended(connection, conf.getUserId(), msg.getId(),
                                     PlainMessage.NOTIFY_FROM_CLIENT);
                             return;
                         }
@@ -473,17 +468,17 @@ public class Messages {
         connection.getXmpp().addMessage(message, true, false);
     }
 
-    private static void parseMessageEvent(XmppConnection connection, XmlNode messageEvent, String from) {
+    private static void parseMessageEvent(XmppConnection connection, String contactId, XmlNode messageEvent, String from) {
         if (null == messageEvent) {
             return;
         }
         if (messageEvent.contains("offline")) {
-            setMessageSended(connection, messageEvent.getFirstNodeValue(XmlNode.S_ID),
+            setMessageSended(connection, contactId, messageEvent.getFirstNodeValue(XmlNode.S_ID),
                     PlainMessage.NOTIFY_FROM_SERVER);
             return;
         }
         if (messageEvent.contains("delivered")) {
-            setMessageSended(connection, messageEvent.getFirstNodeValue(XmlNode.S_ID),
+            setMessageSended(connection, contactId, messageEvent.getFirstNodeValue(XmlNode.S_ID),
                     PlainMessage.NOTIFY_FROM_CLIENT);
             return;
         }
@@ -554,12 +549,12 @@ public class Messages {
         }
     }
 
-    private static boolean isMessageExist(XmppConnection connection, String id) {
-        return connection.isMessageExist(Util.strToIntDef(id, -1));
-    }
-
-    private static void setMessageSended(XmppConnection connection, String id, int state) {
-        connection.markMessageSended(Util.strToIntDef(id, -1), state);
+    private static void setMessageSended(XmppConnection connection, String contactId, String id, int state) {
+        Contact contact = connection.getXmpp().getItemByUID(contactId);
+        HistoryStorage historyStorage = connection.getXmpp().getChat(contact).getHistory();
+        historyStorage.updateState(id, state);
+        if (RosterHelper.getInstance().getUpdateChatListener() != null)
+            RosterHelper.getInstance().getUpdateChatListener().updateMessage(contact, id, state);
     }
 
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.US);

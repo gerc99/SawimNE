@@ -10,6 +10,7 @@ import ru.sawim.chat.message.SystemNotice;
 import ru.sawim.comm.*;
 import ru.sawim.listener.OnMoreMessagesLoaded;
 import ru.sawim.modules.DebugLog;
+import ru.sawim.modules.history.HistoryStorage;
 import ru.sawim.modules.search.UserInfo;
 import ru.sawim.roster.RosterHelper;
 
@@ -87,6 +88,12 @@ public final class XmppConnection extends ClientConnection {
 
     public void setProgress(int percent) {
         getXmpp().setConnectingProgress(percent);
+        if (percent == 100) {
+            List<PlainMessage> messages = HistoryStorage.getNotSendedMessages();
+            for (PlainMessage message : messages) {
+                getXmpp().sendSomeMessage(message);
+            }
+        }
     }
 
     public Xmpp getXmpp() {
@@ -1179,10 +1186,10 @@ public final class XmppConnection extends ClientConnection {
                     return;
                 }
                 while (0 < iqQuery.childrenCount()) {
-                        String jid = iqQuery.popChildNode().getAttribute(XmlNode.S_JID);
-                        requestServerFeatures(jid);
-                    }
-                    requestServerFeatures(domain_);
+                    String jid = iqQuery.popChildNode().getAttribute(XmlNode.S_JID);
+                    //requestServerFeatures(jid); // slow connection
+                }
+                requestServerFeatures(domain_);
                 }
         });
     }

@@ -4,6 +4,7 @@ import android.util.Log;
 
 import protocol.xmpp.XmppContact;
 import ru.sawim.*;
+import ru.sawim.comm.Util;
 import ru.sawim.ui.activity.BaseActivity;
 import ru.sawim.chat.Chat;
 import ru.sawim.chat.ChatHistory;
@@ -822,6 +823,7 @@ abstract public class Protocol {
             return;
         }
         PlainMessage plainMsg = new PlainMessage(this, to.getUserId(), SawimApplication.getCurrentGmtTime(), msg);
+        plainMsg.setMessageId(String.valueOf(Util.uniqueValue()));
         if (isConnected()) {
             if (msg.startsWith("/") && !msg.startsWith("/me ") && !msg.startsWith("/wakeup") && (to instanceof XmppContact)) {
                 boolean cmdExecuted = ((XmppContact) to).execCommand(this, msg);

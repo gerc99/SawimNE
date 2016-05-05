@@ -13,19 +13,14 @@ import ru.sawim.Options;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.SawimException;
-import ru.sawim.chat.message.Message;
-import ru.sawim.chat.message.PlainMessage;
 import ru.sawim.comm.JLocale;
 import ru.sawim.modules.DebugLog;
 import ru.sawim.roster.RosterHelper;
-
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public abstract class ClientConnection implements Runnable {
     private long keepAliveInterv;
     private boolean usePong;
     protected boolean connect;
-    private CopyOnWriteArrayList<PlainMessage> messages = new CopyOnWriteArrayList<>();
 
     private long nextPingTime;
     private long pongTime;
@@ -151,45 +146,6 @@ public abstract class ClientConnection implements Runnable {
 
     public final boolean isConnected() {
         return connect;
-    }
-
-    public final void addMessage(PlainMessage msg) {
-        messages.add(msg);
-        markMessageSended(-1, Message.ICON_NONE);
-    }
-
-    public final boolean isMessageExist(long msgId) {
-        if (-1 < msgId) {
-            for (PlainMessage m : messages) {
-                if (m.getMessageId() == msgId) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    public final void markMessageSended(long msgId, int status) {
-        PlainMessage msg = null;
-        for (PlainMessage m : messages) {
-            if (m.getMessageId() == msgId) {
-                msg = m;
-                break;
-            }
-        }
-        if (null != msg) {
-            msg.setSendingState(getProtocol(), status);
-            if (PlainMessage.NOTIFY_FROM_CLIENT == status) {
-                messages.remove(msg);
-            }
-        }
-        long date = getCurrentGmtTime() - 5 * 60;
-        for (int i = messages.size() - 1; i >= 0; --i) {
-            PlainMessage m = messages.get(i);
-            if (date > m.getNewDate()) {
-                messages.remove(m);
-            }
-        }
     }
 
     private long getCurrentGmtTime() {

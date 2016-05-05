@@ -12,6 +12,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public static final String TABLE_CHAT_HISTORY = "history";
 
+    public static final String ID = "id";
     public static final String ROW_AUTO_ID = "_id";
     public static final String ACCOUNT_ID = "account_id";
     public static final String GROUP_NAME = "group_name";
@@ -44,6 +45,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + ROW_AUTO_ID + " integer primary key autoincrement, "
             + ACCOUNT_ID + " text not null, "
             + CONTACT_ID + " text not null, "
+            + ID + " int, "
             + SENDING_STATE + " int, "
             + INCOMING + " int, "
             + AUTHOR + " text not null, "
@@ -60,13 +62,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        if (newVersion <= 10) {
-            try {
+        try {
+            if (newVersion <= 10) {
                 db.execSQL("DROP TABLE IF EXISTS " + RosterStorage.subContactsTable);
                 db.execSQL("DROP TABLE IF EXISTS " + RosterStorage.storeName);
-            } catch (Exception e) {
-                e.printStackTrace();
             }
+            if (newVersion <= 13) {
+                db.execSQL("ALTER TABLE " + TABLE_CHAT_HISTORY + " ADD COLUMN " + ID + " INTEGER DEFAULT 0");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

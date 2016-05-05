@@ -1,6 +1,7 @@
 buildscript {
     repositories {
-        mavenCentral()
+
+        jcenter()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.1.0'
@@ -13,7 +14,8 @@ task wrapper(type: Wrapper) {
 }
 
 repositories {
-    mavenCentral()
+
+    jcenter()
 }
 
 def mtmProject = project(':deps:mtm')
