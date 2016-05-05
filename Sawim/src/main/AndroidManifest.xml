@@ -117,5 +117,8 @@
             android:name=".gcm.RegistrationIntentService"
             android:exported="false">
         </service>
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="7dd7a74900631f3d243c83f8d0d5fdeed7d55b67" />
     </application>
 </manifest>
