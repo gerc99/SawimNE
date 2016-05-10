@@ -27,12 +27,9 @@ public class TextFormatter {
     private static final Emotions smiles = Emotions.instance;
     private static TextFormatter instance;
 
-    public static void init() {
+    public static TextFormatter getInstance() {
         if (instance == null)
             instance = new TextFormatter();
-    }
-
-    public static TextFormatter getInstance() {
         return instance;
     }
 

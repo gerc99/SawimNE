@@ -40,7 +40,6 @@ import ru.sawim.receiver.NetworkStateReceiver;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.service.SawimService;
 import ru.sawim.service.SawimServiceConnection;
-import ru.sawim.text.TextFormatter;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.X509TrustManager;
@@ -156,7 +155,6 @@ public class SawimApplication extends Application {
                 }
                 RosterHelper.getInstance().getProtocol();
                 DebugLog.startTests();
-                TextFormatter.init();
 
                 RosterHelper.getInstance().loadAccounts();
                 ChatHistory.instance.loadChats();

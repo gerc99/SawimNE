@@ -71,7 +71,7 @@ public class JuickMenu implements DialogInterface.OnClickListener {
             ChatFragment chatFragment = (ChatFragment) activity.getSupportFragmentManager()
                     .findFragmentById(R.id.chat_fragment);
             if (chatFragment == null) {
-                ChatFragment newFragment = ChatFragment.newInstance(currentContact);
+                ChatFragment newFragment = ChatFragment.newInstance();
                 FragmentTransaction transaction = activity.getSupportFragmentManager().beginTransaction();
                 transaction.replace(R.id.fragment_container, newFragment, ChatFragment.TAG);
                 transaction.addToBackStack(null);

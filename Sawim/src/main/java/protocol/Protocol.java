@@ -474,9 +474,6 @@ abstract public class Protocol {
         boolean connecting = StatusInfo.STATUS_OFFLINE != statusIndex;
         Log.e("MENU_CONNECT", isConnected() + " " + isConnecting() + " " + getConnectingProgress() + " " + connected + " " + connecting);
         if (connected) {
-            if (isConnected() || isConnecting()) {
-                disconnect(false);
-            }
             if (!isConnected() && !isConnecting() && connecting) {
                 setOnlineStatus(statusIndex, msg, save);
                 connect();

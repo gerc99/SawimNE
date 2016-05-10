@@ -18,6 +18,7 @@ import java.util.List;
 public class Options {
 
     static final String OPTIONS_CURR_ACCOUNT = "current_account";
+    public static final String OPTIONS_CURR_CONTACT = "current_contact";
     public static final String OPTION_PRIVATE_STATUS = "private_status";
     public static final String OPTION_CL_HIDE_OFFLINE = "cl_hide_offline";
     public static final String OPTION_PRESENCE = "presence_";

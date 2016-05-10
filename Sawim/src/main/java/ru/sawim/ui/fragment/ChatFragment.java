@@ -89,8 +89,6 @@ public class ChatFragment extends SawimFragment implements OnUpdateChat, Handler
     private static final int HISTORY_MESSAGES_LIMIT = 20;
     private static final String CITATION_DIVIDER = "\n---\n";
 
-    private static final String CONTACT_ID = "contact_id";
-
     private static final int ADD_MESSAGE = 0;
     private static final int UPDATE_MESSAGES = 1;
     private static final int UPDATE_MESSAGE = 2;
@@ -120,11 +118,8 @@ public class ChatFragment extends SawimFragment implements OnUpdateChat, Handler
     private ChatsDialogFragment chatsDialogFragment;
     private int lastServerMessageCount;
 
-    public static ChatFragment newInstance(String contactId) {
+    public static ChatFragment newInstance() {
         ChatFragment chatFragment = new ChatFragment();
-        Bundle args = new Bundle();
-        args.putString(CONTACT_ID, contactId);
-        chatFragment.setArguments(args);
         return chatFragment;
     }
 
@@ -376,24 +371,16 @@ public class ChatFragment extends SawimFragment implements OnUpdateChat, Handler
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         if (chat != null) {
-            outState.putString(CONTACT_ID, chat.getContact().getUserId());
+            RosterHelper.getInstance().setCurrentContact(chat.getContact());
         }
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (savedInstanceState == null) {
-            savedInstanceState = getArguments();
-        }
-        if (savedInstanceState != null) {
-            Protocol protocol = RosterHelper.getInstance().getProtocol();
-            if (protocol != null) {
-                Contact contact = protocol.getItemByUID(savedInstanceState.getString(CONTACT_ID));
-                if (contact != null) {
-                    initChat(contact);
-                }
-            }
+        Contact contact = RosterHelper.getInstance().getCurrentContact();
+        if (contact != null) {
+            initChat(contact);
         }
     }
 
@@ -401,9 +388,6 @@ public class ChatFragment extends SawimFragment implements OnUpdateChat, Handler
     public void onStart() {
         super.onStart();
         Contact currentContact = RosterHelper.getInstance().getCurrentContact();
-        if (chat == null && currentContact != null && !SawimApplication.isManyPane()) {
-            initChat(currentContact);
-        }
         if (chat == null) {
             if (SawimApplication.isManyPane()) {
                 chatViewLayout.showHint();
@@ -430,7 +414,15 @@ public class ChatFragment extends SawimFragment implements OnUpdateChat, Handler
     @Override
     public void onResume() {
         super.onResume();
-        resume(chat);
+        if (!SawimApplication.isManyPane()) {
+            resume(chat);
+        } else {
+            if (getActivity().getIntent() == null) {
+
+            } else {
+                getActivity().setIntent(null);
+            }
+        }
     }
 
     public void pause(Chat chat) {

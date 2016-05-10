@@ -79,41 +79,44 @@ public class SawimActivity extends BaseActivity implements OnAccountsLoaded {
 
     private void handleIntent() {
         if (getIntent() == null || getIntent().getAction() == null) return;
-        if (getIntent().getAction().startsWith(Intent.ACTION_SEND)) {
+        Intent intent = getIntent();
+        if (!SawimApplication.isManyPane()) {
+            setIntent(null);
+        }
+        if (intent.getAction().startsWith(Intent.ACTION_SEND)) {
             FragmentManager fm = getSupportFragmentManager();
             for (int i = 0; i < fm.getBackStackEntryCount(); ++i) {
                 fm.popBackStack();
             }
             RosterFragment rosterFragment = getRosterView();
             if (rosterFragment != null)
-                rosterFragment.setMode(getIntent().getType().equals("text/plain") ? RosterFragment.MODE_SHARE_TEXT : RosterFragment.MODE_SHARE);
+                rosterFragment.setMode(intent.getType().equals("text/plain") ? RosterFragment.MODE_SHARE_TEXT : RosterFragment.MODE_SHARE);
             return;
         }
-        if (ACTION_SHOW_LOGIN_WINDOW.equals(getIntent().getAction())) {
+        if (ACTION_SHOW_LOGIN_WINDOW.equals(intent.getAction())) {
             StartWindowFragment newFragment = new StartWindowFragment();
             FragmentManager fm = getSupportFragmentManager();
             FragmentTransaction transaction = fm.beginTransaction();
             transaction.replace(R.id.fragment_container, newFragment, StartWindowFragment.TAG);
             transaction.commit();
         }
-        String userId = getIntent().getStringExtra(EXTRA_MESSAGE_FROM_ID);
-        if (NOTIFY.equals(getIntent().getAction())) {
+        String userId = intent.getStringExtra(EXTRA_MESSAGE_FROM_ID);
+        if (NOTIFY.equals(intent.getAction())) {
             Chat current = ChatHistory.instance.getChat(userId);
             if (current != null)
                 isOpenNewChat = openChat(current.getContact());
         }
-        if (NOTIFY_REPLY.equals(getIntent().getAction())) {
+        if (NOTIFY_REPLY.equals(intent.getAction())) {
             Chat current = ChatHistory.instance.getChat(userId);
             if (current != null)
                 isOpenNewChat = openChat(current.getContact());
         }
-        if (NOTIFY_CAPTCHA.equals(getIntent().getAction())) {
-            FormFragment.showWindows(this, getIntent().getStringExtra(NOTIFY_CAPTCHA));
+        if (NOTIFY_CAPTCHA.equals(intent.getAction())) {
+            FormFragment.showWindows(this, intent.getStringExtra(NOTIFY_CAPTCHA));
         }
-        if (NOTIFY_UPLOAD.equals(getIntent().getAction())) {
-            RosterHelper.getInstance().getFileTransfer(getIntent().getIntExtra(NOTIFY_UPLOAD, -1)).showDialog(this);
+        if (NOTIFY_UPLOAD.equals(intent.getAction())) {
+            RosterHelper.getInstance().getFileTransfer(intent.getIntExtra(NOTIFY_UPLOAD, -1)).showDialog(this);
         }
-        setIntent(null);
     }
 
     public boolean openChat(Contact c) {
@@ -124,7 +127,7 @@ public class SawimActivity extends BaseActivity implements OnAccountsLoaded {
             chatFragment = (ChatFragment) fragmentManager.findFragmentByTag(ChatFragment.TAG);
             if (fragmentManager.getFragments() == null || rosterView == null || chatFragment == null || rosterView.isVisible()) {
                 if (c == null) return false;
-                chatFragment = ChatFragment.newInstance(c.getUserId());
+                chatFragment = ChatFragment.newInstance();
                 FragmentTransaction transaction = fragmentManager.beginTransaction();
                 transaction.replace(R.id.fragment_container, chatFragment, ChatFragment.TAG);
                 transaction.addToBackStack(null);
@@ -193,7 +196,7 @@ public class SawimActivity extends BaseActivity implements OnAccountsLoaded {
         } else {
             RosterHelper.getInstance().setOnAccountsLoaded(this);
         }
-        if (!isOpenNewChat && SawimApplication.isManyPane()) openChat(null);
+        //if (!isOpenNewChat && SawimApplication.isManyPane()) openChat(null);
     }
 
     @Override

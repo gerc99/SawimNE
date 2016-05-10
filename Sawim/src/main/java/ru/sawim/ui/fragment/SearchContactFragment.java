@@ -322,7 +322,7 @@ public class SearchContactFragment extends SawimFragment
             chatFragmentTablet.resume(chatFragmentTablet.getCurrentChat());
             update();
         } else {
-            ChatFragment chatFragment = ChatFragment.newInstance(c.getUserId());
+            ChatFragment chatFragment = ChatFragment.newInstance();
             chatFragment.setSharingText(sharingText);
             FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.fragment_container, chatFragment, ChatFragment.TAG);

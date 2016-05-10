@@ -159,10 +159,13 @@ public final class RosterHelper {
     }
 
     public final Contact getCurrentContact() {
+        currentContact = getProtocol().getItemByUID(Options.getString(Options.OPTIONS_CURR_CONTACT));
         return currentContact;
     }
 
     public final void setCurrentContact(Contact contact) {
+        Options.setString(Options.OPTIONS_CURR_CONTACT, contact.getUserId());
+        Options.safeSave();
         currentContact = contact;
     }
 
