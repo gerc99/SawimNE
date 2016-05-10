@@ -95,19 +95,18 @@ public class ContactMenu implements TextBoxDialogFragment.TextBoxListener {
     public static final int CHAT_MENU_SEARCH = 66;
 
     private Contact contact;
-    private Protocol protocol;
     private TextBoxDialogFragment messageTextbox;
 
-    public ContactMenu(Protocol p, Contact c) {
+    public ContactMenu(Contact c) {
         contact = c;
-        protocol = p;
     }
 
     public void getContextMenu(ContextMenu menu) {
-        contact.initContextMenu(protocol, menu);
+        contact.initContextMenu(menu);
     }
 
     public void doAction(final BaseActivity activity, int cmd) {
+        final Protocol protocol = RosterHelper.getInstance().getProtocol();
         switch (cmd) {
             case USER_MENU_ANNOTATION: {
                 messageTextbox = new TextBoxDialogFragment();
@@ -132,7 +131,7 @@ public class ContactMenu implements TextBoxDialogFragment.TextBoxListener {
 
             case USER_MANAGE_CONTACT:
                 final MyMenu menu = new MyMenu();
-                contact.initManageContactMenu(protocol, menu);
+                contact.initManageContactMenu(menu);
                 AlertDialog.Builder builder = new AlertDialog.Builder(activity);
                 builder.setCancelable(true);
                 builder.setTitle(SawimApplication.getContext().getString(R.string.manage_contact_list));
@@ -247,7 +246,7 @@ public class ContactMenu implements TextBoxDialogFragment.TextBoxListener {
             Contact find = null;
             Contact current = contact;
             current.annotations = messageTextbox.getString();
-            ConcurrentHashMap<String, Contact> contacts = protocol.getContactItems();
+            ConcurrentHashMap<String, Contact> contacts = RosterHelper.getInstance().getProtocol().getContactItems();
             String jid = current.getUserId();
             StringBuilder xml = new StringBuilder();
             xml.append("<iq type='set' id='notes").append(Util.xmlEscape(jid));
@@ -263,7 +262,7 @@ public class ContactMenu implements TextBoxDialogFragment.TextBoxListener {
                 }
             }
             xml.append("</storage></query></iq>");
-            ((Xmpp) protocol).saveAnnotations(xml.toString());
+            ((Xmpp) RosterHelper.getInstance().getProtocol()).saveAnnotations(xml.toString());
             messageTextbox.back();
             return;
         }

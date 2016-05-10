@@ -41,7 +41,7 @@ public class StartWindowFragment extends Fragment {
     public static final String TAG = "StartWindowFragment";
 
     OnAddListener addListener;
-    int accountID = -1;
+    int accountID = 0;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -59,7 +59,7 @@ public class StartWindowFragment extends Fragment {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.start_window, container, false);
 
-        final boolean isEdit = RosterHelper.getInstance().getProtocolCount() > 0;
+        final boolean isEdit = Options.getAccountCount() > 0;
         final Button buttonChangePass = (Button) v.findViewById(R.id.change_password_btn);
         buttonChangePass.setVisibility(isEdit ? View.VISIBLE : View.GONE);
         buttonChangePass.setOnClickListener(new View.OnClickListener() {
@@ -220,16 +220,18 @@ public class StartWindowFragment extends Fragment {
 
     public void addAccount(int num, Profile acc) {
         Options.setAccount(num, acc);
-        RosterHelper.getInstance().setCurrentProtocol();
+        RosterHelper.getInstance().getProtocol().setProfile(Options.getAccount(0));
+        RosterHelper.getInstance().loadAccounts();
+        RosterHelper.getInstance().updateRoster();
     }
 
     private void back() {
-        if (accountID != -1) {
-            getActivity().finish();
-            return;
+        if (Options.getAccountCount() > 0) {
+        //    getActivity().finish();
+        //    return;
         }
         if (SawimApplication.isManyPane())
-            ((SawimActivity) getActivity()).recreateActivity();
+            ((BaseActivity) getActivity()).recreateActivity();
         else
             getActivity().getSupportFragmentManager().popBackStack();
         Util.hideKeyboard(getActivity());

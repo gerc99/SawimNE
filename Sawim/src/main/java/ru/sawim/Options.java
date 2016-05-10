@@ -7,6 +7,7 @@ import protocol.StatusInfo;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
 import ru.sawim.io.BlobStorage;
+import ru.sawim.io.DatabaseHelper;
 import ru.sawim.modules.DebugLog;
 import ru.sawim.roster.RosterHelper;
 
@@ -15,8 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Options {
-
-    private static final String ACCOUNTS_STORAGE_NAME = "accounts";
 
     static final String OPTIONS_CURR_ACCOUNT = "current_account";
     public static final String OPTION_PRIVATE_STATUS = "private_status";
@@ -83,10 +82,6 @@ public class Options {
         editor.putLong(key, value);
     }
 
-    public static int getMaxAccountCount() {
-        return 20;
-    }
-
     public static int getAccountCount() {
         synchronized (listOfProfiles) {
             return listOfProfiles.size();
@@ -124,7 +119,7 @@ public class Options {
     }
 
     public static void delAccount(int num) {
-        RosterHelper.getInstance().removeProtocol(num);
+        //RosterHelper.getInstance().removeProtocol(num);
         synchronized (listOfProfiles) {
             listOfProfiles.remove(num);
             int current = getCurrentAccount();
@@ -138,9 +133,8 @@ public class Options {
                 current = 0;
             }
             setCurrentAccount(current);
-            BlobStorage s = new BlobStorage(ACCOUNTS_STORAGE_NAME);
+            BlobStorage s = new BlobStorage(DatabaseHelper.TABLE_ACCOUNTS);
             try {
-                s.open();
                 for (; num < listOfProfiles.size(); ++num) {
                     Profile p = listOfProfiles.get(num);
                     s.setRecord(num + 1, writeAccount(p));
@@ -178,11 +172,10 @@ public class Options {
     }
 
     public static void loadAccounts() {
-        BlobStorage s = new BlobStorage(ACCOUNTS_STORAGE_NAME);
+        BlobStorage s = new BlobStorage(DatabaseHelper.TABLE_ACCOUNTS);
         try {
             synchronized (listOfProfiles) {
                 listOfProfiles.clear();
-                s.open();
                 int accountCount = s.getNumRecords();
                 for (int i = 0; i < accountCount; ++i) {
                     byte[] data = s.getRecord(i + 1);
@@ -205,9 +198,8 @@ public class Options {
         if (StringConvertor.isEmpty(account.userId)) {
             return;
         }
-        BlobStorage s = new BlobStorage(ACCOUNTS_STORAGE_NAME);
+        BlobStorage s = new BlobStorage(DatabaseHelper.TABLE_ACCOUNTS);
         try {
-            s.open();
             byte[] hash = writeAccount(account);
             if (num < s.getNumRecords()) {
                 s.setRecord(num + 1, hash);

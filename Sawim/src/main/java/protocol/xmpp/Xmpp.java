@@ -1,5 +1,7 @@
 package protocol.xmpp;
 
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 import android.content.DialogInterface;
 import android.provider.Settings;
@@ -7,6 +9,7 @@ import android.widget.Toast;
 import protocol.*;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
+import ru.sawim.gcm.Preferences;
 import ru.sawim.ui.activity.BaseActivity;
 import ru.sawim.chat.message.PlainMessage;
 import ru.sawim.comm.JLocale;
@@ -348,13 +351,13 @@ public final class Xmpp extends Protocol implements FormListener {
     }
 
     protected String processUin(String uin) {
-        String android_id = Settings.Secure.getString(SawimApplication.getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
-        resource = Jid.getResource(uin, "Sawim" + " (" + android_id + ")");
+        String androidId = Settings.Secure.getString(SawimApplication.getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+        resource = Jid.getResource(uin, "Sawim" + " (" + androidId + ")");
         return Jid.getBareJid(uin);
     }
 
     public String getResource() {
-        return resource + "_" + (System.currentTimeMillis() / 1000);
+        return resource;
     }
 
     protected void s_setPrivateStatus() {

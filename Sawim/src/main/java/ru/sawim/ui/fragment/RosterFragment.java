@@ -160,8 +160,8 @@ public class RosterFragment extends SawimFragment implements View.OnClickListene
 
     private int oldProgressBarPercent;
     private void updateProgressBarSync() {
-        final Protocol p = RosterHelper.getInstance().getProtocol(0);
-        if (RosterHelper.getInstance().getProtocolCount() == 1 && p != null) {
+        final Protocol p = RosterHelper.getInstance().getProtocol();
+        if (p != null) {
             byte percent = p.getConnectingProgress();
             if (oldProgressBarPercent != percent) {
                 oldProgressBarPercent = percent;
@@ -333,18 +333,18 @@ public class RosterFragment extends SawimFragment implements View.OnClickListene
         return rosterViewLayout.getMyListView();
     }
 
-    private void openChat(Protocol p, Contact c, String sharingText) {
-        c.activate((BaseActivity) getActivity(), p);
+    private void openChat(Contact c, String sharingText) {
+        c.activate((BaseActivity) getActivity());
         if (SawimApplication.isManyPane()) {
             ChatFragment chatFragmentTablet = (ChatFragment) getActivity().getSupportFragmentManager()
                     .findFragmentById(R.id.chat_fragment);
             chatFragmentTablet.pause(chatFragmentTablet.getCurrentChat());
-            chatFragmentTablet.openChat(p, c);
+            chatFragmentTablet.openChat(c);
             chatFragmentTablet.setSharingText(sharingText);
             chatFragmentTablet.resume(chatFragmentTablet.getCurrentChat());
             update();
         } else {
-            ChatFragment chatFragment = ChatFragment.newInstance(p.getUserId(), c.getUserId());
+            ChatFragment chatFragment = ChatFragment.newInstance(c.getUserId());
             chatFragment.setSharingText(sharingText);
             FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.fragment_container, chatFragment, ChatFragment.TAG);
@@ -360,7 +360,7 @@ public class RosterFragment extends SawimFragment implements View.OnClickListene
         if (type.equals("text/plain")) {
             String subjectText = intent.getStringExtra(Intent.EXTRA_SUBJECT);
             String sharingText = intent.getStringExtra(Intent.EXTRA_TEXT);
-            openChat(p, c, subjectText == null ? sharingText : subjectText + "\n" + sharingText);
+            openChat(c, subjectText == null ? sharingText : subjectText + "\n" + sharingText);
         } else {
             Uri data = intent.getParcelableExtra(Intent.EXTRA_STREAM);
             if (data == null) return;
@@ -380,12 +380,12 @@ public class RosterFragment extends SawimFragment implements View.OnClickListene
         if (treeNode.getType() == TreeNode.PROTOCOL) {
             RosterHelper.getInstance().showProtocolMenu((BaseActivity) getActivity(), ((ProtocolBranch) treeNode).getProtocol());
         } else if (treeNode.getType() == TreeNode.GROUP) {
-            Protocol p = RosterHelper.getInstance().getProtocol((Group) treeNode);
+            Protocol p = RosterHelper.getInstance().getProtocol();
             if (p.isConnected()) {
                 new ManageContactListForm(p, (Group) treeNode).showMenu((BaseActivity) getActivity());
             }
         } else if (treeNode.getType() == TreeNode.CONTACT) {
-            new ContactMenu(((Contact) treeNode).getProtocol(), (Contact) treeNode).getContextMenu(menu);
+            new ContactMenu((Contact) treeNode).getContextMenu(menu);
         }
     }
 
@@ -402,7 +402,7 @@ public class RosterFragment extends SawimFragment implements View.OnClickListene
     }
 
     private void contactMenuItemSelected(final Contact c, final android.view.MenuItem item) {
-        new ContactMenu(c.getProtocol(), c).doAction((BaseActivity) getActivity(), item.getItemId());
+        new ContactMenu(c).doAction((BaseActivity) getActivity(), item.getItemId());
     }
 
     public int getMode() {
@@ -440,7 +440,7 @@ public class RosterFragment extends SawimFragment implements View.OnClickListene
             if (0 < current.getAuthRequestCounter()) {
                 ChatFragment.showAuthorizationDialog((BaseActivity) getActivity(), current);
             } else {
-                openChat(current.getProtocol(), current.getContact(), null);
+                openChat(current.getContact(), null);
                 update();
             }
             return;
@@ -465,28 +465,10 @@ public class RosterFragment extends SawimFragment implements View.OnClickListene
             }
         } else {
             if (treeNode.getType() == TreeNode.CONTACT) {
-                openChat(((Contact) treeNode).getProtocol(), ((Contact) treeNode), null);
+                openChat(((Contact) treeNode), null);
             }
         }
-        if (treeNode.getType() == TreeNode.PROTOCOL) {
-            ProtocolBranch group = (ProtocolBranch) treeNode;
-            RosterHelper roster = RosterHelper.getInstance();
-            final int count = roster.getProtocolCount();
-            int currProtocol = 0;
-            for (int i = 0; i < count; ++i) {
-                Protocol p = roster.getProtocol(i);
-                if (p == null) return;
-                ProtocolBranch root = p.getProtocolBranch(i);
-                if (root.getGroupId() != group.getGroupId()) {
-                    root.setExpandFlag(false);
-                } else {
-                    currProtocol = i;
-                }
-            }
-            group.setExpandFlag(!group.isExpanded());
-            update();
-            getListView().smoothScrollToPosition(currProtocol);
-        } else if (treeNode.getType() == TreeNode.GROUP) {
+        if (treeNode.getType() == TreeNode.GROUP) {
             Group group = RosterHelper.getInstance().getGroupWithContacts((Group) treeNode);
             group.setExpandFlag(!group.isExpanded());
             update();

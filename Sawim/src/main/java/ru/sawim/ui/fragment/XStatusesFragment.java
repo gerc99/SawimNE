@@ -16,6 +16,7 @@ import protocol.Protocol;
 import ru.sawim.R;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.io.BlobStorage;
+import ru.sawim.io.DatabaseHelper;
 import ru.sawim.ui.adapter.XStatusesAdapter;
 
 /**
@@ -26,8 +27,6 @@ import ru.sawim.ui.adapter.XStatusesAdapter;
  * To change this template use File | Settings | File Templates.
  */
 public class XStatusesFragment extends DialogFragment {
-
-    private static final String STORAGE_PREFIX = "_xstatus";
 
     private XStatusesAdapter statusesAdapter;
     protected String[] xst_titles = new String[100];
@@ -87,16 +86,11 @@ public class XStatusesFragment extends DialogFragment {
 
     private void load() {
         try {
-            BlobStorage storage = new BlobStorage(getProtocolId() + STORAGE_PREFIX);
-            storage.open();
+            BlobStorage storage = new BlobStorage(DatabaseHelper.TABLE_ANSWERER);
             storage.loadXStatuses(xst_titles, xst_descs);
             storage.close();
         } catch (Exception ignored) {
         }
-    }
-
-    private String getProtocolId() {
-        return "jabber";
     }
 
     private final void setXStatus(int xstatus, String title, String desc) {
@@ -104,8 +98,7 @@ public class XStatusesFragment extends DialogFragment {
             xst_titles[xstatus] = StringConvertor.notNull(title);
             xst_descs[xstatus] = StringConvertor.notNull(desc);
             try {
-                BlobStorage storage = new BlobStorage(getProtocolId() + STORAGE_PREFIX);
-                storage.open();
+                BlobStorage storage = new BlobStorage(DatabaseHelper.TABLE_ANSWERER);
                 storage.saveXStatuses(xst_titles, xst_descs);
                 storage.close();
             } catch (Exception ignored) {

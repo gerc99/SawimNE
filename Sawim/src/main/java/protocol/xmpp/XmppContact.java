@@ -7,6 +7,7 @@ import ru.sawim.Options;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.comm.*;
+import ru.sawim.roster.RosterHelper;
 import ru.sawim.roster.TreeNode;
 import ru.sawim.ui.fragment.menu.MyMenu;
 
@@ -39,7 +40,7 @@ public class XmppContact extends Contact {
         }
     }
 
-    protected void initContextMenu(Protocol protocol, ContextMenu contactMenu) {
+    protected void initContextMenu(ContextMenu contactMenu) {
         addChatItems(contactMenu);
 
         if (!isOnline() && isAuth() && !isTemp()) {
@@ -52,10 +53,11 @@ public class XmppContact extends Contact {
         if (0 < subcontacts.size()) {
             contactMenu.add(Menu.NONE, ContactMenu.USER_MENU_CONNECTIONS, Menu.NONE, R.string.list_of_connections);
         }
-        addGeneralItems(protocol, contactMenu);
+        addGeneralItems(contactMenu);
     }
 
-    protected void initManageContactMenu(Protocol protocol, MyMenu menu) {
+    protected void initManageContactMenu(MyMenu menu) {
+        Protocol protocol = RosterHelper.getInstance().getProtocol();
         if (protocol.isConnected()) {
             if (isOnline()) {
                 menu.add(SawimApplication.getContext().getString(R.string.adhoc), ContactMenu.USER_MENU_ADHOC);

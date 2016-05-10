@@ -9,6 +9,7 @@ import protocol.Protocol;
 import protocol.xmpp.XmppContact;
 import ru.sawim.Options;
 import ru.sawim.R;
+import ru.sawim.io.DatabaseHelper;
 import ru.sawim.ui.activity.BaseActivity;
 import ru.sawim.chat.message.Message;
 import ru.sawim.comm.JLocale;
@@ -23,8 +24,6 @@ import ru.sawim.ui.fragment.VirtualListFragment;
 import java.util.Vector;
 
 public final class Answerer implements FormListener {
-
-    private static final String STORAGE_NAME = "answerer";
 
     private static final int MENU_EDIT = 0;
     private static final int MENU_ADD = 1;
@@ -137,9 +136,8 @@ public final class Answerer implements FormListener {
     }
 
     public void load() {
-        BlobStorage storage = new BlobStorage(STORAGE_NAME);
+        BlobStorage storage = new BlobStorage(DatabaseHelper.TABLE_ANSWERER);
         try {
-            storage.open();
             dictionary = storage.loadListOfString();
         } catch (Exception e) {
             dictionary = new Vector();
@@ -155,13 +153,12 @@ public final class Answerer implements FormListener {
     }
 
     private void save() {
-        BlobStorage storage = new BlobStorage(STORAGE_NAME);
+        BlobStorage storage = new BlobStorage(DatabaseHelper.TABLE_ANSWERER);
         storage.delete();
         try {
             if (dictionary.isEmpty()) {
                 return;
             }
-            storage.open();
             storage.saveListOfString(dictionary);
         } catch (Exception e) {
             DebugLog.panic("answerer dictionary save", e);

@@ -11,6 +11,7 @@ import ru.sawim.chat.message.Message;
 import ru.sawim.chat.message.PlainMessage;
 import ru.sawim.chat.message.SystemNotice;
 import ru.sawim.comm.StringConvertor;
+import ru.sawim.comm.Util;
 import ru.sawim.modules.history.HistoryStorage;
 import ru.sawim.roster.RosterHelper;
 
@@ -18,7 +19,6 @@ public final class Chat {
 
     public static final String ADDRESS = ", ";
 
-    private Protocol protocol;
     private Contact contact;
     private boolean writable = true;
     private HistoryStorage history;
@@ -31,17 +31,12 @@ public final class Chat {
     public int currentPosition = -2;
     public int offset;
 
-    public Chat(Protocol p, Contact item) {
+    public Chat(Contact item) {
         contact = item;
-        protocol = p;
     }
 
     void setContact(Contact item) {
         contact = item;
-    }
-
-    public Protocol getProtocol() {
-        return protocol;
     }
 
     public final void setWritable(boolean wr) {
@@ -80,13 +75,13 @@ public final class Chat {
 
     public void addFileProgress(String caption, String text) {
         messageCounter = inc(messageCounter);
-        addMessage(new MessData(contact, SawimApplication.getCurrentGmtTime(), text, caption, MessData.PROGRESS));
+        addMessage(new MessData(contact, String.valueOf(Util.uniqueValue()), SawimApplication.getCurrentGmtTime(), text, caption, MessData.PROGRESS));
         if (RosterHelper.getInstance().getUpdateChatListener() != null)
             RosterHelper.getInstance().getUpdateChatListener().updateMessages(contact);
     }
 
     public String getMyName() {
-        return getMyName(contact, protocol);
+        return getMyName(contact, RosterHelper.getInstance().getProtocol());
     }
 
     public static String getMyName(Contact contact, Protocol protocol) {
@@ -104,7 +99,7 @@ public final class Chat {
     public void sendMessage(String message) {
         ChatHistory.instance.registerChat(this);
         if (!StringConvertor.isEmpty(message)) {
-            protocol.sendMessage(contact, message, true);
+            RosterHelper.getInstance().getProtocol().sendMessage(contact, message, true);
         }
     }
 
@@ -140,11 +135,11 @@ public final class Chat {
     }
 
     public boolean isBlogBot() {
-        return contact instanceof XmppContact && ((Xmpp) protocol).isBlogBot(contact.getUserId());
+        return contact instanceof XmppContact && ((Xmpp) RosterHelper.getInstance().getProtocol()).isBlogBot(contact.getUserId());
     }
 
     public boolean isHuman() {
-        boolean service = isBlogBot() || protocol.isBot(contact);
+        boolean service = isBlogBot() || RosterHelper.getInstance().getProtocol().isBot(contact);
         if (contact instanceof XmppContact) {
             service |= Jid.isGate(contact.getUserId());
         }
@@ -164,7 +159,7 @@ public final class Chat {
 
     public HistoryStorage getHistory() {
         if (null == history) {
-            history = HistoryStorage.getHistory(protocol.getUserId(), contact.getUserId());
+            history = HistoryStorage.getHistory(RosterHelper.getInstance().getProtocol().getUserId(), contact.getUserId());
         }
         return history;
     }
@@ -179,8 +174,8 @@ public final class Chat {
         boolean notEmpty = (0 < authRequestCounter);
         authRequestCounter = 0;
         if (notEmpty) {
-            contact.updateChatState(getProtocol(), this);
-            protocol.markMessages(contact);
+            contact.updateChatState(this);
+            RosterHelper.getInstance().getProtocol().markMessages(contact);
         }
     }
 
@@ -193,8 +188,8 @@ public final class Chat {
         otherMessageCounter = 0;
         sysNoticeCounter = 0;
         if (notEmpty) {
-            contact.updateChatState(getProtocol(), this);
-            protocol.markMessages(contact);
+            contact.updateChatState(this);
+            RosterHelper.getInstance().getProtocol().markMessages(contact);
         }
     }
 
@@ -343,7 +338,7 @@ public final class Chat {
         addMessage(mData);
         if (!isVisibleChat()) {
             otherMessageCounter = inc(otherMessageCounter);
-            contact.updateChatState(getProtocol(), this);
+            contact.updateChatState(this);
         }
     }
 
@@ -371,7 +366,7 @@ public final class Chat {
             addMessage(message, from, true, isHighlight);
         }
         if (inc) {
-            contact.updateChatState(getProtocol(), this);
+            contact.updateChatState(this);
         }
     }
 

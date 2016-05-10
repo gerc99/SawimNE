@@ -31,11 +31,9 @@ import java.util.ArrayList;
  */
 public class OnTextLinkClick implements TextLinkClickListener {
 
-    private String currentProtocol;
     private String currentContact;
 
-    public void setContact(String currentProtocol, String currentContact) {
-        this.currentProtocol = currentProtocol;
+    public void setContact(String currentContact) {
         this.currentContact = currentContact;
     }
 
@@ -46,8 +44,8 @@ public class OnTextLinkClick implements TextLinkClickListener {
         boolean isJuick = clickedString.startsWith("@") || clickedString.startsWith("#");
         boolean isJID = Jid.isJID(clickedString);
         if (isJuick) {
-            if (currentProtocol != null && currentContact != null) {
-                new JuickMenu(activity, currentProtocol, currentContact, clickedString).show();
+            if (currentContact != null) {
+                new JuickMenu(activity, currentContact, clickedString).show();
             }
             return;
         }
@@ -57,7 +55,7 @@ public class OnTextLinkClick implements TextLinkClickListener {
             builder.setTitle(R.string.url_menu);
             ArrayList<CharSequence> items = new ArrayList<>();
             items.add(activity.getString(R.string.copy));
-            if (isJID && currentProtocol != null) {
+            if (isJID) {
                 items.add(activity.getString(R.string.add_contact));
             }
             builder.setItems(items.toArray(new CharSequence[items.size()]), new DialogInterface.OnClickListener() {
@@ -68,7 +66,7 @@ public class OnTextLinkClick implements TextLinkClickListener {
                             Clipboard.setClipBoardText(activity, clickedString);
                             break;
                         case 1:
-                            Protocol protocol = RosterHelper.getInstance().getProtocol(currentProtocol);
+                            Protocol protocol = RosterHelper.getInstance().getProtocol();
                             protocol.getSearchForm().show(activity,
                                     Util.getUrlWithoutProtocol(clickedString), true);
                             break;

@@ -109,7 +109,7 @@ abstract public class Contact implements TreeNode {
     }
 
     public Protocol getProtocol() {
-        return RosterHelper.getInstance().getProtocol(this);
+        return RosterHelper.getInstance().getProtocol();
     }
 
     public final void setXStatus(int index, String text) {
@@ -155,9 +155,9 @@ abstract public class Contact implements TreeNode {
         statusText = (StatusInfo.STATUS_OFFLINE == status) ? null : text;
     }
 
-    public void activate(BaseActivity activity, Protocol p) {
+    public void activate(BaseActivity activity) {
         RosterHelper.getInstance().setCurrentContact(this);
-        p.oldContactIdWithMessage = null;
+        RosterHelper.getInstance().getProtocol().oldContactIdWithMessage = null;
     }
 
     public static final byte CONTACT_NO_AUTH = 1 << 1;
@@ -213,9 +213,10 @@ abstract public class Contact implements TreeNode {
         return ChatHistory.instance.getChat(this) != null;
     }
 
-    public final void updateChatState(final Protocol protocol, final Chat chat) {
+    public final void updateChatState(final Chat chat) {
         if (null != chat) {
-            protocol.getStorage().updateUnreadMessagesCount(protocol.getUserId(), getUserId(), chat.getAllUnreadMessageCount());
+            RosterHelper.getInstance().getProtocol().getStorage()
+                    .updateUnreadMessagesCount(RosterHelper.getInstance().getProtocol().getUserId(), getUserId(), chat.getAllUnreadMessageCount());
         }
     }
 
@@ -320,11 +321,11 @@ abstract public class Contact implements TreeNode {
         return 51;
     }
 
-    protected abstract void initManageContactMenu(Protocol protocol, MyMenu menu);
+    protected abstract void initManageContactMenu(MyMenu menu);
 
-    protected void initContextMenu(Protocol protocol, ContextMenu contactMenu) {
+    protected void initContextMenu(ContextMenu contactMenu) {
         addChatItems(contactMenu);
-        addGeneralItems(protocol, contactMenu);
+        addGeneralItems(contactMenu);
     }
 
     public void addChatMenuItems(ContextMenu model) {
@@ -341,7 +342,8 @@ abstract public class Contact implements TreeNode {
         }
     }
 
-    protected final void addGeneralItems(Protocol protocol, ContextMenu menu) {
+    protected final void addGeneralItems(ContextMenu menu) {
+        Protocol protocol = RosterHelper.getInstance().getProtocol();
         menu.add(Menu.NONE, ContactMenu.USER_MENU_USER_INFO, Menu.NONE, R.string.user_info);
         menu.add(Menu.NONE, ContactMenu.USER_MANAGE_CONTACT, Menu.NONE, R.string.manage);
         if (isOnline()) {

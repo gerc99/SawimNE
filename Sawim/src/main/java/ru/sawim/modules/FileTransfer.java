@@ -306,10 +306,10 @@ public final class FileTransfer implements FileBrowserListener, PhotoListener, R
 
         String fileSize = StringConvertor.bytesToSizeString(
                 getFileSize(), false);
-        String message = "File: " + filename + "\n" +
+        String message = /*"File: " + filename + "\n" +
                          "Size: " + fileSize + "\n" +
-                         "Link: " + imageUrl;
-        chat.getProtocol().sendMessage(chat, message);
+                         "Link: " + */imageUrl;
+        RosterHelper.getInstance().getProtocol().sendMessage(chat, message);
     }
 
     private boolean isJabberRuUploadAvailable() {

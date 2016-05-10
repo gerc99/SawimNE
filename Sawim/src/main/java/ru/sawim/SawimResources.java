@@ -20,7 +20,7 @@ public class SawimResources {
     public static Drawable backgroundDrawableOut;
 
     public static final Drawable MENU_ICON = SawimApplication.getInstance().getResources()
-            .getDrawable(R.drawable.abc_ic_menu_moreoverflow_mtrl_alpha);
+            .getDrawable(R.drawable.ic_more_vert_black_24dp);
     public static final BitmapDrawable AUTH_ICON = (BitmapDrawable) SawimApplication.getInstance().getResources()
             .getDrawable(android.R.drawable.stat_notify_error);
     public static final BitmapDrawable MESSAGE_ICON_CHECK = (BitmapDrawable) SawimApplication.getInstance().getResources()

@@ -45,7 +45,7 @@ abstract public class Protocol {
     private boolean isReconnect;
     private int reconnect_attempts;
     private long lastStatusChangeTime;
-    private byte progress = 100;
+    private byte progress = 0;
     private CopyOnWriteArrayList<String> autoGrand = new CopyOnWriteArrayList<>();
     private Group notInListGroup;
 
@@ -135,14 +135,13 @@ abstract public class Protocol {
 
     public final void setRoster(Roster roster) {
         this.roster = roster;
-        ChatHistory.instance.restoreContactsWithChat(this);
+        ChatHistory.instance.restoreContactsWithChat();
         /*Enumeration<Group> e = roster.getGroupItems().elements();
         while (e.hasMoreElements()) {
             Group group = e.nextElement();
             RosterHelper.getInstance().updateGroup(this, group);
         }
         RosterHelper.getInstance().updateGroup(this, notInListGroup);*/
-        if (RosterHelper.getInstance().getProtocolCount() == 0) return;
         RosterHelper.getInstance().updateRoster();
     }
 
@@ -428,6 +427,7 @@ abstract public class Protocol {
     }
 
     public final Contact getItemByUID(String uid) {
+        if (uid == null) return null;
         return roster.getItemByUID(uid);
     }
 
@@ -473,6 +473,16 @@ abstract public class Protocol {
         boolean connected = StatusInfo.STATUS_OFFLINE != profile.statusIndex;
         boolean connecting = StatusInfo.STATUS_OFFLINE != statusIndex;
         Log.e("MENU_CONNECT", isConnected() + " " + isConnecting() + " " + getConnectingProgress() + " " + connected + " " + connecting);
+        if (connected) {
+            if (isConnected() || isConnecting()) {
+                disconnect(false);
+            }
+            if (!isConnected() && !isConnecting() && connecting) {
+                setOnlineStatus(statusIndex, msg, save);
+                connect();
+                return;
+            }
+        }
         if (connected && !connecting) {
             disconnect(true);
         }
@@ -791,7 +801,7 @@ abstract public class Protocol {
     public final void dismiss() {
         disconnect(false);
         userCloseConnection();
-        ChatHistory.instance.unregisterChats(this);
+        ChatHistory.instance.unregisterChats();
         profile = null;
         roster.setNull();
         roster = null;
@@ -842,7 +852,8 @@ abstract public class Protocol {
     }
 
     public final void sendMessage(Chat chat, String messText) {
-        PlainMessage plainMsg = new PlainMessage(chat.getProtocol(), chat.getContact().getUserId(), SawimApplication.getCurrentGmtTime(), messText);
+        PlainMessage plainMsg = new PlainMessage(this, chat.getContact().getUserId(), SawimApplication.getCurrentGmtTime(), messText);
+        plainMsg.setMessageId(String.valueOf(Util.uniqueValue()));
         chat.addMessage(plainMsg, true, false, false);
         sendSomeMessage(plainMsg);
     }
@@ -883,7 +894,7 @@ abstract public class Protocol {
     public final Chat getChat(Contact contact) {
         Chat chat = ChatHistory.instance.getChat(contact);
         if (null == chat) {
-            chat = new Chat(this, contact);
+            chat = new Chat(contact);
             if (!inContactList(contact)) {
                 contact.setTempFlag(true);
                 addLocalContact(contact);

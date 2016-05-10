@@ -1,5 +1,6 @@
 package protocol.xmpp;
 
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import protocol.Contact;
@@ -10,6 +11,7 @@ import ru.sawim.Options;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.SawimResources;
+import ru.sawim.roster.RosterHelper;
 import ru.sawim.ui.activity.BaseActivity;
 import ru.sawim.chat.message.SystemNotice;
 import ru.sawim.comm.JLocale;
@@ -315,7 +317,8 @@ public class XmppServiceContact extends XmppContact {
         return subcontacts.get(nick);
     }
 
-    protected void initContextMenu(Protocol protocol, ContextMenu contactMenu) {
+    protected void initContextMenu(ContextMenu contactMenu) {
+        Protocol protocol = RosterHelper.getInstance().getProtocol();
         if (isGate) {
             if (isOnline()) {
                 contactMenu.add(Menu.NONE, ContactMenu.GATE_DISCONNECT, Menu.NONE, R.string.disconnect);
@@ -375,7 +378,8 @@ public class XmppServiceContact extends XmppContact {
         }
     }
 
-    protected void initManageContactMenu(Protocol protocol, MyMenu menu) {
+    protected void initManageContactMenu(MyMenu menu) {
+        Protocol protocol = RosterHelper.getInstance().getProtocol();
         if (protocol.isConnected()) {
             if (isOnline() && isPrivate) {
                 menu.add(SawimApplication.getContext().getString(R.string.adhoc), ContactMenu.USER_MENU_ADHOC);
@@ -420,11 +424,11 @@ public class XmppServiceContact extends XmppContact {
         return !isPrivate;
     }
 
-    public void activate(BaseActivity activity, Protocol p) {
+    public void activate(BaseActivity activity) {
         if (isOnline() || isPrivate || hasChat()) {
-            super.activate(activity, p);
-        } else if (isConference && p.isConnected()) {
-            new ContactMenu(p, this).doAction(activity, ContactMenu.CONFERENCE_CONNECT);
+            super.activate(activity);
+        } else if (isConference && RosterHelper.getInstance().getProtocol().isConnected()) {
+            new ContactMenu(this).doAction(activity, ContactMenu.CONFERENCE_CONNECT);
         }
     }
 

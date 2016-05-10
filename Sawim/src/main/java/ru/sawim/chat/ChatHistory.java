@@ -38,34 +38,20 @@ public final class ChatHistory {
     }
 
     public void loadChats() {
-        int count = RosterHelper.getInstance().getProtocolCount();
-        for (int i = 0; i < count; ++i) {
-            Protocol p = RosterHelper.getInstance().getProtocol(i);
-            p.getStorage().loadUnreadMessages();
-            List<Contact> contacts = HistoryStorage.getActiveContacts();
-            for (Contact contact : contacts) {
-                ChatHistory.instance.registerChat(p.getChat(contact));
-            }
+        Protocol p = RosterHelper.getInstance().getProtocol();
+        if (p == null) return;
+        p.getStorage().loadUnreadMessages();
+        List<Contact> contacts = HistoryStorage.getActiveContacts();
+        for (Contact contact : contacts) {
+            ChatHistory.instance.registerChat(p.getChat(contact));
         }
         RosterHelper.getInstance().updateRoster();
     }
 
-    public void addLayerToListOfChats(Protocol p, List<TreeNode> items, int id) {
-        boolean hasLayer = false;
-        items.add(new Layer(p.getUserId(), id));
+    public void addLayerToListOfChats(Protocol p, List<TreeNode> items) {
         for (int i = 0; i < historyTable.size(); ++i) {
             Chat chat = chatAt(i);
-            if (chat.getProtocol() == p) {
-                items.add(chat.getContact());
-                hasLayer = true;
-            }
-        }
-        if (RosterHelper.getInstance().getProtocolCount() == 1) {
-            items.remove(0);
-            return;
-        }
-        if (!hasLayer) {
-            items.remove(items.size() - 1);
+            items.add(chat.getContact());
         }
     }
 
@@ -167,15 +153,13 @@ public final class ChatHistory {
         return Message.getIcon(icon);
     }
 
-    public BitmapDrawable getUnreadMessageIcon(Protocol p) {
+    public BitmapDrawable getUnreadMessageIcon() {
         int icon = Message.ICON_NONE;
         Chat chat;
         for (int i = getTotal() - 1; 0 <= i; --i) {
             chat = chatAt(i);
             if (chat != null) {
-                if (chat.getProtocol() == p) {
-                    icon = getMoreImportant(icon, chat.getNewMessageIcon());
-                }
+                icon = getMoreImportant(icon, chat.getNewMessageIcon());
             }
         }
         return Message.getIcon(icon);
@@ -196,7 +180,7 @@ public final class ChatHistory {
     public void registerChat(Chat item) {
         if (!contains(historyTable, item.getContact())) {
             historyTable.add(item);
-            item.getContact().updateChatState(item.getProtocol(), item);
+            item.getContact().updateChatState(item);
         }
     }
 
@@ -216,21 +200,19 @@ public final class ChatHistory {
         closeHistory(item);
         historyTable.remove(item);
         Contact c = item.getContact();
-        c.updateChatState(item.getProtocol(), null);
-        item.getProtocol().ui_updateContact(c);
+        c.updateChatState(null);
+        RosterHelper.getInstance().getProtocol().ui_updateContact(c);
         if (0 < item.getAllUnreadMessageCount()) {
             RosterHelper.getInstance().markMessages(c);
         }
     }
 
-    public void unregisterChats(Protocol p) {
+    public void unregisterChats() {
         for (int i = getTotal() - 1; 0 <= i; --i) {
             Chat key = chatAt(i);
-            if (key.getProtocol() == p) {
-                closeHistory(key);
-                historyTable.remove(key);
-                key.getContact().updateChatState(key.getProtocol(), null);
-            }
+            closeHistory(key);
+            historyTable.remove(key);
+            key.getContact().updateChatState(null);
         }
         RosterHelper.getInstance().markMessages(null);
     }
@@ -257,20 +239,18 @@ public final class ChatHistory {
         }
     }
 
-    public void restoreContactsWithChat(Protocol p) {
+    public void restoreContactsWithChat() {
         int total = getTotal();
         for (int i = 0; i < total; ++i) {
             Contact contact = contactAt(i);
             Chat chat = chatAt(i);
-            if (p != chat.getProtocol()) {
-                continue;
-            }
+            Protocol p = RosterHelper.getInstance().getProtocol();
             if (!p.inContactList(contact)) {
                 Contact newContact = p.getItemByUID(contact.getUserId());
                 if (null != newContact) {
                     chat.setContact(newContact);
-                    contact.updateChatState(chat.getProtocol(), null);
-                    newContact.updateChatState(chat.getProtocol(), chat);
+                    contact.updateChatState(null);
+                    newContact.updateChatState(chat);
                     continue;
                 }
                 if (contact.isSingleUserContact()) {

@@ -1,5 +1,7 @@
 package protocol.xmpp;
 
+import android.text.TextUtils;
+
 import protocol.Contact;
 import protocol.XStatusInfo;
 import ru.sawim.R;
@@ -20,6 +22,7 @@ import java.util.Locale;
 public class Messages {
 
     public static void sendMessage(XmppConnection connection, String to, String msg, String type, boolean notify, String id) {
+        if (TextUtils.isEmpty(id)) id = XmppConnection.generateId();
         to = Jid.SawimJidToRealJid(to);
         boolean buzz = msg.startsWith(PlainMessage.CMD_WAKEUP) && XmlConstants.S_CHAT.equals(type);
         if (buzz) {
@@ -66,7 +69,7 @@ public class Messages {
         }
 
         sendMessage(connection, to, message.getText(), type, XmlConstants.S_CHAT.equals(type),
-                String.valueOf(message.getMessageId()));
+                message.getMessageId());
     }
 
     public static void sendTypingNotify(XmppConnection connection, String to, boolean composing) {
@@ -172,11 +175,11 @@ public class Messages {
                 if (null == id) {
                     id = msg.getId();
                 }
-                setMessageSended(connection, contact.getUserId(), id, PlainMessage.NOTIFY_FROM_CLIENT);
+                setMessageSended(connection, Jid.getBareJid(fullJid), id, PlainMessage.NOTIFY_FROM_CLIENT);
                 return;
             }
             if (!isConference && !isError) {
-                parseMessageEvent(connection, contact.getUserId(), msg.getXNode("jabber:x:event"), from);
+                parseMessageEvent(connection, Jid.getBareJid(fullJid), msg.getXNode("jabber:x:event"), from);
                 parseEvent(connection, msg.getFirstNode("event"), fullJid);
             }
             return;

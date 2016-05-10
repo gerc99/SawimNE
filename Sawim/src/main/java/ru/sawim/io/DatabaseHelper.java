@@ -3,6 +3,7 @@ package ru.sawim.io;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
 import ru.sawim.SawimApplication;
 
 /**
@@ -11,6 +12,9 @@ import ru.sawim.SawimApplication;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     public static final String TABLE_CHAT_HISTORY = "history";
+    public static final String TABLE_XSTATUS = "xstatus";
+    public static final String TABLE_ACCOUNTS = "accounts";
+    public static final String TABLE_ANSWERER = "answerer";
 
     public static final String ID = "id";
     public static final String ROW_AUTO_ID = "_id";
@@ -45,7 +49,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + ROW_AUTO_ID + " integer primary key autoincrement, "
             + ACCOUNT_ID + " text not null, "
             + CONTACT_ID + " text not null, "
-            + ID + " int, "
+            + "`" + ID + "`," + " text, "
             + SENDING_STATE + " int, "
             + INCOMING + " int, "
             + AUTHOR + " text not null, "
@@ -59,6 +63,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_CHAT_HISTORY_TABLE);
+
+        BlobStorage.create(db, TABLE_ACCOUNTS);
+        BlobStorage.create(db, TABLE_ANSWERER);
+        BlobStorage.create(db, TABLE_XSTATUS);
     }
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
@@ -68,7 +76,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 db.execSQL("DROP TABLE IF EXISTS " + RosterStorage.storeName);
             }
             if (newVersion <= 13) {
-                db.execSQL("ALTER TABLE " + TABLE_CHAT_HISTORY + " ADD COLUMN " + ID + " INTEGER DEFAULT 0");
+                db.execSQL("ALTER TABLE " + TABLE_CHAT_HISTORY + " ADD COLUMN " + "`" + ID + "`," + " text");
+            }
+            if (newVersion <= 14) {
+                db.execSQL("DROP TABLE IF EXISTS " + TABLE_CHAT_HISTORY);
+                db.execSQL(CREATE_CHAT_HISTORY_TABLE);
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -1,6 +1,8 @@
 package protocol.xmpp;
 
 import android.support.v4.util.Pair;
+import android.util.Log;
+
 import protocol.*;
 import protocol.net.ClientConnection;
 import ru.sawim.SawimApplication;
@@ -91,7 +93,7 @@ public final class XmppConnection extends ClientConnection {
         if (percent == 100) {
             List<PlainMessage> messages = HistoryStorage.getNotSendedMessages();
             for (PlainMessage message : messages) {
-                getXmpp().sendSomeMessage(message);
+                //getXmpp().sendSomeMessage(message);
             }
         }
     }
@@ -263,6 +265,7 @@ public final class XmppConnection extends ClientConnection {
         }
         if (null != defaultServer) {
             socketUrl[0] = defaultServer;
+            socketUrl[1] = S_5222;
         }
         return socketUrl;
     }

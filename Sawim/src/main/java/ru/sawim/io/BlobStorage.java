@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+
 import ru.sawim.SawimApplication;
 import ru.sawim.comm.StringConvertor;
 
@@ -44,18 +45,12 @@ public final class BlobStorage {
         });
     }
 
-    public void open() {
-        thread.execute(new SqlAsyncTask.OnTaskListener() {
-            @Override
-            public void run() {
-                String CREATE_BLOB_TABLE = "create table if not exists "
-                        + name + " ("
-                        + DatabaseHelper.ROW_AUTO_ID + " integer primary key autoincrement, "
-                        + DatabaseHelper.ROW_DATA + " blob);";
-                SawimApplication.getDatabaseHelper().getWritableDatabase().execSQL(CREATE_BLOB_TABLE);
-            }
-        });
-        StorageConvertor.convertStorage(name, this);
+    public static void create(SQLiteDatabase database, String name) {
+        String CREATE_BLOB_TABLE = "create table if not exists "
+                + name + " ("
+                + DatabaseHelper.ROW_AUTO_ID + " integer primary key autoincrement, "
+                + DatabaseHelper.ROW_DATA + " blob);";
+        database.execSQL(CREATE_BLOB_TABLE);
     }
 
     public void close() {

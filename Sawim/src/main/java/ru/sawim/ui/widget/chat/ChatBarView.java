@@ -34,10 +34,10 @@ import ru.sawim.ui.widget.SimpleItemView;
 public class ChatBarView extends IcsLinearLayout {
 
     private static final int ITEM_VIEW_INDEX = 0;
-    private static final int CHATS_IMAGE_INDEX = 1;
-    private static final int SEARCH_EDITTEXT_VIEW_INDEX = 2;
-    private static final int SEARCH_UP_IMAGE_INDEX = 3;
-    private static final int SEARCH_DOWN_IMAGE_INDEX = 4;
+    private static final int SEARCH_EDITTEXT_VIEW_INDEX = 1;
+    private static final int SEARCH_UP_IMAGE_INDEX = 2;
+    private static final int SEARCH_DOWN_IMAGE_INDEX = 3;
+    private static final int CHATS_IMAGE_INDEX = 4;
 
     SimpleItemView itemView;
 
@@ -58,6 +58,38 @@ public class ChatBarView extends IcsLinearLayout {
         itemView.setPadding(padding * 2, padding, padding, padding);
         addViewInLayout(itemView, ITEM_VIEW_INDEX, labelLayoutParams);
 
+        EditText messageEditor = new EditText(getContext());
+        LinearLayout.LayoutParams messageEditorLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+        messageEditor.setBackgroundColor(Color.TRANSPARENT);
+        messageEditor.setHint("Search");
+        messageEditor.setHintTextColor(Color.LTGRAY);
+        messageEditor.setTextColor(Color.WHITE);
+        try {
+            Field mCursorDrawableRes = TextView.class.getDeclaredField("mCursorDrawableRes");
+            mCursorDrawableRes.setAccessible(true);
+            mCursorDrawableRes.set(messageEditor, R.drawable.search_carret);
+        } catch (Exception e) {
+            //nothing to do
+        }
+        messageEditorLP.weight = 1;
+        addViewInLayout(messageEditor, SEARCH_EDITTEXT_VIEW_INDEX, messageEditorLP);
+
+        MyImageButton upBtn = new MyImageButton(getContext());
+        upBtn.setImageResource(R.drawable.ic_expanded_dark);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+        if (SawimApplication.isManyPane()) {
+            lp.weight = 4;
+        }
+        addViewInLayout(upBtn, SEARCH_UP_IMAGE_INDEX, lp);
+
+        MyImageButton downBtn = new MyImageButton(getContext());
+        downBtn.setImageResource(R.drawable.ic_collapsed_dark);
+        lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+        if (SawimApplication.isManyPane()) {
+            lp.weight = 4;
+        }
+        addViewInLayout(downBtn, SEARCH_DOWN_IMAGE_INDEX, lp);
+
         if (!SawimApplication.isManyPane()) {
             LinearLayout.LayoutParams chatsImageLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
             chatsImageLP.gravity = Gravity.CENTER_VERTICAL;
@@ -69,8 +101,8 @@ public class ChatBarView extends IcsLinearLayout {
         return (MyImageButton) getChildAt(CHATS_IMAGE_INDEX);
     }
 
-    public SearchEditText getSearchEditText() {
-        return (SearchEditText) getChildAt(SEARCH_EDITTEXT_VIEW_INDEX);
+    public EditText getSearchEditText() {
+        return (EditText) getChildAt(SEARCH_EDITTEXT_VIEW_INDEX);
     }
 
     public void update() {
@@ -86,38 +118,18 @@ public class ChatBarView extends IcsLinearLayout {
         setVisibilityChatsImage(GONE);
         if (itemView != null)
             itemView.setVisibility(GONE);
-        SearchEditText messageEditor = new SearchEditText(getContext());
-        LinearLayout.LayoutParams messageEditorLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-        messageEditor.setBackgroundColor(Color.TRANSPARENT);
-        messageEditor.setHint("Search");
-        messageEditor.setHintTextColor(Color.LTGRAY);
-        messageEditor.setTextColor(Color.WHITE);
-        try {
-            Field mCursorDrawableRes = TextView.class.getDeclaredField("mCursorDrawableRes");
-            mCursorDrawableRes.setAccessible(true);
-            mCursorDrawableRes.set(messageEditor, R.drawable.search_carret);
-        } catch (Exception e) {
-            //nothing to do
-        }
-        messageEditorLP.weight = 1;
-        if (getChildAt(SEARCH_EDITTEXT_VIEW_INDEX) == null) {
-            addViewInLayout(messageEditor, SEARCH_EDITTEXT_VIEW_INDEX, messageEditorLP);
-        }
-        AnimationUtils.circleRevealView(messageEditor);
+        EditText messageEditor = (EditText) getChildAt(SEARCH_EDITTEXT_VIEW_INDEX);
+        messageEditor.setVisibility(VISIBLE);
+        //AnimationUtils.circleRevealView(messageEditor);
         messageEditor.requestFocus();
 
-        MyImageButton upBtn = new MyImageButton(getContext());
-        upBtn.setImageResource(R.drawable.ic_collapsed_dark);
+        MyImageButton upBtn = (MyImageButton) getChildAt(SEARCH_UP_IMAGE_INDEX);
         upBtn.setOnClickListener(upBtnClickListener);
-        if (getChildAt(SEARCH_UP_IMAGE_INDEX) == null) {
-            addViewInLayout(upBtn, SEARCH_UP_IMAGE_INDEX, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-        }
-        MyImageButton downBtn = new MyImageButton(getContext());
-        downBtn.setImageResource(R.drawable.ic_expanded_dark);
+        upBtn.setVisibility(VISIBLE);
+
+        MyImageButton downBtn = (MyImageButton) getChildAt(SEARCH_DOWN_IMAGE_INDEX);
         downBtn.setOnClickListener(downBtnClickListener);
-        if (getChildAt(SEARCH_DOWN_IMAGE_INDEX) == null) {
-            addViewInLayout(downBtn, SEARCH_DOWN_IMAGE_INDEX, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-        }
+        downBtn.setVisibility(VISIBLE);
     }
 
     public void hideSearch() {

@@ -18,11 +18,13 @@ import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
 import com.github.anrwatchdog.ANRWatchDog;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
 import de.duenndns.ssl.MemorizingTrustManager;
+import io.fabric.sdk.android.Fabric;
 import protocol.Protocol;
 import protocol.xmpp.Xmpp;
 import ru.sawim.chat.ChatHistory;
@@ -45,7 +47,6 @@ import javax.net.ssl.X509TrustManager;
 
 import java.io.InputStream;
 import java.security.SecureRandom;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -63,7 +64,7 @@ public class SawimApplication extends Application {
     public static final String LOG_TAG = SawimApplication.class.getSimpleName();
 
     public static final String DATABASE_NAME = "sawim.db";
-    public static final int DATABASE_VERSION = 13;
+    public static final int DATABASE_VERSION = 14;
 
     public static String NAME;
     public static String VERSION;
@@ -106,15 +107,17 @@ public class SawimApplication extends Application {
 
     @Override
     public void onCreate() {
+        super.onCreate();
         instance = this;
         NAME = getString(R.string.app_name);
         VERSION = getVersion();
         Thread.setDefaultUncaughtExceptionHandler(ExceptionHandler.inContext(getContext()));
-        super.onCreate();
+        Fabric.with(this, new Crashlytics());
         new ANRWatchDog().start();
         checkPlayServices = checkPlayServices();
     //    refWatcher = LeakCanary.install(this);
         databaseHelper = new DatabaseHelper(getApplicationContext());
+
         uiHandler = new Handler(Looper.getMainLooper());
         backgroundExecutor = Executors
                 .newCachedThreadPool(new ThreadFactory() {
@@ -151,7 +154,7 @@ public class SawimApplication extends Application {
                 } catch (Exception e) {
                     DebugLog.panic("TLS init", e);
                 }
-                RosterHelper.getInstance().initAccounts();
+                RosterHelper.getInstance().getProtocol();
                 DebugLog.startTests();
                 TextFormatter.init();
 
@@ -170,16 +173,13 @@ public class SawimApplication extends Application {
                         PreferenceManager.getDefaultSharedPreferences(context);
                 boolean sentToken = sharedPreferences
                         .getBoolean(Preferences.SENT_TOKEN_TO_SERVER, false);
-                Protocol protocol = RosterHelper.getInstance().getProtocol(0);
-                if (protocol != null) {
-                    protocol.reconnect();
-                }
+
             }
         };
         LocalBroadcastManager.getInstance(this).registerReceiver(registrationBroadcastReceiver,
                 new IntentFilter(Preferences.REGISTRATION_COMPLETE));
     }
-
+//adb shell am startservice -a com.google.android.gms.iid.InstanceID --es "CMD" "RST" -n ru.sawim.jp/ru.sawim.gcm.MyInstanceIDListenerService
     public Handler getUiHandler() {
         return uiHandler;
     }
@@ -258,12 +258,9 @@ public class SawimApplication extends Application {
         autoAbsenceTime = Options.getInt(R.array.absence_array, JLocale.getString(R.string.pref_aa_time)) * 5 * 60;
         if (Options.getBoolean(JLocale.getString(R.string.pref_history))
                 && enableHistory != Options.getBoolean(JLocale.getString(R.string.pref_history))) {
-            for (Protocol p : RosterHelper.getInstance().getProtocols()) {
-                if (p instanceof Xmpp) {
-                    if (((Xmpp) p).getConnection() != null) {
-                        ((Xmpp) p).getConnection().enableMessageArchiveManager();
-                    }
-                }
+            Protocol p = RosterHelper.getInstance().getProtocol();
+            if (((Xmpp) p).getConnection() != null) {
+                ((Xmpp) p).getConnection().enableMessageArchiveManager();
             }
         }
     }
@@ -279,9 +276,8 @@ public class SawimApplication extends Application {
     public void quit(boolean isForceClose) {
         HistoryStorage.saveUnreadMessages();
         AutoAbsence.getInstance().online();
-        int count = RosterHelper.getInstance().getProtocolCount();
-        for (int i = 0; i < count; ++i) {
-            Protocol p = RosterHelper.getInstance().getProtocol(i);
+        Protocol p = RosterHelper.getInstance().getProtocol();
+        if (p != null) {
             p.disconnect(false);
         }
     }

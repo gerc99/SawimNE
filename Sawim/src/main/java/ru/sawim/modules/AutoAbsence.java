@@ -10,11 +10,10 @@ import ru.sawim.roster.RosterHelper;
 public final class AutoAbsence {
 
     private static AutoAbsence instance;
-    private Protocol[] protos;
-    private Profile[] profiles;
     private long activityOutTime;
     private boolean absence;
     private boolean isChangeStatus = false;
+    Profile pr = new Profile();
 
     private AutoAbsence() {
         absence = false;
@@ -47,45 +46,29 @@ public final class AutoAbsence {
         if (absence) {
             return;
         }
-        int count = RosterHelper.getInstance().getProtocolCount();
-        protos = new Protocol[count];
-        profiles = new Profile[count];
-        for (int i = 0; i < count; ++i) {
-            Protocol p = RosterHelper.getInstance().getProtocol(i);
-            if (isSupported(p)) {
-                Profile pr = new Profile();
-                protos[i] = p;
-                profiles[i] = pr;
-                pr.statusIndex = p.getProfile().statusIndex;
-                pr.statusMessage = p.getProfile().statusMessage;
-                pr.xstatusIndex = p.getProfile().xstatusIndex;
-                pr.xstatusTitle = p.getProfile().xstatusTitle;
-                pr.xstatusDescription = p.getProfile().xstatusDescription;
+        Protocol p = RosterHelper.getInstance().getProtocol();
+        if (isSupported(p)) {
+            pr.statusIndex = p.getProfile().statusIndex;
+            pr.statusMessage = p.getProfile().statusMessage;
+            pr.xstatusIndex = p.getProfile().xstatusIndex;
+            pr.xstatusTitle = p.getProfile().xstatusTitle;
+            pr.xstatusDescription = p.getProfile().xstatusDescription;
 
-                isChangeStatus = true;
-                p.setOnlineStatus(StatusInfo.STATUS_AWAY, pr.statusMessage, false);
-                isChangeStatus = false;
-            } else {
-                protos[i] = null;
-            }
+            isChangeStatus = true;
+            p.setOnlineStatus(StatusInfo.STATUS_AWAY, pr.statusMessage, false);
+            isChangeStatus = false;
         }
         absence = true;
     }
 
     public final void online() {
-        if (!absence || (null == protos)) {
+        if (!absence) {
             return;
         }
         absence = false;
-        for (int i = 0; i < protos.length; ++i) {
-            if (null != protos[i]) {
-                Profile pr = profiles[i];
-
-                isChangeStatus = true;
-                protos[i].setOnlineStatus(pr.statusIndex, pr.statusMessage, false);
-                isChangeStatus = false;
-            }
-        }
+        isChangeStatus = true;
+        RosterHelper.getInstance().getProtocol().setOnlineStatus(pr.statusIndex, pr.statusMessage, false);
+        isChangeStatus = false;
     }
 
     public final void userActivity() {

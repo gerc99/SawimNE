@@ -44,13 +44,13 @@ public final class RosterHelper {
     private static final RosterHelper instance = new RosterHelper();
     private final StatusView statusView = new StatusView();
 
+    Protocol protocol;
+
     private Contact currentContact;
     private List<FileTransfer> transfers = new ArrayList<FileTransfer>();
     private OnUpdateRoster updateRoster;
     private OnAccountsLoaded accountsLoaded;
     public boolean useGroups;
-    private Protocol[] protocolList;
-    private int count = 0;
 
     public static RosterHelper getInstance() {
         return instance;
@@ -61,162 +61,31 @@ public final class RosterHelper {
         return exist == profile || exist.userId.equals(profile.userId);
     }
 
-    private void addProtocols(Vector accounts) {
-        int count = getProtocolCount();
-        Protocol[] protocols = new Protocol[count];
-        for (int i = 0; i < count; ++i) {
-            protocols[i] = getProtocol(i);
-        }
-        removeAllProtocols();
-        for (int i = 0; i < accounts.size(); ++i) {
-            Profile profile = (Profile) accounts.elementAt(i);
-            for (int j = 0; j < protocols.length; ++j) {
-                Protocol protocol = protocols[j];
-                if ((null != protocol) && is(protocol, profile)) {
-                    if (protocol.getProfile() != profile) {
-                        protocol.setProfile(profile);
-                    }
-                    protocols[j] = null;
-                    profile = null;
-                    addProtocol(protocol);
-                    break;
-                }
-            }
-            if (null != profile) {
-                addProtocol(profile, true);
-            }
-        }
-        /*for (int i = 0; i < protocols.length; ++i) {
-            Protocol protocol = protocols[i];
-            if (null != protocol) {
-                SawimApplication.getInstance().setStatus(protocol, StatusInfo.STATUS_OFFLINE, "");
-                protocol.dismiss();
-            }
-        }*/
-    }
-
-    public void setCurrentProtocol() {
-        Vector listOfProfiles = new Vector();
-        for (int i = 0; i < Options.getAccountCount(); ++i) {
-            Profile p = Options.getAccount(i);
-            if (p.isActive) {
-                listOfProfiles.addElement(p);
-            }
-        }
-        /*if (listOfProfiles.isEmpty()) {
-            Profile p = Options.getAccount(0);
-            p.isActive = true;
-            listOfProfiles.addElement(p);
-        }*/
-        addProtocols(listOfProfiles);
-        updateRoster();
-    }
-
-    public void initAccounts() {
-        protocolList = new Protocol[Options.getMaxAccountCount()];
-        int count = Math.max(1, Options.getAccountCount());
-        for (int i = 0; i < count; ++i) {
-            Profile p = Options.getAccount(i);
-            if (p.isActive) {
-                addProtocol(p, false);
-            }
-        }
-    }
-
     public boolean isAccountsLoaded;
     public void loadAccounts() {
-        int count = getProtocolCount();
-        for (int i = 0; i < count; ++i) {
-            Protocol protocol = getProtocol(i);
+        Protocol protocol = getProtocol();
+        if (protocol != null) {
             protocol.load();
-        }
-        isAccountsLoaded = true;
-        if (accountsLoaded != null) {
-            accountsLoaded.onAccountsLoaded();
+            isAccountsLoaded = true;
+            if (accountsLoaded != null) {
+                accountsLoaded.onAccountsLoaded();
+            }
         }
     }
 
-    private void addProtocol(Profile account, boolean load) {
-        Protocol protocol = new Xmpp();
-        protocol.setProfile(account);
-        protocol.init();
-        if (load) {
+    public Protocol getProtocol() {
+        if (protocol == null) {
+            protocol = new Xmpp();
+            protocol.setProfile(Options.getAccount(0));
+            protocol.init();
             protocol.safeLoad();
         }
-        addProtocol(protocol);
-    }
-
-    public Protocol getProtocol(Profile profile) {
-        int count = getProtocolCount();
-        for (int i = 0; i < count; ++i) {
-            Protocol p = getProtocol(i);
-            if (p.getProfile() != null)
-                if (is(p, profile))
-                    return p;
-        }
-        return null;
-    }
-
-    public int getProtocol(Protocol protocol) {
-        int count = getProtocolCount();
-        for (int i = 0; i < count; ++i) {
-            Protocol p = getProtocol(i);
-            if (protocol == p) {
-                return i;
-            }
-        }
-        return 0;
-    }
-
-    public Protocol getProtocol(String account) {
-        int count = getProtocolCount();
-        for (int i = 0; i < count; ++i) {
-            Protocol p = getProtocol(i);
-            if (p.getUserId().equals(account)) {
-                return p;
-            }
-        }
-        return null;
-    }
-
-    public final Protocol getProtocol(int accountIndex) {
-        if (protocolList == null) return null;
-        return protocolList[accountIndex];
-    }
-
-    public final Protocol getProtocol(Group treeNode) {
-        if (treeNode == null) return null;
-        for (int i = 0; i < getProtocolCount(); ++i) {
-            if (getProtocol(i).getGroupItems().get(treeNode.getGroupId()) != null) {
-                return getProtocol(i);
-            }
-            if (getProtocol(i).getNotInListGroup().getGroupId() == treeNode.getGroupId()) {
-                return getProtocol(i);
-            }
-        }
-        return null;
-    }
-
-    public Protocol getProtocol(Contact c) {
-        for (int i = 0; i < getProtocolCount(); ++i) {
-            if (getProtocol(i).inContactList(c)) {
-                return getProtocol(i);
-            }
-        }
-        return null;
-    }
-
-    public Protocol[] getProtocols() {
-        Protocol[] all = new Protocol[getProtocolCount()];
-        for (int i = 0; i < all.length; ++i) {
-            all[i] = getProtocol(i);
-        }
-        return all;
+        return protocol;
     }
 
     public Group getGroupWithContacts(Group g) {
         Group group = g;
-        Protocol protocol = RosterHelper.getInstance().getProtocol(g);
+        Protocol protocol = RosterHelper.getInstance().getProtocol();
         if (protocol != null && protocol.getGroupItems() != null) {
             g = protocol.getGroupItems().get(g.getGroupId());
         }
@@ -259,42 +128,22 @@ public final class RosterHelper {
     }
 
     public void autoConnect() {
-        int count = getProtocolCount();
-        for (int i = 0; i < count; ++i) {
-            autoConnect(i);
-        }
-    }
-
-    public void autoConnect(int i) {
-        Profile profile = Options.getAccount(i);
-        Protocol protocol = getProtocol(profile);
-        Log.e("autoConnect", protocol.isConnected() + " " + protocol.isConnecting() + " " + protocol.getConnectingProgress() + " " + profile.isConnected());
-        if (protocol != null && (protocol.isConnected() || protocol.isConnecting())) return;
-        //if (checkPassword(protocol)) {
-            if (profile.isConnected()) {
-                protocol.connect();
-            }
-        //}
+        Protocol p = getProtocol();
+        SawimApplication.getInstance().setStatus(p, StatusInfo.STATUS_ONLINE, "");
     }
 
     public boolean isConnected() {
-        int count = getProtocolCount();
-        for (int i = 0; i < count; ++i) {
-            Protocol p = getProtocol(i);
-            if (p.isConnected() && !p.isConnecting()) {
-                return true;
-            }
+        Protocol p = getProtocol();
+        if (p.isConnected() && !p.isConnecting()) {
+            return true;
         }
         return false;
     }
 
     public boolean isConnecting() {
-        int count = getProtocolCount();
-        for (int i = 0; i < count; ++i) {
-            Protocol p = getProtocol(i);
-            if (p.isConnecting()) {
-                return true;
-            }
+        Protocol p = getProtocol();
+        if (p.isConnecting()) {
+            return true;
         }
         return false;
     }
@@ -364,28 +213,6 @@ public final class RosterHelper {
 
     public void setOnUpdateRoster(OnUpdateRoster l) {
         updateRoster = l;
-    }
-
-    public void removeAllProtocols() {
-        count = 0;
-        for (int i = 0; i < protocolList.length; ++i) {
-            protocolList[i] = null;
-        }
-    }
-
-    public void removeProtocol(int i) {
-        protocolList[i] = null;
-    }
-
-    private void addProtocol(Protocol prot) {
-        if ((count < protocolList.length) && (null != prot)) {
-            protocolList[count] = prot;
-            count++;
-        }
-    }
-
-    public final int getProtocolCount() {
-        return count;
     }
 
     public void updateOptions() {
@@ -519,8 +346,8 @@ public final class RosterHelper {
         switch (idItem) {
             case RosterHelper.MENU_CONNECT:
                 //if (checkPassword(p)) {
-                    SawimApplication.getInstance().setStatus(p, (p.isConnected() || p.isConnecting())
-                            ? StatusInfo.STATUS_OFFLINE : StatusInfo.STATUS_ONLINE, "");
+                SawimApplication.getInstance().setStatus(p, (p.isConnected() || p.isConnecting())
+                        ? StatusInfo.STATUS_OFFLINE : StatusInfo.STATUS_ONLINE, "");
                 //}
                 return true;
             case MENU_FIND_CONF:
@@ -563,5 +390,12 @@ public final class RosterHelper {
 
     public void setOnAccountsLoaded(OnAccountsLoaded accountsLoaded) {
         this.accountsLoaded = accountsLoaded;
+    }
+
+    public Protocol getProtocol(Profile acc) {
+        return getProtocol();
+    }
+    public Protocol getProtocol(int i) {
+        return getProtocol();
     }
 }

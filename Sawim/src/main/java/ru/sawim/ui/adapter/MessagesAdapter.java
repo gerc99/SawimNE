@@ -89,7 +89,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
         MessageItemView item = (MessageItemView) viewHolder.itemView;
         item.setTag(index);
         Contact contact = RosterHelper.getInstance().getCurrentContact();
-        textLinkClick.setContact(contact.getProtocol().getUserId(), contact.getUserId());
+        textLinkClick.setContact(contact.getUserId());
         item.setOnTextLinkClickListener(textLinkClick);
         item.setOnClickListener(this);
 

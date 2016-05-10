@@ -46,8 +46,9 @@ public final class MessData {
         layout = MessageItemView.buildLayout(parsedText, isHighLight ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT);
     }
 
-    public MessData(Contact currentContact, long time, String text, String nick, short flags) {
+    public MessData(Contact currentContact, String id, long time, String text, String nick, short flags) {
         this(currentContact, time, text, nick, flags, false);
+        setId(id);
     }
 
     public String getId() {

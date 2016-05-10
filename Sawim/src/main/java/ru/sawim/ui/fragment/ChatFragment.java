@@ -27,6 +27,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.*;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -88,7 +89,6 @@ public class ChatFragment extends SawimFragment implements OnUpdateChat, Handler
     private static final int HISTORY_MESSAGES_LIMIT = 20;
     private static final String CITATION_DIVIDER = "\n---\n";
 
-    private static final String PROTOCOL_ID = "protocol_id";
     private static final String CONTACT_ID = "contact_id";
 
     private static final int ADD_MESSAGE = 0;
@@ -120,10 +120,9 @@ public class ChatFragment extends SawimFragment implements OnUpdateChat, Handler
     private ChatsDialogFragment chatsDialogFragment;
     private int lastServerMessageCount;
 
-    public static ChatFragment newInstance(String protocolId, String contactId) {
+    public static ChatFragment newInstance(String contactId) {
         ChatFragment chatFragment = new ChatFragment();
         Bundle args = new Bundle();
-        args.putString(PROTOCOL_ID, protocolId);
         args.putString(CONTACT_ID, contactId);
         chatFragment.setArguments(args);
         return chatFragment;
@@ -268,7 +267,7 @@ public class ChatFragment extends SawimFragment implements OnUpdateChat, Handler
             sendButton.setOnClickListener(this);
             sendButton.setOnLongClickListener(this);
         }
-
+        destroySearchMode();
         return SawimApplication.isManyPane() ? chatViewLayout : drawerLayout;
     }
 
@@ -377,7 +376,6 @@ public class ChatFragment extends SawimFragment implements OnUpdateChat, Handler
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         if (chat != null) {
-            outState.putString(PROTOCOL_ID, chat.getProtocol().getUserId());
             outState.putString(CONTACT_ID, chat.getContact().getUserId());
         }
     }
@@ -389,11 +387,11 @@ public class ChatFragment extends SawimFragment implements OnUpdateChat, Handler
             savedInstanceState = getArguments();
         }
         if (savedInstanceState != null) {
-            Protocol protocol = RosterHelper.getInstance().getProtocol(savedInstanceState.getString(PROTOCOL_ID));
+            Protocol protocol = RosterHelper.getInstance().getProtocol();
             if (protocol != null) {
                 Contact contact = protocol.getItemByUID(savedInstanceState.getString(CONTACT_ID));
                 if (contact != null) {
-                    initChat(protocol, contact);
+                    initChat(contact);
                 }
             }
         }
@@ -404,7 +402,7 @@ public class ChatFragment extends SawimFragment implements OnUpdateChat, Handler
         super.onStart();
         Contact currentContact = RosterHelper.getInstance().getCurrentContact();
         if (chat == null && currentContact != null && !SawimApplication.isManyPane()) {
-            initChat(currentContact.getProtocol(), currentContact);
+            initChat(currentContact);
         }
         if (chat == null) {
             if (SawimApplication.isManyPane()) {
@@ -413,10 +411,10 @@ public class ChatFragment extends SawimFragment implements OnUpdateChat, Handler
                 getActivity().getSupportFragmentManager().popBackStack();
             }
             if (currentContact != null)
-                initChat(currentContact.getProtocol(), currentContact);
+                initChat(currentContact);
             return;
         } else {
-            openChat(chat.getProtocol(), chat.getContact());
+            openChat(chat.getContact());
         }
         if (!SawimApplication.isManyPane()) {
             getActivity().supportInvalidateOptionsMenu();
@@ -504,20 +502,20 @@ public class ChatFragment extends SawimFragment implements OnUpdateChat, Handler
         pause(chat);
         RecyclerView chatListView = chatViewLayout.getChatListsView().getChatListView();
         chatListView.stopScroll();
-        openChat(current.getProtocol(), current.getContact());
+        openChat(current.getContact());
         resume(current);
         getActivity().supportInvalidateOptionsMenu();
         updateRoster();
     }
 
-    private void initChat(Protocol p, Contact c) {
-        c.activate((BaseActivity) getActivity(), p);
-        chat = p.getChat(c);
+    private void initChat(Contact c) {
+        c.activate((BaseActivity) getActivity());
+        chat = RosterHelper.getInstance().getProtocol().getChat(c);
     }
 
-    public void openChat(Protocol p, Contact c) {
+    public void openChat(Contact c) {
         chatViewLayout.hideHint();
-        initChat(p, c);
+        initChat(c);
 
         boolean isNewChat = oldChatHash != chat.hashCode();
         if (isNewChat) {
@@ -659,7 +657,9 @@ public class ChatFragment extends SawimFragment implements OnUpdateChat, Handler
                 String messId = (String) ((Object[]) msg.obj)[1];
                 int state = (Integer) ((Object[]) msg.obj)[2];
                 MessData messData = findMessData(messId);
-                messData.setIconIndex(state);
+                if (messData != null) {
+                    messData.setIconIndex(state);
+                }
                 if (chat != null && chat.getContact() == c) {
                     setScroll();
                 }
@@ -817,8 +817,8 @@ public class ChatFragment extends SawimFragment implements OnUpdateChat, Handler
                     } else if (isScroll && !isLoad) {
                         messDataList = chat.getHistory().addNextListMessages(chat, HISTORY_MESSAGES_LIMIT, oldTimeStamp);
                     }
-                    if (messDataList.isEmpty() && chat.getProtocol() instanceof Xmpp) {
-                        ((Xmpp) chat.getProtocol()).queryMessageArchiveManagement(chat.getContact(), new OnMoreMessagesLoaded() {
+                    if (messDataList.isEmpty()) {
+                        ((Xmpp) RosterHelper.getInstance().getProtocol()).queryMessageArchiveManagement(chat.getContact(), new OnMoreMessagesLoaded() {
                             @Override
                             public void onLoaded(int messagesCount) {
                                 lastServerMessageCount = messagesCount;
@@ -924,20 +924,25 @@ public class ChatFragment extends SawimFragment implements OnUpdateChat, Handler
             rosterFragment.update();
     }
 
-    private void searchTextFromMessage() {
+    private boolean searchTextFromMessage() {
         final String query = getTitleBar().getSearchEditText().getText().toString().toLowerCase();
-        if (query.isEmpty()) return;
+        if (query.isEmpty()) return false;
         if (searchMessagePositions == null) {
             searchMessagePositions = chat.getHistory().getSearchMessagesIds(query);
         }
         final boolean positionsIsNtEmpty = !searchMessagePositions.isEmpty();
         final int oldCount = getMessagesAdapter().getItemCount();
         if (positionsIsNtEmpty) {
-            if (searchMessagePositionsCount == 0 || searchMessagePositionsCount - 1 == searchMessagePositions.size()) {
+            if (searchMessagePositionsCount <= 0) {
                 getMessagesAdapter().setQuery(query);
-                searchMessagePositionsCount = searchMessagePositions.size();
+                searchMessagePositionsCount = searchMessagePositions.size() - 1;
             }
-            final int position = searchMessagePositions.get(searchMessagePositionsCount - 1) - 1;
+            if (searchMessagePositionsCount >= searchMessagePositions.size()) {
+                getMessagesAdapter().setQuery(query);
+                searchMessagePositionsCount = 0;
+            }
+            final int position = searchMessagePositions.get(searchMessagePositionsCount) - 1;
+            //Log.e("searchTextFromMessage", position+" "+searchMessagePositionsCount+" "+oldCount);
             SawimApplication.getExecutor().execute(new Runnable() {
                 @Override
                 public void run() {
@@ -967,6 +972,7 @@ public class ChatFragment extends SawimFragment implements OnUpdateChat, Handler
         } else {
             resetSearchMode(true);
         }
+        return positionsIsNtEmpty;
     }
 
     private void resetSearchMode(boolean showToast) {
@@ -981,6 +987,7 @@ public class ChatFragment extends SawimFragment implements OnUpdateChat, Handler
     }
 
     private void enableSearchMode() {
+        if (isSearchMode) return;
         isSearchMode = true;
 
         ActionBar actionBar = ((BaseActivity) getActivity()).getSupportActionBar();
@@ -988,19 +995,21 @@ public class ChatFragment extends SawimFragment implements OnUpdateChat, Handler
         actionBar.setDisplayShowHomeEnabled(true);
         actionBar.setDisplayUseLogoEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
-        drawerToggle.setDrawerIndicatorEnabled(false);
+        if (drawerToggle != null) {
+            drawerToggle.setDrawerIndicatorEnabled(false);
+        }
         searchMenuItem.setVisible(false);
         getTitleBar().showSearch(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                searchTextFromMessage();
-                searchMessagePositionsCount--;
+                if (searchTextFromMessage())
+                    searchMessagePositionsCount--;
             }
         }, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                searchTextFromMessage();
-                searchMessagePositionsCount++;
+                if (searchTextFromMessage())
+                    searchMessagePositionsCount++;
             }
         });
 
@@ -1012,7 +1021,9 @@ public class ChatFragment extends SawimFragment implements OnUpdateChat, Handler
         resetSearchMode(false);
         getTitleBar().hideSearch();
         updateChatIcon();
-        getMessagesAdapter().notifyDataSetChanged();
+        if (getMessagesAdapter() != null) {
+            getMessagesAdapter().notifyDataSetChanged();
+        }
     }
 
     private void destroyMultiCitationMode() {
@@ -1087,10 +1098,16 @@ public class ChatFragment extends SawimFragment implements OnUpdateChat, Handler
             MyMenuItem myMenuItem = myMenu.getItem(i);
             menu.add(Menu.FIRST, myMenuItem.idItem, 2, myMenuItem.nameItem);
         }
-        searchMenuItem = menu.add(Menu.FIRST, ContactMenu.CHAT_MENU_SEARCH, 2, "")
-                .setIcon(R.drawable.ic_search_white_24dp);
-        MenuItemCompat.setShowAsAction(searchMenuItem, MenuItemCompat.SHOW_AS_ACTION_ALWAYS);
-                super.onPrepareOptionsMenu(menu);
+        addSearchView(menu);
+        super.onPrepareOptionsMenu(menu);
+    }
+
+    public void addSearchView(Menu menu) {
+        if (!isSearchMode) {
+            searchMenuItem = menu.add(Menu.FIRST, ContactMenu.CHAT_MENU_SEARCH, 2, "")
+                    .setIcon(R.drawable.ic_search_white_24dp);
+            MenuItemCompat.setShowAsAction(searchMenuItem, MenuItemCompat.SHOW_AS_ACTION_ALWAYS);
+        }
     }
 
     MenuItem searchMenuItem;
@@ -1105,7 +1122,6 @@ public class ChatFragment extends SawimFragment implements OnUpdateChat, Handler
 
     private void onOptionsItemSelected(int id) {
         if (chat == null) return;
-        final Protocol protocol = chat.getProtocol();
         final Contact contact = chat.getContact();
         switch (id) {
             case ContactMenu.CHAT_MENU_SEARCH:
@@ -1124,11 +1140,11 @@ public class ChatFragment extends SawimFragment implements OnUpdateChat, Handler
 
             case ContactMenu.USER_MENU_FILE_TRANS:
                 BaseActivity.getExternalApi().setFragment(this);
-                new ContactMenu(protocol, contact).doAction((BaseActivity) getActivity(), ContactMenu.USER_MENU_FILE_TRANS);
+                new ContactMenu(contact).doAction((BaseActivity) getActivity(), ContactMenu.USER_MENU_FILE_TRANS);
                 break;
             case ContactMenu.USER_MENU_CAM_TRANS:
                 BaseActivity.getExternalApi().setFragment(this);
-                new ContactMenu(protocol, contact).doAction((BaseActivity) getActivity(), ContactMenu.USER_MENU_CAM_TRANS);
+                new ContactMenu(contact).doAction((BaseActivity) getActivity(), ContactMenu.USER_MENU_CAM_TRANS);
                 break;
 
             case ContactMenu.CONFERENCE_DISCONNECT:
@@ -1136,14 +1152,14 @@ public class ChatFragment extends SawimFragment implements OnUpdateChat, Handler
                 chat.setVisibleChat(false);
                 RosterHelper.getInstance().setOnUpdateChat(null);
                 chat = null;
-                new ContactMenu(protocol, contact).doAction((BaseActivity) getActivity(), ContactMenu.CONFERENCE_DISCONNECT);
+                new ContactMenu(contact).doAction((BaseActivity) getActivity(), ContactMenu.CONFERENCE_DISCONNECT);
                 if (!SawimApplication.isManyPane()) {
                     getActivity().getSupportFragmentManager().popBackStack();
                 }
                 break;
 
             default:
-                new ContactMenu(protocol, contact).doAction((BaseActivity) getActivity(), id);
+                new ContactMenu(contact).doAction((BaseActivity) getActivity(), id);
                 getActivity().supportInvalidateOptionsMenu();
         }
     }
@@ -1151,7 +1167,6 @@ public class ChatFragment extends SawimFragment implements OnUpdateChat, Handler
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        final Protocol protocol = chat.getProtocol();
         final Contact contact = chat.getContact();
         menu.add(Menu.FIRST, ContactMenu.MENU_COPY_TEXT, 0, android.R.string.copy);
         menu.add(Menu.FIRST, ContactMenu.ACTION_QUOTE, 0, R.string.quote);
@@ -1160,9 +1175,7 @@ public class ChatFragment extends SawimFragment implements OnUpdateChat, Handler
             menu.add(Menu.FIRST, ContactMenu.COMMAND_INFO, 0, R.string.info);
             menu.add(Menu.FIRST, ContactMenu.COMMAND_STATUS, 0, R.string.user_statuses);
         }
-        if (protocol instanceof Xmpp) {
-            menu.add(Menu.FIRST, ContactMenu.ACTION_TO_NOTES, 0, R.string.add_to_notes);
-        }
+        menu.add(Menu.FIRST, ContactMenu.ACTION_TO_NOTES, 0, R.string.add_to_notes);
         contact.addChatMenuItems(menu);
     }
 
@@ -1172,10 +1185,10 @@ public class ChatFragment extends SawimFragment implements OnUpdateChat, Handler
         if (getMessagesAdapter() == null) return super.onContextItemSelected(item);
         final MessData md = getMessagesAdapter().getItem(info.position);
         if (md == null) return super.onContextItemSelected(item);
-        final Protocol protocol = chat.getProtocol();
         final Contact contact = chat.getContact();
         String nick = md.getNick();
         CharSequence msg = md.getText();
+        Protocol protocol = RosterHelper.getInstance().getProtocol();
         switch (item.getItemId()) {
             case ContactMenu.MENU_COPY_TEXT:
                 Clipboard.setClipBoardText(getActivity(), msg + "\n");
@@ -1203,7 +1216,7 @@ public class ChatFragment extends SawimFragment implements OnUpdateChat, Handler
                     protocol.addTempContact(c);
                 }
                 pause(getCurrentChat());
-                openChat(protocol, c);
+                openChat(c);
                 resume(getCurrentChat());
                 getActivity().supportInvalidateOptionsMenu();
                 break;
@@ -1287,14 +1300,14 @@ public class ChatFragment extends SawimFragment implements OnUpdateChat, Handler
         new DialogFragment() {
             @Override
             public Dialog onCreateDialog(Bundle savedInstanceState) {
-                final Protocol protocol = newChat.getProtocol();
+                final Protocol protocol = RosterHelper.getInstance().getProtocol();
                 final Contact contact = newChat.getContact();
                 AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity);
                 dialogBuilder.setMessage(JLocale.getString(R.string.grant) + " " + contact.getName() + "?");
                 dialogBuilder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        new ContactMenu(protocol, contact).doAction(activity, ContactMenu.USER_MENU_GRANT_AUTH);
+                        new ContactMenu(contact).doAction(activity, ContactMenu.USER_MENU_GRANT_AUTH);
                         activity.supportInvalidateOptionsMenu();
                         RosterHelper.getInstance().updateRoster();
                     }
@@ -1302,7 +1315,7 @@ public class ChatFragment extends SawimFragment implements OnUpdateChat, Handler
                 dialogBuilder.setNegativeButton(R.string.deny, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        new ContactMenu(protocol, contact).doAction(activity, ContactMenu.USER_MENU_DENY_AUTH);
+                        new ContactMenu(contact).doAction(activity, ContactMenu.USER_MENU_DENY_AUTH);
                         activity.supportInvalidateOptionsMenu();
                         RosterHelper.getInstance().updateRoster();
                     }
@@ -1364,7 +1377,7 @@ public class ChatFragment extends SawimFragment implements OnUpdateChat, Handler
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             if (chat == null) return;
-            final Protocol protocol = chat.getProtocol();
+            final Protocol protocol = RosterHelper.getInstance().getProtocol();
             final Contact contact = chat.getContact();
             int length = s.length();
             if (length > 0) {
@@ -1414,7 +1427,7 @@ public class ChatFragment extends SawimFragment implements OnUpdateChat, Handler
 
     @Override
     public void onItemClick(View v, int position) {
-        final Protocol protocol = chat.getProtocol();
+        final Protocol protocol = RosterHelper.getInstance().getProtocol();
         final Contact contact = chat.getContact();
         MessData mData = getMessagesAdapter().getItem(position);
         String msg = mData.getText().toString();
@@ -1425,7 +1438,7 @@ public class ChatFragment extends SawimFragment implements OnUpdateChat, Handler
             getMessagesAdapter().notifyDataSetChanged();
         } else {
             if (chat.isBlogBot()) {
-                new JuickMenu(getActivity(), protocol.getUserId(), contact.getUserId(), chat.getBlogPostId(msg)).show();
+                new JuickMenu(getActivity(), contact.getUserId(), chat.getBlogPostId(msg)).show();
                 return;
             }
             if (mucUsersFragment != null) {

@@ -27,14 +27,12 @@ public class JuickMenu implements DialogInterface.OnClickListener {
     public static final int MODE_PSTO = 1;
 
     private FragmentActivity activity;
-    private String currentProtocol;
     private String currentContact;
     private String text;
 
-    public JuickMenu(FragmentActivity activity, String currentProtocol, String currentContact, String clickedString) {
+    public JuickMenu(FragmentActivity activity, String currentContact, String clickedString) {
         this.activity = activity;
         text = clickedString;
-        this.currentProtocol = currentProtocol;
         this.currentContact = currentContact;
     }
 
@@ -69,11 +67,11 @@ public class JuickMenu implements DialogInterface.OnClickListener {
 
     public void onClick(DialogInterface dialog, int which) {
         if (currentContact.startsWith(JUBO)) {
-            Protocol protocol = RosterHelper.getInstance().getProtocol(currentProtocol);
+            Protocol protocol = RosterHelper.getInstance().getProtocol();
             ChatFragment chatFragment = (ChatFragment) activity.getSupportFragmentManager()
                     .findFragmentById(R.id.chat_fragment);
             if (chatFragment == null) {
-                ChatFragment newFragment = ChatFragment.newInstance(protocol.getUserId(), currentContact);
+                ChatFragment newFragment = ChatFragment.newInstance(currentContact);
                 FragmentTransaction transaction = activity.getSupportFragmentManager().beginTransaction();
                 transaction.replace(R.id.fragment_container, newFragment, ChatFragment.TAG);
                 transaction.addToBackStack(null);
@@ -81,10 +79,8 @@ public class JuickMenu implements DialogInterface.OnClickListener {
             } else {
                 Chat chat = chatFragment.getCurrentChat();
                 chatFragment.pause(chat);
-                if (currentProtocol != null) {
-                    chatFragment.openChat(protocol, protocol.getItemByUID("juick@juick.com"));
-                    chatFragment.resume(chatFragment.getCurrentChat());
-                }
+                chatFragment.openChat(protocol.getItemByUID("juick@juick.com"));
+                chatFragment.resume(chatFragment.getCurrentChat());
             }
         }
         String textToInser = "";

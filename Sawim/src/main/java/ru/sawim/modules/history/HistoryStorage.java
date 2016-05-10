@@ -250,7 +250,7 @@ public class HistoryStorage {
                 do {
                     String protocolId = cursor.getString(cursor.getColumnIndex(DatabaseHelper.ACCOUNT_ID));
                     String uniqueUserId = cursor.getString(cursor.getColumnIndex(DatabaseHelper.CONTACT_ID));
-                    Protocol protocol = RosterHelper.getInstance().getProtocol(protocolId);
+                    Protocol protocol = RosterHelper.getInstance().getProtocol();
                     if (protocol != null) {
                         Contact contact = protocol.getItemByUID(uniqueUserId);
                         if (contact == null) {
@@ -310,9 +310,9 @@ public class HistoryStorage {
         //String serverMsgId = cursor.getString(cursor.getColumnIndex(DatabaseHelper.SERVER_MSG_ID));
         PlainMessage message;
         if (isIncoming) {
-            message = new PlainMessage(from, chat.getProtocol(), date, text, true);
+            message = new PlainMessage(from, RosterHelper.getInstance().getProtocol(), date, text, true);
         } else {
-            message = new PlainMessage(chat.getProtocol(), contact.getUserId(), date, text);
+            message = new PlainMessage(RosterHelper.getInstance().getProtocol(), contact.getUserId(), date, text);
         }
         //message.setServerMsgId(serverMsgId);
         MessData messData;
@@ -352,7 +352,7 @@ public class HistoryStorage {
                     boolean isMessage = (rowData & MessData.PRESENCE) == 0
                             && (rowData & MessData.SERVICE) == 0 && (rowData & MessData.PROGRESS) == 0;
                     if (isMessage) {
-                        Protocol protocol = RosterHelper.getInstance().getProtocol(protocolId);
+                        Protocol protocol = RosterHelper.getInstance().getProtocol();
                         PlainMessage message = new PlainMessage(protocol, uniqueUserId, date, text);
                         message.setMessageId(messId);
                         list.add(message);
@@ -371,7 +371,7 @@ public class HistoryStorage {
         Cursor cursor = null;
         try {
             cursor = SawimApplication.getDatabaseHelper().getReadableDatabase().query(DatabaseHelper.TABLE_CHAT_HISTORY, null,
-                    DatabaseHelper.ID + " = " + id, null, null, null, null, null);
+                    DatabaseHelper.ID + " = ?", new String[]{id}, null, null, null, null);
             return cursor.moveToLast();
         } finally {
             if (cursor != null) {
@@ -417,10 +417,10 @@ public class HistoryStorage {
 
     public void removeHistory() {
         try {
-            Contact contact = RosterHelper.getInstance().getProtocol(protocolId).getItemByUID(uniqueUserId);
+            Contact contact = RosterHelper.getInstance().getProtocol().getItemByUID(uniqueUserId);
             contact.firstServerMsgId = "";
             //RosterStorage.updateFirstServerMsgId(contact);
-            RosterHelper.getInstance().getProtocol(protocolId).getStorage().updateUnreadMessagesCount(protocolId, uniqueUserId, 0);
+            RosterHelper.getInstance().getProtocol().getStorage().updateUnreadMessagesCount(protocolId, uniqueUserId, 0);
             SawimApplication.getDatabaseHelper().getWritableDatabase().delete(DatabaseHelper.TABLE_CHAT_HISTORY, WHERE_ACC_CONTACT_ID, new String[]{protocolId, uniqueUserId});
         } catch (Exception e) {
             DebugLog.panic(e);

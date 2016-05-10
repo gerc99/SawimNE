@@ -100,12 +100,12 @@ public class SawimActivity extends BaseActivity implements OnAccountsLoaded {
         if (NOTIFY.equals(getIntent().getAction())) {
             Chat current = ChatHistory.instance.getChat(userId);
             if (current != null)
-                isOpenNewChat = openChat(current.getProtocol(), current.getContact());
+                isOpenNewChat = openChat(current.getContact());
         }
         if (NOTIFY_REPLY.equals(getIntent().getAction())) {
             Chat current = ChatHistory.instance.getChat(userId);
             if (current != null)
-                isOpenNewChat = openChat(current.getProtocol(), current.getContact());
+                isOpenNewChat = openChat(current.getContact());
         }
         if (NOTIFY_CAPTCHA.equals(getIntent().getAction())) {
             FormFragment.showWindows(this, getIntent().getStringExtra(NOTIFY_CAPTCHA));
@@ -116,15 +116,15 @@ public class SawimActivity extends BaseActivity implements OnAccountsLoaded {
         setIntent(null);
     }
 
-    public boolean openChat(Protocol p, Contact c) {
+    public boolean openChat(Contact c) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         ChatFragment chatFragment = (ChatFragment) fragmentManager.findFragmentById(R.id.chat_fragment);
         if (chatFragment == null) {
             Fragment rosterView = fragmentManager.findFragmentByTag(RosterFragment.TAG);
             chatFragment = (ChatFragment) fragmentManager.findFragmentByTag(ChatFragment.TAG);
             if (fragmentManager.getFragments() == null || rosterView == null || chatFragment == null || rosterView.isVisible()) {
-                if (p == null || c == null) return false;
-                chatFragment = ChatFragment.newInstance(p.getUserId(), c.getUserId());
+                if (c == null) return false;
+                chatFragment = ChatFragment.newInstance(c.getUserId());
                 FragmentTransaction transaction = fragmentManager.beginTransaction();
                 transaction.replace(R.id.fragment_container, chatFragment, ChatFragment.TAG);
                 transaction.addToBackStack(null);
@@ -134,23 +134,20 @@ public class SawimActivity extends BaseActivity implements OnAccountsLoaded {
             if (RosterHelper.getInstance().getCurrentContact() != c
                     && chatFragment.isScrollEnd()) {
                 if (c != null) {
-                    chatFragment.openChat(p, c);
+                    chatFragment.openChat(c);
                     return true;
                 }
             }
         } else {
-            Protocol protocol = null;
             Contact contact = null;
             Chat oldChat = ChatHistory.instance.getChat(RosterHelper.getInstance().getCurrentContact());
-            if (p != null && c != null) {
-                protocol = p;
+            if (c != null) {
                 contact = c;
             } else if (oldChat != null) {
-                protocol = oldChat.getProtocol();
                 contact = oldChat.getContact();
             }
-            if (protocol != null && contact != null) {
-                chatFragment.openChat(protocol, contact);
+            if (contact != null) {
+                chatFragment.openChat(contact);
                 chatFragment.resume(chatFragment.getCurrentChat());
                 return true;
             }
@@ -166,28 +163,20 @@ public class SawimActivity extends BaseActivity implements OnAccountsLoaded {
             @Override
             public void run() {
                 StartWindowFragment startWindowFragment = (StartWindowFragment) getSupportFragmentManager().findFragmentByTag(StartWindowFragment.TAG);
-                if (RosterHelper.getInstance().getProtocolCount() == 0) {
-                    if (Options.getAccountCount() == 0) {
-                        if (SawimApplication.isManyPane()) {
-                            setContentView(R.layout.main);
-                        }
-                        if (startWindowFragment == null) {
-                            StartWindowFragment newFragment = new StartWindowFragment();
-                            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                            transaction.replace(R.id.fragment_container, newFragment, StartWindowFragment.TAG);
-                            if (!SawimApplication.isManyPane()) {
-                                transaction.addToBackStack(null);
-                            }
-                            transaction.commit();
-                            supportInvalidateOptionsMenu();
-                        }
-                    } else {
-                        startActivity(new Intent(getBaseContext(), AccountsListActivity.class));
+                if (Options.getAccountCount() == 0) {
+                    if (SawimApplication.isManyPane()) {
+                        setContentView(R.layout.main);
                     }
-                } else {
-                    //Toast.makeText(SawimApplication.getContext(), R.string.press_menu_for_connect, Toast.LENGTH_LONG).show();
-                    if (startWindowFragment != null)
-                        getSupportFragmentManager().popBackStack();
+                    if (startWindowFragment == null) {
+                        StartWindowFragment newFragment = new StartWindowFragment();
+                        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                        transaction.replace(R.id.fragment_container, newFragment, StartWindowFragment.TAG);
+                        if (!SawimApplication.isManyPane()) {
+                            transaction.addToBackStack(null);
+                        }
+                        transaction.commit();
+                        supportInvalidateOptionsMenu();
+                    }
                 }
             }
         });
@@ -204,10 +193,7 @@ public class SawimActivity extends BaseActivity implements OnAccountsLoaded {
         } else {
             RosterHelper.getInstance().setOnAccountsLoaded(this);
         }
-        if (!isOpenNewChat && SawimApplication.isManyPane()) openChat(null, null);
-        if (SawimApplication.checkPlayServices) {
-            RosterHelper.getInstance().autoConnect();
-        }
+        if (!isOpenNewChat && SawimApplication.isManyPane()) openChat(null);
     }
 
     @Override
@@ -220,10 +206,10 @@ public class SawimActivity extends BaseActivity implements OnAccountsLoaded {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (SawimApplication.checkPlayServices) {
+        /*if (SawimApplication.checkPlayServices) {
             SawimApplication.getInstance().quit(false);
             SawimApplication.getInstance().stopService();
-        }
+        }*/
     }
 
     @Override
@@ -304,8 +290,8 @@ public class SawimActivity extends BaseActivity implements OnAccountsLoaded {
             return true;
         } else if ((rosterFragment != null && rosterFragment.isAdded())
                 || (startWindowFragment != null && startWindowFragment.isAdded())) {
-            Protocol p = RosterHelper.getInstance().getProtocol(0);
-            if (RosterHelper.getInstance().getProtocolCount() == 1 && p != null) {
+            Protocol p = RosterHelper.getInstance().getProtocol();
+            if (p != null) {
                 MyMenu myMenu = RosterHelper.getInstance().getMenu(p);
                 for (int i = 0; i < myMenu.getCount(); ++i) {
                     MyMenuItem myMenuItem = myMenu.getItem(i);
@@ -315,6 +301,9 @@ public class SawimActivity extends BaseActivity implements OnAccountsLoaded {
             menu.add(Menu.NONE, MENU_OPTIONS, Menu.NONE, R.string.options);
             if (!SawimApplication.checkPlayServices) {
                 menu.add(Menu.NONE, MENU_QUIT, Menu.NONE, R.string.quit);
+            }
+            if (chatFragment != null && chatFragment.isAdded() && SawimApplication.isManyPane()) {
+                chatFragment.addSearchView(menu);
             }
         } else if (searchContactFragment != null && searchContactFragment.isAdded()) {
             searchContactFragment.onPrepareOptionsMenu_(menu);
@@ -338,11 +327,10 @@ public class SawimActivity extends BaseActivity implements OnAccountsLoaded {
         if (virtualListFragment != null) {
             virtualListFragment.onOptionsItemSelected_(item);
             return true;
-        } else if (!SawimApplication.isManyPane() && chatFragment != null) {
+        } else if (chatFragment != null && !SawimApplication.isManyPane()) {
             chatFragment.onOptionsItemSelected_(item);
             return true;
-        }
-        if (RosterHelper.getInstance().protocolMenuItemSelected(this, RosterHelper.getInstance().getProtocol(0), item.getItemId()))
+        } else if (RosterHelper.getInstance().protocolMenuItemSelected(this, RosterHelper.getInstance().getProtocol(0), item.getItemId()))
             return true;
         switch (item.getItemId()) {
             case MENU_OPTIONS:

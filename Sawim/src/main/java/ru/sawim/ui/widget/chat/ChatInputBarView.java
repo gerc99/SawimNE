@@ -2,6 +2,8 @@ package ru.sawim.ui.widget.chat;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.view.Gravity;
 import android.widget.LinearLayout;
 import ru.sawim.R;
@@ -68,6 +70,7 @@ public class ChatInputBarView extends IcsLinearLayout {
     }
 
     public void setImageButtons(MyImageButton menuButton, MyImageButton smileButton, MyImageButton sendButton) {
+        DrawableCompat.setTint(SawimResources.MENU_ICON, ContextCompat.getColor(getContext(), R.color.colorGrey500));
         menuButton.setImageDrawable(SawimResources.MENU_ICON);
         smileButton.setImageResource(Scheme.isBlack() ? R.drawable.ic_emoji_dark : R.drawable.ic_emoji_light);
         sendButton.setImageResource(Scheme.isBlack() ? R.drawable.ic_send_dark : R.drawable.ic_send_light);

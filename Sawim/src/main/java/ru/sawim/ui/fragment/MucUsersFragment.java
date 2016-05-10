@@ -9,6 +9,7 @@ import protocol.Protocol;
 import protocol.xmpp.*;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
+import ru.sawim.roster.RosterHelper;
 import ru.sawim.ui.activity.BaseActivity;
 import ru.sawim.ui.activity.SawimActivity;
 import ru.sawim.ui.adapter.MucUsersAdapter;
@@ -29,7 +30,7 @@ public class MucUsersFragment implements MyListView.OnItemClickListener, View.On
     private boolean isLongClick = false;
 
     public void show(final ChatFragment chatFragment, MyListView nickList) {
-        final Protocol protocol = chatFragment.getCurrentChat().getProtocol();
+        final Protocol protocol = RosterHelper.getInstance().getProtocol();
         final XmppServiceContact xmppServiceContact = (XmppServiceContact) chatFragment.getCurrentChat().getContact();
         final BaseActivity activity = (BaseActivity) chatFragment.getActivity();
         final MucUsersAdapter usersAdapter = new MucUsersAdapter();
@@ -220,7 +221,7 @@ public class MucUsersFragment implements MyListView.OnItemClickListener, View.On
         } else {
             chatFragment = (ChatFragment) activity.getSupportFragmentManager().findFragmentByTag(ChatFragment.TAG);
         }
-        final Protocol protocol = chatFragment.getCurrentChat().getProtocol();
+        final Protocol protocol = RosterHelper.getInstance().getProtocol();
         final XmppServiceContact xmppServiceContact = (XmppServiceContact) chatFragment.getCurrentChat().getContact();
         MucUsersAdapter usersAdapter = chatFragment.getMucUsersAdapter();
         final Object o = usersAdapter.getItem(position);
@@ -252,7 +253,7 @@ public class MucUsersFragment implements MyListView.OnItemClickListener, View.On
                             protocol.addTempContact(c);
                         }
                         chatFragment.pause(chatFragment.getCurrentChat());
-                        chatFragment.openChat(protocol, c);
+                        chatFragment.openChat(c);
                         chatFragment.resume(chatFragment.getCurrentChat());
                         activity.supportInvalidateOptionsMenu();
                         break;

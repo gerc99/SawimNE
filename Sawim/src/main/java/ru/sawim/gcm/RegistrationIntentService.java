@@ -10,7 +10,10 @@ import android.util.Log;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
 
+import protocol.Protocol;
 import ru.sawim.R;
+import ru.sawim.SawimApplication;
+import ru.sawim.roster.RosterHelper;
 
 /**
  * Created by gerc on 24.01.2016.
@@ -51,6 +54,15 @@ public class RegistrationIntentService extends IntentService {
             // Notify UI that registration has completed, so the progress indicator can be hidden.
             Intent registrationComplete = new Intent(Preferences.REGISTRATION_COMPLETE);
             LocalBroadcastManager.getInstance(this).sendBroadcast(registrationComplete);
+
+            SawimApplication.getInstance().onCreate();
+            Protocol protocol = RosterHelper.getInstance().getProtocol(0);
+            if (protocol.isConnected() || protocol.isConnecting()) {
+                protocol.disconnect(false);
+                protocol.startConnection();
+            } else {
+                protocol.connect();
+            }
             // [END register_for_gcm]
         } catch (Exception e) {
             Log.d(TAG, "Failed to complete token refresh " + e.getMessage());

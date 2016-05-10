@@ -492,7 +492,7 @@ public class RosterStorage {
                             if (unreadMessageCount == 0) {
                                 continue;
                             }
-                            Protocol protocol = RosterHelper.getInstance().getProtocol(account);
+                            Protocol protocol = RosterHelper.getInstance().getProtocol();
                             if (protocol != null) {
                                 Contact contact = protocol.getItemByUID(userId);
                                 if (contact == null) {

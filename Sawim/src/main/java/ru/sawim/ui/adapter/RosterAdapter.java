@@ -63,13 +63,10 @@ public class RosterAdapter extends RecyclerView.Adapter<RosterAdapter.ViewHolder
         } else {
             query = query.toLowerCase();
             if (originalContactList.isEmpty()) {
-                int count = RosterHelper.getInstance().getProtocolCount();
-                for (int i = 0; i < count; ++i) {
-                    Protocol p = RosterHelper.getInstance().getProtocol(i);
+                Protocol p = RosterHelper.getInstance().getProtocol();
                     for (Contact contact : p.getContactItems().values()) {
                         originalContactList.add(contact);
                     }
-                }
             }
             for (Contact contact : originalContactList) {
                 boolean isSearch = contact.getText().toLowerCase().contains(query);
@@ -231,34 +228,13 @@ public class RosterAdapter extends RecyclerView.Adapter<RosterAdapter.ViewHolder
 
     public void refreshList() {
         RosterHelper roster = RosterHelper.getInstance();
-        final int count = roster.getProtocolCount();
         items.clear();
         if (type == RosterHelper.ACTIVE_CONTACTS) {
-            for (int i = 0; i < roster.getProtocolCount(); ++i) {
-                Protocol p = roster.getProtocol(i);
-                ChatHistory.instance.addLayerToListOfChats(p, items, i);
-                ChatHistory.instance.sort();
-            }
+            Protocol p = roster.getProtocol();
+            ChatHistory.instance.addLayerToListOfChats(p, items);
+            ChatHistory.instance.sort();
         } else {
-            if (count > 1) {
-                for (int i = 0; i < count; ++i) {
-                    Protocol p = roster.getProtocol(i);
-                    if (p == null) return;
-                    /*while (!updateQueue.isEmpty()) {
-                        Group group = (Group) updateQueue.firstElement();
-                        updateQueue.removeElementAt(0);
-                        synchronized (p.getRosterLockObject()) {
-                            roster.updateGroup(group);
-                        }
-                    }*/
-                    ProtocolBranch root = p.getProtocolBranch(i);
-                    items.add(root);
-                    if (!root.isExpanded()) continue;
-                    buildRoster(p);
-                }
-            } else {
-                buildRoster(roster.getProtocol(0));
-            }
+            buildRoster(roster.getProtocol());
         }
         notifyDataSetChanged();
     }
@@ -365,7 +341,7 @@ public class RosterAdapter extends RecyclerView.Adapter<RosterAdapter.ViewHolder
             }
         }
 
-        Drawable messIcon = ChatHistory.instance.getUnreadMessageIcon(o.getProtocol());
+        Drawable messIcon = ChatHistory.instance.getUnreadMessageIcon();
         if (messIcon != null) {
             if (messIcon == SawimResources.PERSONAL_MESSAGE_ICON) {
                 messIcon = messIcon.getConstantState().newDrawable();
@@ -476,7 +452,7 @@ public class RosterAdapter extends RecyclerView.Adapter<RosterAdapter.ViewHolder
         if (chat.getContact().isTyping()) {
             return Message.getIcon(Message.ICON_TYPE);
         } else {
-            Icon icStatus = chat.getProtocol().getStatusInfo().getIcon(chat.getContact().getStatusIndex());
+            Icon icStatus = RosterHelper.getInstance().getProtocol().getStatusInfo().getIcon(chat.getContact().getStatusIndex());
             Drawable icMess = Message.getIcon(chat.getNewMessageIcon());
             if (icMess != null) {
                 if (icMess == SawimResources.PERSONAL_MESSAGE_ICON) {

@@ -56,28 +56,25 @@ public final class StorageConvertor {
                     Log.d(LOG_TAG, "recordsCount = " + recordsCount);
 
                     fileName = fileName.substring(0, fileName.length() - RECORD_STORE_HEADER_SUFFIX.length());
-                    int count = RosterHelper.getInstance().getProtocolCount();
-                    for (int pi = 0; pi < count; ++pi) {
-                        Protocol p = RosterHelper.getInstance().getProtocol(pi);
-                        String contactId = fileName.substring(PREFIX.length(), fileName.length());
-                        HistoryStorage historyStorage = HistoryStorage.getHistory(p.getUserId(), contactId);
-                        for (int recordId = 0; recordId < recordsCount; ++recordId) {
-                            String recordFileName = fileName + "." + (recordId + 1) + RECORD_STORE_RECORD_SUFFIX;
+                    Protocol p = RosterHelper.getInstance().getProtocol();
+                    String contactId = fileName.substring(PREFIX.length(), fileName.length());
+                    HistoryStorage historyStorage = HistoryStorage.getHistory(p.getUserId(), contactId);
+                    for (int recordId = 0; recordId < recordsCount; ++recordId) {
+                        String recordFileName = fileName + "." + (recordId + 1) + RECORD_STORE_RECORD_SUFFIX;
 
-                            byte[] data = readFile(recordFileName);
+                        byte[] data = readFile(recordFileName);
 
-                            ByteArrayInputStream bais = new ByteArrayInputStream(data);
-                            DataInputStream is = new DataInputStream(bais);
-                            boolean isIncoming = is.readByte() == 0;
-                            String from = is.readUTF();
-                            String text = is.readUTF();
-                            long date = Util.createLocalDate(is.readUTF());
+                        ByteArrayInputStream bais = new ByteArrayInputStream(data);
+                        DataInputStream is = new DataInputStream(bais);
+                        boolean isIncoming = is.readByte() == 0;
+                        String from = is.readUTF();
+                        String text = is.readUTF();
+                        long date = Util.createLocalDate(is.readUTF());
 
-                            historyStorage.addText("", 0, isIncoming, from, text, date, (short) 0, "");
+                        historyStorage.addText("", 0, isIncoming, from, text, date, (short) 0, "");
 
-                            is.close();
-                            Log.d(LOG_TAG, "Done converting record #" + (recordId + 1));
-                        }
+                        is.close();
+                        Log.d(LOG_TAG, "Done converting record #" + (recordId + 1));
                     }
                     for (int recordId = 0; recordId < recordsCount; ++recordId) {
                         String recordFileName = fileName + "." + (recordId + 1) + RECORD_STORE_RECORD_SUFFIX;
