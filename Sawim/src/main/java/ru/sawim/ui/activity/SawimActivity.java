@@ -120,6 +120,7 @@ public class SawimActivity extends BaseActivity implements OnAccountsLoaded {
     }
 
     public boolean openChat(Contact c) {
+        RosterHelper.getInstance().setCurrentContact(c);
         FragmentManager fragmentManager = getSupportFragmentManager();
         ChatFragment chatFragment = (ChatFragment) fragmentManager.findFragmentById(R.id.chat_fragment);
         if (chatFragment == null) {
