@@ -4,8 +4,9 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.os.Build;
 import android.view.Gravity;
-import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -15,11 +16,7 @@ import java.lang.reflect.Field;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.SawimResources;
-import ru.sawim.ui.adapter.list.VirtualList;
-import ru.sawim.ui.widget.AnimationUtils;
-import ru.sawim.ui.widget.IcsLinearLayout;
 import ru.sawim.ui.widget.MyImageButton;
-import ru.sawim.ui.widget.SearchEditText;
 import ru.sawim.ui.widget.Util;
 import ru.sawim.ui.widget.SimpleItemView;
 
@@ -31,7 +28,7 @@ import ru.sawim.ui.widget.SimpleItemView;
  * To change this template use File | Settings | File Templates.
  */
 @SuppressLint("NewApi")
-public class ChatBarView extends IcsLinearLayout {
+public class ChatBarView extends LinearLayout {
 
     private static final int ITEM_VIEW_INDEX = 0;
     private static final int SEARCH_EDITTEXT_VIEW_INDEX = 1;
@@ -58,25 +55,33 @@ public class ChatBarView extends IcsLinearLayout {
         itemView.setPadding(padding * 2, padding, padding, padding);
         addViewInLayout(itemView, ITEM_VIEW_INDEX, labelLayoutParams);
 
-        EditText messageEditor = new EditText(getContext());
+        EditText searchEditor = new EditText(getContext());
         LinearLayout.LayoutParams messageEditorLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-        messageEditor.setBackgroundColor(Color.TRANSPARENT);
-        messageEditor.setHint("Search");
-        messageEditor.setHintTextColor(Color.LTGRAY);
-        messageEditor.setTextColor(Color.WHITE);
+        searchEditor.setBackgroundColor(Color.TRANSPARENT);
+        searchEditor.setHint("Search messages");
+        searchEditor.setHintTextColor(Color.LTGRAY);
+        searchEditor.setTextColor(Color.WHITE);
+        searchEditor.setSingleLine();
+        searchEditor.setInputType(searchEditor.getInputType() | EditorInfo.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            searchEditor.setImeOptions(EditorInfo.IME_FLAG_NO_FULLSCREEN | EditorInfo.IME_ACTION_SEARCH);
+            searchEditor.setTextIsSelectable(false);
+        } else {
+            searchEditor.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
+        }
         try {
             Field mCursorDrawableRes = TextView.class.getDeclaredField("mCursorDrawableRes");
             mCursorDrawableRes.setAccessible(true);
-            mCursorDrawableRes.set(messageEditor, R.drawable.search_carret);
+            mCursorDrawableRes.set(searchEditor, R.drawable.search_carret);
         } catch (Exception e) {
             //nothing to do
         }
         messageEditorLP.weight = 1;
-        addViewInLayout(messageEditor, SEARCH_EDITTEXT_VIEW_INDEX, messageEditorLP);
+        addViewInLayout(searchEditor, SEARCH_EDITTEXT_VIEW_INDEX, messageEditorLP);
 
         MyImageButton upBtn = new MyImageButton(getContext());
         upBtn.setImageResource(R.drawable.ic_expanded_dark);
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
         if (SawimApplication.isManyPane()) {
             lp.weight = 4;
         }
@@ -84,7 +89,7 @@ public class ChatBarView extends IcsLinearLayout {
 
         MyImageButton downBtn = new MyImageButton(getContext());
         downBtn.setImageResource(R.drawable.ic_collapsed_dark);
-        lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+        lp = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
         if (SawimApplication.isManyPane()) {
             lp.weight = 4;
         }
@@ -118,10 +123,10 @@ public class ChatBarView extends IcsLinearLayout {
         setVisibilityChatsImage(GONE);
         if (itemView != null)
             itemView.setVisibility(GONE);
-        EditText messageEditor = (EditText) getChildAt(SEARCH_EDITTEXT_VIEW_INDEX);
-        messageEditor.setVisibility(VISIBLE);
+        EditText searchEditor = (EditText) getChildAt(SEARCH_EDITTEXT_VIEW_INDEX);
+        searchEditor.setVisibility(VISIBLE);
         //AnimationUtils.circleRevealView(messageEditor);
-        messageEditor.requestFocus();
+        searchEditor.requestFocus();
 
         MyImageButton upBtn = (MyImageButton) getChildAt(SEARCH_UP_IMAGE_INDEX);
         upBtn.setOnClickListener(upBtnClickListener);

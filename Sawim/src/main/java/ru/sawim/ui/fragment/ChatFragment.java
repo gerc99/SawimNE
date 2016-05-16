@@ -27,7 +27,6 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.*;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -916,7 +915,7 @@ public class ChatFragment extends SawimFragment implements OnUpdateChat, Handler
             rosterFragment.update();
     }
 
-    private boolean searchTextFromMessage() {
+    private boolean searchTextFromMessage(final boolean up) {
         final String query = getTitleBar().getSearchEditText().getText().toString().toLowerCase();
         if (query.isEmpty()) return false;
         if (searchMessagePositions == null) {
@@ -925,23 +924,25 @@ public class ChatFragment extends SawimFragment implements OnUpdateChat, Handler
         final boolean positionsIsNtEmpty = !searchMessagePositions.isEmpty();
         final int oldCount = getMessagesAdapter().getItemCount();
         if (positionsIsNtEmpty) {
-            if (searchMessagePositionsCount <= 0) {
-                getMessagesAdapter().setQuery(query);
-                searchMessagePositionsCount = searchMessagePositions.size() - 1;
+            getMessagesAdapter().setQuery(query);
+            if (up) {
+                searchMessagePositionsCount++;
+            } else {
+                searchMessagePositionsCount--;
             }
-            if (searchMessagePositionsCount >= searchMessagePositions.size()) {
-                getMessagesAdapter().setQuery(query);
+            if (searchMessagePositionsCount < 0) {
+                searchMessagePositionsCount = searchMessagePositions.size() - 1;
+            } else if (searchMessagePositionsCount >= searchMessagePositions.size()) {
                 searchMessagePositionsCount = 0;
             }
-            final int position = searchMessagePositions.get(searchMessagePositionsCount) - 1;
-            //Log.e("searchTextFromMessage", position+" "+searchMessagePositionsCount+" "+oldCount);
+            final int position = searchMessagePositions.get(searchMessagePositionsCount);
             SawimApplication.getExecutor().execute(new Runnable() {
                 @Override
                 public void run() {
                     if (chat == null) return;
                     List<MessData> messDataList = null;
                     if (position > oldCount) {
-                        messDataList = chat.getHistory().addNextListMessages(chat, position, oldCount);
+                        messDataList = chat.getHistory().addNextListMessages(chat, position, getMessagesAdapter().getItem(0).getTime());
                     }
                     final List<MessData> finalMessDataList = messDataList;
                     if (getActivity() != null) {
@@ -994,18 +995,27 @@ public class ChatFragment extends SawimFragment implements OnUpdateChat, Handler
         getTitleBar().showSearch(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (searchTextFromMessage())
-                    searchMessagePositionsCount--;
+                searchTextFromMessage(true);
             }
         }, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (searchTextFromMessage())
-                    searchMessagePositionsCount++;
+                searchTextFromMessage(false);
             }
         });
 
         getMessagesAdapter().notifyDataSetChanged();
+
+        getTitleBar().getSearchEditText().setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (/*actionId == EditorInfo.IME_ACTION_SEARCH || */event != null && (event.getAction() == KeyEvent.ACTION_UP && event.getKeyCode() == KeyEvent.KEYCODE_SEARCH || event.getAction() == KeyEvent.ACTION_DOWN && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
+                    Util.hideKeyboard(getActivity());
+                    searchTextFromMessage(true);
+                }
+                return false;
+            }
+        });
     }
 
     private void destroySearchMode() {
@@ -1390,17 +1400,6 @@ public class ChatFragment extends SawimFragment implements OnUpdateChat, Handler
             String text = s.subSequence(0, s.length()).toString();
             if (sharingText != null && sharingText.equals(text)) {
                 sharingText = null;
-            }
-            if (isSearchMode) {
-                String query = text.toLowerCase();
-                if ((oldSearchQuery != null && !oldSearchQuery.isEmpty()) && query.isEmpty()) {
-                    oldSearchQuery = query;
-                    resetSearchMode(false);
-                } else if (oldSearchQuery != null && !oldSearchQuery.equals(query)) {
-                    oldSearchQuery = query;
-                    resetSearchMode(false);
-                    searchTextFromMessage();
-                }
             }
             if (getMessagesAdapter() != null && getMessagesAdapter().isMultiQuoteMode()) {
                 String clipBoardText = Clipboard.getClipBoardText(getActivity());
