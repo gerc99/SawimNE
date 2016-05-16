@@ -7,6 +7,8 @@ import android.content.res.TypedArray;
 import android.graphics.*;
 import android.graphics.drawable.Drawable;
 import android.media.ThumbnailUtils;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.ViewDragHelper;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.BackgroundColorSpan;
@@ -15,6 +17,8 @@ import android.util.TypedValue;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.LinearLayout;
+
+import java.lang.reflect.Field;
 
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
@@ -200,5 +204,27 @@ public class Util {
         int backgroundResource = typedArray.getResourceId(0, 0);
         view.setBackgroundResource(backgroundResource);
         typedArray.recycle();
+    }
+
+    public static void setDrawerLayoutSensitivity(DrawerLayout drawerLayout, int newEdgeSize) {
+        try {
+            // get dragger responsible for the dragging of the left drawer
+            Field draggerField = DrawerLayout.class.getDeclaredField("mLeftDragger");
+            draggerField.setAccessible(true);
+            ViewDragHelper vdh = (ViewDragHelper)draggerField.get(drawerLayout);
+
+            // get access to the private field which defines
+            // how far from the edge dragging can start
+            Field edgeSizeField = ViewDragHelper.class.getDeclaredField("mEdgeSize");
+            edgeSizeField.setAccessible(true);
+
+            //int origEdgeSize = (int)edgeSizeField.get(vdh);
+            //int newEdgeSize = (int) (origEdgeSize * 2);
+            edgeSizeField.setInt(vdh, newEdgeSize);
+
+        } catch (Exception e) {
+            // we unexpectedly failed - e.g. if internal implementation of
+            // either ViewDragHelper or DrawerLayout changed
+        }
     }
 }

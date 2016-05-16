@@ -141,6 +141,7 @@ public class ChatFragment extends SawimFragment implements OnUpdateChat, Handler
         chatViewLayout = new ChatViewRoot(activity, chatListsView, chatInputBarView);
         smileysPopup = new SmileysPopup((BaseActivity) activity, chatViewLayout);
         drawerLayout = new DrawerLayout(activity);
+        Util.setDrawerLayoutSensitivity(drawerLayout, SawimApplication.getInstance().getResources().getDisplayMetrics().widthPixels);
 
         ((BaseActivity) activity).setConfigurationChanged(this);
     }
