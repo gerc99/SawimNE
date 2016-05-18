@@ -134,12 +134,8 @@ public class XStatus {
                     xml += (StringConvertor.isEmpty(status) ? "" : "<show>" + status + "</show>");
                     xml += (StringConvertor.isEmpty(msg) ? "" : "<status>" + Util.xmlEscape(msg) + "</status>");
                     xml += ServerFeatures.getCaps();
-                    if (Vcard.myAvatarHash != null) {
-                        xml += "<x xmlns='vcard-temp:x:update'><photo>" + Vcard.myAvatarHash + "</photo></x>";
-                    }
                     xml += "</presence>";
                     connection.putPacketIntoQueue(xml);
-
                 }
             }
         }

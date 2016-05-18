@@ -16,8 +16,6 @@ public class Vcard {
 
     public static final String S_VCARD = "vCard";
 
-    public static String myAvatarHash = null;
-
     public static void saveVCard(XmppConnection connection, UserInfo userInfo) {
         if (null == userInfo.vCard) {
             userInfo.vCard = XmlNode.getEmptyVCard();
@@ -153,12 +151,6 @@ public class Vcard {
                 if (bs64photo != null) {
                     byte[] avatarBytes = Util.base64decode(bs64photo.value);
                     String avatarHash = StringConvertor.byteArrayToHexString(SHA1.calculate(avatarBytes));
-                    if (from.equals(connection.getXmpp().getUserId())) {
-                        if (myAvatarHash == null || !myAvatarHash.equals(avatarHash)) {
-                            myAvatarHash = avatarHash;
-                            connection.getXmpp().s_updateOnlineStatus();
-                        }
-                    }
                     if (c != null && c instanceof XmppServiceContact) {
                         XmppContact.SubContact sc = ((XmppServiceContact) c).getExistSubContact(Jid.getResource(from, null));
                         if (null != sc) {
@@ -176,12 +168,6 @@ public class Vcard {
                     }
                     listener.onLoaded(avatarHash, avatarBytes);
                 } else {
-                    if (from.equals(connection.getXmpp().getUserId())) {
-                        if (myAvatarHash != null) {
-                            myAvatarHash = null;
-                            connection.getXmpp().s_updateOnlineStatus();
-                        }
-                    }
                     if (c != null && c instanceof XmppServiceContact) {
                         XmppContact.SubContact sc = ((XmppServiceContact) c).getExistSubContact(Jid.getResource(from, null));
                         if (null != sc) {

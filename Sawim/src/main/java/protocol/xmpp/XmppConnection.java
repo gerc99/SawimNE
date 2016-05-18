@@ -543,7 +543,6 @@ public final class XmppConnection extends ClientConnection {
                     }
                     setProgress(80);
                     getXmpp().s_updateOnlineStatus();
-                    Vcard.requestVCard(this, fullJid_, "-", "---", null);
                     String xcode = Xmpp.xStatus.getCode(xmpp.getProfile().xstatusIndex);
                     if ((null != xcode) && !xcode.startsWith(XmppXStatus.XSTATUS_START)) {
                         XStatus.setXStatus(this);
@@ -1062,9 +1061,6 @@ public final class XmppConnection extends ClientConnection {
                 + (StringConvertor.isEmpty(msg) ? "" : "<status>" + Util.xmlEscape(msg) + "</status>")
                 + (0 < priority ? "<priority>" + priority + "</priority>" : "")
                 + ServerFeatures.getCaps();
-        if (Vcard.myAvatarHash != null) {
-            xml += "<x xmlns='vcard-temp:x:update'><photo>" + Vcard.myAvatarHash + "</photo></x>";
-        }
         xml += xXml + "</presence>";
         putPacketIntoQueue(xml);
         //if (!AutoAbsence.getInstance().isChangeStatus())
