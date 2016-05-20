@@ -27,6 +27,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.*;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -55,6 +56,7 @@ import ru.sawim.ui.fragment.menu.JuickMenu;
 import ru.sawim.ui.fragment.menu.MyMenu;
 import ru.sawim.ui.fragment.menu.MyMenuItem;
 import ru.sawim.ui.widget.FixedEditText;
+import ru.sawim.ui.widget.MyDrawerLayout;
 import ru.sawim.ui.widget.MyImageButton;
 import ru.sawim.ui.widget.MyListView;
 import ru.sawim.ui.widget.Util;
@@ -140,8 +142,8 @@ public class ChatFragment extends SawimFragment implements OnUpdateChat, Handler
         ChatInputBarView chatInputBarView = new ChatInputBarView(activity, menuButton, smileButton, messageEditor, sendButton);
         chatViewLayout = new ChatViewRoot(activity, chatListsView, chatInputBarView);
         smileysPopup = new SmileysPopup((BaseActivity) activity, chatViewLayout);
-        drawerLayout = new DrawerLayout(activity);
-        Util.setDrawerLayoutSensitivity(drawerLayout, SawimApplication.getInstance().getResources().getDisplayMetrics().widthPixels);
+        drawerLayout = new MyDrawerLayout(activity);
+        Util.setDrawerLayoutSensitivity(drawerLayout);
 
         ((BaseActivity) activity).setConfigurationChanged(this);
     }
@@ -1023,10 +1025,12 @@ public class ChatFragment extends SawimFragment implements OnUpdateChat, Handler
         isSearchMode = false;
         resetSearchMode(false);
         getTitleBar().hideSearch();
+        resetBar();
         updateChatIcon();
         if (getMessagesAdapter() != null) {
             getMessagesAdapter().notifyDataSetChanged();
         }
+        getActivity().supportInvalidateOptionsMenu();
     }
 
     private void destroyMultiCitationMode() {
@@ -1116,10 +1120,6 @@ public class ChatFragment extends SawimFragment implements OnUpdateChat, Handler
     MenuItem searchMenuItem;
 
     public void onOptionsItemSelected_(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            hasBack();
-            return;
-        }
         onOptionsItemSelected(item.getItemId());
     }
 

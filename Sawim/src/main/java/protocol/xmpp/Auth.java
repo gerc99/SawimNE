@@ -250,7 +250,7 @@ public class Auth {
         xmppSession.setSessionData(connection.fullJid_, streamNode.getId());
     }
 
-    private void setupSessionKeep(XmppConnection connection) throws SawimException {
+    public void setupSessionKeep(XmppConnection connection) throws SawimException {
         XmlNode rebindNode = new XmlNode(XmlConstants.S_IQ);
         rebindNode.setId(XmppConnection.generateId());
         rebindNode.setType(XmlConstants.S_SET);

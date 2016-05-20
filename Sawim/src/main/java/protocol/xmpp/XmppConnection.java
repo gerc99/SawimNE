@@ -301,6 +301,7 @@ public final class XmppConnection extends ClientConnection {
         socket.start();
 		if (getXmppSession().isRestored()) {
             usePong();
+            auth.setupSessionKeep(this);
             setProgress(100);
         } else {
             requestDiscoServerItems();

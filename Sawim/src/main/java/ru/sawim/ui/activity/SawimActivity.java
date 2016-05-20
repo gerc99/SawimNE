@@ -80,9 +80,6 @@ public class SawimActivity extends BaseActivity implements OnAccountsLoaded {
     private void handleIntent() {
         if (getIntent() == null || getIntent().getAction() == null) return;
         Intent intent = getIntent();
-        if (!SawimApplication.isManyPane()) {
-            setIntent(null);
-        }
         if (intent.getAction().startsWith(Intent.ACTION_SEND)) {
             FragmentManager fm = getSupportFragmentManager();
             for (int i = 0; i < fm.getBackStackEntryCount(); ++i) {
@@ -92,6 +89,9 @@ public class SawimActivity extends BaseActivity implements OnAccountsLoaded {
             if (rosterFragment != null)
                 rosterFragment.setMode(intent.getType().equals("text/plain") ? RosterFragment.MODE_SHARE_TEXT : RosterFragment.MODE_SHARE);
             return;
+        }
+        if (!SawimApplication.isManyPane()) {
+            setIntent(null);
         }
         if (ACTION_SHOW_LOGIN_WINDOW.equals(intent.getAction())) {
             StartWindowFragment newFragment = new StartWindowFragment();
@@ -326,7 +326,7 @@ public class SawimActivity extends BaseActivity implements OnAccountsLoaded {
                 && chatFragment.getDrawerToggle().onOptionsItemSelected(item)) {
             return true;
         }
-        if (item.getItemId() == android.R.id.home) back();
+        if (item.getItemId() == android.R.id.home) onBackPressed();
 
         if (virtualListFragment != null) {
             virtualListFragment.onOptionsItemSelected_(item);

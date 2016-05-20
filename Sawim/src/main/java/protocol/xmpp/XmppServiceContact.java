@@ -425,8 +425,8 @@ public class XmppServiceContact extends XmppContact {
     }
 
     public void activate(BaseActivity activity) {
+        super.activate(activity);
         if (isOnline() || isPrivate || hasChat()) {
-            super.activate(activity);
         } else if (isConference && RosterHelper.getInstance().getProtocol().isConnected()) {
             new ContactMenu(this).doAction(activity, ContactMenu.CONFERENCE_CONNECT);
         }

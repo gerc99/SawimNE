@@ -206,7 +206,7 @@ public class Util {
         typedArray.recycle();
     }
 
-    public static void setDrawerLayoutSensitivity(DrawerLayout drawerLayout, int newEdgeSize) {
+    public static void setDrawerLayoutSensitivity(DrawerLayout drawerLayout) {
         try {
             // get dragger responsible for the dragging of the left drawer
             Field draggerField = DrawerLayout.class.getDeclaredField("mLeftDragger");
@@ -218,8 +218,8 @@ public class Util {
             Field edgeSizeField = ViewDragHelper.class.getDeclaredField("mEdgeSize");
             edgeSizeField.setAccessible(true);
 
-            //int origEdgeSize = (int)edgeSizeField.get(vdh);
-            //int newEdgeSize = (int) (origEdgeSize * 2);
+            int origEdgeSize = (int)edgeSizeField.get(vdh);
+            int newEdgeSize = (int) (origEdgeSize * 3);
             edgeSizeField.setInt(vdh, newEdgeSize);
 
         } catch (Exception e) {
