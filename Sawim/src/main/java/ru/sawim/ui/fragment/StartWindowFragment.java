@@ -42,6 +42,7 @@ public class StartWindowFragment extends Fragment {
 
     OnAddListener addListener;
     int accountID = 0;
+    boolean isEdit;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -59,7 +60,7 @@ public class StartWindowFragment extends Fragment {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.start_window, container, false);
 
-        final boolean isEdit = Options.getAccountCount() > 0;
+        isEdit = Options.getAccountCount() > 0;
         final Button buttonChangePass = (Button) v.findViewById(R.id.change_password_btn);
         buttonChangePass.setVisibility(isEdit ? View.VISIBLE : View.GONE);
         buttonChangePass.setOnClickListener(new View.OnClickListener() {
@@ -226,9 +227,9 @@ public class StartWindowFragment extends Fragment {
     }
 
     private void back() {
-        if (Options.getAccountCount() > 0) {
-        //    getActivity().finish();
-        //    return;
+        if (isEdit && !SawimApplication.isManyPane()) {
+            getActivity().finish();
+            return;
         }
         if (SawimApplication.isManyPane())
             ((BaseActivity) getActivity()).recreateActivity();
