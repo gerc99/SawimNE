@@ -29,6 +29,7 @@ import protocol.Protocol;
 import protocol.xmpp.Xmpp;
 import ru.sawim.chat.ChatHistory;
 import ru.sawim.comm.JLocale;
+import ru.sawim.db.RealmDb;
 import ru.sawim.gcm.Preferences;
 import ru.sawim.io.*;
 import ru.sawim.modules.Answerer;
@@ -62,9 +63,6 @@ public class SawimApplication extends Application {
 
     public static final String LOG_TAG = SawimApplication.class.getSimpleName();
 
-    public static final String DATABASE_NAME = "sawim.db";
-    public static final int DATABASE_VERSION = 14;
-
     public static String NAME;
     public static String VERSION;
     public static final String PHONE = "Android/" + android.os.Build.MODEL
@@ -88,8 +86,6 @@ public class SawimApplication extends Application {
     private final NetworkStateReceiver networkStateReceiver = new NetworkStateReceiver();
     public boolean isBindService = false;
 
-    private DatabaseHelper databaseHelper;
-
     private Handler uiHandler;
     private ExecutorService backgroundExecutor;
     public static SSLContext sc;
@@ -110,12 +106,12 @@ public class SawimApplication extends Application {
         instance = this;
         NAME = getString(R.string.app_name);
         VERSION = getVersion();
+        //new ANRWatchDog().start();
         Thread.setDefaultUncaughtExceptionHandler(ExceptionHandler.inContext(getContext()));
         Fabric.with(this, new Crashlytics());
-        new ANRWatchDog().start();
         checkPlayServices = checkPlayServices();
     //    refWatcher = LeakCanary.install(this);
-        databaseHelper = new DatabaseHelper(getApplicationContext());
+        RealmDb.init(getApplicationContext());
 
         uiHandler = new Handler(Looper.getMainLooper());
         backgroundExecutor = Executors
@@ -332,10 +328,6 @@ public class SawimApplication extends Application {
 
     public static int getFontSize() {
         return fontSize;
-    }
-
-    public static DatabaseHelper getDatabaseHelper() {
-        return instance.databaseHelper;
     }
 
     /**

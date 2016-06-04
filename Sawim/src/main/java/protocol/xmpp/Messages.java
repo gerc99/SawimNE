@@ -257,7 +257,7 @@ public class Messages {
             return;
         }
         if (subject == null) {
-            message = new PlainMessage(from, connection.getXmpp(), time, text, !isOnlineMessage);
+            message = new PlainMessage(from, connection.getXmpp(), msg.getId(), time, text, !isOnlineMessage);
         } else if (!isGroupchat) {
             message = new SystemNotice(connection.getXmpp(), SystemNotice.SYS_NOTICE_MESSAGE, from, text);
         }
@@ -295,7 +295,7 @@ public class Messages {
             }
         }
         if (message != null) {
-            connection.getXmpp().addMessage(message, XmlConstants.S_HEADLINE.equals(type), isConference);
+            connection.getXmpp().addMessage(message, XmlConstants.S_HEADLINE.equals(type) || (xmlns != null && xmlns.equals("p1:pushed")), isConference);
         }
     }
 
@@ -339,7 +339,7 @@ public class Messages {
                 c = (XmppContact) connection.getXmpp().createTempContact(from, false);
                 connection.getXmpp().addLocalContact(c);
             }
-            Message message = new PlainMessage(from, isIncoming ? connection.getXmpp().getUserId() : from, time, text, !isOnlineMessage, !isIncoming);
+            Message message = new PlainMessage(from, isIncoming ? connection.getXmpp().getUserId() : from, msg.getId(), time, text, !isOnlineMessage, !isIncoming);
             message.setServerMsgId(serverMsgId);
             if (isGroupchat && fromRes != null) {
                 final XmppServiceContact conf = (XmppServiceContact) c;
@@ -425,7 +425,7 @@ public class Messages {
             }
         }
 
-        Message message = new PlainMessage(fullJid, isIncoming ? connection.getXmpp().getUserId() : fullJid, time, text, !isOnlineMessage, isIncoming);
+        Message message = new PlainMessage(fullJid, isIncoming ? connection.getXmpp().getUserId() : fullJid, msg.getId(), time, text, !isOnlineMessage, isIncoming);
         connection.getXmpp().addMessage(message, XmlConstants.S_HEADLINE.equals(type), isConference);
         return true;
     }
@@ -464,7 +464,7 @@ public class Messages {
 
         String date = getDate(msg);
         long time = (null == date) ? SawimApplication.getCurrentGmtTime() : parseTimestamp(date);
-        PlainMessage message = new PlainMessage(to, connection.getXmpp(), time, text, false);
+        PlainMessage message = new PlainMessage(to, connection.getXmpp(), msg.getId(), time, text, false);
         if (null != nick) {
             message.setName(('@' == nick.charAt(0)) ? nick.substring(1) : nick);
         }

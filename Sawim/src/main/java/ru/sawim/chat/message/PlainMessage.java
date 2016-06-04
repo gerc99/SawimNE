@@ -8,25 +8,24 @@ import ru.sawim.comm.JLocale;
 public class PlainMessage extends Message {
 
     private String text;
-    private String messageId;
     private boolean offline;
     public static final String CMD_WAKEUP = "/wakeup";
     public static final String CMD_ME = "/me ";
 
-    public PlainMessage(String contactUin, Protocol protocol, long date, String text, boolean offline) {
-        this(contactUin, protocol, date, text, offline, true);
+    public PlainMessage(String contactUin, Protocol protocol, String messageId, long date, String text, boolean offline) {
+        this(contactUin, protocol, messageId, date, text, offline, true);
     }
 
-    public PlainMessage(Protocol protocol, String rcvr, long date, String text) {
-        this(rcvr, protocol, date, text, false, false);
+    public PlainMessage(Protocol protocol, String rcvr, String messageId, long date, String text) {
+        this(rcvr, protocol, messageId, date, text, false, false);
     }
 
-    public PlainMessage(String contactUin, Protocol protocol, long date, String text, boolean offline, boolean isIncoming) {
-        this(contactUin, protocol.getUserId(), date, text, offline, isIncoming);
+    public PlainMessage(String contactUin, Protocol protocol, String messageId, long date, String text, boolean offline, boolean isIncoming) {
+        this(contactUin, protocol.getUserId(), messageId, date, text, offline, isIncoming);
     }
 
-    public PlainMessage(String contactUin, String myId, long date, String text, boolean offline, boolean isIncoming) {
-        super(date, myId, contactUin, isIncoming);
+    public PlainMessage(String contactUin, String myId, String messageId, long date, String text, boolean offline, boolean isIncoming) {
+        super(messageId, date, myId, contactUin, isIncoming);
         this.text = text;
         this.offline = offline;
     }
@@ -53,14 +52,6 @@ public class PlainMessage extends Message {
             }
         }
         return messageText;
-    }
-
-    public void setMessageId(String id) {
-        messageId = id;
-    }
-
-    public String getMessageId() {
-        return messageId;
     }
 }
 

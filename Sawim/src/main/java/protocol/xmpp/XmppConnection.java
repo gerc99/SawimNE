@@ -91,10 +91,10 @@ public final class XmppConnection extends ClientConnection {
     public void setProgress(int percent) {
         getXmpp().setConnectingProgress(percent);
         if (percent == 100) {
-            List<PlainMessage> messages = HistoryStorage.getNotSendedMessages();
-            for (PlainMessage message : messages) {
+            //List<PlainMessage> messages = HistoryStorage.getNotSendedMessages();
+            //for (PlainMessage message : messages) {
                 //getXmpp().sendSomeMessage(message);
-            }
+            //}
         }
     }
 
@@ -733,7 +733,7 @@ public final class XmppConnection extends ClientConnection {
         } else if (("alarm").equals(queryName)) {
             String jid = getXmpp().getItemByUID(Jid.getBareJid(from)).isConference() ? from : Jid.getBareJid(from);
             PlainMessage message = new PlainMessage(jid, getProtocol(),
-                    SawimApplication.getCurrentGmtTime(), PlainMessage.CMD_WAKEUP, false);
+                    String.valueOf(Util.uniqueValue()), SawimApplication.getCurrentGmtTime(), PlainMessage.CMD_WAKEUP, false);
             getXmpp().addMessage(message);
         }
         if (XmlConstants.IQ_TYPE_GET == iqType) {

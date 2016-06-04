@@ -64,9 +64,9 @@ public class RosterAdapter extends RecyclerView.Adapter<RosterAdapter.ViewHolder
             query = query.toLowerCase();
             if (originalContactList.isEmpty()) {
                 Protocol p = RosterHelper.getInstance().getProtocol();
-                    for (Contact contact : p.getContactItems().values()) {
-                        originalContactList.add(contact);
-                    }
+                for (Contact contact : p.getContactItems().values()) {
+                    originalContactList.add(contact);
+                }
             }
             for (Contact contact : originalContactList) {
                 boolean isSearch = contact.getText().toLowerCase().contains(query);

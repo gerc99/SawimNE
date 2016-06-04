@@ -18,6 +18,7 @@ public abstract class Message {
     public static final int NOTIFY_FROM_SERVER = ICON_OUT_MSG_FROM_SERVER;
     public static final int NOTIFY_FROM_CLIENT = ICON_OUT_MSG_FROM_CLIENT;
 
+    private String messageId;
     private boolean isIncoming;
     private String contactId;
     private String myId;
@@ -41,7 +42,8 @@ public abstract class Message {
         return null;
     }
 
-    protected Message(long date, String myId, String contactId, boolean isIncoming) {
+    protected Message(String messageId, long date, String myId, String contactId, boolean isIncoming) {
+        this.messageId = messageId;
         this.newDate = date;
         this.myId = myId;
         this.contactId = contactId;
@@ -100,5 +102,9 @@ public abstract class Message {
 
     public String getServerMsgId() {
         return serverMsgId;
+    }
+
+    public String getMessageId() {
+        return messageId;
     }
 }

@@ -715,7 +715,7 @@ abstract public class Protocol {
                 RosterHelper.getInstance().updateRoster(contact);
             }
         }
-        if (!isWakeUp) {
+        if (!isWakeUp && !silent) {
             if (!chat.isVisibleChat()) {
                 SawimApplication.getInstance().sendNotify(notifyMessage && !chat.isVisibleChat());
             }
@@ -829,8 +829,7 @@ abstract public class Protocol {
         if (StringConvertor.isEmpty(msg)) {
             return;
         }
-        PlainMessage plainMsg = new PlainMessage(this, to.getUserId(), SawimApplication.getCurrentGmtTime(), msg);
-        plainMsg.setMessageId(String.valueOf(Util.uniqueValue()));
+        PlainMessage plainMsg = new PlainMessage(this, to.getUserId(), String.valueOf(Util.uniqueValue()), SawimApplication.getCurrentGmtTime(), msg);
         if (isConnected()) {
             if (msg.startsWith("/") && !msg.startsWith("/me ") && !msg.startsWith("/wakeup") && (to instanceof XmppContact)) {
                 boolean cmdExecuted = ((XmppContact) to).execCommand(this, msg);
@@ -849,8 +848,7 @@ abstract public class Protocol {
     }
 
     public final void sendMessage(Chat chat, String messText) {
-        PlainMessage plainMsg = new PlainMessage(this, chat.getContact().getUserId(), SawimApplication.getCurrentGmtTime(), messText);
-        plainMsg.setMessageId(String.valueOf(Util.uniqueValue()));
+        PlainMessage plainMsg = new PlainMessage(this, chat.getContact().getUserId(), String.valueOf(Util.uniqueValue()), SawimApplication.getCurrentGmtTime(), messText);
         chat.addMessage(plainMsg, true, false, false);
         sendSomeMessage(plainMsg);
     }

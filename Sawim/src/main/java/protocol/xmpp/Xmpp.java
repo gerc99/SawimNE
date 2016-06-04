@@ -1,7 +1,5 @@
 package protocol.xmpp;
 
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 import android.content.DialogInterface;
 import android.provider.Settings;
@@ -9,7 +7,6 @@ import android.widget.Toast;
 import protocol.*;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
-import ru.sawim.gcm.Preferences;
 import ru.sawim.ui.activity.BaseActivity;
 import ru.sawim.chat.message.PlainMessage;
 import ru.sawim.comm.JLocale;

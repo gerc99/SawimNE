@@ -14,9 +14,6 @@ import android.widget.EditText;
 import android.widget.ListView;
 import protocol.Protocol;
 import ru.sawim.R;
-import ru.sawim.comm.StringConvertor;
-import ru.sawim.io.BlobStorage;
-import ru.sawim.io.DatabaseHelper;
 import ru.sawim.ui.adapter.XStatusesAdapter;
 
 /**
@@ -85,16 +82,16 @@ public class XStatusesFragment extends DialogFragment {
     }
 
     private void load() {
-        try {
+    /*    try {
             BlobStorage storage = new BlobStorage(DatabaseHelper.TABLE_ANSWERER);
             storage.loadXStatuses(xst_titles, xst_descs);
             storage.close();
         } catch (Exception ignored) {
-        }
+        }*/
     }
 
     private final void setXStatus(int xstatus, String title, String desc) {
-        if (0 <= xstatus) {
+        /*if (0 <= xstatus) {
             xst_titles[xstatus] = StringConvertor.notNull(title);
             xst_descs[xstatus] = StringConvertor.notNull(desc);
             try {
@@ -104,6 +101,6 @@ public class XStatusesFragment extends DialogFragment {
             } catch (Exception ignored) {
             }
         }
-        protocol.setXStatus(xstatus, title, desc);
+        protocol.setXStatus(xstatus, title, desc);*/
     }
 }

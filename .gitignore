@@ -1,8 +1,9 @@
+/*.apk
 out/*
 gen/*
 .idea/*
 build/*
 .gradle/*
 *.iml
+/captures
 keystore.properties
-SawimNE.apk

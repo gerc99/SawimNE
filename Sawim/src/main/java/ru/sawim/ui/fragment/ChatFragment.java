@@ -34,6 +34,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
 
 import protocol.xmpp.*;
+import ru.sawim.io.RosterStorage;
 import ru.sawim.listener.OnMoreMessagesLoaded;
 import ru.sawim.listener.OnUpdateChat;
 import protocol.Contact;
@@ -597,6 +598,7 @@ public class ChatFragment extends SawimFragment implements OnUpdateChat, Handler
         }
         boolean isConference = chat.getContact() instanceof XmppServiceContact && chat.getContact().isConference();
         if (isConference) {
+            new RosterStorage().loadSubContacts((XmppContact) chat.getContact());
             mucUsersFragment = new MucUsersFragment();
             mucUsersFragment.show(this, nickList);
         } else {

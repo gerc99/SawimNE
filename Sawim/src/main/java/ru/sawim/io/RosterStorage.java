@@ -1,19 +1,20 @@
 package ru.sawim.io;
 
-import android.content.ContentValues;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
-import protocol.Contact;
+import io.realm.Realm;
 import protocol.Group;
 import protocol.Protocol;
 import protocol.Roster;
 import protocol.StatusInfo;
 import protocol.xmpp.XmppContact;
 import protocol.xmpp.XmppServiceContact;
-import ru.sawim.SawimApplication;
 import ru.sawim.chat.Chat;
-import ru.sawim.modules.DebugLog;
+import ru.sawim.db.RealmDb;
+import ru.sawim.db.model.Contact;
+import ru.sawim.db.model.SubContact;
 import ru.sawim.roster.RosterHelper;
 
 /**
@@ -21,54 +22,7 @@ import ru.sawim.roster.RosterHelper;
  */
 public class RosterStorage {
 
-    private static final String WHERE_ACC_CONTACT_ID = DatabaseHelper.ACCOUNT_ID + " = ? AND " + DatabaseHelper.CONTACT_ID + " = ?";
-    private static final String WHERE_ACCOUNT_ID = DatabaseHelper.ACCOUNT_ID + " = ?";
-    private static final String WHERE_CONTACT_ID = DatabaseHelper.CONTACT_ID + " = ?";
-    private static final String WHERE_SUBCONTACT_RESOURCE = DatabaseHelper.CONTACT_ID + " = ? AND " +
-                                                            DatabaseHelper.SUB_CONTACT_RESOURCE + " = ?";
-
-    public static final String storeName = "roster";
-    public static final String subContactsTable = "subcontacts";
-
-    SqlAsyncTask thread = new SqlAsyncTask("RosterStorage");
-
     public RosterStorage() {
-        final String CREATE_ROSTER_TABLE = "create table if not exists "
-                + storeName + " ("
-                + DatabaseHelper.ROW_AUTO_ID + " integer primary key autoincrement, "
-                + DatabaseHelper.ACCOUNT_ID + " text not null, "
-                + DatabaseHelper.GROUP_NAME + " text not null, "
-                + DatabaseHelper.GROUP_ID + " int, "
-                + DatabaseHelper.GROUP_IS_EXPAND + " int, "
-                + DatabaseHelper.CONTACT_ID + " text not null, "
-                + DatabaseHelper.CONTACT_NAME + " text not null, "
-                + DatabaseHelper.STATUS + " int, "
-                + DatabaseHelper.STATUS_TEXT + " text, "
-                + DatabaseHelper.AVATAR_HASH + " text, "
-                + DatabaseHelper.FIRST_SERVER_MESSAGE_ID + " text, "
-                + DatabaseHelper.IS_CONFERENCE + " int, "
-                + DatabaseHelper.CONFERENCE_MY_NAME + " text, "
-                + DatabaseHelper.CONFERENCE_IS_AUTOJOIN + " int, "
-                + DatabaseHelper.ROW_DATA + " int, "
-                + DatabaseHelper.UNREAD_MESSAGES_COUNT + " int);";
-
-        final String CREATE_SUB_CONTACTS_TABLE = "create table if not exists "
-                + subContactsTable + " ("
-                + DatabaseHelper.CONTACT_ID + " text not null, "
-                + DatabaseHelper.SUB_CONTACT_RESOURCE + " text, "
-                + DatabaseHelper.AVATAR_HASH + " text, "
-                + DatabaseHelper.SUB_CONTACT_STATUS + " int, "
-                + DatabaseHelper.STATUS_TEXT + " text, "
-                + DatabaseHelper.SUB_CONTACT_PRIORITY + " int, "
-                + DatabaseHelper.SUB_CONTACT_PRIORITY_A + " int);";
-
-        thread.execute(new SqlAsyncTask.OnTaskListener() {
-            @Override
-            public void run() {
-                SawimApplication.getDatabaseHelper().getWritableDatabase().execSQL(CREATE_ROSTER_TABLE);
-                SawimApplication.getDatabaseHelper().getWritableDatabase().execSQL(CREATE_SUB_CONTACTS_TABLE);
-            }
-        });
     }
 
     public synchronized void load(Protocol protocol) {
@@ -77,440 +31,282 @@ public class RosterStorage {
             roster = new Roster();
             protocol.setRoster(roster);
         }
-        Cursor cursor = null;
-        try {
-            cursor = SawimApplication.getDatabaseHelper().getReadableDatabase().query(storeName, null, WHERE_ACCOUNT_ID,
-                    new String[]{protocol.getUserId()}, null, null, null);
-            if (cursor.moveToFirst()) {
-                do {
-                    Contact contact = getContact(protocol, cursor);
-                    roster.getContactItems().put(contact.getUserId(), contact);
-                } while (cursor.moveToNext());
-            }
-        } catch (Exception e) {
-            DebugLog.panic(e);
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
+        Realm realmDb = RealmDb.realm();
+        List<Contact> localContacts = realmDb.where(Contact.class).findAll();
+        for (Contact localContact : localContacts) {
+            protocol.Contact contact = getContact(protocol, localContact);
+            roster.getContactItems().put(contact.getUserId(), contact);
         }
+        realmDb.close();
         protocol.setRoster(roster);
     }
 
-    public Contact getContact(Protocol protocol, Cursor cursor) {
-        String account = cursor.getString(cursor.getColumnIndex(DatabaseHelper.ACCOUNT_ID));
-        String groupName = cursor.getString(cursor.getColumnIndex(DatabaseHelper.GROUP_NAME));
-        int groupId = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.GROUP_ID));
-        boolean groupIsExpand = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.GROUP_IS_EXPAND)) == 1;
-        String userId = cursor.getString(cursor.getColumnIndex(DatabaseHelper.CONTACT_ID));
-        String userName = cursor.getString(cursor.getColumnIndex(DatabaseHelper.CONTACT_NAME));
-        int status = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.STATUS));
-        String statusText = cursor.getString(cursor.getColumnIndex(DatabaseHelper.STATUS_TEXT));
-        String avatarHash = cursor.getString(cursor.getColumnIndex(DatabaseHelper.AVATAR_HASH));
-        String firstServerMsgId = cursor.getString(cursor.getColumnIndex(DatabaseHelper.FIRST_SERVER_MESSAGE_ID));
+    public List<protocol.Contact> getContacts(Protocol protocol) {
+        Realm realmDb = RealmDb.realm();
+        List<Contact> localContacts = realmDb.where(Contact.class).findAll();
+        List<protocol.Contact> contacts = new ArrayList<>();
+        for (Contact localContact : localContacts) {
+            contacts.add(getContact(protocol, localContact));
+        }
+        realmDb.close();
+        return contacts;
+    }
 
-        boolean isConference = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.IS_CONFERENCE)) == 1;
-        String conferenceMyNick = cursor.getString(cursor.getColumnIndex(DatabaseHelper.CONFERENCE_MY_NAME));
-        boolean conferenceIsAutoJoin = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.CONFERENCE_IS_AUTOJOIN)) == 1;
+    public protocol.Contact getContact(Protocol protocol, String uniqueUserId) {
+        Realm realmDb = RealmDb.realm();
+        Contact localContact = realmDb.where(Contact.class).equalTo("contactId", uniqueUserId).findFirst();
+        protocol.Contact contact = null;
+        if (localContact != null) {
+            contact = getContact(protocol, localContact);
+        }
+        realmDb.close();
+        return localContact == null ? null : contact;
+    }
 
-        byte booleanValues = (byte) cursor.getInt(cursor.getColumnIndex(DatabaseHelper.ROW_DATA));
-
-        Group group = protocol.getGroupItems().get(groupId);
+    public protocol.Contact getContact(Protocol protocol, Contact localContact) {
+        Group group = protocol.getGroupItems().get(localContact.getGroupId());
         if (group == null) {
-            group = protocol.createGroup(groupName);
-            group.setExpandFlag(groupIsExpand);
-            protocol.getGroupItems().put(groupId, group);
+            group = protocol.createGroup(localContact.getGroupName() == null ? "not" : localContact.getGroupName());
+            //group.setExpandFlag(groupIsExpand);
+            protocol.getGroupItems().put(localContact.getGroupId(), group);
         }
 
-        Contact contact = protocol.getItemByUID(userId);
+        protocol.Contact contact = protocol.getItemByUID(localContact.getContactId());
         if (contact == null) {
-            contact = protocol.createContact(userId, userName, isConference);
+            contact = protocol.createContact(localContact.getContactId(), localContact.getContactName(), localContact.isConference());
         }
-        contact.firstServerMsgId = firstServerMsgId;
-        contact.avatarHash = avatarHash;
-        contact.setStatus((byte) status, statusText);
-        contact.setGroupId(groupId);
-        contact.setBooleanValues(booleanValues);
+        contact.firstServerMsgId = localContact.getFirstServerMessageId();
+        contact.avatarHash = localContact.getAvatarHash();
+        contact.setStatus((byte) localContact.getStatus(), localContact.getStatusText());
+        contact.setGroupId(localContact.getGroupId());
+        contact.setBooleanValues(localContact.getData());
         if (contact instanceof XmppContact) {
-            XmppContact xmppContact = (XmppContact)contact;
-            loadSubContacts(xmppContact);
+        //    XmppContact xmppContact = (XmppContact)contact;
+        //    loadSubContacts(xmppContact);
         }
-        if (isConference) {
+        if (localContact.isConference()) {
             XmppServiceContact serviceContact = (XmppServiceContact) contact;
-            serviceContact.setMyName(conferenceMyNick);
-            serviceContact.setAutoJoin(conferenceIsAutoJoin);
+            serviceContact.setMyName(localContact.getConferenceMyName());
+            serviceContact.setAutoJoin(localContact.isConferenceIsAutoJoin());
             serviceContact.setConference(true);
         }
-        protocol.getContactItems().put(contact.getUserId(), contact);
+        protocol.getRoster().getContactItems().put(contact.getUserId(), contact);
         RosterHelper.getInstance().updateGroup(protocol, group);
         return contact;
     }
 
     public void loadSubContacts(XmppContact xmppContact) {
-        Cursor cursor = null;
-        try {
-            cursor = SawimApplication.getDatabaseHelper().getReadableDatabase().query(subContactsTable, null, WHERE_CONTACT_ID,
-                    new String[]{xmppContact.getUserId()}, null, null, null);
-            if (cursor.moveToFirst()) {
-                do {
-                    String subcontactRes = cursor.getString(cursor.getColumnIndex(DatabaseHelper.SUB_CONTACT_RESOURCE));
-                    int subcontactStatus = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.SUB_CONTACT_STATUS));
-                    String statusText = cursor.getString(cursor.getColumnIndex(DatabaseHelper.STATUS_TEXT));
-                    int subcontactPriority = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.SUB_CONTACT_PRIORITY));
-                    int subcontactPriorityA = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.SUB_CONTACT_PRIORITY_A));
-                    String avatarHash = cursor.getString(cursor.getColumnIndex(DatabaseHelper.AVATAR_HASH));
-                    if (subcontactRes != null) {
-                        XmppServiceContact.SubContact subContact = xmppContact.subcontacts.get(subcontactRes);
-                        if (subContact == null) {
-                            subContact = new XmppContact.SubContact();
-                            subContact.resource = subcontactRes;
-                            subContact.status = (byte) subcontactStatus;
-                            subContact.statusText = statusText;
-                            subContact.priority = (byte) subcontactPriority;
-                            subContact.priorityA = (byte) subcontactPriorityA;
-                            subContact.avatarHash = avatarHash;
-                            xmppContact.subcontacts.put(subcontactRes, subContact);
-                        }
-                    }
-                } while (cursor.moveToNext());
-            }
-        } catch (Exception e) {
-            DebugLog.panic(e);
-        } finally {
-            if (cursor != null) {
-                cursor.close();
+        Realm realmDb = RealmDb.realm();
+        List<SubContact> subContacts = realmDb.where(SubContact.class).equalTo("contactId", xmppContact.getUserId()).findAll();
+        for (int i = 0; i < subContacts.size(); i++) {
+            SubContact localSubContact = subContacts.get(i);
+            if (localSubContact.getResource() != null) {
+                XmppServiceContact.SubContact subContact = xmppContact.subcontacts.get(localSubContact.getResource());
+                if (subContact == null) {
+                    subContact = new XmppContact.SubContact();
+                    subContact.resource = localSubContact.getResource();
+                    subContact.status = localSubContact.getStatus();
+                    subContact.statusText = localSubContact.getStatusText();
+                    subContact.priority = localSubContact.getPriority();
+                    subContact.priorityA = localSubContact.getPriorityA();
+                    subContact.avatarHash = localSubContact.getAvatarHash();
+                    subContact.client = localSubContact.getClient();
+                    xmppContact.subcontacts.put(localSubContact.getResource(), subContact);
+                }
             }
         }
+        realmDb.close();
     }
 
-    public void save(final Protocol protocol, final Contact contact, Group group) {
+    public void save(final Protocol protocol, final protocol.Contact contact, Group group) {
         if (group == null) {
             group = protocol.getNotInListGroup();
         }
-        //Log.e("save", contact.getUserId()+" "+protocol.getStatusInfo().getName(contact.getStatusIndex()));
-        final Group finalGroup = group;
-        thread.execute(new SqlAsyncTask.OnTaskListener() {
-            @Override
-            public void run() {
-                Cursor cursor = null;
-                try {
-                    SQLiteDatabase sqLiteDatabase = SawimApplication.getDatabaseHelper().getWritableDatabase();
-                    cursor = sqLiteDatabase.query(storeName,
-                            new String[]{DatabaseHelper.ACCOUNT_ID, DatabaseHelper.CONTACT_ID},
-                            WHERE_ACC_CONTACT_ID, new String[]{protocol.getUserId(), contact.getUserId()}, null, null, null);
-                    if (cursor != null && cursor.getCount() > 0) {
-                        sqLiteDatabase.update(storeName, getRosterValues(protocol, finalGroup, contact),
-                                WHERE_ACC_CONTACT_ID, new String[]{protocol.getUserId(), contact.getUserId()});
-                    } else {
-                        sqLiteDatabase.insert(storeName, null, getRosterValues(protocol, finalGroup, contact));
-                    }
-                } catch (Exception e) {
-                    DebugLog.panic(e);
-                } finally {
-                    if (cursor != null) {
-                        cursor.close();
-                    }
-                }
-            }
-        });
+        Contact localContact = new Contact();
+        localContact.setContactId(contact.getUserId());
+        localContact.setContactName(contact.getName());
+        localContact.setGroupId(contact.getGroupId());
+        localContact.setGroupName(group.getName());
+        localContact.setStatus(contact.getStatusIndex());
+        localContact.setStatusText(contact.getStatusText());
+        //localContact.setFirstServerMessageId(contact.get());
+        if (contact.isConference()) {
+            XmppServiceContact serviceContact = (XmppServiceContact) contact;
+            localContact.setConferenceMyName(serviceContact.getMyName());
+            localContact.setConferenceIsAutoJoin(serviceContact.isAutoJoin());
+            localContact.setConference(true);
+        }
+        localContact.setData(contact.getBooleanValues());
+        RealmDb.save(localContact);
     }
 
     public void save(final XmppContact contact, final XmppServiceContact.SubContact subContact) {
-        thread.execute(new SqlAsyncTask.OnTaskListener() {
-            @Override
-            public void run() {
-                Cursor cursor = null;
-                try {
-                    SQLiteDatabase sqLiteDatabase = SawimApplication.getDatabaseHelper().getWritableDatabase();
-                    cursor = sqLiteDatabase.query(subContactsTable, null, WHERE_SUBCONTACT_RESOURCE,
-                                                  new String[] {contact.getUserId(), subContact.resource}, null, null,
-                                                  null);
-                    if (cursor != null && cursor.getCount() > 0) {
-                        sqLiteDatabase.update(subContactsTable, getSubContactsValues(contact, subContact),
-                                WHERE_SUBCONTACT_RESOURCE,
-                                new String[]{contact.getUserId(), subContact.resource});
-                    } else {
-                        sqLiteDatabase.insert(subContactsTable, null, getSubContactsValues(contact, subContact));
-                    }
-                } catch (Exception e) {
-                    DebugLog.panic(e);
-                } finally {
-                    if (cursor != null) {
-                        cursor.close();
-                    }
-                }
-            }
-        });
+        SubContact localSubContact = new SubContact();
+        localSubContact.setContactId(contact.getUserId());
+        localSubContact.setResource(subContact.resource);
+        localSubContact.setStatus(subContact.status);
+        localSubContact.setStatusText(subContact.statusText);
+        localSubContact.setPriority(subContact.priority);
+        localSubContact.setPriorityA(subContact.priorityA);
+        localSubContact.setAvatarHash(subContact.avatarHash);
+        localSubContact.setClient(subContact.client);
+        RealmDb.save(localSubContact);
     }
 
-    public void delete(final Contact contact, final XmppServiceContact.SubContact subContact) {
+    public void delete(final protocol.Contact contact, final XmppServiceContact.SubContact subContact) {
         if (subContact == null) {
             return;
         }
-
-        thread.execute(new SqlAsyncTask.OnTaskListener() {
+        RealmDb.realm().executeTransactionAsync(new Realm.Transaction() {
             @Override
-            public void run() {
-                try {
-                    SQLiteDatabase sqLiteDatabase = SawimApplication.getDatabaseHelper().getWritableDatabase();
-                    sqLiteDatabase.delete(subContactsTable, WHERE_SUBCONTACT_RESOURCE,
-                                          new String[] {contact.getUserId(), subContact.resource});
-                } catch (Exception e) {
-                    DebugLog.panic(e);
-                }
+            public void execute(Realm realm) {
+                realm.where(SubContact.class).equalTo("contactId", contact.getUserId()).equalTo("resource", subContact.resource).findAll().deleteAllFromRealm();
             }
         });
     }
 
-    public void deleteContact(final Protocol protocol, final Contact contact) {
-        thread.execute(new SqlAsyncTask.OnTaskListener() {
+    public void deleteContact(final Protocol protocol, final protocol.Contact contact) {
+        RealmDb.realm().executeTransactionAsync(new Realm.Transaction() {
             @Override
-            public void run() {
-                SQLiteDatabase sqLiteDatabase = SawimApplication.getDatabaseHelper().getWritableDatabase();
-                sqLiteDatabase.delete(storeName, WHERE_ACC_CONTACT_ID, new String[]{protocol.getUserId(), contact.getUserId()});
+            public void execute(Realm realm) {
+                realm.where(Contact.class).equalTo("contactId", contact.getUserId()).findAll().deleteAllFromRealm();
             }
         });
     }
 
     public void deleteGroup(final Protocol protocol, final Group group) {
-        thread.execute(new SqlAsyncTask.OnTaskListener() {
+        RealmDb.realm().executeTransactionAsync(new Realm.Transaction() {
             @Override
-            public void run() {
-                SQLiteDatabase sqLiteDatabase = SawimApplication.getDatabaseHelper().getWritableDatabase();
-                for (Contact contact : group.getContacts()) {
-                    sqLiteDatabase.delete(storeName, DatabaseHelper.ACCOUNT_ID + "= ?" + " and " + DatabaseHelper.GROUP_ID + "= ?",
-                            new String[]{protocol.getUserId(), String.valueOf(group.getGroupId())});
-                }
+            public void execute(Realm realm) {
+                realm.where(Contact.class).equalTo("groupId", group.getGroupId()).findAll().deleteAllFromRealm();
             }
         });
     }
 
     public void updateGroup(final Protocol protocol, final Group group) {
-        thread.execute(new SqlAsyncTask.OnTaskListener() {
+        RealmDb.realm().executeTransactionAsync(new Realm.Transaction() {
             @Override
-            public void run() {
-                SQLiteDatabase sqLiteDatabase = SawimApplication.getDatabaseHelper().getWritableDatabase();
-                for (Contact contact : group.getContacts()) {
-                    ContentValues values = new ContentValues();
-                    values.put(DatabaseHelper.GROUP_ID, group.getGroupId());
-                    values.put(DatabaseHelper.GROUP_NAME, group.getName());
-                    sqLiteDatabase.update(storeName, values, WHERE_ACC_CONTACT_ID, new String[]{protocol.getUserId(), contact.getUserId()});
+            public void execute(Realm realm) {
+                for (protocol.Contact contact : group.getContacts()) {
+                    Contact localContact = new Contact();
+                    localContact.setContactId(contact.getUserId());
+                    localContact.setContactName(contact.getName());
+                    localContact.setGroupId(group.getGroupId());
+                    localContact.setGroupName(group.getName());
+                    realm.copyToRealmOrUpdate(localContact);
                 }
             }
         });
     }
 
     public void addGroup(final Protocol protocol, final Group group) {
-        thread.execute(new SqlAsyncTask.OnTaskListener() {
+        RealmDb.realm().executeTransactionAsync(new Realm.Transaction() {
             @Override
-            public void run() {
-                SQLiteDatabase sqLiteDatabase = SawimApplication.getDatabaseHelper().getWritableDatabase();
-                for (Contact contact : group.getContacts()) {
-                    //Log.e("addGroup", contact.getUserId()+" "+protocol.getStatusInfo().getName(contact.getStatusIndex()));
-                    sqLiteDatabase.insert(storeName, null, getRosterValues(protocol, group, contact));
+            public void execute(Realm realm) {
+                for (protocol.Contact contact : group.getContacts()) {
+                    Contact localContact = new Contact();
+                    localContact.setContactId(contact.getUserId());
+                    localContact.setContactName(contact.getName());
+                    localContact.setGroupId(group.getGroupId());
+                    localContact.setGroupName(group.getName());
+                    realm.copyToRealmOrUpdate(localContact);
                 }
             }
         });
     }
 
     public void setOfflineStatuses(final Protocol protocol) {
-        thread.execute(new SqlAsyncTask.OnTaskListener() {
+        final Collection<protocol.Contact> localContacts = protocol.getRoster().getContactItems().values();
+        RealmDb.realm().executeTransactionAsync(new Realm.Transaction() {
             @Override
-            public void run() {
-                SQLiteDatabase sqLiteDatabase = SawimApplication.getDatabaseHelper().getWritableDatabase();
-                for (Contact contact : protocol.getContactItems().values()) {
-                    ContentValues values = new ContentValues();
-                    values.put(DatabaseHelper.STATUS, StatusInfo.STATUS_OFFLINE);
+            public void execute(Realm realm) {
+                for (protocol.Contact contact : localContacts) {
+                    Contact localContact = new Contact();
+                    localContact.setContactId(contact.getUserId());
+                    localContact.setStatus(StatusInfo.STATUS_OFFLINE);
+                    realm.copyToRealmOrUpdate(localContact);
                     if (contact instanceof XmppContact) {
-                        sqLiteDatabase.delete(
-                                subContactsTable,
-                                WHERE_CONTACT_ID,
-                                new String[]{contact.getUserId()});
+                        realm.where(SubContact.class).equalTo("contactId", contact.getUserId()).findAll().deleteAllFromRealm();
                     }
-                    sqLiteDatabase.update(storeName, values, WHERE_ACC_CONTACT_ID, new String[]{protocol.getUserId(), contact.getUserId()});
                 }
             }
         });
+
     }
 
-    private ContentValues getRosterValues(Protocol protocol, Group group, Contact contact) {
-        ContentValues values = new ContentValues();
-        values.put(DatabaseHelper.ACCOUNT_ID, protocol.getUserId());
-        values.put(DatabaseHelper.GROUP_ID, group.getGroupId());
-        values.put(DatabaseHelper.GROUP_NAME, group.getName());
-        values.put(DatabaseHelper.GROUP_IS_EXPAND, group.isExpanded() ? 1 : 0);
-
-        values.put(DatabaseHelper.CONTACT_ID, contact.getUserId());
-        values.put(DatabaseHelper.CONTACT_NAME, contact.getName());
-        values.put(DatabaseHelper.STATUS, contact.getStatusIndex());
-        values.put(DatabaseHelper.STATUS_TEXT, contact.getStatusText());
-        values.put(DatabaseHelper.IS_CONFERENCE, contact.isConference() ? 1 : 0);
-        if (contact.isConference()) {
-            XmppServiceContact serviceContact = (XmppServiceContact) contact;
-            values.put(DatabaseHelper.CONFERENCE_MY_NAME, serviceContact.getMyName());
-            values.put(DatabaseHelper.CONFERENCE_IS_AUTOJOIN, serviceContact.isAutoJoin() ? 1 : 0);
-        }
-        values.put(DatabaseHelper.ROW_DATA, contact.getBooleanValues());
-        return values;
-    }
-
-    public ContentValues getSubContactsValues(XmppContact contact, XmppServiceContact.SubContact subContact) {
-        ContentValues values = new ContentValues();
-        values.put(DatabaseHelper.CONTACT_ID, contact.getUserId());
-        values.put(DatabaseHelper.SUB_CONTACT_RESOURCE, subContact.resource);
-        values.put(DatabaseHelper.SUB_CONTACT_STATUS, subContact.status);
-        values.put(DatabaseHelper.STATUS_TEXT, subContact.statusText);
-        values.put(DatabaseHelper.SUB_CONTACT_PRIORITY, subContact.priority);
-        values.put(DatabaseHelper.SUB_CONTACT_PRIORITY_A, subContact.priorityA);
-        return values;
-    }
-
-    public void updateFirstServerMsgId(final Contact contact) {
-        thread.execute(new SqlAsyncTask.OnTaskListener() {
-            @Override
-            public void run() {
-                try {
-                    ContentValues values = new ContentValues();
-                    values.put(DatabaseHelper.FIRST_SERVER_MESSAGE_ID, contact.firstServerMsgId);
-                    SawimApplication.getDatabaseHelper().getWritableDatabase().update(storeName, values, WHERE_CONTACT_ID, new String[]{contact.getUserId()});
-                } catch (Exception e) {
-                    DebugLog.panic(e);
-                }
-            }
-        });
+    public void updateFirstServerMsgId(final protocol.Contact contact) {
+        Contact localContact = new Contact();
+        localContact.setContactId(contact.getUserId());
+        localContact.setFirstServerMessageId(contact.firstServerMsgId);
+        RealmDb.save(localContact);
     }
 
     public void updateAvatarHash(final String uniqueUserId, final String hash) {
-        thread.execute(new SqlAsyncTask.OnTaskListener() {
-            @Override
-            public void run() {
-                try {
-                    ContentValues values = new ContentValues();
-                    values.put(DatabaseHelper.AVATAR_HASH, hash);
-                    SawimApplication.getDatabaseHelper().getWritableDatabase().update(storeName, values, WHERE_CONTACT_ID, new String[]{uniqueUserId});
-                } catch (Exception e) {
-                    DebugLog.panic(e);
-                }
-            }
-        });
+        Contact localContact = new Contact();
+        localContact.setContactId(uniqueUserId);
+        localContact.setAvatarHash(hash);
+        RealmDb.save(localContact);
     }
 
     public void updateSubContactAvatarHash(final String uniqueUserId, final String resource, final String hash) {
-        thread.execute(new SqlAsyncTask.OnTaskListener() {
-            @Override
-            public void run() {
-                try {
-                    String where = WHERE_CONTACT_ID + " and "
-                            + DatabaseHelper.SUB_CONTACT_RESOURCE + "= ?";
-                    String[] selectionArgs = new String[]{uniqueUserId, resource};
-                    ContentValues values = new ContentValues();
-                    values.put(DatabaseHelper.AVATAR_HASH, hash);
-                    SawimApplication.getDatabaseHelper().getWritableDatabase().update(subContactsTable, values, where, selectionArgs);
-                } catch (Exception e) {
-                    DebugLog.panic(e);
-                }
-            }
-        });
+        SubContact localSubContact = new SubContact();
+        localSubContact.setContactId(uniqueUserId);
+        localSubContact.setResource(resource);
+        localSubContact.setAvatarHash(hash);
+        RealmDb.save(localSubContact);
     }
 
     public synchronized String getSubContactAvatarHash(String uniqueUserId, String resource) {
+        Realm realmDb = RealmDb.realm();
+        SubContact subContact = realmDb.where(SubContact.class).equalTo("contactId", uniqueUserId).equalTo("resource", resource).findFirst();
         String hash = null;
-        Cursor cursor = null;
-        try {
-            String where = WHERE_CONTACT_ID + " and "
-                    + DatabaseHelper.SUB_CONTACT_RESOURCE + "= ?";
-            String[] selectionArgs = new String[]{uniqueUserId, resource};
-            cursor = SawimApplication.getDatabaseHelper().getReadableDatabase().query(subContactsTable, null,
-                    where, selectionArgs, null, null, null);
-            if (cursor.moveToFirst()) {
-                do {
-                    hash = cursor.getString(cursor.getColumnIndex(DatabaseHelper.AVATAR_HASH));
-                } while (cursor.moveToNext());
-            }
-        } catch (Exception e) {
-            DebugLog.panic(e);
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
+        if (subContact != null) {
+            hash = subContact.getAvatarHash();
         }
+        realmDb.close();
         return hash;
     }
 
     public synchronized String getAvatarHash(String uniqueUserId) {
+        Realm realmDb = RealmDb.realm();
+        Contact localContact = realmDb.where(Contact.class).equalTo("contactId", uniqueUserId).findFirst();
         String hash = null;
-        Cursor cursor = null;
-        try {
-            String where = WHERE_CONTACT_ID;
-            String[] selectionArgs = new String[]{uniqueUserId};
-            cursor = SawimApplication.getDatabaseHelper().getReadableDatabase().query(storeName, null,
-                    where, selectionArgs, null, null, null);
-            if (cursor.moveToFirst()) {
-                do {
-                    hash = cursor.getString(cursor.getColumnIndex(DatabaseHelper.AVATAR_HASH));
-                } while (cursor.moveToNext());
-            }
-        } catch (Exception e) {
-            DebugLog.panic(e);
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
+        if (localContact != null) {
+            hash = localContact.getAvatarHash();
         }
+        realmDb.close();
         return hash;
     }
 
-    public void updateUnreadMessagesCount(final String protocolId, final String uniqueUserId, final int count) {
-        thread.execute(new SqlAsyncTask.OnTaskListener() {
-            @Override
-            public void run() {
-                try {
-                    SQLiteDatabase sqLiteDatabase = SawimApplication.getDatabaseHelper().getWritableDatabase();
-                    ContentValues values = new ContentValues();
-                    values.put(DatabaseHelper.UNREAD_MESSAGES_COUNT, count);
-                    sqLiteDatabase.update(storeName, values, WHERE_ACC_CONTACT_ID, new String[]{protocolId, uniqueUserId});
-                } catch (Exception e) {
-                    DebugLog.panic(e);
-                }
-            }
-        });
+    public void updateUnreadMessagesCount(final String protocolId, final String uniqueUserId, final short count) {
+        Contact localContact = new Contact();
+        localContact.setContactId(uniqueUserId);
+        localContact.setUnreadMessageCount(count);
+        RealmDb.save(localContact);
     }
 
     public void loadUnreadMessages() {
-        thread.execute(new SqlAsyncTask.OnTaskListener() {
-            @Override
-            public void run() {
-                Cursor cursor = null;
-                try {
-                    cursor = SawimApplication.getDatabaseHelper().getReadableDatabase().query(storeName, null, null, null, null, null, null);
-                    if (cursor.moveToFirst()) {
-                        do {
-                            String account = cursor.getString(cursor.getColumnIndex(DatabaseHelper.ACCOUNT_ID));
-                            String userId = cursor.getString(cursor.getColumnIndex(DatabaseHelper.CONTACT_ID));
-                            short unreadMessageCount = cursor.getShort(cursor.getColumnIndex(DatabaseHelper.UNREAD_MESSAGES_COUNT));
-                            boolean isConference = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.IS_CONFERENCE)) == 1;
-                            if (unreadMessageCount == 0) {
-                                continue;
-                            }
-                            Protocol protocol = RosterHelper.getInstance().getProtocol();
-                            if (protocol != null) {
-                                Contact contact = protocol.getItemByUID(userId);
-                                if (contact == null) {
-                                    contact = protocol.createContact(userId, userId, isConference);
-                                }
-                                Chat chat = protocol.getChat(contact);
-                                chat.setOtherMessageCounter(unreadMessageCount);
-                            }
-                        } while (cursor.moveToNext());
-                    }
-                } catch (Exception e) {
-                    DebugLog.panic(e);
-                } finally {
-                    if (cursor != null) {
-                        cursor.close();
-                    }
-                }
+        Realm realmDb = RealmDb.realm();
+        List<Contact> localContacts = realmDb.where(Contact.class).findAll();
+        for (int i = 0; i < localContacts.size(); i++) {
+            Contact localContact = localContacts.get(i);
+            String userId = localContact.getContactId();
+            short unreadMessageCount = localContact.getUnreadMessageCount();
+            boolean isConference = localContact.isConference();
+            if (unreadMessageCount == 0) {
+                continue;
             }
-        });
+            Protocol protocol = RosterHelper.getInstance().getProtocol();
+            if (protocol != null) {
+                protocol.Contact contact = protocol.getItemByUID(userId);
+                if (contact == null) {
+                    contact = protocol.createContact(userId, userId, isConference);
+                }
+                Chat chat = protocol.getChat(contact);
+                chat.setOtherMessageCounter(unreadMessageCount);
+            }
+        }
+        realmDb.close();
+
     }
 }

@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
+apply plugin: 'realm-android'
 
 def mtmProject = project(':deps:mtm')
 
@@ -23,7 +24,7 @@ dependencies {
     compile mtmProject
     compile 'com.android.support:support-v4:23.3.0'
     compile 'com.android.support:appcompat-v7:23.3.0'
-    compile 'com.github.anrwatchdog:anrwatchdog:1.1.+'
+    compile 'com.github.anrwatchdog:anrwatchdog:1.2.+'
     compile 'com.android.support:design:23.1.0'
     compile 'com.android.support:recyclerview-v7:23.1.1'
     compile 'com.squareup.picasso:picasso:2.5.2'
@@ -43,7 +44,7 @@ android {
     compileSdkVersion 23
     buildToolsVersion "23.0.3"
     defaultConfig {
-        applicationId "ru.sawim"
+        applicationId "ru.sawim.jp"
         minSdkVersion 9
         targetSdkVersion 22
         versionCode 73

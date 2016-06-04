@@ -6,10 +6,7 @@ import protocol.Profile;
 import protocol.StatusInfo;
 import ru.sawim.comm.StringConvertor;
 import ru.sawim.comm.Util;
-import ru.sawim.io.BlobStorage;
-import ru.sawim.io.DatabaseHelper;
 import ru.sawim.modules.DebugLog;
-import ru.sawim.roster.RosterHelper;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -18,6 +15,7 @@ import java.util.List;
 public class Options {
 
     static final String OPTIONS_CURR_ACCOUNT = "current_account";
+    private static final String ACC = "acc";
     public static final String OPTIONS_CURR_CONTACT = "current_contact";
     public static final String OPTION_PRIVATE_STATUS = "private_status";
     public static final String OPTION_CL_HIDE_OFFLINE = "cl_hide_offline";
@@ -119,7 +117,7 @@ public class Options {
         return Options.getInt(Options.OPTIONS_CURR_ACCOUNT);
     }
 
-    public static void delAccount(int num) {
+    /*public static void delAccount(int num) {
         //RosterHelper.getInstance().removeProtocol(num);
         synchronized (listOfProfiles) {
             listOfProfiles.remove(num);
@@ -147,7 +145,7 @@ public class Options {
             }
             s.close();
         }
-    }
+    }*/
 
     public static void setAccount(int num, Profile account) {
         int size = getAccountCount();
@@ -173,7 +171,7 @@ public class Options {
     }
 
     public static void loadAccounts() {
-        BlobStorage s = new BlobStorage(DatabaseHelper.TABLE_ACCOUNTS);
+        /*BlobStorage s = new BlobStorage(DatabaseHelper.TABLE_ACCOUNTS);
         try {
             synchronized (listOfProfiles) {
                 listOfProfiles.clear();
@@ -192,14 +190,18 @@ public class Options {
         } catch (Exception e) {
             DebugLog.panic("load accounts", e);
         }
-        s.close();
+        s.close();*/
+        Profile p = readProfile(Util.base64decode(Options.getString(ACC)));
+        if (!StringConvertor.isEmpty(p.userId)) {
+            listOfProfiles.add(p);
+        }
     }
 
     private static void saveAccount(int num, Profile account) {
         if (StringConvertor.isEmpty(account.userId)) {
             return;
         }
-        BlobStorage s = new BlobStorage(DatabaseHelper.TABLE_ACCOUNTS);
+        /*BlobStorage s = new BlobStorage(DatabaseHelper.TABLE_ACCOUNTS);
         try {
             byte[] hash = writeAccount(account);
             if (num < s.getNumRecords()) {
@@ -210,7 +212,9 @@ public class Options {
         } catch (Exception e) {
             DebugLog.panic("save account #" + num, e);
         }
-        s.close();
+        s.close();*/
+        Options.setString(ACC, Util.base64encode(writeAccount(account)));
+        Options.safeSave();
     }
 
     private static byte[] writeAccount(Profile account) {

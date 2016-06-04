@@ -18,7 +18,7 @@ public final class StorageConvertor {
 
     private StorageConvertor() { }
 
-    static void convertStorage(String fromStorageName, BlobStorage toStorage) {
+    /*static void convertStorage(String fromStorageName, BlobStorage toStorage) {
         String normalizedName = normalizeStorageName(fromStorageName);
         if (isExists(normalizedName)) {
             Context context = SawimApplication.getContext();
@@ -39,7 +39,7 @@ public final class StorageConvertor {
             context.deleteFile(headerFileName);
             Log.d(LOG_TAG, "Done converting " + fromStorageName);
         }
-    }
+    }*/
 
     public static void historyConvert() {
         Context context = SawimApplication.getContext();

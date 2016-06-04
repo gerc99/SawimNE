@@ -9,12 +9,10 @@ import protocol.Protocol;
 import protocol.xmpp.XmppContact;
 import ru.sawim.Options;
 import ru.sawim.R;
-import ru.sawim.io.DatabaseHelper;
 import ru.sawim.ui.activity.BaseActivity;
 import ru.sawim.chat.message.Message;
 import ru.sawim.comm.JLocale;
 import ru.sawim.comm.Util;
-import ru.sawim.io.BlobStorage;
 import ru.sawim.ui.adapter.form.FormListener;
 import ru.sawim.ui.adapter.form.Forms;
 import ru.sawim.ui.adapter.list.VirtualList;
@@ -136,7 +134,7 @@ public final class Answerer implements FormListener {
     }
 
     public void load() {
-        BlobStorage storage = new BlobStorage(DatabaseHelper.TABLE_ANSWERER);
+        /*BlobStorage storage = new BlobStorage(DatabaseHelper.TABLE_ANSWERER);
         try {
             dictionary = storage.loadListOfString();
         } catch (Exception e) {
@@ -149,11 +147,11 @@ public final class Answerer implements FormListener {
             dictionary.addElement("Hello=Hi. :-)");
             dictionary.addElement("Hi=H1 :-).");
             save();
-        }
+        }*/
     }
 
     private void save() {
-        BlobStorage storage = new BlobStorage(DatabaseHelper.TABLE_ANSWERER);
+        /*BlobStorage storage = new BlobStorage(DatabaseHelper.TABLE_ANSWERER);
         storage.delete();
         try {
             if (dictionary.isEmpty()) {
@@ -163,7 +161,7 @@ public final class Answerer implements FormListener {
         } catch (Exception e) {
             DebugLog.panic("answerer dictionary save", e);
         }
-        storage.close();
+        storage.close();*/
     }
 
     public void checkMessage(Protocol protocol, Contact contact, Message message) {

@@ -216,7 +216,7 @@ abstract public class Contact implements TreeNode {
     public final void updateChatState(final Chat chat) {
         if (null != chat) {
             RosterHelper.getInstance().getProtocol().getStorage()
-                    .updateUnreadMessagesCount(RosterHelper.getInstance().getProtocol().getUserId(), getUserId(), chat.getAllUnreadMessageCount());
+                    .updateUnreadMessagesCount(RosterHelper.getInstance().getProtocol().getUserId(), getUserId(), (short) chat.getAllUnreadMessageCount());
         }
     }
 

@@ -6,6 +6,7 @@ import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.comm.JLocale;
 import ru.sawim.comm.StringConvertor;
+import ru.sawim.comm.Util;
 
 public class SystemNotice extends Message {
 
@@ -20,13 +21,13 @@ public class SystemNotice extends Message {
     private String nick;
 
     public SystemNotice(Protocol protocol, byte _sysnotetype, String _uin, String _reason) {
-        super(SawimApplication.getCurrentGmtTime(), protocol.getUserId(), _uin, true);
+        super(String.valueOf(Util.uniqueValue()), SawimApplication.getCurrentGmtTime(), protocol.getUserId(), _uin, true);
         sysnotetype = _sysnotetype;
         reason = StringConvertor.notNull(_reason);
     }
 
     public SystemNotice(Protocol protocol, byte _sysnotetype, String _uin, String nick, String _reason) {
-        super(SawimApplication.getCurrentGmtTime(), protocol.getUserId(), _uin, true);
+        super(String.valueOf(Util.uniqueValue()), SawimApplication.getCurrentGmtTime(), protocol.getUserId(), _uin, true);
         sysnotetype = _sysnotetype;
         this.nick = nick;
         reason = StringConvertor.notNull(_reason);
