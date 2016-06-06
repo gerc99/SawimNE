@@ -1,7 +1,6 @@
 package ru.sawim.io;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import io.realm.Realm;
@@ -63,7 +62,7 @@ public class RosterStorage {
         return localContact == null ? null : contact;
     }
 
-    public protocol.Contact getContact(Protocol protocol, Contact localContact) {
+    public static protocol.Contact getContact(Protocol protocol, Contact localContact) {
         Group group = protocol.getGroupItems().get(localContact.getGroupId());
         if (group == null) {
             group = protocol.createGroup(localContact.getGroupName() == null ? "not" : localContact.getGroupName());
@@ -80,15 +79,15 @@ public class RosterStorage {
         contact.setStatus((byte) localContact.getStatus(), localContact.getStatusText());
         contact.setGroupId(localContact.getGroupId());
         contact.setBooleanValues(localContact.getData());
-        if (contact instanceof XmppContact) {
+        //if (contact instanceof XmppContact) {
         //    XmppContact xmppContact = (XmppContact)contact;
         //    loadSubContacts(xmppContact);
-        }
+        //}
         if (localContact.isConference()) {
             XmppServiceContact serviceContact = (XmppServiceContact) contact;
+            serviceContact.setConference(true);
             serviceContact.setMyName(localContact.getConferenceMyName());
             serviceContact.setAutoJoin(localContact.isConferenceIsAutoJoin());
-            serviceContact.setConference(true);
         }
         protocol.getRoster().getContactItems().put(contact.getUserId(), contact);
         RosterHelper.getInstance().updateGroup(protocol, group);
@@ -142,6 +141,7 @@ public class RosterStorage {
 
     public void save(final XmppContact contact, final XmppServiceContact.SubContact subContact) {
         SubContact localSubContact = new SubContact();
+        localSubContact.setSubContactId(contact.getUserId() + '/' + subContact.resource);
         localSubContact.setContactId(contact.getUserId());
         localSubContact.setResource(subContact.resource);
         localSubContact.setStatus(subContact.status);
@@ -157,81 +157,68 @@ public class RosterStorage {
         if (subContact == null) {
             return;
         }
-        RealmDb.realm().executeTransactionAsync(new Realm.Transaction() {
+        Realm realm = RealmDb.realm();
+        realm.executeTransactionAsync(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                realm.where(SubContact.class).equalTo("contactId", contact.getUserId()).equalTo("resource", subContact.resource).findAll().deleteAllFromRealm();
+                realm.where(SubContact.class).equalTo("subContactId", contact.getUserId() + "/" + subContact.resource).findFirst().deleteFromRealm();
             }
         });
+        realm.close();
     }
 
     public void deleteContact(final Protocol protocol, final protocol.Contact contact) {
-        RealmDb.realm().executeTransactionAsync(new Realm.Transaction() {
+        Realm realm = RealmDb.realm();
+        realm.executeTransactionAsync(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
                 realm.where(Contact.class).equalTo("contactId", contact.getUserId()).findAll().deleteAllFromRealm();
             }
         });
+        realm.close();
     }
 
     public void deleteGroup(final Protocol protocol, final Group group) {
-        RealmDb.realm().executeTransactionAsync(new Realm.Transaction() {
+        Realm realm = RealmDb.realm();
+        realm.executeTransactionAsync(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
                 realm.where(Contact.class).equalTo("groupId", group.getGroupId()).findAll().deleteAllFromRealm();
             }
         });
+        realm.close();
     }
 
     public void updateGroup(final Protocol protocol, final Group group) {
-        RealmDb.realm().executeTransactionAsync(new Realm.Transaction() {
+        Realm realm = RealmDb.realm();
+        realm.executeTransactionAsync(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
                 for (protocol.Contact contact : group.getContacts()) {
-                    Contact localContact = new Contact();
-                    localContact.setContactId(contact.getUserId());
-                    localContact.setContactName(contact.getName());
+                    Contact localContact = realm.where(Contact.class).equalTo("contactId", contact.getUserId()).findFirst();
                     localContact.setGroupId(group.getGroupId());
                     localContact.setGroupName(group.getName());
-                    realm.copyToRealmOrUpdate(localContact);
                 }
             }
         });
-    }
-
-    public void addGroup(final Protocol protocol, final Group group) {
-        RealmDb.realm().executeTransactionAsync(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                for (protocol.Contact contact : group.getContacts()) {
-                    Contact localContact = new Contact();
-                    localContact.setContactId(contact.getUserId());
-                    localContact.setContactName(contact.getName());
-                    localContact.setGroupId(group.getGroupId());
-                    localContact.setGroupName(group.getName());
-                    realm.copyToRealmOrUpdate(localContact);
-                }
-            }
-        });
+        realm.close();
     }
 
     public void setOfflineStatuses(final Protocol protocol) {
-        final Collection<protocol.Contact> localContacts = protocol.getRoster().getContactItems().values();
-        RealmDb.realm().executeTransactionAsync(new Realm.Transaction() {
+        Realm realm = RealmDb.realm();
+        final List<Contact> localContacts = realm.where(Contact.class).findAll();
+        realm.executeTransactionAsync(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                for (protocol.Contact contact : localContacts) {
-                    Contact localContact = new Contact();
-                    localContact.setContactId(contact.getUserId());
-                    localContact.setStatus(StatusInfo.STATUS_OFFLINE);
-                    realm.copyToRealmOrUpdate(localContact);
-                    if (contact instanceof XmppContact) {
-                        realm.where(SubContact.class).equalTo("contactId", contact.getUserId()).findAll().deleteAllFromRealm();
+                for (Contact contact : localContacts) {
+                    contact.setStatus(StatusInfo.STATUS_OFFLINE);
+                    if (contact.isConference()) {
+                        realm.where(SubContact.class).equalTo("contactId", contact.getContactId()).findAll().deleteAllFromRealm();
                     }
                 }
             }
         });
-
+        realm.close();
     }
 
     public void updateFirstServerMsgId(final protocol.Contact contact) {
@@ -242,26 +229,36 @@ public class RosterStorage {
     }
 
     public void updateAvatarHash(final String uniqueUserId, final String hash) {
-        Contact localContact = new Contact();
-        localContact.setContactId(uniqueUserId);
-        localContact.setAvatarHash(hash);
-        RealmDb.save(localContact);
+        Realm realm = RealmDb.realm();
+        realm.executeTransactionAsync(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                Contact localContact = realm.where(Contact.class).equalTo("contactId", uniqueUserId).findFirst();
+                localContact.setContactId(uniqueUserId);
+                localContact.setAvatarHash(hash);
+            }
+        });
+        realm.close();
     }
 
     public void updateSubContactAvatarHash(final String uniqueUserId, final String resource, final String hash) {
-        SubContact localSubContact = new SubContact();
-        localSubContact.setContactId(uniqueUserId);
-        localSubContact.setResource(resource);
-        localSubContact.setAvatarHash(hash);
-        RealmDb.save(localSubContact);
+        Realm realm = RealmDb.realm();
+        realm.executeTransactionAsync(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                SubContact localSubContact = realm.where(SubContact.class).equalTo("subContactId", uniqueUserId + '/' + resource).findFirst();
+                localSubContact.setAvatarHash(hash);
+            }
+        });
+        realm.close();
     }
 
     public synchronized String getSubContactAvatarHash(String uniqueUserId, String resource) {
         Realm realmDb = RealmDb.realm();
-        SubContact subContact = realmDb.where(SubContact.class).equalTo("contactId", uniqueUserId).equalTo("resource", resource).findFirst();
+        SubContact localSubContact = realmDb.where(SubContact.class).equalTo("subContactId", uniqueUserId + '/' + resource).findFirst();
         String hash = null;
-        if (subContact != null) {
-            hash = subContact.getAvatarHash();
+        if (localSubContact != null) {
+            hash = localSubContact.getAvatarHash();
         }
         realmDb.close();
         return hash;
@@ -278,24 +275,27 @@ public class RosterStorage {
         return hash;
     }
 
-    public void updateUnreadMessagesCount(final String protocolId, final String uniqueUserId, final short count) {
-        Contact localContact = new Contact();
-        localContact.setContactId(uniqueUserId);
-        localContact.setUnreadMessageCount(count);
-        RealmDb.save(localContact);
+    public void updateUnreadMessagesCount(String protocolId, final String uniqueUserId, final short count) {
+        Realm realm = RealmDb.realm();
+        realm.executeTransactionAsync(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                Contact localContact = realm.where(Contact.class).equalTo("contactId", uniqueUserId).findFirst();
+                localContact.setContactId(uniqueUserId);
+                localContact.setUnreadMessageCount(count);
+            }
+        });
+        realm.close();
     }
 
     public void loadUnreadMessages() {
         Realm realmDb = RealmDb.realm();
-        List<Contact> localContacts = realmDb.where(Contact.class).findAll();
+        List<Contact> localContacts = realmDb.where(Contact.class).greaterThan("unreadMessageCount", 0).findAll();
         for (int i = 0; i < localContacts.size(); i++) {
             Contact localContact = localContacts.get(i);
             String userId = localContact.getContactId();
             short unreadMessageCount = localContact.getUnreadMessageCount();
             boolean isConference = localContact.isConference();
-            if (unreadMessageCount == 0) {
-                continue;
-            }
             Protocol protocol = RosterHelper.getInstance().getProtocol();
             if (protocol != null) {
                 protocol.Contact contact = protocol.getItemByUID(userId);
@@ -307,6 +307,5 @@ public class RosterStorage {
             }
         }
         realmDb.close();
-
     }
 }

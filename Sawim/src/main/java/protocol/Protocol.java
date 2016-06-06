@@ -35,7 +35,7 @@ abstract public class Protocol {
     public ClientInfo clientInfo;
 
     private RosterStorage storage;
-    private Roster roster;
+    private Roster roster = new Roster();
     protected StatusInfo info;
     protected XStatusInfo xstatusInfo;
     private Profile profile;
@@ -223,6 +223,7 @@ abstract public class Protocol {
             return;
         }
         storage.load(Protocol.this);
+        ChatHistory.instance.loadChats();
         RosterHelper.getInstance().updateRoster();
     }
 
@@ -310,7 +311,7 @@ abstract public class Protocol {
     public final void addGroup(Group group) {
         s_addGroup(group);
         cl_addGroup(group);
-        storage.addGroup(this, group);
+        storage.updateGroup(this, group);
     }
 
     abstract public boolean isConnected();
@@ -474,13 +475,6 @@ abstract public class Protocol {
         boolean connecting = StatusInfo.STATUS_OFFLINE != statusIndex;
         Log.e("MENU_CONNECT", isConnected() + " " + isConnecting() + " " + getConnectingProgress() + " " + connected + " " + connecting);
         if (connected) {
-            if (!isConnected() && !isConnecting() && connecting) {
-                setOnlineStatus(statusIndex, msg, save);
-                connect();
-                return;
-            }
-        }
-        if (connected && !connecting) {
             disconnect(true);
         }
         setOnlineStatus(statusIndex, msg, save);

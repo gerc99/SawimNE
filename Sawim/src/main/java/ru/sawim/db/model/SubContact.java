@@ -9,6 +9,7 @@ import io.realm.annotations.PrimaryKey;
 public class SubContact extends RealmObject {
 
     @PrimaryKey
+    private String subContactId;
     private String contactId;
     private String resource;
     private byte status;
@@ -18,6 +19,14 @@ public class SubContact extends RealmObject {
     private byte priorityA;
     private short client;
     private int data;
+
+    public String getSubContactId() {
+        return subContactId;
+    }
+
+    public void setSubContactId(String subContactId) {
+        this.subContactId = subContactId;
+    }
 
     public String getContactId() {
         return contactId;

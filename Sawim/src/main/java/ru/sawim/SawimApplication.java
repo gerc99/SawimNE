@@ -153,7 +153,6 @@ public class SawimApplication extends Application {
                 DebugLog.startTests();
 
                 RosterHelper.getInstance().loadAccounts();
-                ChatHistory.instance.loadChats();
 
                 StorageConvertor.historyConvert();
                 gc();

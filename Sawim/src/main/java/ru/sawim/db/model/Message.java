@@ -1,6 +1,7 @@
 package ru.sawim.db.model;
 
 import io.realm.RealmObject;
+import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
 
 /**
@@ -10,6 +11,7 @@ public class Message extends RealmObject {
 
     @PrimaryKey
     private String messageId;
+    @Index
     private String contactId;
     private String serverMsgId;
     private int state;

@@ -15,6 +15,7 @@ import ru.sawim.chat.message.PlainMessage;
 import ru.sawim.comm.JLocale;
 import ru.sawim.db.RealmDb;
 import ru.sawim.db.model.Message;
+import ru.sawim.io.RosterStorage;
 import ru.sawim.modules.DebugLog;
 import ru.sawim.roster.RosterHelper;
 
@@ -62,7 +63,8 @@ public class HistoryStorage {
     }
 
     public void updateState(final String messageId, final int state) {
-        RealmDb.realm().executeTransactionAsync(new Realm.Transaction() {
+        Realm realm = RealmDb.realm();
+        realm.executeTransactionAsync(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
                 Message message = new Message();
@@ -72,6 +74,7 @@ public class HistoryStorage {
                 realm.copyToRealmOrUpdate(message);
             }
         });
+        realm.close();
     }
 
     public List<Integer> getSearchMessagesIds(String search) {
@@ -91,7 +94,7 @@ public class HistoryStorage {
     public synchronized long getMessageTime(boolean last) {
         long lastMessageTime = 0;
         Realm realmDb = RealmDb.realm();
-        List<Message> messages = realmDb.where(Message.class).equalTo("contactId", uniqueUserId).findAll();
+        List<Message> messages = realmDb.where(Message.class).equalTo("contactId", uniqueUserId).findAllSorted("date", Sort.ASCENDING);
         if (last) {
             for (int i = messages.size() - 1; 0 <= i; --i) {
                 Message message = messages.get(i);
@@ -123,25 +126,27 @@ public class HistoryStorage {
         String msgNick = chat.getFrom(message);
         String msgText = MessData.formatCmdMe(msgNick, message.getText());
         Realm realmDb = RealmDb.realm();
-        List<Message> messages = realmDb.where(Message.class).equalTo("contactId", uniqueUserId).findAll();
+        List<Message> messages = realmDb.where(Message.class).equalTo("contactId", uniqueUserId).findAllSorted("date", Sort.DESCENDING);
+        boolean has = false;
         for (int i = messages.size() - 1; 0 <= i; --i) {
             Message localMessage = messages.get(i);
             short rowData = localMessage.getData();
             boolean isMessage = (rowData & MessData.PRESENCE) == 0 && (rowData & MessData.PROGRESS) == 0;
             if (isMessage) {
                 if (msgText.equals(localMessage.getText()) && msgNick.equals(localMessage.getAuthor())) {
-                    return true;
+                    has = true;
+                    break;
                 }
             }
         }
         realmDb.close();
-        return false;
+        return has;
     }
 
     public static List<Contact> getActiveContacts() {
         List<Contact> list = new ArrayList<>();
         Realm realmDb = RealmDb.realm();
-        List<Message> messages = realmDb.where(Message.class).findAll();
+        List<Message> messages = realmDb.where(Message.class).distinct("contactId");
         for (int i = messages.size() - 1; 0 <= i; --i) {
             Message localMessage = messages.get(i);
             String uniqueUserId = localMessage.getContactId();
@@ -149,7 +154,7 @@ public class HistoryStorage {
             if (protocol != null) {
                 Contact contact = protocol.getItemByUID(uniqueUserId);
                 if (contact == null) {
-                    contact = protocol.createContact(uniqueUserId, uniqueUserId, false);
+                    contact = RosterStorage.getContact(protocol, realmDb.where(ru.sawim.db.model.Contact.class).contains("contactId", uniqueUserId).findFirst());
                 }
                 if (contact != null) {
                     list.add(contact);
@@ -160,23 +165,21 @@ public class HistoryStorage {
         return list;
     }
 
-    public List<MessData> addNextListMessages(final Chat chat, int limit, long timestamp) {
+    public synchronized List<MessData> addNextListMessages(final Chat chat, int limit, long timestamp) {
         List<MessData> list = new ArrayList<>();
-        List<Message> messages;
         Realm realmDb = RealmDb.realm();
+        List<Message> messages;
         if (timestamp == 0) {
             messages = realmDb.where(Message.class).equalTo("contactId", uniqueUserId).findAllSorted("date", Sort.DESCENDING);
         } else {
             messages = realmDb.where(Message.class).equalTo("contactId", uniqueUserId).lessThan("date", timestamp).findAllSorted("date", Sort.DESCENDING);
         }
-        if (messages != null) {
-            messages = messages.subList(0, Math.min(limit, messages.size()));
-            for (int i = messages.size() - 1; 0 <= i; --i) {
-                Message localMessage = messages.get(i);
-                MessData messData = buildMessage(chat, localMessage);
-                if (messData != null) {
-                    list.add(messData);
-                }
+        messages = messages.subList(0, Math.min(limit, messages.size()));
+        for (int i = messages.size() - 1; 0 <= i; --i) {
+            Message localMessage = messages.get(i);
+            MessData messData = buildMessage(chat, localMessage);
+            if (messData != null) {
+                list.add(messData);
             }
         }
         realmDb.close();

@@ -129,7 +129,8 @@ public final class RosterHelper {
 
     public void autoConnect() {
         Protocol p = getProtocol();
-        SawimApplication.getInstance().setStatus(p, StatusInfo.STATUS_ONLINE, "");
+        if (p.getProfile().isConnected())
+            p.connect();
     }
 
     public boolean isConnected() {

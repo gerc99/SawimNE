@@ -108,7 +108,7 @@ public class Messages {
         boolean isError = XmlConstants.S_ERROR.equals(type);
 
         final Contact contact = connection.getXmpp().getItemByUID(Jid.getBareJid(fullJid));
-        boolean isConference = contact != null && contact.isConference();
+        boolean isConference = contact != null ? contact.isConference() : isGroupchat;
         if (!isGroupchat) {
             fullJid = Jid.realJidToSawimJid(fullJid);
         }
@@ -257,7 +257,7 @@ public class Messages {
             return;
         }
         if (subject == null) {
-            message = new PlainMessage(from, connection.getXmpp(), msg.getId(), time, text, !isOnlineMessage);
+            message = new PlainMessage(from, connection.getXmpp(), msg.getId() == null ? String.valueOf(Util.uniqueValue()) : msg.getId(), time, text, !isOnlineMessage);
         } else if (!isGroupchat) {
             message = new SystemNotice(connection.getXmpp(), SystemNotice.SYS_NOTICE_MESSAGE, from, text);
         }
@@ -287,11 +287,9 @@ public class Messages {
             }
         }
         String xmlns = msg.getXmlns();
-        if (xmlns == null || !xmlns.equals("p1:pushed")) {
-            if (subject == null && isConference && !isOnlineMessage) {
-                if (HistoryStorage.getHistory(connection.getXmpp().getUserId(), c.getUserId()).hasLastMessage(connection.getXmpp().getChat(c), message)) {
-                    return;
-                }
+        if (subject == null && isConference && !isOnlineMessage) {
+            if (HistoryStorage.getHistory(connection.getXmpp().getUserId(), Jid.getBareJid(fullJid)).hasLastMessage(connection.getXmpp().getChat(c), message)) {
+                return;
             }
         }
         if (message != null) {
@@ -336,7 +334,7 @@ public class Messages {
             from = Jid.getBareJid(title);
             XmppContact c = (XmppContact) connection.getXmpp().getItemByUID(from);
             if (c == null) {
-                c = (XmppContact) connection.getXmpp().createTempContact(from, false);
+                c = (XmppContact) connection.getXmpp().createTempContact(from, isGroupchat);
                 connection.getXmpp().addLocalContact(c);
             }
             Message message = new PlainMessage(from, isIncoming ? connection.getXmpp().getUserId() : from, msg.getId(), time, text, !isOnlineMessage, !isIncoming);
@@ -500,7 +498,7 @@ public class Messages {
     }
 
     private static String getDate(XmlNode message) {
-        XmlNode offline = message.getXNode("jabber:x:delay");
+        XmlNode offline = message.getXNode("urn:xmpp:delay");
         if (null == offline) {
             offline = message.getFirstNode("delay");
         }

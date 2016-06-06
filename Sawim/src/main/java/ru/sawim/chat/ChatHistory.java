@@ -28,7 +28,7 @@ public final class ChatHistory {
         return historyTable.size();
     }
 
-    public void sort() {
+    public synchronized void sort() {
         Collections.sort(historyTable, new Comparator<Chat>() {
             @Override
             public int compare(Chat c1, Chat c2) {
@@ -184,6 +184,10 @@ public final class ChatHistory {
         }
     }
 
+    public boolean contains(Contact contact) {
+        return contains(historyTable, contact);
+    }
+
     private static boolean contains(List<Chat> list, Contact contact) {
         int size = list.size();
         for (int i = 0; i < size; ++i) {
@@ -221,21 +225,6 @@ public final class ChatHistory {
         HistoryStorage historyStorage = chat.getHistory();
         if (!Options.getBoolean(JLocale.getString(R.string.pref_history))) {
             historyStorage.removeHistory();
-        }
-    }
-
-    private void clearChat(Chat chat) {
-        unregisterChat(chat);
-    }
-
-    public void removeAll(Chat except) {
-        for (int i = getTotal() - 1; 0 <= i; --i) {
-            Chat chat = chatAt(i);
-            if (except == chat) continue;
-            clearChat(chat);
-        }
-        if (0 == getTotal()) {
-            RosterHelper.getInstance().updateRoster();
         }
     }
 
