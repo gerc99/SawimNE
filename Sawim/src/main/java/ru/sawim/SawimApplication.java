@@ -79,6 +79,8 @@ public class SawimApplication extends Application {
     public static boolean hideIconsClient;
     public static boolean showPicturesInChat;
     public static int autoAbsenceTime;
+
+    private boolean canForegroundService;
     public static boolean checkPlayServices;
 
     private static SawimApplication instance;
@@ -110,7 +112,8 @@ public class SawimApplication extends Application {
         Thread.setDefaultUncaughtExceptionHandler(ExceptionHandler.inContext(getContext()));
         Fabric.with(this, new Crashlytics());
         checkPlayServices = checkPlayServices();
-    //    refWatcher = LeakCanary.install(this);
+        canForegroundService = !checkPlayServices;
+         //    refWatcher = LeakCanary.install(this);
         RealmDb.init(getApplicationContext());
 
         uiHandler = new Handler(Looper.getMainLooper());
@@ -201,7 +204,7 @@ public class SawimApplication extends Application {
         if (isRunService()) {
             stopService(new Intent(this, SawimService.class));
         }
-        if (!checkPlayServices) {
+        if (!canForegroundService) {
             ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).cancelAll();
         }
     }
@@ -342,5 +345,18 @@ public class SawimApplication extends Application {
             return false;
         }
         return true;
+    }
+
+    public boolean isCanForegroundService() {
+        return canForegroundService;
+    }
+
+    public void setCanForegroundService(boolean canForegroundService) {
+        this.canForegroundService = canForegroundService;
+        if (!checkPlayServices || canForegroundService) {
+            serviceConnection.send(Message.obtain(null, SawimService.START_FOREGROUND_SERVICE));
+        } else {
+            serviceConnection.send(Message.obtain(null, SawimService.STOP_FOREGROUND_SERVICE));
+        }
     }
 }

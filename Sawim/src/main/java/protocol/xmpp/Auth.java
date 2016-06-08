@@ -121,6 +121,7 @@ public class Auth {
             rebindSupported = true;
             setupSessionKeep(connection);
         }
+        SawimApplication.getInstance().setCanForegroundService(x2 == null);
 
         x2 = x.getFirstNode("rebind", "p1:rebind");
         if (x2 != null) {
@@ -231,12 +232,13 @@ public class Auth {
             xmppSession.setAsRestored();
 
             setAuthStatus(connection, true);
-
+            SawimApplication.getInstance().setCanForegroundService(false);
             return true;
         } else {
             DebugLog.systemPrintln("[SESSION] Rebind failed");
             xmppSession.resetSessionData();
             connection.getXmpp().setStatusesOffline();
+            SawimApplication.getInstance().setCanForegroundService(true);
 
             return false;
         }

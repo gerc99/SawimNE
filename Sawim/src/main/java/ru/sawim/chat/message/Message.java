@@ -54,8 +54,16 @@ public abstract class Message {
         senderName = name;
     }
 
+    public void setContactId(String contactId) {
+        this.contactId = contactId;
+    }
+
     public String getContactUin() {
         return contactId;
+    }
+
+    public void setMyId(String myId) {
+        this.myId = myId;
     }
 
     public final String getSndrUin() {
@@ -68,6 +76,10 @@ public abstract class Message {
 
     public boolean isIncoming() {
         return isIncoming;
+    }
+
+    public void setIncoming(boolean incoming) {
+        isIncoming = incoming;
     }
 
     protected final Contact getRcvr(Protocol protocol) {

@@ -269,12 +269,14 @@ public class Messages {
             if (isConference) {
                 final XmppServiceContact conf = (XmppServiceContact) c;
                 if (isGroupchat && (null != fromRes)) {
-                    if (isOnlineMessage && fromRes.equals(conf.getMyName())) {
-                        if (HistoryStorage.isMessageExist(msg.getId())) {
-                            setMessageSended(connection, conf.getUserId(), msg.getId(),
-                                    PlainMessage.NOTIFY_FROM_CLIENT);
-                            return;
-                        }
+                    boolean isMyGroupMessage = fromRes.equals(conf.getMyName());
+                    if (message != null && isMyGroupMessage) {
+                        message.setMyId(Jid.getBareJid(from));
+                        message.setIncoming(false);
+                    }
+                    if (isOnlineMessage && isMyGroupMessage) {
+                        setMessageSended(connection, conf.getUserId(), msg.getId(),
+                                PlainMessage.NOTIFY_FROM_CLIENT);
                         if (Jid.isIrcConference(fullJid)) {
                             return;
                         }

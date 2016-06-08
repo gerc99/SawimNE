@@ -303,7 +303,7 @@ public class SawimActivity extends BaseActivity implements OnAccountsLoaded {
                 }
             }
             menu.add(Menu.NONE, MENU_OPTIONS, Menu.NONE, R.string.options);
-            if (!SawimApplication.checkPlayServices) {
+            if (!SawimApplication.getInstance().isCanForegroundService()) {
                 menu.add(Menu.NONE, MENU_QUIT, Menu.NONE, R.string.quit);
             }
             if (chatFragment != null && chatFragment.isAdded() && SawimApplication.isManyPane()) {

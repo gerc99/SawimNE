@@ -55,8 +55,7 @@ public class HistoryStorage {
                 message.setText(text);
                 message.setDate(time);
                 message.setData(rowData);
-                realm.copyToRealm(message);
-                Log.e("save message", text+" "+id);
+                realm.copyToRealmOrUpdate(message);
             }
         });
         realm.close();
@@ -67,11 +66,8 @@ public class HistoryStorage {
         realm.executeTransactionAsync(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                Message message = new Message();
-                message.setContactId(uniqueUserId);
-                message.setMessageId(messageId);
+                Message message = realm.where(Message.class).equalTo("contactId", uniqueUserId).equalTo("messageId", messageId).findFirst();
                 message.setState(state);
-                realm.copyToRealmOrUpdate(message);
             }
         });
         realm.close();
@@ -154,7 +150,12 @@ public class HistoryStorage {
             if (protocol != null) {
                 Contact contact = protocol.getItemByUID(uniqueUserId);
                 if (contact == null) {
-                    contact = RosterStorage.getContact(protocol, realmDb.where(ru.sawim.db.model.Contact.class).contains("contactId", uniqueUserId).findFirst());
+                    ru.sawim.db.model.Contact localContact = realmDb.where(ru.sawim.db.model.Contact.class).contains("contactId", uniqueUserId).findFirst();
+                    if (localContact != null) {
+                        contact = RosterStorage.getContact(protocol, localContact);
+                    } else {
+                        contact = protocol.createTempContact(uniqueUserId, false);
+                    }
                 }
                 if (contact != null) {
                     list.add(contact);
@@ -249,9 +250,10 @@ public class HistoryStorage {
         return list;
     }*/
 
-    public static boolean isMessageExist(String id) {
+    public static boolean isMessageExist(String userId, String messageId, String text) {
         Realm realmDb = RealmDb.realm();
-        boolean isMessageExist = realmDb.where(Message.class).equalTo("messageId", id).findFirst() != null;
+        Message message = realmDb.where(Message.class).equalTo("contactId", userId).equalTo("messageId", messageId).findFirst();
+        boolean isMessageExist = message != null;
         realmDb.close();
         return isMessageExist;
     }

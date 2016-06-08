@@ -21,11 +21,13 @@ public class SawimService extends Service {
     public static final int UPDATE_APP_ICON = 2;
     public static final int SEND_NOTIFY = 3;
     public static final int SET_STATUS = 4;
+    public static final int START_FOREGROUND_SERVICE = 5;
+    public static final int STOP_FOREGROUND_SERVICE = 6;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        if (!SawimApplication.checkPlayServices) {
+        if (SawimApplication.getInstance().isCanForegroundService()) {
             startForeground(R.string.app_name, SawimNotification.get(SawimService.this, false));
         }
         Log.i(LOG_TAG, "onStart();");
@@ -34,7 +36,7 @@ public class SawimService extends Service {
     @Override
     public void onDestroy() {
         Log.i(LOG_TAG, "onDestroy();");
-        if (!SawimApplication.checkPlayServices) {
+        if (SawimApplication.getInstance().isCanForegroundService()) {
             stopForeground(true);
         }
     }
@@ -58,18 +60,18 @@ public class SawimService extends Service {
                         //updateLock();
                         break;
                     case UPDATE_APP_ICON:
-                        if (SawimApplication.checkPlayServices) {
-                            SawimNotification.clear(SawimNotification.NOTIFY_ID);
-                        } else {
+                        if (SawimApplication.getInstance().isCanForegroundService()) {
                             SawimService.this.startForeground(R.string.app_name, SawimNotification.get(SawimService.this, false));
+                        } else {
+                            SawimNotification.clear(SawimNotification.NOTIFY_ID);
                         }
                         break;
                     case SEND_NOTIFY:
                         //SawimNotification.sendNotify(SawimService.this, (String)((Object[])msg.obj)[0], (String)((Object[])msg.obj)[1]);
-                        if (SawimApplication.checkPlayServices) {
-                            SawimNotification.notification(SawimService.this, (boolean) msg.obj);
-                        } else {
+                        if (SawimApplication.getInstance().isCanForegroundService()) {
                             SawimService.this.startForeground(R.string.app_name, SawimNotification.get(SawimService.this, (boolean) msg.obj));
+                        } else {
+                            SawimNotification.notification(SawimService.this, (boolean) msg.obj);
                         }
                         break;
                     case SET_STATUS:
@@ -82,6 +84,12 @@ public class SawimService extends Service {
                                 protocol.setStatus(statusIndex, statusMsg, true);
                             }
                         });
+                        break;
+                    case START_FOREGROUND_SERVICE:
+                        startForeground(R.string.app_name, SawimNotification.get(SawimService.this, false));
+                        break;
+                    case STOP_FOREGROUND_SERVICE:
+                        stopForeground(true);
                         break;
                 }
             } catch (Exception e) {

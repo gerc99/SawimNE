@@ -152,7 +152,7 @@ public class AvatarCache {
     }
 
     private File getFile(String id, String hash) {
-        return new File(AVATARS_FOLDER, id.replace('/', '_').concat("_").concat(hash.replace('/', '_').concat(".").concat(COMPRESS_FORMAT.name())));
+        return new File(AVATARS_FOLDER, id.replace('/', '_').concat((TextUtils.isEmpty(hash) ? "" : hash.replace('/', '_')).concat(".").concat(COMPRESS_FORMAT.name())));
     }
 
     public interface OnImageLoadListener {
