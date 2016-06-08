@@ -192,6 +192,7 @@ public class Messages {
         }
         text = StringConvertor.trim(text);
 
+        boolean isMyGroupMessage = false;
         Message message = null;
         long time = isOnlineMessage ? SawimApplication.getCurrentGmtTime() : /*new Delay().getTime(date)*/parseTimestamp(date);
         final XmppContact c = (XmppContact) connection.getXmpp().getItemByUID(from);
@@ -269,7 +270,7 @@ public class Messages {
             if (isConference) {
                 final XmppServiceContact conf = (XmppServiceContact) c;
                 if (isGroupchat && (null != fromRes)) {
-                    boolean isMyGroupMessage = fromRes.equals(conf.getMyName());
+                    isMyGroupMessage = fromRes.equals(conf.getMyName());
                     if (message != null && isMyGroupMessage) {
                         message.setMyId(Jid.getBareJid(from));
                         message.setIncoming(false);
@@ -294,7 +295,7 @@ public class Messages {
                 return;
             }
         }
-        if (message != null) {
+        if (message != null && !isMyGroupMessage) {
             connection.getXmpp().addMessage(message, XmlConstants.S_HEADLINE.equals(type) || (xmlns != null && xmlns.equals("p1:pushed")), isConference);
         }
     }

@@ -55,7 +55,6 @@ public class HistoryStorage {
                 message.setText(text);
                 message.setDate(time);
                 message.setData(rowData);
-                realm.copyToRealmOrUpdate(message);
             }
         });
         realm.close();
@@ -208,49 +207,13 @@ public class HistoryStorage {
             messData = Chat.buildMessage(contact, message, contact.isConference() ? localMessage.getAuthor() : chat.getFrom(message),
                     rowData, Chat.isHighlight(message.getProcessedText(), contact.getMyName()));
         }
-        if (!message.isIncoming() && !messData.isMe()) {
+        if (!message.isIncoming() && (messData != null && !messData.isMe())) {
             messData.setIconIndex(localMessage.getState());
         }
         return messData;
     }
 
-    /*public static List<PlainMessage> getNotSendedMessages() {
-        List<PlainMessage> list = new ArrayList<>();
-        Cursor cursor = null;
-        try {
-            cursor = SawimApplication.getDatabaseHelper().getReadableDatabase().query(DatabaseHelper.TABLE_CHAT_HISTORY, null,
-                    DatabaseHelper.INCOMING + " = 1 AND " + DatabaseHelper.SENDING_STATE + " = -1", null, null, null, null, null);
-            if (cursor.moveToLast()) {
-                do {
-                    String protocolId = cursor.getString(cursor.getColumnIndex(DatabaseHelper.ACCOUNT_ID));
-                    String uniqueUserId = cursor.getString(cursor.getColumnIndex(DatabaseHelper.CONTACT_ID));
-                    String messId = cursor.getString(cursor.getColumnIndex(DatabaseHelper.ID));
-                    int sendingState = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.SENDING_STATE));
-                    boolean isIncoming = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.INCOMING)) == 0;
-                    String from = cursor.getString(cursor.getColumnIndex(DatabaseHelper.AUTHOR));
-                    String text = cursor.getString(cursor.getColumnIndex(DatabaseHelper.MESSAGE));
-                    long date = cursor.getLong(cursor.getColumnIndex(DatabaseHelper.DATE));
-                    short rowData = cursor.getShort(cursor.getColumnIndex(DatabaseHelper.ROW_DATA));
-                    //String serverMsgId = cursor.getString(cursor.getColumnIndex(DatabaseHelper.SERVER_MSG_ID));
-                    boolean isMessage = (rowData & MessData.PRESENCE) == 0
-                            && (rowData & MessData.SERVICE) == 0 && (rowData & MessData.PROGRESS) == 0;
-                    if (isMessage) {
-                        Protocol protocol = RosterHelper.getInstance().getProtocol();
-                        PlainMessage message = new PlainMessage(protocol, uniqueUserId, date, text);
-                        message.setMessageId(messId);
-                        list.add(message);
-                    }
-                } while (cursor.moveToPrevious());
-            }
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-        return list;
-    }*/
-
-    public static boolean isMessageExist(String userId, String messageId, String text) {
+    public static boolean isMessageExist(String userId, String messageId) {
         Realm realmDb = RealmDb.realm();
         Message message = realmDb.where(Message.class).equalTo("contactId", userId).equalTo("messageId", messageId).findFirst();
         boolean isMessageExist = message != null;
