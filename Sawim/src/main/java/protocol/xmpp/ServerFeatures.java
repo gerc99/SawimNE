@@ -3,6 +3,7 @@ package protocol.xmpp;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import ru.sawim.SawimApplication;
@@ -23,23 +24,40 @@ public class ServerFeatures {
     private static String verHash = "";
     private String featureList = "";
 
+    public ServerFeatures() {
+        List<String> features = Arrays.asList(SawimApplication.getInstance().getSharedPreferences("ServerFeatures", SawimApplication.MODE_PRIVATE).getString("features", "").replace("[", "").replace("]", "").split(", "));
+        for (String feature : features) {
+            switchFeature(feature);
+        }
+    }
+
     public void parseServerFeatures(XmlNode iqQuery, String id) {
+        List<String> features = new ArrayList<>();
         while (0 < iqQuery.childrenCount()) {
             XmlNode featureNode = iqQuery.popChildNode();
             String feature = featureNode.getAttribute("var");
             if (feature != null) {
-                switch (feature) {
-                    case "http://jabber.org/protocol/muc":
-                        //mucServer = serverDiscoItems.get(id);
-                        break;
-                    case "urn:xmpp:mam:0":
-                        hasMessageArchiveManagement = true;
-                        break;
-                    case "urn:xmpp:carbons:2":
-                        hasCarbon = true;
-                        break;
-                }
+                switchFeature(feature);
+                features.add(feature);
             }
+        }
+        SawimApplication.getInstance().getSharedPreferences("ServerFeatures", SawimApplication.MODE_PRIVATE)
+                .edit().putString("features", Arrays.toString(features.toArray(new String[features.size()])))
+                .commit();
+    }
+
+    private void switchFeature(String feature) {
+        if (feature == null) return;
+        switch (feature) {
+            case "http://jabber.org/protocol/muc":
+                //mucServer = serverDiscoItems.get(id);
+                break;
+            case "urn:xmpp:mam:0":
+                hasMessageArchiveManagement = true;
+                break;
+            case "urn:xmpp:carbons:2":
+                hasCarbon = true;
+                break;
         }
     }
 

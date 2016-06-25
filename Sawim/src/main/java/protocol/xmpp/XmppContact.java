@@ -6,15 +6,20 @@ import protocol.*;
 import ru.sawim.Options;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
+import ru.sawim.chat.message.Message;
 import ru.sawim.comm.*;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.roster.TreeNode;
 import ru.sawim.ui.fragment.menu.MyMenu;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 
 public class XmppContact extends Contact {
+
+    public List<Message> historyMessages = new ArrayList<>();
 
     public XmppContact(String jid, String name) {
         this.userId = jid;

@@ -175,7 +175,7 @@ public class Messages {
                 if (null == id) {
                     id = msg.getId();
                 }
-                setMessageSended(connection, Jid.getBareJid(fullJid), id, PlainMessage.NOTIFY_FROM_CLIENT);
+                setMessageSended(connection, fullJid, id, PlainMessage.NOTIFY_FROM_CLIENT);
                 return;
             }
             if (!isConference && !isError) {
@@ -291,7 +291,7 @@ public class Messages {
         }
         String xmlns = msg.getXmlns();
         if (subject == null && isConference && !isOnlineMessage) {
-            if (HistoryStorage.getHistory(connection.getXmpp().getUserId(), Jid.getBareJid(fullJid)).hasLastMessage(connection.getXmpp().getChat(c), message)) {
+            if (c != null && HistoryStorage.getHistory(connection.getXmpp().getUserId(), Jid.getBareJid(fullJid)).hasLastMessage(connection.getXmpp().getChat(c), message)) {
                 return;
             }
         }
@@ -340,13 +340,15 @@ public class Messages {
                 c = (XmppContact) connection.getXmpp().createTempContact(from, isGroupchat);
                 connection.getXmpp().addLocalContact(c);
             }
-            Message message = new PlainMessage(from, isIncoming ? connection.getXmpp().getUserId() : from, msg.getId(), time, text, !isOnlineMessage, !isIncoming);
+            Message message = new PlainMessage(from, isIncoming ? connection.getXmpp().getUserId() : from,
+                    msg.getId(), time, text, !isOnlineMessage, !isIncoming);
             message.setServerMsgId(serverMsgId);
             if (isGroupchat && fromRes != null) {
                 final XmppServiceContact conf = (XmppServiceContact) c;
                 message.setName(conf.getNick(fromRes));
             }
-            HistoryStorage.getHistory(connection.getProtocol().getUserId(), c.getUserId()).addMessageToHistory(c, message, Chat.getFrom(c, connection.getProtocol(), message), false);
+            c.historyMessages.add(message);
+
             if (query != null) {
                 query.incrementMessageCount();
             }

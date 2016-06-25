@@ -4,12 +4,17 @@ import android.util.Log;;
 
 import protocol.Contact;
 import protocol.Protocol;
+import ru.sawim.chat.Chat;
+import ru.sawim.chat.MessData;
+import ru.sawim.chat.message.Message;
 import ru.sawim.comm.Util;
-import ru.sawim.io.RosterStorage;
 import ru.sawim.listener.OnMoreMessagesLoaded;
+import ru.sawim.modules.history.HistoryStorage;
 import ru.sawim.roster.RosterHelper;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -210,6 +215,14 @@ public class MessageArchiveManagement {
             }
             contact.setHasMessagesLeftOnServer(query.getMessagesCount() > 0);
             query.messagesLoaded(query.getMessagesCount());
+            XmppContact xmppContact = ((XmppContact) contact);
+            final List<MessData> messDataList = new ArrayList<>();
+            for (int i = xmppContact.historyMessages.size() - 1; 0 <= i; --i) {
+                Message message = xmppContact.historyMessages.get(i);
+                messDataList.add(Chat.buildMessage(contact, message, Chat.getFrom(contact, protocol, message), false, Chat.isHighlight(message.getProcessedText(), contact.getMyName())));
+            }
+            HistoryStorage.getHistory(protocol.getUserId(), contact.getUserId()).addText(messDataList);
+
             RosterHelper.getInstance().updateRoster(contact);
             if (RosterHelper.getInstance().getUpdateChatListener() != null) {
                 RosterHelper.getInstance().getUpdateChatListener().updateChat();
@@ -234,6 +247,10 @@ public class MessageArchiveManagement {
             }
             return null;
         }
+    }
+
+    public void clearQueries() {
+        queries.clear();
     }
 
     public class Query {

@@ -71,6 +71,7 @@ import ru.sawim.ui.widget.stickyheadersrecyclerview.StickyRecyclerHeadersDecorat
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -409,6 +410,14 @@ public class ChatFragment extends SawimFragment implements OnUpdateChat, Handler
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (((Xmpp) RosterHelper.getInstance().getProtocol()).getConnection() != null) {
+            ((Xmpp) RosterHelper.getInstance().getProtocol()).getConnection().getMessageArchiveManagement().clearQueries();
+        }
+    }
+
+    @Override
     public void onPause() {
         super.onPause();
         pause(chat);
@@ -613,8 +622,8 @@ public class ChatFragment extends SawimFragment implements OnUpdateChat, Handler
         }
     }
 
-    public void sort() {
-        Collections.sort(getMessagesAdapter().getItems(), new Comparator<MessData>() {
+    public void sort(List<MessData> messDataList) {
+        Collections.sort(messDataList, new Comparator<MessData>() {
             @Override
             public int compare(MessData left, MessData right) {
                 if (left.getTime() < right.getTime()) {
@@ -757,7 +766,6 @@ public class ChatFragment extends SawimFragment implements OnUpdateChat, Handler
             RecyclerView chatListView = chatViewLayout.getChatListsView().getChatListView();
             LinearLayoutManager linearLayoutManager = ((LinearLayoutManager) chatListView.getLayoutManager());
             if (isScroll && !isLoad) {
-                //chatListView.setSelection(newCount == oldCount ? 0 : newCount - oldCount + 1);
                 View v = chatListView.getChildAt(0);
                 final int pxOffset = (v == null) ? 0 : v.getTop();
                 linearLayoutManager.scrollToPositionWithOffset(newCount == oldCount ? 0
@@ -807,21 +815,69 @@ public class ChatFragment extends SawimFragment implements OnUpdateChat, Handler
 
                     List<MessData> messDataList = new ArrayList<>();
                     final int oldCount = getMessagesAdapter().getItemCount();
-                    final long oldTimeStamp = oldCount == 0 ? 0 : getMessagesAdapter().getItem(0).getTime();
+                    long oldTimeStamp = 0;
+                    if (oldCount != 0) {
+                        if (getMessagesAdapter().getItem(0) != null) {
+                            oldTimeStamp = getMessagesAdapter().getItem(0).getTime();
+                        } else if (getMessagesAdapter().getItem(0) == null && getMessagesAdapter().getItem(1) != null) {
+                            oldTimeStamp = getMessagesAdapter().getItem(1).getTime();
+                        }
+                    }
                     if (!isScroll && isLoad) {
                         messDataList = chat.getHistory().addNextListMessages(chat, limit, oldTimeStamp);
                     } else if (isScroll && !isLoad) {
                         messDataList = chat.getHistory().addNextListMessages(chat, HISTORY_MESSAGES_LIMIT, oldTimeStamp);
                     }
                     if (messDataList.isEmpty()) {
+                        if (getMessagesAdapter().getItems().isEmpty() || getMessagesAdapter().getItem(0) != null) {
+                            handler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    getMessagesAdapter().getItems().add(0, null);
+                                    getMessagesAdapter().notifyDataSetChanged();
+                                }
+                            });
+                        }
                         ((Xmpp) RosterHelper.getInstance().getProtocol()).queryMessageArchiveManagement(chat.getContact(), new OnMoreMessagesLoaded() {
                             @Override
                             public void onLoaded(int messagesCount) {
                                 lastServerMessageCount = messagesCount;
-                                //sort();
-                                final List<MessData> messDataList = chat.getHistory().addNextListMessages(chat, HISTORY_MESSAGES_LIMIT, oldTimeStamp);
-                                loaded(messDataList, hasUnreadMessages, isBottomScroll,
-                                        isFirstOpenChat, isScroll, isLoad, oldCount);
+                                XmppContact contact = ((XmppContact) chat.getContact());
+                                final List<ru.sawim.chat.message.Message> historyMessages = contact.historyMessages;
+                                final List<MessData> messDataList = new ArrayList<>();
+                                for (int i = historyMessages.size() - 1; 0 <= i; --i) {
+                                    ru.sawim.chat.message.Message message = historyMessages.get(i);
+                                    MessData messData = Chat.buildMessage(contact, message, contact.isConference() ? message.getName() : chat.getFrom(message),
+                                            false, message.isIncoming() && Chat.isHighlight(message.getProcessedText(), contact.getMyName()));
+                                    if (messData != null) {
+                                        messDataList.add(messData);
+                                    }
+                                }
+                                sort(messDataList);
+
+                                handler.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        for (Iterator<MessData> it = getMessagesAdapter().getItems().iterator(); it.hasNext(); ) {
+                                            MessData mess = it.next();
+                                            if (mess == null) it.remove();
+                                        }
+                                        getMessagesAdapter().getItems().addAll(0, messDataList);
+                                        int newCount = getMessagesAdapter().getItemCount();
+                                        int position = newCount - unreadMessageCount;
+                                        getMessagesAdapter().setPosition(position);
+                                        getMessagesAdapter().notifyDataSetChanged();
+                                        RecyclerView chatListView = chatViewLayout.getChatListsView().getChatListView();
+                                        LinearLayoutManager linearLayoutManager = ((LinearLayoutManager) chatListView.getLayoutManager());
+
+                                        View v = chatListView.getChildAt(0);
+                                        final int pxOffset = (v == null) ? 0 : v.getTop();
+                                        linearLayoutManager.scrollToPositionWithOffset(newCount - oldCount - 1, pxOffset);
+                                        canLoadByScroll = true;
+
+                                        historyMessages.clear();
+                                    }
+                                });
                             }
                         });
                     } else {
@@ -1040,7 +1096,7 @@ public class ChatFragment extends SawimFragment implements OnUpdateChat, Handler
         getMessagesAdapter().setMultiQuoteMode(false);
         for (int i = 0; i < getMessagesAdapter().getItemCount(); ++i) {
             MessData messData = getMessagesAdapter().getItem(i);
-            if (messData.isMarked()) {
+            if (messData != null && messData.isMarked()) {
                 messData.setMarked(false);
             }
         }
@@ -1424,6 +1480,7 @@ public class ChatFragment extends SawimFragment implements OnUpdateChat, Handler
         final Protocol protocol = RosterHelper.getInstance().getProtocol();
         final Contact contact = chat.getContact();
         MessData mData = getMessagesAdapter().getItem(position);
+        if (mData == null) return;
         String msg = mData.getText().toString();
         if (getMessagesAdapter().isMultiQuoteMode()) {
             mData.setMarked(!mData.isMarked());

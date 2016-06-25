@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import protocol.Contact;
@@ -35,6 +36,8 @@ import java.util.List;
 public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHolder>
         implements StickyRecyclerHeadersAdapter<MessagesAdapter.HeaderHolder>, View.OnClickListener {
 
+    private static final int TYPE_ITEM = 1;
+    private static final int TYPE_HEADER = 2;
     private List<MessData> items;
 
     private String query;
@@ -52,6 +55,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
 
     public long getItemId(int position) {
         MessData messData = items.get(position);
+        if (messData == null) return -1;
         return messData.getTime() + messData.getText().length();
     }
 
@@ -76,9 +80,16 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-        MessageItemView item = new MessageItemView(viewGroup.getContext());
-        return new ViewHolder(item);
+    public int getItemViewType(int position) {
+        return getItem(position) == null ? TYPE_HEADER : TYPE_ITEM;
+    }
+
+    @Override
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        if (viewType == TYPE_HEADER) {
+            return new ProgressViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_loading, parent, false));
+        }
+        return new ViewHolder(new MessageItemView(parent.getContext()));
     }
 
     @Override
@@ -86,71 +97,77 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
         if (loadItemsListener != null) {
             loadItemsListener.onLoadItems(index);
         }
-        MessageItemView item = (MessageItemView) viewHolder.itemView;
-        item.setTag(index);
-        Contact contact = RosterHelper.getInstance().getCurrentContact();
-        textLinkClick.setContact(contact.getUserId());
-        item.setOnTextLinkClickListener(textLinkClick);
-        item.setOnClickListener(this);
-
         MessData mData = getItem(index);
-        String nick = mData.getNick();
-        boolean incoming = mData.isIncoming();
-
-        if (SawimApplication.showPicturesInChat) {
-            item.setLinks(mData.getUrlLinks());
-        }
-        item.setLinkTextColor(Scheme.getColor(R.attr.link));
-        item.setTypeface(mData.isHighLight() ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT);
-        item.setLayout(mData.layout);
-        if (mData.isMe() || mData.isPresence()) {
-            item.setBackgroundIndex(MessageItemView.BACKGROUND_NONE);
-            item.setPadding(MessageItemView.PADDING_LEFT + 1, MessageItemView.PADDING_TOP, MessageItemView.PADDING_RIGHT - 1, MessageItemView.PADDING_BOTTOM);
-            item.setNick(0, 0, null, null);
-            item.setMsgTime(0, 0, null, null);
-            item.setCheckImage(null);
-            item.setTextSize(SawimApplication.getFontSize());
-            item.setMsgTextSize(SawimApplication.getFontSize());
-            if (mData.isMe()) {
-                item.setTextColor(Scheme.getColor(incoming ? R.attr.chat_in_msg_text : R.attr.chat_out_msg_text));
-            } else {
-                item.setTextColor(Scheme.getColor(R.attr.chat_in_msg_text));
-            }
+        if (mData == null) {
+            return;
         } else {
-            if (incoming) {
-                item.setBackgroundIndex(MessageItemView.BACKGROUND_INCOMING);
-                item.setPadding(MessageItemView.PADDING_LEFT, MessageItemView.PADDING_TOP, MessageItemView.PADDING_RIGHT, MessageItemView.PADDING_BOTTOM);
-            } else {
-                item.setBackgroundIndex(MessageItemView.BACKGROUND_OUTCOMING);
-                item.setPadding(MessageItemView.PADDING_RIGHT, MessageItemView.PADDING_TOP, MessageItemView.PADDING_LEFT, MessageItemView.PADDING_BOTTOM);
+            MessageItemView item = (MessageItemView) viewHolder.itemView;
+            item.setTag(index);
+            Contact contact = RosterHelper.getInstance().getCurrentContact();
+            textLinkClick.setContact(contact.getUserId());
+            item.setOnTextLinkClickListener(textLinkClick);
+            item.setOnClickListener(this);
+
+            String nick = mData.getNick();
+            boolean incoming = mData.isIncoming();
+
+            if (SawimApplication.showPicturesInChat) {
+                item.setLinks(mData.getUrlLinks());
             }
-            item.setTextSize(SawimApplication.getFontSize());
-            item.setCheckImage(mData.getIconIndex() == Message.ICON_OUT_MSG_FROM_CLIENT ? SawimResources.MESSAGE_ICON_CHECK.getBitmap() : null);
-            item.setNick(Scheme.getColor(incoming ? R.attr.chat_in_msg_text : R.attr.chat_out_msg_text),
-                    SawimApplication.getFontSize(), Typeface.DEFAULT_BOLD, nick);
-            item.setMsgTime(Scheme.getColor(incoming ? R.attr.chat_in_msg_text : R.attr.chat_out_msg_text),
-                    SawimApplication.getFontSize() * 2 / 3, Typeface.DEFAULT, mData.getStrTime());
-            item.setMsgTextSize(SawimApplication.getFontSize());
-            item.setTextColor(Scheme.getColor(mData.getMessColor()));
+            item.setLinkTextColor(Scheme.getColor(R.attr.link));
+            item.setTypeface(mData.isHighLight() ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT);
+            item.setLayout(mData.layout);
+            if (mData.isMe() || mData.isPresence()) {
+                item.setBackgroundIndex(MessageItemView.BACKGROUND_NONE);
+                item.setPadding(MessageItemView.PADDING_LEFT + 1, MessageItemView.PADDING_TOP, MessageItemView.PADDING_RIGHT - 1, MessageItemView.PADDING_BOTTOM);
+                item.setNick(0, 0, null, null);
+                item.setMsgTime(0, 0, null, null);
+                item.setCheckImage(null);
+                item.setTextSize(SawimApplication.getFontSize());
+                item.setMsgTextSize(SawimApplication.getFontSize());
+                if (mData.isMe()) {
+                    item.setTextColor(Scheme.getColor(incoming ? R.attr.chat_in_msg_text : R.attr.chat_out_msg_text));
+                } else {
+                    item.setTextColor(Scheme.getColor(R.attr.chat_in_msg_text));
+                }
+            } else {
+                if (incoming) {
+                    item.setBackgroundIndex(MessageItemView.BACKGROUND_INCOMING);
+                    item.setPadding(MessageItemView.PADDING_LEFT, MessageItemView.PADDING_TOP, MessageItemView.PADDING_RIGHT, MessageItemView.PADDING_BOTTOM);
+                } else {
+                    item.setBackgroundIndex(MessageItemView.BACKGROUND_OUTCOMING);
+                    item.setPadding(MessageItemView.PADDING_RIGHT, MessageItemView.PADDING_TOP, MessageItemView.PADDING_LEFT, MessageItemView.PADDING_BOTTOM);
+                }
+                item.setTextSize(SawimApplication.getFontSize());
+                item.setCheckImage(mData.getIconIndex() == Message.ICON_OUT_MSG_FROM_CLIENT ? SawimResources.MESSAGE_ICON_CHECK.getBitmap() : null);
+                item.setNick(Scheme.getColor(incoming ? R.attr.chat_in_msg_text : R.attr.chat_out_msg_text),
+                        SawimApplication.getFontSize(), Typeface.DEFAULT_BOLD, nick);
+                item.setMsgTime(Scheme.getColor(incoming ? R.attr.chat_in_msg_text : R.attr.chat_out_msg_text),
+                        SawimApplication.getFontSize() * 2 / 3, Typeface.DEFAULT, mData.getStrTime());
+                item.setMsgTextSize(SawimApplication.getFontSize());
+                item.setTextColor(Scheme.getColor(mData.getMessColor()));
+            }
+            if (query != null) {
+                item.setLayout(MessageItemView.makeLayout(
+                        Util.highlightText(query, mData.layout.getText().toString(), Scheme.getColor(R.attr.link)),
+                        Typeface.DEFAULT_BOLD, mData.layout.getWidth()));
+            }
+            if (mData.isMarked() && isMultiQuoteMode) {
+                item.setTextColor(Scheme.getColor(R.attr.item_selected));
+            }
+            item.setShowDivider(position == index);
+            item.repaint();
         }
-        if (query != null) {
-            item.setLayout(MessageItemView.makeLayout(
-                    Util.highlightText(query, mData.layout.getText().toString(), Scheme.getColor(R.attr.link)),
-                    Typeface.DEFAULT_BOLD, mData.layout.getWidth()));
-        }
-        if (mData.isMarked() && isMultiQuoteMode) {
-            item.setTextColor(Scheme.getColor(R.attr.item_selected));
-        }
-        item.setShowDivider(position == index);
-        item.repaint();
     }
 
     @Override
-    public void onViewRecycled(ViewHolder holder) {
-        MessageItemView item = (MessageItemView) holder.itemView;
-        item.setOnTextLinkClickListener(null);
-        item.setOnClickListener(null);
-        super.onViewRecycled(holder);
+    public void onViewRecycled(ViewHolder viewHolder) {
+        if (viewHolder.getItemViewType() == TYPE_ITEM) {
+            MessageItemView item = (MessageItemView) viewHolder.itemView;
+            item.setOnTextLinkClickListener(null);
+            item.setOnClickListener(null);
+        }
+        super.onViewRecycled(viewHolder);
     }
 
     @Override
@@ -185,7 +202,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
     }
 
     public MessData getItem(int i) {
-        if (items.isEmpty() || (items.size() <= i)) return null;
+        //if (items.isEmpty() || items.size() <= i || i < 0) return null;
         return items.get(i);
     }
 
@@ -236,6 +253,14 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
             super(itemView);
 
             header = (TextView) itemView.findViewById(R.id.text);
+        }
+    }
+
+    private class ProgressViewHolder extends ViewHolder {
+        public ProgressViewHolder(View v) {
+            super(v);
+            ProgressBar progressBar = (ProgressBar) v;
+            progressBar.setIndeterminate(true);
         }
     }
 

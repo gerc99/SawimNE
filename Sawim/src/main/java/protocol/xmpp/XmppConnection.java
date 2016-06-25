@@ -1453,13 +1453,13 @@ public final class XmppConnection extends ClientConnection {
     }
 
     public void queryMessageArchiveManagement(Contact contact, OnMoreMessagesLoaded moreMessagesLoadedListener) {
-    /*    if (!serverFeatures.hasMessageArchiveManagement()) return;
+        if (!serverFeatures.hasMessageArchiveManagement()) return;
         if (!contact.isHasMessagesLeftOnServer()) return;
         if (getMessageArchiveManagement().queryInProgress(contact, moreMessagesLoadedListener)) return;
         MessageArchiveManagement.Query query = messageArchiveManagement.prev(this, contact);
         if (query != null) {
             query.setOnMoreMessagesLoaded(moreMessagesLoadedListener);
-        }*/
+        }
     }
 
     public MessageArchiveManagement getMessageArchiveManagement() {

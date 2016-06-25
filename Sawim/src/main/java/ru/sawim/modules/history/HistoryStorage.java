@@ -3,6 +3,8 @@ package ru.sawim.modules.history;
 import android.util.Log;
 
 import io.realm.Realm;
+import io.realm.RealmQuery;
+import io.realm.RealmResults;
 import io.realm.Sort;
 import protocol.Contact;
 import protocol.Protocol;
@@ -40,13 +42,34 @@ public class HistoryStorage {
         addText(md.getId(), md.getIconIndex(), md.isIncoming(), md.getNick(), md.getText().toString(), md.getTime(), md.getRowData(), md.getServerMsgId());
     }
 
+    public void addText(final List<MessData> messDataList) {
+        Realm realm = RealmDb.realm();
+        realm.executeTransactionAsync(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                for (MessData md : messDataList) {
+                    Message message = realm.createObject(Message.class);
+                    message.setContactId(uniqueUserId);
+                    message.setMessageId(md.getId());
+                    message.setIncoming(md.isIncoming());
+                    message.setState(md.getIconIndex());
+                    message.setAuthor(md.getNick());
+                    message.setText(md.getText().toString());
+                    message.setDate(md.getTime());
+                    message.setData(md.getRowData());
+                }
+            }
+        });
+        realm.close();
+    }
+
     public void addText(final String id, final int iconIndex, final boolean isIncoming,
                                      final String nick, final String text, final long time, final short rowData, String serverMsgId) {
         Realm realm = RealmDb.realm();
         realm.executeTransactionAsync(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                Message message = new Message();
+                Message message = realm.createObject(Message.class);
                 message.setContactId(uniqueUserId);
                 message.setMessageId(id);
                 message.setIncoming(isIncoming);
@@ -62,9 +85,11 @@ public class HistoryStorage {
 
     public void updateState(final String messageId, final int state) {
         Realm realm = RealmDb.realm();
+        Log.e("updateState111", uniqueUserId+" "+messageId+" "+state);
         realm.executeTransactionAsync(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
+                Log.e("updateState", messageId+" "+state+" "+realm.where(Message.class).equalTo("contactId", uniqueUserId).findFirst());
                 Message message = realm.where(Message.class).equalTo("contactId", uniqueUserId).equalTo("messageId", messageId).findFirst();
                 message.setState(state);
             }
@@ -153,7 +178,7 @@ public class HistoryStorage {
                     if (localContact != null) {
                         contact = RosterStorage.getContact(protocol, localContact);
                     } else {
-                        contact = protocol.createTempContact(uniqueUserId, false);
+                        contact = protocol.createTempContact(uniqueUserId, uniqueUserId.contains("/"));
                     }
                 }
                 if (contact != null) {
@@ -168,15 +193,16 @@ public class HistoryStorage {
     public synchronized List<MessData> addNextListMessages(final Chat chat, int limit, long timestamp) {
         List<MessData> list = new ArrayList<>();
         Realm realmDb = RealmDb.realm();
-        List<Message> messages;
+        RealmQuery<Message> realmQuery;
         if (timestamp == 0) {
-            messages = realmDb.where(Message.class).equalTo("contactId", uniqueUserId).findAllSorted("date", Sort.DESCENDING);
+            realmQuery = realmDb.where(Message.class).equalTo("contactId", uniqueUserId);
         } else {
-            messages = realmDb.where(Message.class).equalTo("contactId", uniqueUserId).lessThan("date", timestamp).findAllSorted("date", Sort.DESCENDING);
+            realmQuery = realmDb.where(Message.class).equalTo("contactId", uniqueUserId).lessThan("date", timestamp);
         }
-        messages = messages.subList(0, Math.min(limit, messages.size()));
-        for (int i = messages.size() - 1; 0 <= i; --i) {
-            Message localMessage = messages.get(i);
+        final RealmResults<Message> messages = realmQuery.findAllSorted("date", Sort.DESCENDING);
+        List<Message> messagesList = messages.subList(0, Math.min(limit, messages.size()));
+        for (int i = messagesList.size() - 1; 0 <= i; --i) {
+            Message localMessage = messagesList.get(i);
             MessData messData = buildMessage(chat, localMessage);
             if (messData != null) {
                 list.add(messData);
@@ -186,7 +212,7 @@ public class HistoryStorage {
         return list;
     }
 
-    private static MessData buildMessage(Chat chat, Message localMessage) {
+    public static MessData buildMessage(Chat chat, Message localMessage) {
         Contact contact = chat.getContact();
         short rowData = localMessage.getData();
         //String serverMsgId = cursor.getString(cursor.getColumnIndex(DatabaseHelper.SERVER_MSG_ID));
@@ -236,7 +262,7 @@ public class HistoryStorage {
         try {
             Contact contact = RosterHelper.getInstance().getProtocol().getItemByUID(uniqueUserId);
             contact.firstServerMsgId = "";
-            //RosterStorage.updateFirstServerMsgId(contact);
+            RosterStorage.updateFirstServerMsgId(contact);
             RosterHelper.getInstance().getProtocol().getStorage().updateUnreadMessagesCount(protocolId, uniqueUserId, (short) 0);
             Realm realmDb = RealmDb.realm();
             realmDb.executeTransaction(new Realm.Transaction() {
