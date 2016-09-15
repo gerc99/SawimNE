@@ -16,8 +16,10 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 
 import java.util.List;
 
@@ -130,10 +132,12 @@ public class MessageItemView extends View {
             layout = makeLayout(layout.getText(), msgTextTypeface, layoutWidth);
         }
         titleHeight = isAddTitleView ? height - getPaddingTop() : getPaddingTop();
-        if (layout != null)
-            height += layout.getLineTop(layout.getLineCount());
-        if (image != null) {
-            height += image.getIntrinsicHeight();
+
+        if (layout != null && ru.sawim.comm.Util.isImageFile(layout.getText().toString())) {
+            height += getMessageWidth();
+        } else {
+            if (layout != null)
+                height += layout.getLineTop(layout.getLineCount());
         }
         setMeasuredDimension(width, height);
     }
@@ -203,24 +207,23 @@ public class MessageItemView extends View {
         if (imageLink == null) {
             return;
         }
+        Glide.with(getContext())
+                .load(imageLink)
+                .asBitmap()
+                .dontTransform()
+                .dontAnimate()
+                .override(getMessageWidth() - 100, getMessageWidth() - 100)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .fitCenter()
+                .into(new SimpleTarget<Bitmap>() {
 
-        Picasso.with(getContext()).load(imageLink).resize(getMessageWidth(), getMessageWidth())
-                .onlyScaleDown().centerInside().into(new Target() {
-            @Override
-            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                image = new BitmapDrawable(getResources(), bitmap);
-                repaint();
-                invalidate();
-            }
-
-            @Override
-            public void onBitmapFailed(Drawable errorDrawable) {
-            }
-
-            @Override
-            public void onPrepareLoad(Drawable placeHolderDrawable) {
-            }
-        });
+                    @Override
+                    public void onResourceReady(Bitmap bitmap, GlideAnimation<? super Bitmap> glideAnimation) {
+                        image = new BitmapDrawable(getResources(), bitmap);
+                        repaint();
+                        invalidate();
+                    }
+                });
     }
 
     public void setLinkTextColor(int color) {
@@ -285,23 +288,27 @@ public class MessageItemView extends View {
         }
 
         if (image != null) {
-            image.setBounds(getWidth() / 2 - image.getIntrinsicWidth() / 2, titleHeight + getPaddingTop() / 2,
-                    image.getIntrinsicWidth() + getWidth() / 2 - image.getIntrinsicWidth() / 2, image.getIntrinsicHeight() + titleHeight + getPaddingTop() / 2);
+            image.setBounds(getWidth() / 2 - image.getIntrinsicWidth() / 2,
+                    titleHeight + getPaddingTop() / 2 + (getHeight() / 2 - image.getIntrinsicHeight() / 2),
+                    image.getIntrinsicWidth() + getWidth() / 2 - image.getIntrinsicWidth() / 2,
+                    image.getIntrinsicHeight() + titleHeight + getPaddingTop() / 2 + (getHeight() / 2 - image.getIntrinsicHeight() / 2));
             image.draw(canvas);
         }
-        if (layout != null) {
-            canvas.save();
-            messageTextPaint.setColor(msgTextColor);
-            messageTextPaint.setTextAlign(Paint.Align.LEFT);
-            messageTextPaint.setTextSize(msgTextSize * getResources().getDisplayMetrics().scaledDensity);
-            messageTextPaint.setTypeface(msgTextTypeface);
-            int y = titleHeight + getPaddingTop() / 2;
-            if (image != null) {
-                y += image.getIntrinsicHeight();
+        if (!ru.sawim.comm.Util.isImageFile(layout.getText().toString())) {
+            if (layout != null) {
+                canvas.save();
+                messageTextPaint.setColor(msgTextColor);
+                messageTextPaint.setTextAlign(Paint.Align.LEFT);
+                messageTextPaint.setTextSize(msgTextSize * getResources().getDisplayMetrics().scaledDensity);
+                messageTextPaint.setTypeface(msgTextTypeface);
+                int y = titleHeight + getPaddingTop() / 2;
+                if (image != null) {
+                    y += image.getIntrinsicHeight();
+                }
+                canvas.translate(getPaddingLeft() * 2, y);
+                layout.draw(canvas);
+                canvas.restore();
             }
-            canvas.translate(getPaddingLeft() * 2, y);
-            layout.draw(canvas);
-            canvas.restore();
         }
     }
 

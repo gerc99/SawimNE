@@ -44,11 +44,11 @@ public class HistoryStorage {
 
     public void addText(final List<MessData> messDataList) {
         Realm realm = RealmDb.realm();
-        realm.executeTransactionAsync(new Realm.Transaction() {
+        realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
                 for (MessData md : messDataList) {
-                    Message message = realm.createObject(Message.class);
+                    Message message = new Message();
                     message.setContactId(uniqueUserId);
                     message.setMessageId(md.getId());
                     message.setIncoming(md.isIncoming());
@@ -57,6 +57,7 @@ public class HistoryStorage {
                     message.setText(md.getText().toString());
                     message.setDate(md.getTime());
                     message.setData(md.getRowData());
+                    realm.copyToRealmOrUpdate(message);
                 }
             }
         });
@@ -66,10 +67,10 @@ public class HistoryStorage {
     public void addText(final String id, final int iconIndex, final boolean isIncoming,
                                      final String nick, final String text, final long time, final short rowData, String serverMsgId) {
         Realm realm = RealmDb.realm();
-        realm.executeTransactionAsync(new Realm.Transaction() {
+        realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                Message message = realm.createObject(Message.class);
+                Message message = new Message();
                 message.setContactId(uniqueUserId);
                 message.setMessageId(id);
                 message.setIncoming(isIncoming);
@@ -78,6 +79,7 @@ public class HistoryStorage {
                 message.setText(text);
                 message.setDate(time);
                 message.setData(rowData);
+                realm.copyToRealmOrUpdate(message);
             }
         });
         realm.close();
@@ -85,11 +87,9 @@ public class HistoryStorage {
 
     public void updateState(final String messageId, final int state) {
         Realm realm = RealmDb.realm();
-        Log.e("updateState111", uniqueUserId+" "+messageId+" "+state);
         realm.executeTransactionAsync(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                Log.e("updateState", messageId+" "+state+" "+realm.where(Message.class).equalTo("contactId", uniqueUserId).findFirst());
                 Message message = realm.where(Message.class).equalTo("contactId", uniqueUserId).equalTo("messageId", messageId).findFirst();
                 message.setState(state);
             }
@@ -190,8 +190,7 @@ public class HistoryStorage {
         return list;
     }
 
-    public synchronized List<MessData> addNextListMessages(final Chat chat, int limit, long timestamp) {
-        List<MessData> list = new ArrayList<>();
+    public synchronized RealmResults<Message> getMessages(long timestamp) {
         Realm realmDb = RealmDb.realm();
         RealmQuery<Message> realmQuery;
         if (timestamp == 0) {
@@ -200,6 +199,13 @@ public class HistoryStorage {
             realmQuery = realmDb.where(Message.class).equalTo("contactId", uniqueUserId).lessThan("date", timestamp);
         }
         final RealmResults<Message> messages = realmQuery.findAllSorted("date", Sort.DESCENDING);
+        realmDb.close();
+        return messages;
+    }
+
+    public synchronized List<MessData> addNextListMessages(final Chat chat, int limit, long timestamp) {
+        List<MessData> list = new ArrayList<>();
+        final RealmResults<Message> messages = getMessages(timestamp);
         List<Message> messagesList = messages.subList(0, Math.min(limit, messages.size()));
         for (int i = messagesList.size() - 1; 0 <= i; --i) {
             Message localMessage = messagesList.get(i);
@@ -208,7 +214,6 @@ public class HistoryStorage {
                 list.add(messData);
             }
         }
-        realmDb.close();
         return list;
     }
 
@@ -271,6 +276,7 @@ public class HistoryStorage {
                     realm.where(Message.class).equalTo("contactId", uniqueUserId).findAll().deleteAllFromRealm();
                 }
             });
+            realmDb.close();
         } catch (Exception e) {
             DebugLog.panic(e);
         }

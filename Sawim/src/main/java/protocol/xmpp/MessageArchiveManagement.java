@@ -214,14 +214,16 @@ public class MessageArchiveManagement {
             if (contact.setLastMessageTransmitted(query.getEnd())) {
             }
             contact.setHasMessagesLeftOnServer(query.getMessagesCount() > 0);
-            query.messagesLoaded(query.getMessagesCount());
             XmppContact xmppContact = ((XmppContact) contact);
             final List<MessData> messDataList = new ArrayList<>();
-            for (int i = xmppContact.historyMessages.size() - 1; 0 <= i; --i) {
+            for (int i = 0; i < xmppContact.historyMessages.size(); ++i) {
                 Message message = xmppContact.historyMessages.get(i);
                 messDataList.add(Chat.buildMessage(contact, message, Chat.getFrom(contact, protocol, message), false, Chat.isHighlight(message.getProcessedText(), contact.getMyName())));
             }
             HistoryStorage.getHistory(protocol.getUserId(), contact.getUserId()).addText(messDataList);
+
+            query.messagesLoaded(query.getMessagesCount());
+            xmppContact.historyMessages.clear();
 
             RosterHelper.getInstance().updateRoster(contact);
             if (RosterHelper.getInstance().getUpdateChatListener() != null) {

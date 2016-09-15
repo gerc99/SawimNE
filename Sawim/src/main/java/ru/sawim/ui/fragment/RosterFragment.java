@@ -459,6 +459,7 @@ public class RosterFragment extends SawimFragment implements View.OnClickListene
     @Override
     public void onItemClick(View view, int position) {
         TreeNode treeNode = getRosterAdapter().getItem(position);
+        if (treeNode == null) return;
         if (getMode() == MODE_SHARE || getMode() == MODE_SHARE_TEXT) {
             if (treeNode.getType() == TreeNode.CONTACT) {
                 sharing(((Contact) treeNode).getProtocol(), (Contact) treeNode);

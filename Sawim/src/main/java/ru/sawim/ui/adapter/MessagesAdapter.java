@@ -8,13 +8,18 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import io.realm.Realm;
+import io.realm.RealmResults;
+import io.realm.Sort;
 import protocol.Contact;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.SawimResources;
 import ru.sawim.Scheme;
+import ru.sawim.chat.ChatHistory;
 import ru.sawim.chat.MessData;
 import ru.sawim.chat.message.Message;
+import ru.sawim.modules.history.HistoryStorage;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.text.OnTextLinkClick;
 import ru.sawim.ui.widget.Util;
@@ -22,8 +27,8 @@ import ru.sawim.ui.widget.chat.MessageItemView;
 import ru.sawim.ui.widget.stickyheadersrecyclerview.StickyRecyclerHeadersAdapter;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -36,30 +41,36 @@ import java.util.List;
 public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHolder>
         implements StickyRecyclerHeadersAdapter<MessagesAdapter.HeaderHolder>, View.OnClickListener {
 
-    private static final int TYPE_ITEM = 1;
-    private static final int TYPE_HEADER = 2;
-    private List<MessData> items;
+    private RealmResults<ru.sawim.db.model.Message> items;
+    private HashMap<String, MessData> itemsCache = new HashMap<>();
 
     private String query;
     private boolean isMultiQuoteMode;
+    public boolean showLoader;
     private int position;
     private OnLoadItemsListener loadItemsListener;
     private OnItemClickListener itemClickListener;
     private OnTextLinkClick textLinkClick;
+    String userId;
 
-    public MessagesAdapter() {
-        items = new ArrayList<>();
+    public MessagesAdapter(Realm realmDb, String userId) {
+        this.userId = userId;
+        items = realmDb.where(ru.sawim.db.model.Message.class).equalTo("contactId", userId).findAllSorted("date", Sort.ASCENDING);
         textLinkClick = new OnTextLinkClick();
         setHasStableIds(true);
     }
 
-    public long getItemId(int position) {
-        MessData messData = items.get(position);
-        if (messData == null) return -1;
-        return messData.getTime() + messData.getText().length();
+    public void setItems(RealmResults<ru.sawim.db.model.Message> items) {
+        this.items = items;
     }
 
-    public List<MessData> getItems() {
+    public long getItemId(int position) {
+        ru.sawim.db.model.Message messData = getItem(position);
+        if (messData == null) return -1;
+        return messData.getDate() + messData.getText().length();
+    }
+
+    public List<ru.sawim.db.model.Message> getItems() {
         return items;
     }
 
@@ -80,15 +91,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
     }
 
     @Override
-    public int getItemViewType(int position) {
-        return getItem(position) == null ? TYPE_HEADER : TYPE_ITEM;
-    }
-
-    @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        if (viewType == TYPE_HEADER) {
-            return new ProgressViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_loading, parent, false));
-        }
         return new ViewHolder(new MessageItemView(parent.getContext()));
     }
 
@@ -97,10 +100,10 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
         if (loadItemsListener != null) {
             loadItemsListener.onLoadItems(index);
         }
-        MessData mData = getItem(index);
-        if (mData == null) {
+        if (showLoader && index == 0) {
             return;
         } else {
+            MessData mData = getMessData(getItem(index));
             MessageItemView item = (MessageItemView) viewHolder.itemView;
             item.setTag(index);
             Contact contact = RosterHelper.getInstance().getCurrentContact();
@@ -160,23 +163,24 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
         }
     }
 
-    @Override
-    public void onViewRecycled(ViewHolder viewHolder) {
-        if (viewHolder.getItemViewType() == TYPE_ITEM) {
-            MessageItemView item = (MessageItemView) viewHolder.itemView;
-            item.setOnTextLinkClickListener(null);
-            item.setOnClickListener(null);
+    public MessData getMessData(ru.sawim.db.model.Message message) {
+        MessData messData = itemsCache.get(message.getMessageId());
+        if (messData == null) {
+            messData = HistoryStorage.buildMessage(ChatHistory.instance.getChat(userId), message);
+            itemsCache.put(message.getMessageId(), messData);
         }
-        super.onViewRecycled(viewHolder);
+        return messData;
     }
 
     @Override
     public long getHeaderId(int position) {
-        MessData current = getItem(position);
-        if (current != null) {
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTimeInMillis(current.getTime());
-            return calendar.get(Calendar.DATE);
+        if (getItem(position) != null) {
+            MessData current = getMessData(getItem(position));
+            if (current != null) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTimeInMillis(current.getTime());
+                return calendar.get(Calendar.DATE);
+            }
         }
         return -1;
     }
@@ -190,7 +194,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
 
     @Override
     public void onBindHeaderViewHolder(HeaderHolder holder, int position) {
-        MessData current = getItem(position);
+        MessData current = getMessData(getItem(position));
         if (current != null) {
             holder.header.setText(formatDate(current.getTime()));
         }
@@ -198,11 +202,12 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
 
     @Override
     public int getItemCount() {
+        if (items == null) return 0;
         return items.size();
     }
 
-    public MessData getItem(int i) {
-        //if (items.isEmpty() || items.size() <= i || i < 0) return null;
+    public ru.sawim.db.model.Message getItem(int i) {
+        if (items.isEmpty() || items.size() <= i || i < 0) return null;
         return items.get(i);
     }
 
@@ -233,6 +238,19 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
     public void onClick(View v) {
         if (itemClickListener != null)
             itemClickListener.onItemClick(v, (Integer) v.getTag());
+    }
+
+    public void showLoader() {
+        showLoader = true;
+        notifyDataSetChanged();
+    }
+
+    public void hideLoader() {
+        showLoader = false;
+    }
+
+    public boolean isLoader() {
+        return showLoader;
     }
 
     public interface OnLoadItemsListener {

@@ -90,8 +90,8 @@ public class Presences {
                 return;
             }
             if (showError) {
-                connection.getXmpp().addMessage(new SystemNotice(connection.getXmpp(),
-                        SystemNotice.SYS_NOTICE_ERROR, from, connection.getError(errorNode)));
+                //connection.getXmpp().addMessage(new SystemNotice(connection.getXmpp(),
+                //        SystemNotice.SYS_NOTICE_ERROR, from, connection.getError(errorNode)));
             }
 
             Contact c = connection.getXmpp().getItemByUID(from);

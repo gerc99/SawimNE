@@ -60,7 +60,7 @@ public class AvatarCache {
                         if (TextUtils.isEmpty(hash)) {
                             String character = String.valueOf(nick.charAt(0));
                             bitmap = Avatars.getRoundedBitmap(character, Avatars.getColorForName(character), Color.WHITE, AVATAR_SIZE);
-                            save(getFile(id, character), bitmap);
+                            //save(getFile(id, character), bitmap);
                             post(bitmap, id, onImageLoadListener);
                         } else {
                             File file = getFile(id, hash);

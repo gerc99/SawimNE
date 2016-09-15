@@ -69,7 +69,7 @@ public class SawimApplication extends Application {
             + "/" + android.os.Build.VERSION.RELEASE;
     public static final String DEFAULT_SERVER = "jabber.ru";
     public static final String DEFAULT_CONFERENCE_SERVER = "conference." + DEFAULT_SERVER;
-    public static final int AVATAR_SIZE = 56;
+    public static final int AVATAR_SIZE = 64;
 
     public static boolean returnFromAcc = false;
     private boolean paused = true;
@@ -354,6 +354,7 @@ public class SawimApplication extends Application {
     public void setCanForegroundService(boolean canForegroundService) {
         this.canForegroundService = canForegroundService;
         if (!checkPlayServices || canForegroundService) {
+            this.canForegroundService = !checkPlayServices;
             serviceConnection.send(Message.obtain(null, SawimService.START_FOREGROUND_SERVICE));
         } else {
             serviceConnection.send(Message.obtain(null, SawimService.STOP_FOREGROUND_SERVICE));

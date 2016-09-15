@@ -221,6 +221,11 @@ public class Messages {
                     msg.removeNode(XmlConstants.S_URL);
                     msg.removeNode(XmlConstants.S_DESC);
                 }
+                XmlNode thumbnailNode = msg.getXNode("urn:xmpp:thumbs:1");
+                String width = thumbnailNode.getAttribute("width");
+                String height = thumbnailNode.getAttribute("height");
+                String uri = thumbnailNode.getAttribute("uri");
+                String mediaType = thumbnailNode.getAttribute("media-type");
             }
 
             if (!isGroupchat && msg.contains("request") && (null != msg.getId())) {
@@ -347,7 +352,12 @@ public class Messages {
                 final XmppServiceContact conf = (XmppServiceContact) c;
                 message.setName(conf.getNick(fromRes));
             }
-            c.historyMessages.add(message);
+            if (!TextUtils.isEmpty(text)) {
+                c.historyMessages.add(message);
+
+                //HistoryStorage.getHistory(connection.getProtocol().getUserId(), c.getUserId())
+                //        .addMessageToHistory(c, message, Chat.getFrom(c, connection.getProtocol(), message), false);
+            }
 
             if (query != null) {
                 query.incrementMessageCount();
