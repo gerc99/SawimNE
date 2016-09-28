@@ -5,6 +5,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import ru.sawim.R;
+import ru.sawim.SawimApplication;
 import ru.sawim.ui.fragment.StartWindowFragment;
 
 /**
@@ -32,7 +33,14 @@ public class AccountsListActivity extends BaseActivity {
             if (savedInstanceState != null) return;
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             StartWindowFragment newFragment = new StartWindowFragment();
-            newFragment.init(0, null);
+            newFragment.init(0, new StartWindowFragment.OnAddListener() {
+                @Override
+                public void onAdd() {
+                    if (!SawimApplication.isManyPane()) {
+                        finish();
+                    }
+                }
+            });
             newFragment.setArguments(getIntent().getExtras());
             transaction.add(R.id.fragment_container, newFragment, StartWindowFragment.TAG);
             transaction.commit();

@@ -216,10 +216,10 @@ public class RosterStorage {
 
     public void setOfflineStatuses(final Protocol protocol) {
         Realm realm = RealmDb.realm();
-        final List<Contact> localContacts = realm.where(Contact.class).findAll();
         realm.executeTransactionAsync(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
+                final List<Contact> localContacts = realm.where(Contact.class).findAll();
                 for (Contact contact : localContacts) {
                     contact.setStatus(StatusInfo.STATUS_OFFLINE);
                     if (contact.isConference()) {

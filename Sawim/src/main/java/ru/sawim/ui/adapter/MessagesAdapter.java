@@ -51,7 +51,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
     private OnLoadItemsListener loadItemsListener;
     private OnItemClickListener itemClickListener;
     private OnTextLinkClick textLinkClick;
-    String userId;
+    private String userId;
 
     public MessagesAdapter(Realm realmDb, String userId) {
         this.userId = userId;
@@ -96,6 +96,11 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
     }
 
     @Override
+    public boolean onFailedToRecycleView(ViewHolder holder) {
+        return true;
+    }
+
+    @Override
     public void onBindViewHolder(ViewHolder viewHolder, int index) {
         if (loadItemsListener != null) {
             loadItemsListener.onLoadItems(index);
@@ -113,13 +118,12 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
 
             String nick = mData.getNick();
             boolean incoming = mData.isIncoming();
-
-            if (SawimApplication.showPicturesInChat) {
-                item.setLinks(mData.getUrlLinks());
-            }
             item.setLinkTextColor(Scheme.getColor(R.attr.link));
             item.setTypeface(mData.isHighLight() ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT);
             item.setLayout(mData.layout);
+            if (SawimApplication.showPicturesInChat) {
+                item.setLinks(mData.getUrlLinks());
+            }
             if (mData.isMe() || mData.isPresence()) {
                 item.setBackgroundIndex(MessageItemView.BACKGROUND_NONE);
                 item.setPadding(MessageItemView.PADDING_LEFT + 1, MessageItemView.PADDING_TOP, MessageItemView.PADDING_RIGHT - 1, MessageItemView.PADDING_BOTTOM);

@@ -184,7 +184,9 @@ public class Util {
     private static final int FULL_DATE_FLAGS = DateUtils.FORMAT_SHOW_TIME
             | DateUtils.FORMAT_ABBREV_ALL | DateUtils.FORMAT_SHOW_DATE;
     public static String getLocalDateString(long gmtDate, boolean onlyTime) {
-        return DateUtils.formatDateTime(SawimApplication.getContext(), new Date(gmtDate).getTime(),
+        Calendar c = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+        c.setTimeInMillis(gmtDate);
+        return DateUtils.formatDateTime(SawimApplication.getContext(), c.getTime().getTime(),
                     onlyTime ? SHORT_DATE_FLAGS : FULL_DATE_FLAGS);
     }
 
@@ -315,7 +317,11 @@ public class Util {
 
     public static String notUrls(String str) {
         str = StringConvertor.notNull(str);
-        return (-1 != str.indexOf("http://")) ? "" : str;
+        return (str.contains("http://")) || str.contains("https://") ? "" : str;
+    }
+
+    public static boolean isUrlContains(String text) {
+        return text.contains("http://") || text.contains("https://");
     }
 
     public static boolean isUrl(String text) {

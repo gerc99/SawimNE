@@ -8,10 +8,14 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.text.*;
 import android.text.style.BackgroundColorSpan;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -71,12 +75,14 @@ public class MessageItemView extends View {
 
     private int textY;
 
+    @Nullable
     private Layout layout;
     private TextLinkClickListener textLinkClickListener;
     private boolean isSecondTap;
     private boolean isLongTap;
     private boolean isShowDivider = false;
     private int titleHeight;
+    boolean isUrl;
 
     public MessageItemView(Context context) {
         super(context);
@@ -95,7 +101,7 @@ public class MessageItemView extends View {
         textPaint.setTextSize(size * getResources().getDisplayMetrics().scaledDensity);
     }
 
-    public void setLayout(Layout layout) {
+    public void setLayout(@Nullable Layout layout) {
         this.layout = layout;
     }
 
@@ -133,12 +139,11 @@ public class MessageItemView extends View {
         }
         titleHeight = isAddTitleView ? height - getPaddingTop() : getPaddingTop();
 
-        if (layout != null && ru.sawim.comm.Util.isImageFile(layout.getText().toString())) {
+        if (isUrl) {
             height += getMessageWidth();
-        } else {
-            if (layout != null)
-                height += layout.getLineTop(layout.getLineCount());
         }
+        if (layout != null)
+            height += layout.getLineTop(layout.getLineCount());
         setMeasuredDimension(width, height);
     }
 
@@ -199,31 +204,37 @@ public class MessageItemView extends View {
     }
 
     public void setLinks(List<String> links) {
-        image = null;
-        repaint();
-        invalidate();
-
         String imageLink = getFirstImageLink(links);
+        if (layout != null) {
+            isUrl = ru.sawim.comm.Util.isUrlContains(layout.getText().toString());
+        } else {
+            isUrl = links != null && !links.isEmpty();
+        }
+        image = null;
+
+        SimpleTarget<Bitmap> target = new SimpleTarget<Bitmap>(getMessageWidth(), getMessageWidth() - getMessageWidth() / 2) {
+
+            @Override
+            public void onResourceReady(Bitmap bitmap, GlideAnimation<? super Bitmap> glideAnimation) {
+                image = new BitmapDrawable(getResources(), bitmap);
+                repaint();
+                invalidate();
+            }
+        };
+        Glide.clear(target);
         if (imageLink == null) {
             return;
         }
         Glide.with(getContext())
                 .load(imageLink)
                 .asBitmap()
+                .centerCrop()
                 .dontTransform()
                 .dontAnimate()
-                .override(getMessageWidth() - 100, getMessageWidth() - 100)
+                .placeholder(new ColorDrawable(ContextCompat.getColor(getContext(), R.color.accent)))
+                .error(new ColorDrawable(ContextCompat.getColor(getContext(), R.color.accent)))
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .fitCenter()
-                .into(new SimpleTarget<Bitmap>() {
-
-                    @Override
-                    public void onResourceReady(Bitmap bitmap, GlideAnimation<? super Bitmap> glideAnimation) {
-                        image = new BitmapDrawable(getResources(), bitmap);
-                        repaint();
-                        invalidate();
-                    }
-                });
+                .into(target);
     }
 
     public void setLinkTextColor(int color) {
@@ -288,27 +299,26 @@ public class MessageItemView extends View {
         }
 
         if (image != null) {
-            image.setBounds(getWidth() / 2 - image.getIntrinsicWidth() / 2,
-                    titleHeight + getPaddingTop() / 2 + (getHeight() / 2 - image.getIntrinsicHeight() / 2),
-                    image.getIntrinsicWidth() + getWidth() / 2 - image.getIntrinsicWidth() / 2,
-                    image.getIntrinsicHeight() + titleHeight + getPaddingTop() / 2 + (getHeight() / 2 - image.getIntrinsicHeight() / 2));
+            int textHeight = layout.getLineTop(layout.getLineCount());
+            image.setBounds(getPaddingLeft() * 2 + (image.getIntrinsicWidth() > getMessageWidth() ? 0 : getMessageWidth() / 2 - image.getIntrinsicWidth() / 2),
+                    titleHeight + getPaddingTop() / 2,
+                    getMessageWidth() - (image.getIntrinsicWidth() > getMessageWidth() ? 0 : getMessageWidth() / 2 - image.getIntrinsicWidth() / 2),
+                    getHeight() - getPaddingTop() / 2 - textHeight - (((getHeight() - textHeight) / 2) - image.getIntrinsicHeight() / 2));
             image.draw(canvas);
         }
-        if (!ru.sawim.comm.Util.isImageFile(layout.getText().toString())) {
-            if (layout != null) {
-                canvas.save();
-                messageTextPaint.setColor(msgTextColor);
-                messageTextPaint.setTextAlign(Paint.Align.LEFT);
-                messageTextPaint.setTextSize(msgTextSize * getResources().getDisplayMetrics().scaledDensity);
-                messageTextPaint.setTypeface(msgTextTypeface);
-                int y = titleHeight + getPaddingTop() / 2;
-                if (image != null) {
-                    y += image.getIntrinsicHeight();
-                }
-                canvas.translate(getPaddingLeft() * 2, y);
-                layout.draw(canvas);
-                canvas.restore();
+        if (layout != null) {
+            canvas.save();
+            messageTextPaint.setColor(msgTextColor);
+            messageTextPaint.setTextAlign(Paint.Align.LEFT);
+            messageTextPaint.setTextSize(msgTextSize * getResources().getDisplayMetrics().scaledDensity);
+            messageTextPaint.setTypeface(msgTextTypeface);
+            int y = titleHeight + getPaddingTop() / 2;
+            if (image != null) {
+                y += getMessageWidth();
             }
+            canvas.translate(getPaddingLeft() * 2, y);
+            layout.draw(canvas);
+            canvas.restore();
         }
     }
 
@@ -336,7 +346,7 @@ public class MessageItemView extends View {
     private static final BackgroundColorSpan linkHighlightColor = new BackgroundColorSpan(Scheme.getColor(R.attr.link_highlight));
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (layout.getText() == null) return super.onTouchEvent(event);
+        if (layout != null && layout.getText() == null) return super.onTouchEvent(event);
         if (layout.getText() instanceof Spannable) {
             final Spannable buffer = (Spannable) layout.getText();
             int action = event.getAction();
@@ -356,7 +366,9 @@ public class MessageItemView extends View {
                 Runnable longPressed = new Runnable() {
                     public void run() {
                         if (textLinkClickListener != null && !isSecondTap && !isLongTap) {
-                            getParent().requestDisallowInterceptTouchEvent(true);
+                            if (getParent() != null) {
+                                getParent().requestDisallowInterceptTouchEvent(true);
+                            }
                             isLongTap = true;
                             textLinkClickListener.onTextLinkClick(MessageItemView.this, buildUrl(urlSpans), true);
                         }
@@ -406,9 +418,9 @@ public class MessageItemView extends View {
             return null;
         }
         for (String link : links) {
-            if (ru.sawim.comm.Util.isImageFile(link)) {
+            //if (ru.sawim.comm.Util.isImageFile(link)) {
                 return link;
-            }
+            //}
         }
         return links.get(0);
     }

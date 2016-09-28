@@ -7,6 +7,7 @@ import java.util.List;
 
 import protocol.Contact;
 import ru.sawim.R;
+import ru.sawim.SawimApplication;
 import ru.sawim.chat.message.Message;
 import ru.sawim.chat.message.PlainMessage;
 import ru.sawim.text.TextFormatter;
@@ -43,7 +44,9 @@ public final class MessData {
         strTime = ru.sawim.comm.Util.getLocalDateString(time, true);
 
         CharSequence parsedText = parsedText(currentContact, text);
-        layout = MessageItemView.buildLayout(parsedText, isHighLight ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT);
+        if (!SawimApplication.PICS_HOST.contains(text)) {
+            layout = MessageItemView.buildLayout(parsedText, isHighLight ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT);
+        }
     }
 
     public MessData(Contact currentContact, String id, long time, String text, String nick, short flags) {

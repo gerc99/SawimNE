@@ -23,7 +23,7 @@ import ru.sawim.ui.widget.Util;
 public class RosterItemView extends View {
 
     private static final int PADDING_W = Util.dipToPixels(SawimApplication.getContext(), 14);
-    private static final int PADDING_H = Util.dipToPixels(SawimApplication.getContext(), 15);
+    private static final int PADDING_H = Util.dipToPixels(SawimApplication.getContext(), 17);
 
     public String itemName;
     public String itemDesc;
@@ -250,8 +250,8 @@ public class RosterItemView extends View {
         if (isShowDivider) {
             paintDivider.setColor(Scheme.getColor(R.attr.list_divider));
             paintDivider.setStrokeWidth(Util.dipToPixels(getContext(), isLayer ? 2 : 1));
-            canvas.drawLine(getPaddingLeft() + (itemFirstImage == null ? 0 : itemFirstImage.getWidth()),
-                    getScrollY() + getMeasuredHeight(), getWidth() - getPaddingRight(), getScrollY() + getMeasuredHeight(), paintDivider);
+            canvas.drawLine(textX,
+                    getScrollY() + getMeasuredHeight(), getWidth(), getScrollY() + getMeasuredHeight(), paintDivider);
         }
     }
 }

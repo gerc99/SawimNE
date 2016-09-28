@@ -350,6 +350,8 @@ public class ChatFragment extends SawimFragment implements OnUpdateChat, Handler
         unregisterForContextMenu(nickList);
         nickList.addOnItemTouchListener(null);
         nickList.setOnTouchListener(null);
+
+        realmDb.close();
     }
 
     public boolean hasBack() {
@@ -417,7 +419,6 @@ public class ChatFragment extends SawimFragment implements OnUpdateChat, Handler
         if (((Xmpp) RosterHelper.getInstance().getProtocol()).getConnection() != null) {
             ((Xmpp) RosterHelper.getInstance().getProtocol()).getConnection().getMessageArchiveManagement().clearQueries();
         }
-        realmDb.close();
     }
 
     @Override

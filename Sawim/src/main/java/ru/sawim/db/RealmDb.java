@@ -27,9 +27,9 @@ public class RealmDb {
             @Override
             public void execute(Realm realm) {
                 if (entity instanceof Iterable) {
-                    realm().copyToRealmOrUpdate((Iterable) entity);
+                    realm.copyToRealmOrUpdate((Iterable) entity);
                 } else if (entity instanceof RealmObject) {
-                    realm().copyToRealmOrUpdate((RealmObject) entity);
+                    realm.copyToRealmOrUpdate((RealmObject) entity);
                 } else {
                     throw new IllegalArgumentException("Entity must extend RealmObject");
                 }

@@ -227,6 +227,7 @@ public class StartWindowFragment extends Fragment {
     }
 
     private void back() {
+        Util.hideKeyboard(getActivity());
         if (isEdit && !SawimApplication.isManyPane()) {
             getActivity().finish();
             return;
@@ -235,7 +236,6 @@ public class StartWindowFragment extends Fragment {
             ((BaseActivity) getActivity()).recreateActivity();
         else
             getActivity().getSupportFragmentManager().popBackStack();
-        Util.hideKeyboard(getActivity());
     }
 
     public interface OnAddListener {
