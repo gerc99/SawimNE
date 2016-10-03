@@ -104,9 +104,9 @@ public class ServerFeatures {
         features.add("jabber:iq:last");
         features.add("jabber:iq:version");
         features.add("urn:xmpp:attention:0");
-        features.add("urn:xmpp:time");
-        features.add("urn:xmpp:mam:0");
         features.add("urn:xmpp:carbons:2");
+        features.add("urn:xmpp:mam:0");
+        features.add("urn:xmpp:time");
         verHash = getVerHash(features);
         featureList = getFeatures(features);
     }
