@@ -32,9 +32,6 @@ dependencies {
     compile 'com.squareup.okhttp3:okhttp:3.2.0'
 
     compile 'com.google.android.gms:play-services-gcm:9.2.1'
-    compile('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
-        transitive = true;
-    }
 
     //debugCompile 'com.squareup.leakcanary:leakcanary-android:1.4-beta2'
     //releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'

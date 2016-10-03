@@ -18,16 +18,13 @@ import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-import com.crashlytics.android.Crashlytics;
 import com.github.anrwatchdog.ANRWatchDog;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
 import de.duenndns.ssl.MemorizingTrustManager;
-import io.fabric.sdk.android.Fabric;
 import protocol.Protocol;
 import protocol.xmpp.Xmpp;
-import ru.sawim.chat.ChatHistory;
 import ru.sawim.comm.JLocale;
 import ru.sawim.db.RealmDb;
 import ru.sawim.gcm.Preferences;
@@ -111,7 +108,7 @@ public class SawimApplication extends Application {
         VERSION = getVersion();
         //new ANRWatchDog().start();
         Thread.setDefaultUncaughtExceptionHandler(ExceptionHandler.inContext(getContext()));
-        Fabric.with(this, new Crashlytics());
+
         checkPlayServices = checkPlayServices();
         canForegroundService = !checkPlayServices;
          //    refWatcher = LeakCanary.install(this);
