@@ -12,12 +12,9 @@ package protocol.xmpp;
 import protocol.net.TcpSocket;
 import ru.sawim.SawimException;
 import ru.sawim.modules.DebugLog;
-import ru.sawim.modules.zlib.ZLibInputStream;
-import ru.sawim.modules.zlib.ZLibOutputStream;
 
 import javax.net.ssl.SSLContext;
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
@@ -29,20 +26,10 @@ final class Socket implements Runnable {
     private byte[] inputBuffer = new byte[1024];
     private int inputBufferLength = 0;
     public int inputBufferIndex = 0;
-    private ZLibInputStream zIn;
-    private ZLibOutputStream zOut;
-    private boolean compressed;
     private boolean secured;
     private final LinkedBlockingQueue<Object> read = new LinkedBlockingQueue<>();
 
     public Socket() {
-    }
-
-    public void startCompression() throws IOException, NoSuchAlgorithmException {
-        zIn = new ZLibInputStream(socket.getIs());
-        zOut = new ZLibOutputStream(socket.getOs());
-        compressed = true;
-        DebugLog.println("zlib is working");
     }
 
     public void startTls(SSLContext sslctx, String host) {
@@ -61,17 +48,6 @@ final class Socket implements Runnable {
     }
 
     private int read(byte[] data) throws SawimException {
-        if (compressed) {
-            int bRead = 0;
-            try {
-                bRead = zIn.read(data);
-            } catch (IOException | IllegalStateException ignored) {
-            }
-            if (-1 == bRead) {
-                throw new SawimException(120, 13);
-            }
-            return bRead;
-        }
         int bRead = socket.read(data, 0, data.length);
         if (-1 == bRead) {
             throw new SawimException(120, 12);
@@ -80,22 +56,12 @@ final class Socket implements Runnable {
     }
 
     public void write(byte[] data) throws SawimException, IOException {
-        if (compressed) {
-            zOut.write(data);
-            zOut.flush();
-            return;
-        }
         socket.write(data, 0, data.length);
         socket.flush();
     }
 
     public void close() {
         connected = false;
-        try {
-            zIn.close();
-            zOut.close();
-        } catch (Exception ignored) {
-        }
         socket.close();
         inputBufferLength = 0;
         inputBufferIndex = 0;
