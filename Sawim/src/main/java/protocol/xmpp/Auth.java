@@ -36,9 +36,6 @@ public class Auth {
         if (x.is("stream:features")) {
             parseStreamFeatures(connection, x);
             return;
-        } else if (x.is("compressed")) {
-            setStreamCompression(connection);
-            return;
         } else if (x.is("proceed")) {
             setStreamTls(connection);
             return;
@@ -108,11 +105,6 @@ public class Auth {
         if (null != x2) {
             DebugLog.println("starttls");
             connection.sendRequest("<starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls'/>");
-            return;
-        }
-        x2 = x.getFirstNode("compression");
-        if ((null != x2) && "zlib".equals(x2.getFirstNodeValue("method"))) {
-            connection.sendRequest("<compress xmlns='http://jabber.org/protocol/compress'><method>zlib</method></compress>");
             return;
         }
 
@@ -294,18 +286,6 @@ public class Auth {
         connection.write(connection.getOpenStreamXml(connection.domain_));
         connection.readXmlNode(true); // "stream:stream"
         parseAuth(connection, connection.readXmlNode(true));
-    }
-
-    private void setStreamCompression(XmppConnection connection) throws SawimException {
-        connection.setProgress(20);
-        try {
-            connection.socket.startCompression();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-        openStreamXml(connection);
     }
 
     private void setStreamTls(XmppConnection connection) throws SawimException {
