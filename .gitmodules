@@ -1,4 +1,0 @@
-[submodule "deps/mtm"]
-	path = deps/mtm
-	url = https://github.com/ge0rg/MemorizingTrustManager.git
-	ignore = untracked

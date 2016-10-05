@@ -2,8 +2,6 @@ apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
 apply plugin: 'realm-android'
 
-def mtmProject = project(':deps:mtm')
-
 buildscript {
     repositories {
         maven { url 'https://maven.fabric.io/public' }
@@ -21,7 +19,7 @@ repositories {
 }
 
 dependencies {
-    compile mtmProject
+    compile 'com.github.ge0rg:MemorizingTrustManager:b6a3d558e4'
     compile 'com.android.support:appcompat-v7:24.2.1'
     compile 'com.github.anrwatchdog:anrwatchdog:1.2.+'
     compile 'com.android.support:design:24.2.1'

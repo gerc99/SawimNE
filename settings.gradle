@@ -1,1 +1,1 @@
-include ':Sawim', ':deps:mtm'
+include ':Sawim'
