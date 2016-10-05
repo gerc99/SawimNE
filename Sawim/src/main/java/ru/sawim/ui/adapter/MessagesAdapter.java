@@ -109,65 +109,68 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
             return;
         } else {
             MessData mData = getMessData(getItem(index));
-            MessageItemView item = (MessageItemView) viewHolder.itemView;
-            item.setTag(index);
-            Contact contact = RosterHelper.getInstance().getCurrentContact();
-            textLinkClick.setContact(contact.getUserId());
-            item.setOnTextLinkClickListener(textLinkClick);
-            item.setOnClickListener(this);
+            if (mData != null) {
+                MessageItemView item = (MessageItemView) viewHolder.itemView;
+                item.setTag(index);
+                Contact contact = RosterHelper.getInstance().getCurrentContact();
+                textLinkClick.setContact(contact.getUserId());
+                item.setOnTextLinkClickListener(textLinkClick);
+                item.setOnClickListener(this);
 
-            String nick = mData.getNick();
-            boolean incoming = mData.isIncoming();
-            item.setLinkTextColor(Scheme.getColor(R.attr.link));
-            item.setTypeface(mData.isHighLight() ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT);
-            item.setLayout(mData.layout);
-            if (SawimApplication.showPicturesInChat) {
-                item.setLinks(mData.getUrlLinks());
-            }
-            if (mData.isMe() || mData.isPresence()) {
-                item.setBackgroundIndex(MessageItemView.BACKGROUND_NONE);
-                item.setPadding(MessageItemView.PADDING_LEFT + 1, MessageItemView.PADDING_TOP, MessageItemView.PADDING_RIGHT - 1, MessageItemView.PADDING_BOTTOM);
-                item.setNick(0, 0, null, null);
-                item.setMsgTime(0, 0, null, null);
-                item.setCheckImage(null);
-                item.setTextSize(SawimApplication.getFontSize());
-                item.setMsgTextSize(SawimApplication.getFontSize());
-                if (mData.isMe()) {
-                    item.setTextColor(Scheme.getColor(incoming ? R.attr.chat_in_msg_text : R.attr.chat_out_msg_text));
-                } else {
-                    item.setTextColor(Scheme.getColor(R.attr.chat_in_msg_text));
+                String nick = mData.getNick();
+                boolean incoming = mData.isIncoming();
+                item.setLinkTextColor(Scheme.getColor(R.attr.link));
+                item.setTypeface(mData.isHighLight() ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT);
+                item.setLayout(mData.layout);
+                if (SawimApplication.showPicturesInChat) {
+                    item.setLinks(mData.getUrlLinks());
                 }
-            } else {
-                if (incoming) {
-                    item.setBackgroundIndex(MessageItemView.BACKGROUND_INCOMING);
-                    item.setPadding(MessageItemView.PADDING_LEFT, MessageItemView.PADDING_TOP, MessageItemView.PADDING_RIGHT, MessageItemView.PADDING_BOTTOM);
+                if (mData.isMe() || mData.isPresence()) {
+                    item.setBackgroundIndex(MessageItemView.BACKGROUND_NONE);
+                    item.setPadding(MessageItemView.PADDING_LEFT + 1, MessageItemView.PADDING_TOP, MessageItemView.PADDING_RIGHT - 1, MessageItemView.PADDING_BOTTOM);
+                    item.setNick(0, 0, null, null);
+                    item.setMsgTime(0, 0, null, null);
+                    item.setCheckImage(null);
+                    item.setTextSize(SawimApplication.getFontSize());
+                    item.setMsgTextSize(SawimApplication.getFontSize());
+                    if (mData.isMe()) {
+                        item.setTextColor(Scheme.getColor(incoming ? R.attr.chat_in_msg_text : R.attr.chat_out_msg_text));
+                    } else {
+                        item.setTextColor(Scheme.getColor(R.attr.chat_in_msg_text));
+                    }
                 } else {
-                    item.setBackgroundIndex(MessageItemView.BACKGROUND_OUTCOMING);
-                    item.setPadding(MessageItemView.PADDING_RIGHT, MessageItemView.PADDING_TOP, MessageItemView.PADDING_LEFT, MessageItemView.PADDING_BOTTOM);
+                    if (incoming) {
+                        item.setBackgroundIndex(MessageItemView.BACKGROUND_INCOMING);
+                        item.setPadding(MessageItemView.PADDING_LEFT, MessageItemView.PADDING_TOP, MessageItemView.PADDING_RIGHT, MessageItemView.PADDING_BOTTOM);
+                    } else {
+                        item.setBackgroundIndex(MessageItemView.BACKGROUND_OUTCOMING);
+                        item.setPadding(MessageItemView.PADDING_RIGHT, MessageItemView.PADDING_TOP, MessageItemView.PADDING_LEFT, MessageItemView.PADDING_BOTTOM);
+                    }
+                    item.setTextSize(SawimApplication.getFontSize());
+                    item.setCheckImage(mData.getIconIndex() == Message.ICON_OUT_MSG_FROM_CLIENT ? SawimResources.MESSAGE_ICON_CHECK.getBitmap() : null);
+                    item.setNick(Scheme.getColor(incoming ? R.attr.chat_in_msg_text : R.attr.chat_out_msg_text),
+                            SawimApplication.getFontSize(), Typeface.DEFAULT_BOLD, nick);
+                    item.setMsgTime(Scheme.getColor(incoming ? R.attr.chat_in_msg_text : R.attr.chat_out_msg_text),
+                            SawimApplication.getFontSize() * 2 / 3, Typeface.DEFAULT, mData.getStrTime());
+                    item.setMsgTextSize(SawimApplication.getFontSize());
+                    item.setTextColor(Scheme.getColor(mData.getMessColor()));
                 }
-                item.setTextSize(SawimApplication.getFontSize());
-                item.setCheckImage(mData.getIconIndex() == Message.ICON_OUT_MSG_FROM_CLIENT ? SawimResources.MESSAGE_ICON_CHECK.getBitmap() : null);
-                item.setNick(Scheme.getColor(incoming ? R.attr.chat_in_msg_text : R.attr.chat_out_msg_text),
-                        SawimApplication.getFontSize(), Typeface.DEFAULT_BOLD, nick);
-                item.setMsgTime(Scheme.getColor(incoming ? R.attr.chat_in_msg_text : R.attr.chat_out_msg_text),
-                        SawimApplication.getFontSize() * 2 / 3, Typeface.DEFAULT, mData.getStrTime());
-                item.setMsgTextSize(SawimApplication.getFontSize());
-                item.setTextColor(Scheme.getColor(mData.getMessColor()));
+                if (query != null) {
+                    item.setLayout(MessageItemView.makeLayout(
+                            Util.highlightText(query, mData.layout.getText().toString(), Scheme.getColor(R.attr.link)),
+                            Typeface.DEFAULT_BOLD, mData.layout.getWidth()));
+                }
+                if (mData.isMarked() && isMultiQuoteMode) {
+                    item.setTextColor(Scheme.getColor(R.attr.item_selected));
+                }
+                item.setShowDivider(position == index);
+                item.repaint();
             }
-            if (query != null) {
-                item.setLayout(MessageItemView.makeLayout(
-                        Util.highlightText(query, mData.layout.getText().toString(), Scheme.getColor(R.attr.link)),
-                        Typeface.DEFAULT_BOLD, mData.layout.getWidth()));
-            }
-            if (mData.isMarked() && isMultiQuoteMode) {
-                item.setTextColor(Scheme.getColor(R.attr.item_selected));
-            }
-            item.setShowDivider(position == index);
-            item.repaint();
         }
     }
 
     public MessData getMessData(ru.sawim.db.model.Message message) {
+        if (message == null) return null;
         MessData messData = itemsCache.get(message.getMessageId());
         if (messData == null) {
             messData = HistoryStorage.buildMessage(ChatHistory.instance.getChat(userId), message);

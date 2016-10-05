@@ -1302,7 +1302,7 @@ public class ChatFragment extends SawimFragment implements OnUpdateChat, Handler
                 }
                 RecyclerView chatListView = chatViewLayout.getChatListsView().getChatListView();
                 if (chatListView != null) {
-                    chatListView.post(new Runnable() {
+                    chatListView.postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             if (chat != null) {
@@ -1318,7 +1318,7 @@ public class ChatFragment extends SawimFragment implements OnUpdateChat, Handler
                                 }
                             }
                         }
-                    });
+                    }, 300);
                 }
             }
         });

@@ -34,8 +34,9 @@ public final class MessData {
     private List<String> urlLinks;
 
     public Layout layout;
+    CharSequence parsedText;
 
-    public MessData(Contact currentContact, long time, String text, String nick, short flags, boolean highLight) {
+    public MessData(Contact currentContact, long time, String text, String nick, short flags, boolean highLight, boolean buildLayout) {
         isHighLight = highLight;
         this.nick = nick;
         this.time = time;
@@ -43,14 +44,16 @@ public final class MessData {
         //boolean today = (SawimApplication.getCurrentGmtTime() / 1000 - 24 * 60 * 60 < time);
         strTime = ru.sawim.comm.Util.getLocalDateString(time, true);
 
-        CharSequence parsedText = parsedText(currentContact, text);
-        if (!SawimApplication.PICS_HOST.contains(text)) {
-            layout = MessageItemView.buildLayout(parsedText, isHighLight ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT);
+        parsedText = parsedText(currentContact, text);
+        if (buildLayout) {
+            if (!SawimApplication.PICS_HOST.contains(text)) {
+                layout = MessageItemView.buildLayout(parsedText, isHighLight ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT);
+            }
         }
     }
 
-    public MessData(Contact currentContact, String id, long time, String text, String nick, short flags) {
-        this(currentContact, time, text, nick, flags, false);
+    public MessData(Contact currentContact, String id, long time, String text, String nick, short flags, boolean buildLayout) {
+        this(currentContact, time, text, nick, flags, false, buildLayout);
         setId(id);
     }
 
@@ -107,7 +110,7 @@ public final class MessData {
     }
 
     public CharSequence getText() {
-        return layout.getText();
+        return parsedText;
     }
 
     public short getRowData() {

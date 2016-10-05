@@ -424,7 +424,7 @@ abstract public class Protocol {
                 group.updateGroupData();
             }
         }
-        getStorage().setOfflineStatuses(this);
+        //getStorage().setOfflineStatuses(this);
     }
 
     public final Contact getItemByUID(String uid) {

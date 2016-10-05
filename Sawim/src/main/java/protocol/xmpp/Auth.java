@@ -238,6 +238,7 @@ public class Auth {
             DebugLog.systemPrintln("[SESSION] Rebind failed");
             xmppSession.resetSessionData();
             connection.getXmpp().setStatusesOffline();
+            connection.getXmpp().getStorage().setOfflineStatuses(connection.getXmpp());
             SawimApplication.getInstance().setCanForegroundService(true);
 
             return false;

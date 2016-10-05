@@ -218,7 +218,7 @@ public class MessageArchiveManagement {
             final List<MessData> messDataList = new ArrayList<>();
             for (int i = 0; i < xmppContact.historyMessages.size(); ++i) {
                 Message message = xmppContact.historyMessages.get(i);
-                messDataList.add(Chat.buildMessage(contact, message, Chat.getFrom(contact, protocol, message), false, Chat.isHighlight(message.getProcessedText(), contact.getMyName())));
+                messDataList.add(Chat.buildMessage(contact, message, Chat.getFrom(contact, protocol, message), false, Chat.isHighlight(message.getProcessedText(), contact.getMyName()), false));
             }
             HistoryStorage.getHistory(protocol.getUserId(), contact.getUserId()).addText(messDataList);
 

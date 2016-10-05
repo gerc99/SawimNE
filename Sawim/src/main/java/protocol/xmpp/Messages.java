@@ -222,10 +222,12 @@ public class Messages {
                     msg.removeNode(XmlConstants.S_DESC);
                 }
                 XmlNode thumbnailNode = msg.getXNode("urn:xmpp:thumbs:1");
-                String width = thumbnailNode.getAttribute("width");
-                String height = thumbnailNode.getAttribute("height");
-                String uri = thumbnailNode.getAttribute("uri");
-                String mediaType = thumbnailNode.getAttribute("media-type");
+                if (thumbnailNode != null) {
+                    String width = thumbnailNode.getAttribute("width");
+                    String height = thumbnailNode.getAttribute("height");
+                    String uri = thumbnailNode.getAttribute("uri");
+                    String mediaType = thumbnailNode.getAttribute("media-type");
+                }
             }
 
             if (!isGroupchat && msg.contains("request") && (null != msg.getId())) {
@@ -300,8 +302,9 @@ public class Messages {
                 return;
             }
         }
-        if (message != null && !isMyGroupMessage) {
-            connection.getXmpp().addMessage(message, XmlConstants.S_HEADLINE.equals(type) || (xmlns != null && xmlns.equals("p1:pushed")), isConference);
+        if (message != null) {
+            if (connection.getXmpp() != null)
+                connection.getXmpp().addMessage(message, XmlConstants.S_HEADLINE.equals(type) || (xmlns != null && xmlns.equals("p1:pushed")), isConference);
         }
     }
 

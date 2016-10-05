@@ -139,7 +139,8 @@ public class HtmlTask extends AsyncTask<String, Integer, String[]> {
     }
 
     public static String parseDropBox(String link) {
-        if (-1 != link.indexOf("https://www.dropbox.com")) {
+        if (link == null) return "";
+        if (link.contains("https://www.dropbox.com")) {
             link = link.replace("https://www.dropbox", "http://dl.dropboxusercontent");
         }
         return link;

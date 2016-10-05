@@ -75,7 +75,7 @@ public final class Chat {
 
     public void addFileProgress(String caption, String text) {
         messageCounter = inc(messageCounter);
-        addMessage(new MessData(contact, String.valueOf(Util.uniqueValue()), SawimApplication.getCurrentGmtTime(), text, caption, MessData.PROGRESS));
+        addMessage(new MessData(contact, String.valueOf(Util.uniqueValue()), SawimApplication.getCurrentGmtTime(), text, caption, MessData.PROGRESS, false));
         if (RosterHelper.getInstance().getUpdateChatListener() != null)
             RosterHelper.getInstance().getUpdateChatListener().updateMessages(contact);
     }
@@ -149,7 +149,7 @@ public final class Chat {
     public String onMessageSelected(MessData md) {
         if (contact.isSingleUserContact()) {
             if (isBlogBot()) {
-                return getBlogPostId(md.getText().toString());
+                return getBlogPostId(md.getText() == null ? "" : md.getText().toString());
             }
             return "";
         }
@@ -278,7 +278,7 @@ public final class Chat {
         return senderName;
     }
 
-    public static MessData buildMessage(Contact contact, Message message, String from, boolean isSystemNotice, boolean isHighlight) {
+    public static MessData buildMessage(Contact contact, Message message, String from, boolean isSystemNotice, boolean isHighlight, boolean buildLayout) {
         boolean incoming = message.isIncoming();
         String messageText = message.getProcessedText();
         messageText = StringConvertor.removeCr(messageText);
@@ -296,10 +296,10 @@ public final class Chat {
         if (isSystemNotice) {
             flags |= MessData.SERVICE;
         }
-        return buildMessage(contact, message, from, flags, isHighlight);
+        return buildMessage(contact, message, from, flags, isHighlight, buildLayout);
     }
 
-    public static MessData buildMessage(Contact contact, Message message, String from, short flags, boolean isHighlight) {
+    public static MessData buildMessage(Contact contact, Message message, String from, short flags, boolean isHighlight, boolean buildLayout) {
         boolean incoming = message.isIncoming();
         String messageText = message.getProcessedText();
         messageText = StringConvertor.removeCr(messageText);
@@ -307,14 +307,14 @@ public final class Chat {
             return null;
         }
 
-        final MessData mData = new MessData(contact, message.getNewDate(), messageText, from, flags, isHighlight);
+        final MessData mData = new MessData(contact, message.getNewDate(), messageText, from, flags, isHighlight, buildLayout);
         mData.setServerMsgId(message.getServerMsgId());
         mData.setId(String.valueOf(message.getMessageId()));
         return mData;
     }
 
-    private void addMessage(Message message, String from, boolean isSystemNotice, boolean isHighlight) {
-        addMessage(buildMessage(contact, message, from, isSystemNotice, isHighlight));
+    private void addMessage(Message message, String from, boolean isSystemNotice, boolean isHighlight, boolean buildLayout) {
+        addMessage(buildMessage(contact, message, from, isSystemNotice, isHighlight, buildLayout));
     }
 
     private void addMessage(MessData mData) {
@@ -327,12 +327,12 @@ public final class Chat {
             }
         }
         lastMessageNick = mData.getNick();
-        lastMessage = mData.getText().toString();
+        lastMessage = mData.getText() == null ? "" : mData.getText().toString();
     }
 
     public void addPresence(SystemNotice message) {
         String messageText = message.getProcessedText();
-        MessData mData = new MessData(contact, message.getNewDate(), messageText, message.getName(), MessData.PRESENCE, false);
+        MessData mData = new MessData(contact, message.getNewDate(), messageText, message.getName(), MessData.PRESENCE, false, false);
         addMessage(mData);
         if (!isVisibleChat()) {
             otherMessageCounter = inc(otherMessageCounter);
@@ -351,7 +351,7 @@ public final class Chat {
                     messageCounter--;
                 }
             }
-            addMessage(message, from, false, isHighlight);
+            addMessage(message, from, false, isHighlight, false);
         } else if (isSystem) {
             SystemNotice notice = (SystemNotice) message;
             if (SystemNotice.SYS_NOTICE_AUTHREQ == notice.getSysnoteType()) {
@@ -361,7 +361,7 @@ public final class Chat {
                 sysNoticeCounter = inc(sysNoticeCounter);
             }
             //MagicEye.addAction(protocol, contact.getUserId(), message.getText());
-            addMessage(message, from, true, isHighlight);
+            addMessage(message, from, true, isHighlight, false);
         }
         if (inc) {
             contact.updateChatState(this);
@@ -371,7 +371,7 @@ public final class Chat {
     public void addMyMessage(PlainMessage message) {
         String from = getFrom(message);
         resetUnreadMessages();
-        addMessage(message, from, false, false);
+        addMessage(message, from, false, false, false);
     }
 
     public Contact getContact() {

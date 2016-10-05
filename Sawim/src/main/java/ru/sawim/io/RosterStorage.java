@@ -12,6 +12,7 @@ import protocol.Roster;
 import protocol.StatusInfo;
 import protocol.xmpp.XmppContact;
 import protocol.xmpp.XmppServiceContact;
+import ru.sawim.BuildConfig;
 import ru.sawim.chat.Chat;
 import ru.sawim.db.RealmDb;
 import ru.sawim.db.model.Contact;
@@ -65,7 +66,8 @@ public class RosterStorage {
     }
 
     public static protocol.Contact getContact(Protocol protocol, Contact localContact) {
-        Log.e("getContact", localContact.getContactId()+" "+localContact.getGroupId()+" "+localContact.getGroupName()+" "+localContact.isConference());
+        if (BuildConfig.DEBUG)
+            Log.e("getContact", localContact.getContactId()+" "+localContact.getGroupId()+" "+localContact.getGroupName()+" "+localContact.isConference());
         Group group = protocol.getGroupItems().get(localContact.getGroupId());
         if (group == null) {
             group = protocol.createGroup(localContact.getGroupName() == null ? "not" : localContact.getGroupName());
@@ -124,7 +126,8 @@ public class RosterStorage {
         if (group == null) {
             group = protocol.getNotInListGroup();
         }
-        Log.e("save contact", contact.getUserId()+" "+group.getName()+" "+protocol.getStatusInfo().getName(contact.getStatusIndex()) +" "+contact.isConference());
+        if (BuildConfig.DEBUG)
+            Log.e("save contact", contact.getUserId()+" "+group.getName()+" "+protocol.getStatusInfo().getName(contact.getStatusIndex()) +" "+contact.isConference());
 
         Contact localContact = new Contact();
         localContact.setContactId(contact.getUserId());
@@ -156,7 +159,8 @@ public class RosterStorage {
         localSubContact.setAvatarHash(subContact.avatarHash);
         localSubContact.setClient(subContact.client);
         RealmDb.save(localSubContact);
-        Log.e("save subcontact", contact.getUserId()+" "+subContact.resource+" "+contact.isConference());
+        if (BuildConfig.DEBUG)
+            Log.e("save subcontact", contact.getUserId()+" "+subContact.resource+" "+contact.isConference());
     }
 
     public void delete(final protocol.Contact contact, final XmppServiceContact.SubContact subContact) {
@@ -171,7 +175,8 @@ public class RosterStorage {
             }
         });
         realm.close();
-        Log.e("delete", contact.getUserId()+" "+subContact.resource+" "+contact.isConference());
+        if (BuildConfig.DEBUG)
+            Log.e("delete", contact.getUserId()+" "+subContact.resource+" "+contact.isConference());
     }
 
     public void deleteContact(final Protocol protocol, final protocol.Contact contact) {
@@ -183,7 +188,8 @@ public class RosterStorage {
             }
         });
         realm.close();
-        Log.e("deleteContact", contact.getUserId()+" "+contact.isConference());
+        if (BuildConfig.DEBUG)
+            Log.e("deleteContact", contact.getUserId()+" "+contact.isConference());
     }
 
     public void deleteGroup(final Protocol protocol, final Group group) {
@@ -195,7 +201,8 @@ public class RosterStorage {
             }
         });
         realm.close();
-        Log.e("deleteGroup", group.getGroupId()+" "+group.getText());
+        if (BuildConfig.DEBUG)
+            Log.e("deleteGroup", group.getGroupId()+" "+group.getText());
     }
 
     public void updateGroup(final Protocol protocol, final Group group) {
@@ -211,7 +218,8 @@ public class RosterStorage {
             }
         });
         realm.close();
-        Log.e("updateGroup", group.getGroupId()+" "+group.getText());
+        if (BuildConfig.DEBUG)
+            Log.e("updateGroup", group.getGroupId()+" "+group.getText());
     }
 
     public void setOfflineStatuses(final Protocol protocol) {
@@ -225,7 +233,8 @@ public class RosterStorage {
                     if (contact.isConference()) {
                         realm.where(SubContact.class).equalTo("contactId", contact.getContactId()).findAll().deleteAllFromRealm();
                     }
-                    Log.e("setOfflineStatuses", contact.getContactId()+" "+contact.isConference());
+                    if (BuildConfig.DEBUG)
+                        Log.e("setOfflineStatuses", contact.getContactId()+" "+contact.isConference());
                 }
             }
         });
@@ -240,7 +249,8 @@ public class RosterStorage {
                 Contact localContact = realm.where(Contact.class).equalTo("contactId", contact.getUserId()).findFirst();
                 localContact.setContactId(contact.getUserId());
                 localContact.setFirstServerMessageId(contact.firstServerMsgId);
-                Log.e("updateFirstServerMsgId", contact.getUserId()+" "+contact.isConference()+" " +contact.firstServerMsgId);
+                if (BuildConfig.DEBUG)
+                    Log.e("updateFirstServerMsgId", contact.getUserId()+" "+contact.isConference()+" " +contact.firstServerMsgId);
             }
         });
         realm.close();

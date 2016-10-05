@@ -39,7 +39,7 @@ public class HistoryStorage {
     }
 
     public void addText(MessData md) {
-        addText(md.getId(), md.getIconIndex(), md.isIncoming(), md.getNick(), md.getText().toString(), md.getTime(), md.getRowData(), md.getServerMsgId());
+        addText(md.getId(), md.getIconIndex(), md.isIncoming(), md.getNick(), md.getText() == null ? "" : md.getText().toString(), md.getTime(), md.getRowData(), md.getServerMsgId());
     }
 
     public void addText(final List<MessData> messDataList) {
@@ -54,7 +54,7 @@ public class HistoryStorage {
                     message.setIncoming(md.isIncoming());
                     message.setState(md.getIconIndex());
                     message.setAuthor(md.getNick());
-                    message.setText(md.getText().toString());
+                    message.setText(md.getText() == null ? "" : md.getText().toString());
                     message.setDate(md.getTime());
                     message.setData(md.getRowData());
                     realm.copyToRealmOrUpdate(message);
@@ -231,12 +231,12 @@ public class HistoryStorage {
         MessData messData;
         if (rowData == 0) {
             messData = Chat.buildMessage(contact, message, contact.isConference() ? localMessage.getAuthor() : chat.getFrom(message),
-                    false, localMessage.isIncoming() && Chat.isHighlight(message.getProcessedText(), contact.getMyName()));
+                    false, localMessage.isIncoming() && Chat.isHighlight(message.getProcessedText(), contact.getMyName()), true);
         } else if ((rowData & MessData.PRESENCE) != 0 || (rowData & MessData.ME) != 0) {
-            messData = new MessData(contact, message.getNewDate(), localMessage.getText(), localMessage.getAuthor(), rowData, false);
+            messData = new MessData(contact, message.getNewDate(), localMessage.getText(), localMessage.getAuthor(), rowData, false, true);
         } else {
             messData = Chat.buildMessage(contact, message, contact.isConference() ? localMessage.getAuthor() : chat.getFrom(message),
-                    rowData, Chat.isHighlight(message.getProcessedText(), contact.getMyName()));
+                    rowData, Chat.isHighlight(message.getProcessedText(), contact.getMyName()), true);
         }
         if (!message.isIncoming() && (messData != null && !messData.isMe())) {
             messData.setIconIndex(localMessage.getState());
@@ -253,7 +253,7 @@ public class HistoryStorage {
     }
 
     public void addMessageToHistory(Contact contact, ru.sawim.chat.message.Message message, String from, boolean isSystemNotice) {
-        addText(Chat.buildMessage(contact, message, from, isSystemNotice, Chat.isHighlight(message.getProcessedText(), contact.getMyName())));
+        addText(Chat.buildMessage(contact, message, from, isSystemNotice, Chat.isHighlight(message.getProcessedText(), contact.getMyName()), false));
     }
 
     public int getHistorySize() {
