@@ -3,6 +3,7 @@ package ru.sawim.ui.fragment;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
@@ -13,7 +14,9 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.*;
 import android.widget.*;
 import protocol.*;
@@ -116,6 +119,7 @@ public class RosterFragment extends SawimFragment implements View.OnClickListene
         rosterViewLayout.addView(emptyView);
 
         rosterAdapter.refreshList();
+        initSwipe(listView);
     }
 
     @Override
@@ -474,5 +478,45 @@ public class RosterFragment extends SawimFragment implements View.OnClickListene
             group.setExpandFlag(!group.isExpanded());
             update();
         }
+    }
+
+    private void initSwipe(RecyclerView recyclerView) {
+        ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                int position = viewHolder.getAdapterPosition();
+                TreeNode treeNode = getRosterAdapter().getItem(position);
+                if (treeNode.getType() == TreeNode.CONTACT) {
+                    Protocol protocol = RosterHelper.getInstance().getProtocol();
+                    Contact contact = (Contact) treeNode;
+                    protocol.getChat(contact).getHistory().removeHistory();
+                    ChatHistory.instance.unregisterChat(protocol.getChat(contact));
+                    RosterHelper.getInstance().updateRoster();
+                }
+            }
+
+            @Override
+            public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+                if(actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
+
+                    View itemView = viewHolder.itemView;
+                    float height = (float) itemView.getBottom() - (float) itemView.getTop();
+                    float width = height / 3;
+
+                    if(dX > 0){
+                    } else {
+                    }
+                }
+                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+            }
+        };
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
+        itemTouchHelper.attachToRecyclerView(recyclerView);
     }
 }
