@@ -671,14 +671,7 @@ public class ChatFragment extends SawimFragment implements OnUpdateChat, Handler
 
     private MessData findMessData(String messId) {
         if (messId == null) return null;
-        for (ru.sawim.db.model.Message message : getMessagesAdapter().getItems()) {
-            MessData messData = getMessagesAdapter().getMessData(message);
-            if (messData.getId() != null
-                    && messData.getId().equals(messId)) {
-                return messData;
-            }
-        }
-        return null;
+        return getMessagesAdapter().getVisibleMessData(messId);
     }
 
     public MucUsersAdapter getMucUsersAdapter() {
@@ -1294,34 +1287,29 @@ public class ChatFragment extends SawimFragment implements OnUpdateChat, Handler
         hideKeyboard();
         final String text = getText();
         resetText();
-        SawimApplication.getExecutor().execute(new Runnable() {
-            @Override
-            public void run() {
-                if (chat != null) {
-                    chat.sendMessage(text);
-                }
-                RecyclerView chatListView = chatViewLayout.getChatListsView().getChatListView();
-                if (chatListView != null) {
-                    chatListView.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (chat != null) {
-                                chat.savedMessage = null;
-                                getMessagesAdapter().setPosition(-1);
-                                chat.currentPosition = 0;
-                                newMessageCount = 0;
-                                getMessagesAdapter().notifyDataSetChanged();
-                                if (isScrollEnd) {
-                                    RecyclerView chatListView = chatViewLayout.getChatListsView().getChatListView();
-                                    LinearLayoutManager linearLayoutManager = ((LinearLayoutManager) chatListView.getLayoutManager());
-                                    linearLayoutManager.scrollToPositionWithOffset(getMessagesAdapter().getItemCount() - 1, -chat.offset);
-                                }
-                            }
+        if (chat != null) {
+            chat.sendMessage(text);
+        }
+        RecyclerView chatListView = chatViewLayout.getChatListsView().getChatListView();
+        if (chatListView != null) {
+            chatListView.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (chat != null) {
+                        chat.savedMessage = null;
+                        getMessagesAdapter().setPosition(-1);
+                        chat.currentPosition = 0;
+                        newMessageCount = 0;
+                        getMessagesAdapter().notifyDataSetChanged();
+                        if (isScrollEnd) {
+                            RecyclerView chatListView = chatViewLayout.getChatListsView().getChatListView();
+                            LinearLayoutManager linearLayoutManager = ((LinearLayoutManager) chatListView.getLayoutManager());
+                            linearLayoutManager.scrollToPositionWithOffset(getMessagesAdapter().getItemCount() - 1, -chat.offset);
                         }
-                    }, 300);
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 
     public static void showAuthorizationDialog(final BaseActivity activity, final Chat newChat) {

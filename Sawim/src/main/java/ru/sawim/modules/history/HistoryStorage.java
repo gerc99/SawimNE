@@ -47,6 +47,7 @@ public class HistoryStorage {
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
+                List<Message> messages = new ArrayList<>();
                 for (MessData md : messDataList) {
                     Message message = new Message();
                     message.setContactId(uniqueUserId);
@@ -57,15 +58,16 @@ public class HistoryStorage {
                     message.setText(md.getText() == null ? "" : md.getText().toString());
                     message.setDate(md.getTime());
                     message.setData(md.getRowData());
-                    realm.copyToRealmOrUpdate(message);
+                    messages.add(message);
                 }
+                realm.copyToRealmOrUpdate(messages);
             }
         });
         realm.close();
     }
 
     public void addText(final String id, final int iconIndex, final boolean isIncoming,
-                                     final String nick, final String text, final long time, final short rowData, String serverMsgId) {
+                        final String nick, final String text, final long time, final short rowData, String serverMsgId) {
         Realm realm = RealmDb.realm();
         realm.executeTransaction(new Realm.Transaction() {
             @Override
@@ -91,7 +93,9 @@ public class HistoryStorage {
             @Override
             public void execute(Realm realm) {
                 Message message = realm.where(Message.class).equalTo("contactId", uniqueUserId).equalTo("messageId", messageId).findFirst();
-                message.setState(state);
+                if (message != null) {
+                    message.setState(state);
+                }
             }
         });
         realm.close();

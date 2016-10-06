@@ -262,7 +262,6 @@ public class RosterStorage {
             @Override
             public void execute(Realm realm) {
                 Contact localContact = realm.where(Contact.class).equalTo("contactId", uniqueUserId).findFirst();
-                localContact.setContactId(uniqueUserId);
                 localContact.setAvatarHash(hash);
             }
         });
@@ -310,7 +309,6 @@ public class RosterStorage {
             public void execute(Realm realm) {
                 Contact localContact = realm.where(Contact.class).equalTo("contactId", uniqueUserId).findFirst();
                 if (localContact != null) {
-                    localContact.setContactId(uniqueUserId);
                     localContact.setUnreadMessageCount(count);
                 }
             }

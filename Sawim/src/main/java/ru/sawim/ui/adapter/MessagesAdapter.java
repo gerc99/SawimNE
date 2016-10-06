@@ -1,6 +1,8 @@
 package ru.sawim.ui.adapter;
 
 import android.graphics.Typeface;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,7 +10,9 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import io.realm.OrderedRealmCollection;
 import io.realm.Realm;
+import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 import io.realm.Sort;
 import protocol.Contact;
@@ -41,9 +45,6 @@ import java.util.List;
 public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHolder>
         implements StickyRecyclerHeadersAdapter<MessagesAdapter.HeaderHolder>, View.OnClickListener {
 
-    private RealmResults<ru.sawim.db.model.Message> items;
-    private HashMap<String, MessData> itemsCache = new HashMap<>();
-
     private String query;
     private boolean isMultiQuoteMode;
     public boolean showLoader;
@@ -51,7 +52,17 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
     private OnLoadItemsListener loadItemsListener;
     private OnItemClickListener itemClickListener;
     private OnTextLinkClick textLinkClick;
+    private HashMap<String, MessData> itemsCache = new HashMap<>();
     private String userId;
+
+    @Nullable
+    private OrderedRealmCollection<ru.sawim.db.model.Message> items;
+    private final RealmChangeListener listener = new RealmChangeListener() {
+        @Override
+        public void onChange(Object results) {
+            notifyDataSetChanged();
+        }
+    };
 
     public MessagesAdapter(Realm realmDb, String userId) {
         this.userId = userId;
@@ -59,7 +70,23 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
         textLinkClick = new OnTextLinkClick();
         setHasStableIds(true);
     }
+/*
+    @Override
+    public void onAttachedToRecyclerView(final RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+        if (isDataValid()) {
+            addListener(items);
+        }
+    }
 
+    @Override
+    public void onDetachedFromRecyclerView(final RecyclerView recyclerView) {
+        super.onDetachedFromRecyclerView(recyclerView);
+        if (isDataValid()) {
+            removeListener(items);
+        }
+    }
+*/
     public void setItems(RealmResults<ru.sawim.db.model.Message> items) {
         this.items = items;
     }
@@ -179,6 +206,10 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
         return messData;
     }
 
+    public MessData getVisibleMessData(String messageId) {
+        return itemsCache.get(messageId);
+    }
+
     @Override
     public long getHeaderId(int position) {
         if (getItem(position) != null) {
@@ -215,7 +246,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
 
     public ru.sawim.db.model.Message getItem(int i) {
         if (items.isEmpty() || items.size() <= i || i < 0) return null;
-        return items.get(i);
+        return isDataValid() ? items.get(i) : null;
     }
 
     private static final SimpleDateFormat chatDate = new SimpleDateFormat("d MMMM");
@@ -291,5 +322,19 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
 
     public interface OnItemClickListener {
         void onItemClick(View v, int position);
+    }
+
+    private void addListener(@NonNull OrderedRealmCollection<ru.sawim.db.model.Message> data) {
+        RealmResults realmResults = (RealmResults) data;
+        realmResults.addChangeListener(listener);
+    }
+
+    private void removeListener(@NonNull OrderedRealmCollection<ru.sawim.db.model.Message> data) {
+        RealmResults realmResults = (RealmResults) data;
+        realmResults.removeChangeListener(listener);
+    }
+
+    private boolean isDataValid() {
+        return items != null && items.isValid();
     }
 }

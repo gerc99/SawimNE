@@ -14,7 +14,8 @@ public class RealmDb {
     }
 
     public static void init(Context context) {
-        realmConfiguration = new RealmConfiguration.Builder(context)
+        Realm.init(context);
+        realmConfiguration = new RealmConfiguration.Builder()
                 .modules(new MyRealmModule())
                 .name("sawim.realm")
                 .schemaVersion(1)
