@@ -1,6 +1,8 @@
 package ru.sawim.ui.adapter;
 
+import android.graphics.Bitmap;
 import android.graphics.Typeface;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
@@ -16,6 +18,7 @@ import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 import io.realm.Sort;
 import protocol.Contact;
+import ru.sawim.Options;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
 import ru.sawim.SawimResources;
@@ -23,6 +26,8 @@ import ru.sawim.Scheme;
 import ru.sawim.chat.ChatHistory;
 import ru.sawim.chat.MessData;
 import ru.sawim.chat.message.Message;
+import ru.sawim.comm.JLocale;
+import ru.sawim.icons.AvatarCache;
 import ru.sawim.modules.history.HistoryStorage;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.text.OnTextLinkClick;
@@ -54,6 +59,8 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
     private OnTextLinkClick textLinkClick;
     private HashMap<String, MessData> itemsCache = new HashMap<>();
     private String userId;
+    private boolean showTimes;
+    private Handler handler = new Handler();
 
     @Nullable
     private OrderedRealmCollection<ru.sawim.db.model.Message> items;
@@ -137,14 +144,25 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
         } else {
             MessData mData = getMessData(getItem(index));
             if (mData != null) {
-                MessageItemView item = (MessageItemView) viewHolder.itemView;
+                final MessageItemView item = (MessageItemView) viewHolder.itemView;
                 item.setTag(index);
                 Contact contact = RosterHelper.getInstance().getCurrentContact();
                 textLinkClick.setContact(contact.getUserId());
                 item.setOnTextLinkClickListener(textLinkClick);
                 item.setOnClickListener(this);
-
                 String nick = mData.getNick();
+
+                if (Options.getBoolean(JLocale.getString(R.string.pref_users_avatars))) {
+                    AvatarCache.getInstance().load(contact.getUserId() + "/" + nick,
+                            contact.avatarHash, contact.getText(),
+                            AvatarCache.MESSAGE_AVATAR_SIZE, new AvatarCache.OnImageLoadListener() {
+                                @Override
+                                public void onLoad(Bitmap avatar) {
+                                    item.setAvatarBitmap(avatar);
+                                }
+                            });
+                }
+
                 boolean incoming = mData.isIncoming();
                 item.setLinkTextColor(Scheme.getColor(R.attr.link));
                 item.setTypeface(mData.isHighLight() ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT);
@@ -176,9 +194,13 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
                     item.setTextSize(SawimApplication.getFontSize());
                     item.setCheckImage(mData.getIconIndex() == Message.ICON_OUT_MSG_FROM_CLIENT ? SawimResources.MESSAGE_ICON_CHECK.getBitmap() : null);
                     item.setNick(Scheme.getColor(incoming ? R.attr.chat_in_msg_text : R.attr.chat_out_msg_text),
-                            SawimApplication.getFontSize(), Typeface.DEFAULT_BOLD, nick);
-                    item.setMsgTime(Scheme.getColor(incoming ? R.attr.chat_in_msg_text : R.attr.chat_out_msg_text),
-                            SawimApplication.getFontSize() * 2 / 3, Typeface.DEFAULT, mData.getStrTime());
+                            SawimApplication.getFontSize() - SawimApplication.getFontSize() / 7, Typeface.DEFAULT, nick);
+                    if (showTimes) {
+                        item.setMsgTime(Scheme.getColor(incoming ? R.attr.chat_in_msg_text : R.attr.chat_out_msg_text),
+                                SawimApplication.getFontSize() * 2 / 3, Typeface.DEFAULT, mData.getStrTime());
+                    } else {
+                        item.setMsgTime(0, 0, null, null);
+                    }
                     item.setMsgTextSize(SawimApplication.getFontSize());
                     item.setTextColor(Scheme.getColor(mData.getMessColor()));
                 }
@@ -246,7 +268,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
 
     public ru.sawim.db.model.Message getItem(int i) {
         if (items.isEmpty() || items.size() <= i || i < 0) return null;
-        return isDataValid() ? items.get(i) : null;
+        return items.get(i);
     }
 
     private static final SimpleDateFormat chatDate = new SimpleDateFormat("d MMMM");
@@ -291,6 +313,19 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
         return showLoader;
     }
 
+    public void showTimes() {
+        showTimes = true;
+        notifyDataSetChanged();
+        handler.removeCallbacksAndMessages(null);
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                showTimes = false;
+                notifyDataSetChanged();
+            }
+        }, 1500);
+    }
+
     public interface OnLoadItemsListener {
         void onLoadItems(int i);
     }
@@ -324,7 +359,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
         void onItemClick(View v, int position);
     }
 
-    private void addListener(@NonNull OrderedRealmCollection<ru.sawim.db.model.Message> data) {
+    /*private void addListener(@NonNull OrderedRealmCollection<ru.sawim.db.model.Message> data) {
         RealmResults realmResults = (RealmResults) data;
         realmResults.addChangeListener(listener);
     }
@@ -336,5 +371,5 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
 
     private boolean isDataValid() {
         return items != null && items.isValid();
-    }
+    }*/
 }

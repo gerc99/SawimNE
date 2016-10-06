@@ -7,7 +7,7 @@
     <color name="primary_text">#f7f7f7</color>
     <color name="secondary_text">#e6e6e6</color>
     <color name="icons">#FFFFFF</color>
-    <color name="list_divider">#60FFFFFF</color>
+    <color name="list_divider">#ffdcdcdc</color>
 
     <color name="background">#3A3A3A</color>
 
@@ -39,7 +39,7 @@
     <color name="light_accent">#1976d2</color>
     <color name="light_primary_text">#212121</color>
     <color name="light_secondary_text">#727272</color>
-    <color name="light_list_divider">#9e9e9e</color>
+    <color name="light_list_divider">#ffdcdcdc</color>
 
     <color name="light_text">#DD000000</color>
     <color name="light_item_selected">#727272</color>

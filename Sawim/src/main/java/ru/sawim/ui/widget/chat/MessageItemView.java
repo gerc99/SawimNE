@@ -27,9 +27,12 @@ import com.bumptech.glide.request.target.SimpleTarget;
 
 import java.util.List;
 
+import ru.sawim.Options;
 import ru.sawim.R;
 import ru.sawim.SawimApplication;
+import ru.sawim.SawimResources;
 import ru.sawim.Scheme;
+import ru.sawim.comm.JLocale;
 import ru.sawim.text.InternalURLSpan;
 import ru.sawim.text.TextLinkClickListener;
 import ru.sawim.ui.widget.Util;
@@ -47,10 +50,11 @@ public class MessageItemView extends View {
     private static final TextPaint textPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
     static Paint highlightPaint;
 
+    private static final int AVATAR_WIDTH = Options.getBoolean(JLocale.getString(R.string.pref_users_avatars)) ? Util.dipToPixels(SawimApplication.getContext(), 56) : 0;
     public static final int PADDING_LEFT = Util.dipToPixels(SawimApplication.getContext(), 9);
-    public static final int PADDING_TOP = Util.dipToPixels(SawimApplication.getContext(), 10);
+    public static final int PADDING_TOP = Util.dipToPixels(SawimApplication.getContext(), 12);
     public static final int PADDING_RIGHT = Util.dipToPixels(SawimApplication.getContext(), 20);
-    public static final int PADDING_BOTTOM = Util.dipToPixels(SawimApplication.getContext(), 10);
+    public static final int PADDING_BOTTOM = Util.dipToPixels(SawimApplication.getContext(), 12);
 
     public static final int BACKGROUND_CORNER = Util.dipToPixels(SawimApplication.getContext(), 7);
 
@@ -72,16 +76,18 @@ public class MessageItemView extends View {
     private int msgTextSize;
     private Bitmap checkImage;
     private Drawable image;
-
-    private int textY;
+    private Bitmap avatarBitmap;
 
     @Nullable
     private Layout layout;
+    private boolean wasLayout;
     private TextLinkClickListener textLinkClickListener;
     private boolean isSecondTap;
     private boolean isLongTap;
     private boolean isShowDivider = false;
     private int titleHeight;
+    private int textHeight;
+    private int textY;
     boolean isUrl;
 
     public MessageItemView(Context context) {
@@ -103,6 +109,7 @@ public class MessageItemView extends View {
 
     public void setLayout(@Nullable Layout layout) {
         this.layout = layout;
+        wasLayout = false;
     }
 
     public static Layout buildLayout(CharSequence parsedText, Typeface msgTextTypeface) {
@@ -110,7 +117,7 @@ public class MessageItemView extends View {
     }
 
     public static int getMessageWidth() {
-        return SawimApplication.getContext().getResources().getDisplayMetrics().widthPixels - (PADDING_LEFT * 2 + PADDING_RIGHT);
+        return SawimApplication.getContext().getResources().getDisplayMetrics().widthPixels - PADDING_LEFT * 2 - PADDING_RIGHT - AVATAR_WIDTH;
     }
 
     public static Layout makeLayout(CharSequence parsedText, Typeface msgTextTypeface, int width) {
@@ -133,17 +140,15 @@ public class MessageItemView extends View {
         boolean isAddTitleView = nickText != null;
         int width = MeasureSpec.getSize(widthMeasureSpec);
         int height = isAddTitleView ? measureHeight(heightMeasureSpec) : getPaddingTop() + getPaddingBottom();
-        int layoutWidth = width - getPaddingRight() - getPaddingLeft() * 2;
-        if (layout != null && layout.getWidth() != layoutWidth) {
-            layout = makeLayout(layout.getText(), msgTextTypeface, layoutWidth);
-        }
         titleHeight = isAddTitleView ? height - getPaddingTop() : getPaddingTop();
 
         if (isUrl) {
             height += getMessageWidth();
         }
-        if (layout != null)
-            height += layout.getLineTop(layout.getLineCount());
+        if (layout != null) {
+            textHeight = layout.getLineTop(layout.getLineCount());
+            height += textHeight;
+        }
         setMeasuredDimension(width, height);
     }
 
@@ -171,10 +176,23 @@ public class MessageItemView extends View {
                             int bottom) {
         super.onLayout(changed, left, top, right, bottom);
         computeCoordinates(right - left, bottom - top);
+
+        int layoutWidth = getMeasuredWidth() - getPaddingRight() - getPaddingLeft() * 2 - AVATAR_WIDTH;
+        if (layout != null && layout.getWidth() != layoutWidth) {
+            layout = makeLayout(layout.getText(), msgTextTypeface, layoutWidth);
+        }
+
+        wasLayout = true;
     }
 
     private void computeCoordinates(int viewWidth, int viewHeight) {
         textY = getPaddingTop() - (int) messageTextPaint.ascent();
+    }
+
+    public void setAvatarBitmap(Bitmap avatarBitmap) {
+        this.avatarBitmap = avatarBitmap;
+        repaint();
+        invalidate();
     }
 
     public void setBackgroundIndex(int index) {
@@ -212,7 +230,7 @@ public class MessageItemView extends View {
         }
         image = null;
 
-        SimpleTarget<Bitmap> target = new SimpleTarget<Bitmap>(getMessageWidth(), getMessageWidth() - getMessageWidth() / 2) {
+        SimpleTarget<Bitmap> target = new SimpleTarget<Bitmap>(getMessageWidth(), getMessageWidth()) {
 
             @Override
             public void onResourceReady(Bitmap bitmap, GlideAnimation<? super Bitmap> glideAnimation) {
@@ -261,20 +279,28 @@ public class MessageItemView extends View {
 
     @Override
     public void onDraw(Canvas canvas) {
+        if (!wasLayout) {
+            requestLayout();
+            return;
+        }
         int width = getWidth();
         int stopX = width - getPaddingRight();
         if (isShowDivider) {
             textPaint.setColor(Scheme.getColor(R.attr.text));
             canvas.drawLine(getPaddingLeft(), getScrollY() - 2, stopX, getScrollY() - 2, textPaint);
         }
-        if (backgroundIndex == BACKGROUND_INCOMING) {
-            //setDrawableBounds(SawimResources.backgroundDrawableIn, 0, getPaddingTop() / 2, width - getPaddingRight() / 2, getHeight() - getPaddingBottom() / 2);
-            //SawimResources.backgroundDrawableIn.draw(canvas);
-            canvas.drawRoundRect(new RectF(getPaddingLeft(), getPaddingTop(), width - getPaddingRight() / 2, getHeight()), BACKGROUND_CORNER, BACKGROUND_CORNER, highlightPaint);
-        } else if (backgroundIndex == BACKGROUND_OUTCOMING) {
-            //setDrawableBounds(SawimResources.backgroundDrawableOut, getPaddingLeft() / 2, getPaddingTop() / 2, width - getPaddingRight() / 2, getHeight() - getPaddingBottom() / 2);
-            //SawimResources.backgroundDrawableOut.draw(canvas);
-            canvas.drawRoundRect(new RectF((float) (getPaddingLeft() * 1.5), getPaddingTop(), width - getPaddingRight() / 2, getHeight()), BACKGROUND_CORNER, BACKGROUND_CORNER, highlightPaint);
+        boolean incoming = backgroundIndex == BACKGROUND_INCOMING;
+        if (avatarBitmap != null) {
+            canvas.drawBitmap(avatarBitmap, (incoming ? getPaddingLeft() : stopX - avatarBitmap.getWidth()), getHeight() - avatarBitmap.getHeight(), null);
+        }
+        if (incoming) {
+            setDrawableBounds(SawimResources.backgroundDrawableIn, AVATAR_WIDTH, getPaddingTop() / 2 + titleHeight - titleHeight / 5, width - getPaddingRight() / 2 - AVATAR_WIDTH, getHeight() - getPaddingBottom() / 2 - titleHeight + titleHeight / 5);
+            SawimResources.backgroundDrawableIn.draw(canvas);
+            //canvas.drawRoundRect(new RectF(getPaddingLeft() + AVATAR_WIDTH, getPaddingTop(), width - getPaddingRight() / 2, getHeight()), BACKGROUND_CORNER, BACKGROUND_CORNER, highlightPaint);
+        } else {
+            setDrawableBounds(SawimResources.backgroundDrawableOut, getPaddingLeft() / 2, getPaddingTop() / 2 + titleHeight - titleHeight / 5, width - getPaddingRight() - AVATAR_WIDTH, getHeight() - getPaddingBottom() / 2 - titleHeight + titleHeight / 5);
+            SawimResources.backgroundDrawableOut.draw(canvas);
+            //canvas.drawRoundRect(new RectF((float) (getPaddingLeft() * 1.5), getPaddingTop(), width - getPaddingRight() / 2- AVATAR_WIDTH, getHeight()), BACKGROUND_CORNER, BACKGROUND_CORNER, highlightPaint);
         }
 
         if (nickText != null) {
@@ -282,7 +308,7 @@ public class MessageItemView extends View {
             textPaint.setTextAlign(Paint.Align.LEFT);
             setTextSize(nickSize);
             textPaint.setTypeface(nickTypeface);
-            canvas.drawText(nickText, getPaddingLeft() * 2, textY + getPaddingTop() / 2, textPaint);
+            canvas.drawText(nickText, incoming ? AVATAR_WIDTH + getPaddingLeft() * 2 : getPaddingLeft(), textY - getPaddingTop() / 2, textPaint);
         }
 
         if (msgTimeText != null) {
@@ -291,19 +317,21 @@ public class MessageItemView extends View {
             setTextSize(msgTimeSize);
             textPaint.setTypeface(msgTimeTypeface);
             canvas.drawText(msgTimeText,
-                    stopX - (checkImage == null ? 0 : checkImage.getWidth() << 1), textY, textPaint);
+                    stopX - (checkImage == null ? 0 : checkImage.getWidth() << 1) - (incoming ? 0 : AVATAR_WIDTH + getPaddingRight()), textY, textPaint);
         }
         if (checkImage != null) {
             canvas.drawBitmap(checkImage,
-                    stopX - checkImage.getWidth(), getPaddingTop() + checkImage.getHeight() / 2, null);
+                    stopX - checkImage.getWidth() - (incoming ? 0 : AVATAR_WIDTH), getPaddingTop() + checkImage.getHeight() / 2, null);
         }
 
         if (image != null) {
-            int textHeight = layout.getLineTop(layout.getLineCount());
-            image.setBounds(getPaddingLeft() * 2 + (image.getIntrinsicWidth() > getMessageWidth() ? 0 : getMessageWidth() / 2 - image.getIntrinsicWidth() / 2),
+            int imageWidth = (int) Math.ceil(getMessageWidth() * (float) image.getIntrinsicWidth() / image.getIntrinsicHeight());
+            setDrawableBounds(image,
+                    (incoming ? AVATAR_WIDTH + getPaddingLeft() * 2 : getPaddingLeft())
+                            + (imageWidth > getMessageWidth() ? 0 : getMessageWidth() / 2 - imageWidth / 2),
                     titleHeight + getPaddingTop() / 2,
-                    getMessageWidth() - (image.getIntrinsicWidth() > getMessageWidth() ? 0 : getMessageWidth() / 2 - image.getIntrinsicWidth() / 2),
-                    getHeight() - getPaddingTop() / 2 - textHeight - (((getHeight() - textHeight) / 2) - image.getIntrinsicHeight() / 2));
+                    imageWidth,
+                    getMessageWidth());
             image.draw(canvas);
         }
         if (layout != null) {
@@ -316,7 +344,7 @@ public class MessageItemView extends View {
             if (image != null) {
                 y += getMessageWidth();
             }
-            canvas.translate(getPaddingLeft() * 2, y);
+            canvas.translate((incoming ? AVATAR_WIDTH + getPaddingLeft() * 2 : getPaddingLeft()), y);
             layout.draw(canvas);
             canvas.restore();
         }
@@ -346,7 +374,7 @@ public class MessageItemView extends View {
     private static final BackgroundColorSpan linkHighlightColor = new BackgroundColorSpan(Scheme.getColor(R.attr.link_highlight));
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (layout != null && layout.getText() == null) return super.onTouchEvent(event);
+        if (layout == null || layout.getText() == null) return super.onTouchEvent(event);
         if (layout.getText() instanceof Spannable) {
             final Spannable buffer = (Spannable) layout.getText();
             int action = event.getAction();

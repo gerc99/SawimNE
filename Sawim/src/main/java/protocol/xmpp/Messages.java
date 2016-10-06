@@ -297,11 +297,6 @@ public class Messages {
             }
         }
         String xmlns = msg.getXmlns();
-        if (subject == null && isConference && !isOnlineMessage) {
-            if (c != null && HistoryStorage.getHistory(connection.getXmpp().getUserId(), Jid.getBareJid(fullJid)).hasLastMessage(connection.getXmpp().getChat(c), message)) {
-                return;
-            }
-        }
         if (message != null) {
             if (connection.getXmpp() != null)
                 connection.getXmpp().addMessage(message, XmlConstants.S_HEADLINE.equals(type) || (xmlns != null && xmlns.equals("p1:pushed")), isConference);

@@ -25,7 +25,8 @@ public class AvatarCache {
     private LruCache<String, Bitmap> bitmapLruCache = new LruCache<>(((int) Runtime.getRuntime().maxMemory() / 1024) / 8); // Use 1/8th of the available memory for this memory cache.
     private static AvatarCache instance;
 
-    private static final int AVATAR_SIZE = Util.dipToPixels(SawimApplication.getContext(), SawimApplication.AVATAR_SIZE);
+    public static final int MESSAGE_AVATAR_SIZE = Util.dipToPixels(SawimApplication.getContext(), 48);
+    private static final int AVATAR_SIZE = MESSAGE_AVATAR_SIZE /*Util.dipToPixels(SawimApplication.getContext(), SawimApplication.AVATAR_SIZE)*/;
     public static final File AVATARS_FOLDER = FileSystem.openDir(FileSystem.AVATARS);
 
     private Handler mainHandler = new Handler(Looper.getMainLooper());
@@ -47,6 +48,10 @@ public class AvatarCache {
     }
 
     public void load(final String id, final String hash, final String nick, final OnImageLoadListener onImageLoadListener) {
+        load(id, hash, nick, AVATAR_SIZE, onImageLoadListener);
+    }
+
+    public void load(final String id, final String hash, final String nick, final int size, final OnImageLoadListener onImageLoadListener) {
         Bitmap bitmap = bitmapLruCache.get(id);
         if (onImageLoadListener != null) {
             onImageLoadListener.onLoad(bitmap);
@@ -59,13 +64,13 @@ public class AvatarCache {
                     if (bitmap == null) {
                         if (TextUtils.isEmpty(hash)) {
                             String character = String.valueOf(nick.charAt(0));
-                            bitmap = Avatars.getRoundedBitmap(character, Avatars.getColorForName(character), Color.WHITE, AVATAR_SIZE);
+                            bitmap = Avatars.getRoundedBitmap(character, Avatars.getColorForName(character), Color.WHITE, size);
                             //save(getFile(id, character), bitmap);
                             post(bitmap, id, onImageLoadListener);
                         } else {
-                            File file = getFile(id, hash);
+                            File file = getFile(id, hash, size);
                             if (file.exists()) {
-                                bitmap = Util.getAvatarBitmap(ru.sawim.comm.Util.fileToArrayBytes(file), AVATAR_SIZE);
+                                bitmap = Util.getAvatarBitmap(ru.sawim.comm.Util.fileToArrayBytes(file), size);
                                 post(bitmap, id, onImageLoadListener);
                                 return;
                             }
@@ -76,13 +81,13 @@ public class AvatarCache {
                             @Override
                             public void onLoaded(String avatarHash, byte[] avatarBytes) {
                                 if (id != null) {
-                                    File file = getFile(id, avatarHash);
+                                    File file = getFile(id, avatarHash, size);
                                     if (file.exists()) {
-                                        Bitmap bitmap = Util.getAvatarBitmap(ru.sawim.comm.Util.fileToArrayBytes(file), AVATAR_SIZE);
+                                        Bitmap bitmap = Util.getAvatarBitmap(ru.sawim.comm.Util.fileToArrayBytes(file), size);
                                         post(bitmap, id, onImageLoadListener);
                                         return;
                                     }
-                                    Bitmap bitmap = Util.getAvatarBitmap(avatarBytes, AVATAR_SIZE);
+                                    Bitmap bitmap = Util.getAvatarBitmap(avatarBytes, size);
                                     if (bitmap == null) return;
                                     bitmap = Avatars.getRoundedBitmap(bitmap);
                                     save(file, bitmap);
@@ -136,8 +141,8 @@ public class AvatarCache {
 
     public void remove(String id, String hash) {
         if (hash == null || id == null) return;
-        File file = getFile(id, hash);
-        file.delete();
+        getFile(id, hash, AVATAR_SIZE).delete();
+        getFile(id, hash, MESSAGE_AVATAR_SIZE).delete();
     }
 
     public boolean hasFile(String hash) {
@@ -151,8 +156,13 @@ public class AvatarCache {
         return false;
     }
 
-    private File getFile(String id, String hash) {
-        return new File(AVATARS_FOLDER, id.replace('/', '_').concat((TextUtils.isEmpty(hash) ? "" : hash.replace('/', '_')).concat(".").concat(COMPRESS_FORMAT.name())));
+    private File getFile(String id, String hash, final int size) {
+        return new File(AVATARS_FOLDER,
+                id.replace('/', '_')
+                        .concat((TextUtils.isEmpty(hash) ? "" : hash.replace('/', '_')))
+                        .concat(String.valueOf(size))
+                        .concat(".")
+                        .concat(COMPRESS_FORMAT.name()));
     }
 
     public interface OnImageLoadListener {

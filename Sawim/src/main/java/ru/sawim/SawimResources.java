@@ -55,9 +55,9 @@ public class SawimResources {
                 .getDrawable(Scheme.isBlack() ? R.drawable.ic_expanded_dark : R.drawable.ic_expanded_light);
         listDivider = SawimApplication.getInstance().getResources()
                 .getDrawable(Scheme.isBlack() ? R.drawable.abc_list_divider_holo_dark : R.drawable.abc_list_divider_holo_light);
-        /*backgroundDrawableIn = SawimApplication.getInstance().getResources()
+        backgroundDrawableIn = SawimApplication.getInstance().getResources()
                 .getDrawable(Scheme.isBlack() ? R.drawable.msg_in_dark : R.drawable.msg_in);
         backgroundDrawableOut = SawimApplication.getInstance().getResources()
-                .getDrawable(Scheme.isBlack() ? R.drawable.msg_out_dark : R.drawable.msg_out);*/
+                .getDrawable(Scheme.isBlack() ? R.drawable.msg_out : R.drawable.msg_out);
     }
 }

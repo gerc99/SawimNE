@@ -65,6 +65,7 @@ public class RosterItemView extends View {
             textPaint = new TextPaint();
             paintDivider = new Paint(Paint.ANTI_ALIAS_FLAG);
             paintDivider.setStyle(Paint.Style.STROKE);
+            paintDivider.setColor(Scheme.getColor(R.attr.list_divider));
         }
         textPaint.setAntiAlias(true);
     }
@@ -213,7 +214,7 @@ public class RosterItemView extends View {
             if (avatarBorderColor == -1) {
                 bitmap = itemFirstImage;
             } else {
-                bitmap = getRoundedBitmap(itemFirstImage, (int) (3 * getResources().getDisplayMetrics().density), avatarBorderColor);
+                bitmap = getRoundedBitmap(itemFirstImage, (int) (1 * getResources().getDisplayMetrics().density), avatarBorderColor);
             }
             canvas.drawBitmap(bitmap, firstImageX, firstImageY, null);
         }
@@ -248,10 +249,9 @@ public class RosterItemView extends View {
 
         boolean isLayer = itemName == null && itemDesc != null;
         if (isShowDivider) {
-            paintDivider.setColor(Scheme.getColor(R.attr.list_divider));
-            paintDivider.setStrokeWidth(Util.dipToPixels(getContext(), isLayer ? 2 : 1));
+            paintDivider.setStrokeWidth(Util.dipToPixels(SawimApplication.getContext(), isLayer ? 2 : 1));
             canvas.drawLine(textX,
-                    getScrollY() + getMeasuredHeight(), getWidth(), getScrollY() + getMeasuredHeight(), paintDivider);
+                    getMeasuredHeight() - 1, getWidth(), getMeasuredHeight() - 1, paintDivider);
         }
     }
 }

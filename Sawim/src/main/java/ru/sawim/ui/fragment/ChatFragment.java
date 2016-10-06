@@ -545,7 +545,7 @@ public class ChatFragment extends SawimFragment implements OnUpdateChat, Handler
 
     private void initList() {
         final MyListView chatListView = chatViewLayout.getChatListsView().getChatListView();
-        MessagesAdapter adapter = new MessagesAdapter(realmDb, chat.getContact().getUserId());
+        final MessagesAdapter adapter = new MessagesAdapter(realmDb, chat.getContact().getUserId());
         chatListView.setAdapter(adapter);
         if (stickyRecyclerHeadersDecoration == null) {
             stickyRecyclerHeadersDecoration = new StickyRecyclerHeadersDecoration(adapter);
@@ -590,6 +590,29 @@ public class ChatFragment extends SawimFragment implements OnUpdateChat, Handler
                     isScrollEnd = isScrollEnd_;
                     chatViewLayout.getChatListsView().setShowDividerForUnreadMessage(!isScrollEnd);
                 }
+            }
+        });
+        chatListView.setOnInterceptTouchListener(new MyListView.OnInterceptTouchListener() {
+            private float x1,x2;
+            static final int MIN_DISTANCE = 150;
+            @Override
+            public boolean onInterceptTouchEvent(MotionEvent event) {
+                switch(event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        x1 = event.getX();
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        x2 = event.getX();
+                        float deltaX = x2 - x1;
+                        if (Math.abs(deltaX) > MIN_DISTANCE) {
+                            if (deltaX < 0) {
+                                adapter.showTimes();
+                                return true;
+                            }
+                        }
+                        break;
+                }
+                return false;
             }
         });
     }

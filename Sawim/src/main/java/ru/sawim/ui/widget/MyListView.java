@@ -56,7 +56,6 @@ public class MyListView extends RecyclerView {
     private void init() {
         setScrollbarFadingEnabled(true);
         setVerticalScrollBarEnabled(true);
-        setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         linearLayoutManager.setSmoothScrollbarEnabled(true);
         linearLayoutManager.setStackFromEnd(false);
