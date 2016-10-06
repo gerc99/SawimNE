@@ -58,6 +58,6 @@ public class SawimResources {
         backgroundDrawableIn = SawimApplication.getInstance().getResources()
                 .getDrawable(Scheme.isBlack() ? R.drawable.msg_in_dark : R.drawable.msg_in);
         backgroundDrawableOut = SawimApplication.getInstance().getResources()
-                .getDrawable(Scheme.isBlack() ? R.drawable.msg_out : R.drawable.msg_out);
+                .getDrawable(Scheme.isBlack() ? R.drawable.msg_out_dark : R.drawable.msg_out);
     }
 }
