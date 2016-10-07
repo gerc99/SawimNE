@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          xmlns:tools="http://schemas.android.com/tools"
           package="ru.sawim"
           android:installLocation="auto">
     <uses-feature android:name="android.hardware.camera" android:required="false"/>
@@ -18,7 +17,6 @@
                       android:anyDensity="true"/>
 
     <application android:label="@string/app_name"
-                 tools:replace="label"
                  android:icon="@drawable/ic_launcher"
                  android:name=".SawimApplication">
         <activity android:name=".ui.activity.SawimActivity"
