@@ -129,14 +129,14 @@ public class Auth {
         if ((null != x2) && x2.contains("mechanism")) {
             String auth = "<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' ";
             Xmpp protocol = connection.getXmpp();
-            if (isMechanism(x2, "DIGEST-MD5")) {
-                DebugLog.systemPrintln("[INFO-JABBER] Using DIGEST-MD5");
-                auth += "mechanism='DIGEST-MD5'/>";
-            } else if (isMechanism(x2, "SCRAM-SHA-1")) {
+            if (isMechanism(x2, "SCRAM-SHA-1")) {
                 auth += "mechanism='SCRAM-SHA-1'>";
                 scramSHA1 = new SASL_ScramSha1();
                 auth += Util.xmlEscape(scramSHA1.init(protocol.getUserId(), protocol.getPassword()));
                 auth += "</auth>";
+            } else if (isMechanism(x2, "DIGEST-MD5")) {
+                DebugLog.systemPrintln("[INFO-JABBER] Using DIGEST-MD5");
+                auth += "mechanism='DIGEST-MD5'/>";
             } else {
                 boolean canUsePlain = true;
                 canUsePlain = connection.socket.isSecured();
