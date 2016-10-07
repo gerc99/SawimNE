@@ -1,11 +1,10 @@
 language: android
 android:
   components:
+    - platform-tools
+    - tools
     - build-tools-23.0.3
-    - build-tools-21.1.1 #mtm
     - android-23
-    - android-21 #mtm
-    - sysimg-23
     - extra-google-m2repository
     - extra-android-m2repository
   licenses:
