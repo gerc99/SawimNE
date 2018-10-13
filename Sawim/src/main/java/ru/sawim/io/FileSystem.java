@@ -2,6 +2,7 @@ package ru.sawim.io;
 
 import android.os.Environment;
 import protocol.net.TcpSocket;
+import ru.sawim.SawimApplication;
 import ru.sawim.SawimException;
 
 import java.io.*;
@@ -79,6 +80,7 @@ public class FileSystem {
                 close();
             }
         } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -87,12 +89,13 @@ public class FileSystem {
     }
 
     public static File getCardDir() {
-        File ext = Environment.getExternalStorageDirectory();
+        /*File ext = Environment.getExternalStorageDirectory();
         if (isAccessible(ext)) return ext;
         if (isAccessible(new File("/sdcard"))) return new File("/sdcard");
         if (isAccessible(new File("/mnt/sdcard"))) return new File("/mnt/sdcard");
         if (isAccessible(new File("/mnt/ext_card"))) return new File("/mnt/ext_card");
-        return ext;
+        return ext;*/
+        return SawimApplication.getInstance().getCacheDir();
     }
 
     private static boolean isAccessible(File file) {

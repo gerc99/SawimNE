@@ -92,13 +92,7 @@ public class PreferenceScreenBuilder {
                 LinearLayout aboutLayout = (LinearLayout) v.findViewById(R.id.about_linear);
                 TextView about = new TextView(activity);
                 about.setTextSize(SawimApplication.getFontSize());
-                about.setText(JLocale.getString(R.string.about_program_desc) + "\n" +
-                        "PayPal: mazahaka.09@inbox.ru\n" +
-                        "WebMoney:\n" +
-                        "  R240291120928\n" +
-                        "  E299360703034\n" +
-                        "  Z158108712712\n" +
-                        "Money.Yandex: 410012088026577");
+                about.setText(JLocale.getString(R.string.about_program_desc));
                 about.setTypeface(Typeface.DEFAULT_BOLD);
                 aboutLayout.addView(about);
 
@@ -110,7 +104,7 @@ public class PreferenceScreenBuilder {
 
                 TextView author = new TextView(activity);
                 author.setTextSize(SawimApplication.getFontSize());
-                author.setText(activity.getString(R.string.author) + ": Gerc (Gorbachev Sergey)");
+                author.setText(activity.getString(R.string.author) + ": Gerc");
                 author.setTypeface(Typeface.DEFAULT);
                 aboutLayout.addView(author);
 

@@ -223,8 +223,13 @@ abstract public class Protocol {
             return;
         }
         storage.load(Protocol.this);
-        ChatHistory.instance.loadChats();
-        RosterHelper.getInstance().updateRoster();
+        SawimApplication.getExecutor().execute(new Runnable() {
+            @Override
+            public void run() {
+                ChatHistory.instance.loadChats();
+                RosterHelper.getInstance().updateRoster();
+            }
+        });
     }
 
     protected void s_removeContact(Contact contact) {

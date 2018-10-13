@@ -14,12 +14,13 @@ import ru.sawim.roster.RosterHelper;
 import ru.sawim.roster.TreeNode;
 
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public final class ChatHistory {
 
     public static final ChatHistory instance = new ChatHistory();
 
-    public final List<Chat> historyTable = new ArrayList<Chat>();
+    public final List<Chat> historyTable = new CopyOnWriteArrayList<>();
 
     private ChatHistory() {
     }

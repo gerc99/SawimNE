@@ -63,7 +63,7 @@ public class AvatarCache {
                     Bitmap bitmap = bitmapLruCache.get(id);
                     if (bitmap == null) {
                         if (TextUtils.isEmpty(hash)) {
-                            String character = String.valueOf(nick.charAt(0));
+                            String character = String.valueOf(nick.length() > 0 ? nick.charAt(0) : "-");
                             bitmap = Avatars.getRoundedBitmap(character, Avatars.getColorForName(character), Color.WHITE, size);
                             //save(getFile(id, character), bitmap);
                             post(bitmap, id, onImageLoadListener);

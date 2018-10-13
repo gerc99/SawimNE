@@ -4,7 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
+
 import ru.sawim.ExternalApi;
 import ru.sawim.R;
 import ru.sawim.Scheme;
@@ -12,7 +13,7 @@ import ru.sawim.Scheme;
 /**
  * Created by admin on 26.03.14.
  */
-public class BaseActivity extends ActionBarActivity {
+public class BaseActivity extends AppCompatActivity {
 
     private final static ExternalApi externalApi = new ExternalApi();
     private OnConfigurationChanged configurationChanged;

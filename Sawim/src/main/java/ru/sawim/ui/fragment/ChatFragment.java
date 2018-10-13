@@ -55,6 +55,7 @@ import ru.sawim.ui.adapter.MucUsersAdapter;
 import ru.sawim.ui.adapter.RosterAdapter;
 import ru.sawim.roster.RosterHelper;
 import ru.sawim.text.TextFormatter;
+import ru.sawim.ui.dialog.ContactAuthDialogFragment;
 import ru.sawim.ui.fragment.menu.JuickMenu;
 import ru.sawim.ui.fragment.menu.MyMenu;
 import ru.sawim.ui.fragment.menu.MyMenuItem;
@@ -1336,34 +1337,9 @@ public class ChatFragment extends SawimFragment implements OnUpdateChat, Handler
     }
 
     public static void showAuthorizationDialog(final BaseActivity activity, final Chat newChat) {
-        new DialogFragment() {
-            @Override
-            public Dialog onCreateDialog(Bundle savedInstanceState) {
-                final Protocol protocol = RosterHelper.getInstance().getProtocol();
-                final Contact contact = newChat.getContact();
-                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity);
-                dialogBuilder.setMessage(JLocale.getString(R.string.grant) + " " + contact.getName() + "?");
-                dialogBuilder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        new ContactMenu(contact).doAction(activity, ContactMenu.USER_MENU_GRANT_AUTH);
-                        activity.supportInvalidateOptionsMenu();
-                        RosterHelper.getInstance().updateRoster();
-                    }
-                });
-                dialogBuilder.setNegativeButton(R.string.deny, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        new ContactMenu(contact).doAction(activity, ContactMenu.USER_MENU_DENY_AUTH);
-                        activity.supportInvalidateOptionsMenu();
-                        RosterHelper.getInstance().updateRoster();
-                    }
-                });
-                Dialog dialog = dialogBuilder.create();
-                dialog.setCanceledOnTouchOutside(true);
-                return dialog;
-            }
-        }.show(activity.getSupportFragmentManager().beginTransaction(), "auth");
+        ContactAuthDialogFragment contactAuthDialogFragment = new ContactAuthDialogFragment();
+        contactAuthDialogFragment.setNewChat(newChat);
+        contactAuthDialogFragment.show(activity.getSupportFragmentManager(), "auth");
     }
 
     private boolean canAdd(String what) {

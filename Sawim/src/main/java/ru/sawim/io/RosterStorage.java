@@ -304,7 +304,7 @@ public class RosterStorage {
 
     public void updateUnreadMessagesCount(String protocolId, final String uniqueUserId, final short count) {
         Realm realm = RealmDb.realm();
-        realm.executeTransactionAsync(new Realm.Transaction() {
+        realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
                 Contact localContact = realm.where(Contact.class).equalTo("contactId", uniqueUserId).findFirst();

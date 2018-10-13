@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 
+import ru.sawim.service.SawimService;
 import ru.sawim.ui.activity.SawimActivity;
 import ru.sawim.chat.Chat;
 import ru.sawim.chat.ChatHistory;
@@ -54,7 +55,7 @@ public class SawimNotification {
 
     private static Notification getNotification(Context context, boolean silent, final int icon, CharSequence stateMsg, Chat current) {
         int unread = ChatHistory.instance.getPersonalUnreadMessageCount(false);
-        NotificationCompat.Builder notification = new NotificationCompat.Builder(context);
+        NotificationCompat.Builder notification = new NotificationCompat.Builder(context, SawimService.CHANNEL_ID1);
         Intent notificationIntent = new Intent(context, SawimActivity.class);
         notificationIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         notificationIntent.setAction(SawimActivity.NOTIFY);
@@ -106,7 +107,7 @@ public class SawimNotification {
     }
 
     public static void pushNotification(Context context, String jid, String message, int unread) {
-        NotificationCompat.Builder notification = new NotificationCompat.Builder(context);
+        NotificationCompat.Builder notification = new NotificationCompat.Builder(context, SawimService.CHANNEL_ID1);
         Intent notificationIntent = new Intent(context, SawimActivity.class);
         notificationIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         notificationIntent.setAction(SawimActivity.NOTIFY);
@@ -142,7 +143,7 @@ public class SawimNotification {
 
     public static void alarm(String nick) {
         Context context = SawimApplication.getContext();
-        NotificationCompat.Builder notification = new NotificationCompat.Builder(context);
+        NotificationCompat.Builder notification = new NotificationCompat.Builder(context, SawimService.CHANNEL_ALARM);
         Intent notificationIntent = new Intent(context, SawimActivity.class);
         notificationIntent.setAction(SawimActivity.NOTIFY);
         notificationIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -176,7 +177,7 @@ public class SawimNotification {
         PendingIntent contentIntent = PendingIntent.getActivity(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         NotificationCompat.Builder builder = notifiBuildersMap.get(id);
         if (builder == null) {
-            builder = new NotificationCompat.Builder(context);
+            builder = new NotificationCompat.Builder(context, SawimService.CHANNEL_PROGRESS);
             notifiBuildersMap.put(id, builder);
         }
         String idStr = String.valueOf(id);
@@ -219,7 +220,7 @@ public class SawimNotification {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.putExtra(SawimActivity.NOTIFY_CAPTCHA, title);
         PendingIntent contentIntent = PendingIntent.getActivity(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, SawimService.CHANNEL_CAPTCHA);
         builder.setContentIntent(contentIntent);
         builder.setOngoing(false);
         builder.setContentTitle(title);

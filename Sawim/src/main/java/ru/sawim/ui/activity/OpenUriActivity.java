@@ -3,7 +3,8 @@ package ru.sawim.ui.activity;
 import android.support.v7.app.AlertDialog;
 import android.content.Intent;
 import android.net.Uri;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
+
 import protocol.Contact;
 import protocol.Protocol;
 import protocol.xmpp.Jid;
@@ -18,7 +19,7 @@ import ru.sawim.roster.RosterHelper;
  *
  * @author vladimir
  */
-public class OpenUriActivity extends ActionBarActivity {
+public class OpenUriActivity extends AppCompatActivity {
 
     public void onStart() {
         super.onStart();

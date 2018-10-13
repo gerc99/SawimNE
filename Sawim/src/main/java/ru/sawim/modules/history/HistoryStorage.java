@@ -118,7 +118,7 @@ public class HistoryStorage {
     public synchronized long getMessageTime(boolean last) {
         long lastMessageTime = 0;
         Realm realmDb = RealmDb.realm();
-        List<Message> messages = realmDb.where(Message.class).equalTo("contactId", uniqueUserId).findAllSorted("date", Sort.ASCENDING);
+        List<Message> messages = realmDb.where(Message.class).equalTo("contactId", uniqueUserId).findAll().sort("date", Sort.ASCENDING);
         if (last) {
             for (int i = messages.size() - 1; 0 <= i; --i) {
                 Message message = messages.get(i);
@@ -150,7 +150,7 @@ public class HistoryStorage {
         String msgNick = chat.getFrom(message);
         String msgText = MessData.formatCmdMe(msgNick, message.getText());
         Realm realmDb = RealmDb.realm();
-        List<Message> messages = realmDb.where(Message.class).equalTo("contactId", uniqueUserId).findAllSorted("date", Sort.DESCENDING);
+        List<Message> messages = realmDb.where(Message.class).equalTo("contactId", uniqueUserId).findAll().sort("date", Sort.DESCENDING);
         boolean has = false;
         for (int i = messages.size() - 1; 0 <= i; --i) {
             Message localMessage = messages.get(i);
@@ -170,9 +170,10 @@ public class HistoryStorage {
     public static List<Contact> getActiveContacts() {
         List<Contact> list = new ArrayList<>();
         Realm realmDb = RealmDb.realm();
-        List<Message> messages = realmDb.where(Message.class).distinct("contactId");
+        List<Message> messages = realmDb.where(Message.class).distinct("contactId").findAll();
         for (int i = messages.size() - 1; 0 <= i; --i) {
             Message localMessage = messages.get(i);
+            if (localMessage == null) continue;
             String uniqueUserId = localMessage.getContactId();
             Protocol protocol = RosterHelper.getInstance().getProtocol();
             if (protocol != null) {
@@ -202,7 +203,7 @@ public class HistoryStorage {
         } else {
             realmQuery = realmDb.where(Message.class).equalTo("contactId", uniqueUserId).lessThan("date", timestamp);
         }
-        final RealmResults<Message> messages = realmQuery.findAllSorted("date", Sort.DESCENDING);
+        final RealmResults<Message> messages = realmQuery.findAll().sort("date", Sort.DESCENDING);
         realmDb.close();
         return messages;
     }

@@ -110,7 +110,7 @@ public class SawimApplication extends Application {
         Thread.setDefaultUncaughtExceptionHandler(ExceptionHandler.inContext(getContext()));
 
         checkPlayServices = checkPlayServices();
-        canForegroundService = !checkPlayServices;
+        canForegroundService = true;//!checkPlayServices;
          //    refWatcher = LeakCanary.install(this);
         RealmDb.init(getApplicationContext());
 
@@ -184,7 +184,11 @@ public class SawimApplication extends Application {
 
     private void startService() {
         if (!isRunService()) {
-            startService(new Intent(this, SawimService.class));
+            try {
+                startService(new Intent(this, SawimService.class));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         if (!isBindService) {
             isBindService = true;
@@ -350,12 +354,12 @@ public class SawimApplication extends Application {
     }
 
     public void setCanForegroundService(boolean canForegroundService) {
-        this.canForegroundService = canForegroundService;
+        /*this.canForegroundService = canForegroundService;
         if (!checkPlayServices || canForegroundService) {
             this.canForegroundService = !checkPlayServices;
             serviceConnection.send(Message.obtain(null, SawimService.START_FOREGROUND_SERVICE));
         } else {
             serviceConnection.send(Message.obtain(null, SawimService.STOP_FOREGROUND_SERVICE));
-        }
+        }*/
     }
 }

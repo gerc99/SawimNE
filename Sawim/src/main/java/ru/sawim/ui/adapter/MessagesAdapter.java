@@ -73,7 +73,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
 
     public MessagesAdapter(Realm realmDb, String userId) {
         this.userId = userId;
-        items = realmDb.where(ru.sawim.db.model.Message.class).equalTo("contactId", userId).findAllSorted("date", Sort.ASCENDING);
+        items = realmDb.where(ru.sawim.db.model.Message.class).equalTo("contactId", userId).findAll().sort("date", Sort.ASCENDING);
         textLinkClick = new OnTextLinkClick();
         setHasStableIds(true);
     }
